@@ -20,7 +20,6 @@
  */
 package eu.europa.esig.dss.cades.validation;
 
-import eu.europa.esig.dss.cades.validation.scope.CAdESSignatureScopeFinder;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
@@ -51,7 +50,7 @@ public class CMSDocumentAnalyzer extends DefaultDocumentAnalyzer {
 	protected CMSSignedData cmsSignedData;
 
 	/**
-	 * The empty constructor, instantiate {@link CAdESSignatureScopeFinder}
+	 * The empty constructor
 	 */
 	CMSDocumentAnalyzer() {
 		// empty

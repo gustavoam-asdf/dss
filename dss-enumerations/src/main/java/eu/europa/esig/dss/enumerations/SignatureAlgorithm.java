@@ -725,6 +725,43 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
     }
 
     /**
+     * Map of COSE signature algorithm keys
+     */
+    private static final Map<Long, SignatureAlgorithm> COSE_ALGORITHMS = registerCoseAlgorithms();
+
+    /**
+     * Map of JWA signature algorithm URIs by algorithm
+     */
+    private static final Map<SignatureAlgorithm, Long> COSE_ALGORITHMS_FOR_KEY = registerCoseAlgorithmsForKey();
+
+    private static Map<Long, SignatureAlgorithm> registerCoseAlgorithms() {
+        // https://www.iana.org/assignments/cose/cose.xml
+        final Map<Long, SignatureAlgorithm> coseAlgorithms = new HashMap<>();
+
+        coseAlgorithms.put(-257L, RSA_SHA256);
+        coseAlgorithms.put(-258L, RSA_SHA384);
+        coseAlgorithms.put(-259L, RSA_SHA512);
+
+        coseAlgorithms.put(-37L, RSA_SSA_PSS_SHA256_MGF1);
+        coseAlgorithms.put(-38L, RSA_SSA_PSS_SHA3_384_MGF1);
+        coseAlgorithms.put(-39L, RSA_SSA_PSS_SHA512_MGF1);
+
+        coseAlgorithms.put(-7L, ECDSA_SHA256);
+        coseAlgorithms.put(-35L, ECDSA_SHA384);
+        coseAlgorithms.put(-36L, ECDSA_SHA512);
+
+        return coseAlgorithms;
+    }
+
+    private static Map<SignatureAlgorithm, Long> registerCoseAlgorithmsForKey() {
+        final Map<SignatureAlgorithm, Long> coseAlgorithms = new EnumMap<>(SignatureAlgorithm.class);
+        for (Entry<Long, SignatureAlgorithm> entry : COSE_ALGORITHMS.entrySet()) {
+            coseAlgorithms.put(entry.getValue(), entry.getKey());
+        }
+        return coseAlgorithms;
+    }
+
+    /**
      * Returns a corresponding {@code SignatureAlgorithm} by the XML URI string
      *
      * @param xmlName {@link String} XML URI
@@ -814,6 +851,21 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
      */
     public static SignatureAlgorithm forJWA(String jsonWebAlgorithm, final SignatureAlgorithm defaultValue) {
         final SignatureAlgorithm algorithm = JWA_ALGORITHMS.get(jsonWebAlgorithm);
+        if (algorithm == null) {
+            return defaultValue;
+        }
+        return algorithm;
+    }
+
+    /**
+     * This method return the {@code SignatureAlgorithm} or the default value if the algorithm is unknown.
+     *
+     * @param algorithmKey {@link Long} COSE algorithm key
+     * @param defaultValue the default value to be returned if not found
+     * @return {@code SignatureAlgorithm} or default value
+     */
+    public static SignatureAlgorithm forCOSE(Long algorithmKey, final SignatureAlgorithm defaultValue) {
+        final SignatureAlgorithm algorithm = COSE_ALGORITHMS.get(algorithmKey);
         if (algorithm == null) {
             return defaultValue;
         }
