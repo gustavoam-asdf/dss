@@ -42,7 +42,7 @@ public class CBORByteString extends AbstractCBORObject {
      *
      * @return byte array
      */
-    public byte[] getValue() {
+    public byte[] getBytes() {
         return byteString.getBytes();
     }
 

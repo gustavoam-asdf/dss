@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.COSEParser;
+import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -38,14 +40,25 @@ class CBAdESServiceTest extends PKIFactoryAccess {
     }
 
     @Test
+    void createAndValidateCoseSignTest() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign.class, coseSignStructure);
+        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESign((COSESign) coseSignStructure);
+        assertEquals(1, cborSignatures.size());
+        CBORSignature cborSignature = cborSignatures.get(0);
+        cborSignature.setKey(getSigningCert().getPublicKey());
+        assertTrue(cborSignature.verifySignature());
+    }
+
+    @Test
     void createAndValidateCoseSign1Test() {
-        CBAdESSignatureParameters signatureParameters = new CBAdESSignatureParameters();
-        signatureParameters.setSigningCertificate(getSigningCert());
-        signatureParameters.setCertificateChain(getCertificateChain());
-        signatureParameters.setSignatureLevel(SignatureLevel.CBAdES_BASELINE_B);
-        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+        CBAdESSignatureParameters signatureParameters = initParameters();
         signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
-        signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
 
         DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
 
@@ -54,6 +67,38 @@ class CBAdESServiceTest extends PKIFactoryAccess {
         CBORSignature cborSignature = CBORSignature.fromCOSE1Sign((COSESign1) coseSignStructure);
         cborSignature.setKey(getSigningCert().getPublicKey());
         assertTrue(cborSignature.verifySignature());
+    }
+
+    @Test
+    void parallelCoseSignTest() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+
+        DSSDocument doubleSignedDocument = sign(Collections.singletonList(signedDocument), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(doubleSignedDocument).parse();
+        assertInstanceOf(COSESign.class, coseSignStructure);
+        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESign((COSESign) coseSignStructure);
+        assertEquals(2, cborSignatures.size());
+        for (CBORSignature cborSignature : cborSignatures) {
+            cborSignature.setKey(getSigningCert().getPublicKey());
+            assertTrue(cborSignature.verifySignature());
+        }
+    }
+
+    private CBAdESSignatureParameters initParameters() {
+        CBAdESSignatureParameters signatureParameters = new CBAdESSignatureParameters();
+        signatureParameters.setSigningCertificate(getSigningCert());
+        signatureParameters.setCertificateChain(getCertificateChain());
+        signatureParameters.setSignatureLevel(SignatureLevel.CBAdES_BASELINE_B);
+        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+        signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        return signatureParameters;
     }
 
     private DSSDocument sign(List<DSSDocument> documentsToSign, CBAdESSignatureParameters signatureParameters) {

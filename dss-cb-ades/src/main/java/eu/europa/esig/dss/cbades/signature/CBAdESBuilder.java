@@ -9,6 +9,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -38,6 +39,9 @@ public class CBAdESBuilder {
     /** The instance of a B-level generator class */
     protected final CBAdESLevelBaselineB cbadesLevelBaselineB;
 
+    /** Signature container */
+    private COSESign coseSign;
+
     /**
      * Default constructor
      *
@@ -45,8 +49,8 @@ public class CBAdESBuilder {
      * @param parameters {@link CBAdESSignatureParameters}
      * @param documentsToSign a list of {@link DSSDocument}s to sign
      */
-    protected CBAdESBuilder(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters,
-                                   final List<DSSDocument> documentsToSign) {
+    public CBAdESBuilder(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters,
+                            final List<DSSDocument> documentsToSign) {
         Objects.requireNonNull(certificateVerifier, "CertificateVerifier must be defined!");
         Objects.requireNonNull(parameters, "SignatureParameters must be defined!");
         if (Utils.isCollectionEmpty(documentsToSign)) {
@@ -54,6 +58,34 @@ public class CBAdESBuilder {
         }
         this.parameters = parameters;
         this.cbadesLevelBaselineB = new CBAdESLevelBaselineB(certificateVerifier, parameters, documentsToSign);
+    }
+
+    /**
+     * Constructor for parallel signature creation
+     *
+     * @param certificateVerifier {@link CertificateVerifier} to use
+     * @param parameters {@link CBAdESSignatureParameters}
+     * @param coseSign {@link COSESign} signature container to create a parallel signature in
+     */
+    public CBAdESBuilder(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters,
+                         final COSESign coseSign) {
+        this(certificateVerifier, parameters, extractDocumentToBeSigned(parameters, coseSign));
+        this.coseSign = coseSign;
+    }
+
+    private static List<DSSDocument> extractDocumentToBeSigned(CBAdESSignatureParameters parameters, COSESign coseSign) {
+        if (coseSign.getPayload().isByteString()) {
+            // enveloping signature
+            CBORByteString payload = (CBORByteString) coseSign.getPayload();
+            return Collections.singletonList(new InMemoryDocument(payload.getBytes()));
+
+        } else if (Utils.isCollectionNotEmpty(parameters.getDetachedContents())) {
+            // detached signature
+            return parameters.getDetachedContents();
+
+        } else {
+            throw new IllegalArgumentException("The payload or detached content must be provided!");
+        }
     }
 
     /**
@@ -80,7 +112,6 @@ public class CBAdESBuilder {
      */
     public DSSDocument build(SignatureValue signatureValue) {
         assertConfigurationValidity(parameters);
-        // TODO : add parallel signatures support
         COSESignStructure coseSignStructure = createCOSESignStructure(signatureValue);
         byte[] coseBytes = coseSignStructure.serialize();
         return new InMemoryDocument(coseBytes);
@@ -106,13 +137,19 @@ public class CBAdESBuilder {
         boolean isDataToSignComputation = signatureValue == null;
         switch (parameters.getCoseStructureType()) {
             case COSE_SIGN:
-                COSESign coseSign = new COSESign();
-                coseSign.setPayload(getPayload(isDataToSignComputation));
+                COSESign coseSign;
+                if (this.coseSign != null) {
+                    coseSign = this.coseSign;
+                } else {
+                    coseSign = new COSESign();
+                    coseSign.setPayload(getPayload(isDataToSignComputation));
+                }
 
                 COSESignature coseSignature = new COSESignature();
                 coseSignature.setProtectedHeader(getProtectedHeader());
                 coseSignature.setSignature(getSignature(signatureValue));
-                coseSign.setSignatures(Collections.singletonList(coseSignature));
+
+                coseSign.getSignatures().add(coseSignature);
 
                 return coseSign;
 
@@ -128,6 +165,7 @@ public class CBAdESBuilder {
                         String.format("The COSE structure '%s' is not supported!", parameters.getCoseStructureType()));
         }
     }
+
 
     /**
      * Generated a Signed Header
@@ -177,9 +215,14 @@ public class CBAdESBuilder {
 
     private void assertConfigurationValidity(CBAdESSignatureParameters signatureParameters) {
         SignaturePackaging packaging = signatureParameters.getSignaturePackaging();
-        if ((packaging != SignaturePackaging.ENVELOPING) && (packaging != SignaturePackaging.DETACHED)) {
-            throw new IllegalArgumentException("Unsupported signature packaging for JSON Serialization Signature: " + packaging);
+        if (packaging != SignaturePackaging.ENVELOPING && packaging != SignaturePackaging.DETACHED) {
+            throw new IllegalArgumentException(String.format("Unsupported signature packaging for COSE signature: %s", packaging));
         }
+        if (coseSign != null && COSEStructureType.COSE_SIGN != signatureParameters.getCoseStructureType()) {
+            throw new IllegalArgumentException(String.format(
+                    "Parallel signature is not supported with '%s' structure type!", signatureParameters.getCoseStructureType()));
+        }
+
     }
     
 }

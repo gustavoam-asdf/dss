@@ -13,7 +13,6 @@ import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +27,7 @@ import java.util.List;
 public final class CBORUtils {
 
     /** An empty btsr value */
-    public static final ByteString EMPTY_BYTE_STRING = new ByteString(DSSUtils.EMPTY_BYTE_ARRAY);
+    public static final CBORByteString EMPTY_BYTE_STRING = new CBORByteString();
 
     /** An empty map value */
     public static final co.nstant.in.cbor.model.Map EMPTY_MAP = new co.nstant.in.cbor.model.Map();

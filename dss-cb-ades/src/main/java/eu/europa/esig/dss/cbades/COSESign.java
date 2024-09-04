@@ -73,7 +73,7 @@ public class COSESign implements COSESignStructure {
     @Override
     public byte[] serialize() {
         CBORArray codeSign = new CBORArray(4);
-        codeSign.setTag(COSESignatureContext.COSE_SIGN.getTag());
+        codeSign.setTag(getContext().getTag());
         codeSign.add(getProtectedHeader().getByteString());
         codeSign.add(getUnprotectedHeader());
         codeSign.add(getPayload());
@@ -89,6 +89,11 @@ public class COSESign implements COSESignStructure {
         }
         codeSign.add(coseSignaturesArray.toDataItem());
         return CBORUtils.serializeCborObject(codeSign);
+    }
+
+    @Override
+    public COSESignatureContext getContext() {
+        return COSESignatureContext.COSE_SIGN;
     }
 
 }

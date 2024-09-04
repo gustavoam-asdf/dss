@@ -30,12 +30,17 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
     @Override
     public byte[] serialize() {
         CBORArray codeSign1 = new CBORArray();
-        codeSign1.setTag(COSESignatureContext.COSE_SIGN1.getTag());
+        codeSign1.setTag(getContext().getTag());
         codeSign1.add(getProtectedHeader().getByteString());
         codeSign1.add(getUnprotectedHeader());
         codeSign1.add(getPayload());
         codeSign1.add(getSignature());
         return CBORUtils.serializeCborObject(codeSign1);
+    }
+
+    @Override
+    public COSESignatureContext getContext() {
+        return COSESignatureContext.COSE_SIGN1;
     }
 
 }

@@ -12,4 +12,11 @@ public interface COSESignStructure {
      */
     byte[] serialize();
 
+    /**
+     * Gets the COSE signature context
+     *
+     * @return {@link COSESignatureContext}
+     */
+    COSESignatureContext getContext();
+
 }

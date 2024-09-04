@@ -1,5 +1,9 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.cbades.COSEParser;
+import eu.europa.esig.dss.cbades.COSESign;
+import eu.europa.esig.dss.cbades.COSESignStructure;
+import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
@@ -15,6 +19,7 @@ import eu.europa.esig.dss.signature.CounterSignatureService;
 import eu.europa.esig.dss.signature.MultipleDocumentsSignatureService;
 import eu.europa.esig.dss.signature.SigningOperation;
 import eu.europa.esig.dss.spi.DSSPKUtils;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.utils.Utils;
@@ -132,8 +137,38 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
      * @return {@link CBAdESBuilder}
      */
     protected CBAdESBuilder getCBAdESBuilder(CBAdESSignatureParameters parameters, List<DSSDocument> documentsToSign) {
-        // TODO : add support of parallel signatures
+        COSESignStructure coseSignStructure = getCOSESignStructureToSign(documentsToSign);
+        if (containsSignatures(coseSignStructure)) {
+            // TODO : add validation against schema ?
+            // return a builder for parallel signing
+            return new CBAdESBuilder(certificateVerifier, parameters, (COSESign) coseSignStructure);
+        }
+
         return new CBAdESBuilder(certificateVerifier, parameters, documentsToSign);
+    }
+
+    private COSESignStructure getCOSESignStructureToSign(List<DSSDocument> documentsToSign) {
+        if (Utils.isCollectionNotEmpty(documentsToSign) && documentsToSign.size() == 1) {
+            DSSDocument document = documentsToSign.get(0);
+            try {
+                return new COSEParser(document).parse();
+            } catch (Exception e) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("The provided document with name '{}' is not of COSE type", document.getName());
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean containsSignatures(COSESignStructure coseSignStructure) {
+        if (coseSignStructure != null) {
+            if (COSESignatureContext.COSE_SIGN == coseSignStructure.getContext()) {
+                return Utils.isCollectionNotEmpty(((COSESign) coseSignStructure).getSignatures());
+            }
+            throw new IllegalInputException("Parallel signing is not supported for COSE_Sign1 RFC 9052 signatures!");
+        }
+        return false;
     }
 
     @Override

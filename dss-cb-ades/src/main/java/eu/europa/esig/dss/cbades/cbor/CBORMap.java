@@ -49,7 +49,7 @@ public class CBORMap extends AbstractCBORObject {
 
     private static co.nstant.in.cbor.model.Map parseByteStringHeader(CBORByteString cborByteString) {
         try {
-            List<DataItem> dataItems = CBORUtils.parseCbor(cborByteString.getValue());
+            List<DataItem> dataItems = CBORUtils.parseCbor(cborByteString.getBytes());
             if (Utils.collectionSize(dataItems) == 0) {
                 return CBORUtils.EMPTY_MAP;
             } else if (Utils.collectionSize(dataItems) > 1) {

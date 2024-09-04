@@ -76,7 +76,7 @@ public class CBORSignature {
         final List<CBORSignature> cborSignatures = new ArrayList<>();
         for (COSESignature coseSignature : coseSign.getSignatures()) {
             final CBORSignature cborSignature = new CBORSignature();
-            cborSignature.setContext(COSESignatureContext.COSE_SIGN);
+            cborSignature.setContext(coseSign.getContext());
             cborSignature.setBodyProtectedHeader(coseSign.getProtectedHeader());
             cborSignature.setBodyUnprotectedHeader(coseSign.getUnprotectedHeader());
             cborSignature.setSignerProtectedHeader(coseSignature.getProtectedHeader());
@@ -90,7 +90,7 @@ public class CBORSignature {
 
     public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
         final CBORSignature cborSignature = new CBORSignature();
-        cborSignature.setContext(COSESignatureContext.COSE_SIGN1);
+        cborSignature.setContext(coseSign1.getContext());
         cborSignature.setSignerProtectedHeader(coseSign1.getProtectedHeader());
         cborSignature.setSignerUnprotectedHeader(coseSign1.getUnprotectedHeader());
         cborSignature.setPayload(coseSign1.getPayload());
@@ -187,7 +187,7 @@ public class CBORSignature {
             signature.update(signatureInputBytes);
 
             // Verify the signature
-            byte[] signatureBytes = getSignature().getValue();
+            byte[] signatureBytes = getSignature().getBytes();
             signatureBytes = ensureDerEncodedSignature(signatureBytes, signatureAlgorithm);
             return signature.verify(signatureBytes);
 
