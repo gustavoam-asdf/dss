@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // Examples provided from {@link https://github.com/cose-wg/Examples}
-public class COSEParserTest {
+class COSEParserTest {
 
     @Test
-    public void signEcdsaTest() throws Exception {
+    void signEcdsaTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628440a054546869732069732074686520636f6e74656e7" +
                 "42e818343a10126a1044231315840e2aeafd40d69d19dfe6e" +
@@ -63,7 +63,7 @@ public class COSEParserTest {
     }
 
     @Test
-    public void sign1EcdsaTest() throws Exception {
+    void sign1EcdsaTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d28445a201260300a1044231315454686973206973207468" +
                 "6520636f6e74656e742e58406520bbaf2081d7e0ed0f95f7" +
@@ -86,7 +86,7 @@ public class COSEParserTest {
     }
 
     @Test
-    public void signMultipleSignaturesEcdsaTest() throws Exception {
+    void signMultipleSignaturesEcdsaTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628440a054546869732069732074686520636f6e74656e7" +
                 "42e828343a10126a1044231315840e2aeafd40d69d19dfe6e" +
@@ -137,7 +137,7 @@ public class COSEParserTest {
     }
 
     @Test
-    public void signEcdsaWithCounterSigTest() throws Exception {
+    void signEcdsaWithCounterSigTest() throws Exception {
         // TODO : counter-signature is not yet supported
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628440a1078343a10126a10442313158405ac05e289d5d0" +
@@ -174,7 +174,7 @@ public class COSEParserTest {
     }
 
     @Test
-    public void signEcdsaWithCritTest() throws Exception {
+    void signEcdsaWithCritTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628456a2687265736572766564f40281687265736572766" +
                 "564a054546869732069732074686520636f6e74656e742e81" +
@@ -208,7 +208,7 @@ public class COSEParserTest {
     }
 
     @Test
-    public void signRsaPssTest() throws Exception {
+    void signRsaPssTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628443a10300a054546869732069732074686520636f6e7" +
                 "4656e742e818344a1013824a104581f6d65726961646f632e" +

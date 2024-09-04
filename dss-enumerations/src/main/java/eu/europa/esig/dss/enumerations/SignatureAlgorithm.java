@@ -1027,6 +1027,15 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
     }
 
     /**
+     * Returns algorithm identifier corresponding to COSE accepted algorithms (RFC 9053)
+     *
+     * @return the COSE algorithm identifier
+     */
+    public Long getCOSEId() {
+        return COSE_ALGORITHMS_FOR_KEY.get(this);
+    }
+
+    /**
      * Returns user-friendly name for the signature algorithm
      *
      * @return {@link String} name

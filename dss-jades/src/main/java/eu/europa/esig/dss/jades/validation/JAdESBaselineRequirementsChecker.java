@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Performs checks according to EN 119 182-1 v1.1.1
+ * Performs checks according to TS 119 182-1 v1.1.1
  * "6.3 Requirements on JAdES components and services"
  *
  */

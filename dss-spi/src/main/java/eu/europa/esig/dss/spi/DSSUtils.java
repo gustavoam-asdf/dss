@@ -22,6 +22,7 @@ package eu.europa.esig.dss.spi;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.ObjectIdentifierQualifier;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.X520Attributes;
@@ -40,6 +41,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
+import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.crypto.digests.SHAKEDigest;
@@ -1163,6 +1165,25 @@ public final class DSSUtils {
 	public static String toUrnOid(String oid) {
 		return OID_NAMESPACE_PREFIX + oid;
 	}
+
+	/**
+	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
+	 * Returns NULL if non of them is present
+	 *
+	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
+	 * @return {@link String} URI
+	 */
+	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
+		/*
+		 * TS 119 182-1 : 5.4.1 The oId data type
+		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
+		 */
+		String uri = objectIdentifier.getUri();
+		if (uri == null && objectIdentifier.getOid() != null) {
+			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
+		}
+		return uri;
+	}
 	
 	/**
 	 * Normalizes and retrieves a {@code String} identifier (to be used for non-XAdES processing).
@@ -1406,6 +1427,38 @@ public final class DSSUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Generates the 'kid' value as in IETF RFC 5035
+	 *
+	 * @param signingCertificate {@link CertificateToken} representing the singing
+	 *                           certificate
+	 * @return byte array 'kid' header value
+	 */
+	public static byte[] generateKid(CertificateToken signingCertificate) {
+		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
+		return DSSASN1Utils.getDEREncoded(issuerSerial);
+	}
+
+	/**
+	 * This method cleans millis from the given time
+	 *
+	 * @param timeInMillis time with millis
+	 * @return time without millis
+	 */
+	public static long getTimeValueInSeconds(long timeInMillis) {
+		return timeInMillis / 1000L;
+	}
+
+	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
+		return timeWithoutMillis * 1000L;
 	}
 
 }

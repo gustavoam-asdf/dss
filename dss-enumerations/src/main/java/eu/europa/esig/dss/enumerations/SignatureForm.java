@@ -35,6 +35,9 @@ public enum SignatureForm {
 	/** A JSON-based signature according to TS 119 182 */
 	JAdES,
 
+	/** A CBOR-based signature according to TS 119 152 */
+	CBAdES,
+
 	/** A PDF-based signature according to EN 319 142 */
 	PAdES,
 

@@ -1,11 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import co.nstant.in.cbor.CborEncoder;
-import co.nstant.in.cbor.CborException;
-import co.nstant.in.cbor.model.Array;
-import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.UnicodeString;
-import eu.europa.esig.dss.cbades.CBORUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
@@ -14,6 +9,10 @@ import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSException;
@@ -23,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.Key;
 import java.security.PublicKey;
 import java.security.Security;
@@ -50,11 +48,11 @@ public class CBORSignature {
 
     private COSEUnprotectedHeader signerUnprotectedHeader;
 
-    private ByteString externalAttributes;
+    private CBORByteString externalAttributes;
 
-    private ByteString payload;
+    private CBORObject payload;
 
-    private ByteString signature;
+    private CBORByteString signature;
 
     private Key key;
 
@@ -62,11 +60,10 @@ public class CBORSignature {
         Security.addProvider(DSSSecurityProvider.getSecurityProvider());
     }
 
-    public CBORSignature() {
+    protected CBORSignature() {
     }
 
     public static List<CBORSignature> fromCOSESignStructure(COSESignStructure coseSignStructure) {
-        final CBORSignature cborSignature = new CBORSignature();
         if (coseSignStructure instanceof COSESign) {
             return fromCOSESign((COSESign) coseSignStructure);
         } else if (coseSignStructure instanceof COSESign1) {
@@ -141,27 +138,27 @@ public class CBORSignature {
         this.signerUnprotectedHeader = signerUnprotectedHeader;
     }
 
-    public ByteString getExternalAttributes() {
+    public CBORByteString getExternalAttributes() {
         return externalAttributes;
     }
 
-    public void setExternalAttributes(ByteString externalAttributes) {
+    public void setExternalAttributes(CBORByteString externalAttributes) {
         this.externalAttributes = externalAttributes;
     }
 
-    public ByteString getPayload() {
+    public CBORObject getPayload() {
         return payload;
     }
 
-    public void setPayload(ByteString payload) {
+    public void setPayload(CBORObject payload) {
         this.payload = payload;
     }
 
-    public ByteString getSignature() {
+    public CBORByteString getSignature() {
         return signature;
     }
 
-    public void setSignature(ByteString signature) {
+    public void setSignature(CBORByteString signature) {
         this.signature = signature;
     }
 
@@ -190,7 +187,7 @@ public class CBORSignature {
             signature.update(signatureInputBytes);
 
             // Verify the signature
-            byte[] signatureBytes = getSignature().getBytes();
+            byte[] signatureBytes = getSignature().getValue();
             signatureBytes = ensureDerEncodedSignature(signatureBytes, signatureAlgorithm);
             return signature.verify(signatureBytes);
 
@@ -200,7 +197,12 @@ public class CBORSignature {
         }
     }
 
-    private byte[] getSignatureInputBytes() {
+    /**
+     * Returns a DataToBeSigned input
+     *
+     * @return byte array
+     */
+    public byte[] getSignatureInputBytes() {
         /*
          * Sig_structure = [
          *     context : "Signature" / "Signature1" / "CounterSignature",
@@ -211,17 +213,17 @@ public class CBORSignature {
          * ]
          */
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            final Array array = new Array();
+            final CBORArray array = new CBORArray();
 
             /*
-             * 1.  A text string identifying the context of the signature. The context string is:
-             *    "Signature" for signatures using the COSE_Signature structure.
-             *    "Signature1" for signatures using the COSE_Sign1 structure.
-             *    "CounterSignature" for signatures used as counter signature attributes.
+             * 1. A text string identifying the context of the signature. The context string is:
+             *   - "Signature" for signatures using the COSE_Signature structure.
+             *   - "Signature1" for signatures using the COSE_Sign1 structure.
+             *   - "CounterSignature" for signatures used as counter signature attributes.
              */
             array.add(new UnicodeString(context.getContext()));
             /*
-             * 2.  The protected attributes from the body structure encoded in a bstr type.
+             * 2. The protected attributes from the body structure encoded in a bstr type.
              * If there are no protected attributes, a bstr of length zero is used.
              */
             if (bodyProtectedHeader != null) {
@@ -230,7 +232,7 @@ public class CBORSignature {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
-             * 3.  The protected attributes from the signer structure encoded in a
+             * 3. The protected attributes from the signer structure encoded in a
              * bstr type. If there are no protected attributes, a bstr of
              * length zero is used. This field is omitted for the COSE_Sign1
              * signature structure.
@@ -241,7 +243,7 @@ public class CBORSignature {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
-             * 4.  The protected attributes from the application encoded in a bstr type.
+             * 4. The protected attributes from the application encoded in a bstr type.
              * If this field is not supplied, it defaults to a zero-
              * length binary string.  (See Section 4.3 for application guidance
              * on constructing this field.)
@@ -255,19 +257,16 @@ public class CBORSignature {
              * 5. The payload to be signed encoded in a bstr type.
              * The payload is placed here independent of how it is transported.
              */
-            if (payload != null) {
+            if (payload != null && payload.isByteString()) {
                 array.add(payload);
             } else {
                 LOG.warn("No payload found for COSE signature!");
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
 
-            final CborEncoder cborEncoder = new CborEncoder(baos);
-            cborEncoder.encode(array);
+            return CBORUtils.serializeCborObject(array);
 
-            return baos.toByteArray();
-
-        } catch (IOException | CborException e) {
+        } catch (Exception e) {
             throw new DSSException(String.format("Unable to build signature input bytes : %s", e.getMessage()), e);
         }
     }

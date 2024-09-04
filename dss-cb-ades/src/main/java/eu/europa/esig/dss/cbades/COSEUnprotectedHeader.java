@@ -1,9 +1,15 @@
 package eu.europa.esig.dss.cbades;
 
-public class COSEUnprotectedHeader extends COSEMap {
+import eu.europa.esig.dss.cbades.cbor.CBORMap;
 
-    public COSEUnprotectedHeader(final co.nstant.in.cbor.model.Map headerMap) {
-        super(headerMap);
+public class COSEUnprotectedHeader extends CBORMap {
+
+    public COSEUnprotectedHeader() {
+        super();
+    }
+
+    public COSEUnprotectedHeader(final CBORMap headerMap) {
+        super((co.nstant.in.cbor.model.Map) headerMap.toDataItem());
     }
 
 }

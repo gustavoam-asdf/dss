@@ -161,7 +161,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 					"Only one shall be present.");
 			return null;
 		} else if (iat != null) {
-			long timeValueInMilliseconds = DSSJsonUtils.getTimeValueInMilliseconds(iat.longValue());
+			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.longValue());
 			return DSSJsonUtils.getDate(timeValueInMilliseconds);
 		} else if (Utils.isStringNotEmpty(sigT)) {
 			return DSSJsonUtils.getDate(sigT);
@@ -781,7 +781,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		Map<?, ?> signatureDetached = jws.getProtectedHeaderValueAsMap(JAdESHeaderParameterNames.SIG_D);
 		if (Utils.isMapNotEmpty(signatureDetached)) {
 			String mechanismUri = DSSJsonUtils.getAsString(signatureDetached, JAdESHeaderParameterNames.M_ID);
-			SigDMechanism sigDMechanism = SigDMechanism.forUri(mechanismUri);
+			SigDMechanism sigDMechanism = SigDMechanism.forJAdESUri(mechanismUri);
 			if (sigDMechanism == null) {
 				LOG.warn("The sigDMechanism with uri '{}' is not supported!", mechanismUri);
 			}

@@ -48,7 +48,6 @@ import org.jose4j.base64url.Base64Url;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.json.internal.json_simple.JSONArray;
 import org.jose4j.json.internal.json_simple.JSONValue;
-import org.jose4j.jwt.NumericDate;
 import org.jose4j.jwx.CompactSerializer;
 import org.jose4j.lang.JoseException;
 import org.jose4j.lang.StringUtil;
@@ -163,7 +162,7 @@ public class DSSJsonUtils {
 	
 	static {
 		protectedCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119-812 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
 				IAT,
@@ -179,7 +178,7 @@ public class DSSJsonUtils {
 				PBES2_SALT_INPUT, PBES2_ITERATION_COUNT, ENCRYPTION_METHOD, ZIP ).collect(Collectors.toSet());
 
 		requiredCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119-812 constraints */
 				SIG_D,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD ).collect(Collectors.toSet());
@@ -392,37 +391,18 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * Creates an 'oid' LinkedJSONObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' LinkedJSONObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param objectIdentifier {@link ObjectIdentifier} to create an 'oid' from
 	 * @return 'oid' {@link JsonObject}
 	 */
 	public static JsonObject getOidObject(ObjectIdentifier objectIdentifier) {
-		return getOidObject(getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
+		return getOidObject(DSSUtils.getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
 				objectIdentifier.getDocumentationReferences());
 	}
 
 	/**
-	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
-	 * Returns NULL if non of them is present
-	 *
-	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
-	 * @return {@link String} URI
-	 */
-	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
-		/*
-		 * TS 119 182-1 : 5.4.1 The oId data type
-		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
-		 */
-		String uri = objectIdentifier.getUri();
-		if (uri == null && objectIdentifier.getOid() != null) {
-			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
-		}
-		return uri;
-	}
-
-	/**
-	 * Creates an 'oid' JsonObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' JsonObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param uri {@link String} URI defining the object. The property is REQUIRED.
 	 * @param desc {@link String} the object description. The property is OPTIONAL.
@@ -446,7 +426,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstContainer' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstContainer' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinaries a list of {@link TimestampBinary}s to incorporate
 	 * @param canonicalizationMethodUri a canonicalization method (OPTIONAL, e.g. shall not be present for content timestamps)
@@ -473,7 +453,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstToken' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstToken' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinary {@link TimestampBinary}s to incorporate
 	 * @return 'tstToken' {@link JsonObject}
@@ -483,7 +463,7 @@ public class DSSJsonUtils {
 		
 		Map<String, Object> tstTokenParams = new HashMap<>();
 		// only RFC 3161 TimestampTokens are supported
-		// 'type', 'encoding' and 'specRef' params are not need to be defined (see EN 119-182 ch. 5.4.3.3)
+		// 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119-182 ch. 5.4.3.3)
 		tstTokenParams.put(JAdESHeaderParameterNames.VAL, Utils.toBase64(timestampBinary.getBytes()));
 		
 		return new JsonObject(tstTokenParams);
@@ -713,9 +693,8 @@ public class DSSJsonUtils {
 	 *                           certificate
 	 * @return {@link String} 'kid' header value
 	 */
-	public static String generateKid(CertificateToken signingCertificate) {
-		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
-		return Utils.toBase64(DSSASN1Utils.getDEREncoded(issuerSerial));
+	public static String generateKidBase64String(CertificateToken signingCertificate) {
+		return Utils.toBase64(DSSUtils.generateKid(signingCertificate));
 	}
 	
 	/**
@@ -1337,26 +1316,6 @@ public class DSSJsonUtils {
 			return DSSJsonUtils.MIME_TYPE_APPLICATION_PREFIX + mimeType;
 		}
 		return mimeType;
-	}
-
-	/**
-	 * This method cleans millis from the given time
-	 *
-	 * @param timeInMillis time with millis
-	 * @return time without millis
-	 */
-	public static long getTimeValueInSeconds(long timeInMillis) {
-		return NumericDate.fromMilliseconds(timeInMillis).getValue();
-	}
-
-	/**
-	 * This method adds millis to the given time in seconds
-	 *
-	 * @param timeWithoutMillis time without millis
-	 * @return time with millis
-	 */
-	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
-		return NumericDate.fromSeconds(timeWithoutMillis).getValueInMillis();
 	}
 
 }

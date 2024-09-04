@@ -51,7 +51,7 @@ public class KidCertificateSource extends CommonCertificateSource {
 	@Override
 	public CertificateToken addCertificate(CertificateToken certificateToAdd) {
 		LOG.debug("kid is not provided (generate kid following the JAdES specification)");
-		return addCertificate(DSSJsonUtils.generateKid(certificateToAdd), certificateToAdd);
+		return addCertificate(DSSJsonUtils.generateKidBase64String(certificateToAdd), certificateToAdd);
 	}
 
 	/**

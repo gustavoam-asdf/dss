@@ -226,6 +226,8 @@ public class FileNameBuilder {
                     return MimeTypeEnum.PDF.getExtension();
                 case JAdES:
                     return MimeTypeEnum.JSON.getExtension();
+                case CBAdES:
+                    return MimeTypeEnum.COSE.getExtension();
                 default:
                     throw new DSSException(String.format("Unable to generate a full document name! " +
                             "The SignatureForm %s is not supported.", signatureForm));

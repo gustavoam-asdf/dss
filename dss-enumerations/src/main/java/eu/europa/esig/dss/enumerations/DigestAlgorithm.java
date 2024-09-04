@@ -36,19 +36,19 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	// see http://www.w3.org/TR/2013/NOTE-xmlsec-algorithms-20130411/
 	// @formatter:off
 	/** SHA-1 */
-	SHA1("SHA1", "SHA-1", "1.3.14.3.2.26", "http://www.w3.org/2000/09/xmldsig#sha1", null, "SHA", 20),
+	SHA1("SHA1", "SHA-1", "1.3.14.3.2.26", "http://www.w3.org/2000/09/xmldsig#sha1", null, "SHA", -14L, 20),
 
 	/** SHA-224 */
 	SHA224("SHA224", "SHA-224", "2.16.840.1.101.3.4.2.4", "http://www.w3.org/2001/04/xmldsig-more#sha224", "S224", 28),
 
 	/** SHA-256 */
-	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", 32),
+	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", -16L, 32),
 
 	/** SHA-384 */
-	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", 48),
+	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", null, -43L, 48),
 
 	/** SHA-512 */
-	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", 64),
+	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", -44L, 64),
 
 	// see https://tools.ietf.org/html/rfc6931
 	/** SHA3-224 */
@@ -64,13 +64,13 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	SHA3_512("SHA3-512", "SHA3-512", "2.16.840.1.101.3.4.2.10", "http://www.w3.org/2007/05/xmldsig-more#sha3-512", "S3-512", 64),
 
 	/** SHAKE-128 */
-	SHAKE128("SHAKE-128", "SHAKE-128", "2.16.840.1.101.3.4.2.11", null),
+	SHAKE128("SHAKE-128", "SHAKE-128", "2.16.840.1.101.3.4.2.11", null, -18L),
 
 	/** SHAKE-256 */
 	SHAKE256("SHAKE-256", "SHAKE-256", "2.16.840.1.101.3.4.2.12", null),
 
 	/** SHAKE-256 + output 512bits */
-	SHAKE256_512("SHAKE256-512", "SHAKE256-512", "2.16.840.1.101.3.4.2.18", null),
+	SHAKE256_512("SHAKE256-512", "SHAKE256-512", "2.16.840.1.101.3.4.2.18", null, -45L),
 
 	/** RIPEMD160 */
 	RIPEMD160("RIPEMD160", "RIPEMD160", "1.3.36.3.2.1", "http://www.w3.org/2001/04/xmlenc#ripemd160"),
@@ -110,6 +110,9 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	/** URI of the algorithm for a JAdES (JWS) signatures */
 	private final String jadesId;
 
+	/** Identifier of the algorithm for a CB-AdES (COSE) signatures */
+	private final Long coseId;
+
 	/** URI of the algorithm for JAdES HTTPHeaders (see RFC 5843, sigD HTTP_HEADER)  */
 	private final String httpHeaderId;
 
@@ -128,6 +131,8 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		private static final Map<String, DigestAlgorithm> XML_ALGORITHMS = registerXMLAlgorithms();
 		/** A map between JAdES URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> JADES_ALGORITHMS = registerJAdESAlgorithms();
+		/** A map between COSE IDs and algorithms */
+		private static final Map<String, DigestAlgorithm> COSE_ALGORITHMS = registerCOSEAlgorithms();
 		/** A map between JAdES HTTPHeader URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> HTTP_HEADER_ALGORITHMS = registerJwsHttpHeaderAlgorithms();
 
@@ -164,6 +169,14 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		}
 
 		private static Map<String, DigestAlgorithm> registerJAdESAlgorithms() {
+			final Map<String, DigestAlgorithm> map = new HashMap<>();
+			for (final DigestAlgorithm digestAlgorithm : values()) {
+				map.put(digestAlgorithm.jadesId, digestAlgorithm);
+			}
+			return map;
+		}
+
+		private static Map<String, DigestAlgorithm> registerCOSEAlgorithms() {
 			final Map<String, DigestAlgorithm> map = new HashMap<>();
 			for (final DigestAlgorithm digestAlgorithm : values()) {
 				map.put(digestAlgorithm.jadesId, digestAlgorithm);
@@ -327,6 +340,19 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	}
 
 	/**
+	 * Constructor with OID and XML URI
+	 *
+	 * @param name {@link String} algorithm name
+	 * @param javaName {@link String} algorithm Java name
+	 * @param oid {@link String} algorithm OID
+	 * @param xmlId {@link String} algorithm XML URI
+	 * @param coseId {@link Long} algorithm COSE Id
+	 */
+	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId, final Long coseId) {
+		this(name, javaName, oid, xmlId, null, null, coseId, 0);
+	}
+
+	/**
 	 * Constructor with OID, XML URI and JAdES ids
 	 *
 	 * @param name {@link String} algorithm name
@@ -338,7 +364,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
 			final String jadesId, final String httpHeaderId) {
-		this(name, javaName, oid, xmlId, jadesId, httpHeaderId, 0);
+		this(name, javaName, oid, xmlId, jadesId, httpHeaderId, null, 0);
 	}
 
 	/**
@@ -366,7 +392,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
 			final String jadesId, final int saltLength) {
-		this(name, javaName, oid, xmlId, jadesId, null, saltLength);
+		this(name, javaName, oid, xmlId, jadesId, null, null, saltLength);
 	}
 
 	/**
@@ -378,16 +404,18 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 * @param xmlId {@link String} algorithm XML URI
 	 * @param jadesId {@link String} algorithm JAdES URI
 	 * @param httpHeaderId {@link String} algorithm JAdES HTTPHeader URI
+	 * @param coseId {@link Long} algorithm COSE Id
 	 * @param saltLength {@link String} salt length for MGF
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
-			final String jadesId, final String httpHeaderId, final int saltLength) {
+			final String jadesId, final String httpHeaderId, final Long coseId, final int saltLength) {
 		this.name = name;
 		this.javaName = javaName;
 		this.oid = oid;
 		this.xmlId = xmlId;
 		this.jadesId = jadesId;
 		this.httpHeaderId = httpHeaderId;
+		this.coseId = coseId;
 		this.saltLength = saltLength;
 	}
 
@@ -431,7 +459,6 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 
 	/**
 	 * Get the algorithm id used in JAdES Signatures.
-	 * 
 	 * TS 119-182 Annex E (normative): Digest algorithms identifiers for JAdES
 	 * signatures
 	 * 
@@ -448,6 +475,16 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	public String getHttpHeaderAlgo() {
 		return httpHeaderId;
+	}
+
+	/**
+	 * Get the algorithm Id used in COSE Signatures.
+	 * IANA COSE Algorithms registry: COSE Algorithms
+	 *
+	 * @return the algorithm COSE identifier
+	 */
+	public Long getCoseId() {
+		return coseId;
 	}
 
 	/**

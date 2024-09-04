@@ -1,54 +1,41 @@
 package eu.europa.esig.dss.cbades;
 
-import co.nstant.in.cbor.model.ByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORNull;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 
 /**
  * This class represents a COSE_Sign1 structure (Tag '18')
  *
  */
-public class COSESign1 implements COSESignStructure {
+public class COSESign1 extends COSESignature implements COSESignStructure {
 
-    private COSEProtectedHeader protectedHeader;
-
-    private COSEUnprotectedHeader unprotectedHeader;
-
-    private ByteString payload;
-
-    private ByteString signature;
+    private CBORObject payload;
 
     public COSESign1() {
     }
 
-    public COSEProtectedHeader getProtectedHeader() {
-        return protectedHeader;
-    }
-
-    public void setProtectedHeader(COSEProtectedHeader protectedHeader) {
-        this.protectedHeader = protectedHeader;
-    }
-
-    public COSEUnprotectedHeader getUnprotectedHeader() {
-        return unprotectedHeader;
-    }
-
-    public void setUnprotectedHeader(COSEUnprotectedHeader unprotectedHeader) {
-        this.unprotectedHeader = unprotectedHeader;
-    }
-
-    public ByteString getPayload() {
+    public CBORObject getPayload() {
+        if (payload == null) {
+            payload = new CBORNull();
+        }
         return payload;
     }
 
-    public void setPayload(ByteString payload) {
+    public void setPayload(CBORObject payload) {
         this.payload = payload;
     }
 
-    public ByteString getSignature() {
-        return signature;
-    }
-
-    public void setSignature(ByteString signature) {
-        this.signature = signature;
+    @Override
+    public byte[] serialize() {
+        CBORArray codeSign1 = new CBORArray();
+        codeSign1.setTag(COSESignatureContext.COSE_SIGN1.getTag());
+        codeSign1.add(getProtectedHeader().getByteString());
+        codeSign1.add(getUnprotectedHeader());
+        codeSign1.add(getPayload());
+        codeSign1.add(getSignature());
+        return CBORUtils.serializeCborObject(codeSign1);
     }
 
 }

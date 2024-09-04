@@ -255,7 +255,7 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * The digest method indicates the digest algorithm to be used to calculate the certificate digest
 	 * to define a signing certificate ('x5t#256' for SHA256 or 'x5t#o' for other algorithms)
-	 * Default: DigestAlgorithm.SHA256 ('x5t#256' attribute will be created)
+	 * Default: DigestAlgorithm.SHA512 ('x5t#o' attribute will be created)
 	 *
 	 * @param signingCertificateDigestMethod {@link DigestAlgorithm} to be used
 	 */

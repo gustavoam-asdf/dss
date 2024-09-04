@@ -1,0 +1,70 @@
+package eu.europa.esig.dss.cbades.signature;
+
+import eu.europa.esig.dss.cbades.COSEParser;
+import eu.europa.esig.dss.cbades.COSESign1;
+import eu.europa.esig.dss.cbades.COSESignStructure;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.test.PKIFactoryAccess;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CBAdESServiceTest extends PKIFactoryAccess {
+
+    private static DSSDocument documentToSign;
+    private static CertificateVerifier certificateVerifier;
+    private static CBAdESService service;
+
+    @BeforeEach
+    void init() {
+        documentToSign = new InMemoryDocument("Hello World!".getBytes());
+        certificateVerifier = getCompleteCertificateVerifier();
+        service = new CBAdESService(certificateVerifier);
+        service.setTspSource(getGoodTsa());
+    }
+
+    @Test
+    void createAndValidateCoseSign1Test() {
+        CBAdESSignatureParameters signatureParameters = new CBAdESSignatureParameters();
+        signatureParameters.setSigningCertificate(getSigningCert());
+        signatureParameters.setCertificateChain(getCertificateChain());
+        signatureParameters.setSignatureLevel(SignatureLevel.CBAdES_BASELINE_B);
+        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+        signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign1.class, coseSignStructure);
+        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign((COSESign1) coseSignStructure);
+        cborSignature.setKey(getSigningCert().getPublicKey());
+        assertTrue(cborSignature.verifySignature());
+    }
+
+    private DSSDocument sign(List<DSSDocument> documentsToSign, CBAdESSignatureParameters signatureParameters) {
+        ToBeSigned dataToSign = service.getDataToSign(documentsToSign, signatureParameters);
+        SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
+        return service.signDocument(documentsToSign, signatureParameters, signatureValue);
+    }
+
+    @Override
+    protected String getSigningAlias() {
+        return ECDSA_USER;
+    }
+
+}

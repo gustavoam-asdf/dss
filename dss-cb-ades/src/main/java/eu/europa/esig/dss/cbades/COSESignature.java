@@ -1,19 +1,26 @@
 package eu.europa.esig.dss.cbades;
 
-import co.nstant.in.cbor.model.ByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 
-public class COSESignature implements COSESignStructure {
+/**
+ * Represents a COSE_Signature object defined in RFC 9052 "4.1. Signing with One or More Signers"
+ *
+ */
+public class COSESignature {
 
     private COSEProtectedHeader protectedHeader;
 
     private COSEUnprotectedHeader unprotectedHeader;
 
-    private ByteString signature;
+    private CBORByteString signature;
 
     public COSESignature() {
     }
 
     public COSEProtectedHeader getProtectedHeader() {
+        if (protectedHeader == null) {
+            protectedHeader = new COSEProtectedHeader();
+        }
         return protectedHeader;
     }
 
@@ -22,6 +29,9 @@ public class COSESignature implements COSESignStructure {
     }
 
     public COSEUnprotectedHeader getUnprotectedHeader() {
+        if (unprotectedHeader == null) {
+            unprotectedHeader = new COSEUnprotectedHeader();
+        }
         return unprotectedHeader;
     }
 
@@ -29,11 +39,15 @@ public class COSESignature implements COSESignStructure {
         this.unprotectedHeader = unprotectedHeader;
     }
 
-    public ByteString getSignature() {
+    public CBORByteString getSignature() {
+        if (signature == null) {
+            signature = new CBORByteString();
+        }
         return signature;
     }
 
-    public void setSignature(ByteString signature) {
+    public void setSignature(CBORByteString signature) {
         this.signature = signature;
     }
+
 }
