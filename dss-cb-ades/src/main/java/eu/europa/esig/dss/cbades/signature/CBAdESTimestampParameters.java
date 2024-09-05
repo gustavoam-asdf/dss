@@ -7,7 +7,6 @@ import eu.europa.esig.dss.model.TimestampParameters;
  * The parameters to create a CB-AdES timestamp
  *
  */
-@SuppressWarnings("serial")
 public class CBAdESTimestampParameters extends TimestampParameters {
 
     /**

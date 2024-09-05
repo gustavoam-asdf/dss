@@ -30,6 +30,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents an implementation of a CB-AdES ETSI TS 119 152-1 signature
+ *
+ */
 public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override

@@ -32,6 +32,7 @@ import java.util.Objects;
 
 /**
  * Contains methods for CB-AdES signature creation/extension
+ *
  */
 public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> implements
         MultipleDocumentsSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters>,

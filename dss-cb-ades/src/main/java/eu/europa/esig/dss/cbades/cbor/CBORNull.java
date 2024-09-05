@@ -6,7 +6,7 @@ import co.nstant.in.cbor.model.SimpleValueType;
 /**
  * Identifies a nullable CBOR value
  */
-public class CBORNull extends AbstractCBORObject {
+public class CBORNull extends AbstractCBORObject<SimpleValue> {
 
     /**
      * Creates a new CBOR nullable object

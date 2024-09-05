@@ -15,17 +15,31 @@ import java.util.List;
  */
 public class COSESign implements COSESignStructure {
 
+    /** Protected attributes of the body structure */
     private COSEProtectedHeader protectedHeader;
 
+    /** Unprotected attributes of the body structure */
     private COSEUnprotectedHeader unprotectedHeader;
 
+    /** Payload to be signed, when present */
     private CBORObject payload;
 
+    /** List of signers */
     private List<COSESignature> signatures;
 
+    /**
+     * Instantiates an empty COSE_Sign structure object
+     */
     public COSESign() {
+        // empty
     }
 
+    /**
+     * Gets a protected attributes header of the body structure.
+     * Instantiates an empty map when omitted.
+     *
+     * @return {@link COSEProtectedHeader}
+     */
     public COSEProtectedHeader getProtectedHeader() {
         if (protectedHeader == null) {
             protectedHeader = new COSEProtectedHeader();
@@ -33,10 +47,21 @@ public class COSESign implements COSESignStructure {
         return protectedHeader;
     }
 
+    /**
+     * Sets a protected attributes header of the body structure.
+     *
+     * @param protectedHeader {@link COSEProtectedHeader}
+     */
     public void setProtectedHeader(COSEProtectedHeader protectedHeader) {
         this.protectedHeader = protectedHeader;
     }
 
+    /**
+     * Gets an unprotected attributes header of the body structure.
+     * Instantiates an empty map when omitted.
+     *
+     * @return {@link COSEUnprotectedHeader}
+     */
     public COSEUnprotectedHeader getUnprotectedHeader() {
         if (unprotectedHeader == null) {
             unprotectedHeader = new COSEUnprotectedHeader();
@@ -44,10 +69,21 @@ public class COSESign implements COSESignStructure {
         return unprotectedHeader;
     }
 
+    /**
+     * Sets an unprotected attributes header of the body structure.
+     *
+     * @param unprotectedHeader {@link COSEUnprotectedHeader}
+     */
     public void setUnprotectedHeader(COSEUnprotectedHeader unprotectedHeader) {
         this.unprotectedHeader = unprotectedHeader;
     }
 
+    /**
+     * Gets the content to be signed.
+     * Instantiates a nil value, when payload is absent.
+     *
+     * @return {@link CBORObject}
+     */
     public CBORObject getPayload() {
         if (payload == null) {
             payload = new CBORNull();
@@ -55,10 +91,21 @@ public class COSESign implements COSESignStructure {
         return payload;
     }
 
+    /**
+     * Sets a content to be signed.
+     *
+     * @param payload {@link CBORObject}
+     */
     public void setPayload(CBORObject payload) {
         this.payload = payload;
     }
 
+    /**
+     * Gets a list of signers.
+     * Instantiates an empty list, when value is absent.
+     *
+     * @return a list of {@link COSESignature}s
+     */
     public List<COSESignature> getSignatures() {
         if (signatures == null) {
             signatures = new ArrayList<>();
@@ -66,6 +113,11 @@ public class COSESign implements COSESignStructure {
         return signatures;
     }
 
+    /**
+     * Sets a list of signers.
+     *
+     * @param signatures a list of {@link COSESignature}s
+     */
     public void setSignatures(List<COSESignature> signatures) {
         this.signatures = new ArrayList<>(signatures);
     }

@@ -1,7 +1,6 @@
 package eu.europa.esig.dss.cbades.cbor;
 
 import co.nstant.in.cbor.model.Array;
-import co.nstant.in.cbor.model.DataItem;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
@@ -11,10 +10,7 @@ import java.util.stream.Collectors;
  * A wrapper of a CBOR array object
  *
  */
-public class CBORArray extends AbstractCBORObject {
-
-    /** Implementation of a CBOR Array object */
-    private final Array array;
+public class CBORArray extends AbstractCBORObject<Array> {
 
     /**
      * Constructor to create an empty array
@@ -39,7 +35,6 @@ public class CBORArray extends AbstractCBORObject {
      */
     public CBORArray(final Array array) {
         super(array);
-        this.array = array;
     }
 
     /**
@@ -81,7 +76,7 @@ public class CBORArray extends AbstractCBORObject {
      * @param object {@link Object} to add
      */
     public void add(Object object) {
-        array.add(CBORUtils.toDataItem(object));
+        toDataItem().add(CBORUtils.toDataItem(object));
     }
 
     /**
@@ -90,7 +85,7 @@ public class CBORArray extends AbstractCBORObject {
      * @return TRUE if the array is empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return Utils.isCollectionEmpty(array.getDataItems());
+        return Utils.isCollectionEmpty(toDataItem().getDataItems());
     }
 
     /**
@@ -99,11 +94,7 @@ public class CBORArray extends AbstractCBORObject {
      * @return a list of {@link CBORObject}s
      */
     public List<CBORObject> getItems() {
-        return array.getDataItems().stream().map(CBORUtils::toCBORObject).collect(Collectors.toList());
+        return toDataItem().getDataItems().stream().map(CBORUtils::toCBORObject).collect(Collectors.toList());
     }
 
-    @Override
-    public DataItem toDataItem() {
-        return array;
-    }
 }

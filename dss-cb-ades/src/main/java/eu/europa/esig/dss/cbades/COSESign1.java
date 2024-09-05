@@ -11,11 +11,22 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
  */
 public class COSESign1 extends COSESignature implements COSESignStructure {
 
+    /** The signed content */
     private CBORObject payload;
 
+    /**
+     * Instantiates an empty COSE_Sign1 structure object
+     */
     public COSESign1() {
+        // empty
     }
 
+    /**
+     * Gets the content to be signed.
+     * Instantiates a nil value, when absent.
+     *
+     * @return {@link CBORObject}
+     */
     public CBORObject getPayload() {
         if (payload == null) {
             payload = new CBORNull();
@@ -23,6 +34,11 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
         return payload;
     }
 
+    /**
+     * Sets the content to be signed
+     *
+     * @param payload {@link CBORObject}
+     */
     public void setPayload(CBORObject payload) {
         this.payload = payload;
     }

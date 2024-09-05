@@ -11,7 +11,7 @@ import co.nstant.in.cbor.model.UnsignedInteger;
  * A wrapper for a one-dimensional CBOR object
  *
  */
-public class CBORSimpleObject extends AbstractCBORObject {
+public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
 
     /**
      * Creates a new CBOR object from the given {@code dataItem}

@@ -10,17 +10,17 @@ import co.nstant.in.cbor.model.Tag;
  * An abstract implementation of a CBOR object wrapper
  *
  */
-public abstract class AbstractCBORObject implements CBORObject {
+public abstract class AbstractCBORObject<D extends DataItem> implements CBORObject {
 
     /** A CBOR object implementation */
-    private final DataItem dataItem;
+    private final D dataItem;
 
     /**
      * Creates a new CBOR object from the given {@code dataItem}
      *
      * @param dataItem {@link DataItem}
      */
-    protected AbstractCBORObject(final DataItem dataItem) {
+    protected AbstractCBORObject(final D dataItem) {
         this.dataItem = dataItem;
     }
 
@@ -40,7 +40,7 @@ public abstract class AbstractCBORObject implements CBORObject {
     }
 
     @Override
-    public DataItem toDataItem() {
+    public D toDataItem() {
         return dataItem;
     }
 

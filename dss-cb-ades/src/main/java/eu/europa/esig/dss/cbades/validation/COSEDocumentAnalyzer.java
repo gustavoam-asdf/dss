@@ -8,6 +8,10 @@ import eu.europa.esig.dss.spi.validation.analyzer.DefaultDocumentAnalyzer;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This class performs signature extraction and Java validation of COSE (RFC 8152) and CB-AdES (ETSI TS 119 152) signatures
+ *
+ */
 public class COSEDocumentAnalyzer extends DefaultDocumentAnalyzer {
 
     /** The COSESignature to be validated */

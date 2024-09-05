@@ -31,38 +31,59 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class represents a single COSE signature
+ * This class represents a single COSE signature.
+ * The class is used for verification of a cryptographic validity of the COSE signature.
  *
  */
 public class CBORSignature {
 
     private static final Logger LOG = LoggerFactory.getLogger(CBORSignature.class);
 
+    /** Context of the signature */
     private COSESignatureContext context;
 
+    /** Protected attributes of the body structure */
     private COSEProtectedHeader bodyProtectedHeader;
 
+    /** Protected attributes of the signer structure (absent for COSE_Sign1) */
     private COSEProtectedHeader signerProtectedHeader;
 
+    /** Unprotected attributes of the body structure */
     private COSEUnprotectedHeader bodyUnprotectedHeader;
 
+    /** Unprotected attributes of the signer structure (absent for COSE_Sign1) */
     private COSEUnprotectedHeader signerUnprotectedHeader;
 
+    /** Externally supplied data used as a part of a signed data */
     private CBORByteString externalAttributes;
 
+    /** The payload to be signed */
     private CBORObject payload;
 
+    /** The signer's signature value */
     private CBORByteString signature;
 
+    /** The signer's key */
     private Key key;
 
     static {
         Security.addProvider(DSSSecurityProvider.getSecurityProvider());
     }
 
+    /**
+     * Default constructor to instantiate an empty object
+     */
     protected CBORSignature() {
+        // empty
     }
 
+    /**
+     * This method creates a list of {@code CBORSignature}s for the given {@code COSESignStructure},
+     * representing a validation object for each embedded signer.
+     *
+     * @param coseSignStructure {@link COSESignStructure}
+     * @return a list of {@link CBORSignature}
+     */
     public static List<CBORSignature> fromCOSESignStructure(COSESignStructure coseSignStructure) {
         if (coseSignStructure instanceof COSESign) {
             return fromCOSESign((COSESign) coseSignStructure);
@@ -72,6 +93,13 @@ public class CBORSignature {
         throw new UnsupportedOperationException(String.format("Unsupported class '%s'", coseSignStructure.getClass()));
     }
 
+    /**
+     * This method creates a list of {@code CBORSignature}s for the given {@code COSESign},
+     * representing a validation object for each embedded signer.
+     *
+     * @param coseSign {@link COSESign}
+     * @return a list of {@link CBORSignature}
+     */
     public static List<CBORSignature> fromCOSESign(COSESign coseSign) {
         final List<CBORSignature> cborSignatures = new ArrayList<>();
         for (COSESignature coseSignature : coseSign.getSignatures()) {
@@ -88,6 +116,13 @@ public class CBORSignature {
         return cborSignatures;
     }
 
+    /**
+     * This method creates a {@code CBORSignature} for the given {@code COSESign1},
+     * representing a validation object for the signer.
+     *
+     * @param coseSign1 {@link COSESign1}
+     * @return {@link CBORSignature}
+     */
     public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
         final CBORSignature cborSignature = new CBORSignature();
         cborSignature.setContext(coseSign1.getContext());
@@ -98,98 +133,79 @@ public class CBORSignature {
         return cborSignature;
     }
 
-    public COSESignatureContext getContext() {
-        return context;
-    }
-
-    public void setContext(COSESignatureContext context) {
+    private void setContext(COSESignatureContext context) {
         this.context = context;
     }
 
-    public COSEProtectedHeader getBodyProtectedHeader() {
-        return bodyProtectedHeader;
-    }
-
-    public void setBodyProtectedHeader(COSEProtectedHeader bodyProtectedHeader) {
+    private void setBodyProtectedHeader(COSEProtectedHeader bodyProtectedHeader) {
         this.bodyProtectedHeader = bodyProtectedHeader;
     }
 
-    public COSEProtectedHeader getSignerProtectedHeader() {
-        return signerProtectedHeader;
-    }
-
-    public void setSignerProtectedHeader(COSEProtectedHeader signerProtectedHeader) {
+    private void setSignerProtectedHeader(COSEProtectedHeader signerProtectedHeader) {
         this.signerProtectedHeader = signerProtectedHeader;
     }
 
-    public COSEUnprotectedHeader getBodyUnprotectedHeader() {
-        return bodyUnprotectedHeader;
-    }
-
-    public void setBodyUnprotectedHeader(COSEUnprotectedHeader bodyUnprotectedHeader) {
+    private void setBodyUnprotectedHeader(COSEUnprotectedHeader bodyUnprotectedHeader) {
         this.bodyUnprotectedHeader = bodyUnprotectedHeader;
     }
 
-    public COSEUnprotectedHeader getSignerUnprotectedHeader() {
-        return signerUnprotectedHeader;
-    }
-
-    public void setSignerUnprotectedHeader(COSEUnprotectedHeader signerUnprotectedHeader) {
+    private void setSignerUnprotectedHeader(COSEUnprotectedHeader signerUnprotectedHeader) {
         this.signerUnprotectedHeader = signerUnprotectedHeader;
     }
 
-    public CBORByteString getExternalAttributes() {
-        return externalAttributes;
-    }
-
-    public void setExternalAttributes(CBORByteString externalAttributes) {
+    private void setExternalAttributes(CBORByteString externalAttributes) {
         this.externalAttributes = externalAttributes;
     }
 
-    public CBORObject getPayload() {
-        return payload;
-    }
-
-    public void setPayload(CBORObject payload) {
+    private void setPayload(CBORObject payload) {
         this.payload = payload;
     }
 
-    public CBORByteString getSignature() {
-        return signature;
-    }
-
-    public void setSignature(CBORByteString signature) {
+    private void setSignature(CBORByteString signature) {
         this.signature = signature;
     }
 
-    public Key getKey() {
+    private Key getKey() {
+        if (key == null) {
+            throw new IllegalStateException("No key has been supplied. COSE verification is not possible!");
+        }
         return key;
     }
 
+    /**
+     * This method sets the signer's key in order to verify the signature
+     *
+     * @param key {@link Key} public key of the signer
+     */
     public void setKey(Key key) {
         this.key = key;
     }
 
+    /**
+     * This method verifies the signature, using the defined {@code key}
+     *
+     * @return TRUE if the signature is valid, FALSE otherwise
+     */
     public boolean verifySignature() {
         // TODO : add additional verification (crit dict, etc.). See JWS validation
         try {
             // Create Signature object
             SignatureAlgorithm signatureAlgorithm = getAlgorithm();
-            Signature signature = Signature.getInstance(signatureAlgorithm.getJCEId(), DSSSecurityProvider.getSecurityProviderName());
+            Signature signatureInstance = Signature.getInstance(signatureAlgorithm.getJCEId(), DSSSecurityProvider.getSecurityProviderName());
 
             // Initialize Signature object with the public key
             Key key = getKey();
             PublicKey publicKey = (PublicKey) key;
-            signature.initVerify(publicKey);
+            signatureInstance.initVerify(publicKey);
 
             // Supply the signature input bytes
             byte[] signatureInputBytes = getSignatureInputBytes();
-            signature.update(signatureInputBytes);
+            signatureInstance.update(signatureInputBytes);
 
             // Verify the signature
-            byte[] signatureBytes = getSignature().getBytes();
+            byte[] signatureBytes = signature.getBytes();
             signatureBytes = ensureDerEncodedSignature(signatureBytes, signatureAlgorithm);
-            return signature.verify(signatureBytes);
+            return signatureInstance.verify(signatureBytes);
 
         } catch (Exception e) {
             LOG.warn("An error occurred on signature validation: {}", e.getMessage(), e);
@@ -280,6 +296,11 @@ public class CBORSignature {
         return signature;
     }
 
+    /**
+     * Gets the used SignatureAlgorithm, define within a protected header of the signer
+     *
+     * @return {@link SignatureAlgorithm}
+     */
     public SignatureAlgorithm getAlgorithm() {
         COSEProtectedHeader coseProtectedHeader = getCOSEProtectedHeader();
         Long algNumber = coseProtectedHeader.getHeaderAsLong(COSEConstants.ALG);

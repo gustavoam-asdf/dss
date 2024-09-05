@@ -6,10 +6,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 /**
  * A wrapper for a CBOR ByteString object implementation
  */
-public class CBORByteString extends AbstractCBORObject {
-
-    /** Implementation of a CBOR ByteString object */
-    private final ByteString byteString;
+public class CBORByteString extends AbstractCBORObject<ByteString> {
 
     /**
      * Constructor to create an empty CBOR ByteString object
@@ -34,7 +31,6 @@ public class CBORByteString extends AbstractCBORObject {
      */
     public CBORByteString(final ByteString byteString) {
         super(byteString);
-        this.byteString = byteString;
     }
 
     /**
@@ -43,7 +39,7 @@ public class CBORByteString extends AbstractCBORObject {
      * @return byte array
      */
     public byte[] getBytes() {
-        return byteString.getBytes();
+        return toDataItem().getBytes();
     }
 
 }

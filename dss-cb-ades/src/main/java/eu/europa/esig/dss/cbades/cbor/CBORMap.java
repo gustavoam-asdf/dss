@@ -12,10 +12,7 @@ import java.util.List;
  * Internal wrapper of a CBOR Map object
  *
  */
-public class CBORMap extends AbstractCBORObject {
-
-    /** Implementation of a CBOR Map object */
-    private final co.nstant.in.cbor.model.Map map;
+public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
 
     /** Serialized map */
     private CBORByteString serializedMap;
@@ -34,7 +31,6 @@ public class CBORMap extends AbstractCBORObject {
      */
     public CBORMap(final co.nstant.in.cbor.model.Map map) {
         super(map);
-        this.map = map;
     }
 
     /**
@@ -85,7 +81,7 @@ public class CBORMap extends AbstractCBORObject {
      * @return TRUE if the map contains the header for the given key, FALSE otherwise
      */
     public boolean containsKey(long key) {
-        return map.getKeys().contains(CBORUtils.toDataItem(key));
+        return toDataItem().getKeys().contains(CBORUtils.toDataItem(key));
     }
 
     /**
@@ -95,7 +91,7 @@ public class CBORMap extends AbstractCBORObject {
      * @return {@link DataItem}
      */
     public DataItem getHeader(long key) {
-        return map.get(CBORUtils.toDataItem(key));
+        return toDataItem().get(CBORUtils.toDataItem(key));
     }
 
     /**
@@ -121,7 +117,12 @@ public class CBORMap extends AbstractCBORObject {
      * @param value {@link Object} representing the header value
      */
     public void put(long key, Object value) {
-        map.put(CBORUtils.toDataItem(key), CBORUtils.toDataItem(value));
+        toDataItem().put(CBORUtils.toDataItem(key), CBORUtils.toDataItem(value));
+        clearSerializedBytes();
+    }
+
+    private void clearSerializedBytes() {
+        serializedMap = null;
     }
 
     /**
@@ -130,12 +131,7 @@ public class CBORMap extends AbstractCBORObject {
      * @return TRUE if the map is empty, FALSE otherwise
      */
     public boolean isEmpty() {
-        return Utils.isCollectionEmpty(map.getKeys());
-    }
-
-    @Override
-    public DataItem toDataItem() {
-        return map;
+        return Utils.isCollectionEmpty(toDataItem().getKeys());
     }
 
 }
