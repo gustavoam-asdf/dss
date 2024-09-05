@@ -27,26 +27,13 @@ import java.util.List;
 public final class CBORUtils {
 
     /** An empty btsr value */
-    public static final CBORByteString EMPTY_BYTE_STRING = new CBORByteString();
-
-    /** An empty map value */
-    public static final co.nstant.in.cbor.model.Map EMPTY_MAP = new co.nstant.in.cbor.model.Map();
-
-    /** An empty btsr serialized map */
-    public static final ByteString EMPTY_SERIALIZED_MAP;
+    public static final CBORByteString EMPTY_BYTE_STRING;
 
     /** The binary content encoding (RFC 2045) */
     public static final String CONTENT_ENCODING_BINARY = "binary";
 
     static {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            co.nstant.in.cbor.model.Map map = new co.nstant.in.cbor.model.Map();
-            CborEncoder cborEncoder = new CborEncoder(baos);
-            cborEncoder.encode(map);
-            EMPTY_SERIALIZED_MAP = new ByteString(baos.toByteArray());
-        } catch (IOException | CborException e) {
-            throw new DSSException(String.format("An error occurred : %s", e.getMessage()), e);
-        }
+        EMPTY_BYTE_STRING = new CBORByteString();
     }
 
     /**

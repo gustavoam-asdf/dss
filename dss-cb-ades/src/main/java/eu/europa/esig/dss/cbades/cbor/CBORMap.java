@@ -51,7 +51,7 @@ public class CBORMap extends AbstractCBORObject {
         try {
             List<DataItem> dataItems = CBORUtils.parseCbor(cborByteString.getBytes());
             if (Utils.collectionSize(dataItems) == 0) {
-                return CBORUtils.EMPTY_MAP;
+                return new co.nstant.in.cbor.model.Map();
             } else if (Utils.collectionSize(dataItems) > 1) {
                 throw new IllegalInputException("Protected header root shall consist of one data object!");
             }

@@ -101,6 +101,10 @@ public class CBAdESBuilder {
         CBORSignature cborSignature = cborSignatures.get(cborSignatures.size() - 1);
 
         byte[] dataToSign = cborSignature.getSignatureInputBytes();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("CB-AdES DataToSign trace : ");
+            LOG.trace(Utils.toHex(dataToSign));
+        }
         return new ToBeSigned(dataToSign);
     }
 

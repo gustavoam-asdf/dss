@@ -91,8 +91,8 @@ public class CBORSignature {
     public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
         final CBORSignature cborSignature = new CBORSignature();
         cborSignature.setContext(coseSign1.getContext());
-        cborSignature.setSignerProtectedHeader(coseSign1.getProtectedHeader());
-        cborSignature.setSignerUnprotectedHeader(coseSign1.getUnprotectedHeader());
+        cborSignature.setBodyProtectedHeader(coseSign1.getProtectedHeader());
+        cborSignature.setBodyUnprotectedHeader(coseSign1.getUnprotectedHeader());
         cborSignature.setPayload(coseSign1.getPayload());
         cborSignature.setSignature(coseSign1.getSignature());
         return cborSignature;
@@ -222,13 +222,14 @@ public class CBORSignature {
              *   - "CounterSignature" for signatures used as counter signature attributes.
              */
             array.add(new UnicodeString(context.getContext()));
+
             /*
              * 2. The protected attributes from the body structure encoded in a bstr type.
              * If there are no protected attributes, a bstr of length zero is used.
              */
-            if (bodyProtectedHeader != null) {
+            if (bodyProtectedHeader != null && !bodyProtectedHeader.isEmpty()) {
                 array.add(bodyProtectedHeader.getByteString());
-            } else if (COSESignatureContext.COSE_SIGN1 != context) {
+            } else {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
@@ -237,15 +238,15 @@ public class CBORSignature {
              * length zero is used. This field is omitted for the COSE_Sign1
              * signature structure.
              */
-            if (signerProtectedHeader != null) {
+            if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
                 array.add(signerProtectedHeader.getByteString());
-            } else {
+            } else if (COSESignatureContext.COSE_SIGN1 != context) {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
              * 4. The protected attributes from the application encoded in a bstr type.
              * If this field is not supplied, it defaults to a zero-
-             * length binary string.  (See Section 4.3 for application guidance
+             * length binary string. (See Section 4.3 for application guidance
              * on constructing this field.)
              */
             if (externalAttributes != null) {
@@ -280,10 +281,11 @@ public class CBORSignature {
     }
 
     public SignatureAlgorithm getAlgorithm() {
-        Long algNumber = signerProtectedHeader.getHeaderAsLong(COSEConstants.ALG);
+        COSEProtectedHeader coseProtectedHeader = getCOSEProtectedHeader();
+        Long algNumber = coseProtectedHeader.getHeaderAsLong(COSEConstants.ALG);
         if (algNumber == null) {
             // It is usual for COSE signatures to have signature algorithm within unsigned header
-            algNumber = signerUnprotectedHeader.getHeaderAsLong(COSEConstants.ALG);
+            algNumber = coseProtectedHeader.getHeaderAsLong(COSEConstants.ALG);
             if (algNumber != null) {
                 LOG.info("Alg header is present within unsigned header!");
             }
@@ -292,6 +294,10 @@ public class CBORSignature {
             throw new DSSException("No 'alg' header found!");
         }
         return SignatureAlgorithm.forCOSE(algNumber, null);
+    }
+
+    private COSEProtectedHeader getCOSEProtectedHeader() {
+        return signerProtectedHeader != null ? signerProtectedHeader : bodyProtectedHeader;
     }
 
 }

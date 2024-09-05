@@ -76,6 +76,8 @@ class CBAdESServiceTest extends PKIFactoryAccess {
 
         DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
 
+        awaitOneSecond();
+
         signatureParameters = initParameters();
         signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
 
