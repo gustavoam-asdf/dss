@@ -16,6 +16,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
@@ -98,7 +99,11 @@ public class CBAdESBuilder {
 
         COSESignStructure coseSignStructure = createCOSESignStructure();
         List<CBORSignature> cborSignatures = CBORSignature.fromCOSESignStructure(coseSignStructure);
+
         CBORSignature cborSignature = cborSignatures.get(cborSignatures.size() - 1);
+        if (parameters.getExternallySuppliedData() != null) {
+            cborSignature.setExternalAttributesBytes(DSSUtils.toByteArray(parameters.getExternallySuppliedData()));
+        }
 
         byte[] dataToSign = cborSignature.getSignatureInputBytes();
         if (LOG.isTraceEnabled()) {

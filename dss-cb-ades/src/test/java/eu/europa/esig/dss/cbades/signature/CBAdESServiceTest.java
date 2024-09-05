@@ -13,6 +13,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.test.PKIFactoryAccess;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -91,6 +93,27 @@ class CBAdESServiceTest extends PKIFactoryAccess {
             cborSignature.setKey(getSigningCert().getPublicKey());
             assertTrue(cborSignature.verifySignature());
         }
+    }
+
+    @Test
+    void externallySuppliedDataCoseSign1Test() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+
+        DSSDocument externalDocument = new InMemoryDocument("Bye World!".getBytes());
+        signatureParameters.setExternallySuppliedData(externalDocument);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign1.class, coseSignStructure);
+
+        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign((COSESign1) coseSignStructure);
+        cborSignature.setKey(getSigningCert().getPublicKey());
+        assertFalse(cborSignature.verifySignature());
+
+        cborSignature.setExternalAttributesBytes(DSSUtils.toByteArray(externalDocument));
+        assertTrue(cborSignature.verifySignature());
     }
 
     private CBAdESSignatureParameters initParameters() {

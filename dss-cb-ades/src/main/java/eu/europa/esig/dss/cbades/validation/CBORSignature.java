@@ -55,7 +55,7 @@ public class CBORSignature {
     private COSEUnprotectedHeader signerUnprotectedHeader;
 
     /** Externally supplied data used as a part of a signed data */
-    private CBORByteString externalAttributes;
+    private CBORByteString externallySuppliedData;
 
     /** The payload to be signed */
     private CBORObject payload;
@@ -104,13 +104,13 @@ public class CBORSignature {
         final List<CBORSignature> cborSignatures = new ArrayList<>();
         for (COSESignature coseSignature : coseSign.getSignatures()) {
             final CBORSignature cborSignature = new CBORSignature();
-            cborSignature.setContext(coseSign.getContext());
-            cborSignature.setBodyProtectedHeader(coseSign.getProtectedHeader());
-            cborSignature.setBodyUnprotectedHeader(coseSign.getUnprotectedHeader());
-            cborSignature.setSignerProtectedHeader(coseSignature.getProtectedHeader());
-            cborSignature.setSignerUnprotectedHeader(coseSignature.getUnprotectedHeader());
-            cborSignature.setPayload(coseSign.getPayload());
-            cborSignature.setSignature(coseSignature.getSignature());
+            cborSignature.context = coseSign.getContext();
+            cborSignature.bodyProtectedHeader = coseSign.getProtectedHeader();
+            cborSignature.bodyUnprotectedHeader = coseSign.getUnprotectedHeader();
+            cborSignature.signerProtectedHeader = coseSignature.getProtectedHeader();
+            cborSignature.signerUnprotectedHeader = coseSignature.getUnprotectedHeader();
+            cborSignature.payload = coseSign.getPayload();
+            cborSignature.signature = coseSignature.getSignature();
             cborSignatures.add(cborSignature);
         }
         return cborSignatures;
@@ -125,44 +125,21 @@ public class CBORSignature {
      */
     public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
         final CBORSignature cborSignature = new CBORSignature();
-        cborSignature.setContext(coseSign1.getContext());
-        cborSignature.setBodyProtectedHeader(coseSign1.getProtectedHeader());
-        cborSignature.setBodyUnprotectedHeader(coseSign1.getUnprotectedHeader());
-        cborSignature.setPayload(coseSign1.getPayload());
-        cborSignature.setSignature(coseSign1.getSignature());
+        cborSignature.context = coseSign1.getContext();
+        cborSignature.bodyProtectedHeader = coseSign1.getProtectedHeader();
+        cborSignature.bodyUnprotectedHeader = coseSign1.getUnprotectedHeader();
+        cborSignature.payload = coseSign1.getPayload();
+        cborSignature.signature = coseSign1.getSignature();
         return cborSignature;
     }
 
-    private void setContext(COSESignatureContext context) {
-        this.context = context;
-    }
-
-    private void setBodyProtectedHeader(COSEProtectedHeader bodyProtectedHeader) {
-        this.bodyProtectedHeader = bodyProtectedHeader;
-    }
-
-    private void setSignerProtectedHeader(COSEProtectedHeader signerProtectedHeader) {
-        this.signerProtectedHeader = signerProtectedHeader;
-    }
-
-    private void setBodyUnprotectedHeader(COSEUnprotectedHeader bodyUnprotectedHeader) {
-        this.bodyUnprotectedHeader = bodyUnprotectedHeader;
-    }
-
-    private void setSignerUnprotectedHeader(COSEUnprotectedHeader signerUnprotectedHeader) {
-        this.signerUnprotectedHeader = signerUnprotectedHeader;
-    }
-
-    private void setExternalAttributes(CBORByteString externalAttributes) {
-        this.externalAttributes = externalAttributes;
-    }
-
-    private void setPayload(CBORObject payload) {
-        this.payload = payload;
-    }
-
-    private void setSignature(CBORByteString signature) {
-        this.signature = signature;
+    /**
+     * This method sets externally supplied data binaries, when applicable
+     *
+     * @param externallySuppliedData byte array representing an externally supplied data
+     */
+    public void setExternalAttributesBytes(byte[] externallySuppliedData) {
+        this.externallySuppliedData = new CBORByteString(externallySuppliedData);
     }
 
     private Key getKey() {
@@ -240,8 +217,9 @@ public class CBORSignature {
             array.add(new UnicodeString(context.getContext()));
 
             /*
-             * 2. The protected attributes from the body structure encoded in a bstr type.
-             * If there are no protected attributes, a bstr of length zero is used.
+             * 2. The protected attributes from the body structure, encoded in a
+             * bstr type. If there are no protected attributes, a zero-length
+             * byte string is used.
              */
             if (bodyProtectedHeader != null && !bodyProtectedHeader.isEmpty()) {
                 array.add(bodyProtectedHeader.getByteString());
@@ -249,9 +227,9 @@ public class CBORSignature {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
-             * 3. The protected attributes from the signer structure encoded in a
-             * bstr type. If there are no protected attributes, a bstr of
-             * length zero is used. This field is omitted for the COSE_Sign1
+             * 3. The protected attributes from the signer structure, encoded in a
+             * bstr type. If there are no protected attributes, a zero-length
+             * byte string is used. This field is omitted for the COSE_Sign1
              * signature structure.
              */
             if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
@@ -260,19 +238,19 @@ public class CBORSignature {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
-             * 4. The protected attributes from the application encoded in a bstr type.
-             * If this field is not supplied, it defaults to a zero-
-             * length binary string. (See Section 4.3 for application guidance
-             * on constructing this field.)
+             * 4. The externally supplied data from the application, encoded in a
+             * bstr type. If this field is not supplied, it defaults to a zero-
+             * length byte string. (See Section 4.3 for application guidance on
+             * constructing this field.)
              */
-            if (externalAttributes != null) {
-                array.add(externalAttributes);
+            if (externallySuppliedData != null) {
+                array.add(externallySuppliedData);
             } else {
                 array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
             /*
-             * 5. The payload to be signed encoded in a bstr type.
-             * The payload is placed here independent of how it is transported.
+             * 5. The payload to be signed, encoded in a bstr type. The full
+             *  payload is used here, independent of how it is transported.
              */
             if (payload != null && payload.isByteString()) {
                 array.add(payload);

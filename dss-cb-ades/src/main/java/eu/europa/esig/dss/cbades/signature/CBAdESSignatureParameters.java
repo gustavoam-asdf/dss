@@ -5,6 +5,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.signature.AbstractSignatureParameters;
 
 import java.util.Objects;
@@ -59,6 +60,15 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * Defines a used 'sigD' mechanism for a detached signature
      */
     private SigDMechanism sigDMechanism;
+
+    /**
+     * Externally supplied data from the application, carried outside the COSE signature structure,
+     * but used as a part of a signature computation.
+     * <p>
+     * NOTE: this field is optional, but used as a part of DataToBeSigned computation, when provided.
+     * WARN: When present on a signature creation, the data object shall be supplied on signature validation too.
+     */
+    private DSSDocument externallySuppliedData;
 
     /**
      * Default constructor instantiating object with default parameters
@@ -225,4 +235,27 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
         this.sigDMechanism = sigDMechanism;
     }
     
+    /**
+     * Gets the externally supplied data.
+     * NOTE: the data is carried outside the COSE signature structure, but used on signature creation and validation.
+     *
+     * @return {@link DSSDocument}
+     */
+    public DSSDocument getExternallySuppliedData() {
+        return externallySuppliedData;
+    }
+
+    /**
+     * Sets an optional externally supplied data, carried outside the COSE signature structure,
+     * but used as a part of a signature computation.
+     * <p>
+     * NOTE: this data is used as a part of DataToBeSigned computation, when provided.
+     * WARN: When present on a signature creation, the data object shall be supplied on signature validation too.
+     *
+     * @param externallySuppliedData {@link DSSDocument}
+     */
+    public void setExternallySuppliedData(DSSDocument externallySuppliedData) {
+        this.externallySuppliedData = externallySuppliedData;
+    }
+
 }
