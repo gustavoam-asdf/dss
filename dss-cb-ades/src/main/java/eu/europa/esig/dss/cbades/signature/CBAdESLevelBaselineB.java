@@ -673,6 +673,9 @@ public class CBAdESLevelBaselineB {
      * @return payload byte array
      */
     public byte[] getPayloadBytes() {
+        if (SignaturePackaging.DETACHED.equals(parameters.getSignaturePackaging())) {
+            assertDetachedContentValid();
+        }
         if (!SignaturePackaging.DETACHED.equals(parameters.getSignaturePackaging()) ||
                 SigDMechanism.NO_SIG_D.equals(parameters.getSigDMechanism())) {
             return DSSUtils.toByteArray(documentsToSign.get(0));

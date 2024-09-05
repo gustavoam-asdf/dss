@@ -7,6 +7,7 @@ import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CBAdESServiceTest extends PKIFactoryAccess {
@@ -113,6 +115,32 @@ class CBAdESServiceTest extends PKIFactoryAccess {
         assertFalse(cborSignature.verifySignature());
 
         cborSignature.setExternalAttributesBytes(DSSUtils.toByteArray(externalDocument));
+        assertTrue(cborSignature.verifySignature());
+    }
+
+    @Test
+    void detachedCoseSign1Test() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+        signatureParameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                sign(Collections.singletonList(documentToSign), signatureParameters));
+        assertEquals("The SigDMechanism is not defined for a detached signature! " +
+                "Please use CBAdESSignatureParameters.setSigDMechanism(sigDMechanism) method.", exception.getMessage());
+
+        signatureParameters.setSigDMechanism(SigDMechanism.NO_SIG_D);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign1.class, coseSignStructure);
+
+        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign((COSESign1) coseSignStructure);
+        cborSignature.setKey(getSigningCert().getPublicKey());
+        assertFalse(cborSignature.verifySignature());
+
+        cborSignature.setPayloadBytes(DSSUtils.toByteArray(documentToSign));
         assertTrue(cborSignature.verifySignature());
     }
 

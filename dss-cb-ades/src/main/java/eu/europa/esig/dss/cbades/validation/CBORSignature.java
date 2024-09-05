@@ -142,6 +142,15 @@ public class CBORSignature {
         this.externallySuppliedData = new CBORByteString(externallySuppliedData);
     }
 
+    /**
+     * This method allows supplying of a payload
+     *
+     * @param payload binaries of a payload
+     */
+    public void setPayloadBytes(byte[] payload) {
+        this.payload = new CBORByteString(payload);
+    }
+
     private Key getKey() {
         if (key == null) {
             throw new IllegalStateException("No key has been supplied. COSE verification is not possible!");

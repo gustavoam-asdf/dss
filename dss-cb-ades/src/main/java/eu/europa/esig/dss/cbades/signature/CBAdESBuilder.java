@@ -146,6 +146,10 @@ public class CBAdESBuilder {
         boolean isDataToSignComputation = signatureValue == null;
         switch (parameters.getCoseStructureType()) {
             case COSE_SIGN:
+                COSESignature coseSignature = new COSESignature();
+                coseSignature.setProtectedHeader(getProtectedHeader());
+                coseSignature.setSignature(getSignature(signatureValue));
+
                 COSESign coseSign;
                 if (this.coseSign != null) {
                     coseSign = this.coseSign;
@@ -154,18 +158,14 @@ public class CBAdESBuilder {
                     coseSign.setPayload(getPayload(isDataToSignComputation));
                 }
 
-                COSESignature coseSignature = new COSESignature();
-                coseSignature.setProtectedHeader(getProtectedHeader());
-                coseSignature.setSignature(getSignature(signatureValue));
-
                 coseSign.getSignatures().add(coseSignature);
 
                 return coseSign;
 
             case COSE_SIGN1:
                 COSESign1 coseSign1 = new COSESign1();
-                coseSign1.setPayload(getPayload(isDataToSignComputation));
                 coseSign1.setProtectedHeader(getProtectedHeader());
+                coseSign1.setPayload(getPayload(isDataToSignComputation));
                 coseSign1.setSignature(getSignature(signatureValue));
                 return coseSign1;
 
