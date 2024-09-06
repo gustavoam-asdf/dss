@@ -155,6 +155,7 @@ public class CBAdESBuilder {
                     coseSign = this.coseSign;
                 } else {
                     coseSign = new COSESign();
+                    coseSign.setTagged(parameters.isTagged());
                     coseSign.setPayload(getPayload(isDataToSignComputation));
                 }
 
@@ -164,6 +165,7 @@ public class CBAdESBuilder {
 
             case COSE_SIGN1:
                 COSESign1 coseSign1 = new COSESign1();
+                coseSign1.setTagged(parameters.isTagged());
                 coseSign1.setProtectedHeader(getProtectedHeader());
                 coseSign1.setPayload(getPayload(isDataToSignComputation));
                 coseSign1.setSignature(getSignature(signatureValue));

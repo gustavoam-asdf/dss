@@ -21,7 +21,6 @@ import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.security.Key;
 import java.security.PublicKey;
 import java.security.Security;
@@ -214,65 +213,60 @@ public class CBORSignature {
          *     payload : bstr
          * ]
          */
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            final CBORArray array = new CBORArray();
+        final CBORArray array = new CBORArray();
 
-            /*
-             * 1. A text string identifying the context of the signature. The context string is:
-             *   - "Signature" for signatures using the COSE_Signature structure.
-             *   - "Signature1" for signatures using the COSE_Sign1 structure.
-             *   - "CounterSignature" for signatures used as counter signature attributes.
-             */
-            array.add(new UnicodeString(context.getContext()));
+        /*
+         * 1. A text string identifying the context of the signature. The context string is:
+         *   - "Signature" for signatures using the COSE_Signature structure.
+         *   - "Signature1" for signatures using the COSE_Sign1 structure.
+         *   - "CounterSignature" for signatures used as counter signature attributes.
+         */
+        array.add(new UnicodeString(context.getContext()));
 
-            /*
-             * 2. The protected attributes from the body structure, encoded in a
-             * bstr type. If there are no protected attributes, a zero-length
-             * byte string is used.
-             */
-            if (bodyProtectedHeader != null && !bodyProtectedHeader.isEmpty()) {
-                array.add(bodyProtectedHeader.getByteString());
-            } else {
-                array.add(CBORUtils.EMPTY_BYTE_STRING);
-            }
-            /*
-             * 3. The protected attributes from the signer structure, encoded in a
-             * bstr type. If there are no protected attributes, a zero-length
-             * byte string is used. This field is omitted for the COSE_Sign1
-             * signature structure.
-             */
-            if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
-                array.add(signerProtectedHeader.getByteString());
-            } else if (COSESignatureContext.COSE_SIGN1 != context) {
-                array.add(CBORUtils.EMPTY_BYTE_STRING);
-            }
-            /*
-             * 4. The externally supplied data from the application, encoded in a
-             * bstr type. If this field is not supplied, it defaults to a zero-
-             * length byte string. (See Section 4.3 for application guidance on
-             * constructing this field.)
-             */
-            if (externallySuppliedData != null) {
-                array.add(externallySuppliedData);
-            } else {
-                array.add(CBORUtils.EMPTY_BYTE_STRING);
-            }
-            /*
-             * 5. The payload to be signed, encoded in a bstr type. The full
-             *  payload is used here, independent of how it is transported.
-             */
-            if (payload != null && payload.isByteString()) {
-                array.add(payload);
-            } else {
-                LOG.warn("No payload found for COSE signature!");
-                array.add(CBORUtils.EMPTY_BYTE_STRING);
-            }
-
-            return CBORUtils.serializeCborObject(array);
-
-        } catch (Exception e) {
-            throw new DSSException(String.format("Unable to build signature input bytes : %s", e.getMessage()), e);
+        /*
+         * 2. The protected attributes from the body structure, encoded in a
+         * bstr type. If there are no protected attributes, a zero-length
+         * byte string is used.
+         */
+        if (bodyProtectedHeader != null && !bodyProtectedHeader.isEmpty()) {
+            array.add(bodyProtectedHeader.getByteString());
+        } else {
+            array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
+        /*
+         * 3. The protected attributes from the signer structure, encoded in a
+         * bstr type. If there are no protected attributes, a zero-length
+         * byte string is used. This field is omitted for the COSE_Sign1
+         * signature structure.
+         */
+        if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
+            array.add(signerProtectedHeader.getByteString());
+        } else if (COSESignatureContext.COSE_SIGN1 != context) {
+            array.add(CBORUtils.EMPTY_BYTE_STRING);
+        }
+        /*
+         * 4. The externally supplied data from the application, encoded in a
+         * bstr type. If this field is not supplied, it defaults to a zero-
+         * length byte string. (See Section 4.3 for application guidance on
+         * constructing this field.)
+         */
+        if (externallySuppliedData != null) {
+            array.add(externallySuppliedData);
+        } else {
+            array.add(CBORUtils.EMPTY_BYTE_STRING);
+        }
+        /*
+         * 5. The payload to be signed, encoded in a bstr type. The full
+         *  payload is used here, independent of how it is transported.
+         */
+        if (payload != null && payload.isByteString()) {
+            array.add(payload);
+        } else {
+            LOG.warn("No payload found for COSE signature!");
+            array.add(CBORUtils.EMPTY_BYTE_STRING);
+        }
+
+        return CBORUtils.serializeCborObject(array);
     }
 
     private byte[] ensureDerEncodedSignature(byte[] signature, SignatureAlgorithm signatureAlgorithm) {

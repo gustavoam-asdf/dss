@@ -57,6 +57,14 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     private COSEStructureType coseStructureType;
 
     /**
+     * Defines the encoding of the signature structure as either tagged (TRUE) or untagged (FALSE),
+     * depending on the context it will be used in.
+     * <p>
+     * Default: TRUE (tagged signature structure is used, i.e. COSE_Sign_Tagged or COSE_Sign1_Tagged)
+     */
+    private boolean tagged = true;
+
+    /**
      * Defines a used 'sigD' mechanism for a detached signature
      */
     private SigDMechanism sigDMechanism;
@@ -215,6 +223,30 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setCoseStructureType(COSEStructureType coseStructureType) {
         this.coseStructureType = coseStructureType;
+    }
+
+    /**
+     * Gets whether a tagged signature structure is used
+     *
+     * @return TRUE if a tagged signature structure is used, FALSE for untagged
+     */
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    /**
+     * Sets the encoding of the signature structure on signature creation as either tagged (TRUE) or untagged (FALSE),
+     * depending on the context it will be used in.
+     * <p>
+     * Default: TRUE (tagged signature structure is used, i.e. COSE_Sign_Tagged or COSE_Sign1_Tagged)
+     * <p>
+     * NOTE: the value is ignored on signing or augmentation of existing signature structure.
+     *       The original encoding type is used.
+     *
+     * @param tagged whether the tagged signature structure shall be used
+     */
+    public void setTagged(boolean tagged) {
+        this.tagged = tagged;
     }
 
     /**

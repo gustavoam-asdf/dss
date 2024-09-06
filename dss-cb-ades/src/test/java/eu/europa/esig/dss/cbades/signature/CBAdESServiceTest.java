@@ -68,7 +68,9 @@ class CBAdESServiceTest extends PKIFactoryAccess {
 
         COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
         assertInstanceOf(COSESign1.class, coseSignStructure);
-        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign((COSESign1) coseSignStructure);
+        COSESign1 coseSign1 = (COSESign1) coseSignStructure;
+        assertTrue(coseSign1.isTagged());
+        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign(coseSign1);
         cborSignature.setKey(getSigningCert().getPublicKey());
         assertTrue(cborSignature.verifySignature());
     }
@@ -80,6 +82,11 @@ class CBAdESServiceTest extends PKIFactoryAccess {
 
         DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
 
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign.class, coseSignStructure);
+        COSESign coseSign = (COSESign) coseSignStructure;
+        assertTrue(coseSign.isTagged());
+
         awaitOneSecond();
 
         signatureParameters = initParameters();
@@ -87,10 +94,14 @@ class CBAdESServiceTest extends PKIFactoryAccess {
 
         DSSDocument doubleSignedDocument = sign(Collections.singletonList(signedDocument), signatureParameters);
 
-        COSESignStructure coseSignStructure = new COSEParser(doubleSignedDocument).parse();
+        coseSignStructure = new COSEParser(doubleSignedDocument).parse();
         assertInstanceOf(COSESign.class, coseSignStructure);
-        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESign((COSESign) coseSignStructure);
+        coseSign = (COSESign) coseSignStructure;
+        assertTrue(coseSign.isTagged());
+
+        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESign(coseSign);
         assertEquals(2, cborSignatures.size());
+
         for (CBORSignature cborSignature : cborSignatures) {
             cborSignature.setKey(getSigningCert().getPublicKey());
             assertTrue(cborSignature.verifySignature());
@@ -142,6 +153,58 @@ class CBAdESServiceTest extends PKIFactoryAccess {
 
         cborSignature.setPayloadBytes(DSSUtils.toByteArray(documentToSign));
         assertTrue(cborSignature.verifySignature());
+    }
+
+    @Test
+    void untaggedCoseSign1Test() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+        signatureParameters.setTagged(false);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign1.class, coseSignStructure);
+        COSESign1 coseSign1 = (COSESign1) coseSignStructure;
+        assertFalse(coseSign1.isTagged());
+        CBORSignature cborSignature = CBORSignature.fromCOSE1Sign(coseSign1);
+        cborSignature.setKey(getSigningCert().getPublicKey());
+        assertTrue(cborSignature.verifySignature());
+    }
+
+    @Test
+    void untaggedParallelCoseSignTest() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+        signatureParameters.setTagged(false);
+
+        DSSDocument signedDocument = sign(Collections.singletonList(documentToSign), signatureParameters);
+
+        COSESignStructure coseSignStructure = new COSEParser(signedDocument).parse();
+        assertInstanceOf(COSESign.class, coseSignStructure);
+        COSESign coseSign = (COSESign) coseSignStructure;
+        assertFalse(coseSign.isTagged());
+
+        awaitOneSecond();
+
+        signatureParameters = initParameters();
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+        signatureParameters.setTagged(true); // should be ignored
+
+        DSSDocument doubleSignedDocument = sign(Collections.singletonList(signedDocument), signatureParameters);
+
+        coseSignStructure = new COSEParser(doubleSignedDocument).parse();
+        assertInstanceOf(COSESign.class, coseSignStructure);
+        coseSign = (COSESign) coseSignStructure;
+        assertFalse(coseSign.isTagged());
+
+        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESign(coseSign);
+        assertEquals(2, cborSignatures.size());
+
+        for (CBORSignature cborSignature : cborSignatures) {
+            cborSignature.setKey(getSigningCert().getPublicKey());
+            assertTrue(cborSignature.verifySignature());
+        }
     }
 
     private CBAdESSignatureParameters initParameters() {

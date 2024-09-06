@@ -15,6 +15,9 @@ import java.util.List;
  */
 public class COSESign implements COSESignStructure {
 
+    /** Defines the encoding of the structure */
+    private boolean tagged;
+
     /** Protected attributes of the body structure */
     private COSEProtectedHeader protectedHeader;
 
@@ -32,6 +35,24 @@ public class COSESign implements COSESignStructure {
      */
     public COSESign() {
         // empty
+    }
+
+    /**
+     * Gets whether the signature structure is encoded as tagged
+     *
+     * @return TRUE if the signature structure is encoded as tagged, FALSE in case of untagged
+     */
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    /**
+     * Sets whether the signature structure is encoded as tagged or untagged
+     *
+     * @param tagged whether the signature structure is encoded as tagged or untagged
+     */
+    public void setTagged(boolean tagged) {
+        this.tagged = tagged;
     }
 
     /**
@@ -124,8 +145,10 @@ public class COSESign implements COSESignStructure {
 
     @Override
     public byte[] serialize() {
-        CBORArray codeSign = new CBORArray(4);
-        codeSign.setTag(getContext().getTag());
+        final CBORArray codeSign = new CBORArray(4);
+        if (tagged) {
+            codeSign.setTag(getContext().getTag());
+        }
         codeSign.add(getProtectedHeader().getByteString());
         codeSign.add(getUnprotectedHeader());
         codeSign.add(getPayload());

@@ -11,6 +11,9 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
  */
 public class COSESign1 extends COSESignature implements COSESignStructure {
 
+    /** Defines the encoding of the structure */
+    private boolean tagged;
+
     /** The signed content */
     private CBORObject payload;
 
@@ -19,6 +22,24 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
      */
     public COSESign1() {
         // empty
+    }
+
+    /**
+     * Gets whether the signature structure is encoded as tagged
+     *
+     * @return TRUE if the signature structure is encoded as tagged, FALSE in case of untagged
+     */
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    /**
+     * Sets whether the signature structure is encoded as tagged or untagged
+     *
+     * @param tagged whether the signature structure is encoded as tagged or untagged
+     */
+    public void setTagged(boolean tagged) {
+        this.tagged = tagged;
     }
 
     /**
@@ -45,8 +66,10 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
 
     @Override
     public byte[] serialize() {
-        CBORArray codeSign1 = new CBORArray();
-        codeSign1.setTag(getContext().getTag());
+        final CBORArray codeSign1 = new CBORArray(4);
+        if (tagged) {
+            codeSign1.setTag(getContext().getTag());
+        }
         codeSign1.add(getProtectedHeader().getByteString());
         codeSign1.add(getUnprotectedHeader());
         codeSign1.add(getPayload());
