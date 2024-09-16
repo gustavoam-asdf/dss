@@ -1,5 +1,11 @@
 package eu.europa.esig.dss.cbades;
 
+import co.nstant.in.cbor.model.Tag;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORMap;
+import eu.europa.esig.dss.cbades.cbor.CBORTag;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -38,7 +44,10 @@ class COSEParserTest {
                 "c98b8544c908b4507de1e90b717c3d34816fe926a2b98f53af" +
                 "d2fa0f30a"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign.class, coseSignItem);
         COSESign coseSign = (COSESign) coseSignItem;
@@ -71,7 +80,10 @@ class COSEParserTest {
                 "32a37230f39a842a54821fdd223092819d7728efb9d3a008" +
                 "0b75380b"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign1.class, coseSignItem);
         COSESign1 coseSign1 = (COSESign1) coseSignItem;
@@ -101,7 +113,10 @@ class COSEParserTest {
                 "5b2d8c44e95ffb13877dd2582866883535de3bb03d01753f8" +
                 "3ab87bb4f7a0297"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign.class, coseSignItem);
         COSESign coseSign = (COSESign) coseSignItem;
@@ -149,7 +164,10 @@ class COSEParserTest {
                 "82ac45ac98b8544c908b4507de1e90b717c3d34816fe926a2" +
                 "b98f53afd2fa0f30a"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign.class, coseSignItem);
         COSESign coseSign = (COSESign) coseSignItem;
@@ -183,7 +201,10 @@ class COSEParserTest {
                 "5b1a3e83e1510d1aca2f2e8a7c081c7645042b18aba9d1fad" +
                 "1bd9c"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign.class, coseSignItem);
         COSESign coseSign = (COSESign) coseSignItem;
@@ -225,7 +246,10 @@ class COSEParserTest {
                 "e2729716cb18a31e6f231db3d69a7a432aa3d6fa1def9c965" +
                 "9616beb626f158378e0fbdd"));
 
-        COSESignStructure coseSignItem = new COSEParser(document).parse();
+        COSEParser coseParser = new COSEParser(document);
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignItem = coseParser.parse();
         assertNotNull(coseSignItem);
         assertInstanceOf(COSESign.class, coseSignItem);
         COSESign coseSign = (COSESign) coseSignItem;
@@ -329,6 +353,63 @@ class COSEParserTest {
         // Generate RSA public key
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(rsaPublicKeySpec);
+    }
+
+    @Test
+    void isCoseDocumentTest() {
+        assertTrue(new COSEParser(new InMemoryDocument(new COSESign().serialize())).isSupported());
+        assertTrue(new COSEParser(new InMemoryDocument(new COSESign1().serialize())).isSupported());
+
+        COSESign coseSignUntagged = new COSESign();
+        coseSignUntagged.setTagged(false);
+        assertTrue(new COSEParser(new InMemoryDocument(coseSignUntagged.serialize())).isSupported());
+
+        COSESign1 coseSign1Untagged = new COSESign1();
+        coseSign1Untagged.setTagged(false);
+        assertTrue(new COSEParser(new InMemoryDocument(coseSign1Untagged.serialize())).isSupported());
+
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(new CBORTag(new Tag(COSESignatureContext.COSE_SIGN.getTag()))))).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(new CBORTag(new Tag(COSESignatureContext.COSE_SIGN1.getTag()))))).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(new CBORTag(new Tag(COSESignatureContext.COSE_COUNTER_SIGN.getTag()))))).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(new CBORTag(new Tag(1))))).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(new CBORArray()))).isSupported());
+
+        CBORArray cborArray = new CBORArray();
+        cborArray.setTag(COSESignatureContext.COSE_SIGN.getTag());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.setTag(COSESignatureContext.COSE_SIGN.getTag());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.add(new CBORByteString());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.add(new CBORMap());
+        cborArray.add(new CBORByteString());
+        cborArray.add(new CBORByteString());
+        assertTrue(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.setTag(COSESignatureContext.COSE_SIGN1.getTag());
+        assertTrue(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.setTag(1);
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray = new CBORArray();
+        cborArray.add(new CBORByteString());
+        cborArray.add(new CBORMap());
+        cborArray.add(new CBORByteString());
+        cborArray.add(new CBORByteString());
+        assertTrue(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        cborArray.add(new CBORByteString());
+        assertFalse(new COSEParser(new InMemoryDocument(CBORUtils.serializeCborObject(cborArray))).isSupported());
+
+        assertFalse(new COSEParser(new InMemoryDocument("".getBytes())).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument("Hello World!".getBytes())).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument("<?xml".getBytes())).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument("%PDF".getBytes())).isSupported());
+        assertFalse(new COSEParser(new InMemoryDocument(Utils.fromBase64("MIAGCSqGSIb3DQEH"))).isSupported());
     }
 
 }

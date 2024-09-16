@@ -1,6 +1,10 @@
 package eu.europa.esig.dss.cbades;
 
 import co.nstant.in.cbor.CborException;
+import co.nstant.in.cbor.decoder.ArrayDecoder;
+import co.nstant.in.cbor.decoder.TagDecoder;
+import co.nstant.in.cbor.model.MajorType;
+import co.nstant.in.cbor.model.Tag;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -10,7 +14,11 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +27,8 @@ import java.util.List;
  *
  */
 public class COSEParser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(COSEParser.class);
 
     /** The document to be parsed */
     private final DSSDocument document;
@@ -30,6 +40,20 @@ public class COSEParser {
      */
     public COSEParser(DSSDocument document) {
         this.document = document;
+    }
+
+    /**
+     * This method verifies whether the document represents a COSE structure
+     *
+     * @return TRUE if the document is supported, FALSE otherwise
+     */
+    public boolean isSupported() {
+        try (InputStream is = document.openStream()) {
+            return isCoseStart(is);
+        } catch (IOException e) {
+            throw new DSSException(String.format("Unable to read the document with name '%s' : %s",
+                    document.getName(), e.getMessage()));
+        }
     }
 
     /**
@@ -200,6 +224,64 @@ public class COSEParser {
         } else {
             throw new IllegalInputException("COSE structure signature(s) must be a bstr or array!");
         }
+    }
+
+    /**
+     * This method verifies whether the beginning of the InputStream is a COSE structure
+     *
+     * @param inputStream {@link InputStream} to check
+     * @return TRUE if the beginning of the InoutStream represents a COSE valid structure, FALSE otherwise
+     * @throws IOException if an error occurs on InputStream reading
+     */
+    private boolean isCoseStart(InputStream inputStream) throws IOException {
+        try (InputStream is = inputStream) {
+            int symbol = is.read();
+            if (isCoseTag(symbol, is)) {
+                symbol = is.read();
+                return isCoseArray(symbol, is);
+            } else if (isCoseArray(symbol, is)) {
+                return true;
+            }
+        } catch (CborException e) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Error on CBOR decoding : {}. Not a valid CBOR file.", e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private boolean isCoseTag(int symbol, InputStream inputStream) throws CborException {
+        if (MajorType.TAG == MajorType.ofByte(symbol)) {
+            TagDecoder tagDecoder = new TagDecoder(null, inputStream);
+            Tag tag = tagDecoder.decode(symbol);
+            return COSEConstants.COSE_SIGN_TAG == tag.getValue() || COSEConstants.COSE_SIGN1_TAG == tag.getValue();
+        }
+        return false;
+    }
+
+    private boolean isCoseArray(int symbol, InputStream inputStream) throws CborException, IOException {
+        if (MajorType.ARRAY == MajorType.ofByte(symbol)) {
+            DSSArrayDecoder arrayDecoder = new DSSArrayDecoder(inputStream);
+            long length = arrayDecoder.getLength(symbol);
+            if (length == -1 || length == 4) { // -1 for not defined length, 4 for COSESign or COSESign1 structure
+                int arrayFirstSymbol = inputStream.read();
+                return MajorType.BYTE_STRING == MajorType.ofByte(arrayFirstSymbol);
+            }
+        }
+        return false;
+    }
+
+    private static class DSSArrayDecoder extends ArrayDecoder {
+
+        public DSSArrayDecoder(InputStream inputStream) {
+            super(null, inputStream);
+        }
+
+        @Override
+        protected long getLength(int initialByte) throws CborException {
+            return super.getLength(initialByte);
+        }
+
     }
 
 }

@@ -24,7 +24,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.validation.analyzer.DocumentAnalyzerFactory;
 
 /**
- * Loads the relevant Validator to process a given JWS signature
+ * Loads the relevant Analyzer to process a given JWS signature
  *
  */
 public class JWSDocumentAnalyzerFactory implements DocumentAnalyzerFactory {

@@ -20,6 +20,20 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
         super(new COSEDocumentAnalyzer());
     }
 
+    /**
+     * Default constructor
+     *
+     * @param document {@link DSSDocument} to validate
+     */
+    public COSEDocumentValidator(DSSDocument document) {
+        super(new COSEDocumentAnalyzer(document));
+    }
+
+    @Override
+    public COSEDocumentAnalyzer getDocumentAnalyzer() {
+        return (COSEDocumentAnalyzer) super.getDocumentAnalyzer();
+    }
+
     @Override
     public boolean isSupported(DSSDocument dssDocument) {
         return false;
