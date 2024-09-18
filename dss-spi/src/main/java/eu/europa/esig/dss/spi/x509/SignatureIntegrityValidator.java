@@ -146,7 +146,7 @@ public abstract class SignatureIntegrityValidator {
 	 */
 	public List<String> getErrorMessages() {
 		if (errorMessages == null) {
-			throw new IllegalStateException("The validate(candiates) method shall be proceeded before!");
+			throw new IllegalStateException("The validate(candidates) method shall be proceeded before!");
 		}
 		return errorMessages;
 	}

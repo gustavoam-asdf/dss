@@ -20,6 +20,9 @@
  */
 package eu.europa.esig.dss.spi.signature;
 
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.ManifestFile;
@@ -162,6 +165,24 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	 */
 	protected DefaultAdvancedSignature() {
 		// empty
+	}
+
+	@Override
+	public EncryptionAlgorithm getEncryptionAlgorithm() {
+		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
+		if (signatureAlgorithm == null) {
+			return null;
+		}
+		return signatureAlgorithm.getEncryptionAlgorithm();
+	}
+
+	@Override
+	public DigestAlgorithm getDigestAlgorithm() {
+		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
+		if (signatureAlgorithm == null) {
+			return null;
+		}
+		return signatureAlgorithm.getDigestAlgorithm();
 	}
 	
 	/**

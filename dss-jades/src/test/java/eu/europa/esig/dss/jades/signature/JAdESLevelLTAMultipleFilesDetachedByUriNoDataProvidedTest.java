@@ -107,7 +107,7 @@ class JAdESLevelLTAMultipleFilesDetachedByUriNoDataProvidedTest extends Abstract
         List<XmlDigestMatcher> digestMatchers = signatureWrapper.getDigestMatchers();
         assertEquals(1, digestMatchers.size());
         XmlDigestMatcher digestMatcher = digestMatchers.get(0);
-        assertEquals(DigestMatcherType.JWS_SIGNING_INPUT_DIGEST, digestMatcher.getType());
+        assertEquals(DigestMatcherType.JWS_SIGNING_INPUT, digestMatcher.getType());
         assertFalse(digestMatcher.isDataFound());
         assertFalse(digestMatcher.isDataIntact());
     }

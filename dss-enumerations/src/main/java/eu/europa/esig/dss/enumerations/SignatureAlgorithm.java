@@ -750,6 +750,8 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
         coseAlgorithms.put(-35L, ECDSA_SHA384);
         coseAlgorithms.put(-36L, ECDSA_SHA512);
 
+        coseAlgorithms.put(-8L, ED25519);
+
         return coseAlgorithms;
     }
 

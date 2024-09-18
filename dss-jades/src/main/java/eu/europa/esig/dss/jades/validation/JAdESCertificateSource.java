@@ -34,6 +34,8 @@ import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
+import eu.europa.esig.dss.spi.x509.KidCertificateSource;
+import eu.europa.esig.dss.spi.x509.X509URLCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import org.bouncycastle.asn1.x509.IssuerSerial;
@@ -359,7 +361,7 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 				KidCertificateSource kidCertificateSource = (KidCertificateSource) signingCertificateSource;
 				return kidCertificateSource.getCertificateByKid(kidHeader);
 			} else {
-				LOG.warn("JWS/JAdES contains a 'kid' header (provide a KidCertificateSource to resolve it)");
+				LOG.info("JWS/JAdES contains a 'kid' header (provide a KidCertificateSource to resolve it)");
 			}
 		}
 		return null;
@@ -376,7 +378,7 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 				}
 				return certificatesByUri;
 			} else {
-				LOG.warn("JWS/JAdES contains a 'x5u' header (provide a X509URLCertificateSource to resolve it)");
+				LOG.info("JWS/JAdES contains a 'x5u' header (provide a X509URLCertificateSource to resolve it)");
 			}
 		}
 		return Collections.emptyList();

@@ -64,7 +64,7 @@ class JWSSimpleDetachedWithWrongAlgoValidationTest extends AbstractJAdESTestVali
 		assertEquals(2, digestMatchers.size());
 
 		XmlDigestMatcher jwsSigningInput = digestMatchers.get(0);
-		assertEquals(DigestMatcherType.JWS_SIGNING_INPUT_DIGEST, jwsSigningInput.getType());
+		assertEquals(DigestMatcherType.JWS_SIGNING_INPUT, jwsSigningInput.getType());
 		assertNotNull(jwsSigningInput.getDigestMethod());
 		assertTrue(Utils.isArrayNotEmpty(jwsSigningInput.getDigestValue()));
 		assertTrue(jwsSigningInput.isDataFound());

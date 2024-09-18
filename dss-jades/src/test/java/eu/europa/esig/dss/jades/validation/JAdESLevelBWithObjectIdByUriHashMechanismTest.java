@@ -67,7 +67,7 @@ class JAdESLevelBWithObjectIdByUriHashMechanismTest extends AbstractJAdESTestVal
         boolean jwsSigningInputFound = false;
         boolean sigDEntryFound = false;
         for (XmlDigestMatcher digestMatcher : signature.getDigestMatchers()) {
-            if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType())) {
+            if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType())) {
                 jwsSigningInputFound = true;
             } else if (DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
                 assertNotNull(digestMatcher.getDigestMethod());

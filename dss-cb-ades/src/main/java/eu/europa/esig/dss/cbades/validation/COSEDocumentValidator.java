@@ -1,10 +1,10 @@
 package eu.europa.esig.dss.cbades.validation;
 
+import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,6 +29,15 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
         super(new COSEDocumentAnalyzer(document));
     }
 
+    /**
+     * Sets externally supplied data as per RFC 9052 "4.3. Externally Supplied Data"
+     *
+     * @param externallySuppliedData {@link DSSDocument}
+     */
+    public void setExternallySuppliedData(DSSDocument externallySuppliedData) {
+        getDocumentAnalyzer().setExternallySuppliedData(externallySuppliedData);
+    }
+
     @Override
     public COSEDocumentAnalyzer getDocumentAnalyzer() {
         return (COSEDocumentAnalyzer) super.getDocumentAnalyzer();
@@ -36,12 +45,21 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
 
     @Override
     public boolean isSupported(DSSDocument dssDocument) {
-        return false;
+        return getDocumentAnalyzer().isSupported(dssDocument);
+    }
+
+    /**
+     * Gets a {@code COSESignStructure} to be validated
+     *
+     * @return {@link COSESignStructure}
+     */
+    public COSESignStructure getCoseSignStructure() {
+        return getDocumentAnalyzer().getCoseSignStructure();
     }
 
     @Override
     public List<DSSDocument> getOriginalDocuments(AdvancedSignature advancedSignature) {
-        return Collections.emptyList();
+        return getDocumentAnalyzer().getOriginalDocuments(advancedSignature);
     }
 
 }

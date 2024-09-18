@@ -44,8 +44,11 @@ public enum ArchiveTimestampType {
 	/** Detached timestamp, used for ASiC */
 	CAdES_DETACHED,
 
-	/** arcTst */
+	/** JAdES : arcTst */
 	JAdES,
+
+	/** CB-AdES : arcTst */
+	CB_AdES,
 
 	/** DOCUMENT_TIMESTAMP covering a DSS dictionary (revision) */
 	PAdES,

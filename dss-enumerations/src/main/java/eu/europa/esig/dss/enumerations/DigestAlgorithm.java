@@ -132,7 +132,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		/** A map between JAdES URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> JADES_ALGORITHMS = registerJAdESAlgorithms();
 		/** A map between COSE IDs and algorithms */
-		private static final Map<String, DigestAlgorithm> COSE_ALGORITHMS = registerCOSEAlgorithms();
+		private static final Map<Long, DigestAlgorithm> COSE_ALGORITHMS = registerCOSEAlgorithms();
 		/** A map between JAdES HTTPHeader URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> HTTP_HEADER_ALGORITHMS = registerJwsHttpHeaderAlgorithms();
 
@@ -176,10 +176,10 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 			return map;
 		}
 
-		private static Map<String, DigestAlgorithm> registerCOSEAlgorithms() {
-			final Map<String, DigestAlgorithm> map = new HashMap<>();
+		private static Map<Long, DigestAlgorithm> registerCOSEAlgorithms() {
+			final Map<Long, DigestAlgorithm> map = new HashMap<>();
 			for (final DigestAlgorithm digestAlgorithm : values()) {
-				map.put(digestAlgorithm.jadesId, digestAlgorithm);
+				map.put(digestAlgorithm.coseId, digestAlgorithm);
 			}
 			return map;
 		}
@@ -304,6 +304,22 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	public static DigestAlgorithm forJAdES(final String algoId) {
 		final DigestAlgorithm algorithm = Registry.JADES_ALGORITHMS.get(algoId);
+		if (algorithm == null) {
+			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, algoId));
+		}
+		return algorithm;
+	}
+
+	/**
+     * Returns the digest algorithm associated with the given identifier, according to
+	 * {@link <a href="https://www.iana.org/assignments/cose/cose.xhtml">IANA CBOR Object Signing and Encryption (COSE)</a>}
+     *
+     * @param algoId {@link Long} COSE algorithm identifier
+     * @return the digest algorithm linked to the given identifier
+     * @throws IllegalArgumentException if the name doesn't match any digest  algorithm
+     */
+	public static DigestAlgorithm forCOSE(final Long algoId) {
+		final DigestAlgorithm algorithm = Registry.COSE_ALGORITHMS.get(algoId);
 		if (algorithm == null) {
 			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, algoId));
 		}

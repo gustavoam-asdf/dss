@@ -11,7 +11,9 @@ import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
@@ -28,6 +30,7 @@ import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a single COSE signature.
@@ -40,6 +43,9 @@ public class CBORSignature {
 
     /** Context of the signature */
     private COSESignatureContext context;
+
+    /** Defines whether the signature container is tagged */
+    private boolean tagged;
 
     /** Protected attributes of the body structure */
     private COSEProtectedHeader bodyProtectedHeader;
@@ -61,6 +67,12 @@ public class CBORSignature {
 
     /** The signer's signature value */
     private CBORByteString signature;
+
+    /** Original COSE signature container structure */
+    private COSESignStructure coseSignStructure;
+
+    /** The original signer signature (applicable only for COSE_Sign) */
+    private COSESignature signerSignature;
 
     /** The signer's key */
     private Key key;
@@ -104,12 +116,15 @@ public class CBORSignature {
         for (COSESignature coseSignature : coseSign.getSignatures()) {
             final CBORSignature cborSignature = new CBORSignature();
             cborSignature.context = coseSign.getContext();
+            cborSignature.tagged = coseSign.isTagged();
             cborSignature.bodyProtectedHeader = coseSign.getProtectedHeader();
             cborSignature.bodyUnprotectedHeader = coseSign.getUnprotectedHeader();
             cborSignature.signerProtectedHeader = coseSignature.getProtectedHeader();
             cborSignature.signerUnprotectedHeader = coseSignature.getUnprotectedHeader();
             cborSignature.payload = coseSign.getPayload();
             cborSignature.signature = coseSignature.getSignature();
+            cborSignature.coseSignStructure = coseSign;
+            cborSignature.signerSignature = coseSignature;
             cborSignatures.add(cborSignature);
         }
         return cborSignatures;
@@ -125,11 +140,88 @@ public class CBORSignature {
     public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
         final CBORSignature cborSignature = new CBORSignature();
         cborSignature.context = coseSign1.getContext();
+        cborSignature.tagged = coseSign1.isTagged();
         cborSignature.bodyProtectedHeader = coseSign1.getProtectedHeader();
         cborSignature.bodyUnprotectedHeader = coseSign1.getUnprotectedHeader();
         cborSignature.payload = coseSign1.getPayload();
         cborSignature.signature = coseSign1.getSignature();
+        cborSignature.coseSignStructure = coseSign1;
         return cborSignature;
+    }
+
+    /**
+     * Returns context of the COSE signature
+     *
+     * @return {@link COSESignatureContext}
+     */
+    public COSESignatureContext getContext() {
+        return context;
+    }
+
+    /**
+     * Gets whether the container of the signature is tagged
+     *
+     * @return TRUE if the COSE signature containe is tagged, FALSE otherwise
+     */
+    public boolean isTagged() {
+        return tagged;
+    }
+
+    /**
+     * Gets the body protected header
+     *
+     * @return {@link COSEProtectedHeader}
+     */
+    public COSEProtectedHeader getBodyProtectedHeader() {
+        return bodyProtectedHeader;
+    }
+
+    /**
+     * Gets the signer protected header.
+     * NOTE: the field is present only within COSE_Sign signature structure.
+     *
+     * @return {@link COSEProtectedHeader}
+     */
+    public COSEProtectedHeader getSignerProtectedHeader() {
+        return signerProtectedHeader;
+    }
+
+    /**
+     * Gets the body unprotected header
+     *
+     * @return {@link COSEUnprotectedHeader}
+     */
+    public COSEUnprotectedHeader getBodyUnprotectedHeader() {
+        return bodyUnprotectedHeader;
+    }
+
+    /**
+     * Gets the signer unprotected header.
+     * NOTE: the field is present only within COSE_Sign signature structure.
+     *
+     * @return {@link COSEUnprotectedHeader}
+     */
+    public COSEUnprotectedHeader getSignerUnprotectedHeader() {
+        return signerUnprotectedHeader;
+    }
+
+    /**
+     * Gets current CBOR representation of signature binaries
+     *
+     * @return {@link CBORByteString}
+     */
+    public CBORByteString getSignature() {
+        return signature;
+    }
+
+    /**
+     * Returns signature value
+     *
+     * @return byte array containing the signature bytes
+     */
+    public byte[] getSignatureValue() {
+        Objects.requireNonNull(signature, "Signature bytes shall be set.");
+        return signature.getBytes();
     }
 
     /**
@@ -142,12 +234,60 @@ public class CBORSignature {
     }
 
     /**
+     * Gets the payload
+     *
+     * @return {@link CBORObject}
+     */
+    public CBORObject getPayload() {
+        return payload;
+    }
+
+    /**
+     * Gets the payload bytes, when present
+     *
+     * @return byte array representing the payload bytes
+     */
+    public byte[] getPayloadBytes() {
+        if (payload != null && payload.isByteString()) {
+            return ((CBORByteString) payload).getBytes();
+        }
+        return null;
+    }
+
+    /**
      * This method allows supplying of a payload
      *
      * @param payload binaries of a payload
      */
     public void setPayloadBytes(byte[] payload) {
         this.payload = new CBORByteString(payload);
+    }
+
+    /**
+     * Gets the original COSE signature structure
+     *
+     * @return {@link COSESignStructure}
+     */
+    public COSESignStructure getCoseSignStructure() {
+        return coseSignStructure;
+    }
+
+    /**
+     * Returns the original signer signature structure (applicable only for COSE_Sign signatures)
+     *
+     * @return {@link COSESignature}
+     */
+    public COSESignature getSignerSignature() {
+        return signerSignature;
+    }
+
+    /**
+     * Sets the original COSE signature structure
+     *
+     * @param coseSignStructure {@link COSESignStructure}
+     */
+    public void setCoseSignStructure(COSESignStructure coseSignStructure) {
+        this.coseSignStructure = coseSignStructure;
     }
 
     private Key getKey() {
@@ -283,23 +423,144 @@ public class CBORSignature {
      * @return {@link SignatureAlgorithm}
      */
     public SignatureAlgorithm getAlgorithm() {
-        COSEProtectedHeader coseProtectedHeader = getCOSEProtectedHeader();
-        Long algNumber = coseProtectedHeader.getHeaderAsLong(COSEConstants.ALG);
-        if (algNumber == null) {
-            // It is usual for COSE signatures to have signature algorithm within unsigned header
-            algNumber = coseProtectedHeader.getHeaderAsLong(COSEConstants.ALG);
-            if (algNumber != null) {
-                LOG.info("Alg header is present within unsigned header!");
-            }
-        }
+        Long algNumber = getAlgorithmHeaderValue();
         if (algNumber == null) {
             throw new DSSException("No 'alg' header found!");
         }
         return SignatureAlgorithm.forCOSE(algNumber, null);
     }
 
-    private COSEProtectedHeader getCOSEProtectedHeader() {
-        return signerProtectedHeader != null ? signerProtectedHeader : bodyProtectedHeader;
+    /**
+     * This method returns a value of the {@code 'alg'} header parameter.
+     *
+     * @return {@link Long}
+     */
+    public Long getAlgorithmHeaderValue() {
+        return getProtectedHeaderValueAsLong(COSEConstants.ALG);
+    }
+
+    /**
+     * This method returns a Long value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link Long} value if header is identified, NULL otherwise
+     */
+    public Long getProtectedHeaderValueAsLong(long headerKey) {
+        CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
+        if (protectedHeaderValue != null && (protectedHeaderValue.isNegativeInteger() || protectedHeaderValue.isUnsignedInteger())) {
+            return ((CBORSimpleObject) protectedHeaderValue).getValueAsLong();
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a String value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link Long} value if header is identified, NULL otherwise
+     */
+    public String getProtectedHeaderValueAsString(long headerKey) {
+        CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
+        if (protectedHeaderValue != null && (protectedHeaderValue.isUnicodeString())) {
+            return ((CBORSimpleObject) protectedHeaderValue).getValueAsString();
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a byte array value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return byte array value if header is identified, NULL otherwise
+     */
+    public byte[] getProtectedHeaderValueAsBinaries(long headerKey) {
+        CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
+        if (protectedHeaderValue != null && (protectedHeaderValue.isByteString())) {
+            return ((CBORByteString) protectedHeaderValue).getBytes();
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a CBORArray value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link CBORArray) value if header is identified, NULL otherwise
+     */
+    public CBORArray getProtectedHeaderValueAsArray(long headerKey) {
+        CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
+        if (protectedHeaderValue != null && (protectedHeaderValue.isArray())) {
+            return ((CBORArray) protectedHeaderValue);
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a CBORMap value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link CBORMap) value if header is identified, NULL otherwise
+     */
+    public CBORMap getProtectedHeaderValueAsMap(long headerKey) {
+        CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
+        if (protectedHeaderValue != null && (protectedHeaderValue.isMap())) {
+            return ((CBORMap) protectedHeaderValue);
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a value extracted from protected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link CBORObject}
+     */
+    protected CBORObject getProtectedHeaderValue(long headerKey) {
+        CBORObject bodyProtectedHeaderValue = getBodyProtectedHeaderValue(headerKey);
+        CBORObject signerProtectedHeaderValue = getSignerProtectedHeaderValue(headerKey);
+        if (bodyProtectedHeaderValue != null && signerProtectedHeaderValue != null) {
+            LOG.info("Same protected header '{}' is present in body and signer structure.", headerKey);
+            if (bodyProtectedHeaderValue.equals(signerProtectedHeaderValue)) {
+                LOG.warn("The value of protected header '{}' in body structure does not match the value in signer structure!", headerKey);
+                return null;
+            }
+        }
+        return bodyProtectedHeaderValue != null ? bodyProtectedHeaderValue : signerProtectedHeaderValue;
+    }
+
+    private CBORObject getBodyProtectedHeaderValue(long headerKey) {
+        return bodyProtectedHeader != null ? bodyProtectedHeader.getHeader(headerKey) : null;
+    }
+
+    private CBORObject getSignerProtectedHeaderValue(long headerKey) {
+        return signerProtectedHeader != null ? signerProtectedHeader.getHeader(headerKey) : null;
+    }
+
+    /**
+     * This method returns a value extracted from unprotected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link CBORObject}
+     */
+    protected CBORObject getUnprotectedHeaderValue(long headerKey) {
+        CBORObject bodyUnprotectedHeaderValue = getBodyUnprotectedHeaderValue(headerKey);
+        CBORObject signerUnprotectedHeaderValue = getSignerUnprotectedHeaderValue(headerKey);
+        if (bodyUnprotectedHeaderValue != null && signerUnprotectedHeaderValue != null) {
+            LOG.info("Same unprotected header '{}' is present in body and signer structure.", headerKey);
+            if (bodyUnprotectedHeaderValue.equals(signerUnprotectedHeaderValue)) {
+                LOG.warn("The value of unprotected header '{}' in body structure does not match the value in signer structure!", headerKey);
+                return null;
+            }
+        }
+        return bodyUnprotectedHeaderValue != null ? bodyUnprotectedHeaderValue : signerUnprotectedHeaderValue;
+    }
+
+    private CBORObject getBodyUnprotectedHeaderValue(long headerKey) {
+        return bodyUnprotectedHeader != null ? bodyUnprotectedHeader.getHeader(headerKey) : null;
+    }
+
+    private CBORObject getSignerUnprotectedHeaderValue(long headerKey) {
+        return signerUnprotectedHeader != null ? signerUnprotectedHeader.getHeader(headerKey) : null;
     }
 
 }

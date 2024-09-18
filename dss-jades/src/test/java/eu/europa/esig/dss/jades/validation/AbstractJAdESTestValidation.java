@@ -93,7 +93,7 @@ public abstract class AbstractJAdESTestValidation extends AbstractDocumentTestVa
 
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType()) ||
+				if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType()) ||
 						DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
 					assertNotNull(digestMatcher.getDigestMethod());
 					assertNotNull(digestMatcher.getDigestValue());
@@ -107,6 +107,7 @@ public abstract class AbstractJAdESTestValidation extends AbstractDocumentTestVa
 		}
 	}
 
+	@Override
 	protected void validateETSIDataObjectFormatType(SADataObjectFormatType dataObjectFormat) {
 		super.validateETSIDataObjectFormatType(dataObjectFormat);
 

@@ -95,7 +95,7 @@ class JAdESLevelLTAMultipleFilesDetachedUriByHashNoDataProvidedTest extends Abst
         int sigDEntryValidDMs = 0;
         int sigDEntryFailedDMs = 0;
         for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
-            if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType())) {
+            if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType())) {
                 assertTrue(digestMatcher.isDataFound());
                 assertTrue(digestMatcher.isDataIntact());
                 ++jwsSigInputDMs;

@@ -691,8 +691,7 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 	}
 
 	private XmlSignatureDigestReference getXmlSignatureDigestReference(AdvancedSignature signature) {
-		SignatureDigestReference signatureDigestReference = signature
-				.getSignatureDigestReference(defaultDigestAlgorithm);
+		SignatureDigestReference signatureDigestReference = signature.getSignatureDigestReference(defaultDigestAlgorithm);
 		if (signatureDigestReference != null) {
 			XmlSignatureDigestReference xmlDigestReference = new XmlSignatureDigestReference();
 			xmlDigestReference.setCanonicalizationMethod(signatureDigestReference.getCanonicalizationMethod());

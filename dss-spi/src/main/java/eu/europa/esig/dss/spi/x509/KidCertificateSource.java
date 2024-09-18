@@ -18,11 +18,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.jades.validation;
+package eu.europa.esig.dss.spi.x509;
 
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The certificate source containing a map of certificates by KIDs
+ * The certificate source containing a map of certificates by KIDs.
+ * The class is used for JAdES and CB-AdES processing.
+ *
  */
 public class KidCertificateSource extends CommonCertificateSource {
 
@@ -51,13 +53,24 @@ public class KidCertificateSource extends CommonCertificateSource {
 	@Override
 	public CertificateToken addCertificate(CertificateToken certificateToAdd) {
 		LOG.debug("kid is not provided (generate kid following the JAdES specification)");
-		return addCertificate(DSSJsonUtils.generateKidBase64String(certificateToAdd), certificateToAdd);
+		return addCertificate(generateKidBase64String(certificateToAdd), certificateToAdd);
 	}
 
 	/**
-	 * Adds a certificate for a given 'kid' (JWS/JAdES)
+	 * Generates the 'kid' value as in IETF RFC 5035
+	 *
+	 * @param signingCertificate {@link CertificateToken} representing the singing
+	 *                           certificate
+	 * @return {@link String} 'kid' header value
+	 */
+	protected String generateKidBase64String(CertificateToken signingCertificate) {
+		return Utils.toBase64(DSSUtils.generateKid(signingCertificate));
+	}
+
+	/**
+	 * Adds a certificate for a given 'kid' (JWS/COSE)
 	 * 
-	 * @param kid         the used kid in the JWS/JAdES
+	 * @param kid         base64-encoded value of kid used in the JWS/COSE
 	 * @param certificate the related certificate token
 	 * @return the certificate
 	 */
@@ -71,13 +84,23 @@ public class KidCertificateSource extends CommonCertificateSource {
 	}
 
 	/**
-	 * Gets a {@code CertificateToken} by the given KID
+	 * Gets a {@code CertificateToken} by the given base64-encoded KID value
 	 *
-	 * @param kid {@link String} to get a certificate token with
+	 * @param kid {@link String} of base64-encoded value of 'kid' to get a certificate token with
 	 * @return {@link CertificateToken}
 	 */
 	public CertificateToken getCertificateByKid(String kid) {
 		return mapByKid.get(kid);
+	}
+
+	/**
+	 * Gets a {@code CertificateToken} by the given binary KID value
+	 *
+	 * @param kid byte array representing a 'kid' header value to get a certificate token with
+	 * @return {@link CertificateToken}
+	 */
+	public CertificateToken getCertificateByKid(byte[] kid) {
+		return mapByKid.get(Utils.toBase64(kid));
 	}
 
 	@Override

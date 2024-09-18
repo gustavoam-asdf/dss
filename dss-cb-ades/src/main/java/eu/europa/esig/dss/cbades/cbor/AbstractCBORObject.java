@@ -6,6 +6,8 @@ import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
 
+import java.util.Objects;
+
 /**
  * An abstract implementation of a CBOR object wrapper
  *
@@ -94,6 +96,25 @@ public abstract class AbstractCBORObject<D extends DataItem> implements CBORObje
     @Override
     public boolean isArray() {
         return MajorType.ARRAY == dataItem.getMajorType();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractCBORObject<?> that = (AbstractCBORObject<?>) o;
+        return Objects.equals(dataItem, that.dataItem);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(dataItem);
+    }
+
+    @Override
+    public String toString() {
+        return dataItem.toString();
     }
 
 }

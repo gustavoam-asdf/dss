@@ -2,12 +2,17 @@ package eu.europa.esig.dss.cbades;
 
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +26,8 @@ import java.util.Objects;
  *
  */
 public class CBAdESUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CBAdESUtils.class);
 
     /**
      * Utils class
@@ -115,7 +122,7 @@ public class CBAdESUtils {
      * @param documents a list of {@link DSSDocument}s to concatenate
      * @return a byte array
      */
-    public static byte[] concatenateDocumentContents(List<DSSDocument> documents) {
+    public static byte[] concatenateDSSDocuments(List<DSSDocument> documents) {
         if (Utils.isCollectionEmpty(documents)) {
             throw new IllegalArgumentException("Unable to build a COSE Payload. Reason : the detached content is not provided!");
         }
@@ -131,6 +138,28 @@ public class CBAdESUtils {
         } catch (IOException e) {
             throw new DSSException(String.format("Unable to build a COSE Payload. Reason : %s", e.getMessage()), e);
         }
+    }
+
+    /**
+     * Extracts {@code Digest} from a 'DigAlgVal' CBOR Array
+     *
+     * @param digAlgVal {@link CBORArray}
+     * @return {@link Digest}
+     */
+    public static Digest getDigestAlgAndVal(CBORArray digAlgVal) {
+        if (digAlgVal != null) {
+            if (digAlgVal.getSize() == 2) {
+                Long hashAlg = digAlgVal.getAsLongOrString(COSEConstants.DIG_ALG_VAL_HASH_ALG);
+                DigestAlgorithm digestAlgorithm = CBORUtils.getDigestAlgorithmForCoseId(hashAlg);
+                byte[] hashValue = digAlgVal.getAsBinaries(COSEConstants.DIG_ALG_VAL_HASH_VALUE);
+                if (digestAlgorithm != null && hashValue != null) {
+                    return new Digest(digestAlgorithm, hashValue);
+                } else {
+                    LOG.warn("DigAlgVal shall by of type [ hashAlg: (int / tstr), hashValue: bstr ].");
+                }
+            }
+        }
+        return null;
     }
 
 }

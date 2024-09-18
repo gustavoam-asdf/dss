@@ -78,7 +78,7 @@ class JAdESWithUnsupportedSignatureAlgorithmTest extends AbstractJAdESTestValida
         assertEquals(1, digestMatchers.size());
 
         XmlDigestMatcher digestMatcher = digestMatchers.get(0);
-        assertEquals(DigestMatcherType.JWS_SIGNING_INPUT_DIGEST, digestMatcher.getType());
+        assertEquals(DigestMatcherType.JWS_SIGNING_INPUT, digestMatcher.getType());
         assertNull(digestMatcher.getDigestMethod());
         assertFalse(Utils.isArrayNotEmpty(digestMatcher.getDigestValue()));
         assertTrue(digestMatcher.isDataFound());

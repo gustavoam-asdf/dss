@@ -79,6 +79,34 @@ public final class COSEConstants {
     /** Detached COSE Payload reference data. CBOR Tag 'TBD011' */
     public static final long SIG_D = 111;
 
+    /* ETSI TS 119 152 uHeaders parameters */
+    // TODO : Tags have to be registered in IANA.
+    // TODO : For the moment, we use TBD00X or TBD0XY (TBD: To Be Defined) values, using unassigned identifiers, starting from 200.
+
+    /** uHeaders header parameter contains a list of unsigned properties qualifying the CB-AdES signature. CBOR Tag 'TBD111' */
+    public static final long U_HEADERS = 211;
+
+    /** Signature policy document. CBOR Tag 'TBD112' */
+    public static final long SIG_PST = 212;
+
+    /** Signature time-stamp. CBOR Tag 'TBD113' */
+    public static final long SIG_TST = 213;
+
+    /** Validation data. CBOR Tag 'TBD114' */
+    public static final long VAL_DATA = 214;
+
+    /** Archive time-stamp. CBOR Tag 'TBD115' */
+    public static final long ARC_TST = 215;
+
+    /** Validation data references. CBOR Tag 'TBD116' */
+    public static final long REFS = 216;
+
+    /** Signature and validation data references time-stamp. CBOR Tag 'TBD117' */
+    public static final long SIG_R_TST = 217;
+
+    /** Validation data references time-stamp. CBOR Tag 'TBD118' */
+    public static final long RFS_TST = 218;
+
     /* Subtype keys */
 
     /** SrCm commId the commitment identifier: an oId data type. CBOR Tag '1' */
@@ -95,6 +123,15 @@ public final class COSEConstants {
 
     /** oId docRefs: an array of URI references to documents specifying the identified object. CBOR Tag '3' */
     public static final long OID_DOC_REFS = 3;
+
+    /** pkiOb val: CBOR byte string encapsulating the encoded PKI object. CBOR Tag '1' */
+    public static final long PKI_OB_VAL = 1;
+
+    /** pkiOb encoding: a URI reference identifying the encoding. CBOR Tag '2' */
+    public static final long PKI_OB_ENCODING = 2;
+
+    /** pkiOb specRef: a URI reference identifying the specification of the encapsulated PKI object. CBOR Tag '3' */
+    public static final long PKI_OB_SPEC_REF = 3;
 
     /** sigPl addressCountry. CBOR Tag '1' */
     public static final long SIG_PL_ADDRESS_COUNTRY = 1;
@@ -122,6 +159,21 @@ public final class COSEConstants {
 
     /** srAts claimed: Claimed signer attributes. CBOR Tag '3' */
     public static final long SR_ATS_CLAIMED = 3;
+
+    /** srAtms certified CertifiedAttr x509AttrCert: encapsulates a X.509 attribute certificate. CBOR Tag '1' */
+    public static final long CERTIFIED_ATTR_X509_ATTR_CERT = 1;
+
+    /** srAtms certified CertifiedAttr otherAttrCert: encapsulates another type of attribute certificate. CBOR Tag '2' */
+    public static final long CERTIFIED_ATTR_OTHER_ATTR_CERT = 2;
+
+    /** NotCertifiedItem mediaType: String identifying the type of claimed attributes or signed assertions. Array position '0' */
+    public static final int NOT_CERTIFIED_ITEM_MEDIA_TYPE = 0;
+
+    /** NotCertifiedItem encoding: String identifying the encoding of claimed attributes or signed assertions. Array position '1' */
+    public static final int NOT_CERTIFIED_ITEM_ENCODING = 1;
+
+        /** NotCertifiedItem qVals: Array with the claimed attributes or signed assertions. Array position '0' */
+    public static final int NOT_CERTIFIED_ITEM_QVALS = 2;
 
     /** tstContainer tstTokens: CBOR array containing one or more time-stamp tokens. CBOR Tag '1' */
     public static final long TST_CONTAINER_TST_TOKENS = 1;
@@ -179,6 +231,18 @@ public final class COSEConstants {
 
     /** sigD ctys: Indication of the content type of each referenced object. CBOR Tag '5' */
     public static final long SIG_D_CTYS = 5;
+
+    /** DigAlgVal hashAlg. Array position '0' */
+    public static final int DIG_ALG_VAL_HASH_ALG = 0;
+
+    /** DigAlgVal hashValue. Array position '1' */
+    public static final int DIG_ALG_VAL_HASH_VALUE = 1;
+
+    /** valData xVals: DER-encoded encapsulated X.509 certificates or other encapsulated certificates. CBOR Tag '1 */
+    public static final long VAL_DATA_X_VALS = 1;
+
+    /** valData rVals: validation material. CBOR Tag '2 */
+    public static final long VAL_DATA_R_VALS = 2;
 
     /**
      * Singleton

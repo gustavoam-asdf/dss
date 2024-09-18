@@ -11,9 +11,14 @@ import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.utils.Utils;
+import org.bouncycastle.asn1.x509.IssuerSerial;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +30,8 @@ import java.util.List;
  *
  */
 public final class CBORUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CBORUtils.class);
 
     /** An empty btsr value */
     public static final CBORByteString EMPTY_BYTE_STRING;
@@ -190,6 +197,37 @@ public final class CBORUtils {
         } catch (CborException | IOException e) {
             throw new DSSException(String.format("Unable to serialize CBOR object : %s", e.getMessage()), e);
         }
+    }
+
+    /**
+     * Gets {@code DigestAlgorithm} safely for a given {@code digestAlgoId}
+     *
+     * @param digestAlgoId {@link Long} IANA COSE Digest Algorithm identifier
+     * @return {@link DigestAlgorithm} if supported, NULL otherwise
+     */
+    public static DigestAlgorithm getDigestAlgorithmForCoseId(Long digestAlgoId) {
+        if (digestAlgoId == null) {
+            return null;
+        }
+        try {
+            return DigestAlgorithm.forCOSE(digestAlgoId);
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Unknown Digest Algorithm with Id '{}'.", digestAlgoId);
+            return null;
+        }
+    }
+
+    /**
+     * Parses the 'kid' header value as in IETF RFC 9035
+     *
+     * @param value {@link String} IssuerSerial to parse
+     * @return {@link IssuerSerial}
+     */
+    public static IssuerSerial getIssuerSerial(byte[] value) {
+        if (value != null) {
+            return DSSASN1Utils.getIssuerSerial(value);
+        }
+        return null;
     }
 
 }

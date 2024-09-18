@@ -211,7 +211,7 @@ class CBAdESServiceTest extends PKIFactoryAccess {
         CBAdESSignatureParameters signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
-        signatureParameters.setSignatureLevel(SignatureLevel.CBAdES_BASELINE_B);
+        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         return signatureParameters;

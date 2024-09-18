@@ -25,7 +25,8 @@ import eu.europa.esig.dss.spi.signature.identifier.AbstractSignatureIdentifierBu
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 
 /**
- * The DSS identifier for a JAdES signature
+ * Builds the DSS identifier for a JAdES signature
+ *
  */
 public class JAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifierBuilder {
 
@@ -64,7 +65,7 @@ public class JAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifier
 	protected Integer getSignaturePosition() {
 		JAdESSignature jadesSignature = (JAdESSignature) signature;
 		JWS currentJWS = jadesSignature.getJws();
-		JWSJsonSerializationObject jwsJsonSerializationObject = jadesSignature.getJws().getJwsJsonSerializationObject();
+		JWSJsonSerializationObject jwsJsonSerializationObject = currentJWS.getJwsJsonSerializationObject();
 		
 		int counter = 0;
 		if (jwsJsonSerializationObject != null) {

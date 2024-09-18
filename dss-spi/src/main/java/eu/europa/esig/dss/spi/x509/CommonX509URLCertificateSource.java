@@ -18,10 +18,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.jades.validation;
+package eu.europa.esig.dss.spi.x509;
 
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The common implementation of {@code X509URLCertificateSource} retrieving X.509 certificates by the given URI
+ * The common implementation of {@code X509URLCertificateSource} retrieving X.509 certificates by the given URI.
+ * This class is used for validation of JAdES and CB-AdES signatures.
  * 
  */
 public class CommonX509URLCertificateSource extends CommonCertificateSource implements X509URLCertificateSource {

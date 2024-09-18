@@ -383,7 +383,7 @@ public class CBAdESLevelBaselineB {
         notCertifiedItem.add(MimeTypeEnum.TEXT.getMimeTypeString());
         notCertifiedItem.add(CBORUtils.CONTENT_ENCODING_BINARY);
         for (String value : values) {
-            notCertifiedItem.add(value.getBytes());
+            notCertifiedItem.add(value);
         }
 
         attrArrays.add(notCertifiedItem);
@@ -681,7 +681,7 @@ public class CBAdESLevelBaselineB {
             return DSSUtils.toByteArray(documentsToSign.get(0));
 
         } else if (SigDMechanism.OBJECT_ID_BY_URI.equals(parameters.getSigDMechanism())) {
-            return CBAdESUtils.concatenateDocumentContents(documentsToSign);
+            return CBAdESUtils.concatenateDSSDocuments(documentsToSign);
 
         } else if (SigDMechanism.OBJECT_ID_BY_URI_HASH.equals(parameters.getSigDMechanism())) {
             /*

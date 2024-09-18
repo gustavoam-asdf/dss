@@ -188,7 +188,8 @@ public class JAdESLevelBaselineB {
 	 */
 	protected void incorporateKeyIdentifier() {
 		if (parameters.isIncludeKeyIdentifier() && parameters.getSigningCertificate() != null) {
-			addHeader(HeaderParameterNames.KEY_ID, DSSJsonUtils.generateKidBase64String(parameters.getSigningCertificate()));
+			byte[] kid = DSSUtils.generateKid(parameters.getSigningCertificate());
+			addHeader(HeaderParameterNames.KEY_ID, Utils.toBase64(kid));
 		}
 	}
 

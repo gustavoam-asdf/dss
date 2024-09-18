@@ -135,24 +135,6 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 
 	@Override
-	public EncryptionAlgorithm getEncryptionAlgorithm() {
-		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
-		if (signatureAlgorithm == null) {
-			return null;
-		}
-		return signatureAlgorithm.getEncryptionAlgorithm();
-	}
-
-	@Override
-	public DigestAlgorithm getDigestAlgorithm() {
-		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
-		if (signatureAlgorithm == null) {
-			return null;
-		}
-		return signatureAlgorithm.getDigestAlgorithm();
-	}
-
-	@Override
 	public Date getSigningTime() {
 		Number iat = jws.getProtectedHeaderValueAsNumber(JAdESHeaderParameterNames.IAT);
 		String sigT = jws.getProtectedHeaderValueAsString(JAdESHeaderParameterNames.SIG_T);
@@ -162,7 +144,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 			return null;
 		} else if (iat != null) {
 			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.longValue());
-			return DSSJsonUtils.getDate(timeValueInMilliseconds);
+			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
 		} else if (Utils.isStringNotEmpty(sigT)) {
 			return DSSJsonUtils.getDate(sigT);
 		}
@@ -171,7 +153,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 
 	/**
-	 * Checks if the JAdES Signature is a detached (contains 'sigD' dictionary)
+	 * Checks if the JAdES Signature is a detached (payload is not present within the signature structure)
 	 * 
 	 * @return TRUE if the signature is detached, FALSE otherwise
 	 */
@@ -591,12 +573,12 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	public Digest getDataToBeSignedRepresentation() {
 		List<ReferenceValidation> referenceValidations = getReferenceValidations();
 		for (ReferenceValidation referenceValidation : referenceValidations) {
-			if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(referenceValidation.getType())) {
+			if (DigestMatcherType.JWS_SIGNING_INPUT.equals(referenceValidation.getType())) {
 				return referenceValidation.isFound() ? referenceValidation.getDigest() : null;
 			}
 		}
 		// shall not happen
-		throw new DSSException("JWS_SIGNING_INPUT_DIGEST is not found! Unable to compute DTBSR.");
+		throw new DSSException("JWS_SIGNING_INPUT is not found! Unable to compute DTBSR.");
 	}
 
 	@Override
@@ -623,11 +605,10 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 			refsIntact = true;
 			
 			for (ReferenceValidation referenceValidation : referenceValidations) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(referenceValidation.getType())) {
-					JAdESReferenceValidation signingInputReferenceValidation = (JAdESReferenceValidation) referenceValidation;
-					signatureCryptographicVerification.setSignatureIntact(signingInputReferenceValidation.isIntact());
+				if (DigestMatcherType.JWS_SIGNING_INPUT.equals(referenceValidation.getType())) {
+					signatureCryptographicVerification.setSignatureIntact(referenceValidation.isIntact());
 					
-					for (String errorMessage : signingInputReferenceValidation.getErrorMessages()) {
+					for (String errorMessage : referenceValidation.getErrorMessages()) {
 						signatureCryptographicVerification.setErrorMessage(errorMessage);
 					}
 				}
@@ -646,11 +627,11 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		if (referenceValidations == null) {
 			referenceValidations = new ArrayList<>();
 			
-			JAdESReferenceValidation signingInputReferenceValidation = getSigningInputReferenceValidation();
+			ReferenceValidation signingInputReferenceValidation = getSigningInputReferenceValidation();
 			referenceValidations.add(signingInputReferenceValidation);
 
 			if (isDetachedSignature()) {
-				List<JAdESReferenceValidation> detachedReferenceValidations = getDetachedReferenceValidations();
+				List<ReferenceValidation> detachedReferenceValidations = getDetachedReferenceValidations();
 				if (Utils.isCollectionNotEmpty(detachedReferenceValidations)) {
 					referenceValidations.addAll(detachedReferenceValidations);
 				}
@@ -664,9 +645,9 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		return referenceValidations;
 	}
 	
-	private JAdESReferenceValidation getSigningInputReferenceValidation() {
-		JAdESReferenceValidation signatureValueReferenceValidation = new JAdESReferenceValidation();
-		signatureValueReferenceValidation.setType(DigestMatcherType.JWS_SIGNING_INPUT_DIGEST);
+	private ReferenceValidation getSigningInputReferenceValidation() {
+		ReferenceValidation signatureValueReferenceValidation = new ReferenceValidation();
+		signatureValueReferenceValidation.setType(DigestMatcherType.JWS_SIGNING_INPUT);
 		
 		try {
 			String encodedHeader = jws.getEncodedHeader();
@@ -754,7 +735,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		return jws.getKeyIdHeaderValue();
 	}
 
-	private List<JAdESReferenceValidation> getDetachedReferenceValidations() {
+	private List<ReferenceValidation> getDetachedReferenceValidations() {
 		SigDMechanism sigDMechanism = getSigDMechanism();
 		if (sigDMechanism != null) {
 			switch (sigDMechanism) {
@@ -887,7 +868,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		return signedDocumentsByUri;
 	}
 	
-	private List<JAdESReferenceValidation> getReferenceValidationsByUriHashMechanism() {
+	private List<ReferenceValidation> getReferenceValidationsByUriHashMechanism() {
 		List<DSSDocument> detachedDocuments = detachedContents;
 		
 		if (Utils.isCollectionEmpty(detachedContents)) {
@@ -899,7 +880,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		Map<String, String> signedDataHashMap = getSignedDataUriHashMap();
 		if (Utils.isMapEmpty(signedDataHashMap)) {
 			LOG.warn("The SignedData has not been found or incorrect for detached content.");
-			JAdESReferenceValidation emptyReference = new JAdESReferenceValidation();
+			ReferenceValidation emptyReference = new ReferenceValidation();
 			emptyReference.setType(DigestMatcherType.SIG_D_ENTRY);
 			return Collections.singletonList(emptyReference);
 		}
@@ -909,10 +890,10 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 			LOG.warn("The DigestAlgorithm has not been found for the detached content.");
 		}
 		
-		List<JAdESReferenceValidation> detachedReferenceValidations = new ArrayList<>();
+		List<ReferenceValidation> detachedReferenceValidations = new ArrayList<>();
 
 		for (Map.Entry<String, String> signedDataEntry : signedDataHashMap.entrySet()) {
-			JAdESReferenceValidation referenceValidation = new JAdESReferenceValidation();
+			ReferenceValidation referenceValidation = new ReferenceValidation();
 			referenceValidation.setType(DigestMatcherType.SIG_D_ENTRY);
 			
 			String signedDataName = signedDataEntry.getKey();
@@ -950,7 +931,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		
 		if (Utils.isCollectionEmpty(detachedReferenceValidations)) {
 			// add an empty reference if none found
-			JAdESReferenceValidation referenceValidation = new JAdESReferenceValidation();
+			ReferenceValidation referenceValidation = new ReferenceValidation();
 			referenceValidation.setType(DigestMatcherType.SIG_D_ENTRY);
 			detachedReferenceValidations.add(referenceValidation);
 		}
@@ -991,12 +972,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 
 	private DSSDocument getDetachedDocumentByName(String documentName, List<DSSDocument> detachedContent) {
 		documentName = DSSUtils.decodeURI(documentName);
-		for (DSSDocument detachedDocument : detachedContent) {
-			if (documentName.equals(detachedDocument.getName())) {
-				return detachedDocument;
-			}
-		}
-		return null;
+		return DSSUtils.getDocumentWithName(detachedContent, documentName);
 	}
 
 	private Map<String, String> getSignedDataUriHashMap() {
@@ -1036,8 +1012,8 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	private List<String> getSignedDataContentTypeList() {
 		Map<?, ?> signatureDetached = jws.getProtectedHeaderValueAsMap(JAdESHeaderParameterNames.SIG_D);
 		if (Utils.isMapNotEmpty(signatureDetached)) {
-			List<?> pars = DSSJsonUtils.getAsList(signatureDetached, JAdESHeaderParameterNames.CTYS);
-			return DSSJsonUtils.toListOfStrings(pars);
+			List<?> ctys = DSSJsonUtils.getAsList(signatureDetached, JAdESHeaderParameterNames.CTYS);
+			return DSSJsonUtils.toListOfStrings(ctys);
 		}
 		return Collections.emptyList();
 	}
@@ -1060,8 +1036,8 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		return false;
 	}
 
-	private JAdESReferenceValidation getCounterSignatureReferenceValidation() {
-		JAdESReferenceValidation referenceValidation = new JAdESReferenceValidation();
+	private ReferenceValidation getCounterSignatureReferenceValidation() {
+		ReferenceValidation referenceValidation = new ReferenceValidation();
 		referenceValidation.setType(DigestMatcherType.COUNTER_SIGNED_SIGNATURE_VALUE);
 
 		JAdESSignature masterSignature = (JAdESSignature) getMasterSignature();
@@ -1091,7 +1067,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 	
 	private Map<?, ?> getUnsignedPropertyAsMap(String headerName) {
-		List<EtsiUComponent> unsignedPropertiesWithHeaderName = 
+		List<EtsiUComponent> unsignedPropertiesWithHeaderName =
 				DSSJsonUtils.getUnsignedPropertiesWithHeaderName(getEtsiUHeader(), headerName);
 		if (Utils.isCollectionNotEmpty(unsignedPropertiesWithHeaderName)) {
 			// return the first occurrence
@@ -1125,7 +1101,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 				// check if the signature of an old detached format
 				SignatureCryptographicVerification signatureCryptographicVerification = getSignatureCryptographicVerification();
 				if (signatureCryptographicVerification.isSignatureIntact()) {
-					if (Utils.isCollectionNotEmpty(detachedContents) && detachedContents.size() == 1) {
+					if (Utils.collectionSize(detachedContents) == 1) {
 						return Collections.singletonList(detachedContents.get(0));
 						
 					} else if (SigDMechanism.HTTP_HEADERS.equals(getSigDMechanism())) {

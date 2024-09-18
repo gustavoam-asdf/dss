@@ -34,7 +34,6 @@ import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SpDocSpecification;
 import eu.europa.esig.dss.model.TimestampBinary;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -646,29 +645,6 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * Parses a IETF RFC 7519 dateTime NumericDate
-	 *
-	 * @param dateTimeNumber {@link Number} in the RFC 7519 NumericDate format to parse
-	 * @return {@link Date}
-	 */
-	public static Date getDate(Number dateTimeNumber) {
-		/*
-		 * A JSON numeric value representing the number of seconds from
-		 * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
-		 * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,
-		 * 2013 Edition [POSIX.1] definition "Seconds Since the Epoch", in
-		 * which each day is accounted for by exactly 86400 seconds, other
-		 * than that non-integer values can be represented.  See RFC 3339
-		 * [RFC3339] for details regarding date/times in general and UTC in
-		 * particular.
-		 */
-		if (dateTimeNumber != null) {
-			return new Date(dateTimeNumber.longValue());
-		}
-		return null;
-	}
-
-	/**
 	 * Parses the 'kid' header value as in IETF RFC 5035
 	 * 
 	 * @param value {@link String} IssuerSerial to parse
@@ -684,17 +660,6 @@ public class DSSJsonUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Generates the 'kid' value as in IETF RFC 5035
-	 * 
-	 * @param signingCertificate {@link CertificateToken} representing the singing
-	 *                           certificate
-	 * @return {@link String} 'kid' header value
-	 */
-	public static String generateKidBase64String(CertificateToken signingCertificate) {
-		return Utils.toBase64(DSSUtils.generateKid(signingCertificate));
 	}
 	
 	/**
