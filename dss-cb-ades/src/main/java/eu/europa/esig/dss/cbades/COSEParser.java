@@ -107,7 +107,7 @@ public class COSEParser {
             throw new IllegalInputException("COSE_Sign.unprotected header must be a header map!");
         }
         CBORObject payloadItem = dataItems.get(2);
-        if (payloadItem != null && !payloadItem.isByteString()) {
+        if (payloadItem != null && !payloadItem.isByteString() && !payloadItem.isNull()) {
             throw new IllegalInputException("COSE_Sign.payload must be a bstr or nil!");
         }
         CBORObject signaturesArray = dataItems.get(3);

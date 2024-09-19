@@ -124,7 +124,12 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
         return result;
     }
 
-    private Set<Long> getKeys() {
+    /**
+     * Returns a list of all keys from the current CBOR Map
+     *
+     * @return a set of {@code Long} keys
+     */
+    public Set<Long> getKeys() {
         final Set<Long> keys = new HashSet<>();
         for (DataItem keyDataItem : toDataItem().getKeys()) {
             CBORObject keyObject = CBORUtils.toCBORObject(keyDataItem);

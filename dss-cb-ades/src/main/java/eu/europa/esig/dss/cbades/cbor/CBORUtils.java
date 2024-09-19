@@ -24,6 +24,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static eu.europa.esig.dss.cbades.COSEConstants.ADO_TST;
+import static eu.europa.esig.dss.cbades.COSEConstants.ALG;
+import static eu.europa.esig.dss.cbades.COSEConstants.CONTENT_TYPE;
+import static eu.europa.esig.dss.cbades.COSEConstants.COUNTER_SIGNATURE;
+import static eu.europa.esig.dss.cbades.COSEConstants.CRIT;
+import static eu.europa.esig.dss.cbades.COSEConstants.IV;
+import static eu.europa.esig.dss.cbades.COSEConstants.KID;
+import static eu.europa.esig.dss.cbades.COSEConstants.PARTIAL_IV;
+import static eu.europa.esig.dss.cbades.COSEConstants.SIG_D;
+import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PID;
+import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PL;
+import static eu.europa.esig.dss.cbades.COSEConstants.SIG_T;
+import static eu.europa.esig.dss.cbades.COSEConstants.SR_ATS;
+import static eu.europa.esig.dss.cbades.COSEConstants.SR_CMS;
+import static eu.europa.esig.dss.cbades.COSEConstants.X5BAG;
+import static eu.europa.esig.dss.cbades.COSEConstants.X5CHAIN;
+import static eu.europa.esig.dss.cbades.COSEConstants.X5T;
+import static eu.europa.esig.dss.cbades.COSEConstants.X5TS;
+import static eu.europa.esig.dss.cbades.COSEConstants.X5U;
 
 /**
  * Contains common util methods for working with CBOR content
@@ -39,8 +62,35 @@ public final class CBORUtils {
     /** The binary content encoding (RFC 2045) */
     public static final String CONTENT_ENCODING_BINARY = "binary";
 
+    /**
+     * Contains protected header names that are supported and can be present in the critical ('crit') attribute
+     */
+    private static final Set<Long> supportedCriticalHeaders;
+
+    /**
+     * Contains protected header names that are required to be present in the critical ('crit') attribute, when used
+     */
+    // TODO : TS 119 152-1 does not mandate presence of 'crit' header, thus it is not yet enforced
+    private static final Set<Long> requiredCriticalHeaders;
+
     static {
         EMPTY_BYTE_STRING = new CBORByteString();
+
+        supportedCriticalHeaders = Stream.of(
+                /* RFC 9052 */
+                ALG, CRIT, CONTENT_TYPE, KID, IV, PARTIAL_IV,
+                /* RFC 9360 */
+                X5BAG, X5CHAIN, X5T, X5U,
+                /* RFC 8152 */
+                COUNTER_SIGNATURE,
+                /* CB-AdES TS 119 152-1 headers */
+                SIG_T, X5TS, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D
+        ).collect(Collectors.toSet());
+
+        requiredCriticalHeaders = Stream.of(
+                /* CB-AdES TS 119 152-1 headers */
+                SIG_D
+        ).collect(Collectors.toSet());
     }
 
     /**
@@ -228,6 +278,26 @@ public final class CBORUtils {
             return DSSASN1Utils.getIssuerSerial(value);
         }
         return null;
+    }
+
+    /**
+     * Returns a set of supported protected critical headers
+     *
+     * @return a set of supported protected critical header identifiers
+     */
+    public static Set<Long> getSupportedProtectedCriticalHeaders() {
+        return supportedCriticalHeaders;
+    }
+
+    // TODO : ETSI TS 119 152-1 does not (yet) define a use of 'crit' dictionary
+    /**
+     * Checks if the given {@code headerId} is required to be incorporated within 'crit' header, when used
+     *
+     * @param headerId {@link String} header name to check
+     * @return TRUE if the header is required within 'crit' header when used, FALSE otherwise
+     */
+    public static boolean isRequiredCriticalHeader(Long headerId) {
+        return requiredCriticalHeaders.contains(headerId);
     }
 
 }

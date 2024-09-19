@@ -23,6 +23,14 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     private boolean includeCertificateChain = true;
 
+    // TODO : check 'x5t' usage
+    /**
+     * Defines whether the thumbprints of the whole X.509 certificate chain should be included, using a 'x5ts' signed header.
+     * When certificate chain is not provided, only the signing-certificate will be included to the chain.
+     * When disabled, creates a 'x5t' signed header with only signing-certificate's thumbprint provided.
+     */
+    private boolean includeThumbprintsOfCertificateChain = true;
+
     /**
      * This property defines whether a 'kid' (key identifier) header parameter should be added to a signed header.
      * <p>
@@ -54,7 +62,7 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * Defines the COSE structure, whether to allow multiple signers (COSE_SIGN) or preserve only one signer (COSE_SIGN1)
      * Default : COSEStructureType.COSE_SIGN (allows multiple signature incorporation)
      */
-    private COSEStructureType coseStructureType;
+    private COSEStructureType coseStructureType = COSEStructureType.COSE_SIGN;
 
     /**
      * Defines the encoding of the signature structure as either tagged (TRUE) or untagged (FALSE),
@@ -65,11 +73,6 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     private boolean tagged = true;
 
     /**
-     * Defines a used 'sigD' mechanism for a detached signature
-     */
-    private SigDMechanism sigDMechanism;
-
-    /**
      * Externally supplied data from the application, carried outside the COSE signature structure,
      * but used as a part of a signature computation.
      * <p>
@@ -77,6 +80,11 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * WARN: When present on a signature creation, the data object shall be supplied on signature validation too.
      */
     private DSSDocument externallySuppliedData;
+
+    /**
+     * Defines a used 'sigD' mechanism for a detached signature
+     */
+    private SigDMechanism sigDMechanism;
 
     /**
      * Default constructor instantiating object with default parameters
@@ -134,6 +142,29 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setIncludeCertificateChain(boolean includeCertificateChain) {
         this.includeCertificateChain = includeCertificateChain;
+    }
+
+    /**
+     * Returns whether the thumbprints of the whole certificate chain should be included in the signature's
+     * protected header using the 'x5ts' signed header.
+     *
+     * @return TRUE if the thumbprints of certificate chain to be included, FALSE otherwise
+     */
+    public boolean isIncludeThumbprintsOfCertificateChain() {
+        return includeThumbprintsOfCertificateChain;
+    }
+
+    /**
+     * Sets whether the thumbprints of the whole certificate chain should be included in the signature's
+     * protected header using the 'x5ts' signed header.
+     * When enabled, adds the signing-certificate at the first position, with other certificates following
+     * in the provided order.
+     * When disabled, creates a 'x5t' signed header with only signing-certificate's thumbprint provided.
+     *
+     * @param includeThumbprintsOfCertificateChain whether the thumbprints of the certificate chain should be included
+     */
+    public void setIncludeThumbprintsOfCertificateChain(boolean includeThumbprintsOfCertificateChain) {
+        this.includeThumbprintsOfCertificateChain = includeThumbprintsOfCertificateChain;
     }
 
     /**
@@ -222,6 +253,7 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * @param coseStructureType {@link COSEStructureType}
      */
     public void setCoseStructureType(COSEStructureType coseStructureType) {
+        Objects.requireNonNull(coseStructureType, "COSEStructureType cannot be null!");
         this.coseStructureType = coseStructureType;
     }
 
@@ -250,24 +282,6 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     }
 
     /**
-     * Returns a sigD mechanism to use
-     *
-     * @return {@link SigDMechanism}
-     */
-    public SigDMechanism getSigDMechanism() {
-        return sigDMechanism;
-    }
-
-    /**
-     * Sets sigD mechanism to use for a Detached signature
-     *
-     * @param sigDMechanism {@link SigDMechanism}
-     */
-    public void setSigDMechanism(SigDMechanism sigDMechanism) {
-        this.sigDMechanism = sigDMechanism;
-    }
-    
-    /**
      * Gets the externally supplied data.
      * NOTE: the data is carried outside the COSE signature structure, but used on signature creation and validation.
      *
@@ -288,6 +302,24 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setExternallySuppliedData(DSSDocument externallySuppliedData) {
         this.externallySuppliedData = externallySuppliedData;
+    }
+
+    /**
+     * Returns a sigD mechanism to use
+     *
+     * @return {@link SigDMechanism}
+     */
+    public SigDMechanism getSigDMechanism() {
+        return sigDMechanism;
+    }
+
+    /**
+     * Sets sigD mechanism to use for a Detached signature
+     *
+     * @param sigDMechanism {@link SigDMechanism}
+     */
+    public void setSigDMechanism(SigDMechanism sigDMechanism) {
+        this.sigDMechanism = sigDMechanism;
     }
 
 }

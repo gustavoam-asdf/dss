@@ -145,7 +145,7 @@ public enum SigDMechanism {
 	 */
 	public static SigDMechanism forCBAdESUri(final String uri) {
 		for (SigDMechanism sigDMechanism : values()) {
-			if (sigDMechanism.getCBAdESUri().equals(uri)) {
+			if (sigDMechanism.getCBAdESUri() != null && sigDMechanism.getCBAdESUri().equals(uri)) {
 				return sigDMechanism;
 			}
 		}

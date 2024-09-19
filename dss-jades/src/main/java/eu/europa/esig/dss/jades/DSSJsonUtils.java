@@ -161,7 +161,7 @@ public class DSSJsonUtils {
 	
 	static {
 		protectedCriticalHeaders = Stream.of(
-				/* JAdES TS 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
 				IAT,
@@ -177,7 +177,7 @@ public class DSSJsonUtils {
 				PBES2_SALT_INPUT, PBES2_ITERATION_COUNT, ENCRYPTION_METHOD, ZIP ).collect(Collectors.toSet());
 
 		requiredCriticalHeaders = Stream.of(
-				/* JAdES TS 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_D,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD ).collect(Collectors.toSet());

@@ -264,7 +264,7 @@ public abstract class AbstractJAdESTestSignature
 	
 	@Override
 	protected void checkSignatureType(DiagnosticData diagnosticData) {
-		super.checkMimeType(diagnosticData);
+		super.checkSignatureType(diagnosticData);
 
 		SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
 		assertNotNull(signature.getSignatureType());

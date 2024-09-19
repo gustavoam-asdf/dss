@@ -65,6 +65,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         extractX509Url();
 
         // certificate chain
+        extractX5Bag();
         extractX5Chain();
 
         // TODO : unsigned properties
@@ -145,6 +146,30 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         return cose.getProtectedHeaderValueAsString(COSEConstants.X5U);
     }
 
+    private void extractX5Bag() {
+        byte[] x5bagEntry = cose.getProtectedHeaderValueAsBinaries(COSEConstants.X5BAG);
+        CBORArray x5bagArray = cose.getProtectedHeaderValueAsArray(COSEConstants.X5BAG);
+        if (x5bagEntry != null) {
+            CertificateToken certificate = loadCertificate(x5bagEntry);
+            if (certificate != null) {
+                addCertificate(certificate, CertificateOrigin.KEY_INFO);
+            }
+
+        } else if (x5bagArray != null) {
+            for (CBORObject cborObject : x5bagArray.getItems()) {
+                if (cborObject.isByteString()) {
+                    CertificateToken certificate = loadCertificate(((CBORByteString) cborObject).getBytes());
+                    if (certificate != null) {
+                        addCertificate(certificate, CertificateOrigin.KEY_INFO);
+                    }
+                } else {
+                    LOG.warn("The item of 'x5bag' CBOR array shall be a byte string!");
+                }
+            }
+
+        }
+    }
+
     private void extractX5Chain() {
         byte[] x5chainEntry = cose.getProtectedHeaderValueAsBinaries(COSEConstants.X5CHAIN);
         CBORArray x5chainArray = cose.getProtectedHeaderValueAsArray(COSEConstants.X5CHAIN);
@@ -166,8 +191,6 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
                 }
             }
 
-        } else {
-            LOG.warn("The value of 'x5chain' shall be a byte string a a CBOR array!");
         }
     }
 

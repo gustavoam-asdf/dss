@@ -30,7 +30,10 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
     }
 
     /**
-     * Sets externally supplied data as per RFC 9052 "4.3. Externally Supplied Data"
+     * Sets externally supplied data as per RFC 9052 "4.3. Externally Supplied Data".
+     * <p>
+     * WARN: Provide the data only when the signature have used the externally supplied data on its creation.
+     *       Otherwise, it will invalidate the signature.
      *
      * @param externallySuppliedData {@link DSSDocument}
      */

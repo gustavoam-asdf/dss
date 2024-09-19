@@ -268,6 +268,7 @@ public abstract class AbstractPkiFactoryTestSignature<SP extends SerializableSig
 					switch (signatureForm) {
 						case XAdES:
 						case JAdES:
+						case CBAdES:
 							uriMatch = indication.equals(commitmentTypeIndication.getUri()) || indication.equals(DSSUtils.getOidCode(commitmentTypeIndication.getOid()));
 							break;
 						case CAdES:

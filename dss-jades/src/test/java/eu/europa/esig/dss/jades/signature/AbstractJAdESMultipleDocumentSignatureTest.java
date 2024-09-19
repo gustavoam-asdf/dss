@@ -179,19 +179,21 @@ public abstract class AbstractJAdESMultipleDocumentSignatureTest extends Abstrac
 
 	@Override
 	protected boolean isBaselineT() {
-		// TODO Auto-generated method stub
-		return false;
+		SignatureLevel signatureLevel = getSignatureParameters().getSignatureLevel();
+		return SignatureLevel.JAdES_BASELINE_LTA.equals(signatureLevel)
+				|| SignatureLevel.JAdES_BASELINE_LT.equals(signatureLevel)
+				|| SignatureLevel.JAdES_BASELINE_T.equals(signatureLevel);
 	}
+
 
 	@Override
 	protected boolean isBaselineLTA() {
-		// TODO Auto-generated method stub
-		return false;
+		SignatureLevel signatureLevel = getSignatureParameters().getSignatureLevel();
+		return SignatureLevel.JAdES_BASELINE_LTA.equals(signatureLevel);
 	}
 
 	@Override
 	protected String getSigningAlias() {
-		// TODO Auto-generated method stub
 		return GOOD_USER;
 	}
 

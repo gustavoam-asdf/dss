@@ -28,6 +28,17 @@ public final class COSEConstants {
     /** Key identifier. CBOR Tag '4' */
     public static final long KID = 4;
 
+    /** Initialization Vector. CBOR Tag '5' */
+    public static final long IV = 5;
+
+    /** Partial Initialization Vector. CBOR Tag '6' */
+    public static final long PARTIAL_IV = 6;
+
+    /* RFC 8152 Header parameters */
+
+    /** Counter signature. CBOR Tag '7' */
+    public static final long COUNTER_SIGNATURE = 7;
+
     /* RFC 9360 Header parameters */
 
     /** An unordered bag of X.509 certificates. CBOR Tag '32' */
@@ -65,7 +76,7 @@ public final class COSEConstants {
     public static final long ADO_TST = 106;
 
     /** Signature Policy Identifier. CBOR Tag 'TBD007' */
-    public static final long SIG_P_ID = 107;
+    public static final long SIG_PID = 107;
 
     /** URL where a copy of the signature policy document can be obtained. CBOR Tag 'TBD008' */
     public static final long SP_URI = 108;

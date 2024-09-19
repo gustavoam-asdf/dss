@@ -131,4 +131,5 @@ public enum COSEStructureType {
      * ]
      */
     COSE_SIGN1
+
 }

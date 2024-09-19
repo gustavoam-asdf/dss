@@ -1,16 +1,22 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.signature.AbstractSignatureParameters;
@@ -19,13 +25,18 @@ import eu.europa.esig.dss.signature.CounterSignatureService;
 import eu.europa.esig.dss.signature.MultipleDocumentsSignatureService;
 import eu.europa.esig.dss.signature.SigningOperation;
 import eu.europa.esig.dss.spi.DSSPKUtils;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.utils.Utils;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.tsp.TSPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -116,17 +127,48 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
     }
 
     @Override
+    public TimestampToken getContentTimestamp(DSSDocument toSignDocument, CBAdESSignatureParameters parameters) {
+        return getContentTimestamp(Arrays.asList(toSignDocument), parameters);
+    }
+
+    /**
+     * This method allows creation of a TimestampToken for a detached CBAdES (with a 'sigD' parameter).
+     * NOTE: The toSignDocuments must be present in the same order they will be passed to signature computation process
+     *
+     * @param toSignDocuments a list of {@link DSSDocument}s to be timestamped
+     * @param parameters {@link CBAdESSignatureParameters}
+     * @return content {@link TimestampToken}
+     */
+    @Override
     public TimestampToken getContentTimestamp(List<DSSDocument> toSignDocuments, CBAdESSignatureParameters parameters) {
-        return null;
+        Objects.requireNonNull(tspSource, "A TSPSource is required!");
+        assertContentTimestampCreationPossible(toSignDocuments);
+
+        byte[] messageImprint = CBAdESUtils.concatenateDSSDocuments(toSignDocuments);
+
+        DigestAlgorithm digestAlgorithm = parameters.getContentTimestampParameters().getDigestAlgorithm();
+        TimestampBinary timeStampResponse = tspSource.getTimeStampResponse(digestAlgorithm,
+                DSSUtils.digest(digestAlgorithm, messageImprint));
+        try {
+            return new TimestampToken(timeStampResponse.getBytes(), TimestampType.CONTENT_TIMESTAMP);
+        } catch (TSPException | IOException | CMSException e) {
+            throw new DSSException("Cannot create a content TimestampToken", e);
+        }
+    }
+
+    private void assertContentTimestampCreationPossible(List<DSSDocument> documents) {
+        if (Utils.isCollectionEmpty(documents)) {
+            throw new IllegalArgumentException("Original documents must be provided to generate a content timestamp!");
+        }
+        for (DSSDocument document : documents) {
+            if (document instanceof DigestDocument) {
+                throw new IllegalArgumentException("Content timestamp creation is not possible with DigestDocument!");
+            }
+        }
     }
 
     @Override
     public DSSDocument timestamp(List<DSSDocument> toTimestampDocuments, CBAdESTimestampParameters parameters) {
-        return null;
-    }
-
-    @Override
-    public TimestampToken getContentTimestamp(DSSDocument toSignDocument, CBAdESSignatureParameters parameters) {
         return null;
     }
 

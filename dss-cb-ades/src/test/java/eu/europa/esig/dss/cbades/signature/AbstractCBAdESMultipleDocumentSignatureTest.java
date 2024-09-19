@@ -1,0 +1,339 @@
+package eu.europa.esig.dss.cbades.signature;
+
+import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEParser;
+import eu.europa.esig.dss.cbades.COSEProtectedHeader;
+import eu.europa.esig.dss.cbades.COSESign;
+import eu.europa.esig.dss.cbades.COSESign1;
+import eu.europa.esig.dss.cbades.COSESignStructure;
+import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.cbades.validation.CBAdESCertificateSource;
+import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
+import eu.europa.esig.dss.cbades.validation.COSEDocumentValidator;
+import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
+import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
+import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
+import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.test.signature.AbstractPkiFactoryTestMultipleDocumentsSignatureService;
+import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.dss.validation.reports.Reports;
+import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
+import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
+import eu.europa.esig.validationreport.jaxb.ValidationReportType;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+public abstract class AbstractCBAdESMultipleDocumentSignatureTest extends
+        AbstractPkiFactoryTestMultipleDocumentsSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> {
+
+    @Override
+    protected void onDocumentSigned(byte[] byteArray) {
+        super.onDocumentSigned(byteArray);
+
+        COSEParser coseParser = new COSEParser(new InMemoryDocument(byteArray));
+        assertTrue(coseParser.isSupported());
+
+        COSESignStructure coseSignStructure = coseParser.parse();
+        checkCOSESignStructure(coseSignStructure);
+    }
+
+    protected void checkCOSESignStructure(COSESignStructure coseSignStructure) {
+        assertNotNull(coseSignStructure);
+
+        assertNotNull(coseSignStructure.getContext());
+
+        assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
+                coseSignStructure instanceof COSESign);
+        assertEquals(COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType(),
+                coseSignStructure instanceof COSESign1);
+
+        assertEquals(getSignatureParameters().isTagged(), coseSignStructure.isTagged());
+
+        assertNotNull(coseSignStructure.getPayload());
+        assertEquals(SignaturePackaging.DETACHED == getSignatureParameters().getSignaturePackaging(), coseSignStructure.getPayload().isNull());
+    }
+
+    @Override
+    protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
+        COSEDocumentValidator documentValidator = (COSEDocumentValidator) super.getValidator(signedDocument);
+        documentValidator.setExternallySuppliedData(getExternallySuppliedData());
+        return documentValidator;
+    }
+
+    protected DSSDocument getExternallySuppliedData() {
+        return null;
+    }
+
+    @Override
+    protected void checkAdvancedSignatures(List<AdvancedSignature> signatures) {
+        super.checkAdvancedSignatures(signatures);
+
+        for (AdvancedSignature signature : signatures) {
+            assertInstanceOf(CBAdESSignature.class, signature);
+            CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
+
+            CBORSignature cose = cbadesSignature.getCoseSignature();
+
+            CBAdESUHeaders cbAdESUHeaders = new CBAdESUHeaders(cose);
+            assertEquals(cbAdESUHeaders.isExist(), !SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel()));
+
+            assertNotNull(cose.getContext());
+            assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
+                    COSESignatureContext.COSE_SIGN == cose.getContext());
+            assertEquals(COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType(),
+                    COSESignatureContext.COSE_SIGN1 == cose.getContext());
+
+            assertNotNull(cose.getCoseSignStructure());
+            assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
+                    cose.getCoseSignStructure() instanceof COSESign);
+            assertEquals(COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType(),
+                    cose.getCoseSignStructure() instanceof COSESign1);
+
+            COSEProtectedHeader bodyProtectedHeader = cose.getBodyProtectedHeader();
+            COSEProtectedHeader signerProtectedHeader = cose.getSignerProtectedHeader();
+
+            COSEUnprotectedHeader bodyUnprotectedHeader = cose.getBodyUnprotectedHeader();
+            COSEUnprotectedHeader signerUnprotectedHeader = cose.getSignerUnprotectedHeader();
+
+            COSEProtectedHeader protectedHeader = null;
+            COSEUnprotectedHeader unprotectedHeader = null;
+            if (COSESignatureContext.COSE_SIGN == cose.getContext()) {
+                assertNotNull(bodyProtectedHeader);
+                assertTrue(bodyProtectedHeader.isEmpty());
+                assertNotNull(signerProtectedHeader);
+                assertFalse(signerProtectedHeader.isEmpty());
+
+                assertNotNull(bodyUnprotectedHeader);
+                assertTrue(bodyUnprotectedHeader.isEmpty());
+                assertNotNull(signerUnprotectedHeader);
+                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), signerUnprotectedHeader.isEmpty());
+
+                protectedHeader = signerProtectedHeader;
+                unprotectedHeader = signerUnprotectedHeader;
+
+            } else if (COSESignatureContext.COSE_SIGN1 == cose.getContext()) {
+                assertNotNull(bodyProtectedHeader);
+                assertFalse(bodyProtectedHeader.isEmpty());
+                assertNull(signerProtectedHeader);
+
+                assertNotNull(bodyUnprotectedHeader);
+                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), bodyUnprotectedHeader.isEmpty());
+                assertNull(signerUnprotectedHeader);
+
+                protectedHeader = bodyProtectedHeader;
+                unprotectedHeader = bodyUnprotectedHeader;
+
+            } else {
+                fail(String.format("Unsupported context '%s'!", cose.getContext()));
+            }
+
+            Set<Long> keySet = protectedHeader.getKeys();
+            assertTrue(Utils.isCollectionNotEmpty(keySet));
+            for (Long signedPropertyKey : keySet) {
+                assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyKey));
+            }
+
+            CBORObject crit = protectedHeader.getHeader(COSEConstants.CRIT);
+            if (crit != null) {
+                assertTrue(crit.isArray());
+                assertInstanceOf(CBORArray.class, crit);
+
+                CBORArray critArray = (CBORArray) crit;
+                assertFalse(critArray.isEmpty());
+                for (CBORObject critItem : critArray.getItems()) {
+                    assertTrue(critItem.isUnsignedInteger() || critItem.isNegativeInteger());
+                    assertInstanceOf(CBORSimpleObject.class, critItem);
+
+                    Long labelId = ((CBORSimpleObject) critItem).getValueAsLong();
+                    assertNotNull(labelId);
+
+                    assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(labelId));
+                    assertTrue(CBORUtils.isRequiredCriticalHeader(labelId));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkSignatureValue(DiagnosticData diagnosticData) {
+        super.checkSignatureValue(diagnosticData);
+
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            if (signatureWrapper.getEncryptionAlgorithm() != null && signatureWrapper.getDigestAlgorithm() != null &&
+                    signatureWrapper.getEncryptionAlgorithm().isEquivalent(EncryptionAlgorithm.ECDSA)) {
+                assertFalse(DSSASN1Utils.isAsn1EncodedSignatureValue(signatureWrapper.getSignatureValue()), "PLAIN-ECDSA is expected!");
+
+                int bitLength = DSSASN1Utils.getSignatureValueBitLength(signatureWrapper.getSignatureValue());
+                switch (signatureWrapper.getDigestAlgorithm()) {
+                    case SHA256:
+                        assertEquals(256, bitLength);
+                        break;
+                    case SHA384:
+                        assertEquals(384, bitLength);
+                        break;
+                    case SHA512:
+                        assertTrue(bitLength == 520 || bitLength == 528);
+                        break;
+                    default:
+                        fail(String.format("DigestAlgorithm '%s' is not supported for JWS with ECDSA!",
+                                signatureWrapper.getDigestAlgorithm()));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected MimeType getExpectedMime() {
+        return MimeTypeEnum.COSE;
+    }
+
+    @Override
+    protected boolean isBaselineT() {
+        SignatureLevel signatureLevel = getSignatureParameters().getSignatureLevel();
+        return SignatureLevel.CB_AdES_BASELINE_LTA.equals(signatureLevel)
+                || SignatureLevel.CB_AdES_BASELINE_LT.equals(signatureLevel)
+                || SignatureLevel.CB_AdES_BASELINE_T.equals(signatureLevel);
+    }
+
+
+    @Override
+    protected boolean isBaselineLTA() {
+        SignatureLevel signatureLevel = getSignatureParameters().getSignatureLevel();
+        return SignatureLevel.CB_AdES_BASELINE_LTA.equals(signatureLevel);
+    }
+
+    @Override
+    protected void checkSignatureIdentifier(DiagnosticData diagnosticData) {
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            assertNotNull(signatureWrapper.getSignatureValue());
+        }
+    }
+
+    @Override
+    protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
+        super.checkSigningCertificateValue(diagnosticData);
+
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
+            List<RelatedCertificateWrapper> signingCertificates = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
+            assertEquals(1, signingCertificates.size());
+
+            List<CertificateRefWrapper> references = signingCertificates.get(0).getReferences();
+            List<RelatedCertificateWrapper> kidCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER);
+            List<RelatedCertificateWrapper> x5uCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.X509_URL);
+
+            int signCertRefs = 1 + (Utils.isCollectionNotEmpty(kidCerts) ? 1 : 0) + (Utils.isCollectionNotEmpty(x5uCerts) ? 1 : 0);
+            assertEquals(signCertRefs, references.size());
+
+            if (getSignatureParameters().isIncludeKeyIdentifier()) {
+                assertEquals(1, kidCerts.size());
+            } else if (Utils.isStringNotEmpty(getSignatureParameters().getX509Url())) {
+                assertTrue(Utils.isCollectionNotEmpty(x5uCerts));
+            } else {
+                assertEquals(0, kidCerts.size());
+                assertEquals(0, x5uCerts.size());
+            }
+
+            for (CertificateRefWrapper certificateRef : references) {
+                if (CertificateRefOrigin.SIGNING_CERTIFICATE.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getDigestAlgoAndValue());
+                    assertNotNull(certificateRef.getDigestMethod());
+                    assertTrue(certificateRef.isDigestValuePresent());
+                    assertTrue(certificateRef.isDigestValueMatch());
+                    assertNull(certificateRef.getIssuerSerial());
+
+                } else if (CertificateRefOrigin.KEY_IDENTIFIER.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getCertificateId());
+                    assertNotNull(certificateRef.getIssuerSerial());
+                    assertTrue(certificateRef.isIssuerSerialPresent());
+                    assertTrue(certificateRef.isIssuerSerialMatch());
+                    assertNull(certificateRef.getDigestAlgoAndValue());
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkReportsSignatureIdentifier(Reports reports) {
+        DiagnosticData diagnosticData = reports.getDiagnosticData();
+        ValidationReportType etsiValidationReport = reports.getEtsiValidationReportJaxb();
+        for (SignatureValidationReportType signatureValidationReport : etsiValidationReport.getSignatureValidationReport()) {
+            SignatureWrapper signature = diagnosticData.getSignatureById(signatureValidationReport.getSignatureIdentifier().getId());
+
+            SignatureIdentifierType signatureIdentifier = signatureValidationReport.getSignatureIdentifier();
+            assertNotNull(signatureIdentifier);
+
+            assertNotNull(signatureIdentifier.getSignatureValue());
+            assertArrayEquals(signature.getSignatureValue(), signatureIdentifier.getSignatureValue().getValue());
+        }
+    }
+
+    @Override
+    protected void verifyCertificateSourceData(SignatureCertificateSource certificateSource, FoundCertificatesProxy foundCertificates) {
+        super.verifyCertificateSourceData(certificateSource, foundCertificates);
+
+        if (certificateSource instanceof CBAdESCertificateSource) {
+            CBAdESCertificateSource cbadesCertificateSource = (CBAdESCertificateSource) certificateSource;
+            assertEquals(cbadesCertificateSource.getKeyIdentifierCertificates().size(),
+                    foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size() +
+                            foundCertificates.getOrphanCertificatesByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size());
+            assertEquals(cbadesCertificateSource.getKeyIdentifierCertificateRefs().size(),
+                    foundCertificates.getRelatedCertificateRefsByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size() +
+                            foundCertificates.getOrphanCertificateRefsByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size());
+        }
+    }
+
+    @Override
+    protected void checkMessageDigestAlgorithm(DiagnosticData diagnosticData) {
+        super.checkMessageDigestAlgorithm(diagnosticData);
+
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
+                if (DigestMatcherType.COSE_SIG_STRUCTURE.equals(digestMatcher.getType()) ||
+                        DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
+                    assertNotNull(digestMatcher.getDigestMethod());
+                    assertNotNull(digestMatcher.getDigestValue());
+                } else if (DigestMatcherType.COUNTER_SIGNED_SIGNATURE_VALUE.equals(digestMatcher.getType())) {
+                    assertNull(digestMatcher.getDigestMethod());
+                    assertNull(digestMatcher.getDigestValue());
+                } else {
+                    fail(String.format("Unexpected DigestMatcherType reached : %s", digestMatcher.getType()));
+                }
+            }
+        }
+    }
+
+}

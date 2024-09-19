@@ -32,6 +32,7 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -160,7 +161,7 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.1.7 The x5t CBOR array
+     * Incorporates 5.1.7 The x5t CBOR array or 5.2.3 The x5ts (X509 certificates Thumbprints) CBOR Array
      */
     protected void incorporateSigningCertificate() {
         CertificateToken signingCertificate = parameters.getSigningCertificate();
@@ -169,12 +170,43 @@ public class CBAdESLevelBaselineB {
         }
 
         DigestAlgorithm digestAlgorithm = parameters.getSigningCertificateDigestMethod();
-        byte[] digestValue = signingCertificate.getDigest(digestAlgorithm);
+        if (parameters.isIncludeThumbprintsOfCertificateChain()) {
+            List<CertificateToken> certificateTokens = getCertificateChainWithFirstSigningCertificate();
+            CBORArray x5ts = new CBORArray(certificateTokens.size());
+            for (CertificateToken certificateToken : certificateTokens) {
+                x5ts.add(getCoseCertHash(certificateToken, digestAlgorithm));
+            }
+            addHeader(COSEConstants.X5TS, x5ts); // [+x5t : COSE_CertHash]
+
+        } else {
+            // incorporate 'x5t'
+            CBORArray x5t = getCoseCertHash(signingCertificate, digestAlgorithm);
+            addHeader(COSEConstants.X5T, x5t); // [ hashAlg: (int / tstr), hashValue: bstr ]
+        }
+    }
+
+    private List<CertificateToken> getCertificateChainWithFirstSigningCertificate() {
+        final List<CertificateToken> result = new ArrayList<>();
+        if (parameters.getSigningCertificate() != null) {
+            result.add(parameters.getSigningCertificate());
+        }
+        if (parameters.getCertificateChain() != null) {
+            for (CertificateToken certificateToken : parameters.getCertificateChain()) {
+                if (!result.contains(certificateToken)) {
+                    result.add(certificateToken);
+                }
+            }
+        }
+        return result;
+    }
+
+    private CBORArray getCoseCertHash(CertificateToken certificateToken, DigestAlgorithm digestAlgorithm) {
+        byte[] digestValue = certificateToken.getDigest(digestAlgorithm);
 
         CBORArray coseCertHash = new CBORArray();
         coseCertHash.add(digestAlgorithm.getCoseId());
         coseCertHash.add(digestValue);
-        addHeader(COSEConstants.X5T, coseCertHash); // [ hashAlg: (int / tstr), hashValue: bstr ]
+        return coseCertHash;
     }
 
     /**
@@ -452,7 +484,7 @@ public class CBAdESLevelBaselineB {
                 sigPIdParams.put(COSEConstants.SIG_P_ID_SIG_P_QUALS, signaturePolicyQualifiers);
             }
 
-            addHeader(COSEConstants.SIG_P_ID, sigPIdParams);
+            addHeader(COSEConstants.SIG_PID, sigPIdParams);
         }
     }
 
@@ -614,7 +646,7 @@ public class CBAdESLevelBaselineB {
         sigDParams.put(COSEConstants.SIG_D_PARS, getSignedDataReferences(detachedContents));
 
         DigestAlgorithm digestAlgorithm = getReferenceDigestAlgorithmOrDefault();
-        sigDParams.put(COSEConstants.SIG_D_HASH_M, digestAlgorithm.getJAdESId());
+        sigDParams.put(COSEConstants.SIG_D_HASH_M, digestAlgorithm.getCoseId());
         sigDParams.put(COSEConstants.SIG_D_HASH_V, getSignedDataDigests(detachedContents, digestAlgorithm));
 
         sigDParams.put(COSEConstants.SIG_D_CTYS, getSignedDataMimeTypesIfPresent(detachedContents));

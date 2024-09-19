@@ -24,11 +24,7 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
         // empty
     }
 
-    /**
-     * Gets whether the signature structure is encoded as tagged
-     *
-     * @return TRUE if the signature structure is encoded as tagged, FALSE in case of untagged
-     */
+    @Override
     public boolean isTagged() {
         return tagged;
     }
@@ -42,12 +38,7 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
         this.tagged = tagged;
     }
 
-    /**
-     * Gets the content to be signed.
-     * Instantiates a nil value, when absent.
-     *
-     * @return {@link CBORObject}
-     */
+    @Override
     public CBORObject getPayload() {
         if (payload == null) {
             payload = new CBORNull();

@@ -26,6 +26,7 @@ import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
 /**
@@ -151,7 +152,7 @@ public class FileNameBuilder {
         if (isContainerMimeType(mimeType)) {
             originalName = CONTAINER_PREFIX;
         } else {
-            originalName = originalFilename;
+            originalName = DSSUtils.replaceAllNonAlphanumericCharacters(originalFilename, "-");
         }
 
         String originalExtension = Utils.EMPTY_STRING;

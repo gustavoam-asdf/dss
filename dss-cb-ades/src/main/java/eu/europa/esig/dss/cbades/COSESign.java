@@ -37,11 +37,7 @@ public class COSESign implements COSESignStructure {
         // empty
     }
 
-    /**
-     * Gets whether the signature structure is encoded as tagged
-     *
-     * @return TRUE if the signature structure is encoded as tagged, FALSE in case of untagged
-     */
+    @Override
     public boolean isTagged() {
         return tagged;
     }
@@ -99,12 +95,7 @@ public class COSESign implements COSESignStructure {
         this.unprotectedHeader = unprotectedHeader;
     }
 
-    /**
-     * Gets the content to be signed.
-     * Instantiates a nil value, when payload is absent.
-     *
-     * @return {@link CBORObject}
-     */
+    @Override
     public CBORObject getPayload() {
         if (payload == null) {
             payload = new CBORNull();

@@ -397,7 +397,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     protected SignaturePolicy buildSignaturePolicy() {
-        CBORMap sigPId = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_P_ID);
+        CBORMap sigPId = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_PID);
         if (sigPId != null && !sigPId.isEmpty()) {
             CBORMap sigPOid = sigPId.getAsMap(COSEConstants.SIG_P_ID_ID);
             if (sigPOid != null && !sigPOid.isEmpty()) {
