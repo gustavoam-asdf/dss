@@ -2,6 +2,7 @@ package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
@@ -12,6 +13,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
 import eu.europa.esig.validationreport.jaxb.SignersDocumentType;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -20,10 +22,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CBAdESLevelBDetachedByUriByHashNoDocsTest extends AbstractCBAdESTestSignature {
+class CBAdESLevelBDetachedByUriNoDocsTest extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
     private DSSDocument documentToSign;
@@ -46,7 +49,7 @@ class CBAdESLevelBDetachedByUriByHashNoDocsTest extends AbstractCBAdESTestSignat
         signatureParameters.setSignaturePackaging(SignaturePackaging.DETACHED);
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
 
-        signatureParameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH);
+        signatureParameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI);
         return signatureParameters;
     }
 
@@ -56,23 +59,21 @@ class CBAdESLevelBDetachedByUriByHashNoDocsTest extends AbstractCBAdESTestSignat
 
         SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
         List<XmlDigestMatcher> digestMatchers = signature.getDigestMatchers();
-        assertEquals(2, digestMatchers.size());
+        assertEquals(1, digestMatchers.size());
 
         boolean signingInputFound = false;
         boolean sigDEntryFound = false;
         for (XmlDigestMatcher digestMatcher : digestMatchers) {
             if (DigestMatcherType.COSE_SIG_STRUCTURE.equals(digestMatcher.getType())) {
-                assertTrue(digestMatcher.isDataFound());
-                assertTrue(digestMatcher.isDataIntact());
-                signingInputFound = true;
-            } else if (DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
                 assertFalse(digestMatcher.isDataFound());
                 assertFalse(digestMatcher.isDataIntact());
+                signingInputFound = true;
+            } else if (DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
                 sigDEntryFound = true;
             }
         }
         assertTrue(signingInputFound);
-        assertTrue(sigDEntryFound);
+        assertFalse(sigDEntryFound);
     }
 
     @Override
@@ -80,9 +81,22 @@ class CBAdESLevelBDetachedByUriByHashNoDocsTest extends AbstractCBAdESTestSignat
         assertTrue(Utils.isCollectionEmpty(diagnosticData.getOriginalSignerDocuments()));
     }
 
+    protected void checkDTBSR(DiagnosticData diagnosticData) {
+        SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
+
+        XmlDigestAlgoAndValue dataToBeSignedRepresentation = signature.getDataToBeSignedRepresentation();
+        assertNull(dataToBeSignedRepresentation);
+    }
+
     @Override
     protected void validateETSISignersDocument(SignersDocumentType signersDocument) {
         assertNull(signersDocument);
+    }
+
+    protected void validateETSISignatureIdentifier(SignatureIdentifierType signatureIdentifier) {
+        assertNotNull(signatureIdentifier);
+        assertNotNull(signatureIdentifier.getId());
+        assertNull(signatureIdentifier.getDigestAlgAndValue());
     }
 
     @Override

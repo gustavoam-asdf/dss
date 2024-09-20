@@ -29,7 +29,7 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * When certificate chain is not provided, only the signing-certificate will be included to the chain.
      * When disabled, creates a 'x5t' signed header with only signing-certificate's thumbprint provided.
      */
-    private boolean includeThumbprintsOfCertificateChain = true;
+    private boolean includeCertificateChainThumbprints = true;
 
     /**
      * This property defines whether a 'kid' (key identifier) header parameter should be added to a signed header.
@@ -150,8 +150,8 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      *
      * @return TRUE if the thumbprints of certificate chain to be included, FALSE otherwise
      */
-    public boolean isIncludeThumbprintsOfCertificateChain() {
-        return includeThumbprintsOfCertificateChain;
+    public boolean isIncludeCertificateChainThumbprints() {
+        return includeCertificateChainThumbprints;
     }
 
     /**
@@ -161,10 +161,10 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * in the provided order.
      * When disabled, creates a 'x5t' signed header with only signing-certificate's thumbprint provided.
      *
-     * @param includeThumbprintsOfCertificateChain whether the thumbprints of the certificate chain should be included
+     * @param includeCertificateChainThumbprints whether the thumbprints of the certificate chain should be included
      */
-    public void setIncludeThumbprintsOfCertificateChain(boolean includeThumbprintsOfCertificateChain) {
-        this.includeThumbprintsOfCertificateChain = includeThumbprintsOfCertificateChain;
+    public void setIncludeCertificateChainThumbprints(boolean includeCertificateChainThumbprints) {
+        this.includeCertificateChainThumbprints = includeCertificateChainThumbprints;
     }
 
     /**

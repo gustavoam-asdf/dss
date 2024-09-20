@@ -18,6 +18,7 @@ import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.cbades.validation.COSEDocumentValidator;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
+import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
 import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
@@ -36,6 +37,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.BaselineBCertificateSelector;
 import eu.europa.esig.dss.test.signature.AbstractPkiFactoryTestMultipleDocumentsSignatureService;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
@@ -244,19 +246,55 @@ public abstract class AbstractCBAdESMultipleDocumentSignatureTest extends
 
     @Override
     protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
-        super.checkSigningCertificateValue(diagnosticData);
-
         for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            assertTrue(signatureWrapper.isSigningCertificateIdentified());
+            assertTrue(signatureWrapper.isSigningCertificateReferencePresent());
+
+            CertificateRefWrapper signingCertificateReference = signatureWrapper.getSigningCertificateReference();
+            assertNotNull(signingCertificateReference);
+            assertTrue(signingCertificateReference.isDigestValuePresent());
+            assertTrue(signingCertificateReference.isDigestValueMatch());
+            if (signingCertificateReference.isIssuerSerialPresent()) {
+                assertTrue(signingCertificateReference.isIssuerSerialMatch());
+            }
+
+            CertificateWrapper signingCertificate = signatureWrapper.getSigningCertificate();
+            assertNotNull(signingCertificate);
+            String signingCertificateId = signingCertificate.getId();
+            String certificateDN = diagnosticData.getCertificateDN(signingCertificateId);
+            String certificateSerialNumber = diagnosticData.getCertificateSerialNumber(signingCertificateId);
+            assertEquals(signingCertificate.getCertificateDN(), certificateDN);
+            assertEquals(signingCertificate.getSerialNumber(), certificateSerialNumber);
+
+            assertTrue(Utils.isCollectionEmpty(signatureWrapper.foundCertificates()
+                    .getOrphanCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE)));
+
             FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
             List<RelatedCertificateWrapper> signingCertificates = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
-            assertEquals(1, signingCertificates.size());
+            if (getSignatureParameters().isIncludeCertificateChainThumbprints()) {
+                BaselineBCertificateSelector certificateSelector = new BaselineBCertificateSelector(
+                        getSignatureParameters().getSigningCertificate(), getSignatureParameters().getCertificateChain())
+                        .setTrustAnchorBPPolicy(getSignatureParameters().bLevel().isTrustAnchorBPPolicy())
+                        .setTrustedCertificateSource(getTrustedCertificateSource());
+                assertEquals(certificateSelector.getCertificates().size(), signingCertificates.size());
+            } else {
+                assertEquals(1, signingCertificates.size());
+            }
 
-            List<CertificateRefWrapper> references = signingCertificates.get(0).getReferences();
+            List<CertificateRefWrapper> signingCertificateRefs = null;
+            for (RelatedCertificateWrapper certificateWrapper : signingCertificates) {
+                if (signatureWrapper.getSigningCertificate().getId().equals(certificateWrapper.getId())) {
+                    signingCertificateRefs = certificateWrapper.getReferences();
+                    break;
+                }
+            }
+            assertNotNull(signingCertificateRefs);
+
             List<RelatedCertificateWrapper> kidCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER);
             List<RelatedCertificateWrapper> x5uCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.X509_URL);
 
             int signCertRefs = 1 + (Utils.isCollectionNotEmpty(kidCerts) ? 1 : 0) + (Utils.isCollectionNotEmpty(x5uCerts) ? 1 : 0);
-            assertEquals(signCertRefs, references.size());
+            assertEquals(signCertRefs, signingCertificateRefs.size());
 
             if (getSignatureParameters().isIncludeKeyIdentifier()) {
                 assertEquals(1, kidCerts.size());
@@ -267,7 +305,7 @@ public abstract class AbstractCBAdESMultipleDocumentSignatureTest extends
                 assertEquals(0, x5uCerts.size());
             }
 
-            for (CertificateRefWrapper certificateRef : references) {
+            for (CertificateRefWrapper certificateRef : signingCertificateRefs) {
                 if (CertificateRefOrigin.SIGNING_CERTIFICATE.equals(certificateRef.getOrigin())) {
                     assertNotNull(certificateRef.getDigestAlgoAndValue());
                     assertNotNull(certificateRef.getDigestMethod());

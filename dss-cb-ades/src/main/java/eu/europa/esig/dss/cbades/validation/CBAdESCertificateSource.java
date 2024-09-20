@@ -111,9 +111,9 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     private void extractX5T(CBORArray x5t) {
         if (x5t != null) {
             if (x5t.getSize() == 2) {
-                Long hashAlgId = x5t.getAsLongOrString(0);
+                Long hashAlgId = x5t.getAsLongOrString(COSEConstants.COSE_CERT_HASH_ALG);
                 DigestAlgorithm hashAlg = CBORUtils.getDigestAlgorithmForCoseId(hashAlgId);
-                byte[] hashValue = x5t.getAsBinaries(1);
+                byte[] hashValue = x5t.getAsBinaries(COSEConstants.COSE_CERT_HASH_VALUE);
                 if (hashAlg != null && hashValue != null) {
                     CertificateRef certRef = new CertificateRef();
                     certRef.setCertDigest(new Digest(hashAlg, hashValue));

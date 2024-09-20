@@ -249,6 +249,12 @@ public final class COSEConstants {
     /** DigAlgVal hashValue. Array position '1' */
     public static final int DIG_ALG_VAL_HASH_VALUE = 1;
 
+    /** COSE_CertHash hashAlg. Array position '0' */
+    public static final int COSE_CERT_HASH_ALG = 0;
+
+    /** COSE_CertHash hashValue. Array position '0' */
+    public static final int COSE_CERT_HASH_VALUE = 1;
+
     /** valData xVals: DER-encoded encapsulated X.509 certificates or other encapsulated certificates. CBOR Tag '1 */
     public static final long VAL_DATA_X_VALS = 1;
 

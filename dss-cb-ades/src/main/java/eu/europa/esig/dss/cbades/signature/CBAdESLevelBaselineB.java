@@ -32,7 +32,6 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -170,13 +169,18 @@ public class CBAdESLevelBaselineB {
         }
 
         DigestAlgorithm digestAlgorithm = parameters.getSigningCertificateDigestMethod();
-        if (parameters.isIncludeThumbprintsOfCertificateChain()) {
-            List<CertificateToken> certificateTokens = getCertificateChainWithFirstSigningCertificate();
-            CBORArray x5ts = new CBORArray(certificateTokens.size());
-            for (CertificateToken certificateToken : certificateTokens) {
-                x5ts.add(getCoseCertHash(certificateToken, digestAlgorithm));
+        if (parameters.isIncludeCertificateChainThumbprints()) {
+            // TODO : include trust anchor ?
+            List<CertificateToken> certificateTokens = getBaselineBCertificates();
+            if (Utils.isCollectionNotEmpty(certificateTokens)) {
+                CBORArray x5ts = new CBORArray(certificateTokens.size());
+                for (CertificateToken certificateToken : certificateTokens) {
+                    x5ts.add(getCoseCertHash(certificateToken, digestAlgorithm));
+                }
+                addHeader(COSEConstants.X5TS, x5ts); // [+x5t : COSE_CertHash]
+            } else {
+                LOG.debug("No certificate chain found to be incorporated within 'x5ts' signed header");
             }
-            addHeader(COSEConstants.X5TS, x5ts); // [+x5t : COSE_CertHash]
 
         } else {
             // incorporate 'x5t'
@@ -185,19 +189,12 @@ public class CBAdESLevelBaselineB {
         }
     }
 
-    private List<CertificateToken> getCertificateChainWithFirstSigningCertificate() {
-        final List<CertificateToken> result = new ArrayList<>();
-        if (parameters.getSigningCertificate() != null) {
-            result.add(parameters.getSigningCertificate());
-        }
-        if (parameters.getCertificateChain() != null) {
-            for (CertificateToken certificateToken : parameters.getCertificateChain()) {
-                if (!result.contains(certificateToken)) {
-                    result.add(certificateToken);
-                }
-            }
-        }
-        return result;
+    private List<CertificateToken> getBaselineBCertificates() {
+        BaselineBCertificateSelector certificateSelector = new BaselineBCertificateSelector(
+                parameters.getSigningCertificate(), parameters.getCertificateChain())
+                .setTrustAnchorBPPolicy(parameters.bLevel().isTrustAnchorBPPolicy())
+                .setTrustedCertificateSource(certificateVerifier.getTrustedCertSources());
+        return certificateSelector.getCertificates();
     }
 
     private CBORArray getCoseCertHash(CertificateToken certificateToken, DigestAlgorithm digestAlgorithm) {
@@ -217,11 +214,7 @@ public class CBAdESLevelBaselineB {
             return;
         }
 
-        BaselineBCertificateSelector certificateSelector = new BaselineBCertificateSelector(parameters.getSigningCertificate(), parameters.getCertificateChain())
-                .setTrustAnchorBPPolicy(parameters.bLevel().isTrustAnchorBPPolicy())
-                .setTrustedCertificateSource(certificateVerifier.getTrustedCertSources());
-        List<CertificateToken> certificates = certificateSelector.getCertificates();
-
+        List<CertificateToken> certificates = getBaselineBCertificates();
         if (Utils.collectionSize(certificates) == 0) {
             LOG.debug("No certificate chain found to be incorporated within 'x5chain' signed header");
         } else if (Utils.collectionSize(certificates) == 1) {
