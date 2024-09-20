@@ -406,11 +406,14 @@ public class CBAdESLevelBaselineB {
         final CBORArray attrArrays = new CBORArray();
 
         CBORArray notCertifiedItem = new CBORArray();
-        notCertifiedItem.add(MimeTypeEnum.TEXT.getMimeTypeString());
-        notCertifiedItem.add(CBORUtils.CONTENT_ENCODING_BINARY);
+        notCertifiedItem.add(MimeTypeEnum.TEXT.getMimeTypeString()); // mediaType : tstr
+        notCertifiedItem.add(CBORUtils.CONTENT_ENCODING_BINARY); // encoding : tsrt
+
+        CBORArray qVals = new CBORArray(values.size());
         for (String value : values) {
-            notCertifiedItem.add(value);
+            qVals.add(value);
         }
+        notCertifiedItem.add(qVals); // qVals : [+any]
 
         attrArrays.add(notCertifiedItem);
         return attrArrays;
