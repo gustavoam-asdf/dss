@@ -743,7 +743,7 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
         coseAlgorithms.put(-259L, RSA_SHA512);
 
         coseAlgorithms.put(-37L, RSA_SSA_PSS_SHA256_MGF1);
-        coseAlgorithms.put(-38L, RSA_SSA_PSS_SHA3_384_MGF1);
+        coseAlgorithms.put(-38L, RSA_SSA_PSS_SHA384_MGF1);
         coseAlgorithms.put(-39L, RSA_SSA_PSS_SHA512_MGF1);
 
         coseAlgorithms.put(-7L, ECDSA_SHA256);
@@ -759,7 +759,9 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
         final Map<SignatureAlgorithm, Long> coseAlgorithms = new EnumMap<>(SignatureAlgorithm.class);
         for (Entry<Long, SignatureAlgorithm> entry : COSE_ALGORITHMS.entrySet()) {
             coseAlgorithms.put(entry.getValue(), entry.getKey());
+            ensurePlainECDSA(coseAlgorithms, entry.getValue(), entry.getKey());
         }
+        coseAlgorithms.put(SignatureAlgorithm.ED448, -8L);
         return coseAlgorithms;
     }
 
@@ -874,7 +876,7 @@ public enum SignatureAlgorithm implements OidAndUriBasedEnum {
         return algorithm;
     }
 
-    private static void ensurePlainECDSA(Map<SignatureAlgorithm, String> algMap, SignatureAlgorithm signatureAlgorithm, String key) {
+    private static <T> void ensurePlainECDSA(Map<SignatureAlgorithm, T> algMap, SignatureAlgorithm signatureAlgorithm, T key) {
         if (signatureAlgorithm != null && EncryptionAlgorithm.ECDSA.equals(signatureAlgorithm.getEncryptionAlgorithm())) {
             algMap.put(SignatureAlgorithm.getAlgorithm(EncryptionAlgorithm.PLAIN_ECDSA, signatureAlgorithm.getDigestAlgorithm()), key);
         }

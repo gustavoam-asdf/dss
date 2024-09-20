@@ -17,7 +17,6 @@ import eu.europa.esig.dss.cbades.validation.scope.CBAdESSignatureScopeFinder;
 import eu.europa.esig.dss.cbades.validation.timestamp.CBAdESTimestampSource;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
-import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.EndorsementType;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
@@ -163,13 +162,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public SignatureAlgorithm getSignatureAlgorithm() {
-        SignatureAlgorithm signatureAlgorithm = cose.getAlgorithm();
-        if (signatureAlgorithm == null) {
-            LOG.warn("SignatureAlgorithm '{}' is not supported!", cose.getAlgorithmHeaderValue());
-        } else if (EncryptionAlgorithm.EDDSA.equals(signatureAlgorithm.getEncryptionAlgorithm())) {
-            signatureAlgorithm = DSSUtils.getEdDSASignatureAlgorithm(getSignatureValue());
-        }
-        return signatureAlgorithm;
+        return cose.getAlgorithm();
     }
 
     @Override

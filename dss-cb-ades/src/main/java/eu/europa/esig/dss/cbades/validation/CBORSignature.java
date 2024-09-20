@@ -20,6 +20,7 @@ import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSSecurityProvider;
+import eu.europa.esig.dss.spi.DSSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +77,9 @@ public class CBORSignature {
 
     /** The signer's key */
     private Key key;
+
+    /** Cached instance of the signature algorithm defined within 'alg' signed header parameter */
+    private SignatureAlgorithm signatureAlgorithm;
 
     static {
         Security.addProvider(DSSSecurityProvider.getSecurityProvider());
@@ -423,11 +427,21 @@ public class CBORSignature {
      * @return {@link SignatureAlgorithm}
      */
     public SignatureAlgorithm getAlgorithm() {
+        if (signatureAlgorithm != null) {
+            return signatureAlgorithm;
+        }
         Long algNumber = getAlgorithmHeaderValue();
         if (algNumber == null) {
             throw new DSSException("No 'alg' header found!");
         }
-        return SignatureAlgorithm.forCOSE(algNumber, null);
+
+        signatureAlgorithm = SignatureAlgorithm.forCOSE(algNumber, null);
+        if (signatureAlgorithm == null) {
+            LOG.warn("SignatureAlgorithm '{}' is not supported!", algNumber);
+        } else if (EncryptionAlgorithm.EDDSA.equals(signatureAlgorithm.getEncryptionAlgorithm())) {
+            signatureAlgorithm = DSSUtils.getEdDSASignatureAlgorithm(getSignatureValue());
+        }
+        return signatureAlgorithm;
     }
 
     /**
@@ -435,7 +449,7 @@ public class CBORSignature {
      *
      * @return {@link Long}
      */
-    public Long getAlgorithmHeaderValue() {
+    protected Long getAlgorithmHeaderValue() {
         return getProtectedHeaderValueAsLong(COSEConstants.ALG);
     }
 

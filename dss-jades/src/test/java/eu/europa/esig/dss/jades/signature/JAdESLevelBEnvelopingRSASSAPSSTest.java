@@ -28,12 +28,10 @@ import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JAdESTimestampParameters;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
-import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -41,10 +39,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-class JAdESLevelBEnvelopedNONEWithRSASSAPSSTest extends AbstractJAdESTestSignature {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class JAdESLevelBEnvelopingRSASSAPSSTest extends AbstractJAdESTestSignature {
 
     private DocumentSignatureService<JAdESSignatureParameters, JAdESTimestampParameters> service;
     private JAdESSignatureParameters signatureParameters;
@@ -52,27 +54,30 @@ class JAdESLevelBEnvelopedNONEWithRSASSAPSSTest extends AbstractJAdESTestSignatu
 
     private static Stream<Arguments> data() {
         List<Arguments> args = new ArrayList<>();
-        for (DigestAlgorithm digestAlgorithm : DigestAlgorithm.values()) {
-            SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.getAlgorithm(EncryptionAlgorithm.RSASSA_PSS, digestAlgorithm);
-            if (signatureAlgorithm != null && Utils.isStringNotBlank(signatureAlgorithm.getJWAId())) {
-                args.add(Arguments.of(digestAlgorithm));
+
+        for (DigestAlgorithm digestAlgo : DigestAlgorithm.values()) {
+            SignatureAlgorithm sa = SignatureAlgorithm.getAlgorithm(EncryptionAlgorithm.RSASSA_PSS, digestAlgo);
+            if (sa != null && Utils.isStringNotBlank(sa.getJWAId())) {
+                args.add(Arguments.of(digestAlgo));
             }
         }
+
         return args.stream();
     }
 
-    @ParameterizedTest(name = "Combination {index} of RSASSA-PSS and digest algorithm {0}")
+    @ParameterizedTest(name = "Combination {index} of RSASSA-PSS with digest algorithm {0}")
     @MethodSource("data")
     void init(DigestAlgorithm digestAlgo) {
         documentToSign = new FileDocument(new File("src/test/resources/sample.json"));
 
         signatureParameters = new JAdESSignatureParameters();
+        signatureParameters.bLevel().setSigningDate(new Date());
+        signatureParameters.setDigestAlgorithm(digestAlgo);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
+        signatureParameters.setEncryptionAlgorithm(EncryptionAlgorithm.RSASSA_PSS);
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
         signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
-        signatureParameters.setDigestAlgorithm(digestAlgo);
-        signatureParameters.setEncryptionAlgorithm(EncryptionAlgorithm.RSASSA_PSS);
 
         service = new JAdESService(getOfflineCertificateVerifier());
 
@@ -80,19 +85,19 @@ class JAdESLevelBEnvelopedNONEWithRSASSAPSSTest extends AbstractJAdESTestSignatu
     }
 
     @Override
-    public void signAndVerify() {
-    }
-
-    @Override
     protected DSSDocument sign() {
         ToBeSigned dataToSign = service.getDataToSign(documentToSign, signatureParameters);
 
-        byte[] originalDigest = DSSUtils.digest(signatureParameters.getDigestAlgorithm(), dataToSign.getBytes());
-        Digest digest = new Digest(signatureParameters.getDigestAlgorithm(), originalDigest);
-
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.getAlgorithm(EncryptionAlgorithm.RSASSA_PSS, signatureParameters.getDigestAlgorithm());
-        SignatureValue signatureValue = getToken().signDigest(digest, signatureAlgorithm, getPrivateKeyEntry());
+        SignatureValue signatureValue = getToken().sign(dataToSign, signatureAlgorithm, getPrivateKeyEntry());
+        assertEquals(signatureAlgorithm, signatureValue.getAlgorithm());
+        assertTrue(service.isValidSignatureValue(dataToSign, signatureValue, getSigningCert()));
+
         return service.signDocument(documentToSign, signatureParameters, signatureValue);
+    }
+
+    @Override
+    public void signAndVerify() {
     }
 
     @Override
