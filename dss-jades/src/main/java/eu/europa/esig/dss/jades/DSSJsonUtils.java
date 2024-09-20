@@ -507,16 +507,10 @@ public class DSSJsonUtils {
 			throw new IllegalArgumentException("Unable to build a message-digest. Reason : the detached content is not provided!");
 		}
 
-		byte[] octets = null;
-		if (documents.size() == 1) {
-			octets = getDocumentOctets(documents.get(0), isBase64UrlEncoded);
+		byte[] octets;
+		for (DSSDocument document : documents) {
+			octets = getDocumentOctets(document, isBase64UrlEncoded);
 			digestCalculator.update(octets);
-
-		} else {
-			for (DSSDocument document : documents) {
-				octets = getDocumentOctets(document, isBase64UrlEncoded);
-				digestCalculator.update(octets);
-			}
 		}
 	}
 

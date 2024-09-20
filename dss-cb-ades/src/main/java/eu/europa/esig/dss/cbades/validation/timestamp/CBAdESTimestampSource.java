@@ -16,7 +16,6 @@ import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.SignatureProperties;
 import eu.europa.esig.dss.spi.validation.timestamp.SignatureTimestampIdentifierBuilder;
 import eu.europa.esig.dss.spi.validation.timestamp.SignatureTimestampSource;
-import eu.europa.esig.dss.spi.validation.timestamp.TimestampMessageDigestBuilder;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.evidencerecord.EvidenceRecord;
 import eu.europa.esig.dss.spi.x509.revocation.crl.CRLRef;
@@ -287,13 +286,14 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
     }
 
     @Override
-    protected TimestampMessageDigestBuilder getTimestampMessageImprintDigestBuilder(DigestAlgorithm digestAlgorithm) {
-        return null;
+    protected CBAdESTimestampMessageDigestBuilder getTimestampMessageImprintDigestBuilder(TimestampToken timestampToken) {
+        return new CBAdESTimestampMessageDigestBuilder(signature, timestampToken)
+                .setTimestampAttribute(timestampAttributeMap.get(timestampToken));
     }
 
     @Override
-    protected TimestampMessageDigestBuilder getTimestampMessageImprintDigestBuilder(TimestampToken timestampToken) {
-        return null;
+    protected CBAdESTimestampMessageDigestBuilder getTimestampMessageImprintDigestBuilder(DigestAlgorithm digestAlgorithm) {
+        return new CBAdESTimestampMessageDigestBuilder(signature, digestAlgorithm);
     }
 
 }

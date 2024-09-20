@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -87,7 +85,7 @@ public class CBAdESUtils {
 
         CBORArray tstTokens = new CBORArray();
         for (TimestampBinary timestampBinary : timestampBinaries) {
-            Map<Long, Object> tstToken = getTstToken(timestampBinary);
+            CBORMap tstToken = getTstToken(timestampBinary);
             tstTokens.add(tstToken);
         }
         tstContainerParams.put(COSEConstants.TST_CONTAINER_TST_TOKENS, tstTokens);
@@ -100,20 +98,20 @@ public class CBAdESUtils {
     }
 
     /**
-     * Creates a 'tstToken' JsonObject according to TS 119-152 ch. 5.4.3.3 The tstContainer type
+     * Creates a 'tstToken' CBOR Map according to TS 119-152 ch. 5.4.3.3 The tstContainer type
      *
      * @param timestampBinary {@link TimestampBinary}s to incorporate
-     * @return 'tstToken' object
+     * @return {@link CBORMap} 'tstToken' object
      */
-    private static Map<Long, Object> getTstToken(TimestampBinary timestampBinary) {
+    private static CBORMap getTstToken(TimestampBinary timestampBinary) {
         Objects.requireNonNull(timestampBinary, "timestampBinary cannot be null!");
 
-        Map<Long, Object> tstTokenParams = new HashMap<>();
+        CBORMap tstToken = new CBORMap();
         // only RFC 3161 TimestampTokens are supported
-        // 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119-182 ch. 5.4.3.3)
-        tstTokenParams.put(COSEConstants.TST_TOKEN_VAL, timestampBinary.getBytes());
+        // 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119 152-1 ch. 5.4.3.3)
+        tstToken.put(COSEConstants.TST_TOKEN_VAL, timestampBinary.getBytes());
 
-        return tstTokenParams;
+        return tstToken;
     }
 
     /**
