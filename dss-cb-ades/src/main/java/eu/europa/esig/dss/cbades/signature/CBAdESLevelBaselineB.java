@@ -562,7 +562,7 @@ public class CBAdESLevelBaselineB {
     private CBORArray getNoticeNumbersArray(int[] noticeNumbers) {
         CBORArray cborArray = new CBORArray(noticeNumbers.length);
         for (int number : noticeNumbers) {
-            cborArray.add(number);
+            cborArray.add((long) number);
         }
         return cborArray;
     }
