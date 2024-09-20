@@ -153,7 +153,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 
 	/**
-	 * Checks if the JAdES Signature is a detached (payload is not present within the signature structure)
+	 * Checks if the JAdES Signature is detached (payload is not present within the signature structure)
 	 * 
 	 * @return TRUE if the signature is detached, FALSE otherwise
 	 */

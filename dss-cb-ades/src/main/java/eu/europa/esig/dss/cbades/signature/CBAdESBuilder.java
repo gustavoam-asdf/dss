@@ -225,13 +225,17 @@ public class CBAdESBuilder {
     }
 
     private void assertConfigurationValidity(CBAdESSignatureParameters signatureParameters) {
+        Objects.requireNonNull(signatureParameters.getSignaturePackaging(), "SignaturePackaging shall be defined!");
+        Objects.requireNonNull(signatureParameters.getSignatureLevel(), "SignatureLevel shall be defined!");
+        Objects.requireNonNull(signatureParameters.getCoseStructureType(), "COSEStructureType shall be defined!");
         SignaturePackaging packaging = signatureParameters.getSignaturePackaging();
         if (packaging != SignaturePackaging.ENVELOPING && packaging != SignaturePackaging.DETACHED) {
             throw new IllegalArgumentException(String.format("Unsupported signature packaging for COSE signature: %s", packaging));
         }
-        if (coseSign != null && COSEStructureType.COSE_SIGN != signatureParameters.getCoseStructureType()) {
+        COSEStructureType coseStructureType = signatureParameters.getCoseStructureType();
+        if (coseSign != null && COSEStructureType.COSE_SIGN != coseStructureType) {
             throw new IllegalArgumentException(String.format(
-                    "Parallel signature is not supported with '%s' structure type!", signatureParameters.getCoseStructureType()));
+                    "Parallel signature is not supported with '%s' structure type!", coseStructureType));
         }
 
     }

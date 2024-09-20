@@ -195,11 +195,7 @@ public final class CBORUtils {
         try (InputStream is = document.openStream()) {
             CborDecoder cborDecoder = new CborDecoder(is);
             List<DataItem> dataItems = cborDecoder.decode();
-            if (Utils.collectionSize(dataItems) == 1) {
-                return toCBORObject(dataItems.iterator().next());
-            } else {
-                return new CBORArray(dataItems);
-            }
+            return toCBORObject(dataItems);
         } catch (IOException e) {
             throw new DSSException(String.format("Unable to read document with name '%s' : %s", document.getName(), e.getMessage()), e);
         }
@@ -213,8 +209,17 @@ public final class CBORUtils {
      * @return a list of {@link DataItem}s
      * @throws CborException if an error occurs on byte array parsing
      */
-    public static List<DataItem> parseCbor(byte[] bytes) throws CborException {
-        return CborDecoder.decode(bytes);
+    public static CBORObject parseCbor(byte[] bytes) throws CborException {
+        List<DataItem> dataItems = CborDecoder.decode(bytes);
+        return toCBORObject(dataItems);
+    }
+
+    private static CBORObject toCBORObject(List<DataItem> dataItems) {
+        if (Utils.collectionSize(dataItems) == 1) {
+            return toCBORObject(dataItems.iterator().next());
+        } else {
+            return new CBORArray(dataItems);
+        }
     }
 
     /**

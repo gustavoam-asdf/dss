@@ -66,7 +66,7 @@ public class MessageDigestOrSignedPropertiesCheck extends ChainItem<XmlSAV> {
 			case PKCS7:
 				return isRequiredDigestMatcherPresent(DigestMatcherType.MESSAGE_DIGEST);
 			default:
-				// JAdES shall be skipped
+				// JAdES/CB-AdES shall be skipped
 				return false;
 		}
 	}

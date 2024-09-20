@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.cbades.cbor;
 
+import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.MajorType;
@@ -53,7 +54,7 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
 
     private static co.nstant.in.cbor.model.Map parseByteStringHeader(CBORByteString cborByteString) {
         try {
-            List<DataItem> dataItems = CBORUtils.parseCbor(cborByteString.getBytes());
+            List<DataItem> dataItems = CborDecoder.decode(cborByteString.getBytes());
             if (Utils.collectionSize(dataItems) == 0) {
                 return new co.nstant.in.cbor.model.Map();
             } else if (Utils.collectionSize(dataItems) > 1) {

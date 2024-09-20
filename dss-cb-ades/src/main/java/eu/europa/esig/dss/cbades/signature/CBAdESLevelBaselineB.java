@@ -32,6 +32,7 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -277,7 +278,7 @@ public class CBAdESLevelBaselineB {
         for (CommitmentType commitmentType : parameters.bLevel().getCommitmentTypeIndications()) {
             if (Utils.isStringEmpty(commitmentType.getUri()) && Utils.isStringEmpty(commitmentType.getOid())) {
                 throw new IllegalArgumentException(
-                        "Either URI or OID shall be defined for CommitmentType signed attribute in JAdES!");
+                        "Either URI or OID shall be defined for CommitmentType signed attribute in CB-AdES!");
             }
 
             CBORMap srCmParams = new CBORMap();
@@ -618,8 +619,16 @@ public class CBAdESLevelBaselineB {
             }
 
         } else if (SigDMechanism.OBJECT_ID_BY_URI == sigDMechanism || SigDMechanism.OBJECT_ID_BY_URI_HASH == sigDMechanism) {
-            if (documentsToSign.stream().anyMatch(d -> Utils.isStringEmpty(d.getName()))) {
-                throw new IllegalArgumentException("The signed document must have names for a detached JAdES signature!");
+            List<String> documentNames = new ArrayList<>();
+            for (DSSDocument document : documentsToSign) {
+                if (Utils.isStringEmpty(document.getName())) {
+                    throw new IllegalArgumentException("The signed document must have names for a detached CB-AdES signature!");
+                }
+                if (documentNames.contains(document.getName())) {
+                    throw new IllegalArgumentException(String.format("The documents to be signed shall have different names! "
+                            + "The name '%s' appears multiple times.", document.getName()));
+                }
+                documentNames.add(document.getName());
             }
         }
     }

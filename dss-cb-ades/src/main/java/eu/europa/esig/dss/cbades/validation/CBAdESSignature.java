@@ -548,7 +548,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     /**
-     * Checks if the JAdES Signature is a detached (payload is not present within the signature structure)
+     * Checks if the CB-AdES Signature is detached (payload is not present within the signature structure)
      *
      * @return TRUE if the signature is detached, FALSE otherwise
      */
