@@ -376,4 +376,31 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         return certificateValidity.isValid();
     }
 
+    @Override
+    public List<CertificateRef> getReferencesForCertificateToken(CertificateToken certificateToken) {
+        final List<CertificateRef> result = super.getReferencesForCertificateToken(certificateToken);
+        for (Map.Entry<String, Collection<CertificateToken>> x5uEntry : x509UrlMap.entrySet()) {
+            if (x5uEntry.getValue().contains(certificateToken)) {
+                for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.X509_URL)) {
+                    if (x5uEntry.getKey().equals(certificateRef.getX509Url())) {
+                        result.add(certificateRef);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
+        final Set<CertificateToken> certificates = super.findTokensFromCertRef(certificateRef);
+        if (Utils.isStringNotEmpty(certificateRef.getX509Url())) {
+            Collection<CertificateToken> x509UrlCertificates = x509UrlMap.get(certificateRef.getX509Url());
+            if (Utils.isCollectionNotEmpty(x509UrlCertificates)) {
+                certificates.addAll(x509UrlCertificates);
+            }
+        }
+        return certificates;
+    }
+
 }

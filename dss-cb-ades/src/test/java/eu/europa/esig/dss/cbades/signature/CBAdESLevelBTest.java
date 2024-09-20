@@ -8,6 +8,7 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCommitmentTypeIndication;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.CommitmentTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -18,6 +19,7 @@ import eu.europa.esig.dss.model.SignerLocation;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CBAdESLevelBTest extends AbstractCBAdESTestSignature {
@@ -86,12 +89,23 @@ class CBAdESLevelBTest extends AbstractCBAdESTestSignature {
         List<RelatedCertificateWrapper> signCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
         assertEquals(2, signCerts.size());
 
-        List<CertificateRefWrapper> signCertReferences = signCerts.get(0).getReferences();
-        assertEquals(2, signCertReferences.size());
+
+        RelatedCertificateWrapper signingCertificate = null;
+        for (RelatedCertificateWrapper certificateWrapper : signCerts) {
+            assertTrue(Utils.isCollectionNotEmpty(certificateWrapper.getOrigins()));
+            assertEquals(CertificateOrigin.KEY_INFO, certificateWrapper.getOrigins().get(0));
+            if (signature.getSigningCertificate().getId().equals(certificateWrapper.getId())) {
+                signingCertificate = certificateWrapper;
+                break;
+            }
+        }
+        assertNotNull(signingCertificate);
+
+        assertEquals(2, signingCertificate.getReferences().size());
 
         boolean signCertRefFound = false;
         boolean kidCertRefFound = false;
-        for (CertificateRefWrapper certificateRefWrapper : signCertReferences) {
+        for (CertificateRefWrapper certificateRefWrapper : signingCertificate.getReferences()) {
             if (CertificateRefOrigin.SIGNING_CERTIFICATE.equals(certificateRefWrapper.getOrigin())) {
                 signCertRefFound = true;
             } else if (CertificateRefOrigin.KEY_IDENTIFIER.equals(certificateRefWrapper.getOrigin())) {
