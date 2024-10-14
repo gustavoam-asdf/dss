@@ -782,7 +782,10 @@ public final class DSSUtils {
 	 * @return the normalized {@link String}
 	 */
 	public static String getNormalizedString(final String str) {
-		String normalizedStr = DSSUtils.decodeURI(str);
+		if (str == null) {
+			return null;
+		}
+		String normalizedStr = decodeURI(str);
 		normalizedStr = normalizedStr.replaceAll("\\W", "_");
 		return normalizedStr;
 	}

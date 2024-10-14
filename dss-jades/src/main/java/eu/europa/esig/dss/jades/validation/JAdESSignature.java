@@ -430,7 +430,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 				if (JAdESHeaderParameterNames.C_SIG.equals(etsiUComponent.getHeaderName())) {
 					JAdESSignature counterSignature = DSSJsonUtils.extractJAdESCounterSignature(etsiUComponent, this);
 					if (counterSignature != null) {
-						counterSignature.setSignatureFilename(getSignatureFilename());
+						counterSignature.setFilename(getFilename());
 						counterSignatures.add(counterSignature);
 					}
 				}
