@@ -2,12 +2,14 @@ package eu.europa.esig.dss.cbades.validation;
 
 import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
@@ -21,6 +23,7 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,11 +69,14 @@ public class CBORSignature {
     /** The payload to be signed */
     private CBORObject payload;
 
+    /** The payload to be signed */
+    private CBORObject otherFields;
+
     /** The signer's signature value */
     private CBORByteString signature;
 
     /** Original COSE signature container structure */
-    private COSESignStructure coseSignStructure;
+    private COSEStructure coseSignStructure;
 
     /** The original signer signature (applicable only for COSE_Sign) */
     private COSESignature signerSignature;
@@ -100,10 +106,12 @@ public class CBORSignature {
      * @return a list of {@link CBORSignature}
      */
     public static List<CBORSignature> fromCOSESignStructure(COSESignStructure coseSignStructure) {
+        Objects.requireNonNull(coseSignStructure, "COSESignStructure cannot be null!");
+
         if (coseSignStructure instanceof COSESign) {
             return fromCOSESign((COSESign) coseSignStructure);
         } else if (coseSignStructure instanceof COSESign1) {
-            return Collections.singletonList(fromCOSE1Sign((COSESign1) coseSignStructure));
+            return Collections.singletonList(fromCOSESign1((COSESign1) coseSignStructure));
         }
         throw new UnsupportedOperationException(String.format("Unsupported class '%s'", coseSignStructure.getClass()));
     }
@@ -116,6 +124,9 @@ public class CBORSignature {
      * @return a list of {@link CBORSignature}
      */
     public static List<CBORSignature> fromCOSESign(COSESign coseSign) {
+        Objects.requireNonNull(coseSign, "COSESign cannot be null!");
+        Objects.requireNonNull(coseSign.getContext(), "COSE signature context shall be defined!");
+
         final List<CBORSignature> cborSignatures = new ArrayList<>();
         for (COSESignature coseSignature : coseSign.getSignatures()) {
             final CBORSignature cborSignature = new CBORSignature();
@@ -141,7 +152,10 @@ public class CBORSignature {
      * @param coseSign1 {@link COSESign1}
      * @return {@link CBORSignature}
      */
-    public static CBORSignature fromCOSE1Sign(COSESign1 coseSign1) {
+    public static CBORSignature fromCOSESign1(COSESign1 coseSign1) {
+        Objects.requireNonNull(coseSign1, "COSESign1 cannot be null!");
+        Objects.requireNonNull(coseSign1.getContext(), "COSE signature context shall be defined!");
+
         final CBORSignature cborSignature = new CBORSignature();
         cborSignature.context = coseSign1.getContext();
         cborSignature.tagged = coseSign1.isTagged();
@@ -150,6 +164,63 @@ public class CBORSignature {
         cborSignature.payload = coseSign1.getPayload();
         cborSignature.signature = coseSign1.getSignature();
         cborSignature.coseSignStructure = coseSign1;
+        return cborSignature;
+    }
+
+    public static CBORSignature fromCOSECounterSignature(COSECounterSignature coseCounterSignature) {
+        Objects.requireNonNull(coseCounterSignature, "COSECounterSignature cannot be null!");
+        Objects.requireNonNull(coseCounterSignature.getContext(), "COSE signature context shall be defined!");
+        Objects.requireNonNull(coseCounterSignature.getMasterSignature(), "Master signature shall be defined for a counter signature!");
+
+        final CBORSignature cborSignature = new CBORSignature();
+        cborSignature.context = coseCounterSignature.getContext();
+        cborSignature.tagged = coseCounterSignature.isTagged();
+        cborSignature.signerProtectedHeader = coseCounterSignature.getProtectedHeader();
+        cborSignature.signerUnprotectedHeader = coseCounterSignature.getUnprotectedHeader();
+        cborSignature.signature = coseCounterSignature.getSignature();
+        cborSignature.coseSignStructure = coseCounterSignature;
+
+        COSEStructure masterSignature = coseCounterSignature.getMasterSignature();
+        switch (masterSignature.getContext()) {
+            case COSE_SIGN:
+                COSESign coseSign = (COSESign) masterSignature;
+                cborSignature.bodyProtectedHeader = coseSign.getProtectedHeader();
+                cborSignature.payload = coseSign.getPayload();
+                break;
+
+            case COSE_SIGN1:
+                COSESign1 coseSign1 = (COSESign1) masterSignature;
+                cborSignature.bodyProtectedHeader = coseSign1.getProtectedHeader();
+                cborSignature.payload = coseSign1.getPayload();
+                if (coseCounterSignature.getContext().isCounterSignatureV2()) {
+                    /*
+                     * RFC 9338
+                     *
+                     * other_fields: Omitted if there are only two bstr fields in the
+                     * target structure. This field is an array of all bstr fields after
+                     * the second. As an example, this would be an array of one element
+                     * for the COSE_Sign1 structure containing the signature value.
+                     *
+                     * NOTE: applied only for counter signature(0) v2
+                     */
+                    cborSignature.otherFields = new CBORArray(Collections.singletonList(coseSign1.getSignature()));
+                }
+                break;
+
+            case COSE_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE_V2:
+                COSESignature coseSignature = (COSESignature) masterSignature;
+                cborSignature.bodyProtectedHeader = coseSignature.getProtectedHeader();
+                cborSignature.payload = coseSignature.getSignature();
+                break;
+
+            default:
+                // NOTE: countersignature0 may not have other counter signatures
+                throw new UnsupportedOperationException(String.format(
+                        "The type of master signature '%s' is not supported!", masterSignature.getContext()));
+        }
+
         return cborSignature;
     }
 
@@ -165,7 +236,7 @@ public class CBORSignature {
     /**
      * Gets whether the container of the signature is tagged
      *
-     * @return TRUE if the COSE signature containe is tagged, FALSE otherwise
+     * @return TRUE if the COSE signature container is tagged, FALSE otherwise
      */
     public boolean isTagged() {
         return tagged;
@@ -270,10 +341,19 @@ public class CBORSignature {
     /**
      * Gets the original COSE signature structure
      *
-     * @return {@link COSESignStructure}
+     * @return {@link COSEStructure}
      */
-    public COSESignStructure getCoseSignStructure() {
+    public COSEStructure getCoseSignStructure() {
         return coseSignStructure;
+    }
+
+    /**
+     * Sets the original COSE signature structure
+     *
+     * @param coseSignStructure {@link COSEStructure}
+     */
+    public void setCoseSignStructure(COSEStructure coseSignStructure) {
+        this.coseSignStructure = coseSignStructure;
     }
 
     /**
@@ -283,15 +363,6 @@ public class CBORSignature {
      */
     public COSESignature getSignerSignature() {
         return signerSignature;
-    }
-
-    /**
-     * Sets the original COSE signature structure
-     *
-     * @param coseSignStructure {@link COSESignStructure}
-     */
-    public void setCoseSignStructure(COSESignStructure coseSignStructure) {
-        this.coseSignStructure = coseSignStructure;
     }
 
     private Key getKey() {
@@ -329,6 +400,11 @@ public class CBORSignature {
 
             // Supply the signature input bytes
             byte[] signatureInputBytes = getSignatureInputBytes();
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Serialized Sig_structure bytes:");
+                LOG.trace(new String(signatureInputBytes));
+            }
+            LOG.info(Utils.toHex(signatureInputBytes));
             signatureInstance.update(signatureInputBytes);
 
             // Verify the signature
@@ -382,10 +458,14 @@ public class CBORSignature {
          * bstr type. If there are no protected attributes, a zero-length
          * byte string is used. This field is omitted for the COSE_Sign1
          * signature structure.
+         *
+         * NOTE: The field is also omitted for CounterSignature0 and Countersignature0V2 attributes
          */
         if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
             array.add(signerProtectedHeader.getByteString());
-        } else if (COSESignatureContext.COSE_SIGN1 != context) {
+        } else if (COSESignatureContext.COSE_SIGN1 != context
+                && COSESignatureContext.COSE_COUNTER_SIGNATURE0 != context
+                && COSESignatureContext.COSE_COUNTER_SIGNATURE0_V2 != context) {
             array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
         /*
@@ -408,6 +488,23 @@ public class CBORSignature {
         } else {
             LOG.warn("No payload found for COSE signature!");
             array.add(CBORUtils.EMPTY_BYTE_STRING);
+        }
+
+        /*
+         * RFC 9338. CountersignaturesV2 only
+         *
+         * Countersign_structure = [
+         *   context : "CounterSignature" / "CounterSignature0" /
+         *             "CounterSignatureV2" / "CounterSignature0V2" /,
+         *   body_protected : empty_or_serialized_map,
+         *   ? sign_protected : empty_or_serialized_map,
+         *   external_aad : bstr,
+         *   payload : bstr,
+         *   ? other_fields : [+ bstr ]
+         * ]
+         */
+        if (context.isCounterSignatureV2() && otherFields != null) {
+            array.add(otherFields);
         }
 
         return CBORUtils.serializeCborObject(array);
@@ -532,14 +629,15 @@ public class CBORSignature {
     protected CBORObject getProtectedHeaderValue(long headerKey) {
         CBORObject bodyProtectedHeaderValue = getBodyProtectedHeaderValue(headerKey);
         CBORObject signerProtectedHeaderValue = getSignerProtectedHeaderValue(headerKey);
-        if (bodyProtectedHeaderValue != null && signerProtectedHeaderValue != null) {
+        // NOTE: for counter signatures only the main protected header is used
+        if (!context.isCounterSignature() && bodyProtectedHeaderValue != null && signerProtectedHeaderValue != null) {
             LOG.info("Same protected header '{}' is present in body and signer structure.", headerKey);
-            if (bodyProtectedHeaderValue.equals(signerProtectedHeaderValue)) {
+            if (!bodyProtectedHeaderValue.equals(signerProtectedHeaderValue)) {
                 LOG.warn("The value of protected header '{}' in body structure does not match the value in signer structure!", headerKey);
                 return null;
             }
         }
-        return bodyProtectedHeaderValue != null ? bodyProtectedHeaderValue : signerProtectedHeaderValue;
+        return signerProtectedHeaderValue != null ? signerProtectedHeaderValue : bodyProtectedHeaderValue;
     }
 
     private CBORObject getBodyProtectedHeaderValue(long headerKey) {

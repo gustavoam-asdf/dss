@@ -1,9 +1,9 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.COSESign;
-import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.signature.identifier.AbstractSignatureIdentifierBuilder;
 
@@ -32,14 +32,14 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
     protected Integer getSignaturePosition() {
         CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
         CBORSignature cose = cbadesSignature.getCoseSignature();
-        COSESignStructure coseSignStructure = cose.getCoseSignStructure();
+        COSEStructure coseStructure = cose.getCoseSignStructure();
         COSESignature currentSigner = cose.getSignerSignature();
 
         int counter = 0;
-        if (coseSignStructure != null) {
+        if (coseStructure != null) {
             // TODO : counter-signatures ?
-            if (COSESignatureContext.COSE_SIGN == coseSignStructure.getContext()) {
-                COSESign coseSign = (COSESign) coseSignStructure;
+            if (COSESignatureContext.COSE_SIGN == coseStructure.getContext()) {
+                COSESign coseSign = (COSESign) coseStructure;
                 for (COSESignature coseSignature : coseSign.getSignatures()) {
                     if (currentSigner == coseSignature) {
                         break;

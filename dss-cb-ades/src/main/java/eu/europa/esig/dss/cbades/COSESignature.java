@@ -1,12 +1,14 @@
 package eu.europa.esig.dss.cbades;
 
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 
 /**
  * Represents a COSE_Signature object defined in RFC 9052 "4.1. Signing with One or More Signers"
  *
  */
-public class COSESignature {
+public class COSESignature implements COSEStructure {
 
     /** The protected attributes of the signer structure */
     private COSEProtectedHeader protectedHeader;
@@ -84,6 +86,20 @@ public class COSESignature {
      */
     public void setSignature(CBORByteString signature) {
         this.signature = signature;
+    }
+
+    @Override
+    public byte[] serialize() {
+        CBORArray coseSignatureArray = new CBORArray(3);
+        coseSignatureArray.add(protectedHeader.getByteString());
+        coseSignatureArray.add(unprotectedHeader);
+        coseSignatureArray.add(signature);
+        return CBORUtils.serializeCborObject(coseSignatureArray);
+    }
+
+    @Override
+    public COSESignatureContext getContext() {
+        return COSESignatureContext.COSE_SIGNATURE;
     }
 
 }

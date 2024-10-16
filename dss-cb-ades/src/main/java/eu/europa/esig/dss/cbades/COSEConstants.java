@@ -39,6 +39,20 @@ public final class COSEConstants {
     /** Counter signature. CBOR Tag '7' */
     public static final long COUNTER_SIGNATURE = 7;
 
+    /** Counter signature0. CBOR Tag '9' */
+    public static final long COUNTER_SIGNATURE0 = 9;
+
+    /* RFC 9338 Header parameters */
+
+    /** COSE_Countersignature. CBOR Tag '19' */
+    public static final long COSE_COUNTERSIGNATURE_TAG = 19;
+
+    /** Counter signature V2. CBOR Tag '11' */
+    public static final long COUNTER_SIGNATURE_V2 = 11;
+
+    /** Counter signature0 V2. CBOR Tag '12' */
+    public static final long COUNTER_SIGNATURE0_V2 = 12;
+
     /* RFC 9360 Header parameters */
 
     /** An unordered bag of X.509 certificates. CBOR Tag '32' */

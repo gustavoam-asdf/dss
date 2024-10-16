@@ -64,7 +64,7 @@ public class COSEDocumentAnalyzer extends DefaultDocumentAnalyzer {
     }
 
     private COSESignStructure buildCoseSignStructure(final DSSDocument document) {
-        COSEParser coseParser = new COSEParser(document);
+        COSEParser coseParser = COSEParser.fromDocument(document);
         return coseParser.parse();
     }
 
@@ -79,8 +79,7 @@ public class COSEDocumentAnalyzer extends DefaultDocumentAnalyzer {
 
     @Override
     public boolean isSupported(DSSDocument dssDocument) {
-        COSEParser coseParser = new COSEParser(dssDocument);
-        return coseParser.isSupported();
+        return COSEParser.isSupported(dssDocument);
     }
 
     /**

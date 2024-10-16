@@ -5,21 +5,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORObject;
 /**
  * Represents a common interface for COSE signature structure objects defined in RFC 9052 "4. Signing Objects"
  */
-public interface COSESignStructure {
-
-    /**
-     * Builds an RFC 9052 COSE signature structure
-     *
-     * @return serialized byte array
-     */
-    byte[] serialize();
-
-    /**
-     * Gets the COSE signature context
-     *
-     * @return {@link COSESignatureContext}
-     */
-    COSESignatureContext getContext();
+public interface COSESignStructure extends COSEStructure {
 
     /**
      * Gets whether the signature structure is encoded as tagged

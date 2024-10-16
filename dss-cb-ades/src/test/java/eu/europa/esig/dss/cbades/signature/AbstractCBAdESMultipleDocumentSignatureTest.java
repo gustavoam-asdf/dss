@@ -65,9 +65,10 @@ public abstract class AbstractCBAdESMultipleDocumentSignatureTest extends
     protected void onDocumentSigned(byte[] byteArray) {
         super.onDocumentSigned(byteArray);
 
-        COSEParser coseParser = new COSEParser(new InMemoryDocument(byteArray));
-        assertTrue(coseParser.isSupported());
+        DSSDocument signedDocument = new InMemoryDocument(byteArray);
+        assertTrue(COSEParser.isSupported(signedDocument));
 
+        COSEParser coseParser = COSEParser.fromDocument(signedDocument);
         COSESignStructure coseSignStructure = coseParser.parse();
         checkCOSESignStructure(coseSignStructure);
     }
