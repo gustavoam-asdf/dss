@@ -99,7 +99,7 @@ public class COSEDocumentAnalyzer extends DefaultDocumentAnalyzer {
         LOG.info("{} signature(s) found", Utils.collectionSize(cborSignatures));
         for (CBORSignature cose : cborSignatures) {
             CBAdESSignature cbadesSignature = new CBAdESSignature(cose);
-            cbadesSignature.setSignatureFilename(document.getName());
+            cbadesSignature.setFilename(document.getName());
             cbadesSignature.setSigningCertificateSource(signingCertificateSource);
             cbadesSignature.setDetachedContents(detachedContents);
             if (externallySuppliedData != null) {

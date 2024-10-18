@@ -65,13 +65,13 @@ public class JAdESCounterSignatureBuilder extends JAdESExtensionBuilder {
 	 */
 	public DSSDocument getSignatureValueToBeSigned(DSSDocument signatureDocument, JAdESCounterSignatureParameters parameters) {
 
-		JWSDocumentAnalyzerFactory documentValidatorFactory = new JWSDocumentAnalyzerFactory();
-		AbstractJWSDocumentAnalyzer documentValidator = documentValidatorFactory.create(signatureDocument);
+		JWSDocumentAnalyzerFactory documentAnalyzerFactory = new JWSDocumentAnalyzerFactory();
+		AbstractJWSDocumentAnalyzer documentAnalyzer = documentAnalyzerFactory.create(signatureDocument);
 
-		JWSJsonSerializationObject jwsJsonSerializationObject = documentValidator.getJwsJsonSerializationObject();
+		JWSJsonSerializationObject jwsJsonSerializationObject = documentAnalyzer.getJwsJsonSerializationObject();
 		assertJSONSerializationObjectMayBeExtended(jwsJsonSerializationObject);
 
-		List<AdvancedSignature> signatures = documentValidator.getSignatures();
+		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 
 		JAdESSignature jadesSignature = (JAdESSignature) extractSignatureById(signatures, parameters.getSignatureIdToCounterSign());
 		return new InMemoryDocument(jadesSignature.getSignatureValue());

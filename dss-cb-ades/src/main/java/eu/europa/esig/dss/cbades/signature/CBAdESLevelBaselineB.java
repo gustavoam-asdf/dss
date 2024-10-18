@@ -54,7 +54,7 @@ public class CBAdESLevelBaselineB {
     private final CBAdESSignatureParameters parameters;
 
     /** List of documents to sign */
-    private final List<DSSDocument> documentsToSign;
+    private List<DSSDocument> documentsToSign;
 
     /** COSE Protected Header map representation */
     private COSEProtectedHeader signedProperties = new COSEProtectedHeader();
@@ -68,14 +68,24 @@ public class CBAdESLevelBaselineB {
      */
     public CBAdESLevelBaselineB(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters,
                                 final List<DSSDocument> documentsToSign) {
-        Objects.requireNonNull(certificateVerifier, "certificateVerifier must not be null!");
-        Objects.requireNonNull(certificateVerifier, "signatureParameters must be defined!");
+        this(certificateVerifier, parameters);
         if (Utils.isCollectionEmpty(documentsToSign)) {
             throw new IllegalArgumentException("Documents to sign must be provided!");
         }
+        this.documentsToSign = documentsToSign;
+    }
+
+    /**
+     * The constructor without original document (used for counter signing)
+     *
+     * @param certificateVerifier {@link CertificateVerifier}
+     * @param parameters {@link CBAdESSignatureParameters}
+     */
+    protected CBAdESLevelBaselineB(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters) {
+        Objects.requireNonNull(certificateVerifier, "certificateVerifier must not be null!");
+        Objects.requireNonNull(parameters, "signatureParameters must be defined!");
         this.certificateVerifier = certificateVerifier;
         this.parameters = parameters;
-        this.documentsToSign = documentsToSign;
     }
 
     /**

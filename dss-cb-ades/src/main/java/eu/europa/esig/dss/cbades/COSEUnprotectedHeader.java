@@ -21,7 +21,7 @@ public class COSEUnprotectedHeader extends CBORMap {
      * @param headerMap {@link CBORMap}
      */
     public COSEUnprotectedHeader(final CBORMap headerMap) {
-        super((co.nstant.in.cbor.model.Map) headerMap.toDataItem());
+        super(headerMap.toDataItem());
     }
 
 }

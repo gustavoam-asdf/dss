@@ -162,6 +162,38 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
         return null;
     }
 
+    @Override
+    public ToBeSigned getDataToBeCounterSigned(DSSDocument signatureDocument, CBAdESCounterSignatureParameters parameters) {
+        Objects.requireNonNull(signatureDocument, "signatureDocument cannot be null!");
+        verifyAndSetCounterSignatureParameters(parameters);
+        assertSigningCertificateValid(parameters);
+
+        final CBAdESCounterSignatureBuilder counterSignatureBuilder =
+                new CBAdESCounterSignatureBuilder(certificateVerifier, parameters, signatureDocument);
+        return counterSignatureBuilder.buildDataToBeSigned();
+    }
+
+    @Override
+    public DSSDocument counterSignSignature(DSSDocument signatureDocument, CBAdESCounterSignatureParameters parameters,
+                                            SignatureValue signatureValue) {
+        Objects.requireNonNull(signatureDocument, "signatureDocument cannot be null!");
+        Objects.requireNonNull(parameters, "SignatureParameters cannot be null!");
+        Objects.requireNonNull(signatureValue, "signatureValue cannot be null!");
+        verifyAndSetCounterSignatureParameters(parameters);
+        assertSigningCertificateValid(parameters);
+
+        final CBAdESCounterSignatureBuilder counterSignatureBuilder =
+                new CBAdESCounterSignatureBuilder(certificateVerifier, parameters, signatureDocument);
+        DSSDocument counterSigned = counterSignatureBuilder.buildEmbeddedCounterSignature(signatureValue);
+
+        parameters.reinit();
+        counterSigned.setName(getFinalFileName(signatureDocument, SigningOperation.COUNTER_SIGN,
+                parameters.getSignatureLevel()));
+        counterSigned.setMimeType(signatureDocument.getMimeType());
+
+        return counterSigned;
+    }
+
     /**
      * Returns the CBAdESBuilder to be used
      *
@@ -204,63 +236,15 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
         return false;
     }
 
-    @Override
-    public ToBeSigned getDataToBeCounterSigned(DSSDocument signatureDocument, CBAdESCounterSignatureParameters parameters) {
-        Objects.requireNonNull(signatureDocument, "signatureDocument cannot be null!");
-        verifyAndSetCounterSignatureParameters(parameters);
-        assertSigningCertificateValid(parameters);
-
-        CBAdESCounterSignatureBuilder counterSignatureBuilder = new CBAdESCounterSignatureBuilder();
-        DSSDocument signatureValueToSign = counterSignatureBuilder.getSignatureValueToBeSigned(signatureDocument, parameters);
-
-        return getDataToSign(signatureValueToSign, parameters);
-    }
-
-    @Override
-    public DSSDocument counterSignSignature(DSSDocument signatureDocument, CBAdESCounterSignatureParameters parameters,
-                                            SignatureValue signatureValue) {
-        Objects.requireNonNull(signatureDocument, "signatureDocument cannot be null!");
-        Objects.requireNonNull(parameters, "SignatureParameters cannot be null!");
-        Objects.requireNonNull(signatureValue, "signatureValue cannot be null!");
-        verifyAndSetCounterSignatureParameters(parameters);
-        assertSigningCertificateValid(parameters);
-
-        CBAdESCounterSignatureBuilder counterSignatureBuilder = new CBAdESCounterSignatureBuilder();
-        DSSDocument signatureValueToSign = counterSignatureBuilder.getSignatureValueToBeSigned(signatureDocument, parameters);
-
-        DSSDocument counterSignature = signDocument(signatureValueToSign, parameters, signatureValue);
-
-        DSSDocument counterSigned = counterSignatureBuilder.buildEmbeddedCounterSignature(signatureDocument, counterSignature, parameters);
-
-        parameters.reinit();
-        counterSigned.setName(getFinalFileName(signatureDocument, SigningOperation.COUNTER_SIGN,
-                parameters.getSignatureLevel()));
-        counterSigned.setMimeType(signatureDocument.getMimeType());
-
-        return counterSigned;
-    }
-
     private void verifyAndSetCounterSignatureParameters(CBAdESCounterSignatureParameters parameters) {
-        if (parameters.getSignaturePackaging() == null) {
-            // attached counter signature is created by default
-            parameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        }
+        // detached counter signature is the only allowed type
+        parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
 
-        switch (parameters.getSignaturePackaging()) {
-            case ENVELOPING:
-                break;
-            case DETACHED:
-                if (parameters.getSigDMechanism() == null) {
-                    parameters.setSigDMechanism(SigDMechanism.NO_SIG_D);
-                } else if (!SigDMechanism.NO_SIG_D.equals(parameters.getSigDMechanism())) {
-                    throw new IllegalArgumentException(String.format("The SigDMechanism '%s' is not supported by CBAdES Counter Signature!",
-                            parameters.getSigDMechanism()));
-                }
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        String.format("The SignaturePackaging '%s' is not supported by CBAdES Counter Signature!",
-                                parameters.getSignaturePackaging()));
+        if (parameters.getSigDMechanism() == null) {
+            parameters.setSigDMechanism(SigDMechanism.NO_SIG_D);
+        } else if (!SigDMechanism.NO_SIG_D.equals(parameters.getSigDMechanism())) {
+            throw new IllegalArgumentException(String.format("The SigDMechanism '%s' is not supported by CBAdES Counter Signature!",
+                    parameters.getSigDMechanism()));
         }
     }
 

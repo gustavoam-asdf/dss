@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -207,11 +208,17 @@ public final class CBORUtils {
      *
      * @param bytes byte array to parse
      * @return a list of {@link DataItem}s
-     * @throws CborException if an error occurs on byte array parsing
      */
-    public static CBORObject parseCbor(byte[] bytes) throws CborException {
-        List<DataItem> dataItems = CborDecoder.decode(bytes);
-        return toCBORObject(dataItems);
+    public static CBORObject parseCbor(byte[] bytes) {
+        try {
+            List<DataItem> dataItems = CborDecoder.decode(bytes);
+            return toCBORObject(dataItems);
+        } catch (CborException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Error on parsing binaries: {}", Utils.toBase64(bytes));
+            }
+            throw new DSSException(String.format("Unable to parse binaries : %s. More detail in debug mode.", e.getMessage()), e);
+        }
     }
 
     private static CBORObject toCBORObject(List<DataItem> dataItems) {
@@ -252,6 +259,16 @@ public final class CBORUtils {
         } catch (CborException | IOException e) {
             throw new DSSException(String.format("Unable to serialize CBOR object : %s", e.getMessage()), e);
         }
+    }
+
+    /**
+     * Returns a CBOR Byte String wrapped incorporation of the {@code cborObject}
+     *
+     * @param cborObject {@link CBORObject} to serialized and incroporate into CBOR Byte String type
+     * @return {@link CBORByteString}
+     */
+    public static CBORByteString toCborBtsrWrapped(CBORObject cborObject) {
+        return new CBORByteString(serializeCborObject(cborObject));
     }
 
     /**
@@ -303,6 +320,89 @@ public final class CBORUtils {
      */
     public static boolean isRequiredCriticalHeader(Long headerId) {
         return requiredCriticalHeaders.contains(headerId);
+    }
+
+    /**
+     * Checks if all components have one type (CBOR btsr or clear objects)
+     *
+     * @param uHeaders {@link CBORArray} of objects to check
+     * @return TRUE if all components are uniform (CBOR btsr or clear objects), FALSE
+     *         otherwise
+     */
+    public static boolean checkComponentsUnicity(CBORArray uHeaders) {
+        if (uHeaders != null && !uHeaders.isEmpty()) {
+            Iterator<CBORObject> iterator = uHeaders.getItems().iterator();
+            CBORObject uHeader = iterator.next();
+            boolean stringFormat = isCborByteStringWrappedFormat(uHeader);
+            while (iterator.hasNext()) {
+                uHeader = iterator.next();
+                if (stringFormat != isCborByteStringWrappedFormat(uHeader)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks of the object is an instance of a CBOR btsr type
+     *
+     * @param uHeader {@link CBORObject} to check
+     * @return TRUE if the object is an instance of CBOR btsr type, FALSE otherwise
+     */
+    public static boolean isCborByteStringWrappedFormat(CBORObject uHeader) {
+        return uHeader.isByteString();
+    }
+
+    /**
+     * Checks if the all components are CBOR byte string encoded
+     *
+     * @param uHeaders {@link CBORArray} to check
+     * @return TRUE if all the components are CBOR byte string encoded, FALSE otherwise
+     */
+    public static boolean areAllCborBtsrComponents(CBORArray uHeaders) {
+        if (uHeaders != null && !uHeaders.isEmpty()) {
+            for (CBORObject component : uHeaders.getItems()) {
+                if (!isCborByteStringWrappedFormat(component)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method parses a {@code CBORObject} representing a component of 'uHeaders' unsigned header parameter,
+     * returning a value of the entry in the unified form {@code CBORMap}
+     *
+     * @param uHeadersEntry {@link CBORObject} to parse
+     * @return {@link CBORMap} if parsing is successful, NULL otherwise
+     */
+    public static CBORMap parseUHeadersEntry(CBORObject uHeadersEntry) {
+        if (uHeadersEntry.isByteString()) {
+            LOG.trace("CBOR Byte String encoded 'uHeader' component found. Parse to CBORMap.");
+            byte[] componentSerialized = ((CBORByteString) uHeadersEntry).getBytes();
+            try {
+                uHeadersEntry = CBORUtils.parseCbor(componentSerialized);
+            } catch (Exception e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.warn("An error occurred on parsing 'uHeaders' component with value (b64-encoded) '{}' : {}", Utils.toBase64(componentSerialized), e.getMessage(), e);
+                } else {
+                    LOG.warn("An error occurred on parsing 'uHeaders' component : {}", e.getMessage());
+                }
+            }
+        }
+        if (!uHeadersEntry.isMap()) {
+            LOG.warn("Component of 'uHeaders' unsigned header parameter shall be of CBORMap type! Entry is skipped.");
+            return null;
+        }
+
+        CBORMap uHeadersEntryMap = (CBORMap) uHeadersEntry;
+        if (uHeadersEntryMap.getSize() != 1) {
+            LOG.warn("Only one entry is allowed within an 'uHeaders' component! Entry is skipped.");
+            return null;
+        }
+        return uHeadersEntryMap;
     }
 
 }

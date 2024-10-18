@@ -5,6 +5,7 @@ import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
+import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -51,14 +52,8 @@ public class CBAdESBuilder {
      * @param documentsToSign a list of {@link DSSDocument}s to sign
      */
     public CBAdESBuilder(final CertificateVerifier certificateVerifier, final CBAdESSignatureParameters parameters,
-                            final List<DSSDocument> documentsToSign) {
-        Objects.requireNonNull(certificateVerifier, "CertificateVerifier must be defined!");
-        Objects.requireNonNull(parameters, "SignatureParameters must be defined!");
-        if (Utils.isCollectionEmpty(documentsToSign)) {
-            throw new IllegalArgumentException("Documents to sign must be provided!");
-        }
-        this.parameters = parameters;
-        this.cbadesLevelBaselineB = new CBAdESLevelBaselineB(certificateVerifier, parameters, documentsToSign);
+                         final List<DSSDocument> documentsToSign) {
+        this(parameters, new CBAdESLevelBaselineB(certificateVerifier, parameters, documentsToSign));
     }
 
     /**
@@ -72,6 +67,17 @@ public class CBAdESBuilder {
                          final COSESign coseSign) {
         this(certificateVerifier, parameters, extractDocumentToBeSigned(parameters, coseSign));
         this.coseSign = coseSign;
+    }
+
+    /**
+     * Generic builder for a custom implementation
+     *
+     * @param parameters {@link CBAdESSignatureParameters}
+     */
+    protected CBAdESBuilder(final CBAdESSignatureParameters parameters, final CBAdESLevelBaselineB cbadesLevelBaselineB) {
+        Objects.requireNonNull(parameters, "SignatureParameters must be defined!");
+        this.parameters = parameters;
+        this.cbadesLevelBaselineB = cbadesLevelBaselineB;
     }
 
     private static List<DSSDocument> extractDocumentToBeSigned(CBAdESSignatureParameters parameters, COSESign coseSign) {
@@ -97,10 +103,7 @@ public class CBAdESBuilder {
     public ToBeSigned buildDataToBeSigned() {
         assertConfigurationValidity(parameters);
 
-        COSESignStructure coseSignStructure = createCOSESignStructure();
-        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESignStructure(coseSignStructure);
-
-        CBORSignature cborSignature = cborSignatures.get(cborSignatures.size() - 1);
+        CBORSignature cborSignature = prepareCBORSignature();
         if (parameters.getExternallySuppliedData() != null) {
             cborSignature.setExternalAttributesBytes(DSSUtils.toByteArray(parameters.getExternallySuppliedData()));
         }
@@ -114,6 +117,17 @@ public class CBAdESBuilder {
     }
 
     /**
+     * Creates a {@code CBORSignature} for cryptographic processing
+     *
+     * @return {@link CBORSignature}
+     */
+    protected CBORSignature prepareCBORSignature() {
+        COSESignStructure coseSignStructure = (COSESignStructure) createCOSESignStructure();
+        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESignStructure(coseSignStructure);
+        return cborSignatures.get(cborSignatures.size() - 1);
+    }
+
+    /**
      * Builds a COSE signature document
      * 
      * @param signatureValue {@link SignatureValue} to be embedded
@@ -121,7 +135,7 @@ public class CBAdESBuilder {
      */
     public DSSDocument build(SignatureValue signatureValue) {
         assertConfigurationValidity(parameters);
-        COSESignStructure coseSignStructure = createCOSESignStructure(signatureValue);
+        COSEStructure coseSignStructure = createCOSESignStructure(signatureValue);
         byte[] coseBytes = coseSignStructure.serialize();
         return new InMemoryDocument(coseBytes);
     }
@@ -129,9 +143,9 @@ public class CBAdESBuilder {
     /**
      * This method creates a COSE_Sign or COSE_Sign1 structure without a SignatureValue, based on the provided configuration
      *
-     * @return {@link COSESignStructure}
+     * @return {@link COSEStructure}
      */
-    protected COSESignStructure createCOSESignStructure() {
+    protected COSEStructure createCOSESignStructure() {
         return createCOSESignStructure(null);
     }
 
@@ -140,9 +154,9 @@ public class CBAdESBuilder {
      * based on the provided configuration
      * 
      * @param signatureValue {@link SignatureValue} to embed
-     * @return {@link COSESignStructure}
+     * @return {@link COSEStructure}
      */
-    protected COSESignStructure createCOSESignStructure(SignatureValue signatureValue) {
+    protected COSEStructure createCOSESignStructure(SignatureValue signatureValue) {
         boolean isDataToSignComputation = signatureValue == null;
         switch (parameters.getCoseStructureType()) {
             case COSE_SIGN:
@@ -224,7 +238,12 @@ public class CBAdESBuilder {
         return new CBORNull();
     }
 
-    private void assertConfigurationValidity(CBAdESSignatureParameters signatureParameters) {
+    /**
+     * Verifies whether the signature parameters are valid
+     *
+     * @param signatureParameters {@link CBAdESSignatureParameters}
+     */
+    protected void assertConfigurationValidity(CBAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(signatureParameters.getSignaturePackaging(), "SignaturePackaging shall be defined!");
         Objects.requireNonNull(signatureParameters.getSignatureLevel(), "SignatureLevel shall be defined!");
         Objects.requireNonNull(signatureParameters.getCoseStructureType(), "COSEStructureType shall be defined!");

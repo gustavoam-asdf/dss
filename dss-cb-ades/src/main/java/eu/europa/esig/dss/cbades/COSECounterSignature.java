@@ -75,6 +75,16 @@ public class COSECounterSignature extends COSESignature implements COSECounterSi
 
     @Override
     public byte[] serialize() {
+        CBORArray cborArray = toCBORObject();
+        return CBORUtils.serializeCborObject(cborArray);
+    }
+
+    /**
+     * Serialized the current COSE counter signature structure to a CBOR Object
+     *
+     * @return {@link CBORArray}
+     */
+    public CBORArray toCBORObject() {
         final CBORArray coseCounterSignature = new CBORArray(3);
         if (tagged) {
             Objects.requireNonNull(getContext(), "Context shall be defined for a tagged CBOR object!");
@@ -83,7 +93,7 @@ public class COSECounterSignature extends COSESignature implements COSECounterSi
         coseCounterSignature.add(getProtectedHeader().getByteString());
         coseCounterSignature.add(getUnprotectedHeader());
         coseCounterSignature.add(getSignature());
-        return CBORUtils.serializeCborObject(coseCounterSignature);
+        return coseCounterSignature;
     }
 
 }

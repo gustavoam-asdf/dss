@@ -89,7 +89,7 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
         assertTrue(Utils.isArrayNotEmpty(payload.getBytes()));
     }
 
-    protected void checkProtectedHeader(CBORByteString protectedHeader) throws Exception {
+    protected void checkProtectedHeader(CBORByteString protectedHeader) {
         assertNotNull(protectedHeader);
         assertTrue(Utils.isArrayNotEmpty(protectedHeader.getBytes()));
 
@@ -154,7 +154,7 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
         }
     }
 
-    protected void checkSigningTime(CBORMap protectedHeaderMap) throws Exception {
+    protected void checkSigningTime(CBORMap protectedHeaderMap) {
         Long sigT = protectedHeaderMap.getAsLong(102L);
         assertNotNull(sigT);
 

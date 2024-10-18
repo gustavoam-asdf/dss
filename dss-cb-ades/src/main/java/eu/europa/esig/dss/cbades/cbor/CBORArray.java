@@ -202,7 +202,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
      * @param index position of the item in the array to return
      * @return {@link CBORArray}
      */
-    protected CBORObject getItem(int index) {
+    public CBORObject getItem(int index) {
         return CBORUtils.toCBORObject(toDataItem().getDataItems().get(index));
     }
 

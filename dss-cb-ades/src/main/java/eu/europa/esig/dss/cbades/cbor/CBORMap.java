@@ -78,7 +78,7 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
      */
     public CBORByteString getByteString() {
         if (serializedMap == null) {
-            serializedMap = new CBORByteString(CBORUtils.serializeCborObject(this));
+            serializedMap = CBORUtils.toCborBtsrWrapped(this);
         }
         return serializedMap;
     }
@@ -256,6 +256,15 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
      */
     public boolean isEmpty() {
         return Utils.isCollectionEmpty(toDataItem().getKeys());
+    }
+
+    /**
+     * Returns size of the map
+     *
+     * @return size of the map
+     */
+    public int getSize() {
+        return toDataItem().getKeys().size();
     }
 
 }

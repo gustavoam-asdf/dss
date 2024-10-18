@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.cbades.requirements;
 
-import co.nstant.in.cbor.CborException;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -86,7 +85,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
         return (CBORMap) unprotectedHeader;
     }
 
-    private CBORArray getCose(byte[] byteArray) throws Exception {
+    private CBORArray getCose(byte[] byteArray) {
         CBORObject cborObject = CBORUtils.parseCbor(byteArray);
         assertTrue(cborObject.isArray());
         return (CBORArray) cborObject;
@@ -104,7 +103,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
         return signature;
     }
 
-    protected void checkBodyProtectedHeader(CBORByteString bodyProtectedHeader) throws CborException {
+    protected void checkBodyProtectedHeader(CBORByteString bodyProtectedHeader) {
         assertNotNull(bodyProtectedHeader);
         assertTrue(Utils.isArrayNotEmpty(bodyProtectedHeader.getBytes()));
 

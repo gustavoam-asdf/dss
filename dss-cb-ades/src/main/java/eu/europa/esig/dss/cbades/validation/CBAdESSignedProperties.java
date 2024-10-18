@@ -31,8 +31,20 @@ public class CBAdESSignedProperties implements SignatureProperties<CBAdESAttribu
      * @param signerProtectedHeader {@link COSEProtectedHeader} of the COSE signer structure (only for COSE_Sign)
      */
     public CBAdESSignedProperties(COSEProtectedHeader bodyProtectedHeader, COSEProtectedHeader signerProtectedHeader) {
+        if (bodyProtectedHeader == null && signerProtectedHeader == null) {
+            throw new NullPointerException("Either bodyProtectedHeader or signerProtectedHeader shall be defined!");
+        }
         this.bodyProtectedHeader = bodyProtectedHeader;
         this.signerProtectedHeader = signerProtectedHeader;
+    }
+
+    /**
+     * Constructor for counter signature
+     *
+     * @param signerProtectedHeader {@link COSEProtectedHeader} of the COSE counter signature structure
+     */
+    public CBAdESSignedProperties(COSEProtectedHeader signerProtectedHeader) {
+        this(null, signerProtectedHeader);
     }
 
     @Override

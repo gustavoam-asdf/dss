@@ -46,7 +46,7 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
         return (CBORMap) unprotectedHeader;
     }
 
-    private CBORArray getCose(byte[] byteArray) throws Exception {
+    private CBORArray getCose(byte[] byteArray) {
         CBORObject cborObject = CBORUtils.parseCbor(byteArray);
         assertTrue(cborObject.isArray());
         return (CBORArray) cborObject;

@@ -87,6 +87,16 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     private SigDMechanism sigDMechanism;
 
     /**
+     * Defines if the items of the 'uHeader' unprotected headers will be incorporated
+     * in their corresponding CBOR Byte String encodings, if FALSE the components will
+     * appear as clear CBOR object instances.
+     * All the components of 'uHeader' header shall appear in the same representation.
+     * <p>
+     * Default : TRUE (CBOR Byte String wrapped uHeader components)
+     */
+    private boolean cborBtsrWrappedComponents = true;
+
+    /**
      * Default constructor instantiating object with default parameters
      */
     public CBAdESSignatureParameters() {
@@ -320,6 +330,29 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setSigDMechanism(SigDMechanism sigDMechanism) {
         this.sigDMechanism = sigDMechanism;
+    }
+
+    /**
+     * Gets if the 'uHeaders' unsigned header parameter components shall be incorporated
+     * in their corresponding CBOR Byte String wrapping.
+     *
+     * @return whether 'uHeaders' components shall be CBOR Byte String encoded
+     */
+    public boolean isCborBtsrWrappedComponents() {
+        return cborBtsrWrappedComponents;
+    }
+
+    /**
+     * Sets whether components of the 'uHeaders' unsigned header parameter shall be incorporated
+     * in their corresponding CBOR Byte String wrapping representation.
+     * If set to FALSE, the 'uHeaders' components are incorporated in their clear form.
+     * <p>
+     * Default : TRUE (CBOR Byte String wrapped uHeader components)
+     *
+     * @param cborBtsrWrappedComponents whether 'uHeaders' components shall be CBOR Byte String encoded
+     */
+    public void setCborBtsrWrappedComponents(boolean cborBtsrWrappedComponents) {
+        this.cborBtsrWrappedComponents = cborBtsrWrappedComponents;
     }
 
 }

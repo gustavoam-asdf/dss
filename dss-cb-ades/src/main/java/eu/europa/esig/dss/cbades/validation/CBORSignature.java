@@ -2,7 +2,9 @@ package eu.europa.esig.dss.cbades.validation;
 
 import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
+import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
@@ -23,6 +25,7 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +170,32 @@ public class CBORSignature {
         return cborSignature;
     }
 
+    /**
+     * This method creates a list of {@code CBORSignature}s for the given {@code COSECounterSignStructure},
+     * representing a validation object for each embedded signer.
+     *
+     * @param coseCounterSignStructure {@link COSECounterSignStructure}
+     * @return a list of {@link CBORSignature}
+     */
+    public static List<CBORSignature> fromCOSECounterSignStructure(COSECounterSignStructure coseCounterSignStructure) {
+        Objects.requireNonNull(coseCounterSignStructure, "COSECounterSignStructure cannot be null!");
+
+        if (coseCounterSignStructure instanceof COSECounterSignature) {
+            return Collections.singletonList(fromCOSECounterSignature((COSECounterSignature) coseCounterSignStructure));
+        } else if (coseCounterSignStructure instanceof COSECounterSignatureArray) {
+            return fromCOSECounterSignatureArray((COSECounterSignatureArray) coseCounterSignStructure);
+        }
+        // TODO : add support for countersignauture0(V2)
+        throw new UnsupportedOperationException(String.format("Unsupported class '%s'", coseCounterSignStructure.getClass()));
+    }
+
+    /**
+     * This method creates a {@code CBORSignature} for the given {@code COSECounterSignature},
+     * representing a validation object for the signer.
+     *
+     * @param coseCounterSignature {@link COSECounterSignature}
+     * @return {@link CBORSignature}
+     */
     public static CBORSignature fromCOSECounterSignature(COSECounterSignature coseCounterSignature) {
         Objects.requireNonNull(coseCounterSignature, "COSECounterSignature cannot be null!");
         Objects.requireNonNull(coseCounterSignature.getContext(), "COSE signature context shall be defined!");
@@ -222,6 +251,27 @@ public class CBORSignature {
         }
 
         return cborSignature;
+    }
+
+    /**
+     * This method creates a list of {@code CBORSignature}s for the given {@code COSECounterSignatureArray},
+     * representing a validation object for the signer.
+     *
+     * @param coseCounterSignatureArray {@link COSECounterSignatureArray}
+     * @return a list of {@link CBORSignature}s
+     */
+    public static List<CBORSignature> fromCOSECounterSignatureArray(COSECounterSignatureArray coseCounterSignatureArray) {
+        Objects.requireNonNull(coseCounterSignatureArray, "COSECounterSignature cannot be null!");
+        Objects.requireNonNull(coseCounterSignatureArray.getContext(), "COSE signature context shall be defined!");
+        if (Utils.isCollectionEmpty(coseCounterSignatureArray.getCoseCounterSignatureList())) {
+            throw new IllegalInputException("COSECounterSignature array cannot be empty!");
+        }
+        final List<CBORSignature> result = new ArrayList<>();
+        for (COSECounterSignature counterSignature : coseCounterSignatureArray.getCoseCounterSignatureList()) {
+            CBORSignature coseCounterSignature = fromCOSECounterSignature(counterSignature);
+            result.add(coseCounterSignature);
+        }
+        return result;
     }
 
     /**
@@ -300,12 +350,30 @@ public class CBORSignature {
     }
 
     /**
+     * Gets externally supplied data
+     *
+     * @return {@link CBORByteString}
+     */
+    public CBORByteString getExternallySuppliedData() {
+        return externallySuppliedData;
+    }
+
+    /**
+     * This method sets externally supplied data binaries, when applicable
+     *
+     * @param externallySuppliedData {@link CBORByteString} representing an externally supplied data
+     */
+    public void setExternalAttributes(CBORByteString externallySuppliedData) {
+        this.externallySuppliedData = externallySuppliedData;
+    }
+
+    /**
      * This method sets externally supplied data binaries, when applicable
      *
      * @param externallySuppliedData byte array representing an externally supplied data
      */
     public void setExternalAttributesBytes(byte[] externallySuppliedData) {
-        this.externallySuppliedData = new CBORByteString(externallySuppliedData);
+        setExternalAttributes(new CBORByteString(externallySuppliedData));
     }
 
     /**
@@ -315,6 +383,15 @@ public class CBORSignature {
      */
     public CBORObject getPayload() {
         return payload;
+    }
+
+    /**
+     * Sets the payload
+     *
+     * @param payload {@link CBORObject}
+     */
+    public void setPayload(CBORObject payload) {
+        this.payload = payload;
     }
 
     /**
@@ -336,6 +413,32 @@ public class CBORSignature {
      */
     public void setPayloadBytes(byte[] payload) {
         this.payload = new CBORByteString(payload);
+    }
+
+    /**
+     * Gets other_fields bytes, when present (master signature's payload)
+     *
+     * @return byte array representing the first entry of the other_fields array
+     */
+    public byte[] getOtherFieldsBytes() {
+        if (otherFields != null) {
+            if (otherFields.isArray()) {
+                CBORArray cborArray = (CBORArray) otherFields;
+                if (!cborArray.isEmpty()) {
+                    CBORObject masterSignatureValue = cborArray.getItem(0);
+                    if (masterSignatureValue.isByteString()) {
+                        return ((CBORByteString) masterSignatureValue).getBytes();
+                    } else {
+                        LOG.warn("Content of the other_fields entry shall be of CBOR Byte String type!");
+                    }
+                } else {
+                    LOG.warn("other_fields array cannot be empty!");
+                }
+            } else {
+                LOG.warn("other_fields shall be of type CBOR Array!");
+            }
+        }
+        return null;
     }
 
     /**
@@ -404,7 +507,6 @@ public class CBORSignature {
                 LOG.trace("Serialized Sig_structure bytes:");
                 LOG.trace(new String(signatureInputBytes));
             }
-            LOG.info(Utils.toHex(signatureInputBytes));
             signatureInstance.update(signatureInputBytes);
 
             // Verify the signature
@@ -626,11 +728,14 @@ public class CBORSignature {
      * @param headerKey identifier of the header
      * @return {@link CBORObject}
      */
-    protected CBORObject getProtectedHeaderValue(long headerKey) {
-        CBORObject bodyProtectedHeaderValue = getBodyProtectedHeaderValue(headerKey);
+    public CBORObject getProtectedHeaderValue(long headerKey) {
         CBORObject signerProtectedHeaderValue = getSignerProtectedHeaderValue(headerKey);
         // NOTE: for counter signatures only the main protected header is used
-        if (!context.isCounterSignature() && bodyProtectedHeaderValue != null && signerProtectedHeaderValue != null) {
+        if (context.isCounterSignature()) {
+            return signerProtectedHeaderValue;
+        }
+        CBORObject bodyProtectedHeaderValue = getBodyProtectedHeaderValue(headerKey);
+        if (bodyProtectedHeaderValue != null && signerProtectedHeaderValue != null) {
             LOG.info("Same protected header '{}' is present in body and signer structure.", headerKey);
             if (!bodyProtectedHeaderValue.equals(signerProtectedHeaderValue)) {
                 LOG.warn("The value of protected header '{}' in body structure does not match the value in signer structure!", headerKey);
@@ -649,22 +754,45 @@ public class CBORSignature {
     }
 
     /**
+     * Returns an unprotected header 'uHeaders' value, if present
+     *
+     * @return {@link CBORArray}
+     */
+    public CBORArray getUHeaders() {
+        return getUnprotectedHeaderValueAsArray(COSEConstants.U_HEADERS);
+    }
+
+    /**
+     * This method returns a CBORArray value extracted from unprotected header of the signature
+     *
+     * @param headerKey identifier of the header
+     * @return {@link CBORArray) value if header is identified, NULL otherwise
+     */
+    public CBORArray getUnprotectedHeaderValueAsArray(long headerKey) {
+        CBORObject unprotectedHeaderValue = getUnprotectedHeaderValue(headerKey);
+        if (unprotectedHeaderValue != null && (unprotectedHeaderValue.isArray())) {
+            return ((CBORArray) unprotectedHeaderValue);
+        }
+        return null;
+    }
+
+    /**
      * This method returns a value extracted from unprotected header of the signature
      *
      * @param headerKey identifier of the header
      * @return {@link CBORObject}
      */
-    protected CBORObject getUnprotectedHeaderValue(long headerKey) {
+    public CBORObject getUnprotectedHeaderValue(long headerKey) {
         CBORObject bodyUnprotectedHeaderValue = getBodyUnprotectedHeaderValue(headerKey);
         CBORObject signerUnprotectedHeaderValue = getSignerUnprotectedHeaderValue(headerKey);
         if (bodyUnprotectedHeaderValue != null && signerUnprotectedHeaderValue != null) {
             LOG.info("Same unprotected header '{}' is present in body and signer structure.", headerKey);
-            if (bodyUnprotectedHeaderValue.equals(signerUnprotectedHeaderValue)) {
+            if (!bodyUnprotectedHeaderValue.equals(signerUnprotectedHeaderValue)) {
                 LOG.warn("The value of unprotected header '{}' in body structure does not match the value in signer structure!", headerKey);
                 return null;
             }
         }
-        return bodyUnprotectedHeaderValue != null ? bodyUnprotectedHeaderValue : signerUnprotectedHeaderValue;
+        return signerUnprotectedHeaderValue != null ? signerUnprotectedHeaderValue : bodyUnprotectedHeaderValue;
     }
 
     private CBORObject getBodyUnprotectedHeaderValue(long headerKey) {

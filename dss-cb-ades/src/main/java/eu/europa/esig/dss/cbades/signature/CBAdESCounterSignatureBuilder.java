@@ -1,44 +1,125 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSECounterSignature;
+import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.COSEStructure;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
+import eu.europa.esig.dss.cbades.validation.COSEDocumentAnalyzer;
+import eu.europa.esig.dss.enumerations.TimestampedObjectType;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+
+import java.util.Objects;
 
 /**
- * Creates a CB-AdES Counter signature
+ * Creates a CB-AdES Counter signature.
+ * This class creates only RFC 9338 Countersignature version 2 type,
+ * as other counter signature types do not meet CB-AdES requirements.
  * 
  */
-public class CBAdESCounterSignatureBuilder extends CBAdESExtensionBuilder {
+public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
+
+    /** Master signature to be counter signed */
+    private final CBAdESSignature masterSignature;
 
     /**
-     * Default constructor
+     * Constructor for counter signature creation
+     *
+     * @param certificateVerifier {@link CertificateVerifier} to use
+     * @param parameters {@link CBAdESSignatureParameters}
+     * @param signatureDocument {@link DSSDocument} containing the target signature to be counter signed
      */
-    public CBAdESCounterSignatureBuilder() {
-        // empty
+    public CBAdESCounterSignatureBuilder(final CertificateVerifier certificateVerifier, final CBAdESCounterSignatureParameters parameters,
+                                         final DSSDocument signatureDocument) {
+        super(parameters, new CBAdESLevelBaselineB(certificateVerifier, parameters));
+        Objects.requireNonNull(certificateVerifier, "CertificateVerifier must be defined!");
+        Objects.requireNonNull(signatureDocument, "Signature document cannot be null!");
+
+        this.masterSignature = extractSignatureById(signatureDocument, parameters.getSignatureIdToCounterSign());
+    }
+
+    private CBAdESSignature extractSignatureById(final DSSDocument signatureDocument, String signatureId) {
+        Objects.requireNonNull(signatureId, "The Id of a signature to be counter signed shall be defined! "
+                + "Please use SerializableCounterSignatureParameters.setSignatureIdToCounterSign(signatureId) method.");
+
+        COSEDocumentAnalyzer documentAnalyzer = new COSEDocumentAnalyzer(signatureDocument);
+        AdvancedSignature signatureById = documentAnalyzer.getSignatureById(signatureId);
+        if (signatureById == null) {
+            throw new IllegalArgumentException(String.format("The requested CB-AdES Signature with id '%s' " +
+                    "has not been found in the provided file!", signatureId));
+        }
+        assertCounterSignaturePossible(signatureById);
+        return (CBAdESSignature) signatureById;
+    }
+
+    private void assertCounterSignaturePossible(AdvancedSignature targetSignature) {
+        assertSignatureNotTimestampedRecursively(targetSignature);
+    }
+
+    private void assertSignatureNotTimestampedRecursively(AdvancedSignature signature) {
+        if (signature != null && signature.getMasterSignature() != null) {
+            AdvancedSignature masterSignature = signature.getMasterSignature();
+            if (masterSignature.getTimestampSource().isTimestamped(signature.getId(), TimestampedObjectType.SIGNATURE)) {
+                throw new IllegalInputException(String.format("Unable to counter sign a signature with Id '%s'. "
+                        + "The signature is timestamped by a master signature!", signature.getId()));
+            }
+            assertSignatureNotTimestampedRecursively(masterSignature);
+        }
+    }
+
+    @Override
+    protected CBORSignature prepareCBORSignature() {
+        COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure();
+        return CBORSignature.fromCOSECounterSignature(coseCounterSignature);
+    }
+
+    @Override
+    protected CBORObject getPayload(boolean dataToSign) {
+        throw new UnsupportedOperationException("The method #getPayload(boolean dataToSign) is not supported " +
+                "for CBAdESCounterSignatureBuilder class!");
     }
 
     /**
-     * Extract SignatureValue binaries from the provided CB-AdES signature
+     * Embeds and returns the original CBAdES signature containing the embedded counter signature
      *
-     * @param signatureDocument {@link DSSDocument} to be counter-signed
-     * @param parameters {@link CBAdESCounterSignatureParameters}
-     * @return {@link DSSDocument} extracted SignatureValue
+     * @param signatureValue {@link SignatureValue} to be incorporated
+     * @return {@link DSSDocument} original signature document enveloping the {@code counterSignature} in an unprotected header
      */
-    public DSSDocument getSignatureValueToBeSigned(DSSDocument signatureDocument, CBAdESCounterSignatureParameters parameters) {
-        // TODO : to be implemented
-        return null;
+    public DSSDocument buildEmbeddedCounterSignature(SignatureValue signatureValue) {
+        CBAdESUHeaders uHeaders = masterSignature.getUHeaders();
+        COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure(signatureValue);
+        uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject(), parameters.isCborBtsrWrappedComponents());
+
+        CBAdESSignature upperSignature = getUpperSignature(masterSignature);
+        COSEStructure coseSignStructure = upperSignature.getCoseSignature().getCoseSignStructure();
+        byte[] serializedBytes = coseSignStructure.serialize();
+        return new InMemoryDocument(serializedBytes);
     }
 
-    /**
-     * Embeds and returns the embedded counter signature into the original CBAdES signature
-     *
-     * @param signatureDocument {@link DSSDocument} the original document containing the signature to be counter signed
-     * @param counterSignature {@link DSSDocument} the counter signature
-     * @param parameters {@link CBAdESCounterSignatureParameters}
-     * @return {@link DSSDocument} original signature enveloping the {@code counterSignature} in an unprotected header
-     */
-    public DSSDocument buildEmbeddedCounterSignature(DSSDocument signatureDocument, DSSDocument counterSignature,
-                                                     CBAdESCounterSignatureParameters parameters) {
-        // TODO : to be implemented
-        return null;
+    private CBAdESSignature getUpperSignature(CBAdESSignature signature) {
+        if (signature.getMasterSignature() == null) {
+            return signature;
+        }
+        return getUpperSignature((CBAdESSignature) signature.getMasterSignature());
+    }
+
+    @Override
+    protected COSEStructure createCOSESignStructure(SignatureValue signatureValue) {
+        final COSECounterSignature coseCounterSignature = new COSECounterSignature();
+        coseCounterSignature.setContext(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2); // the only supported counter signature type
+        coseCounterSignature.setMasterSignature(masterSignature.getCoseSignature().getCoseSignStructure());
+        coseCounterSignature.setTagged(parameters.isTagged());
+        coseCounterSignature.setProtectedHeader(getProtectedHeader());
+        coseCounterSignature.setSignature(getSignature(signatureValue));
+        return coseCounterSignature;
     }
 
 }

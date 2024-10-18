@@ -3,10 +3,10 @@ package eu.europa.esig.dss.cbades.validation;
 import eu.europa.esig.dss.cbades.CBAdESSignatureIntegrityValidator;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
-import eu.europa.esig.dss.cbades.COSESign;
-import eu.europa.esig.dss.cbades.COSESign1;
-import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.cbades.COSESignature;
+import eu.europa.esig.dss.cbades.COSECounterSignStructure;
+import eu.europa.esig.dss.cbades.COSECounterSignatureParser;
+import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -579,37 +579,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public SignatureDigestReference getSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
         // TODO : no definition is available -> build a signature structure based on its context
-        COSESignStructure coseSignStructure;
-        switch (cose.getContext()) {
-            case COSE_SIGN:
-                COSESignature coseSignature = new COSESignature();
-                coseSignature.setProtectedHeader(cose.getSignerProtectedHeader());
-                coseSignature.setSignature(cose.getSignature());
-                // unprotected header is ignored (see CAdES or JAdES)
-
-                COSESign coseSign = new COSESign();
-                coseSign.setProtectedHeader(cose.getBodyProtectedHeader());
-                coseSign.setTagged(cose.isTagged());
-                coseSign.setPayload(cose.getPayload());
-
-                // add only the current signature
-                coseSign.getSignatures().add(coseSignature);
-                coseSignStructure = coseSign;
-                break;
-
-            case COSE_SIGN1:
-                COSESign1 coseSign1 = new COSESign1();
-                coseSign1.setTagged(cose.isTagged());
-                coseSign1.setProtectedHeader(cose.getBodyProtectedHeader());
-                coseSign1.setPayload(cose.getPayload());
-                coseSign1.setSignature(cose.getSignature());
-                coseSignStructure = coseSign1;
-                break;
-
-            default:
-                throw new UnsupportedOperationException(String.format("The COSE context '%s' is not supported!", cose.getContext()));
-        }
-
+        COSEStructure coseSignStructure = cose.getCoseSignStructure();
         byte[] serializedBytes = coseSignStructure.serialize();
         byte[] digestValue = DSSUtils.digest(digestAlgorithm, serializedBytes);
         return new SignatureDigestReference(new Digest(digestAlgorithm, digestValue));
@@ -684,9 +654,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             }
 
             if (isCounterSignature()) {
-                // TODO : add support of counter-signatures
-                // referenceValidations.add(getCounterSignatureReferenceValidation());
-                throw new UnsupportedOperationException("Not implemented");
+                referenceValidations.add(getCounterSignatureReferenceValidation());
             }
 
         }
@@ -980,6 +948,41 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         return null;
     }
 
+    private ReferenceValidation getCounterSignatureReferenceValidation() {
+        ReferenceValidation referenceValidation = new ReferenceValidation();
+        referenceValidation.setType(DigestMatcherType.COUNTER_SIGNED_SIGNATURE_VALUE);
+
+        CBAdESSignature masterSignature = (CBAdESSignature) getMasterSignature();
+        if (masterSignature != null) {
+
+            byte[] signatureValue = masterSignature.getSignatureValue();
+            if (Utils.isArrayNotEmpty(signatureValue)) {
+                referenceValidation.setFound(true);
+            }
+
+            // signature value of the master signature can be embedded as a payload or other_fields,
+            // depending on master signature type
+            byte[] unverifiedBytes = cose.getOtherFieldsBytes();
+            if (unverifiedBytes == null) {
+                unverifiedBytes = cose.getPayloadBytes();
+            }
+
+            if (Utils.isArrayNotEmpty(unverifiedBytes)) {
+                boolean intact = Arrays.equals(signatureValue, unverifiedBytes);
+                if (!intact) {
+                    LOG.warn("The payload of a countersignature with Id '{}' does not match the signature value of its master signature!",
+                            getDSSId().asXmlId());
+                }
+                referenceValidation.setIntact(intact);
+            } else {
+                LOG.warn("No payload found for a countersignature with Id '{}'!", getDSSId().asXmlId());
+                referenceValidation.setIntact(false);
+            }
+        }
+
+        return referenceValidation;
+    }
+
     /**
      * Returns a list of original documents signed by the signature
      *
@@ -1056,8 +1059,43 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public List<AdvancedSignature> getCounterSignatures() {
-        // TODO : not implemented
-        return Collections.emptyList();
+        if (counterSignatures != null) {
+            return counterSignatures;
+        }
+        counterSignatures = new ArrayList<>();
+
+        // TODO : add counter signature support outside of 'uHeaders'
+
+        List<CBAdESUHeadersComponent> uHeaders = getUHeaders().getAttributes();
+        if (Utils.isCollectionNotEmpty(uHeaders)) {
+            for (CBAdESUHeadersComponent uHeader : uHeaders) {
+                COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(uHeader.getHeaderId());
+                // is known
+                if (counterSignatureContext != null) {
+                    CBORObject uHeaderValue = uHeader.getValue();
+                    COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
+                    COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(uHeaderValue)
+                            .setContext(counterSignatureContext)
+                            .setMasterSignature(masterSignatureStructure)
+                            .parse();
+                    List<CBORSignature> coseSignatures = CBORSignature.fromCOSECounterSignStructure(coseCounterSignStructure);
+                    for (CBORSignature cose : coseSignatures) {
+                        CBAdESSignature cbadesCounterSignature = new CBAdESSignature(cose);
+                        cbadesCounterSignature.setFilename(getFilename());
+                        cbadesCounterSignature.setMasterSignature(this);
+                        if (cose.getExternallySuppliedData() != null) {
+                            cbadesCounterSignature.getCoseSignature().setExternalAttributes(cose.getExternallySuppliedData());
+                        }
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
+                        }
+                        counterSignatures.add(cbadesCounterSignature);
+                    }
+                }
+                // TODO : add support of countersignature0 and countersignature0V2
+            }
+        }
+        return counterSignatures;
     }
 
     @Override
