@@ -74,11 +74,7 @@ public class COSECounterSignature0 implements COSECounterSignStructure  {
         this.signature = signature;
     }
 
-    /**
-     * Gets the master signature structure
-     *
-     * @return {@link COSEStructure}
-     */
+    @Override
     public COSEStructure getMasterSignature() {
         return masterSignature;
     }

@@ -3,6 +3,7 @@ package eu.europa.esig.dss.cbades.validation;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 
@@ -37,6 +38,17 @@ class CBAdESLevelBCoseSignCountersignatureInArrayRfc8152Test extends AbstractCBA
         }
         assertEquals(1, masterSigCounter);
         assertEquals(2, counterSigCounter);
+    }
+
+    @Override
+    protected void checkSignatureLevel(DiagnosticData diagnosticData) {
+        super.checkSignatureLevel(diagnosticData);
+
+        List<SignatureWrapper> signatures = diagnosticData.getSignatures();
+        assertEquals(3, signatures.size());
+        for (SignatureWrapper signatureWrapper : signatures) {
+            assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+        }
     }
 
 }

@@ -18,6 +18,9 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
     /** Defines the encoding of the structure */
     private boolean tagged;
 
+    /** The master signature structure */
+    private COSEStructure masterSignature;
+
     /** Collection of embedded COSECounterSignature's */
     private List<COSECounterSignature> coseCounterSignatureList;
 
@@ -47,6 +50,20 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
      */
     public void setTagged(boolean tagged) {
         this.tagged = tagged;
+    }
+
+    @Override
+    public COSEStructure getMasterSignature() {
+        return masterSignature;
+    }
+
+    /**
+     * Sets the master signature structure
+     *
+     * @param masterSignature {@link COSEStructure}
+     */
+    public void setMasterSignature(COSEStructure masterSignature) {
+        this.masterSignature = masterSignature;
     }
 
     /**

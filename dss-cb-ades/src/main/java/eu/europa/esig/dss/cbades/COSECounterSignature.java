@@ -55,11 +55,7 @@ public class COSECounterSignature extends COSESignature implements COSECounterSi
         this.tagged = tagged;
     }
 
-    /**
-     * Gets the master signature structure
-     *
-     * @return {@link COSEStructure}
-     */
+    @Override
     public COSEStructure getMasterSignature() {
         return masterSignature;
     }

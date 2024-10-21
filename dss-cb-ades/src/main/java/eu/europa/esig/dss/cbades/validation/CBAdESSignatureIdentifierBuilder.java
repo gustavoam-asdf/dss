@@ -50,7 +50,7 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
         CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
         CBORSignature cose = cbadesSignature.getCoseSignature();
         COSEStructure coseStructure = cose.getCoseSignStructure();
-        COSESignature currentSigner = cose.getSignerSignature();
+        COSEStructure currentSigner = cose.getSignerSignature();
 
         int counter = 0;
         if (coseStructure != null) {

@@ -55,7 +55,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected SignatureProperties<CBAdESAttribute> buildSignedSignatureProperties() {
-        if (signature.isCounterSignature()) {
+        if (signature.isCounterSignature() && signature.getCoseSignature().getSignerProtectedHeader() != null) {
             return new CBAdESSignedProperties(signature.getCoseSignature().getSignerProtectedHeader());
         }
         return new CBAdESSignedProperties(signature.getCoseSignature().getBodyProtectedHeader(),

@@ -12,11 +12,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CBAdESLevelBCoseSignCountersignatureV2InArrayRfc9338Test extends AbstractCBAdESTestValidation {
+class CBAdESLevelBCoseSignCountersignature0Rfc8152Test extends AbstractCBAdESTestValidation {
 
     @Override
     protected DSSDocument getSignedDocument() {
-        return new FileDocument("src/test/resources/validation/cb-ades-cosesign-countersignatureV2-rfc9338-array.cose");
+        return new FileDocument("src/test/resources/validation/cb-ades-cosesign-countersignature0-rfc8152.cose");
     }
 
     @Override
@@ -33,7 +33,7 @@ class CBAdESLevelBCoseSignCountersignatureV2InArrayRfc9338Test extends AbstractC
                 assertEquals(COSESignatureContext.COSE_SIGN, COSESignatureContext.forLabel(signatureWrapper.getSignatureStructureType()));
                 masterSigFound = true;
             } else {
-                assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2, COSESignatureContext.forLabel(signatureWrapper.getSignatureStructureType()));
+                assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE0, COSESignatureContext.forLabel(signatureWrapper.getSignatureStructureType()));
                 counterSigFound = true;
             }
         }
@@ -47,9 +47,20 @@ class CBAdESLevelBCoseSignCountersignatureV2InArrayRfc9338Test extends AbstractC
 
         List<SignatureWrapper> signatures = diagnosticData.getSignatures();
         assertEquals(2, signatures.size());
+
+        boolean masterSigFound = false;
+        boolean counterSigFound = false;
         for (SignatureWrapper signatureWrapper : signatures) {
-            assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+            if (!signatureWrapper.isCounterSignature()) {
+                assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+                masterSigFound = true;
+            } else {
+                assertEquals(SignatureLevel.CBOR_NOT_ETSI, signatureWrapper.getSignatureFormat());
+                counterSigFound = true;
+            }
         }
+        assertTrue(masterSigFound);
+        assertTrue(counterSigFound);
     }
 
 }

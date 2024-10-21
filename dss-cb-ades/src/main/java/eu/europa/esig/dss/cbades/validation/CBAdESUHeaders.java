@@ -145,7 +145,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
             case COSE_SIGN:
             case COSE_COUNTER_SIGNATURE:
             case COSE_COUNTER_SIGNATURE_V2:
-                COSESignature signerSignature = cose.getSignerSignature();
+                COSESignature signerSignature = (COSESignature) cose.getSignerSignature();
                 signerSignature.setUnprotectedHeader(unprotectedHeader);
                 break;
 

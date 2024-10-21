@@ -4,6 +4,7 @@ import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
+import eu.europa.esig.dss.cbades.COSECounterSignature0;
 import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
@@ -82,7 +83,7 @@ public class CBORSignature {
     private COSEStructure coseSignStructure;
 
     /** The original signer signature (applicable only for COSE_Sign) */
-    private COSESignature signerSignature;
+    private COSEStructure signerSignature;
 
     /** The signer's key */
     private Key key;
@@ -184,8 +185,9 @@ public class CBORSignature {
             return Collections.singletonList(fromCOSECounterSignature((COSECounterSignature) coseCounterSignStructure));
         } else if (coseCounterSignStructure instanceof COSECounterSignatureArray) {
             return fromCOSECounterSignatureArray((COSECounterSignatureArray) coseCounterSignStructure);
+        } else if (coseCounterSignStructure instanceof COSECounterSignature0) {
+            return Collections.singletonList(fromCOSECounterSignature0((COSECounterSignature0) coseCounterSignStructure));
         }
-        // TODO : add support for countersignauture0(V2)
         throw new UnsupportedOperationException(String.format("Unsupported class '%s'", coseCounterSignStructure.getClass()));
     }
 
@@ -208,8 +210,13 @@ public class CBORSignature {
         cborSignature.signerUnprotectedHeader = coseCounterSignature.getUnprotectedHeader();
         cborSignature.signature = coseCounterSignature.getSignature();
         cborSignature.signerSignature = coseCounterSignature;
+        appendBodyStructure(cborSignature, coseCounterSignature);
 
-        COSEStructure masterSignature = coseCounterSignature.getMasterSignature();
+        return cborSignature;
+    }
+
+    private static void appendBodyStructure(CBORSignature cborSignature, COSECounterSignStructure coseCounterSignStructure) {
+        COSEStructure masterSignature = coseCounterSignStructure.getMasterSignature();
         switch (masterSignature.getContext()) {
             case COSE_SIGN:
                 COSESign coseSign = (COSESign) masterSignature;
@@ -221,7 +228,7 @@ public class CBORSignature {
                 COSESign1 coseSign1 = (COSESign1) masterSignature;
                 cborSignature.bodyProtectedHeader = coseSign1.getProtectedHeader();
                 cborSignature.payload = coseSign1.getPayload();
-                if (coseCounterSignature.getContext().isCounterSignatureV2()) {
+                if (coseCounterSignStructure.getContext().isCounterSignatureV2()) {
                     /*
                      * RFC 9338
                      *
@@ -249,8 +256,6 @@ public class CBORSignature {
                 throw new UnsupportedOperationException(String.format(
                         "The type of master signature '%s' is not supported!", masterSignature.getContext()));
         }
-
-        return cborSignature;
     }
 
     /**
@@ -273,6 +278,28 @@ public class CBORSignature {
             result.add(coseCounterSignature);
         }
         return result;
+    }
+
+    /**
+     * This method creates a {@code CBORSignature} for the given {@code COSECounterSignature0},
+     * representing a validation object for the signer.
+     *
+     * @param coseCounterSignature0 {@link COSECounterSignature0}
+     * @return {@link CBORSignature}
+     */
+    public static CBORSignature fromCOSECounterSignature0(COSECounterSignature0 coseCounterSignature0) {
+        Objects.requireNonNull(coseCounterSignature0, "COSECounterSignature0 cannot be null!");
+        Objects.requireNonNull(coseCounterSignature0.getContext(), "COSE signature context shall be defined!");
+        Objects.requireNonNull(coseCounterSignature0.getMasterSignature(), "Master signature shall be defined for a counter signature!");
+
+        final CBORSignature cborSignature = new CBORSignature();
+        cborSignature.context = coseCounterSignature0.getContext();
+        cborSignature.tagged = coseCounterSignature0.isTagged();
+        cborSignature.signature = coseCounterSignature0.getSignature();
+        cborSignature.signerSignature = coseCounterSignature0;
+        appendBodyStructure(cborSignature, coseCounterSignature0);
+
+        return cborSignature;
     }
 
     /**
@@ -463,9 +490,9 @@ public class CBORSignature {
     /**
      * Returns the original signer signature structure (applicable only for COSE_Sign signatures)
      *
-     * @return {@link COSESignature}
+     * @return {@link COSEStructure}
      */
-    public COSESignature getSignerSignature() {
+    public COSEStructure getSignerSignature() {
         return signerSignature;
     }
 
@@ -556,6 +583,7 @@ public class CBORSignature {
         } else {
             array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
+
         /*
          * 3. The protected attributes from the signer structure, encoded in a
          * bstr type. If there are no protected attributes, a zero-length
@@ -571,6 +599,7 @@ public class CBORSignature {
                 && COSESignatureContext.COSE_COUNTER_SIGNATURE0_V2 != context) {
             array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
+
         /*
          * 4. The externally supplied data from the application, encoded in a
          * bstr type. If this field is not supplied, it defaults to a zero-
@@ -582,6 +611,7 @@ public class CBORSignature {
         } else {
             array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
+
         /*
          * 5. The payload to be signed, encoded in a bstr type. The full
          *  payload is used here, independent of how it is transported.
@@ -732,7 +762,7 @@ public class CBORSignature {
     public CBORObject getProtectedHeaderValue(long headerKey) {
         CBORObject signerProtectedHeaderValue = getSignerProtectedHeaderValue(headerKey);
         // NOTE: for counter signatures only the main protected header is used
-        if (context.isCounterSignature()) {
+        if (context.isCounterSignature() && signerProtectedHeader != null) {
             return signerProtectedHeaderValue;
         }
         CBORObject bodyProtectedHeaderValue = getBodyProtectedHeaderValue(headerKey);
@@ -786,7 +816,7 @@ public class CBORSignature {
     public CBORObject getUnprotectedHeaderValue(long headerKey) {
         CBORObject signerUnprotectedHeaderValue = getSignerUnprotectedHeaderValue(headerKey);
         // NOTE: for counter signatures only the main unprotected header is used
-        if (context.isCounterSignature()) {
+        if (context.isCounterSignature() && signerUnprotectedHeader != null) {
             return signerUnprotectedHeaderValue;
         }
         CBORObject bodyUnprotectedHeaderValue = getBodyUnprotectedHeaderValue(headerKey);

@@ -13,4 +13,11 @@ public interface COSECounterSignStructure extends COSEStructure {
      */
     boolean isTagged();
 
+    /**
+     * Gets the master signature structure
+     *
+     * @return {@link COSEStructure}
+     */
+    COSEStructure getMasterSignature();
+
 }

@@ -3,6 +3,7 @@ package eu.europa.esig.dss.cbades.validation;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 
@@ -38,6 +39,17 @@ class CBAdESLevelBCoseSignCountersignatureRfc8152UnsignedPropsTest extends Abstr
         }
         assertTrue(masterSigFound);
         assertTrue(counterSigFound);
+    }
+
+    @Override
+    protected void checkSignatureLevel(DiagnosticData diagnosticData) {
+        super.checkSignatureLevel(diagnosticData);
+
+        List<SignatureWrapper> signatures = diagnosticData.getSignatures();
+        assertEquals(2, signatures.size());
+        for (SignatureWrapper signatureWrapper : signatures) {
+            assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+        }
     }
 
 }
