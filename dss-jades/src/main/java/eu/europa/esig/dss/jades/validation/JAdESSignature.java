@@ -173,7 +173,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	/**
 	 * Sets a 'cSig' component embedding the current signature
 	 * 
-	 * @param masterCSigComponent {@link Object} 'cSig' embedding the current
+	 * @param masterCSigComponent {@link EtsiUComponent} 'cSig' embedding the current
 	 *                            signature
 	 */
 	public void setMasterCSigComponent(EtsiUComponent masterCSigComponent) {

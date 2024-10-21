@@ -214,6 +214,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
     private COSECounterSignatureArray parseCOSECounterSignatureArray(CBORArray cborArray) {
         final COSECounterSignatureArray coseCounterSignatureArray = new COSECounterSignatureArray();
         coseCounterSignatureArray.setTagged(cborArray.isTagged());
+        coseCounterSignatureArray.setContext(context);
         List<COSECounterSignature> signatures = new ArrayList<>();
         for (CBORObject arrayEntry : cborArray.getItems()) {
             COSECounterSignature coseCounterSignature = parseCOSECounterSignature(arrayEntry);

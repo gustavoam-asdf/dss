@@ -207,7 +207,7 @@ public class CBORSignature {
         cborSignature.signerProtectedHeader = coseCounterSignature.getProtectedHeader();
         cborSignature.signerUnprotectedHeader = coseCounterSignature.getUnprotectedHeader();
         cborSignature.signature = coseCounterSignature.getSignature();
-        cborSignature.coseSignStructure = coseCounterSignature;
+        cborSignature.signerSignature = coseCounterSignature;
 
         COSEStructure masterSignature = coseCounterSignature.getMasterSignature();
         switch (masterSignature.getContext()) {
@@ -269,6 +269,7 @@ public class CBORSignature {
         final List<CBORSignature> result = new ArrayList<>();
         for (COSECounterSignature counterSignature : coseCounterSignatureArray.getCoseCounterSignatureList()) {
             CBORSignature coseCounterSignature = fromCOSECounterSignature(counterSignature);
+            coseCounterSignature.setCoseSignStructure(coseCounterSignatureArray);
             result.add(coseCounterSignature);
         }
         return result;

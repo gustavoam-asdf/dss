@@ -78,7 +78,11 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
             Objects.requireNonNull(getContext(), "Context shall be defined for a tagged CBOR object!");
             coseCounterSignatureArray.setTag(getContext().getTag());
         }
-        coseCounterSignatureList.forEach(coseCounterSignatureArray::add);
+        CBORArray cborArray = new CBORArray(coseCounterSignatureList.size());
+        for (COSECounterSignature counterSignature : coseCounterSignatureList) {
+            cborArray.add(counterSignature.toCBORObject());
+        }
+        coseCounterSignatureArray.add(cborArray);
         return CBORUtils.serializeCborObject(coseCounterSignatureArray);
     }
 

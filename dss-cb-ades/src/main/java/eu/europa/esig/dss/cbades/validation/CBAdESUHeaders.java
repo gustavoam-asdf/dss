@@ -1,7 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
-import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
@@ -138,20 +137,16 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
 
     private void assignUnprotectedHeader(COSEUnprotectedHeader unprotectedHeader) {
         switch (cose.getContext()) {
-            case COSE_SIGN:
-                COSESignature signerSignature = cose.getSignerSignature();
-                signerSignature.setUnprotectedHeader(unprotectedHeader);
-                break;
-
             case COSE_SIGN1:
                 COSESign1 coseSign1 = (COSESign1) cose.getCoseSignStructure();
                 coseSign1.setUnprotectedHeader(unprotectedHeader);
                 break;
 
+            case COSE_SIGN:
             case COSE_COUNTER_SIGNATURE:
             case COSE_COUNTER_SIGNATURE_V2:
-                COSECounterSignature coseCounterSignature = (COSECounterSignature) cose.getCoseSignStructure();
-                coseCounterSignature.setUnprotectedHeader(unprotectedHeader);
+                COSESignature signerSignature = cose.getSignerSignature();
+                signerSignature.setUnprotectedHeader(unprotectedHeader);
                 break;
 
             default:

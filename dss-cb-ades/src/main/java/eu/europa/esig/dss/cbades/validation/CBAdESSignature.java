@@ -79,6 +79,12 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     private final boolean isDetached;
 
     /**
+     * The counter signature component embedding the current signature
+     * NOTE: used for counter signatures only
+     */
+    private CBAdESUHeadersComponent masterCounterSignatureComponent;
+
+    /**
      * Default constructor
      *
      * @param cose {@link CBORSignature}
@@ -167,6 +173,24 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             uHeaders = new CBAdESUHeaders(cose);
         }
         return uHeaders;
+    }
+
+    /**
+     * Gets a counter signature component embedding the current signature
+     *
+     * @return {@link CBAdESUHeadersComponent} 'cSig' embedding the current signature
+     */
+    public CBAdESUHeadersComponent getMasterCounterSignatureComponent() {
+        return masterCounterSignatureComponent;
+    }
+
+    /**
+     * Sets a 'cSig' component embedding the current signature
+     *
+     * @param masterCounterSignatureComponent {@link CBAdESUHeadersComponent} 'cSig' embedding the current signature
+     */
+    public void setMasterCounterSignatureComponent(CBAdESUHeadersComponent masterCounterSignatureComponent) {
+        this.masterCounterSignatureComponent = masterCounterSignatureComponent;
     }
 
     @Override
@@ -588,7 +612,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public SignatureDigestReference getSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
         // TODO : no definition is available -> build a signature structure based on its context
-        COSEStructure coseSignStructure = cose.getCoseSignStructure();
+        COSEStructure coseSignStructure = COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
         byte[] serializedBytes = coseSignStructure.serialize();
         byte[] digestValue = DSSUtils.digest(digestAlgorithm, serializedBytes);
         return new SignatureDigestReference(new Digest(digestAlgorithm, digestValue));
@@ -1086,7 +1110,17 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         List<CBAdESUHeadersComponent> uHeaders = getUHeaders().getAttributes();
         if (Utils.isCollectionNotEmpty(uHeaders)) {
             for (CBAdESUHeadersComponent uHeader : uHeaders) {
-                counterSignatures.addAll(buildCounterSignatures(uHeader.getHeaderId(), uHeader.getValue()));
+                counterSignatures.addAll(buildCounterSignatures(uHeader));
+            }
+        }
+        return counterSignatures;
+    }
+
+    private List<CBAdESSignature> buildCounterSignatures(CBAdESUHeadersComponent uHeader) {
+        List<CBAdESSignature> counterSignatures = buildCounterSignatures(uHeader.getHeaderId(), uHeader.getValue());
+        if (Utils.isCollectionNotEmpty(counterSignatures)) {
+            for (CBAdESSignature counterSignature : counterSignatures) {
+                counterSignature.setMasterCounterSignatureComponent(uHeader);
             }
         }
         return counterSignatures;
@@ -1098,7 +1132,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         if (counterSignatureContext != null) {
             final List<CBAdESSignature> result = new ArrayList<>();
 
-            COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
+            COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
             COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(headerValue)
                     .setContext(counterSignatureContext)
                     .setMasterSignature(masterSignatureStructure)
@@ -1115,10 +1149,8 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                     LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
                 }
                 result.add(cbadesCounterSignature);
-
-                return result;
             }
-
+            return result;
         }
         return Collections.emptyList();
         // TODO : add support of countersignature0 and countersignature0V2

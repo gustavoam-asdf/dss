@@ -124,7 +124,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
 
     private COSEStructure getMasterSignatureStructure() {
         CBORSignature cose = masterSignature.getCoseSignature();
-        return COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
+        return COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
     }
 
 }

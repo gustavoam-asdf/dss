@@ -1,5 +1,8 @@
 package eu.europa.esig.dss.cbades.validation;
 
+import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSECounterSignature;
+import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
@@ -24,8 +27,22 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
 
     @Override
     protected Integer getCounterSignaturePosition(AdvancedSignature masterSignature) {
-        // TODO : to be implemented
-        return 0;
+        CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
+        CBAdESSignature cbadesMasterSignature = (CBAdESSignature) masterSignature;
+        CBAdESUHeadersComponent masterCSigAttribute = cbadesSignature.getMasterCounterSignatureComponent();
+
+        int counter = 0;
+        if (masterCSigAttribute != null) {
+            for (AdvancedSignature counterSignature : cbadesMasterSignature.getCounterSignatures()) {
+                CBAdESSignature jadesCounterSignature = (CBAdESSignature) counterSignature;
+                if (masterCSigAttribute.hashCode() == jadesCounterSignature.getMasterCounterSignatureComponent().hashCode()) {
+                    break;
+                }
+                ++counter;
+            }
+        }
+
+        return counter;
     }
 
     @Override
@@ -37,7 +54,6 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
 
         int counter = 0;
         if (coseStructure != null) {
-            // TODO : counter-signatures ?
             if (COSESignatureContext.COSE_SIGN == coseStructure.getContext()) {
                 COSESign coseSign = (COSESign) coseStructure;
                 for (COSESignature coseSignature : coseSign.getSignatures()) {
@@ -51,6 +67,37 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
         }
 
         return counter;
+    }
+
+    @Override
+    protected String getPositionId() {
+        final String positionId = super.getPositionId();
+        if (!signature.isCounterSignature()) {
+            return positionId;
+        }
+
+        CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
+
+        StringBuilder stringBuilder = new StringBuilder(positionId);
+        stringBuilder.append(cbadesSignature.getCOSESignatureContext().getLabel());
+
+        if (cbadesSignature.getMasterCounterSignatureComponent() != null) {
+            stringBuilder.append(COSEConstants.U_HEADERS);
+        }
+
+        COSEStructure coseSignStructure = cbadesSignature.getCoseSignature().getCoseSignStructure();
+        if (coseSignStructure instanceof COSECounterSignatureArray) {
+            COSECounterSignatureArray coseCounterSignatureArray = (COSECounterSignatureArray) coseSignStructure;
+            int counter = 0;
+            for (COSECounterSignature coseCounterSignature : coseCounterSignatureArray.getCoseCounterSignatureList()) {
+                if (cbadesSignature.getCoseSignature().getSignerSignature().hashCode() == coseCounterSignature.hashCode()) {
+                    break;
+                }
+                ++counter;
+            }
+            stringBuilder.append(counter);
+        }
+        return stringBuilder.toString();
     }
 
 }
