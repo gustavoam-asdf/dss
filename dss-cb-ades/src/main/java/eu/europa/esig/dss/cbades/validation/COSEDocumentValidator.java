@@ -4,6 +4,7 @@ import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 import java.util.List;
 
@@ -27,6 +28,11 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
      */
     public COSEDocumentValidator(DSSDocument document) {
         super(new COSEDocumentAnalyzer(document));
+    }
+
+    @Override
+    protected SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+        return new CBAdESDiagnosticDataBuilder();
     }
 
     /**

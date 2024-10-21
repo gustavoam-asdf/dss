@@ -156,13 +156,13 @@ class COSEParserTest {
     void signEcdsaWithCounterSigTest() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
                 "d8628440a1078343a10126a10442313158405ac05e289d5d0" +
-                        "e1b0a7f048a5d2b643813ded50bc9e49220f4f7278f85f19d" +
-                        "4a77d655c9d3b51e805a74b099e1e085aacd97fc29d72f887" +
-                        "e8802bb6650cceb2c54546869732069732074686520636f6e" +
-                        "74656e742e818343a10126a1044231315840e2aeafd40d69d" +
-                        "19dfe6e52077c5d7ff4e408282cbefb5d06cbf414af2e19d9" +
-                        "82ac45ac98b8544c908b4507de1e90b717c3d34816fe926a2" +
-                        "b98f53afd2fa0f30a"));
+                "e1b0a7f048a5d2b643813ded50bc9e49220f4f7278f85f19d" +
+                "4a77d655c9d3b51e805a74b099e1e085aacd97fc29d72f887" +
+                "e8802bb6650cceb2c54546869732069732074686520636f6e" +
+                "74656e742e818343a10126a1044231315840e2aeafd40d69d" +
+                "19dfe6e52077c5d7ff4e408282cbefb5d06cbf414af2e19d9" +
+                "82ac45ac98b8544c908b4507de1e90b717c3d34816fe926a2" +
+                "b98f53afd2fa0f30a"));
 
         COSEParser coseParser = COSEParser.fromDocument(document);
         assertTrue(COSEParser.isSupported(document));
@@ -212,7 +212,18 @@ class COSEParserTest {
     @Test
     void signEcdsaWithCounterSigned1Test() throws Exception {
         DSSDocument document = new InMemoryDocument(Utils.fromHex(
-                "d28445a201260300a2044231310b8344a1013823a104581e62696c626f2e62616767696e7340686f626269746f6e2e6578616d706c65588401b1291b0e60a79c459a4a9184a0d393e034b34af069a1cca34f5a913affff698002295fa9f8fcbfb6fdff59132fc0c406e98754a98f1fbfe81c03095f481856bc470170227206fa5bee3c0431c56a66824e7aaf692985952e31271434b2ba2e47a335c658b5e995aeb5d63cf2d0ced367d3e4cc8fffd53b70d115baa9e86961fbd1a5cf54546869732069732074686520636f6e74656e742e5840bb587d6b15f47bfd54d2cbfcecef75451e92b08a514bd439fa3aa65c6ac92df0d7328c4a47529b32add3dd1b4e940071c021e9a8f2641f1d8e3b053ddd65ae52"));
+                "d28445a201260300a2044231310b8344a1013823a104581e6" +
+                "2696c626f2e62616767696e7340686f626269746f6e2e6578" +
+                "616d706c65588401b1291b0e60a79c459a4a9184a0d393e03" +
+                "4b34af069a1cca34f5a913affff698002295fa9f8fcbfb6fd" +
+                "ff59132fc0c406e98754a98f1fbfe81c03095f481856bc470" +
+                "170227206fa5bee3c0431c56a66824e7aaf692985952e3127" +
+                "1434b2ba2e47a335c658b5e995aeb5d63cf2d0ced367d3e4c" +
+                "c8fffd53b70d115baa9e86961fbd1a5cf5454686973206973" +
+                "2074686520636f6e74656e742e5840bb587d6b15f47bfd54d" +
+                "2cbfcecef75451e92b08a514bd439fa3aa65c6ac92df0d732" +
+                "8c4a47529b32add3dd1b4e940071c021e9a8f2641f1d8e3b0" +
+                "53ddd65ae52"));
 
         COSEParser coseParser = COSEParser.fromDocument(document);
         assertTrue(COSEParser.isSupported(document));

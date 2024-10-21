@@ -16,7 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CBAdESLevelBDetachedMultipleDocumentsNoSigDTest extends AbstractCBAdESMultipleDocumentSignatureTest {
+class CBAdESLevelBDetachedMultipleDocumentsNoSigDTest extends AbstractCBAdESMultipleDocumentSignatureTest {
 
     private CBAdESSignatureParameters signatureParameters;
     private List<DSSDocument> documentToSigns;

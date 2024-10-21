@@ -173,6 +173,19 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	}
 
 	/**
+	 * Gets signature structure's type, when applicable (e.g. CB-AdES)
+	 *
+	 * @return {@link String}
+	 */
+	public String getSignatureStructureType() {
+		XmlStructuralValidation structuralValidation = signature.getStructuralValidation();
+		if (structuralValidation != null) {
+			return structuralValidation.getType();
+		}
+		return null;
+	}
+
+	/**
 	 * Returns structural validation error messages, when applicable
 	 *
 	 * @return a list of {@link String} error messages

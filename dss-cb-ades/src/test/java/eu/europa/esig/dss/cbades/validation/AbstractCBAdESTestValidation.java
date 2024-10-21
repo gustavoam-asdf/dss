@@ -1,11 +1,15 @@
 package eu.europa.esig.dss.cbades.validation;
 
+import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
+import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.validationreport.jaxb.SADataObjectFormatType;
@@ -14,8 +18,10 @@ import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
 import eu.europa.esig.validationreport.jaxb.ValidationReportType;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractCBAdESTestValidation extends AbstractDocumentTestValidation {
@@ -79,6 +85,33 @@ public abstract class AbstractCBAdESTestValidation extends AbstractDocumentTestV
                     fail(String.format("Unexpected DigestMatcherType reached : %s", digestMatcher.getType()));
                 }
             }
+        }
+    }
+
+    @Override
+    protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            assertTrue(signatureWrapper.isSigningCertificateIdentified());
+            assertTrue(signatureWrapper.isSigningCertificateReferencePresent());
+
+            CertificateRefWrapper signingCertificateReference = signatureWrapper.getSigningCertificateReference();
+            assertNotNull(signingCertificateReference);
+            assertTrue(signingCertificateReference.isDigestValuePresent());
+            assertTrue(signingCertificateReference.isDigestValueMatch());
+            if (signingCertificateReference.isIssuerSerialPresent()) {
+                assertTrue(signingCertificateReference.isIssuerSerialMatch());
+            }
+
+            CertificateWrapper signingCertificate = signatureWrapper.getSigningCertificate();
+            assertNotNull(signingCertificate);
+            String signingCertificateId = signingCertificate.getId();
+            String certificateDN = diagnosticData.getCertificateDN(signingCertificateId);
+            String certificateSerialNumber = diagnosticData.getCertificateSerialNumber(signingCertificateId);
+            assertEquals(signingCertificate.getCertificateDN(), certificateDN);
+            assertEquals(signingCertificate.getSerialNumber(), certificateSerialNumber);
+
+            assertTrue(Utils.isCollectionEmpty(signatureWrapper.foundCertificates()
+                    .getOrphanCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE)));
         }
     }
 

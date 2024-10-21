@@ -8,7 +8,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import org.junit.jupiter.api.BeforeEach;
 
-public class CBAdESLevelBWithEd25519Test extends AbstractCBAdESTestSignature {
+class CBAdESLevelBWithEd25519Test extends AbstractCBAdESTestSignature {
 
     private static final String HELLO_WORLD = "Hello World";
 

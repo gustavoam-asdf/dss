@@ -504,8 +504,8 @@ public class CBORSignature {
             // Supply the signature input bytes
             byte[] signatureInputBytes = getSignatureInputBytes();
             if (LOG.isTraceEnabled()) {
-                LOG.trace("Serialized Sig_structure bytes:");
-                LOG.trace(new String(signatureInputBytes));
+                LOG.trace("Serialized Sig_structure bytes (hex-encoded):");
+                LOG.trace(DSSUtils.toHex(signatureInputBytes));
             }
             signatureInstance.update(signatureInputBytes);
 
@@ -783,8 +783,12 @@ public class CBORSignature {
      * @return {@link CBORObject}
      */
     public CBORObject getUnprotectedHeaderValue(long headerKey) {
-        CBORObject bodyUnprotectedHeaderValue = getBodyUnprotectedHeaderValue(headerKey);
         CBORObject signerUnprotectedHeaderValue = getSignerUnprotectedHeaderValue(headerKey);
+        // NOTE: for counter signatures only the main unprotected header is used
+        if (context.isCounterSignature()) {
+            return signerUnprotectedHeaderValue;
+        }
+        CBORObject bodyUnprotectedHeaderValue = getBodyUnprotectedHeaderValue(headerKey);
         if (bodyUnprotectedHeaderValue != null && signerUnprotectedHeaderValue != null) {
             LOG.info("Same unprotected header '{}' is present in body and signer structure.", headerKey);
             if (!bodyUnprotectedHeaderValue.equals(signerUnprotectedHeaderValue)) {

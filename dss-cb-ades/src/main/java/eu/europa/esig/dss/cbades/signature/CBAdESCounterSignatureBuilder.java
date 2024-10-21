@@ -115,11 +115,16 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     protected COSEStructure createCOSESignStructure(SignatureValue signatureValue) {
         final COSECounterSignature coseCounterSignature = new COSECounterSignature();
         coseCounterSignature.setContext(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2); // the only supported counter signature type
-        coseCounterSignature.setMasterSignature(masterSignature.getCoseSignature().getCoseSignStructure());
+        coseCounterSignature.setMasterSignature(getMasterSignatureStructure());
         coseCounterSignature.setTagged(parameters.isTagged());
         coseCounterSignature.setProtectedHeader(getProtectedHeader());
         coseCounterSignature.setSignature(getSignature(signatureValue));
         return coseCounterSignature;
+    }
+
+    private COSEStructure getMasterSignatureStructure() {
+        CBORSignature cose = masterSignature.getCoseSignature();
+        return COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
     }
 
 }

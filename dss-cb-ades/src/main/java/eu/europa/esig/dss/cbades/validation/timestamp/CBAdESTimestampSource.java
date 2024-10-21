@@ -87,7 +87,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isSignatureTimestamp(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.SIG_TST == unsignedAttribute.getHeaderId();
     }
 
     @Override
@@ -112,12 +112,12 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isRefsOnlyTimestamp(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.RFS_TST == unsignedAttribute.getHeaderId();
     }
 
     @Override
     protected boolean isSigAndRefsTimestamp(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.SIG_R_TST == unsignedAttribute.getHeaderId();
     }
 
     @Override
@@ -142,22 +142,23 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isArchiveTimestamp(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.ARC_TST == unsignedAttribute.getHeaderId();
     }
 
     @Override
     protected boolean isTimeStampValidationData(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.VAL_DATA == unsignedAttribute.getHeaderId();
     }
 
     @Override
     protected boolean isCounterSignature(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.COUNTER_SIGNATURE_V2 == unsignedAttribute.getHeaderId() ||
+                COSEConstants.COUNTER_SIGNATURE0_V2 == unsignedAttribute.getHeaderId();
     }
 
     @Override
     protected boolean isSignaturePolicyStore(CBAdESAttribute unsignedAttribute) {
-        return false;
+        return COSEConstants.SIG_PST == unsignedAttribute.getHeaderId();
     }
 
     @Override

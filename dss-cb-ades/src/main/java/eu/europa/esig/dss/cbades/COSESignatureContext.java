@@ -9,28 +9,31 @@ import java.util.Objects;
 public enum COSESignatureContext {
 
     /** For signatures using the COSE_Signature structure */
-    COSE_SIGN("Signature", 98L),
+    COSE_SIGN("Signature", "COSE_Sign", 98L),
 
     /** For signatures using the COSE_Sign1 structure */
-    COSE_SIGN1("Signature1", 18L),
+    COSE_SIGN1("Signature1", "COSE_Sign1", 18L),
 
     /** For signatures using the COSE_Signature structure */
-    COSE_SIGNATURE(null, null),
+    COSE_SIGNATURE(null, null, null),
 
     /** For full counter-signatures */
-    COSE_COUNTER_SIGNATURE("CounterSignature", 19L, true, false, COSEConstants.COUNTER_SIGNATURE),
+    COSE_COUNTER_SIGNATURE("CounterSignature", "COSE_Countersignature", 19L, true, false, COSEConstants.COUNTER_SIGNATURE),
 
     /** For abbreviated counter-signatures0 */
-    COSE_COUNTER_SIGNATURE0("CounterSignature0", null, true, false, COSEConstants.COUNTER_SIGNATURE0),
+    COSE_COUNTER_SIGNATURE0("CounterSignature0", "COSE_Countersignature0", null, true, false, COSEConstants.COUNTER_SIGNATURE0),
 
     /** For full counter-signatures with other_fields present */
-    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", 19L, true, true, COSEConstants.COUNTER_SIGNATURE_V2),
+    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", "COSE_Countersignature_V2", 19L, true, true, COSEConstants.COUNTER_SIGNATURE_V2),
 
     /** For abbreviated counter-signatures0 with other_fields present */
-    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", null, true, true, COSEConstants.COUNTER_SIGNATURE0_V2);
+    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", "COSE_Countersignature0_V2", null, true, true, COSEConstants.COUNTER_SIGNATURE0_V2);
 
     /** The context label used as a part of a DTBS computation */
     private final String context;
+
+    /** Gets the COSE signature context's label as defined in RFC 8152 / RFC 9052 / RFC 9338 */
+    private final String label;
 
     /** The tag label code of the corresponding structure */
     private final Long tag;
@@ -48,24 +51,27 @@ public enum COSESignatureContext {
      * Default constructor
      *
      * @param context {@link String} context label
+     * @param label {@link String} user-friendly label as defined in RFC
      * @param tag long value of the tag label key
      */
-    COSESignatureContext(final String context, final Long tag) {
-        this(context, tag, false, false, null);
+    COSESignatureContext(final String context, final String label, final Long tag) {
+        this(context, label, tag, false, false, null);
     }
 
     /**
      * Default constructor
      *
      * @param context {@link String} context label
+     * @param label {@link String} user-friendly label as defined in RFC
      * @param tag long value of the tag label key
      * @param counterSignature whether the context corresponds to the counter signature
      * @param counterSignatureV2 whether the context corresponds to the counter signature V2
      * @param counterSignatureHeaderKey {@link Long} key used to define a counter signature header parameter
      */
-    COSESignatureContext(final String context, final Long tag, final boolean counterSignature,
+    COSESignatureContext(final String context, final String label, final Long tag, final boolean counterSignature,
                          final boolean counterSignatureV2, final Long counterSignatureHeaderKey) {
         this.context = context;
+        this.label = label;
         this.tag = tag;
         this.counterSignature = counterSignature;
         this.counterSignatureV2 = counterSignatureV2;
@@ -80,6 +86,15 @@ public enum COSESignatureContext {
      */
     public String getContext() {
         return context;
+    }
+
+    /**
+     * Gets the RFC definition user-friendly label
+     *
+     * @return {@link String}
+     */
+    public String getLabel() {
+        return label;
     }
 
     /**
@@ -108,6 +123,31 @@ public enum COSESignatureContext {
      */
     public boolean isCounterSignatureV2() {
         return counterSignatureV2;
+    }
+
+    /**
+     * Gets the header key of unsigned property used to embed the counter signature in
+     *
+     * @return {@link Long}
+     */
+    public Long getCounterSignatureHeaderKey() {
+        return counterSignatureHeaderKey;
+    }
+
+    /**
+     * Gets the corresponding {@code COSESignatureContext} enum for the given {@code label}, if found
+     *
+     * @param label {@link String}
+     * @return {@link COSESignatureContext}
+     */
+    public static COSESignatureContext forLabel(final String label) {
+        Objects.requireNonNull(label, "Label string shall be defined!");
+        for (COSESignatureContext coseSignatureContext : values()) {
+            if (label.equals(coseSignatureContext.label)) {
+                return coseSignatureContext;
+            }
+        }
+        return null;
     }
 
     /**

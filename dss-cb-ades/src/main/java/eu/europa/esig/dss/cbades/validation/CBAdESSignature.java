@@ -111,6 +111,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         return cose;
     }
 
+    /**
+     * Gets context of the COSE signature
+     *
+     * @return {@link COSESignatureContext}
+     */
+    public COSESignatureContext getCOSESignatureContext() {
+        return cose.getContext();
+    }
+
     @Override
     public SignatureForm getSignatureForm() {
         return SignatureForm.CBAdES;
@@ -1064,38 +1073,55 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         }
         counterSignatures = new ArrayList<>();
 
-        // TODO : add counter signature support outside of 'uHeaders'
+        for (COSESignatureContext coseContext : COSESignatureContext.values()) {
+            Long headerKey = coseContext.getCounterSignatureHeaderKey();
+            if (headerKey != null) {
+                CBORObject headerValue = cose.getUnprotectedHeaderValue(headerKey);
+                if (headerValue != null) { // is present
+                    counterSignatures.addAll(buildCounterSignatures(headerKey, headerValue));
+                }
+            }
+        }
 
         List<CBAdESUHeadersComponent> uHeaders = getUHeaders().getAttributes();
         if (Utils.isCollectionNotEmpty(uHeaders)) {
             for (CBAdESUHeadersComponent uHeader : uHeaders) {
-                COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(uHeader.getHeaderId());
-                // is known
-                if (counterSignatureContext != null) {
-                    CBORObject uHeaderValue = uHeader.getValue();
-                    COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
-                    COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(uHeaderValue)
-                            .setContext(counterSignatureContext)
-                            .setMasterSignature(masterSignatureStructure)
-                            .parse();
-                    List<CBORSignature> coseSignatures = CBORSignature.fromCOSECounterSignStructure(coseCounterSignStructure);
-                    for (CBORSignature cose : coseSignatures) {
-                        CBAdESSignature cbadesCounterSignature = new CBAdESSignature(cose);
-                        cbadesCounterSignature.setFilename(getFilename());
-                        cbadesCounterSignature.setMasterSignature(this);
-                        if (cose.getExternallySuppliedData() != null) {
-                            cbadesCounterSignature.getCoseSignature().setExternalAttributes(cose.getExternallySuppliedData());
-                        }
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
-                        }
-                        counterSignatures.add(cbadesCounterSignature);
-                    }
-                }
-                // TODO : add support of countersignature0 and countersignature0V2
+                counterSignatures.addAll(buildCounterSignatures(uHeader.getHeaderId(), uHeader.getValue()));
             }
         }
         return counterSignatures;
+    }
+
+    private List<CBAdESSignature> buildCounterSignatures(Long headerKey, CBORObject headerValue) {
+        COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(headerKey);
+        // is known
+        if (counterSignatureContext != null) {
+            final List<CBAdESSignature> result = new ArrayList<>();
+
+            COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN == cose.getContext() ? cose.getSignerSignature() : cose.getCoseSignStructure();
+            COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(headerValue)
+                    .setContext(counterSignatureContext)
+                    .setMasterSignature(masterSignatureStructure)
+                    .parse();
+            List<CBORSignature> coseSignatures = CBORSignature.fromCOSECounterSignStructure(coseCounterSignStructure);
+            for (CBORSignature cose : coseSignatures) {
+                CBAdESSignature cbadesCounterSignature = new CBAdESSignature(cose);
+                cbadesCounterSignature.setFilename(getFilename());
+                cbadesCounterSignature.setMasterSignature(this);
+                if (cose.getExternallySuppliedData() != null) {
+                    cbadesCounterSignature.getCoseSignature().setExternalAttributes(cose.getExternallySuppliedData());
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
+                }
+                result.add(cbadesCounterSignature);
+
+                return result;
+            }
+
+        }
+        return Collections.emptyList();
+        // TODO : add support of countersignature0 and countersignature0V2
     }
 
     @Override

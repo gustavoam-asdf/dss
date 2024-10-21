@@ -523,7 +523,7 @@ public abstract class SignatureTimestampSource<AS extends AdvancedSignature, SA 
                 continue;
 
             } else {
-                LOG.warn("The unsigned attribute with a name [{}] is not supported in TimestampSource processing", unsignedAttribute);
+                LOG.warn("Unsupported attribute encountered during TimestampSource processing. Entry is skipped.");
                 continue;
             }
 

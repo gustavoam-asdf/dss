@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Tag("slow")
-public class CBAdESLevelBEnvelopingRSATest extends AbstractCBAdESTestSignature {
+class CBAdESLevelBEnvelopingRSATest extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
     private CBAdESSignatureParameters signatureParameters;

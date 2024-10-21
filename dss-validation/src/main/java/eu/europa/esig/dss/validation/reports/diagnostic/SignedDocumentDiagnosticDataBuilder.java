@@ -513,7 +513,13 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 		return xmlSignature;
 	}
 
-	private XmlStructuralValidation getXmlStructuralValidation(AdvancedSignature signature) {
+	/**
+	 * Gets structural validation result of advanced signature
+	 *
+	 * @param signature {@link AdvancedSignature}
+	 * @return {@link XmlStructuralValidation}
+	 */
+	protected XmlStructuralValidation getXmlStructuralValidation(AdvancedSignature signature) {
 		return getXmlStructuralValidation(signature.getStructureValidationResult());
 	}
 

@@ -110,7 +110,7 @@ public class CBAdESBuilder {
 
         byte[] dataToSign = cborSignature.getSignatureInputBytes();
         if (LOG.isTraceEnabled()) {
-            LOG.trace("CB-AdES DataToSign trace : ");
+            LOG.trace("CB-AdES DataToSign trace (hex-encoded) : ");
             LOG.trace(Utils.toHex(dataToSign));
         }
         return new ToBeSigned(dataToSign);

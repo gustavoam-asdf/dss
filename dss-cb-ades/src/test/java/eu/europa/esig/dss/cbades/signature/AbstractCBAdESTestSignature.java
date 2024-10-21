@@ -252,6 +252,28 @@ public abstract class AbstractCBAdESTestSignature
     }
 
     @Override
+    protected void checkStructureValidation(DiagnosticData diagnosticData) {
+        super.checkStructureValidation(diagnosticData);
+
+        for (SignatureWrapper signature : diagnosticData.getSignatures()) {
+            String signatureStructureType = signature.getSignatureStructureType();
+            assertNotNull(signatureStructureType);
+
+            COSESignatureContext coseSignatureContext = COSESignatureContext.forLabel(signatureStructureType);
+            assertNotNull(coseSignatureContext);
+            if (signature.isCounterSignature()) {
+                assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2, coseSignatureContext);
+            } else if (COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType()) {
+                assertEquals(COSESignatureContext.COSE_SIGN, coseSignatureContext);
+            } else if (COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType()) {
+                assertEquals(COSESignatureContext.COSE_SIGN1, coseSignatureContext);
+            } else {
+                fail("COSE structure type is not defined!");
+            }
+        }
+    }
+
+    @Override
     protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
         for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
             assertTrue(signatureWrapper.isSigningCertificateIdentified());

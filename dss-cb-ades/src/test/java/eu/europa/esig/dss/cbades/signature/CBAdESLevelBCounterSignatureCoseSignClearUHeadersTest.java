@@ -6,16 +6,15 @@ import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSECounterSignatureParser;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
-import eu.europa.esig.dss.cbades.COSESign1;
+import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
+import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
-import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
-import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
@@ -49,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSignatureTest {
+class CBAdESLevelBCounterSignatureCoseSignClearUHeadersTest extends AbstractCBAdESCounterSignatureTest {
 
     private CBAdESService service;
     private DSSDocument documentToSign;
@@ -72,7 +71,7 @@ public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSigna
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
-        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
         return signatureParameters;
     }
 
@@ -83,6 +82,7 @@ public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSigna
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+        signatureParameters.setCborBtsrWrappedComponents(false);
         SignerLocation signerLocation = new SignerLocation();
         signerLocation.setLocality("Kehlen");
         signatureParameters.bLevel().setSignerLocation(signerLocation);
@@ -101,10 +101,18 @@ public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSigna
         COSESignStructure coseSignStructure = coseParser.parse();
         assertNotNull(coseSignStructure);
 
-        assertEquals(COSESignatureContext.COSE_SIGN1, coseSignStructure.getContext());
-        COSESign1 coseSign1 = assertInstanceOf(COSESign1.class, coseSignStructure);
+        assertEquals(COSESignatureContext.COSE_SIGN, coseSignStructure.getContext());
+        COSESign coseSign = assertInstanceOf(COSESign.class, coseSignStructure);
 
-        COSEUnprotectedHeader unprotectedHeader = coseSign1.getUnprotectedHeader();
+        COSEUnprotectedHeader unprotectedHeader = coseSign.getUnprotectedHeader();
+        assertNotNull(unprotectedHeader);
+        assertTrue(unprotectedHeader.isEmpty());
+
+        List<COSESignature> signatures = coseSign.getSignatures();
+        assertEquals(1, signatures.size());
+
+        COSESignature coseSignature = signatures.get(0);
+        unprotectedHeader = coseSignature.getUnprotectedHeader();
         assertNotNull(unprotectedHeader);
         assertFalse(unprotectedHeader.isEmpty());
         assertEquals(1, unprotectedHeader.getSize());
@@ -117,12 +125,8 @@ public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSigna
         assertEquals(1, items.size());
 
         CBORObject countersignatureObject = items.get(0);
-        assertTrue(countersignatureObject.isByteString());
-        CBORByteString countersignatureBtsr = assertInstanceOf(CBORByteString.class, countersignatureObject);
-
-        CBORObject countersignatureComponent = CBORUtils.parseCbor(countersignatureBtsr.getBytes());
-        assertTrue(countersignatureComponent.isMap());
-        CBORMap cborMap = assertInstanceOf(CBORMap.class, countersignatureComponent);
+        assertTrue(countersignatureObject.isMap());
+        CBORMap cborMap = assertInstanceOf(CBORMap.class, countersignatureObject);
         assertEquals(1, cborMap.getSize());
 
         CBORObject counterSignatureV2Object = cborMap.getHeader(COSEConstants.COUNTER_SIGNATURE_V2);
@@ -131,7 +135,7 @@ public class CBAdESLevelBCounterSignatureTest extends AbstractCBAdESCounterSigna
 
         COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(counterSignatureV2Object)
                 .setContext(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2)
-                .setMasterSignature(coseSign1)
+                .setMasterSignature(coseSign)
                 .parse();
         assertNotNull(coseCounterSignStructure);
         assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2, coseCounterSignStructure.getContext());
