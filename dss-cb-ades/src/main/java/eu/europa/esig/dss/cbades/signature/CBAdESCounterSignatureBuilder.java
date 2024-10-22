@@ -1,12 +1,14 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeadersComponent;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.cbades.validation.COSEDocumentAnalyzer;
 import eu.europa.esig.dss.enumerations.TimestampedObjectType;
@@ -62,7 +64,23 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     }
 
     private void assertCounterSignaturePossible(AdvancedSignature targetSignature) {
+        assertSignatureTypeSupported(targetSignature);
         assertSignatureNotTimestampedRecursively(targetSignature);
+    }
+
+    private void assertSignatureTypeSupported(AdvancedSignature targetSignature) {
+        CBAdESSignature cbadesSignature = (CBAdESSignature) targetSignature;
+        switch (cbadesSignature.getCOSESignatureContext()) {
+            case COSE_SIGN:
+            case COSE_SIGN1:
+            case COSE_COUNTER_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE_V2:
+                // supported types
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("The counter signing of a signature type '%s' is not supported!",
+                        cbadesSignature.getCOSESignatureContext().getLabel()));
+        }
     }
 
     private void assertSignatureNotTimestampedRecursively(AdvancedSignature signature) {
@@ -114,17 +132,36 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
         COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure(signatureValue);
         uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject(), parameters.isCborBtsrWrappedComponents());
 
-        CBAdESSignature upperSignature = getUpperSignature(masterSignature);
+        CBAdESSignature upperSignature = updateMasterSignatureRecursively(masterSignature);
         COSEStructure coseSignStructure = upperSignature.getCoseSignature().getCoseSignStructure();
         byte[] serializedBytes = coseSignStructure.serialize();
         return new InMemoryDocument(serializedBytes);
     }
 
-    private CBAdESSignature getUpperSignature(CBAdESSignature signature) {
+    private CBAdESSignature updateMasterSignatureRecursively(CBAdESSignature signature) {
+        CBAdESSignature masterSignature = (CBAdESSignature) signature.getMasterSignature();
         if (signature.getMasterSignature() == null) {
             return signature;
         }
-        return getUpperSignature((CBAdESSignature) signature.getMasterSignature());
+
+        CBAdESUHeadersComponent masterCSigComponent = signature.getMasterCounterSignatureComponent();
+        if (masterCSigComponent != null) {
+            CBORSignature coseSignature = signature.getCoseSignature();
+            COSECounterSignStructure coseSignStructure = (COSECounterSignStructure) (coseSignature.getCoseSignStructure() != null ?
+                    coseSignature.getCoseSignStructure() : coseSignature.getSignerSignature());
+
+            CBAdESUHeadersComponent updatedCSigAttribute = CBAdESUHeadersComponent.build(masterCSigComponent.getHeaderId(),
+                    coseSignStructure.toCBORObject(), masterCSigComponent.isCborBtsrWrapped(), masterCSigComponent.getIdentifier());
+
+            replaceCSigComponent(masterSignature, updatedCSigAttribute);
+        }
+
+        return updateMasterSignatureRecursively(masterSignature);
+    }
+
+    private void replaceCSigComponent(CBAdESSignature masterSignature, CBAdESUHeadersComponent cSigAttribute) {
+        CBAdESUHeaders uHeaders = masterSignature.getUHeaders();
+        uHeaders.replaceComponent(cSigAttribute);
     }
 
     @Override

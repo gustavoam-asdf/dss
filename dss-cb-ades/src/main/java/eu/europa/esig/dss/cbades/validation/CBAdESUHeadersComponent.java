@@ -46,4 +46,51 @@ public class CBAdESUHeadersComponent extends CBAdESAttribute {
         return null;
     }
 
+    /**
+     * Builds the {@code EtsiUComponent} from the given parameters
+     *
+     * @param headerKey {@link Long} name of the 'uHeaders' array component
+     * @param value {@link CBORObject} represents the value of the component
+     * @param base64UrlEncoded defines if the components is stored in base64url encoding
+     * @param identifier {@link CBAdESAttributeIdentifier}
+     * @return {@link CBAdESUHeadersComponent}
+     */
+    public static CBAdESUHeadersComponent build(Long headerKey, CBORObject value, boolean base64UrlEncoded,
+                                                CBAdESAttributeIdentifier identifier) {
+        CBORObject component = createUHeadersComponent(headerKey, value, base64UrlEncoded);
+        return new CBAdESUHeadersComponent(component, headerKey, value, identifier);
+    }
+
+    /**
+     * Returns an 'uHeaders' component in the defined representation
+     *
+     * @param key              {@link Long} header name
+     * @param value            {@link CBORObject} object
+     * @param cborBtsrWrapped  TRUE if base64Url encoded representation, FALSE otherwise
+     * @return {@link CBORObject} 'uHeaders' component
+     */
+    private static CBORObject createUHeadersComponent(Long key, CBORObject value, boolean cborBtsrWrapped) {
+        CBORMap cborMap = new CBORMap();
+        cborMap.put(key, value);
+        return cborBtsrWrapped ? cborMap.getByteString() : cborMap;
+    }
+
+    /**
+     * Gets the current component in {@code CBORObject} representation
+     *
+     * @return {@link CBORObject}
+     */
+    public CBORObject getComponent() {
+        return component;
+    }
+
+    /**
+     * Gets if the component is CBOR Byte String encoded
+     *
+     * @return TRUE if the component is CBOR Byte String encoded, FALSE otherwise
+     */
+    public boolean isCborBtsrWrapped() {
+        return component.isByteString();
+    }
+
 }

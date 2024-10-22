@@ -1,12 +1,14 @@
 package eu.europa.esig.dss.cbades.cbor;
 
 import co.nstant.in.cbor.model.Array;
+import co.nstant.in.cbor.model.DataItem;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 /**
@@ -82,6 +84,26 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public void add(Object object) {
         toDataItem().add(CBORUtils.toDataItem(object));
+    }
+
+    /**
+     * Sets {@code object} within the current CBOR Array at the {@code index} position, replacing the existing value
+     *
+     * @param index position to set the object at
+     * @param object to be placed
+     */
+    public void set(int index, Object object) {
+        Array array = toDataItem();
+        ListIterator<DataItem> it = array.getDataItems().listIterator();
+        int i = 0;
+        while (it.hasNext()) {
+            it.next();
+            if (index == i) {
+                it.set(CBORUtils.toDataItem(object));
+                break;
+            }
+            ++i;
+        }
     }
 
     /**

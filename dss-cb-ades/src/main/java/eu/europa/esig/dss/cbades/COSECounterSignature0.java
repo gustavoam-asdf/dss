@@ -90,8 +90,13 @@ public class COSECounterSignature0 implements COSECounterSignStructure  {
 
     @Override
     public byte[] serialize() {
-        CBORByteString bstrSignature = getSignature();
+        CBORByteString bstrSignature = toCBORObject();
         return CBORUtils.serializeCborObject(bstrSignature);
+    }
+
+    @Override
+    public CBORByteString toCBORObject() {
+        return getSignature();
     }
 
 }

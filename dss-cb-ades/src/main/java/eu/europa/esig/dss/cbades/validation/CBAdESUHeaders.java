@@ -159,4 +159,21 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
         this.components = null;
     }
 
+    /**
+     * Replaces the given component within the 'uHeaders' header array
+     *
+     * @param uHeader {@link CBAdESUHeadersComponent} to replace
+     */
+    public void replaceComponent(CBAdESUHeadersComponent uHeader) {
+        CBORArray uHeaders = getUHeadersToEdit();
+        for (int i = 0; i < uHeaders.getSize(); i++) {
+            CBORObject item = uHeaders.getItem(i);
+            CBAdESUHeadersComponent currentComponent = CBAdESUHeadersComponent.build(item, i);
+            if (uHeader.equals(currentComponent)) {
+                uHeaders.set(i, uHeader.getComponent());
+                break;
+            }
+        }
+    }
+
 }

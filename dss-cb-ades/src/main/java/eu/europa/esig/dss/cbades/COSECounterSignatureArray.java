@@ -86,6 +86,12 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
 
     @Override
     public byte[] serialize() {
+        CBORArray cborArray = toCBORObject();
+        return CBORUtils.serializeCborObject(cborArray);
+    }
+
+    @Override
+    public CBORArray toCBORObject() {
         if (Utils.isCollectionEmpty(coseCounterSignatureList)) {
             throw new IllegalStateException("Collection of COSECounterSignature's cannot be null or empty " +
                     "in COSECounterSignature CBOR Array!");
@@ -95,12 +101,10 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
             Objects.requireNonNull(getContext(), "Context shall be defined for a tagged CBOR object!");
             coseCounterSignatureArray.setTag(getContext().getTag());
         }
-        CBORArray cborArray = new CBORArray(coseCounterSignatureList.size());
         for (COSECounterSignature counterSignature : coseCounterSignatureList) {
-            cborArray.add(counterSignature.toCBORObject());
+            coseCounterSignatureArray.add(counterSignature.toCBORObject());
         }
-        coseCounterSignatureArray.add(cborArray);
-        return CBORUtils.serializeCborObject(coseCounterSignatureArray);
+        return coseCounterSignatureArray;
     }
 
 }

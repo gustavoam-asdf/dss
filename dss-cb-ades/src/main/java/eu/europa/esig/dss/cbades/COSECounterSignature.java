@@ -75,11 +75,7 @@ public class COSECounterSignature extends COSESignature implements COSECounterSi
         return CBORUtils.serializeCborObject(cborArray);
     }
 
-    /**
-     * Serialized the current COSE counter signature structure to a CBOR Object
-     *
-     * @return {@link CBORArray}
-     */
+    @Override
     public CBORArray toCBORObject() {
         final CBORArray coseCounterSignature = new CBORArray(3);
         if (tagged) {
