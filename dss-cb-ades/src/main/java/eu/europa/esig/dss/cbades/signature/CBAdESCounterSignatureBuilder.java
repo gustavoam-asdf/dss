@@ -16,6 +16,7 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Objects;
 
@@ -78,7 +79,22 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     @Override
     protected CBORSignature prepareCBORSignature() {
         COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure();
-        return CBORSignature.fromCOSECounterSignature(coseCounterSignature);
+        CBORSignature counterSignature = CBORSignature.fromCOSECounterSignature(coseCounterSignature);
+        ensureDetachedPayload(counterSignature);
+        return counterSignature;
+    }
+
+    private void ensureDetachedPayload(CBORSignature counterSignature) {
+        if (COSESignatureContext.COSE_SIGN1 == masterSignature.getCOSESignatureContext() && masterSignature.isDetachedSignature()) {
+            if (Utils.isCollectionEmpty(parameters.getDetachedContents())) {
+                throw new IllegalArgumentException(String.format("Detached contents shall be provided " +
+                        "on counter signing a '%s' signature.", masterSignature.getCOSESignatureContext().getLabel()));
+            }
+            masterSignature.setDetachedContents(parameters.getDetachedContents());
+            masterSignature.checkSignatureIntegrity(); // required to extract the payload
+
+            counterSignature.setPayload(masterSignature.getCoseSignature().getPayload());
+        }
     }
 
     @Override

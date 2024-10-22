@@ -579,7 +579,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
      * @return TRUE if the signature is detached, FALSE otherwise
      */
     public boolean isDetachedSignature() {
-        return isDetached;
+        return isDetached && !isCounterSignature();
     }
 
     /**
@@ -1022,7 +1022,16 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
      * @return a list of {@link DSSDocument}s
      */
     public List<DSSDocument> getOriginalDocuments() {
-        if (isDetachedSignature()) {
+        if (isCounterSignature()) {
+            final List<DSSDocument> originalDocuments = new ArrayList<>();
+            CBAdESSignature masterSignature = (CBAdESSignature) getMasterSignature();
+            originalDocuments.add(new InMemoryDocument(masterSignature.getSignatureValue()));
+            if (COSESignatureContext.COSE_SIGN1 == masterSignature.getCOSESignatureContext()) {
+                originalDocuments.addAll(masterSignature.getOriginalDocuments());
+            }
+            return originalDocuments;
+
+        } else if (isDetachedSignature()) {
 
             List<DSSDocument> originalDocuments = new ArrayList<>();
 
@@ -1041,7 +1050,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 // check if the signature of an old detached format
                 SignatureCryptographicVerification signatureCryptographicVerification = getSignatureCryptographicVerification();
                 if (signatureCryptographicVerification.isSignatureIntact()) {
-                    if (isDetached && Utils.collectionSize(detachedContents) == 1) {
+                    if (isDetachedSignature() && Utils.collectionSize(detachedContents) == 1) {
                         return Collections.singletonList(detachedContents.get(0));
                     } else if (SigDMechanism.OBJECT_ID_BY_URI.equals(getSigDMechanism())) {
                         return getSignedDocumentsForObjectIdByUriMechanism();
@@ -1138,22 +1147,26 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                     .setMasterSignature(masterSignatureStructure)
                     .parse();
             List<CBORSignature> coseSignatures = CBORSignature.fromCOSECounterSignStructure(coseCounterSignStructure);
-            for (CBORSignature cose : coseSignatures) {
-                CBAdESSignature cbadesCounterSignature = new CBAdESSignature(cose);
+            for (CBORSignature coseSignature : coseSignatures) {
+                CBAdESSignature cbadesCounterSignature = new CBAdESSignature(coseSignature);
                 cbadesCounterSignature.setFilename(getFilename());
                 cbadesCounterSignature.setMasterSignature(this);
-                if (cose.getExternallySuppliedData() != null) {
-                    cbadesCounterSignature.getCoseSignature().setExternalAttributes(cose.getExternallySuppliedData());
+                if (coseSignature.getExternallySuppliedData() != null) {
+                    cbadesCounterSignature.getCoseSignature().setExternalAttributes(coseSignature.getExternallySuppliedData());
                 }
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
+                }
+                // only COSE_Sign1 covers master signature's payload
+                if (COSESignatureContext.COSE_SIGN1 == cose.getContext() && isDetachedSignature()) {
+                    checkSignatureIntegrity(); // ensure payload
+                    coseSignature.setPayload(cose.getPayload());
                 }
                 result.add(cbadesCounterSignature);
             }
             return result;
         }
         return Collections.emptyList();
-        // TODO : add support of countersignature0 and countersignature0V2
     }
 
     @Override

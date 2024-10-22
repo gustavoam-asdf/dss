@@ -44,16 +44,15 @@ public class CBAdESSignatureScopeFinder extends AbstractSignatureScopeFinder imp
             return result;
         }
 
+        if (cbadesSignature.isCounterSignature()) {
+            result.add(new CounterSignatureScope(cbadesSignature.getMasterSignature(), originalDocuments.get(0)));
+        }
+
         List<ReferenceValidation> referenceValidations = cbadesSignature.getReferenceValidations();
         for (ReferenceValidation referenceValidation : referenceValidations) {
             if (referenceValidation.isIntact()) {
-                if (originalDocuments.size() == 1) {
-                    if (cbadesSignature.isCounterSignature()) {
-                        // only one document shall be present
-                        return Collections.singletonList(new CounterSignatureScope(cbadesSignature.getMasterSignature(), originalDocuments.get(0)));
-                    } else {
-                        return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0)));
-                    }
+                if (originalDocuments.size() == 1 && !cbadesSignature.isCounterSignature()) {
+                    return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0)));
 
                 } else if (referenceValidations.size() == 1) {
                     return getSignatureScopeFromOriginalDocuments(originalDocuments);
