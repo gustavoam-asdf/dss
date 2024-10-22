@@ -19,6 +19,9 @@ public class COSESignature implements COSEStructure {
     /** The computed signature value of the signer */
     private CBORByteString signature;
 
+    /** Parent container of the signature, when applicable */
+    private COSEStructure parent;
+
     /**
      * Default constructor to instantiate an empty COSESignature object
      */
@@ -86,6 +89,24 @@ public class COSESignature implements COSEStructure {
      */
     public void setSignature(CBORByteString signature) {
         this.signature = signature;
+    }
+
+    /**
+     * Gets parent signature structure, when applicable
+     *
+     * @return {@link COSEStructure}
+     */
+    public COSEStructure getParent() {
+        return parent;
+    }
+
+    /**
+     * Sets parent signature structure
+     *
+     * @param parent {@link COSEStructure}
+     */
+    public void setParent(COSEStructure parent) {
+        this.parent = parent;
     }
 
     @Override

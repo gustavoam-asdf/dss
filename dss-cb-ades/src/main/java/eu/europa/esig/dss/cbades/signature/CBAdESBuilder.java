@@ -172,6 +172,7 @@ public class CBAdESBuilder {
                     coseSign.setTagged(parameters.isTagged());
                     coseSign.setPayload(getPayload(isDataToSignComputation));
                 }
+                coseSignature.setParent(coseSign);
 
                 coseSign.getSignatures().add(coseSignature);
 

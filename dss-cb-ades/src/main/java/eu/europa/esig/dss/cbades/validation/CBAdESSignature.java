@@ -7,6 +7,7 @@ import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignatureParser;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEStructure;
+import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -1106,12 +1107,22 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         }
         counterSignatures = new ArrayList<>();
 
+        COSEUnprotectedHeader bodyUnprotectedHeader = cose.getBodyUnprotectedHeader();
+        COSEUnprotectedHeader signerUnprotectedHeader = cose.getSignerUnprotectedHeader();
         for (COSESignatureContext coseContext : COSESignatureContext.values()) {
             Long headerKey = coseContext.getCounterSignatureHeaderKey();
             if (headerKey != null) {
-                CBORObject headerValue = cose.getUnprotectedHeaderValue(headerKey);
+                CBORObject headerValue = null;
+                boolean bodyStructure = false;
+                if (signerUnprotectedHeader != null) {
+                    headerValue = signerUnprotectedHeader.getHeader(headerKey);
+                }
+                if (headerValue == null && bodyUnprotectedHeader != null && !isCounterSignature()) {
+                    headerValue = bodyUnprotectedHeader.getHeader(headerKey);
+                    bodyStructure = true;
+                }
                 if (headerValue != null) { // is present
-                    counterSignatures.addAll(buildCounterSignatures(headerKey, headerValue));
+                    counterSignatures.addAll(buildCounterSignatures(headerKey, headerValue, bodyStructure));
                 }
             }
         }
@@ -1126,7 +1137,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private List<CBAdESSignature> buildCounterSignatures(CBAdESUHeadersComponent uHeader) {
-        List<CBAdESSignature> counterSignatures = buildCounterSignatures(uHeader.getHeaderId(), uHeader.getValue());
+        List<CBAdESSignature> counterSignatures = buildCounterSignatures(uHeader.getHeaderId(), uHeader.getValue(), false);
         if (Utils.isCollectionNotEmpty(counterSignatures)) {
             for (CBAdESSignature counterSignature : counterSignatures) {
                 counterSignature.setMasterCounterSignatureComponent(uHeader);
@@ -1135,13 +1146,13 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         return counterSignatures;
     }
 
-    private List<CBAdESSignature> buildCounterSignatures(Long headerKey, CBORObject headerValue) {
+    private List<CBAdESSignature> buildCounterSignatures(Long headerKey, CBORObject headerValue, boolean bodyStructure) {
         COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(headerKey);
         // is known
         if (counterSignatureContext != null) {
             final List<CBAdESSignature> result = new ArrayList<>();
 
-            COSEStructure masterSignatureStructure = COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
+            COSEStructure masterSignatureStructure = getMasterSignatureStructure(bodyStructure);
             COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(headerValue)
                     .setContext(counterSignatureContext)
                     .setMasterSignature(masterSignatureStructure)
@@ -1167,6 +1178,18 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             return result;
         }
         return Collections.emptyList();
+    }
+
+    private COSEStructure getMasterSignatureStructure(boolean bodyStructure) {
+        switch (cose.getContext()) {
+            case COSE_SIGN:
+                return bodyStructure ? cose.getCoseSignStructure() : cose.getSignerSignature();
+            case COSE_SIGN1:
+                return cose.getCoseSignStructure();
+            default:
+                // counter signatures
+                return cose.getSignerSignature();
+        }
     }
 
     @Override

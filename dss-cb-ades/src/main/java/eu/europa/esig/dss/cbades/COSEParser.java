@@ -176,12 +176,17 @@ public class COSEParser extends AbstractCOSEParser {
         if (!signaturesArray.isArray()) {
             throw new IllegalInputException("COSE_Sign1.signature must be an array!");
         }
+
         final COSESign coseSign = new COSESign();
         coseSign.setTagged(cborArray.isTagged());
         coseSign.setProtectedHeader(new COSEProtectedHeader((CBORByteString) protectedHeaderItem));
         coseSign.setUnprotectedHeader(new COSEUnprotectedHeader((CBORMap) unprotectedHeaderItem));
         coseSign.setPayload(payloadItem);
-        coseSign.setSignatures(parseSignatures((CBORArray) signaturesArray));
+
+        List<COSESignature> coseSignatures = parseSignatures((CBORArray) signaturesArray);
+        coseSignatures.forEach(s -> s.setParent(coseSign));
+        coseSign.setSignatures(coseSignatures);
+
         return coseSign;
     }
 
