@@ -7,6 +7,7 @@ import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.validation.timestamp.TimestampMessageDigestBuilder;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import org.slf4j.Logger;
@@ -159,7 +160,33 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
 
     @Override
     public DSSMessageDigest getSignatureTimestampMessageDigest() {
-        return null;
+        try {
+            /*
+             * The input of the message imprint computation for the time-stamp tokens
+             * encapsulated by sigTst CBOR map shall be the COSE signature value present
+             * within the CB-AdES signature.
+             * NOTE: This is the same as the content encapsulated within the signature
+             *       CBOR byte string member of instances of COSE_Signature type specified
+             *       in IETF RFC 9052 [2] clause 4.1.
+             */
+            // TODO : review the message-imprint computation -> should be CBOR encoded?
+            byte[] signatureTimestampData = getSignatureValue();
+            return new DSSMessageDigest(digestAlgorithm, DSSUtils.digest(digestAlgorithm, signatureTimestampData));
+
+        } catch (Exception e) {
+            String errorMessage = timestampToken == null ? String.format(MESSAGE_IMPRINT_ERROR, e.getMessage()) :
+                    String.format(MESSAGE_IMPRINT_ERROR_WITH_ID, timestampToken.getDSSIdAsString(), e.getMessage());
+            if (LOG.isDebugEnabled()) {
+                LOG.warn(errorMessage, e);
+            } else {
+                LOG.warn(errorMessage);
+            }
+        }
+        return DSSMessageDigest.createEmptyDigest();
+    }
+
+    private byte[] getSignatureValue() {
+        return signature.getSignatureValue();
     }
 
     @Override

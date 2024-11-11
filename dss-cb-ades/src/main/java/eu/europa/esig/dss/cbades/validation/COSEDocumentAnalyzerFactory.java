@@ -18,14 +18,14 @@ public class COSEDocumentAnalyzerFactory implements DocumentAnalyzerFactory {
 
     @Override
     public boolean isSupported(DSSDocument document) {
-        COSEDocumentAnalyzer validator = new COSEDocumentAnalyzer();
-        return validator.isSupported(document);
+        COSEDocumentAnalyzer analyzer = new COSEDocumentAnalyzer();
+        return analyzer.isSupported(document);
     }
 
     @Override
     public COSEDocumentAnalyzer create(DSSDocument document) {
-        COSEDocumentAnalyzer validator = new COSEDocumentAnalyzer();
-        if (validator.isSupported(document)) {
+        COSEDocumentAnalyzer analyzer = new COSEDocumentAnalyzer();
+        if (analyzer.isSupported(document)) {
             return new COSEDocumentAnalyzer(document);
         }
         throw new IllegalArgumentException("Not supported document");

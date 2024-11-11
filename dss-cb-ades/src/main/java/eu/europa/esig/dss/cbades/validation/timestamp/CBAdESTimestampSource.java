@@ -11,6 +11,7 @@ import eu.europa.esig.dss.crl.CRLBinary;
 import eu.europa.esig.dss.enumerations.ArchiveTimestampType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.TimestampType;
+import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.SignatureProperties;
@@ -298,6 +299,17 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
     @Override
     protected CBAdESTimestampMessageDigestBuilder getTimestampMessageImprintDigestBuilder(DigestAlgorithm digestAlgorithm) {
         return new CBAdESTimestampMessageDigestBuilder(signature, digestAlgorithm);
+    }
+
+    /**
+     * Returns the message-imprint digest for a SignatureTimestamp (BASE64URL(JWS Signature Value))
+     *
+     * @param digestAlgorithm {@link DigestAlgorithm} to compute digest with
+     * @return {@link DSSMessageDigest} representing a message-imprint digest
+     */
+    public DSSMessageDigest getSignatureTimestampData(DigestAlgorithm digestAlgorithm) {
+        CBAdESTimestampMessageDigestBuilder builder = getTimestampMessageImprintDigestBuilder(digestAlgorithm);
+        return builder.getSignatureTimestampMessageDigest();
     }
 
 }

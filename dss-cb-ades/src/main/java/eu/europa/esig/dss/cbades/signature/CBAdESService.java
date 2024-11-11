@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -103,7 +102,16 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
         CBAdESBuilder cbadesBuilder = getCBAdESBuilder(parameters, toSignDocuments);
         DSSDocument signedDocument = cbadesBuilder.build(signatureValue);
 
-        // TODO : add extension support
+        
+        CBAdESLevelBaselineExtension signatureExtension = getExtensionProfile(parameters);
+        if (signatureExtension != null) {
+            if (SignaturePackaging.DETACHED.equals(parameters.getSignaturePackaging()) &&
+                    Utils.isCollectionEmpty(parameters.getDetachedContents())) {
+                parameters.getContext().setDetachedContents(toSignDocuments);
+            }
+            signatureExtension.setOperationKind(SigningOperation.SIGN);
+            signedDocument = signatureExtension.extendSignatures(signedDocument, parameters);
+        }
 
         parameters.reinit();
         signedDocument.setName(getFinalFileName(toSignDocuments.iterator().next(), SigningOperation.SIGN, parameters.getSignatureLevel()));
@@ -113,12 +121,26 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
 
     @Override
     public DSSDocument extendDocument(DSSDocument toExtendDocument, CBAdESSignatureParameters parameters) {
-        return null;
+        Objects.requireNonNull(toExtendDocument, "toExtendDocument cannot be null!");
+        Objects.requireNonNull(parameters, "Cannot extend the signature. SignatureParameters are not defined!");
+        Objects.requireNonNull(parameters.getSignatureLevel(), "SignatureLevel must be defined!");
+
+        final CBAdESLevelBaselineExtension signatureExtension = getExtensionProfile(parameters);
+        if (signatureExtension != null) {
+            signatureExtension.setOperationKind(SigningOperation.EXTEND);
+            final DSSDocument dssDocument = signatureExtension.extendSignatures(toExtendDocument, parameters);
+            dssDocument.setName(
+                    getFinalFileName(toExtendDocument, SigningOperation.EXTEND, parameters.getSignatureLevel()));
+            dssDocument.setMimeType(MimeTypeEnum.COSE);
+            return dssDocument;
+        }
+        throw new UnsupportedOperationException(
+                String.format("Unsupported signature format '%s' for extension.", parameters.getSignatureLevel()));
     }
 
     @Override
     public TimestampToken getContentTimestamp(DSSDocument toSignDocument, CBAdESSignatureParameters parameters) {
-        return getContentTimestamp(Arrays.asList(toSignDocument), parameters);
+        return getContentTimestamp(Collections.singletonList(toSignDocument), parameters);
     }
 
     /**
@@ -159,7 +181,7 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
 
     @Override
     public DSSDocument timestamp(List<DSSDocument> toTimestampDocuments, CBAdESTimestampParameters parameters) {
-        return null;
+        throw new UnsupportedOperationException("Unsupported operation for this file format");
     }
 
     @Override
@@ -234,6 +256,28 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
             throw new IllegalInputException("Parallel signing is not supported for COSE_Sign1 RFC 9052 signatures!");
         }
         return false;
+    }
+
+    private CBAdESLevelBaselineExtension getExtensionProfile(CBAdESSignatureParameters parameters) {
+        switch (parameters.getSignatureLevel()) {
+            case CB_AdES_BASELINE_B:
+                return null;
+            case CB_AdES_BASELINE_T:
+                final CBAdESLevelBaselineT extensionT = new CBAdESLevelBaselineT(certificateVerifier);
+                extensionT.setTspSource(tspSource);
+                return extensionT;
+//            case CB_AdES_BASELINE_LT:
+//                final CBAdESLevelBaselineLT extensionLT = new CBAdESLevelBaselineLT(certificateVerifier);
+//                extensionLT.setTspSource(tspSource);
+//                return extensionLT;
+//            case CB_AdES_BASELINE_LTA:
+//                final CBAdESLevelBaselineLTA extensionLTA = new CBAdESLevelBaselineLTA(certificateVerifier);
+//                extensionLTA.setTspSource(tspSource);
+//                return extensionLTA;
+            default:
+                throw new UnsupportedOperationException(
+                        String.format("Unsupported signature format '%s' for extension.", parameters.getSignatureLevel()));
+        }
     }
 
     private void verifyAndSetCounterSignatureParameters(CBAdESCounterSignatureParameters parameters) {
