@@ -1,19 +1,19 @@
 /**
  * DSS - Digital Signature Services
  * Copyright (C) 2015 European Commission, provided under the CEF programme
- * 
+ * <p>
  * This file is part of the "DSS - Digital Signature Services" project.
- * 
+ * <p>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ * <p>
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -162,6 +162,9 @@ public class CommonsDataLoader implements DataLoader {
 
 	/** Contains rules credentials for authentication to different resources */
 	private Map<HostConnection, UserCredentials> authenticationMap;
+
+	/** A list of preferred auth schemes, to be executed in the given order */
+	private List<String> targetPreferredAuthSchemes;
 
 	/**
 	 * Used SSL protocol
@@ -605,19 +608,6 @@ public class CommonsDataLoader implements DataLoader {
 	}
 
 	/**
-	 * Sets whether the preemptive authentication should be used.
-	 * When set to TRUE, the client sends authentication details (i.e. user credentials) within the initial request
-	 * to the remote host, instead of sending the credentials only after a request from the host.
-	 * Please note that the preemptive authentication should not be used over an insecure connection.
-	 * Default : FALSE (preemptive authentication is not used)
-	 *
-	 * @param preemptiveAuthentication whether the preemptive authentication should be used
-	 */
-	public void setPreemptiveAuthentication(boolean preemptiveAuthentication) {
-		this.preemptiveAuthentication = preemptiveAuthentication;
-	}
-
-	/**
 	 * Adds authentication credentials to the existing {@code authenticationMap}
 	 *
 	 * @param host
@@ -637,6 +627,39 @@ public class CommonsDataLoader implements DataLoader {
 		final HostConnection hostConnection = new HostConnection(host, port, scheme);
 		final UserCredentials userCredentials = new UserCredentials(login, password);
 		return addAuthentication(hostConnection, userCredentials);
+	}
+
+	/**
+	 * Gets the target preferred authentication scheme, to be called in the given order
+	 *
+	 * @return a list of {@link String}s
+	 */
+	public List<String> getTargetPreferredAuthSchemes() {
+		return targetPreferredAuthSchemes;
+	}
+
+	/**
+	 * Sets a list of target preferred authentication schemes,
+	 * to be executed on the given order on connection establishing
+	 * Default: "Bearer", "Digest", "Basic".
+	 *
+	 * @param targetPreferredAuthSchemes a list of {@link String}s
+	 */
+	public void setTargetPreferredAuthSchemes(List<String> targetPreferredAuthSchemes) {
+		this.targetPreferredAuthSchemes = targetPreferredAuthSchemes;
+	}
+
+	/**
+	 * Sets whether the preemptive authentication should be used.
+	 * When set to TRUE, the client sends authentication details (i.e. user credentials) within the initial request
+	 * to the remote host, instead of sending the credentials only after a request from the host.
+	 * Please note that the preemptive authentication should not be used over an insecure connection.
+	 * Default : FALSE (preemptive authentication is not used)
+	 *
+	 * @param preemptiveAuthentication whether the preemptive authentication should be used
+	 */
+	public void setPreemptiveAuthentication(boolean preemptiveAuthentication) {
+		this.preemptiveAuthentication = preemptiveAuthentication;
 	}
 
 	/**
@@ -855,8 +878,8 @@ public class CommonsDataLoader implements DataLoader {
 
 	private URL getURL(String urlString) {
 		try {
-			return new URL(urlString);
-		} catch (MalformedURLException e) {
+			return URI.create(urlString).toURL();
+		} catch (MalformedURLException | IllegalArgumentException e) {
 			throw new DSSExternalResourceException("Unable to create URL instance", e);
 		}
 	}
@@ -1120,14 +1143,8 @@ public class CommonsDataLoader implements DataLoader {
 
 		httpClientBuilder = configCredentials(httpClientBuilder, url);
 
-		final RequestConfig.Builder requestConfigBuilder = RequestConfig.custom()
-				.setConnectionRequestTimeout(timeoutConnectionRequest)
-				.setResponseTimeout(timeoutResponse)
-				.setConnectionKeepAlive(connectionKeepAlive)
-				.setRedirectsEnabled(redirectsEnabled);
-
 		httpClientBuilder.setConnectionManager(getConnectionManager())
-				.setDefaultRequestConfig(requestConfigBuilder.build())
+				.setDefaultRequestConfig(getRequestConfig())
 				.setRetryStrategy(retryStrategy);
 		
 		return httpClientBuilder;
@@ -1141,6 +1158,29 @@ public class CommonsDataLoader implements DataLoader {
 	 */
 	protected synchronized CloseableHttpClient getHttpClient(final String url) {
 		return getHttpClientBuilder(url).build();
+	}
+
+	/**
+	 * Gets a configured {@code RequestConfig.Builder}
+	 *
+	 * @return {@link RequestConfig.Builder}
+	 */
+	protected RequestConfig.Builder getRequestConfigBuilder() {
+		return RequestConfig.custom()
+				.setTargetPreferredAuthSchemes(targetPreferredAuthSchemes)
+				.setConnectionRequestTimeout(timeoutConnectionRequest)
+				.setResponseTimeout(timeoutResponse)
+				.setConnectionKeepAlive(connectionKeepAlive)
+				.setRedirectsEnabled(redirectsEnabled);
+	}
+
+	/**
+	 * Builds and gets a {@code RequestConfig}
+	 *
+	 * @return {@link RequestConfig}
+	 */
+	protected RequestConfig getRequestConfig() {
+		return getRequestConfigBuilder().build();
 	}
 
 	/**

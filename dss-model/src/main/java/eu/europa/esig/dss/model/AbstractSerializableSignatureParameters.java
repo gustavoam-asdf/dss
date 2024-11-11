@@ -1,19 +1,19 @@
 /**
  * DSS - Digital Signature Services
  * Copyright (C) 2015 European Commission, provided under the CEF programme
- * 
+ * <p>
  * This file is part of the "DSS - Digital Signature Services" project.
- * 
+ * <p>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ * <p>
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -352,23 +352,6 @@ public abstract class AbstractSerializableSignatureParameters<TP extends Seriali
 	}
 
 	@Override
-	public int hashCode() {
-		int result = Boolean.hashCode(checkCertificateRevocation);
-		result = 31 * result + Boolean.hashCode(generateTBSWithoutCertificate);
-		result = 31 * result + Objects.hashCode(signatureLevel);
-		result = 31 * result + Objects.hashCode(signaturePackaging);
-		result = 31 * result + Objects.hashCode(signatureAlgorithm);
-		result = 31 * result + Objects.hashCode(encryptionAlgorithm);
-		result = 31 * result + Objects.hashCode(digestAlgorithm);
-		result = 31 * result + Objects.hashCode(referenceDigestAlgorithm);
-		result = 31 * result + Objects.hashCode(bLevelParams);
-		result = 31 * result + Objects.hashCode(contentTimestampParameters);
-		result = 31 * result + Objects.hashCode(signatureTimestampParameters);
-		result = 31 * result + Objects.hashCode(archiveTimestampParameters);
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
@@ -386,6 +369,23 @@ public abstract class AbstractSerializableSignatureParameters<TP extends Seriali
 				&& Objects.equals(contentTimestampParameters, that.contentTimestampParameters)
 				&& Objects.equals(signatureTimestampParameters, that.signatureTimestampParameters)
 				&& Objects.equals(archiveTimestampParameters, that.archiveTimestampParameters);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Boolean.hashCode(checkCertificateRevocation);
+		result = 31 * result + Boolean.hashCode(generateTBSWithoutCertificate);
+		result = 31 * result + Objects.hashCode(signatureLevel);
+		result = 31 * result + Objects.hashCode(signaturePackaging);
+		result = 31 * result + Objects.hashCode(signatureAlgorithm);
+		result = 31 * result + Objects.hashCode(encryptionAlgorithm);
+		result = 31 * result + Objects.hashCode(digestAlgorithm);
+		result = 31 * result + Objects.hashCode(referenceDigestAlgorithm);
+		result = 31 * result + Objects.hashCode(bLevelParams);
+		result = 31 * result + Objects.hashCode(contentTimestampParameters);
+		result = 31 * result + Objects.hashCode(signatureTimestampParameters);
+		result = 31 * result + Objects.hashCode(archiveTimestampParameters);
+		return result;
 	}
 
 }

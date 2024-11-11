@@ -1,19 +1,19 @@
 /**
  * DSS - Digital Signature Services
  * Copyright (C) 2015 European Commission, provided under the CEF programme
- * 
+ * <p>
  * This file is part of the "DSS - Digital Signature Services" project.
- * 
+ * <p>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ * <p>
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -87,7 +87,7 @@ public class RevocationDataVerifier {
                 DigestAlgorithm.SHA224, DigestAlgorithm.SHA256, DigestAlgorithm.SHA384, DigestAlgorithm.SHA512,
                 DigestAlgorithm.SHA3_256, DigestAlgorithm.SHA3_384, DigestAlgorithm.SHA3_512);
 
-        DEFAULT_ENCRYPTION_ALGORITHMS_KEY_LENGTH_MAP = new HashMap<>();
+        DEFAULT_ENCRYPTION_ALGORITHMS_KEY_LENGTH_MAP = new EnumMap<>(EncryptionAlgorithm.class);
         DEFAULT_ENCRYPTION_ALGORITHMS_KEY_LENGTH_MAP.put(EncryptionAlgorithm.DSA, 2048);
         DEFAULT_ENCRYPTION_ALGORITHMS_KEY_LENGTH_MAP.put(EncryptionAlgorithm.RSA, 1900);
         DEFAULT_ENCRYPTION_ALGORITHMS_KEY_LENGTH_MAP.put(EncryptionAlgorithm.RSASSA_PSS, 1900);
@@ -456,18 +456,39 @@ public class RevocationDataVerifier {
      *
      * @param revocationToken {@link RevocationToken}
      * @param issuerCertificateToken {@link CertificateToken} issued the current revocation
-     * @param certificateChain a list of {@link CertificateToken}s, represnting a certificate chain of the issuer
+     * @param certificateChain a list of {@link CertificateToken}s, representing a certificate chain of the issuer
      * @param controlTime {@link Date}
      * @return TRUE if the revocation data is acceptable to continue the validation process, FALSE otherwise
      */
     public boolean isAcceptable(RevocationToken<?> revocationToken, CertificateToken issuerCertificateToken,
                                 List<CertificateToken> certificateChain, Date controlTime) {
-        return isRevocationDataComplete(revocationToken) && isGoodIssuer(revocationToken, issuerCertificateToken, controlTime)
+        return isRevocationTokenValid(revocationToken) && isRevocationDataComplete(revocationToken)
+                && isGoodIssuer(revocationToken, issuerCertificateToken, controlTime)
                 && isCertificateChainValid(certificateChain, controlTime, Context.REVOCATION) && isConsistent(revocationToken)
                 && isAcceptableSignatureAlgorithm(revocationToken, issuerCertificateToken);
     }
 
-    private boolean isRevocationDataComplete(RevocationToken<?> revocationToken) {
+    /**
+     * Verifies whether the revocation token is cryptographically valid
+     *
+     * @param revocationToken {@link RevocationToken} to be verified
+     * @return TRUE if the revocation token is valid, FALSE otherwise
+     */
+    protected boolean isRevocationTokenValid(RevocationToken<?> revocationToken) {
+        if (!revocationToken.isValid()) {
+            LOG.warn("The revocation token '{}' is not valid : {}!", revocationToken.getDSSIdAsString(), revocationToken.getInvalidityReason());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Verifies whether the revocation token contains all required data
+     *
+     * @param revocationToken {@link RevocationToken} to be verifies
+     * @return TRUE if the revocation token is complete, FALSE otherwise
+     */
+    protected boolean isRevocationDataComplete(RevocationToken<?> revocationToken) {
         if (revocationToken.getRelatedCertificate() == null) {
             LOG.warn("The revocation '{}' does not have a related certificate!", revocationToken.getDSSIdAsString());
             return false;
@@ -483,7 +504,15 @@ public class RevocationDataVerifier {
         return true;
     }
 
-    private boolean isGoodIssuer(RevocationToken<?> revocationToken, CertificateToken issuerCertificateToken, Date controlTime) {
+    /**
+     * Verifies validity if the {@code issuerCertificateToken} of {@code revocationToken}
+     *
+     * @param revocationToken {@link RevocationToken} concerned revocation token
+     * @param issuerCertificateToken {@link CertificateToken} issued the revocation token
+     * @param controlTime {@link Date} validation time
+     * @return TRUE if the issuer certificate token is valid at the control time, FALSE otherwise
+     */
+    protected boolean isGoodIssuer(RevocationToken<?> revocationToken, CertificateToken issuerCertificateToken, Date controlTime) {
         if (issuerCertificateToken == null) {
             LOG.warn("The issuer certificate is not found for the obtained revocation '{}'!", revocationToken.getDSSIdAsString());
             return false;
@@ -500,12 +529,13 @@ public class RevocationDataVerifier {
         return true;
     }
 
-    private boolean hasRevocationAccessPoints(final CertificateToken certificateToken) {
-        return Utils.isCollectionNotEmpty(CertificateExtensionsUtils.getCRLAccessUrls(certificateToken)) ||
-                Utils.isCollectionNotEmpty(CertificateExtensionsUtils.getOCSPAccessUrls(certificateToken));
-    }
-
-    private boolean isConsistent(RevocationToken<?> revocation) {
+    /**
+     * Verifies whether the revocation token is consistent
+     *
+     * @param revocation {@link RevocationToken} to be verified
+     * @return TRUE if the revocation token is consistent, FALSE otherwise
+     */
+    protected boolean isConsistent(RevocationToken<?> revocation) {
         final CertificateToken certToken = revocation.getRelatedCertificate();
 
         if (!isRevocationIssuedAfterCertificateNotBefore(revocation, certToken)) {
@@ -531,8 +561,7 @@ public class RevocationDataVerifier {
         return revocationInformationAssured(revocationToken, certificateToken) || certHashMatch(revocationToken);
     }
 
-    private boolean revocationInformationAssured(RevocationToken<?> revocationToken,
-                                                  CertificateToken certificateToken) {
+    private boolean revocationInformationAssured(RevocationToken<?> revocationToken, CertificateToken certificateToken) {
         Date notAfterRevoc = revocationToken.getThisUpdate();
         Date certNotAfter = certificateToken.getNotAfter();
 
@@ -553,7 +582,15 @@ public class RevocationDataVerifier {
         return revocationToken.isCertHashPresent() && revocationToken.isCertHashMatch();
     }
 
-    private boolean isAcceptableSignatureAlgorithm(RevocationToken<?> revocationToken, CertificateToken issuerCertificateToken) {
+    /**
+     * Verifies validity of the used signature algorithm on revocation data creation is still valid according
+     * to the specified cryptographic constraints.
+     *
+     * @param revocationToken {@link RevocationToken} to be verified
+     * @param issuerCertificateToken {@link CertificateToken} issued the revocation token
+     * @return TRUE if the signature algorithm used on revocation token creation, FALSE otherwise
+     */
+    protected boolean isAcceptableSignatureAlgorithm(RevocationToken<?> revocationToken, CertificateToken issuerCertificateToken) {
         if (Utils.isCollectionEmpty(acceptableDigestAlgorithms)) {
             LOG.info("No acceptable digest algorithms defined!");
             return false;
@@ -819,6 +856,11 @@ public class RevocationDataVerifier {
             }
         }
         return true;
+    }
+
+    private boolean hasRevocationAccessPoints(final CertificateToken certificateToken) {
+        return Utils.isCollectionNotEmpty(CertificateExtensionsUtils.getCRLAccessUrls(certificateToken)) ||
+                Utils.isCollectionNotEmpty(CertificateExtensionsUtils.getOCSPAccessUrls(certificateToken));
     }
 
     /**
