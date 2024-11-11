@@ -56,9 +56,9 @@ public class PAdESExtensionLTWithVRIToLTATest extends PAdESExtensionLTToLTATest 
     protected void onDocumentSigned(DSSDocument signedDocument) {
         super.onDocumentSigned(signedDocument);
 
-        PDFDocumentAnalyzer documentValidator = new PDFDocumentAnalyzer(signedDocument);
+        PDFDocumentAnalyzer documentAnalyzer = new PDFDocumentAnalyzer(signedDocument);
 
-        List<AdvancedSignature> signatures = documentValidator.getSignatures();
+        List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
         assertEquals(1, signatures.size());
 
         PAdESSignature padesSignature = (PAdESSignature) signatures.get(0);
@@ -82,9 +82,9 @@ public class PAdESExtensionLTWithVRIToLTATest extends PAdESExtensionLTToLTATest 
     protected void onDocumentExtended(DSSDocument extendedDocument) {
         super.onDocumentExtended(extendedDocument);
 
-        PDFDocumentAnalyzer documentValidator = new PDFDocumentAnalyzer(extendedDocument);
+        PDFDocumentAnalyzer documentAnalyzer = new PDFDocumentAnalyzer(extendedDocument);
 
-        List<AdvancedSignature> signatures = documentValidator.getSignatures();
+        List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
         assertEquals(1, signatures.size());
 
         PAdESSignature padesSignature = (PAdESSignature) signatures.get(0);

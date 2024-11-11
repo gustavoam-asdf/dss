@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,7 +58,7 @@ public abstract class PAdESUtilsTest {
 
         DSSDocument signedDocument = PAdESUtils.replaceSignature(documentToBeSigned,
                 DSSASN1Utils.getDEREncoded(Utils.fromHex(hexEncodedCMSSignedData)), new InMemoryResourcesHandlerBuilder());
-        assertTrue(signedDocument instanceof InMemoryDocument);
+        assertInstanceOf(InMemoryDocument.class, signedDocument);
 
         PDFDocumentAnalyzer analyzer = new PDFDocumentAnalyzer(signedDocument);
         analyzer.setCertificateVerifier(new CommonCertificateVerifier());
@@ -79,12 +80,12 @@ public abstract class PAdESUtilsTest {
 
         DSSDocument signedDocument = PAdESUtils.replaceSignature(documentToBeSigned,
                 DSSASN1Utils.getDEREncoded(Utils.fromHex(hexEncodedCMSSignedData)),tempFileResourcesHandlerBuilder);
-        assertTrue(signedDocument instanceof FileDocument);
-
-        PDFDocumentAnalyzer validator = new PDFDocumentAnalyzer(signedDocument);
-        validator.setCertificateVerifier(new CommonCertificateVerifier());
+        assertInstanceOf(FileDocument.class, signedDocument);
 
         PDFDocumentAnalyzer analyzer = new PDFDocumentAnalyzer(signedDocument);
+        analyzer.setCertificateVerifier(new CommonCertificateVerifier());
+
+        analyzer = new PDFDocumentAnalyzer(signedDocument);
         analyzer.setCertificateVerifier(new CommonCertificateVerifier());
 
         assertEquals(1, analyzer.getSignatures().size());
@@ -129,12 +130,12 @@ public abstract class PAdESUtilsTest {
 
         DSSDocument signedDocument = PAdESUtils.replaceSignature(documentToBeSigned,
                 DSSASN1Utils.getDEREncoded(Utils.fromHex(hexEncodedCMSSignedData)), null);
-        assertTrue(signedDocument instanceof InMemoryDocument);
-
-        PDFDocumentAnalyzer validator = new PDFDocumentAnalyzer(signedDocument);
-        validator.setCertificateVerifier(new CommonCertificateVerifier());
+        assertInstanceOf(InMemoryDocument.class, signedDocument);
 
         PDFDocumentAnalyzer analyzer = new PDFDocumentAnalyzer(signedDocument);
+        analyzer.setCertificateVerifier(new CommonCertificateVerifier());
+
+        analyzer = new PDFDocumentAnalyzer(signedDocument);
         analyzer.setCertificateVerifier(new CommonCertificateVerifier());
 
         assertEquals(1, analyzer.getSignatures().size());

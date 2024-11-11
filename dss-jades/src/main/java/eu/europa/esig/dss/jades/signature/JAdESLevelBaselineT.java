@@ -67,9 +67,9 @@ public class JAdESLevelBaselineT extends JAdESExtensionBuilder implements JAdESL
 	protected TSPSource tspSource;
 
 	/**
-	 * The cached instance of a document validator
+	 * The cached instance of a document analyzer
 	 */
-	protected AbstractJWSDocumentAnalyzer documentValidator;
+	protected AbstractJWSDocumentAnalyzer documentAnalyzer;
 
 	/**
 	 * Internal variable: defines the current signing procedure (used in signature creation/extension)
@@ -104,16 +104,16 @@ public class JAdESLevelBaselineT extends JAdESExtensionBuilder implements JAdESL
 		Objects.requireNonNull(document, "The document cannot be null");
 		Objects.requireNonNull(tspSource, "The TSPSource cannot be null");
 
-		JWSDocumentAnalyzerFactory documentValidatorFactory = new JWSDocumentAnalyzerFactory();
-		documentValidator = documentValidatorFactory.create(document);
-		documentValidator.setCertificateVerifier(certificateVerifier);
-		documentValidator.setDetachedContents(params.getDetachedContents());
-		documentValidator.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
+		JWSDocumentAnalyzerFactory documentAnalyzerFactory = new JWSDocumentAnalyzerFactory();
+		documentAnalyzer = documentAnalyzerFactory.create(document);
+		documentAnalyzer.setCertificateVerifier(certificateVerifier);
+		documentAnalyzer.setDetachedContents(params.getDetachedContents());
+		documentAnalyzer.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
 
-		JWSJsonSerializationObject jwsJsonSerializationObject = documentValidator.getJwsJsonSerializationObject();
+		JWSJsonSerializationObject jwsJsonSerializationObject = documentAnalyzer.getJwsJsonSerializationObject();
 		assertJWSJsonSerializationObjectValid(jwsJsonSerializationObject);
 
-		List<AdvancedSignature> signatures = documentValidator.getSignatures();
+		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 		if (Utils.isCollectionEmpty(signatures)) {
 			throw new IllegalInputException("There is no signature to extend!");
 		}

@@ -685,8 +685,8 @@ public class DSSJsonUtils {
 			
 			JWSDocumentAnalyzerFactory factory = new JWSDocumentAnalyzerFactory();
 			if (factory.isSupported(cSigDocument)) {
-				DocumentAnalyzer validator = factory.create(cSigDocument);
-				List<AdvancedSignature> signatures = validator.getSignatures();
+				DocumentAnalyzer analyzer = factory.create(cSigDocument);
+				List<AdvancedSignature> signatures = analyzer.getSignatures();
 
 				/*
 				 * 5.3.2 The cSig (counter signature) JSON object

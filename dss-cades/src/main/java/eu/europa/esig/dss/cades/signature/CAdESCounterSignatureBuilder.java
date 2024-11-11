@@ -249,11 +249,11 @@ public class CAdESCounterSignatureBuilder {
 		Objects.requireNonNull(parameters.getSignatureIdToCounterSign(), "The Id of a signature to be counter signed shall be defined! "
 				+ "Please use SerializableCounterSignatureParameters.setSignatureIdToCounterSign(signatureId) method.");
 
-		CMSDocumentAnalyzer validator = new CMSDocumentAnalyzer(signatureDocument);
-		validator.setDetachedContents(parameters.getDetachedContents());
-		validator.setManifestFile(manifestFile);
+		CMSDocumentAnalyzer analyzer = new CMSDocumentAnalyzer(signatureDocument);
+		analyzer.setDetachedContents(parameters.getDetachedContents());
+		analyzer.setManifestFile(manifestFile);
 		
-		List<AdvancedSignature> signatures = validator.getSignatures();
+		List<AdvancedSignature> signatures = analyzer.getSignatures();
 		return findSignatureRecursive(signatures, parameters.getSignatureIdToCounterSign());
 	}
 

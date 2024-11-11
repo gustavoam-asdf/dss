@@ -45,8 +45,8 @@ public class ASiCWithXAdESContainerExtractorFactory implements ASiCContainerExtr
     public boolean isSupported(DSSDocument asicContainer) {
         Objects.requireNonNull(asicContainer, "ASiC container cannot be null!");
 
-        final ASiCContainerWithXAdESAnalyzerFactory documentValidatorFactory = new ASiCContainerWithXAdESAnalyzerFactory();
-        return documentValidatorFactory.isSupported(asicContainer);
+        final ASiCContainerWithXAdESAnalyzerFactory documentAnalyzerFactory = new ASiCContainerWithXAdESAnalyzerFactory();
+        return documentAnalyzerFactory.isSupported(asicContainer);
     }
 
     @Override

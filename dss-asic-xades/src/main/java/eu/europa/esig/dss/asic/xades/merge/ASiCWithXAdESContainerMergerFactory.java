@@ -48,13 +48,13 @@ public class ASiCWithXAdESContainerMergerFactory implements ASiCContainerMergerF
         if (containers.length == 0) {
             throw new NullPointerException("At least one container shall be provided!");
         }
-        ASiCContainerWithXAdESAnalyzerFactory documentValidatorFactory = new ASiCContainerWithXAdESAnalyzerFactory();
+        ASiCContainerWithXAdESAnalyzerFactory documentAnalyzerFactory = new ASiCContainerWithXAdESAnalyzerFactory();
         for (DSSDocument container : containers) {
             if (container == null) {
                 throw new NullPointerException("A document cannot be null!");
             }
 
-            if (!documentValidatorFactory.isSupported(container)) {
+            if (!documentAnalyzerFactory.isSupported(container)) {
                 return false;
             }
         }
@@ -104,13 +104,13 @@ public class ASiCWithXAdESContainerMergerFactory implements ASiCContainerMergerF
         if (asicContents.length == 0) {
             throw new NullPointerException("At least one ASiCContent shall be provided!");
         }
-        ASiCContainerWithXAdESAnalyzerFactory documentValidatorFactory = new ASiCContainerWithXAdESAnalyzerFactory();
+        ASiCContainerWithXAdESAnalyzerFactory documentAnalyzerFactory = new ASiCContainerWithXAdESAnalyzerFactory();
         for (ASiCContent asicContent : asicContents) {
             if (asicContent == null) {
                 throw new NullPointerException("An ASiCContent cannot be null!");
             }
 
-            if (!documentValidatorFactory.isSupported(asicContent)) {
+            if (!documentAnalyzerFactory.isSupported(asicContent)) {
                 return false;
             }
         }

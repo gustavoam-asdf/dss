@@ -156,8 +156,8 @@ public abstract class AbstractASiCWithCAdESContainerMerger extends DefaultContai
     private List<CMSSignedData> getCMSSignedDataList(List<DSSDocument> signatureDocuments) {
         List<CMSSignedData> signedDataList = new ArrayList<>();
         for (DSSDocument signatureDocument : signatureDocuments) {
-            CMSDocumentAnalyzer documentValidator = new CMSDocumentAnalyzer(signatureDocument);
-            signedDataList.add(documentValidator.getCmsSignedData());
+            CMSDocumentAnalyzer documentAnalyzer = new CMSDocumentAnalyzer(signatureDocument);
+            signedDataList.add(documentAnalyzer.getCmsSignedData());
         }
         return signedDataList;
     }

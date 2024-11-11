@@ -71,10 +71,10 @@ public class SignaturePolicyStoreBuilder extends ExtensionBuilder {
 		Objects.requireNonNull(signatureDocument, "Signature document must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		final XMLDocumentAnalyzer documentValidator = initDocumentValidator(signatureDocument);
+		final XMLDocumentAnalyzer documentAnalyzer = initDocumentAnalyzer(signatureDocument);
 
 		boolean signaturePolicyStoreAdded = false;
-		for (AdvancedSignature signature : documentValidator.getSignatures()) {
+		for (AdvancedSignature signature : documentAnalyzer.getSignatures()) {
 			boolean added = addSignaturePolicyStoreIfDigestMatch((XAdESSignature) signature, documentDom, signaturePolicyStore);
 			signaturePolicyStoreAdded = signaturePolicyStoreAdded || added;
 		}
@@ -99,8 +99,8 @@ public class SignaturePolicyStoreBuilder extends ExtensionBuilder {
 		Objects.requireNonNull(signatureDocument, "Signature document must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		final XMLDocumentAnalyzer documentValidator = initDocumentValidator(signatureDocument);
-		AdvancedSignature signature = documentValidator.getSignatureById(signatureId);
+		final XMLDocumentAnalyzer documentAnalyzer = initDocumentAnalyzer(signatureDocument);
+		AdvancedSignature signature = documentAnalyzer.getSignatureById(signatureId);
 		if (signature == null) {
 			throw new IllegalInputException(String.format("Unable to find a signature with Id : %s!", signatureId));
 		}
@@ -113,7 +113,7 @@ public class SignaturePolicyStoreBuilder extends ExtensionBuilder {
 		return createXmlDocument();
 	}
 
-	private XMLDocumentAnalyzer initDocumentValidator(DSSDocument document) {
+	private XMLDocumentAnalyzer initDocumentAnalyzer(DSSDocument document) {
 		params = new XAdESSignatureParameters();
 
 		documentAnalyzer = new XMLDocumentAnalyzer(document);

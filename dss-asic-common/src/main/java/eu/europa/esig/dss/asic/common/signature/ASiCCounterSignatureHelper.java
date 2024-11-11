@@ -137,11 +137,11 @@ public abstract class ASiCCounterSignatureHelper {
 	
 	private boolean containsSignatureToBeCounterSigned(DSSDocument signatureDocument, String signatureId) {
 		try {
-			DocumentAnalyzer validator = getDocumentAnalyzer(signatureDocument);
-			validator.setDetachedContents(getDetachedDocuments(signatureDocument.getName()));
-			validator.setManifestFile(getManifestFile(signatureDocument.getName()));
+			DocumentAnalyzer analyzer = getDocumentAnalyzer(signatureDocument);
+			analyzer.setDetachedContents(getDetachedDocuments(signatureDocument.getName()));
+			analyzer.setManifestFile(getManifestFile(signatureDocument.getName()));
 			
-			List<AdvancedSignature> signatures = validator.getSignatures();
+			List<AdvancedSignature> signatures = analyzer.getSignatures();
 			for (AdvancedSignature signature : signatures) {
 				if (containsSignatureToBeCounterSigned(signature, signatureId)) {
 					return true;

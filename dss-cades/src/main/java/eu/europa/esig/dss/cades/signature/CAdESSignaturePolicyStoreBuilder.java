@@ -92,8 +92,8 @@ public class CAdESSignaturePolicyStoreBuilder {
 		Objects.requireNonNull(cmsSignedData, "CMSSignedData must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		CMSDocumentAnalyzer documentValidator = new CMSDocumentAnalyzer(cmsSignedData);
-		List<AdvancedSignature> signatures = documentValidator.getSignatures();
+		CMSDocumentAnalyzer documentAnalyzer = new CMSDocumentAnalyzer(cmsSignedData);
+		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 
 		if (Utils.isCollectionEmpty(signatures)) {
 			throw new IllegalInputException("Unable to extend the document! No signatures found.");
@@ -149,14 +149,14 @@ public class CAdESSignaturePolicyStoreBuilder {
 		Objects.requireNonNull(cmsSignedData, "CMSSignedData must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		CMSDocumentAnalyzer documentValidator = new CMSDocumentAnalyzer(cmsSignedData);
-		AdvancedSignature signature = documentValidator.getSignatureById(signatureId);
+		CMSDocumentAnalyzer documentAnalyzer = new CMSDocumentAnalyzer(cmsSignedData);
+		AdvancedSignature signature = documentAnalyzer.getSignatureById(signatureId);
 		if (signature == null) {
 			throw new IllegalInputException(String.format("Unable to find a signature with Id : %s!", signatureId));
 		}
 
 		final List<SignerInformation> newSignerInformationList = new ArrayList<>();
-		for (AdvancedSignature currentSignature : documentValidator.getSignatures()) {
+		for (AdvancedSignature currentSignature : documentAnalyzer.getSignatures()) {
 			CAdESSignature cadesSignature = (CAdESSignature) currentSignature;
 			if (signature.equals(cadesSignature)) {
 				SignerInformation newSignerInformation = addSignaturePolicyStoreIfDigestMatch(cadesSignature, signaturePolicyStore);

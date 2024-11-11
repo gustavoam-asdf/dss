@@ -159,8 +159,8 @@ abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignat
 
 		List<String> signatureIdsToExtend = new ArrayList<>();
 
-		CMSDocumentAnalyzer validator = getDocumentValidator(cmsSignedData, parameters);
-		List<AdvancedSignature> signatures = validator.getSignatures();
+		CMSDocumentAnalyzer analyzer = getDocumentAnalyzer(cmsSignedData, parameters);
+		List<AdvancedSignature> signatures = analyzer.getSignatures();
 		for (AdvancedSignature signature : signatures) {
 			CAdESSignature cadesSignature = (CAdESSignature) signature;
 			if (signerInformationsToExtend.contains(cadesSignature.getSignerInformation())) {
@@ -288,18 +288,18 @@ abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignat
 	}
 
 	/**
-	 * This method returns a document validator for a {@code CMSSignedData}
+	 * This method returns a document analyzer for a {@code CMSSignedData}
 	 *
 	 * @param signedData {@link CMSSignedData} to get validation for
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @return {@link CMSDocumentAnalyzer}
 	 */
-	protected CMSDocumentAnalyzer getDocumentValidator(CMSSignedData signedData, CAdESSignatureParameters parameters) {
-		CMSDocumentAnalyzer documentValidator = new CMSDocumentAnalyzer(signedData);
-		documentValidator.setCertificateVerifier(certificateVerifier);
-		documentValidator.setDetachedContents(parameters.getDetachedContents());
-		documentValidator.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
-		return documentValidator;
+	protected CMSDocumentAnalyzer getDocumentAnalyzer(CMSSignedData signedData, CAdESSignatureParameters parameters) {
+		CMSDocumentAnalyzer documentAnalyzer = new CMSDocumentAnalyzer(signedData);
+		documentAnalyzer.setCertificateVerifier(certificateVerifier);
+		documentAnalyzer.setDetachedContents(parameters.getDetachedContents());
+		documentAnalyzer.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
+		return documentAnalyzer;
 	}
 	
 }

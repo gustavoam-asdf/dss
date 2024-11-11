@@ -90,7 +90,7 @@ public class JAdESLevelBaselineLT extends JAdESLevelBaselineT {
 		signatureRequirementsChecker.assertCertificateChainValidForLTLevel(signaturesToExtend);
 
 		// Perform signature validation
-		ValidationDataContainer validationDataContainer = documentValidator.getValidationData(signatures);
+		ValidationDataContainer validationDataContainer = documentAnalyzer.getValidationData(signatures);
 
 		// Append ValidationData
 		for (AdvancedSignature signature : signaturesToExtend) {

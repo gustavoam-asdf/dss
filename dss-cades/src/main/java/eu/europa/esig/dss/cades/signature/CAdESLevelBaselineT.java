@@ -66,7 +66,7 @@ public class CAdESLevelBaselineT extends CAdESSignatureExtension {
 												List<String> signatureIdsToExtend) {
 		final List<SignerInformation> newSignerInformationList = new ArrayList<>();
 
-		CMSDocumentAnalyzer documentAnalyzer = getDocumentValidator(cmsSignedData, parameters);
+		CMSDocumentAnalyzer documentAnalyzer = getDocumentAnalyzer(cmsSignedData, parameters);
 		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 		if (Utils.isCollectionEmpty(signatures)) {
 			throw new IllegalInputException("There is no signature to extend!");
