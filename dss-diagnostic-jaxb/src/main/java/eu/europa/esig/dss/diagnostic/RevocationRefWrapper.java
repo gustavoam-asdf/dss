@@ -24,6 +24,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlRevocationRef;
 import eu.europa.esig.dss.enumerations.RevocationRefOrigin;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class RevocationRefWrapper {
 	}
 
 	/**
-	 * Returns revocation ref production time if present
+	 * Returns revocation ref production time (OCSP) or issuance time (CRL) if present
 	 * 
 	 * @return {@link Date}
 	 */
@@ -90,6 +91,24 @@ public class RevocationRefWrapper {
 			return revocationRef.getResponderId().getSki();
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the CRLNumber value, when present
+	 *
+	 * @return {@link BigInteger}
+	 */
+	public BigInteger getCRLNumber() {
+		return revocationRef.getCRLNumber();
+	}
+
+	/**
+	 * Gets the URI reference to the revocation data, when present
+	 *
+	 * @return {@link String}
+	 */
+	public String getUri() {
+		return revocationRef.getUri();
 	}
 	
 	/**

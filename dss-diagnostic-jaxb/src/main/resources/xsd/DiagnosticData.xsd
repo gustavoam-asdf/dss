@@ -1404,8 +1404,10 @@
 		<xs:sequence>
 			<xs:element name="Origin" type="RevocationRefOriginType" maxOccurs="unbounded" />
 			<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" />
-			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" /> <!-- OCSP -->
+			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" />
 			<xs:element name="ResponderId" type="SignerInfo" minOccurs="0" /> <!-- OCSP -->
+			<xs:element name="CRLNumber" type="xs:integer" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="Uri" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 	

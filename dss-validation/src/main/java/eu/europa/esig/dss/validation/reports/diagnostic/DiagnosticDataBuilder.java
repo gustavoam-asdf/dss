@@ -731,6 +731,9 @@ public abstract class DiagnosticDataBuilder {
 		if (crlRef.getDigest() != null) {
 			xmlRevocationRef.setDigestAlgoAndValue(getXmlDigestAlgoAndValue(crlRef.getDigest()));
 		}
+		xmlRevocationRef.setProducedAt(crlRef.getCrlIssuedTime());
+		xmlRevocationRef.setCRLNumber(crlRef.getCrlNumber());
+		xmlRevocationRef.setUri(crlRef.getCrlUri());
 		return xmlRevocationRef;
 	}
 
@@ -752,6 +755,7 @@ public abstract class DiagnosticDataBuilder {
 		if (responderId != null) {
 			xmlRevocationRef.setResponderId(getXmlSignerInfo(responderId));
 		}
+		xmlRevocationRef.setUri(ocspRef.getUri());
 		return xmlRevocationRef;
 	}
 
