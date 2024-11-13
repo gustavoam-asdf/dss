@@ -49,6 +49,9 @@ public final class CRLRef extends RevocationRef<CRL> {
 	/** CRL number */
 	private BigInteger crlNumber;
 
+	/** URI reference to the CRL (a hint) */
+	private String crlUri;
+
 	/**
 	 * The default constructor for CRLRef.
 	 *
@@ -129,6 +132,24 @@ public final class CRLRef extends RevocationRef<CRL> {
 	 */
 	public void setCrlNumber(BigInteger crlNumber) {
 		this.crlNumber = crlNumber;
+	}
+
+	/**
+	 * Gets the URI reference to the CRL (a hint)
+	 *
+	 * @return {@link String}
+	 */
+	public String getCrlUri() {
+		return crlUri;
+	}
+
+	/**
+	 * Sets a URI reference to the CRL (a hint)
+	 *
+	 * @param crlUri {@link String}
+	 */
+	public void setCrlUri(String crlUri) {
+		this.crlUri = crlUri;
 	}
 
 	@Override

@@ -269,11 +269,89 @@ public final class COSEConstants {
     /** COSE_CertHash hashValue. Array position '0' */
     public static final int COSE_CERT_HASH_VALUE = 1;
 
-    /** valData xVals: DER-encoded encapsulated X.509 certificates or other encapsulated certificates. CBOR Tag '1 */
+    /** valData xVals: DER-encoded encapsulated X.509 certificates or other encapsulated certificates. CBOR Tag '1' */
     public static final long VAL_DATA_X_VALS = 1;
 
-    /** valData rVals: validation material. CBOR Tag '2 */
+    /** valData rVals: validation material. CBOR Tag '2' */
     public static final long VAL_DATA_R_VALS = 2;
+
+    /** X509OrOther x509Cert: DER-encoded X509 certificate encapsulated in an instance of pkiOb type. CBOR Tag '1' */
+    public static final long X509_OR_OTHER_X509_CERT = 1;
+
+    /** X509OrOther otherCert: otherCert: Other type of certificate encoded and encapsulated in an instance of pkiOb type. CBOR Tag '2' */
+    public static final long X509_OR_OTHER_OTHER_CERT = 2;
+
+    /** rVals crlVals: array of CRLs encapsulated in an instance of pkiOb type. CBOR Tag '1' */
+    public static final long R_VALS_CRL_VALS = 1;
+
+    /** rVals ocspVals: array of DER encoded OCSPResponse encapsulated in an instance of pkiOb type. CBOR Tag '2' */
+    public static final long R_VALS_OCSP_VALS = 2;
+
+    /** rVals otherVals: other revocation values encoded and encapsulated in an instance of pkiOb type. CBOR Tag '3' */
+    public static final long R_VALS_OTHER_VALS = 3;
+
+    /** refs xRefs: references to certificates. CBOR Tag '1' */
+    public static final long REFS_X_REFS = 1;
+
+    /** refs rRefs: references to revocation data. CBOR Tag '2' */
+    public static final long REFS_R_REFS = 2;
+
+    /** CertId x5t: the digest algorithm identifier and value. CBOR Tag '1' */
+    public static final long CERT_ID_X5T = 1;
+
+    /** CertId kid: optional key identifier. CBOR Tag '2' */
+    public static final long CERT_ID_KID = 2;
+
+    /** CertId x5u: URI reference to X.509 certificate. CBOR Tag '3' */
+    public static final long CERT_ID_X5U = 3;
+
+    /** rRefs crlRefs: array of references to CRLs. CBOR Tag '1' */
+    public static final long R_REFS_CRL_REF = 1;
+
+    /** rRefs ocspRefs: array of references to OCSP responses. CBOR Tag '2' */
+    public static final long R_REFS_OCSP_REF = 2;
+
+    /** rRefs otherRefs: array of references to OCSP responses. CBOR Tag '3' */
+    public static final long R_REFS_ANY = 3;
+
+    /** CRLRef digAlgVal: digest algorithm and value of DER-encoded CRL. CBOR Tag '1' */
+    public static final long CRL_REF_DIG_ALG_VAL = 1;
+
+    /** CRLRef crlId: identifier of the CRL. CBOR Tag '2' */
+    public static final long CRL_REF_CRL_ID = 2;
+
+    /** CRLId issuer: the DER-encoded issuer of the CRL. CBOR Tag '1' */
+    public static final long CRL_ID_ISSUER = 1;
+
+    /** CRLId issueTime: the date and time of issuance. CBOR Tag '2' */
+    public static final long CRL_ID_ISSUE_TIME = 2;
+
+    /** CRLId number: the issuance number. CBOR Tag '3' */
+    public static final long CRL_ID_NUMBER = 3;
+
+    /** CRLId uri: an URI reference to the CRL (hint). CBOR Tag '4' */
+    public static final long CRL_ID_URI = 4;
+
+    /** OCSPRef digAlgVal: digest algorithm and value of the OCSP response. CBOR Tag '1' */
+    public static final long OCSP_REF_DIG_ALG_VAL = 1;
+
+    /** OCSPRef ocspId: identifier of the OCSP response. CBOR Tag '2' */
+    public static final long OCSP_REF_OCSP_ID = 2;
+
+    /** OCSPId responderChoice: a choice for identifying the responder. CBOR Tag '1' */
+    public static final long OCSP_ID_RESPONDER_ID_CHOICE = 1;
+
+    /** OCSPId producedAt: same time as the time indicated by the ProducedAt field of the referenced OCSP response. CBOR Tag '2' */
+    public static final long OCSP_ID_PRODUCED_AT = 2;
+
+    /** OCSPId uri: an URI reference to the OCSP response (hint). CBOR Tag '3' */
+    public static final long OCSP_ID_URI = 3;
+
+    /** ResponderIdChoice responderIdByName: the name of the responder wrapped in a CBOR byte string. CBOR Tag '1' */
+    public static final long RESPONDER_ID_CHOICE_RESPONDER_ID_BY_NAME = 1;
+
+    /** ResponderIdChoice responderIdByKey: the key of the responder wrapped in a CBOR byte string. CBOR Tag '2' */
+    public static final long RESPONDER_ID_CHOICE_RESPONDER_ID_BY_KEY = 2;
 
     /**
      * Singleton

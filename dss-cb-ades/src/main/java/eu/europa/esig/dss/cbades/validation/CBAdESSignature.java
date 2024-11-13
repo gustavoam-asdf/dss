@@ -135,7 +135,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public SignatureCertificateSource getCertificateSource() {
         if (offlineCertificateSource == null) {
-            offlineCertificateSource = new CBAdESCertificateSource(cose);
+            offlineCertificateSource = new CBAdESCertificateSource(cose, getUHeaders());
         }
         return offlineCertificateSource;
     }
@@ -143,7 +143,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public OfflineCRLSource getCRLSource() {
         if (signatureCRLSource == null) {
-            signatureCRLSource = new CBAdESCRLSource();
+            signatureCRLSource = new CBAdESCRLSource(getUHeaders());
         }
         return signatureCRLSource;
     }
@@ -151,7 +151,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public OfflineOCSPSource getOCSPSource() {
         if (signatureOCSPSource == null) {
-            signatureOCSPSource = new CBAdESOCSPSource();
+            signatureOCSPSource = new CBAdESOCSPSource(getUHeaders());
         }
         return signatureOCSPSource;
     }

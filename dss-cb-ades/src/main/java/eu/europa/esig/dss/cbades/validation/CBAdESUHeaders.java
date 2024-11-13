@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Represents the list of components present inside the unprotected 'uHeaders' header
@@ -173,6 +174,45 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
                 uHeaders.set(i, uHeader.getComponent());
                 break;
             }
+        }
+    }
+
+    /**
+     * Removes the 'uHeaders' components with the given {@code headerName}
+     *
+     * @param headerId {@link Long} identifier of the 'uHeaders' entry to remove
+     */
+    public void removeComponent(Long headerId) {
+        CBORArray uHeaders = getUHeadersToEdit();
+        if (!uHeaders.isEmpty()) {
+            ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
+            while (iterator.hasPrevious()) {
+                removeLastIfMatches(iterator, headerId);
+            }
+        }
+    }
+
+    /**
+     * Removes the last 'uHeaders' item if the name matches to the given {@code headerName}
+     *
+     * @param headerId {@link Long} identifier of the 'uHeaders' entry to remove
+     */
+    public void removeLastComponent(Long headerId) {
+        CBORArray uHeaders = getUHeadersToEdit();
+        if (!uHeaders.isEmpty()) {
+            ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
+            removeLastIfMatches(iterator, headerId);
+        }
+    }
+
+    private ListIterator<CBORObject> getBackwardIterator(CBORArray uHeaders) {
+        return uHeaders.getItems().listIterator(uHeaders.getSize());
+    }
+
+    private void removeLastIfMatches(ListIterator<CBORObject> iterator, Long headerId) {
+        CBORObject object = iterator.previous();
+        if (object.isMap() && ((CBORMap) object).getKeys().contains(headerId)) {
+            iterator.remove();
         }
     }
 

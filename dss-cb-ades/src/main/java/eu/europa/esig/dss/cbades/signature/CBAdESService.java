@@ -266,10 +266,10 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
                 final CBAdESLevelBaselineT extensionT = new CBAdESLevelBaselineT(certificateVerifier);
                 extensionT.setTspSource(tspSource);
                 return extensionT;
-//            case CB_AdES_BASELINE_LT:
-//                final CBAdESLevelBaselineLT extensionLT = new CBAdESLevelBaselineLT(certificateVerifier);
-//                extensionLT.setTspSource(tspSource);
-//                return extensionLT;
+            case CB_AdES_BASELINE_LT:
+                final CBAdESLevelBaselineLT extensionLT = new CBAdESLevelBaselineLT(certificateVerifier);
+                extensionLT.setTspSource(tspSource);
+                return extensionLT;
 //            case CB_AdES_BASELINE_LTA:
 //                final CBAdESLevelBaselineLTA extensionLTA = new CBAdESLevelBaselineLTA(certificateVerifier);
 //                extensionLTA.setTspSource(tspSource);

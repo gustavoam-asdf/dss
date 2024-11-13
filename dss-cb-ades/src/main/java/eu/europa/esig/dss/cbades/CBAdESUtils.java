@@ -5,19 +5,33 @@ import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
+import eu.europa.esig.dss.enumerations.PKIEncoding;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.TimestampBinary;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.x509.CertificateRef;
+import eu.europa.esig.dss.spi.x509.ResponderId;
+import eu.europa.esig.dss.spi.x509.revocation.crl.CRLRef;
+import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPRef;
 import eu.europa.esig.dss.utils.Utils;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * Utility class containing methods for CB-AdES processing
@@ -26,6 +40,9 @@ import java.util.Objects;
 public class CBAdESUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CBAdESUtils.class);
+
+    /** Format date-time as specified in RFC 3339 5.6 */
+    private static final String DATE_TIME_FORMAT_RFC3339 = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     /**
      * Utils class
@@ -155,9 +172,253 @@ public class CBAdESUtils {
                 } else {
                     LOG.warn("DigAlgVal shall by of type [ hashAlg: (int / tstr), hashValue: bstr ].");
                 }
+            } else {
+                LOG.warn("Invalid number of entries within 'DigAlgVal' array! Shall by of type [ hashAlg: (int / tstr), hashValue: bstr ].");
             }
         }
         return null;
+    }
+
+    /**
+     * Parses the 'certId' value and returns {@code CertificateRef}
+     *
+     * @param certId {@link CBORMap} representing the item of 'xRefs' array
+     * @return {@link CertificateRef} of the value has been parsed successfully, FALSE otherwise
+     */
+    public static CertificateRef fromCertId(CBORMap certId) {
+        CBORArray x5t = certId.getAsArray(COSEConstants.CERT_ID_X5T);
+        Digest digest = extractX5TDigest(x5t);
+        if (digest != null) {
+            final CertificateRef certificateRef = new CertificateRef();
+            certificateRef.setCertDigest(digest);
+
+            byte[] kid = certId.getAsBinaries(COSEConstants.CERT_ID_KID);
+            if (kid != null) {
+                IssuerSerial kidIssuerSerial = CBORUtils.getIssuerSerial(kid);
+                certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(kidIssuerSerial));
+            }
+
+            String x5u = certId.getAsString(COSEConstants.CERT_ID_X5U);
+            if (x5u != null) {
+                certificateRef.setX509Url(x5u);
+            }
+
+            return certificateRef;
+
+        } else {
+            LOG.warn("The mandatory header 'x5t' is not present within a 'CertId' entry! The entry is skipped.");
+        }
+        return null;
+    }
+
+    /**
+     * Extracts Digest value from the 'x5t' CBOR array
+     *
+     * @param x5t {@link CBORArray} to parse
+     * @return {@link Digest}
+     */
+    public static Digest extractX5TDigest(CBORArray x5t) {
+        if (x5t != null) {
+            if (x5t.getSize() == 2) {
+                Long hashAlgId = x5t.getAsLongOrString(COSEConstants.COSE_CERT_HASH_ALG);
+                DigestAlgorithm hashAlg = CBORUtils.getDigestAlgorithmForCoseId(hashAlgId);
+                byte[] hashValue = x5t.getAsBinaries(COSEConstants.COSE_CERT_HASH_VALUE);
+                if (hashAlg != null && hashValue != null) {
+                    return new Digest(hashAlg, hashValue);
+
+                } else {
+                    LOG.warn("'x5t' header array members have invalid structure!");
+                }
+
+            } else {
+                LOG.warn("'x5t' header array shall have two entries!");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Parses the 'pkiOb' CBOR map and returns the extracted DER-encoded binaries
+     *
+     * @param pkiOb {@link CBORMap} to parse
+     * @return byte array containing DER-encoded value, if supported
+     */
+    public static byte[] extractDerEncodedPkiObject(CBORMap pkiOb) {
+        if (pkiOb != null) {
+            String encoding = pkiOb.getAsString(COSEConstants.PKI_OB_ENCODING);
+            if (Utils.isStringEmpty(encoding) || Utils.areStringsEqual(PKIEncoding.DER.getUri(), encoding)) {
+                return pkiOb.getAsBinaries(COSEConstants.PKI_OB_VAL);
+            } else {
+                LOG.warn("Unsupported encoding header value : '{}'", encoding);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract an {@code CRLRef} from 'CRLRef' CBOR object
+     *
+     * @param crlRefMap {@link CBORMap} representing the 'CRLRef' CBOR object
+     * @return {@link CRLRef}
+     */
+    public static CRLRef createCRLRef(CBORMap crlRefMap) {
+        try {
+            CBORArray digAlgVal = crlRefMap.getAsArray(COSEConstants.CRL_REF_DIG_ALG_VAL);
+            if (digAlgVal != null) {
+                Digest digest = getDigestAlgAndVal(digAlgVal);
+                if (digest != null) {
+                    final CRLRef crlRef = new CRLRef(digest);
+                    CBORMap crlId = crlRefMap.getAsMap(COSEConstants.CRL_REF_CRL_ID);
+                    if (crlId != null) {
+                        crlRef.setCrlIssuer(getCRLIdIssuer(crlId));
+                        crlRef.setCrlIssuedTime(getCRLIdIssueTime(crlId));
+                        crlRef.setCrlNumber(getCRLIdNumber(crlId));
+                        crlRef.setCrlUri(getCRLIdUri(crlId));
+                    }
+                    return crlRef;
+
+                }
+            } else {
+                LOG.warn("Mandatory header 'DigAlgVal' is missed within CRLRef. The entry is skipped.");
+            }
+
+        } catch (Exception e) {
+            LOG.warn("Unable to extract a CRLRef. Reason : {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private static X500Name getCRLIdIssuer(CBORMap crlId) {
+        byte[] crlIdIssuer = crlId.getAsBinaries(COSEConstants.CRL_ID_ISSUER);
+        if (Utils.isArrayNotEmpty(crlIdIssuer)) {
+            try {
+                return X500Name.getInstance(crlIdIssuer);
+            } catch (Exception e) {
+                LOG.warn("Unable to extract 'CRLId.issuer' header : {}", e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    private static Date getCRLIdIssueTime(CBORMap crlId) {
+        // TODO : no definition in the standard. Temporary aligned with JAdES
+        String crlIdIssueTime = crlId.getAsString(COSEConstants.CRL_ID_ISSUE_TIME);
+        if (crlIdIssueTime != null) {
+            return getDate(crlIdIssueTime);
+        }
+        return null;
+    }
+
+    /**
+     * Parses a IETF RFC 3339 dateTime String
+     *
+     * @param dateTimeString {@link String} in the RFC 3339 format to parse
+     * @return {@link Date}
+     */
+    public static Date getDate(String dateTimeString) {
+        if (Utils.isStringNotEmpty(dateTimeString)) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_RFC3339);
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return sdf.parse(dateTimeString);
+            } catch (ParseException e) {
+                LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    private static BigInteger getCRLIdNumber(CBORMap crlId) {
+        Long crlIdNumber = crlId.getAsLong(COSEConstants.CRL_ID_NUMBER);
+        if (crlIdNumber != null) {
+            return BigInteger.valueOf(crlIdNumber);
+        }
+        return null;
+    }
+
+    private static String getCRLIdUri(CBORMap crlId) {
+        return crlId.getAsString(COSEConstants.CRL_ID_URI);
+    }
+
+    /**
+     * Extract an {@code OCSPRef} from 'OCSPRef' CBOR object
+     *
+     * @param ocspRefMap {@link CBORMap} representing the 'OCSPRef' CBOR object
+     * @return {@link OCSPRef}
+     */
+    public static OCSPRef createOCSPRef(CBORMap ocspRefMap) {
+        try {
+            Digest digest;
+            ResponderId responderId;
+            Date producedAt;
+
+            CBORArray digAlgVal = ocspRefMap.getAsArray(COSEConstants.OCSP_REF_DIG_ALG_VAL);
+            if (digAlgVal != null) {
+                digest = getDigestAlgAndVal(digAlgVal);
+            } else {
+                LOG.warn("Mandatory header 'DigAlgVal' is missed within 'OCSPRef'. The entry is skipped.");
+                return null;
+            }
+
+            CBORMap ocspId = ocspRefMap.getAsMap(COSEConstants.OCSP_REF_OCSP_ID);
+            if (ocspId != null) {
+                responderId = getResponderId(ocspId);
+                producedAt = getProducedAt(ocspId);
+            } else {
+                LOG.warn("Mandatory header 'ocspId' is missed within 'OCSPRef'. The entry is skipped.");
+                return null;
+            }
+
+            if (digest != null && responderId != null && producedAt != null) {
+                OCSPRef ocspRef = new OCSPRef(digest, producedAt, responderId);
+                ocspRef.setUri(getOCSPIdUri(ocspId));
+                return ocspRef;
+            }
+
+        } catch (Exception e) {
+            LOG.warn("Unable to extract a CRLRef. Reason : {}", e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private static ResponderId getResponderId(CBORMap ocspId) {
+        CBORMap responderIdMap = ocspId.getAsMap(COSEConstants.OCSP_ID_RESPONDER_ID_CHOICE);
+        if (responderIdMap != null && !responderIdMap.isEmpty()) {
+            X500Principal subjectX500Principal = null;
+            byte[] ski = null;
+
+            byte[] responderIdByName = ocspId.getAsBinaries(COSEConstants.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_NAME);
+            if (Utils.isArrayNotEmpty(responderIdByName)) {
+                subjectX500Principal = DSSASN1Utils.toX500Principal(X500Name.getInstance(responderIdByName));
+            }
+
+            byte[] responderIdByKey = ocspId.getAsBinaries(COSEConstants.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_KEY);
+            if (Utils.isArrayNotEmpty(responderIdByKey)) {
+                ski = responderIdByKey;
+            }
+
+            if (subjectX500Principal != null || Utils.isArrayNotEmpty(ski)) {
+                return new ResponderId(subjectX500Principal, ski);
+            } else {
+                LOG.warn("Fields 'responderIdByName' and 'responderIdByKey' shall be present within a 'ResponderIdChoice' header!");
+            }
+        }
+        return null;
+    }
+
+    private static Date getProducedAt(CBORMap ocspId) {
+        // TODO : no definition in the standard. Temporary aligned with JAdES
+        String ocspIdProducedAt = ocspId.getAsString(COSEConstants.OCSP_ID_PRODUCED_AT);
+        if (ocspIdProducedAt != null) {
+            return getDate(ocspIdProducedAt);
+        } else {
+            LOG.warn("Field 'producedAt' shall be present within a 'OCSPId' CBOR Map!");
+        }
+        return null;
+    }
+
+    private static String getOCSPIdUri(CBORMap ocspId) {
+        return ocspId.getAsString(COSEConstants.OCSP_ID_URI);
     }
 
 }
