@@ -18,7 +18,7 @@ public class CBAdESLevelTCoseSign1Test extends AbstractCBAdESTestSignature {
 
     @BeforeEach
     void init() throws Exception {
-        service = new CBAdESService(getCompleteCertificateVerifier());
+        service = new CBAdESService(getOfflineCertificateVerifier());
         service.setTspSource(getGoodTsa());
         documentToSign = new InMemoryDocument("Hello world!".getBytes());
 

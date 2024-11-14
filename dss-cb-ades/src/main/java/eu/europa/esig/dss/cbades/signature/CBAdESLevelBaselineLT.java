@@ -28,7 +28,7 @@ import static eu.europa.esig.dss.enumerations.SignatureLevel.CB_AdES_BASELINE_LT
  * This class provides a functionality for the CB-AdES-BASELINE-LT profile augmentation.
  *
  */
-public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT implements CBAdESLevelBaselineExtension {
+public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
 
     /**
      * The default constructor
@@ -50,12 +50,12 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT implements CBAdE
 
         // Reset sources
         for (AdvancedSignature signature : signaturesToExtend) {
-            CBAdESSignature jadesSignature = (CBAdESSignature) signature;
+            CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
 
             // Data sources can already be loaded in memory (force reload)
-            jadesSignature.resetCertificateSource();
-            jadesSignature.resetRevocationSources();
-            jadesSignature.resetTimestampSource();
+            cbadesSignature.resetCertificateSource();
+            cbadesSignature.resetRevocationSources();
+            cbadesSignature.resetTimestampSource();
         }
 
         final SignatureRequirementsChecker signatureRequirementsChecker = getSignatureRequirementsChecker(params);
@@ -84,7 +84,6 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT implements CBAdE
             incorporateValidationData(uHeaders, validationDataForInclusion, params.isCborBtsrWrappedComponents());
         }
     }
-
 
     /**
      * Removes the 'valData' component, when present

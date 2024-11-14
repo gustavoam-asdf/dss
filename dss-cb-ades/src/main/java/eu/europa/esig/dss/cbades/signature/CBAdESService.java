@@ -270,10 +270,10 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
                 final CBAdESLevelBaselineLT extensionLT = new CBAdESLevelBaselineLT(certificateVerifier);
                 extensionLT.setTspSource(tspSource);
                 return extensionLT;
-//            case CB_AdES_BASELINE_LTA:
-//                final CBAdESLevelBaselineLTA extensionLTA = new CBAdESLevelBaselineLTA(certificateVerifier);
-//                extensionLTA.setTspSource(tspSource);
-//                return extensionLTA;
+            case CB_AdES_BASELINE_LTA:
+                final CBAdESLevelBaselineLTA extensionLTA = new CBAdESLevelBaselineLTA(certificateVerifier);
+                extensionLTA.setTspSource(tspSource);
+                return extensionLTA;
             default:
                 throw new UnsupportedOperationException(
                         String.format("Unsupported signature format '%s' for extension.", parameters.getSignatureLevel()));

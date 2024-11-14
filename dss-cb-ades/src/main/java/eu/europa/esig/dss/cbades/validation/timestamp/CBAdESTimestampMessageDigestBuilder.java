@@ -1,7 +1,14 @@
 package eu.europa.esig.dss.cbades.validation.timestamp;
 
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESAttribute;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeadersComponent;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -31,9 +38,6 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
 
     /** The error message to be thrown in case of a message-imprint build error for a timestamp */
     private static final String MESSAGE_IMPRINT_ERROR_WITH_ID = "Unable to compute message-imprint for TimestampToken with Id '%s'. Reason : %s";
-
-    /** String used to print the computed message-imprint */
-    private static final String MESSAGE_IMPRINT_MESSAGE = "The '{}' timestamp message-imprint : {}";
 
     /** The signature */
     private final CBAdESSignature signature;
@@ -201,7 +205,116 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
 
     @Override
     public DSSMessageDigest getArchiveTimestampMessageDigest() {
-        return null;
+        // TODO : arcTst message-imprint computation algorithm may be not finalized yet
+        try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("--->Get 'arcTst' timestamp data : {}", timestampToken == null ? "--> CREATION" : "--> VALIDATION");
+            }
+
+            CBORSignature cose = signature.getCoseSignature();
+
+            /*
+             * 5.3.6.2.1 Computation of message-imprint for uHeaders with CBOR-bstr-wrapped
+             *
+             * For computing the input to the message imprint computation, performing step 2) in clause 5.3.6.2,
+             * when the CB-AdES signature uses CBOR-bstr-wrapped incorporation for incorporating elments in
+             * the uHeaders CBOR array, the steps listed below shall be performed:
+             *
+             * 1) Initialize the final octet stream to an empty stream.
+             */
+            final DSSMessageDigestCalculator digestCalculator = new DSSMessageDigestCalculator(digestAlgorithm);
+
+            /*
+             * 2) If the sigD header parameter is absent, then:
+             *  - If the payload field is present, then concatenate the bytes encapsulated within
+             *    the bit string of the payload field.
+             *  - Else if the payload field is absent (COSE Payload is detached, and not explicitly referenced
+             *    by the sigD header parameter), then retrieve the bytes of the COSE Payload.
+             *
+             * 3) If the sigD header parameter is present, then concatenate the bytes resulting from processing
+             * the contents of its pars member as specified in clause 5.2.9.2.2 of the present document.
+             */
+            writeSignedDataBinaries(digestCalculator);
+
+            /*
+             * 4) Concatenate the CBOR-encoded protected headers map, wrapped within a CBOR byte string.
+             */
+            // TODO : use the signature's protected header, no clear definition
+            switch (signature.getCOSESignatureContext()) {
+                case COSE_SIGN:
+                case COSE_COUNTER_SIGNATURE:
+                case COSE_COUNTER_SIGNATURE_V2:
+                    digestCalculator.update(cose.getSignerProtectedHeader().getByteString().getBytes());
+                    break;
+                case COSE_SIGN1:
+                    digestCalculator.update(cose.getBodyProtectedHeader().getByteString().getBytes());
+                    break;
+                default:
+                    throw new UnsupportedOperationException(String.format("The COSE signature context '%s' is " +
+                            "not supported for 'arcTst' message-imprint computation!", signature.getCOSESignatureContext()));
+            }
+
+            /*
+             * 5) Concatenate the value of the bytes of the COSE signature value.
+             */
+            digestCalculator.update(getSignatureValue());
+
+            /*
+             * 6) Concatenate the components present in uHeaders CBOR array, that preced (appear BEFORE)
+             * the arcTst CBOR map that contains the time-stamp token that is being validated, in the order
+             * they appear within the uHeaders CBOR array, into the final octet stream.
+             */
+            CBORArray uHeadersArray = signature.getCoseSignature().getUHeaders();
+            if (CBORUtils.checkComponentsUnicity(uHeadersArray)) {
+
+                CBAdESUHeaders uHeaders = signature.getUHeaders();
+                for (CBAdESUHeadersComponent uHeaderComponent : uHeaders.getAttributes()) {
+                    if (timestampAttribute != null && timestampAttribute.equals(uHeaderComponent)) {
+                        // the timestamp is reached, stop the iteration
+                        break;
+                    }
+
+                    digestCalculator.update(getUHeadersComponentValue(uHeaderComponent, canonicalizationAlgorithm));
+                }
+
+            } else {
+                LOG.warn("Unable to process 'uHeaders' entries for an 'arcTst' timestamp. "
+                        + "The 'uHeaders' components shall have a common format (CBOR Byte String or CBOR Map)!");
+            }
+
+            final DSSMessageDigest messageDigest = digestCalculator.getMessageDigest();
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("The 'arcTst' timestamp message-imprint : {}", messageDigest);
+            }
+            return messageDigest;
+
+        } catch (Exception e) {
+            String errorMessage = timestampToken == null ? String.format(MESSAGE_IMPRINT_ERROR, e.getMessage()) :
+                    String.format(MESSAGE_IMPRINT_ERROR_WITH_ID, timestampToken.getDSSIdAsString(), e.getMessage());
+            if (LOG.isDebugEnabled()) {
+                LOG.warn(errorMessage, e);
+            } else {
+                LOG.warn(errorMessage);
+            }
+        }
+        return DSSMessageDigest.createEmptyDigest();
+    }
+
+    private byte[] getUHeadersComponentValue(CBAdESUHeadersComponent uHeaderComponent, String canonicalizationMethod) {
+        CBORObject component = uHeaderComponent.getComponent();
+        if (uHeaderComponent.isCborBtsrWrapped()) {
+            return ((CBORByteString) component).getBytes();
+        } else {
+            return getCanonicalizedValue(component, canonicalizationMethod);
+        }
+    }
+
+    private byte[] getCanonicalizedValue(CBORObject cborObject, String canonicalizationMethod) {
+        // TODO: canonicalization is not supported yet
+        LOG.warn("Canonicalization is not supported in the current version. "
+                + "The message imprint computation can lead to an unexpected result");
+        // temporary solution
+        return CBORUtils.serializeCborObject(cborObject);
     }
     
 }

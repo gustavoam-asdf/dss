@@ -243,7 +243,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
                 CBORMap valDataMap = (CBORMap) valData;
                 CBORArray xVals = valDataMap.getAsArray(COSEConstants.VAL_DATA_X_VALS);
                 if (xVals != null && !xVals.isEmpty()) {
-                    extractCertificateValues(xVals, CertificateOrigin.CERTIFICATE_VALUES);
+                    extractCertificateValues(xVals, CertificateOrigin.ANY_VALIDATION_DATA);
                 }
             } else {
                 LOG.warn("The value of header 'valData' shall be represented by a CBOR Map! Entry is skilled.");

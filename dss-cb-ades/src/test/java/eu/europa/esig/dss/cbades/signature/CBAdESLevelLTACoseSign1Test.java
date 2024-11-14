@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Date;
 
-public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
+public class CBAdESLevelLTACoseSign1Test extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
     private DSSDocument documentToSign;
@@ -18,7 +18,7 @@ public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
 
     @BeforeEach
     void init() throws Exception {
-        service = new CBAdESService(getOfflineCertificateVerifier());
+        service = new CBAdESService(getCompleteCertificateVerifier());
         service.setTspSource(getGoodTsa());
         documentToSign = new InMemoryDocument("Hello world!".getBytes());
 
@@ -27,8 +27,8 @@ public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_T);
-        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LTA);
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
         signatureParameters.setTagged(true);
     }
 

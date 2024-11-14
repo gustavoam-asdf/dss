@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.cbades.validation.timestamp;
 
+import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -8,11 +9,15 @@ import eu.europa.esig.dss.cbades.validation.CBAdESAttribute;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignedProperties;
 import eu.europa.esig.dss.crl.CRLBinary;
+import eu.europa.esig.dss.crl.CRLUtils;
 import eu.europa.esig.dss.enumerations.ArchiveTimestampType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.DSSRevocationUtils;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.SignatureProperties;
 import eu.europa.esig.dss.spi.validation.timestamp.SignatureTimestampIdentifierBuilder;
@@ -28,6 +33,7 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -98,16 +104,19 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isAttributeCertificateRef(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
     @Override
     protected boolean isCompleteRevocationRef(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
     @Override
     protected boolean isAttributeRevocationRef(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
@@ -123,21 +132,25 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isCertificateValues(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
     @Override
     protected boolean isRevocationValues(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
     @Override
     protected boolean isAttrAuthoritiesCertValues(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
     @Override
     protected boolean isAttributeRevocationValues(CBAdESAttribute unsignedAttribute) {
+        // not supported
         return false;
     }
 
@@ -148,7 +161,18 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isTimeStampValidationData(CBAdESAttribute unsignedAttribute) {
+        // not supported
+        return false;
+    }
+
+    @Override
+    protected boolean isAnyValidationData(CBAdESAttribute unsignedAttribute) {
         return COSEConstants.VAL_DATA == unsignedAttribute.getHeaderId();
+    }
+
+    @Override
+    protected boolean isValidationDataReferences(CBAdESAttribute unsignedAttribute) {
+        return COSEConstants.REFS == unsignedAttribute.getHeaderId();
     }
 
     @Override
@@ -168,19 +192,21 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
     }
 
     @Override
+    protected List<TimestampedReference> getSignatureTimestampReferences() {
+        List<TimestampedReference> timestampedReferences = super.getSignatureTimestampReferences();
+        addReferences(timestampedReferences, getKeyInfoReferences());
+        return timestampedReferences;
+    }
+
+    @Override
     protected TimestampToken makeTimestampToken(CBAdESAttribute signatureAttribute, TimestampType timestampType, List<TimestampedReference> references) {
         return null;
     }
 
     @Override
     protected List<TimestampToken> makeTimestampTokens(CBAdESAttribute signatureAttribute, TimestampType timestampType, List<TimestampedReference> references) {
-        if (TimestampType.ARCHIVE_TIMESTAMP.equals(timestampType)) {
-            // TODO : arcTst ?
-            throw new UnsupportedOperationException("Not implemented");
-        } else {
-            CBORObject tstContainer = signatureAttribute.getValue();
-            return extractTimestampTokens(signatureAttribute, tstContainer, timestampType, references);
-        }
+        CBORObject tstContainer = signatureAttribute.getValue();
+        return extractTimestampTokens(signatureAttribute, tstContainer, timestampType, references);
     }
 
     private List<TimestampToken> extractTimestampTokens(CBAdESAttribute signatureAttribute, CBORObject tstContainer,
@@ -247,36 +273,261 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected List<EvidenceRecord> makeEvidenceRecords(CBAdESAttribute signatureAttribute, List<TimestampedReference> references) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<CertificateRef> getCertificateRefs(CBAdESAttribute unsignedAttribute) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<CRLRef> getCRLRefs(CBAdESAttribute unsignedAttribute) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    protected List<OCSPRef> getOCSPRefs(CBAdESAttribute unsignedAttribute) {
+        if (signatureAttribute != null) {
+            LOG.warn("Embedded evidence records are not supported within CB-AdES format! The unsigned attribute is skipped.");
+        }
         return Collections.emptyList();
     }
 
     @Override
     protected List<Identifier> getEncapsulatedCertificateIdentifiers(CBAdESAttribute unsignedAttribute) {
+        CBORObject valData = unsignedAttribute.getValue();
+        if (valData.isMap()) {
+            CBORMap valDataMap = (CBORMap) valData;
+            CBORArray xVals = valDataMap.getAsArray(COSEConstants.VAL_DATA_X_VALS);
+            if (xVals != null && !xVals.isEmpty()) {
+                List<Identifier> certificateIdentifiers = new ArrayList<>();
+                for (CBORObject encapsulatedCert : xVals.getItems()) {
+                    CertificateToken certificateToken = toCertificateToken(encapsulatedCert);
+                    if (certificateToken != null) {
+                        certificateIdentifiers.add(certificateToken.getDSSId());
+                    }
+                }
+                return certificateIdentifiers;
+            }
+
+        } else {
+            LOG.warn("The value of 'valData' uHeader must be represented by a CBOR Map! The entry is skipped.");
+        }
         return Collections.emptyList();
+    }
+
+    private CertificateToken toCertificateToken(CBORObject encapsulatedCert) {
+        if (encapsulatedCert.isMap()) {
+            CBORMap x509OrOther = (CBORMap) encapsulatedCert;
+
+            CBORMap pkiOb = x509OrOther.getAsMap(COSEConstants.X509_OR_OTHER_X509_CERT);
+            byte[] val = CBAdESUtils.extractDerEncodedPkiObject(pkiOb);
+            if (Utils.isArrayNotEmpty(val)) {
+                try {
+                    return DSSUtils.loadCertificate(val);
+                } catch (Exception e) {
+                    LOG.warn("Unable to decode a certificate from binaries! Reason : {}", e.getMessage(), e);
+                    return null;
+                }
+            }
+
+            CBORMap otherCert = x509OrOther.getAsMap(COSEConstants.X509_OR_OTHER_OTHER_CERT);
+            if (otherCert != null) {
+                LOG.warn("The header 'otherCert' is not supported! The entry is skipped.");
+            }
+
+        } else {
+            LOG.warn("The value of 'x509OrOther' shall be represented by a CBOR Map! Entry is skilled.");
+        }
+        return null;
     }
 
     @Override
     protected List<CRLBinary> getEncapsulatedCRLIdentifiers(CBAdESAttribute unsignedAttribute) {
+        CBORObject valData = unsignedAttribute.getValue();
+        if (valData.isMap()) {
+            CBORMap valDataMap = (CBORMap) valData;
+            CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+            if (rVals != null && !rVals.isEmpty()) {
+                CBORArray crlVals = rVals.getAsArray(COSEConstants.R_VALS_CRL_VALS);
+                if (crlVals != null && !crlVals.isEmpty()) {
+                    List<CRLBinary> crlIdentifiers = new ArrayList<>();
+                    for (CBORObject pkiOb : crlVals.getItems()) {
+                        if (pkiOb.isMap()) {
+                            CRLBinary crlBinary = toCRLBinary(pkiOb);
+                            if (crlBinary != null) {
+                                crlIdentifiers.add(crlBinary);
+                            }
+
+                        } else {
+                            LOG.warn("The header 'pkiOb' shall be represented by a CBOR Map! The entry is skipped.");
+                        }
+                    }
+                    return crlIdentifiers;
+                }
+            }
+
+        } else {
+            LOG.warn("The value of header 'valData' shall be represented by a CBOR Map! Entry is skilled.");
+        }
         return Collections.emptyList();
+    }
+
+    private CRLBinary toCRLBinary(CBORObject pkiOb) {
+        if (pkiOb.isMap()) {
+            try {
+                byte[] val = CBAdESUtils.extractDerEncodedPkiObject((CBORMap) pkiOb);
+                if (Utils.isArrayNotEmpty(val)) {
+                    try {
+                        return CRLUtils.buildCRLBinary(val);
+                    } catch (Exception e) {
+                        LOG.warn("Unable to decode a CRL from binaries! Reason : {}", e.getMessage(), e);
+                        return null;
+                    }
+                }
+
+            } catch (Exception e) {
+                LOG.warn("An error occurred during parsing a CRL. Reason : {}", e.getMessage(), e);
+            }
+        } else {
+            LOG.warn("The header 'pkiOb' shall be represented by a CBOR Map! The entry is skipped.");
+        }
+        return null;
     }
 
     @Override
     protected List<OCSPResponseBinary> getEncapsulatedOCSPIdentifiers(CBAdESAttribute unsignedAttribute) {
+        CBORObject valData = unsignedAttribute.getValue();
+        if (valData.isMap()) {
+            CBORMap valDataMap = (CBORMap) valData;
+            CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+            if (rVals != null && !rVals.isEmpty()) {
+                List<OCSPResponseBinary> ocspIdentifiers = new ArrayList<>();
+
+                CBORArray ocspVals = rVals.getAsArray(COSEConstants.R_VALS_OCSP_VALS);
+                if (ocspVals != null && !ocspVals.isEmpty()) {
+                    for (CBORObject pkiOb : ocspVals.getItems()) {
+                        if (pkiOb.isMap()) {
+                            OCSPResponseBinary ocspResponseBinary = toOCSPResponseBinary(pkiOb);
+                            if (ocspResponseBinary != null) {
+                                ocspIdentifiers.add(ocspResponseBinary);
+                            }
+                        } else {
+                            LOG.warn("The header 'pkiOb' shall be represented by a CBOR Map! The entry is skipped.");
+                        }
+                    }
+                }
+                return ocspIdentifiers;
+            }
+
+        } else {
+            LOG.warn("The value of header 'valData' shall be represented by a CBOR Map! Entry is skilled.");
+        }
+
+        return Collections.emptyList();
+    }
+
+    private OCSPResponseBinary toOCSPResponseBinary(CBORObject pkiOb) {
+        if (pkiOb.isMap()) {
+            try {
+                byte[] val = CBAdESUtils.extractDerEncodedPkiObject((CBORMap) pkiOb);
+                if (Utils.isArrayNotEmpty(val)) {
+                    try {
+                        return OCSPResponseBinary.build(DSSRevocationUtils.loadOCSPFromBinaries(val));
+                    } catch (Exception e) {
+                        LOG.warn("Unable to decode a CRL from binaries! Reason : {}", e.getMessage(), e);
+                        return null;
+                    }
+                }
+
+            } catch (Exception e) {
+                LOG.warn("An error occurred during parsing a CRL. Reason : {}", e.getMessage(), e);
+            }
+        } else {
+            LOG.warn("The header 'pkiOb' shall be represented by a CBOR Map! The entry is skipped.");
+        }
+        return null;
+    }
+
+    @Override
+    protected List<CertificateRef> getCertificateRefs(CBAdESAttribute unsignedAttribute) {
+        CBORObject refs = unsignedAttribute.getValue();
+        if (refs.isMap()) {
+            if (refs.isMap()) {
+                CBORMap refsMap = (CBORMap) refs;
+                CBORArray xRefs = refsMap.getAsArray(COSEConstants.REFS_X_REFS);
+                if (xRefs != null && !xRefs.isEmpty()) {
+                    List<CertificateRef> certificateRefs = new ArrayList<>();
+                    for (CBORObject item : xRefs.getItems()) {
+                        if (item.isMap()) {
+                            CBORMap certId = (CBORMap) item;
+                            CertificateRef certificateRef = CBAdESUtils.fromCertId(certId);
+                            if (certificateRef != null) {
+                                certificateRefs.add(certificateRef);
+                            }
+                        } else {
+                            LOG.warn("The value of 'CertId' shall be represented by a CBOR Map! Entry is skilled.");
+                        }
+                    }
+                    return certificateRefs;
+                }
+
+            } else {
+                LOG.warn("The value of header 'refs' shall be represented by a CBOR Map! Entry is skilled.");
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected List<CRLRef> getCRLRefs(CBAdESAttribute unsignedAttribute) {
+        CBORObject refs = unsignedAttribute.getValue();
+        if (refs.isMap()) {
+            if (refs.isMap()) {
+                CBORMap refsMap = (CBORMap) refs;
+                CBORMap rRefs = refsMap.getAsMap(COSEConstants.REFS_R_REFS);
+                if (rRefs != null && !rRefs.isEmpty()) {
+                    CBORArray crlRefs = rRefs.getAsArray(COSEConstants.R_REFS_CRL_REF);
+                    if (crlRefs != null) {
+                        List<CRLRef> result = new ArrayList<>();
+                        for (CBORObject item : crlRefs.getItems()) {
+                            if (item.isMap()) {
+                                CBORMap crlRefMap = (CBORMap) item;
+                                CRLRef crlRef = CBAdESUtils.createCRLRef(crlRefMap);
+                                if (crlRef != null) {
+                                    result.add(crlRef);
+                                }
+                            } else {
+                                LOG.warn("The value of 'CRLRef' shall be represented by a CBOR Map! Entry is skilled.");
+                            }
+                        }
+                        return result;
+                    }
+                }
+
+            } else {
+                LOG.warn("The value of header 'refs' shall be represented by a CBOR Map! Entry is skilled.");
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    protected List<OCSPRef> getOCSPRefs(CBAdESAttribute unsignedAttribute) {
+        CBORObject refs = unsignedAttribute.getValue();
+        if (refs.isMap()) {
+            if (refs.isMap()) {
+                CBORMap refsMap = (CBORMap) refs;
+                CBORMap rRefs = refsMap.getAsMap(COSEConstants.REFS_R_REFS);
+                if (rRefs != null && !rRefs.isEmpty()) {
+                    CBORArray ocspRefs = rRefs.getAsArray(COSEConstants.R_REFS_OCSP_REF);
+                    if (ocspRefs != null) {
+                        List<OCSPRef> result = new ArrayList<>();
+                        for (CBORObject item : ocspRefs.getItems()) {
+                            if (item.isMap()) {
+                                CBORMap ocspRefMap = (CBORMap) item;
+                                OCSPRef ocspRef = CBAdESUtils.createOCSPRef(ocspRefMap);
+                                if (ocspRef != null) {
+                                    result.add(ocspRef);
+                                }
+                            } else {
+                                LOG.warn("The value of 'OCSPRef' shall be represented by a CBOR Map! Entry is skilled.");
+                            }
+                        }
+                        return result;
+                    }
+                }
+
+            } else {
+                LOG.warn("The value of header 'refs' shall be represented by a CBOR Map! Entry is skilled.");
+            }
+        }
         return Collections.emptyList();
     }
 
@@ -287,7 +538,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected ArchiveTimestampType getArchiveTimestampType(CBAdESAttribute unsignedAttribute) {
-        return null;
+        return ArchiveTimestampType.CB_AdES;
     }
 
     @Override
@@ -310,6 +561,19 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
     public DSSMessageDigest getSignatureTimestampData(DigestAlgorithm digestAlgorithm) {
         CBAdESTimestampMessageDigestBuilder builder = getTimestampMessageImprintDigestBuilder(digestAlgorithm);
         return builder.getSignatureTimestampMessageDigest();
+    }
+
+    /**
+     * Returns message-imprint digest for an ArchiveTimestamp
+     *
+     * @param digestAlgorithm {@link DigestAlgorithm} to compute digest with
+     * @param canonicalizationMethod {@link String} canonicalization method to use
+     * @return {@link DSSMessageDigest} representing a message-imprint digest
+     */
+    public DSSMessageDigest getArchiveTimestampData(DigestAlgorithm digestAlgorithm, String canonicalizationMethod) {
+        CBAdESTimestampMessageDigestBuilder builder = getTimestampMessageImprintDigestBuilder(digestAlgorithm)
+                .setCanonicalizationAlgorithm(canonicalizationMethod);
+        return builder.getArchiveTimestampMessageDigest();
     }
 
 }

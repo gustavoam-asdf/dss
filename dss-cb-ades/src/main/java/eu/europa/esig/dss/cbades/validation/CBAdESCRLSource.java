@@ -54,7 +54,7 @@ public class CBAdESCRLSource extends OfflineCRLSource {
                 CBORMap valDataMap = (CBORMap) valData;
                 CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
                 if (rVals != null && !rVals.isEmpty()) {
-                    extractRevocationValues(rVals, RevocationOrigin.REVOCATION_VALUES);
+                    extractRevocationValues(rVals, RevocationOrigin.ANY_VALIDATION_DATA);
                 }
             } else {
                 LOG.warn("The value of header 'valData' shall be represented by a CBOR Map! Entry is skilled.");
