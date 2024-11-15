@@ -8,6 +8,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.validation.CBAdESAttribute;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignedProperties;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeadersComponent;
 import eu.europa.esig.dss.crl.CRLBinary;
 import eu.europa.esig.dss.crl.CRLUtils;
 import eu.europa.esig.dss.enumerations.ArchiveTimestampType;
@@ -177,7 +178,9 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isCounterSignature(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.COUNTER_SIGNATURE_V2 == unsignedAttribute.getHeaderId() ||
+        return COSEConstants.COUNTER_SIGNATURE == unsignedAttribute.getHeaderId() ||
+                COSEConstants.COUNTER_SIGNATURE0 == unsignedAttribute.getHeaderId() ||
+                COSEConstants.COUNTER_SIGNATURE_V2 == unsignedAttribute.getHeaderId() ||
                 COSEConstants.COUNTER_SIGNATURE0_V2 == unsignedAttribute.getHeaderId();
     }
 
@@ -533,6 +536,13 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected List<AdvancedSignature> getCounterSignatures(CBAdESAttribute unsignedAttribute) {
+        if (unsignedAttribute instanceof CBAdESUHeadersComponent) {
+            CBAdESUHeadersComponent cbadesUHeadersComponent = (CBAdESUHeadersComponent) unsignedAttribute;
+            List<CBAdESSignature> counterSignatures = CBAdESUtils.buildCounterSignatures(signature, cbadesUHeadersComponent);
+            if (Utils.isCollectionNotEmpty(counterSignatures)) {
+                return new ArrayList<>(counterSignatures);
+            }
+        }
         return Collections.emptyList();
     }
 

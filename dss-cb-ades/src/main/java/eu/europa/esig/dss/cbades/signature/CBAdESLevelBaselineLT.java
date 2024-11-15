@@ -66,7 +66,7 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
         signatureRequirementsChecker.assertCertificateChainValidForLTLevel(signaturesToExtend);
 
         // Perform signature validation
-        ValidationDataContainer validationDataContainer = documentAnalyzer.getValidationData(signatures);
+        ValidationDataContainer validationDataContainer = getValidationData(signatures, params);
 
         // Append ValidationData
         for (AdvancedSignature signature : signaturesToExtend) {
@@ -199,7 +199,14 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
         return toBeExtended;
     }
 
-    private boolean ltLevelExtensionRequired(AdvancedSignature signature, CBAdESSignatureParameters parameters) {
+    /**
+     * Verifies if the LT-level extension is required and possible
+     *
+     * @param signature {@link AdvancedSignature} to check
+     * @param parameters {@link CBAdESSignatureParameters}
+     * @return TRUE if the extension is possible, FALSE otherwise
+     */
+    protected boolean ltLevelExtensionRequired(AdvancedSignature signature, CBAdESSignatureParameters parameters) {
         return CB_AdES_BASELINE_LT.equals(parameters.getSignatureLevel()) || !signature.hasLTAProfile();
     }
 

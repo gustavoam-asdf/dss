@@ -18,6 +18,7 @@ import eu.europa.esig.dss.signature.SigningOperation;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.ValidationDataContainer;
 import eu.europa.esig.dss.spi.validation.executor.CompleteValidationContextExecutor;
 import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import eu.europa.esig.dss.utils.Utils;
@@ -88,9 +89,7 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
         Objects.requireNonNull(tspSource, "The TSPSource cannot be null");
 
         documentAnalyzer = new COSEDocumentAnalyzer(document);
-        documentAnalyzer.setCertificateVerifier(certificateVerifier);
-        documentAnalyzer.setDetachedContents(params.getDetachedContents());
-        documentAnalyzer.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
+        initDocumentAnalyzer(documentAnalyzer, params);
 
         COSESignStructure coseSignStructure = documentAnalyzer.getCoseSignStructure();
         assertCOSESignStructureValid(coseSignStructure);
@@ -160,8 +159,37 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
         return toBeExtended;
     }
 
-    private boolean tLevelExtensionRequired(AdvancedSignature signature, CBAdESSignatureParameters parameters) {
+    /**
+     * Verifies if the T-level extension is required and possible
+     *
+     * @param signature {@link AdvancedSignature} to check
+     * @param parameters {@link CBAdESSignatureParameters}
+     * @return TRUE if the extension is possible, FALSE otherwise
+     */
+    protected boolean tLevelExtensionRequired(AdvancedSignature signature, CBAdESSignatureParameters parameters) {
         return CB_AdES_BASELINE_T.equals(parameters.getSignatureLevel()) || !signature.hasTProfile();
+    }
+
+    /**
+     * This method returns validation data for the given {@code signatures}
+     *
+     * @param signatures a list of {@link AdvancedSignature}s to get validation data for
+     * @param params {@link CBAdESSignatureParameters} signature augmentation parameters
+     * @return {@link ValidationDataContainer}
+     */
+    protected ValidationDataContainer getValidationData(List<AdvancedSignature> signatures, CBAdESSignatureParameters params) {
+        // Empty DocumentAnalyzer should be instantiated for counter-signatures, because of their different structure
+        if (documentAnalyzer == null) {
+            documentAnalyzer = new COSEDocumentAnalyzer();
+            initDocumentAnalyzer(documentAnalyzer, params);
+        }
+        return documentAnalyzer.getValidationData(signatures);
+    }
+
+    private void initDocumentAnalyzer(COSEDocumentAnalyzer documentAnalyzer, CBAdESSignatureParameters params) {
+        documentAnalyzer.setCertificateVerifier(certificateVerifier);
+        documentAnalyzer.setDetachedContents(params.getDetachedContents());
+        documentAnalyzer.setValidationContextExecutor(CompleteValidationContextExecutor.INSTANCE);
     }
 
     /**

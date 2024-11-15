@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
@@ -15,11 +16,14 @@ import eu.europa.esig.dss.enumerations.TimestampedObjectType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.signature.SigningOperation;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import eu.europa.esig.dss.utils.Utils;
 
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -32,6 +36,11 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
 
     /** Master signature to be counter signed */
     private final CBAdESSignature masterSignature;
+
+    private final CertificateVerifier certificateVerifier;
+
+    /** The TSPSource to use for timestamp requests */
+    protected TSPSource tspSource;
 
     /**
      * Constructor for counter signature creation
@@ -47,6 +56,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
         Objects.requireNonNull(signatureDocument, "Signature document cannot be null!");
 
         this.masterSignature = extractSignatureById(signatureDocument, parameters.getSignatureIdToCounterSign());
+        this.certificateVerifier = certificateVerifier;
     }
 
     private CBAdESSignature extractSignatureById(final DSSDocument signatureDocument, String signatureId) {
@@ -94,6 +104,15 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
         }
     }
 
+    /**
+     * Sets the TSPSource to be used in case of counter signature augmentation
+     *
+     * @param tspSource {@link TSPSource}
+     */
+    public void setTspSource(TSPSource tspSource) {
+        this.tspSource = tspSource;
+    }
+
     @Override
     protected CBORSignature prepareCBORSignature() {
         COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure();
@@ -130,12 +149,30 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     public DSSDocument buildEmbeddedCounterSignature(SignatureValue signatureValue) {
         CBAdESUHeaders uHeaders = masterSignature.getUHeaders();
         COSECounterSignature coseCounterSignature = (COSECounterSignature) createCOSESignStructure(signatureValue);
+
+        CBAdESLevelBaselineT signatureExtension = getExtensionProfile(parameters);
+        if (signatureExtension != null) {
+            CBAdESSignature counterSignature = getCounterSignatureToExtend(coseCounterSignature);
+
+            signatureExtension.setOperationKind(SigningOperation.COUNTER_SIGN);
+            signatureExtension.extendSignatures(Collections.singletonList(counterSignature), parameters);
+
+            coseCounterSignature = (COSECounterSignature) counterSignature.getCoseSignature().getSignerSignature();
+        }
+
         uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject(), parameters.isCborBtsrWrappedComponents());
 
         CBAdESSignature upperSignature = updateMasterSignatureRecursively(masterSignature);
         COSEStructure coseSignStructure = upperSignature.getCoseSignature().getCoseSignStructure();
         byte[] serializedBytes = coseSignStructure.serialize();
         return new InMemoryDocument(serializedBytes);
+    }
+
+    private CBAdESSignature getCounterSignatureToExtend(COSECounterSignature coseCounterSignature) {
+        CBAdESSignature counterSignature = CBAdESUtils.buildCounterSignatures(masterSignature, COSEConstants.COUNTER_SIGNATURE_V2,
+                coseCounterSignature.toCBORObject(), false).iterator().next();
+        counterSignature.initBaselineRequirementsChecker(certificateVerifier);
+        return counterSignature;
     }
 
     private CBAdESSignature updateMasterSignatureRecursively(CBAdESSignature signature) {
@@ -178,6 +215,32 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     private COSEStructure getMasterSignatureStructure() {
         CBORSignature cose = masterSignature.getCoseSignature();
         return COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
+    }
+
+    private CBAdESLevelBaselineT getExtensionProfile(CBAdESSignatureParameters parameters) {
+        // NOTE: enforce extension to skip the signature validation -> only the current signature is provided to extension
+        switch (parameters.getSignatureLevel()) {
+            case CB_AdES_BASELINE_B:
+                return null;
+            case CB_AdES_BASELINE_T:
+                final CBAdESLevelBaselineT extensionT = new CBAdESLevelBaselineT(certificateVerifier);
+                extensionT.setTspSource(tspSource);
+                return extensionT;
+
+            case CB_AdES_BASELINE_LT:
+                final CBAdESLevelBaselineLT extensionLT = new CBAdESLevelBaselineLT(certificateVerifier);
+                extensionLT.setTspSource(tspSource);
+                return extensionLT;
+
+            case CB_AdES_BASELINE_LTA:
+                final CBAdESLevelBaselineLTA extensionLTA = new CBAdESLevelBaselineLTA(certificateVerifier);
+                extensionLTA.setTspSource(tspSource);
+                return extensionLTA;
+
+            default:
+                throw new UnsupportedOperationException(
+                        String.format("Unsupported signature format '%s' for extension.", parameters.getSignatureLevel()));
+        }
     }
 
 }

@@ -58,7 +58,7 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
         // Perform signature validation
         ValidationDataContainer validationDataContainer = null;
         if (addTimestampValidationData) {
-            validationDataContainer = documentAnalyzer.getValidationData(signatures);
+            validationDataContainer = getValidationData(signatures, params);
         }
 
         for (AdvancedSignature signature : signatures) {

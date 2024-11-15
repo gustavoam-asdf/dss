@@ -2,7 +2,11 @@ package eu.europa.esig.dss.cbades;
 
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeadersComponent;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.PKIEncoding;
@@ -28,6 +32,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -419,6 +425,79 @@ public class CBAdESUtils {
 
     private static String getOCSPIdUri(CBORMap ocspId) {
         return ocspId.getAsString(COSEConstants.OCSP_ID_URI);
+    }
+
+    /**
+     * Builds a list of counter signatures from the given {@code uHeader} embedded in a {@code CBAdESSignature}
+     *
+     * @param signature {@link CBAdESSignature} master signature
+     * @param uHeader {@link CBAdESUHeadersComponent}
+     * @return a list of {@link CBAdESSignature}s
+     */
+    public static List<CBAdESSignature> buildCounterSignatures(CBAdESSignature signature, CBAdESUHeadersComponent uHeader) {
+        List<CBAdESSignature> counterSignatures = buildCounterSignatures(signature, uHeader.getHeaderId(), uHeader.getValue(), false);
+        if (Utils.isCollectionNotEmpty(counterSignatures)) {
+            for (CBAdESSignature counterSignature : counterSignatures) {
+                counterSignature.setMasterCounterSignatureComponent(uHeader);
+            }
+        }
+        return counterSignatures;
+    }
+
+    /**
+     * Builds counter signatures from a CBORObject value with the given {@code headerKey}
+     *
+     * @param signature {@link CBAdESSignature} master signature
+     * @param headerKey {@link Long} key of the header embedding the counter signature
+     * @param headerValue {@link CBORObject} the header value encapsulating the counter signature
+     * @param bodyStructure TRUE if the counter signature has been extracted from the body structure (for COSE_SIGN), FALSE otherwise
+     * @return a list of {@link CBAdESSignature}s
+     */
+    public static List<CBAdESSignature> buildCounterSignatures(CBAdESSignature signature, Long headerKey,
+                                                               CBORObject headerValue, boolean bodyStructure) {
+        COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(headerKey);
+        // is known
+        if (counterSignatureContext != null) {
+            final List<CBAdESSignature> result = new ArrayList<>();
+
+            COSEStructure masterSignatureStructure = getMasterSignatureStructure(signature.getCoseSignature(), bodyStructure);
+            COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(headerValue)
+                    .setContext(counterSignatureContext)
+                    .setMasterSignature(masterSignatureStructure)
+                    .parse();
+            List<CBORSignature> coseSignatures = CBORSignature.fromCOSECounterSignStructure(coseCounterSignStructure);
+            for (CBORSignature coseSignature : coseSignatures) {
+                CBAdESSignature cbadesCounterSignature = new CBAdESSignature(coseSignature);
+                cbadesCounterSignature.setFilename(signature.getFilename());
+                cbadesCounterSignature.setMasterSignature(signature);
+                if (coseSignature.getExternallySuppliedData() != null) {
+                    cbadesCounterSignature.getCoseSignature().setExternalAttributes(coseSignature.getExternallySuppliedData());
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
+                }
+                // only COSE_Sign1 covers master signature's payload
+                if (COSESignatureContext.COSE_SIGN1 == signature.getCOSESignatureContext() && signature.isDetachedSignature()) {
+                    signature.checkSignatureIntegrity(); // ensure payload
+                    coseSignature.setPayload(signature.getCoseSignature().getPayload());
+                }
+                result.add(cbadesCounterSignature);
+            }
+            return result;
+        }
+        return Collections.emptyList();
+    }
+
+    private static COSEStructure getMasterSignatureStructure(CBORSignature cose, boolean bodyStructure) {
+        switch (cose.getContext()) {
+            case COSE_SIGN:
+                return bodyStructure ? cose.getCoseSignStructure() : cose.getSignerSignature();
+            case COSE_SIGN1:
+                return cose.getCoseSignStructure();
+            default:
+                // counter signatures
+                return cose.getSignerSignature();
+        }
     }
 
 }

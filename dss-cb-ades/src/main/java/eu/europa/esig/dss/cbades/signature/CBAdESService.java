@@ -101,7 +101,6 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
 
         CBAdESBuilder cbadesBuilder = getCBAdESBuilder(parameters, toSignDocuments);
         DSSDocument signedDocument = cbadesBuilder.build(signatureValue);
-
         
         CBAdESLevelBaselineExtension signatureExtension = getExtensionProfile(parameters);
         if (signatureExtension != null) {
@@ -206,6 +205,7 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
 
         final CBAdESCounterSignatureBuilder counterSignatureBuilder =
                 new CBAdESCounterSignatureBuilder(certificateVerifier, parameters, signatureDocument);
+        counterSignatureBuilder.setTspSource(tspSource);
         DSSDocument counterSigned = counterSignatureBuilder.buildEmbeddedCounterSignature(signatureValue);
 
         parameters.reinit();
