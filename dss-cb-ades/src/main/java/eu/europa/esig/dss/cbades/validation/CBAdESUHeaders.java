@@ -5,8 +5,10 @@ import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.SignatureProperties;
 import eu.europa.esig.dss.utils.Utils;
@@ -187,7 +189,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
         if (!uHeaders.isEmpty()) {
             ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
             while (iterator.hasPrevious()) {
-                removeLastIfMatches(iterator, headerId);
+                removeLastIfMatches(uHeaders, iterator, headerId);
             }
         }
     }
@@ -201,7 +203,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
         CBORArray uHeaders = getUHeadersToEdit();
         if (!uHeaders.isEmpty()) {
             ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
-            removeLastIfMatches(iterator, headerId);
+            removeLastIfMatches(uHeaders, iterator, headerId);
         }
     }
 
@@ -209,10 +211,17 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
         return uHeaders.getItems().listIterator(uHeaders.getSize());
     }
 
-    private void removeLastIfMatches(ListIterator<CBORObject> iterator, Long headerId) {
-        CBORObject object = iterator.previous();
-        if (object.isMap() && ((CBORMap) object).getKeys().contains(headerId)) {
-            iterator.remove();
+    private void removeLastIfMatches(CBORArray uHeaders, ListIterator<CBORObject> iterator, Long headerId) {
+        CBORObject originalObject = iterator.previous();
+        CBORObject objectMapRepresentation = null;
+        if (originalObject.isByteString()) {
+            objectMapRepresentation = CBORUtils.parseCbor(((CBORByteString) originalObject).getBytes());
+        } else if (originalObject.isMap()) {
+            objectMapRepresentation = originalObject;
+        }
+        if (objectMapRepresentation != null && objectMapRepresentation.isMap()
+                && ((CBORMap) objectMapRepresentation).getKeys().contains(headerId)) {
+            uHeaders.remove(originalObject);
         }
     }
 

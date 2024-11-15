@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -277,6 +278,26 @@ public class CBORArray extends AbstractCBORObject<Array> {
             }
         }
         return result;
+    }
+
+    /**
+     * Removes {@code cborObject} from the current CBORArray, when present
+     *
+     * @param cborObject {@link CBORObject} to remove
+     */
+    public void remove(CBORObject cborObject) {
+        Objects.requireNonNull(cborObject, "CBORObject cannot be null!");
+
+        DataItem toBeRemoved = cborObject.toDataItem();
+        Array array = toDataItem();
+        ListIterator<DataItem> it = array.getDataItems().listIterator();
+        while (it.hasNext()) {
+            DataItem dataItem = it.next();
+            if (toBeRemoved == dataItem) {
+                it.remove();
+                break;
+            }
+        }
     }
 
     /**
