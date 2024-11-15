@@ -6,6 +6,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractCBAdESRequirementsCheck {
@@ -49,7 +50,9 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
     private CBORArray getCose(byte[] byteArray) {
         CBORObject cborObject = CBORUtils.parseCbor(byteArray);
         assertTrue(cborObject.isArray());
-        return (CBORArray) cborObject;
+        CBORArray cborArray = (CBORArray) cborObject;
+        assertEquals(4, cborArray.getSize());
+        return cborArray;
     }
     
 }

@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.cbades.signature;
+package eu.europa.esig.dss.cbades.signature.clearUHeaders;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSECounterSignStructure;
@@ -10,37 +10,22 @@ import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
-import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
-import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.signature.CBAdESCounterSignatureParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESLevelBCounterSignatureCoseSignTest;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCommitmentTypeIndication;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
-import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.CommitmentTypeEnum;
-import eu.europa.esig.dss.enumerations.SignatureLevel;
-import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.enumerations.SignatureScopeType;
-import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.SignerLocation;
-import eu.europa.esig.dss.model.ToBeSigned;
-import eu.europa.esig.dss.signature.CounterSignatureService;
-import eu.europa.esig.dss.signature.DocumentSignatureService;
-import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -48,58 +33,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CBAdESLevelBCounterSignatureCoseSignClearUHeadersTest extends AbstractCBAdESCounterSignatureTest {
-
-    private CBAdESService service;
-    private DSSDocument documentToSign;
-
-    private Date signingDate;
-
-    @BeforeEach
-    void init() throws Exception {
-        service = new CBAdESService(getCompleteCertificateVerifier());
-        service.setTspSource(getGoodTsa());
-        documentToSign = new InMemoryDocument("Hello World!".getBytes(), "doc.txt");
-        signingDate = new Date();
-    }
-
-    @Override
-    protected CBAdESSignatureParameters getSignatureParameters() {
-        CBAdESSignatureParameters signatureParameters = new CBAdESSignatureParameters();
-        signatureParameters.bLevel().setSigningDate(signingDate);
-        signatureParameters.setSigningCertificate(getSigningCert());
-        signatureParameters.setCertificateChain(getCertificateChain());
-        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
-        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
-        return signatureParameters;
-    }
+class CBAdESLevelBCounterSignatureCoseSignClearUHeadersTest extends CBAdESLevelBCounterSignatureCoseSignTest {
 
     @Override
     protected CBAdESCounterSignatureParameters getCounterSignatureParameters() {
-        CBAdESCounterSignatureParameters signatureParameters = new CBAdESCounterSignatureParameters();
-        signatureParameters.bLevel().setSigningDate(signingDate);
-        signatureParameters.setSigningCertificate(getSigningCert());
-        signatureParameters.setCertificateChain(getCertificateChain());
-        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
-        signatureParameters.setCborBtsrWrappedComponents(false);
-        SignerLocation signerLocation = new SignerLocation();
-        signerLocation.setLocality("Kehlen");
-        signatureParameters.bLevel().setSignerLocation(signerLocation);
-        signatureParameters.bLevel().setCommitmentTypeIndications(Collections.singletonList(CommitmentTypeEnum.ProofOfCreation));
-        return signatureParameters;
+        CBAdESCounterSignatureParameters counterSignatureParameters = super.getCounterSignatureParameters();
+        counterSignatureParameters.setCborBtsrWrappedComponents(false);
+        return counterSignatureParameters;
     }
 
     @Override
     protected void onDocumentSigned(byte[] byteArray) {
-        super.onDocumentSigned(byteArray);
-
         InMemoryDocument signedDocument = new InMemoryDocument(byteArray);
         assertTrue(COSEParser.isSupported(signedDocument));
 
         COSEParser coseParser = COSEParser.fromDocument(signedDocument);
         COSESignStructure coseSignStructure = coseParser.parse();
         assertNotNull(coseSignStructure);
+        checkCOSESignStructure(coseSignStructure);
 
         assertEquals(COSESignatureContext.COSE_SIGN, coseSignStructure.getContext());
         COSESign coseSign = assertInstanceOf(COSESign.class, coseSignStructure);
@@ -189,52 +140,6 @@ class CBAdESLevelBCounterSignatureCoseSignClearUHeadersTest extends AbstractCBAd
                 assertEquals(0, commitmentTypeIndications.size());
             }
         }
-    }
-
-    @Override
-    protected void verifySourcesAndDiagnosticData(List<AdvancedSignature> advancedSignatures,
-                                                  DiagnosticData diagnosticData) {
-        super.verifySourcesAndDiagnosticData(advancedSignatures, diagnosticData);
-
-        CBAdESSignature jadesSignature = (CBAdESSignature) advancedSignatures.get(0);
-
-        COSEStructure coseSignStructure = jadesSignature.getCoseSignature().getCoseSignStructure();
-        DSSDocument signatureDocument = new InMemoryDocument(coseSignStructure.serialize());
-
-        CBAdESCounterSignatureParameters counterSignatureParameters = getCounterSignatureParameters();
-        counterSignatureParameters.setSignatureIdToCounterSign(getSignatureIdToCounterSign());
-
-        for (SignatureWrapper signature : diagnosticData.getSignatures()) {
-            XmlDigestAlgoAndValue dtbsr = signature.getDataToBeSignedRepresentation();
-
-            ToBeSigned dataToSign;
-            if (signature.isCounterSignature()) {
-                dataToSign = service.getDataToBeCounterSigned(signatureDocument, counterSignatureParameters);
-            } else {
-                dataToSign = service.getDataToSign(getDocumentToSign(), getSignatureParameters());
-            }
-            assertArrayEquals(DSSUtils.digest(dtbsr.getDigestMethod(), dataToSign.getBytes()), dtbsr.getDigestValue());
-        }
-    }
-
-    @Override
-    protected DSSDocument getDocumentToSign() {
-        return documentToSign;
-    }
-
-    @Override
-    protected DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> getService() {
-        return service;
-    }
-
-    @Override
-    protected CounterSignatureService<CBAdESCounterSignatureParameters> getCounterSignatureService() {
-        return service;
-    }
-
-    @Override
-    protected String getSigningAlias() {
-        return GOOD_USER;
     }
 
 }

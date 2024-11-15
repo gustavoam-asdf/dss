@@ -12,11 +12,13 @@ import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.validation.timestamp.TimestampMessageDigestBuilder;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
+import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,6 +144,9 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
 
     private void writePayloadValue(DSSMessageDigestCalculator digestCalculator) {
         byte[] payload = signature.getCoseSignature().getPayloadBytes();
+        if (Utils.isArrayEmpty(payload)) {
+            throw new DSSException("Unable to extract COSE payload!");
+        }
         digestCalculator.update(payload);
     }
 

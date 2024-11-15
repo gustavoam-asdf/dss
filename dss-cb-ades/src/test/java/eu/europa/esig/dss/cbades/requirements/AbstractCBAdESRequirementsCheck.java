@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.cbades.requirements;
 
+import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -250,7 +251,139 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
 
     protected void checkUnprotectedHeader(CBORMap unprotectedHeaderMap) throws Exception {
         assertNotNull(unprotectedHeaderMap);
-        // TODO : to be implemented
+
+        checkSignatureTimestamp(unprotectedHeaderMap);
+        checkValidationData(unprotectedHeaderMap);
+        checkReferences(unprotectedHeaderMap);
+        checkSigAndRefTimestamps(unprotectedHeaderMap);
+        checkRefTimestamps(unprotectedHeaderMap);
+        checkArchiveTimestamp(unprotectedHeaderMap);
+    }
+
+    protected void checkSignatureTimestamp(CBORMap unprotectedHeader) {
+        CBORObject sigTst = getUHeadersElement(unprotectedHeader, COSEConstants.SIG_TST);
+        checkTstContainer(sigTst);
+    }
+
+    protected CBORObject getUHeadersElement(CBORMap bodyUnprotectedHeader, Long headerId) {
+        CBORObject uHeaders = bodyUnprotectedHeader.getHeader(COSEConstants.U_HEADERS);
+        assertNotNull(uHeaders);
+        assertTrue(uHeaders.isArray());
+        CBORArray uHeadersArray = (CBORArray) uHeaders;
+        for (CBORObject uHeadersItem : uHeadersArray.getItems()) {
+            CBORMap map = null;
+            if (uHeadersItem.isByteString()) {
+                byte[] decoded = ((CBORByteString) uHeadersItem).getBytes();
+                CBORObject parsed = CBORUtils.parseCbor(decoded);
+                assertTrue(parsed.isMap());
+                map = (CBORMap) parsed;
+            } else if (uHeadersItem.isMap()) {
+                map = (CBORMap) uHeadersItem;
+            } else {
+                fail(String.format("The type of component '%s' of 'uHeaders' property is not supported!", uHeadersItem.getClass().getName()));
+            }
+            CBORObject value = map.getHeader(headerId);
+            if (value != null) {
+                return value;
+            }
+            // continue
+        }
+        return null;
+    }
+
+    protected void checkValidationData(CBORMap unprotectedHeaderMap) {
+        CBORObject valData = getUHeadersElement(unprotectedHeaderMap, COSEConstants.VAL_DATA);
+        assertNotNull(valData);
+        assertTrue(valData.isMap());
+
+        CBORMap valDataMap = (CBORMap) valData;
+
+        CBORObject xVals = valDataMap.getHeader(COSEConstants.VAL_DATA_X_VALS);
+        assertNotNull(xVals);
+        assertTrue(xVals.isArray());
+
+        CBORArray xValsArray = (CBORArray) xVals;
+        assertFalse(xValsArray.isEmpty());
+
+        for (CBORObject xValsItem : xValsArray.getItems()) {
+            assertTrue(xValsItem.isMap());
+            CBORMap x509OrOther = (CBORMap) xValsItem;
+            CBORObject x509Cert = x509OrOther.getHeader(COSEConstants.X509_OR_OTHER_X509_CERT);
+            checkPkiOb(x509Cert);
+        }
+
+        CBORObject rVals = valDataMap.getHeader(COSEConstants.VAL_DATA_R_VALS);
+        assertNotNull(rVals);
+        assertTrue(rVals.isMap());
+
+        CBORMap rValsMap = (CBORMap) rVals;
+
+        CBORObject crlVals = rValsMap.getHeader(COSEConstants.R_VALS_CRL_VALS);
+        assertNotNull(crlVals);
+        assertTrue(crlVals.isArray());
+
+        CBORArray crlValsArray = (CBORArray) crlVals;
+        assertFalse(crlValsArray.isEmpty());
+        for (CBORObject crlValsItem : crlValsArray.getItems()) {
+            checkPkiOb(crlValsItem);
+        }
+        CBORObject ocspVals = rValsMap.getHeader(COSEConstants.R_VALS_OCSP_VALS);
+        assertNotNull(ocspVals);
+        assertTrue(ocspVals.isArray());
+
+        CBORArray ocspValsArray = (CBORArray) ocspVals;
+        assertFalse(ocspValsArray.isEmpty());
+        for (CBORObject ocspValsItem : ocspValsArray.getItems()) {
+            checkPkiOb(ocspValsItem);
+        }
+    }
+
+    protected void checkPkiOb(CBORObject pkiOb) {
+        assertNotNull(pkiOb);
+        assertTrue(pkiOb.isMap());
+        CBORMap pkiObMap = (CBORMap) pkiOb;
+        byte[] binaries = pkiObMap.getAsBinaries(COSEConstants.PKI_OB_VAL);
+        assertNotNull(binaries);
+    }
+
+    protected void checkReferences(CBORMap unprotectedHeaderMap) {
+        CBORObject refs = getUHeadersElement(unprotectedHeaderMap, COSEConstants.REFS);
+        assertNull(refs);
+    }
+
+    protected void checkSigAndRefTimestamps(CBORMap unprotectedHeaderMap) {
+        CBORObject sigRTst = getUHeadersElement(unprotectedHeaderMap, COSEConstants.SIG_R_TST);
+        assertNull(sigRTst);
+    }
+
+    protected void checkRefTimestamps(CBORMap unprotectedHeaderMap) {
+        CBORObject rfsTst = getUHeadersElement(unprotectedHeaderMap, COSEConstants.RFS_TST);
+        assertNull(rfsTst);
+    }
+
+    protected void checkArchiveTimestamp(CBORMap unprotectedHeaderMap) {
+        CBORObject arcTst = getUHeadersElement(unprotectedHeaderMap, COSEConstants.ARC_TST);
+        checkTstContainer(arcTst);
+    }
+
+    protected void checkTstContainer(CBORObject tstContainer) {
+        assertNotNull(tstContainer);
+        assertTrue(tstContainer.isMap());
+        CBORMap tstContainerMap = (CBORMap) tstContainer;
+        assertNull(tstContainerMap.getHeader(COSEConstants.TST_CONTAINER_CANON_ALG));
+        CBORObject tstTokens = tstContainerMap.getHeader(COSEConstants.TST_CONTAINER_TST_TOKENS);
+        assertNotNull(tstTokens);
+        assertTrue(tstTokens.isArray());
+
+        CBORArray tstTokensArray = (CBORArray) tstTokens;
+        assertEquals(1, tstTokensArray.getSize());
+        checkTstToken(tstTokensArray.getItem(0));
+    }
+
+    protected void checkTstToken(CBORObject tstToken) {
+        assertTrue(tstToken.isMap());
+        CBORMap tstTokenMap = (CBORMap) tstToken;
+        assertNotNull(tstTokenMap.getAsBinaries(COSEConstants.TST_TOKEN_VAL));
     }
 
     @Override
