@@ -53,22 +53,32 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     public List<CBAdESUHeadersComponent> getAttributes() {
         if (components == null) {
             components = new ArrayList<>();
-            COSEUnprotectedHeader unprotectedHeader = getUnprotectedHeader();
-            if (unprotectedHeader != null && !unprotectedHeader.isEmpty()) {
-                CBORArray uHeaders = unprotectedHeader.getAsArray(COSEConstants.U_HEADERS);
-                if (uHeaders != null && !uHeaders.isEmpty()) {
-                    for (int i = 0; i < uHeaders.getSize(); i++) {
-                        CBORObject uHeadersEntry = uHeaders.getItem(i);
-                        CBAdESUHeadersComponent component = CBAdESUHeadersComponent.build(uHeadersEntry, i);
-                        if (component != null) {
-                            components.add(component);
-                        }
-                        // else : unable to create, skip
+            CBORArray uHeaders = getCBORArray();
+            if (uHeaders != null && !uHeaders.isEmpty()) {
+                for (int i = 0; i < uHeaders.getSize(); i++) {
+                    CBORObject uHeadersEntry = uHeaders.getItem(i);
+                    CBAdESUHeadersComponent component = CBAdESUHeadersComponent.build(uHeadersEntry, i);
+                    if (component != null) {
+                        components.add(component);
                     }
+                    // else : unable to create, skip
                 }
             }
         }
         return components;
+    }
+
+    /**
+     * Gets 'uHeaders' representation in a CBORArray
+     *
+     * @return {@link CBORArray}
+     */
+    public CBORArray getCBORArray() {
+        COSEUnprotectedHeader unprotectedHeader = getUnprotectedHeader();
+        if (unprotectedHeader != null && !unprotectedHeader.isEmpty()) {
+            return unprotectedHeader.getAsArray(COSEConstants.U_HEADERS);
+        }
+        return null;
     }
 
     /**

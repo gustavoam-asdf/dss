@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Date;
 
-class CBAdESLevelLTCoseSign1Test extends AbstractCBAdESTestSignature {
+public class CBAdESLevelLTCoseSign1Test extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
     private DSSDocument documentToSign;

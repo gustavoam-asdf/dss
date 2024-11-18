@@ -11,6 +11,7 @@ import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -320,6 +321,17 @@ public final class CBORUtils {
      */
     public static boolean isRequiredCriticalHeader(Long headerId) {
         return requiredCriticalHeaders.contains(headerId);
+    }
+
+    /**
+     * Checks if all components have one type (CBOR btsr or clear objects)
+     *
+     * @param uHeaders {@link CBAdESUHeaders} of objects to check
+     * @return TRUE if all components are uniform (CBOR btsr or clear objects), FALSE
+     *         otherwise
+     */
+    public static boolean checkComponentsUnicity(CBAdESUHeaders uHeaders) {
+        return checkComponentsUnicity(uHeaders.getCBORArray());
     }
 
     /**

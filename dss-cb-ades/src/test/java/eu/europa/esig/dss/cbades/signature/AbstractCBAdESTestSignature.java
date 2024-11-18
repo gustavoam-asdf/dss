@@ -9,6 +9,8 @@ import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
@@ -193,6 +195,31 @@ public abstract class AbstractCBAdESTestSignature
                     assertTrue(CBORUtils.isRequiredCriticalHeader(labelId));
                 }
             }
+
+            CBORArray uHeaders = unprotectedHeader.getAsArray(COSEConstants.U_HEADERS);
+            if (SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel())) {
+                assertNull(uHeaders);
+
+            } else {
+                assertNotNull(uHeaders);
+                assertFalse(uHeaders.isEmpty());
+
+                for (CBORObject item : uHeaders.getItems()) {
+                    CBORMap itemMap;
+                    if (getSignatureParameters().isCborBtsrWrappedComponents()) {
+                        assertTrue(item.isByteString());
+                        CBORObject parsedHeader = CBORUtils.parseCbor(((CBORByteString) item).getBytes());
+                        assertNotNull(parsedHeader);
+                        assertTrue(parsedHeader.isMap());
+                        itemMap = (CBORMap) parsedHeader;
+                    } else {
+                        assertTrue(item.isMap());
+                        itemMap = (CBORMap) item;
+                    }
+                    assertEquals(1, itemMap.getSize());
+                }
+            }
+
         }
     }
 

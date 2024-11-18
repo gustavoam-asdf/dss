@@ -10,26 +10,36 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Date;
 
-public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
+class CBAdESLevelLTASelfSignedTest extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
-    private DSSDocument documentToSign;
     private CBAdESSignatureParameters signatureParameters;
+    private DSSDocument documentToSign;
 
     @BeforeEach
     void init() throws Exception {
-        service = new CBAdESService(getOfflineCertificateVerifier());
-        service.setTspSource(getGoodTsa());
-        documentToSign = new InMemoryDocument("Hello world!".getBytes());
+        documentToSign = new InMemoryDocument("Hello world!".getBytes(), "HelloWorld");
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(new Date());
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_T);
+        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LTA);
         signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
-        signatureParameters.setTagged(true);
+
+        service = new CBAdESService(getCompleteCertificateVerifier());
+        service.setTspSource(getGoodTsa());
+    }
+
+    @Override
+    protected String getSigningAlias() {
+        return SELF_SIGNED_USER;
+    }
+
+    @Override
+    protected DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> getService() {
+        return service;
     }
 
     @Override
@@ -40,16 +50,6 @@ public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
     @Override
     protected DSSDocument getDocumentToSign() {
         return documentToSign;
-    }
-
-    @Override
-    protected DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> getService() {
-        return service;
-    }
-
-    @Override
-    protected String getSigningAlias() {
-        return GOOD_USER;
     }
 
 }

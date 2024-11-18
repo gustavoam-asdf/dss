@@ -1,16 +1,19 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
+class CBAdESLevelTNotTrustedTSPTest extends AbstractCBAdESTestSignature {
 
     private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
     private DSSDocument documentToSign;
@@ -18,23 +21,31 @@ public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
 
     @BeforeEach
     void init() throws Exception {
-        service = new CBAdESService(getOfflineCertificateVerifier());
-        service.setTspSource(getGoodTsa());
-        documentToSign = new InMemoryDocument("Hello world!".getBytes());
 
+        documentToSign = new InMemoryDocument("Hello world!".getBytes(), "HelloWorld");
         signatureParameters = new CBAdESSignatureParameters();
-        signatureParameters.bLevel().setSigningDate(new Date());
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_T);
-        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
-        signatureParameters.setTagged(true);
+
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+
+        CertificateVerifier certificateVerifier = getCompleteCertificateVerifier();
+
+        CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
+        trustedCertificateSource.importAsTrusted(getGoodPKITrustAnchors());
+        certificateVerifier.setTrustedCertSources(trustedCertificateSource);
+
+        service = new CBAdESService(certificateVerifier);
+        service.setTspSource(getSHA3GoodTsa());
     }
 
     @Override
-    protected CBAdESSignatureParameters getSignatureParameters() {
-        return signatureParameters;
+    protected void checkSignatureLevel(DiagnosticData diagnosticData) {
+        super.checkSignatureLevel(diagnosticData);
+
+        assertEquals(SignatureLevel.CB_AdES_BASELINE_T, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
     }
 
     @Override
@@ -45,6 +56,11 @@ public class CBAdESLevelTCoseSignTest extends AbstractCBAdESTestSignature {
     @Override
     protected DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> getService() {
         return service;
+    }
+
+    @Override
+    protected CBAdESSignatureParameters getSignatureParameters() {
+        return signatureParameters;
     }
 
     @Override

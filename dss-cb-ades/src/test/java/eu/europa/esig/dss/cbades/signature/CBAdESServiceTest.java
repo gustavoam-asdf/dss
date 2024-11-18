@@ -189,6 +189,39 @@ class CBAdESServiceTest extends PKIFactoryAccess {
     }
 
     @Test
+    void extensionTest() {
+        CBAdESSignatureParameters signatureParameters = initParameters();
+        DSSDocument signedDocument = signAndValidate(documentToSign, signatureParameters);
+
+        CBAdESSignatureParameters extensionParameters = new CBAdESSignatureParameters();
+
+        Exception exception = assertThrows(NullPointerException.class, () -> extendAndValidate(null, extensionParameters));
+        assertEquals("toExtendDocument cannot be null!", exception.getMessage());
+
+        exception = assertThrows(NullPointerException.class, () -> extendAndValidate(signedDocument, null));
+        assertEquals("Cannot extend the signature. SignatureParameters are not defined!", exception.getMessage());
+
+        exception = assertThrows(NullPointerException.class, () -> extendAndValidate(signedDocument, extensionParameters));
+        assertEquals("SignatureLevel must be defined!", exception.getMessage());
+
+        exception = assertThrows(IllegalArgumentException.class, () ->  extensionParameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_B));
+        assertEquals("Only CBAdES form is allowed !", exception.getMessage());
+
+        extensionParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+        exception = assertThrows(UnsupportedOperationException.class, () -> extendAndValidate(signedDocument, extensionParameters));
+        assertEquals("Unsupported signature format 'CB-AdES-BASELINE-B' for extension.", exception.getMessage());
+
+        extensionParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LTA);
+        extendAndValidate(signedDocument, extensionParameters);
+    }
+
+    private void extendAndValidate(DSSDocument documentToExtend, CBAdESSignatureParameters signatureParameters) {
+        DSSDocument extendedDocument = service.extendDocument(documentToExtend, signatureParameters);
+        assertNotNull(extendedDocument);
+        validate(extendedDocument);
+    }
+
+    @Test
     void createAndValidateCoseSignTest() {
         CBAdESSignatureParameters signatureParameters = initParameters();
         signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
