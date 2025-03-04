@@ -129,6 +129,7 @@ class ASiCEWithCAdESLevelLTWithTwoEvidenceRecordsInSequenceValidationTest extend
         assertTrue(secondErFound);
     }
 
+    @Override
     protected void verifySimpleReport(SimpleReport simpleReport) {
         Set<String> evidenceRecordIds = new HashSet<>();
         for (String sigId : simpleReport.getSignatureIdList()) {
@@ -247,7 +248,6 @@ class ASiCEWithCAdESLevelLTWithTwoEvidenceRecordsInSequenceValidationTest extend
                 assertEquals(1, cryptoInformation.getValidationObjectId().getVOReference().size());
                 assertNotNull(DigestAlgorithm.forXML(cryptoInformation.getAlgorithm()));
                 assertTrue(cryptoInformation.isSecureAlgorithm());
-                assertNotNull(cryptoInformation.getNotAfter());
 
                 ++evidenceRecordCounter;
 

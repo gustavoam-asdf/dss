@@ -62,7 +62,6 @@ import eu.europa.esig.dss.xades.definition.XAdESPath;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Attribute;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Element;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
-import eu.europa.esig.dss.xades.definition.xades141.XAdES141Element;
 import eu.europa.esig.dss.xades.reference.XAdESReferenceValidation;
 import eu.europa.esig.dss.xades.validation.scope.XAdESSignatureScopeFinder;
 import eu.europa.esig.dss.xades.validation.timestamp.XAdESTimestampSource;
@@ -773,87 +772,6 @@ public class XAdESSignature extends DefaultAdvancedSignature {
 		return DomUtils.getNodeList(signatureElement, XMLDSigPath.OBJECT_PATH);
 	}
 
-	/**
-	 * Gets xades:CompleteCertificateRefs or xades141:CompleteCertificateRefsV2 element
-	 *
-	 * @return {@link Element}
-	 */
-	public Element getCompleteCertificateRefs() {
-		Element element = null;
-		String completeCertificateRefsPath = xadesPath.getCompleteCertificateRefsPath();
-		if (Utils.isStringNotEmpty(completeCertificateRefsPath)) {
-			element = DomUtils.getElement(signatureElement, completeCertificateRefsPath);
-		}
-		String completeCertificateRefsV2Path = xadesPath.getCompleteCertificateRefsV2Path();
-		if (element == null && Utils.isStringNotEmpty(completeCertificateRefsV2Path)) {
-			element = DomUtils.getElement(signatureElement, completeCertificateRefsV2Path);
-		}
-		return element;
-	}
-
-	/**
-	 * Gets xades:CompleteRevocationRefs
-	 *
-	 * @return {@link Element}
-	 */
-	public Element getCompleteRevocationRefs() {
-		return DomUtils.getElement(signatureElement, xadesPath.getCompleteRevocationRefsPath());
-	}
-
-	/**
-	 * Gets xades:SigAndRefsTimeStamp node list
-	 *
-	 * @return {@link NodeList}
-	 */
-	public NodeList getSigAndRefsTimeStamp() {
-		NodeList nodeList = null;
-		String sigAndRefsTimestampPath = xadesPath.getSigAndRefsTimestampPath();
-		if (Utils.isStringNotEmpty(sigAndRefsTimestampPath)) {
-			nodeList = DomUtils.getNodeList(signatureElement, sigAndRefsTimestampPath);
-		}
-		String sigAndRefsTimestampV2Path = xadesPath.getSigAndRefsTimestampV2Path();
-		if ((nodeList == null || nodeList.getLength() == 0) && Utils.isStringNotEmpty(sigAndRefsTimestampV2Path)) {
-			nodeList = DomUtils.getNodeList(signatureElement, sigAndRefsTimestampV2Path);
-		}
-		return nodeList;
-	}
-
-	/**
-	 * Gets xades:RefsOnlyTimestamp node list
-	 *
-	 * @return {@link NodeList}
-	 */
-	public NodeList getRefsOnlyTimestampTimeStamp() {
-		NodeList nodeList = null;
-		String refsOnlyTimestampPath = xadesPath.getRefsOnlyTimestampPath();
-		if (Utils.isStringNotEmpty(refsOnlyTimestampPath)) {
-			nodeList = DomUtils.getNodeList(signatureElement, refsOnlyTimestampPath);
-		}
-		String refsOnlyTimestampV2Path = xadesPath.getRefsOnlyTimestampV2Path();
-		if ((nodeList == null || nodeList.getLength() == 0) && Utils.isStringNotEmpty(refsOnlyTimestampV2Path)) {
-			nodeList = DomUtils.getNodeList(signatureElement, refsOnlyTimestampV2Path);
-		}
-		return nodeList;
-	}
-
-	/**
-	 * Gets xades:CertificateValues element
-	 *
-	 * @return {@link Element}
-	 */
-	public Element getCertificateValues() {
-		return DomUtils.getElement(signatureElement, xadesPath.getCertificateValuesPath());
-	}
-
-	/**
-	 * Gets xades:RevocationValues element
-	 *
-	 * @return {@link Element}
-	 */
-	public Element getRevocationValues() {
-		return DomUtils.getElement(signatureElement, xadesPath.getRevocationValuesPath());
-	}
-
 	@Override
 	public void addExternalTimestamp(TimestampToken timestamp) {
 		throw new UnsupportedOperationException("The action is not supported for XAdES!");
@@ -1412,24 +1330,6 @@ public class XAdESSignature extends DefaultAdvancedSignature {
 	@Override
 	protected List<SignatureScope> findSignatureScopes() {
 		return new XAdESSignatureScopeFinder().findSignatureScope(this);
-	}
-
-	/**
-	 * This method returns the last timestamp validation data for an archive
-	 * timestamp.
-	 *
-	 * @return {@link Element} xades141:TimestampValidationData
-	 */
-	public Element getLastTimestampValidationData() {
-		final NodeList nodeList = DomUtils.getNodeList(signatureElement, xadesPath.getUnsignedSignaturePropertiesPath() + "/*");
-		if (nodeList.getLength() > 0) {
-			final Element unsignedSignatureElement = (Element) nodeList.item(nodeList.getLength() - 1);
-			final String nodeName = unsignedSignatureElement.getLocalName();
-			if (XAdES141Element.TIMESTAMP_VALIDATION_DATA.isSameTagName(nodeName)) {
-				return unsignedSignatureElement;
-			}
-		}
-		return null;
 	}
 
 	@Override

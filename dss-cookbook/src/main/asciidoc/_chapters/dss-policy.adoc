@@ -2287,6 +2287,20 @@ Default: not executed
 </Timestamp>
 ----
 
+* `AtsHashIndex` - this constraint checks if the ats-hash-index(-v3) attribute present within CAdES archive-time-stamp-v3 is valid according to the ETSI EN 319 122-1 (cf. <<R02>>) definition . If the ats-hash-index(-v3) attribute is not present or not valid for the corresponding CAdES archive-time-stamp-v3 unsigned property, the check will fail.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of AtsHashIndex usage (with WARN validation level)
+----
+<Timestamp>
+    ...
+    <AtsHashIndex Level="WARN" />
+    ...
+</Timestamp>
+----
+
 * `ContainerSignedAndTimestampedFilesCovered` - this constraint checks if all data files signed and/or time-asserted covered signatures or timestamps are protected by the container timestamp. If one of the data files signed and/or time-asserted by a covered signature or timestamp is not protected by the container timestamp, the check will fail.
 
 Default: `FAIL`
@@ -2715,14 +2729,32 @@ Default: `WARN`
 
 * `TLVersion` - this constraint checks whether the "version" attribute of the Trusted List corresponds to the defined value. If the version of the Trusted List matches the expected value, the check will fail.
 
-Default: `WARN` (`5`)
+Default: `FAIL` (`5` and `6`)
 
 [source,xml,indent=0]
-.Example of TLVersion usage (with WARN validation level)
+.Example of TLVersion usage (with FAIL validation level)
 ----
 <eIDAS>
     ...
-    <TLVersion Level="FAIL" value="5" />
+    <TLVersion Level="FAIL">
+        <Id>5</Id>
+        <Id>6</Id>
+    </TLVersion>
+    ...
+</eIDAS>
+----
+
+* `TLStructure` - this constraint checks whether the structure of the Trusted List is valid according to
+the definition of the corresponding Trusted List verison and its XSD. If the Trusted List's structure is not valid, the check will fail.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of TLStructure usage (with WARN validation level)
+----
+<eIDAS>
+    ...
+    <TLStructure Level="WARN" />
     ...
 </eIDAS>
 ----
@@ -2878,7 +2910,7 @@ This table defines the correspondence between the enforced validation policy con
                                   |DocumentTimeStamp               |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |TLevelTimeStamp                 |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |LTALevelTimeStamp               |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
-.11+|TimestampConstraints         |TimestampDelay                  |TimeConstraint                    |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+.12+|TimestampConstraints         |TimestampDelay                  |TimeConstraint                    |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |RevocationTimeAgainstBestSignatureTime   |LevelConstraint          |INDETERMINATE         |REVOKED_NO_POE +
                                                                                                                               REVOKED_CA_NO_POE
                                   |BestSignatureTimeBeforeExpirationDateOfSigningCertificate |LevelConstraint  |FAILED       |NOT_YET_VALID
@@ -2889,6 +2921,7 @@ This table defines the correspondence between the enforced validation policy con
                                   |TSAGeneralNamePresent           |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |TSAGeneralNameContentMatch      |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |TSAGeneralNameOrderMatch        |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+                                  |AtsHashIndex                    |LevelConstraint                   |FAILED                |FORMAT_FAILURE
                                   |ContainerSignedAndTimestampedFilesCovered   |LevelConstraint       |FAILED                |FORMAT_FAILURE
 .6+|RevocationConstraints         |UnknownStatus                   |LevelConstraint                   |INDETERMINATE         |CERTIFICATE_CHAIN_GENERAL_FAILURE
                                   |OCSPResponderIdMatch            |LevelConstraint                   |INDETERMINATE         |CERTIFICATE_CHAIN_GENERAL_FAILURE
@@ -2915,7 +2948,8 @@ This table defines the correspondence between the enforced validation policy con
                                                                                                                               CRYPTO_CONSTRAINTS_FAILURE
                                   |AlgoExpirationDate              |AlgoExpirationDate                |INDETERMINATE         |CRYPTO_CONSTRAINTS_FAILURE_NO_POE +
                                                                                                                               CRYPTO_CONSTRAINTS_FAILURE
-.4+|eIDAS                         |TLFreshness                     |TimeConstraint                    |FAILED                |-
+.5+|eIDAS                         |TLFreshness                     |TimeConstraint                    |FAILED                |-
                                   |TLNotExpired                    |LevelConstraint                   |FAILED                |-
                                   |TLWellSigned                    |LevelConstraint                   |FAILED                |-
                                   |TLVersion                       |ValueConstraint                   |FAILED                |-
+                                  |TLStructure                     |LevelConstraint                   |FAILED                |-

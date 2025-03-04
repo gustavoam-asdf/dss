@@ -23,16 +23,17 @@ package eu.europa.esig.dss.tsl.parsing;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.tsl.function.OfficialJournalSchemeInformationURI;
 import eu.europa.esig.dss.tsl.function.TLPredicateFactory;
 import eu.europa.esig.dss.tsl.function.XMLOtherTSLPointer;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
+import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,8 +54,10 @@ class LOTLParsingTaskTest {
 
 	private static DSSDocument TL;
 
+	private static List<Integer> DEFAULT_ACCEPTED_TL_VERSION;
+
 	@BeforeAll
-	static void init() throws IOException {
+	static void init() {
 		LOTL = new FileDocument("src/test/resources/eu-lotl.xml");
 		LOTL_NO_SIG = new FileDocument("src/test/resources/eu-lotl-no-sig.xml");
 		LOTL_NOT_PARSEABLE = new FileDocument("src/test/resources/eu-lotl-not-parseable.xml");
@@ -63,11 +66,15 @@ class LOTLParsingTaskTest {
 		LOTL_MRA = new FileDocument("src/test/resources/mra-lotl.xml");
 
 		TL = new FileDocument("src/test/resources/ie-tl.xml");
+
+		DEFAULT_ACCEPTED_TL_VERSION = Arrays.asList(5, 6);
 	}
 
 	@Test
 	void parseLOTLDefault() {
-		LOTLParsingTask task = new LOTLParsingTask(LOTL, new LOTLSource());
+		LOTLSource lotlSource = new LOTLSource();
+		lotlSource.setTLVersions(DEFAULT_ACCEPTED_TL_VERSION);
+		LOTLParsingTask task = new LOTLParsingTask(LOTL, lotlSource);
 		LOTLParsingResult result = task.get();
 		assertNotNull(result);
 		assertNotNull(result.getIssueDate());
@@ -101,11 +108,15 @@ class LOTLParsingTaskTest {
 
 		assertNotNull(result.getDistributionPoints());
 		assertEquals(1, result.getDistributionPoints().size());
+
+		assertTrue(Utils.isCollectionEmpty(result.getStructureValidationMessages()));
 	}
 
 	@Test
 	void parseLOTLNoSig() {
-		LOTLParsingTask task = new LOTLParsingTask(LOTL_NO_SIG, new LOTLSource());
+		LOTLSource lotlSource = new LOTLSource();
+		lotlSource.setTLVersions(DEFAULT_ACCEPTED_TL_VERSION);
+		LOTLParsingTask task = new LOTLParsingTask(LOTL_NO_SIG, lotlSource);
 		LOTLParsingResult result = task.get();
 		assertNotNull(result);
 		assertNotNull(result.getIssueDate());
@@ -124,6 +135,9 @@ class LOTLParsingTaskTest {
 
 		assertNotNull(result.getDistributionPoints());
 		assertEquals(1, result.getDistributionPoints().size());
+
+		assertFalse(Utils.isCollectionEmpty(result.getStructureValidationMessages()));
+		assertTrue(result.getStructureValidationMessages().stream().anyMatch(r -> r.contains("No ds:Signature element is present!")));
 	}
 
 	private void checkOtherPointers(List<OtherTSLPointer> lotlPointers) {

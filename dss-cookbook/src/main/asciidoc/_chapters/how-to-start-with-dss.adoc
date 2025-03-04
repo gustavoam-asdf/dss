@@ -44,12 +44,12 @@ The simplest way to include DSS to your project is to use https://central.sonaty
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-xades</artifactId>
-        <version>6.1</version>
+        <version>6.2</version>
     </dependency>
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-validation</artifactId>
-        <version>6.1</version>
+        <version>6.2</version>
     </dependency>
     ...
 </dependencies>
@@ -94,7 +94,7 @@ The root `pom.xml` of `dss-bom` defines versions of all modules within DSS-libra
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-bom</artifactId>
-            <version>6.1</version>
+            <version>6.2</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -251,11 +251,11 @@ In order to build a bundle for JDK 17 (minimum requirement), the following profi
 mvn clean install -P java17
 ----
 
-DSS webapp version with Java 22 can be created with a command below:
+DSS webapp version with Java 23 can be created with a command below:
 
-.Maven command to create a JDK 22 bundle
+.Maven command to create a JDK 23 bundle
 ----
-mvn clean install -P java22
+mvn clean install -P java23
 ----
 
 ====== Integration tests
@@ -337,8 +337,8 @@ dss-i18n:: Module allowing internationalization of generated reports.
 
 dss-model:: Data model used in almost every module.
 dss-crl-parser:: API to validate CRLs and retrieve revocation data
-dss-crl-parser-stream:: Implementation of dss-crl-parser which streams the CRL.
-dss-crl-parser-x509crl:: Implementation of dss-crl-parser which uses the java object X509CRL.
+dss-crl-parser-stream:: Implementation of `dss-crl-parser` which streams the CRL.
+dss-crl-parser-x509crl:: Implementation of `dss-crl-parser` which uses the java object X509CRL.
 dss-spi:: Interfaces and util classes to process ASN.1 structure, compute digests, etc.
 dss-service:: Implementations to communicate with online resources (TSP, CRL, OCSP).
 dss-token:: Token definitions and implementations for MS CAPI, MacOS Keychain, PKCS#11, PKCS#12.
@@ -350,6 +350,9 @@ dss-tsl-validation:: Module which allows loading / parsing / validating of LOTL 
 
 dss-xades:: Implementation of the XAdES signature, augmentation and validation.
 dss-cades:: Implementation of the CAdES signature, augmentation and validation.
+dss-cms:: Provides interfaces and utility methods for working with CMS objects (see RFC 5652, cf. <<R30>>).
+dss-cms-object:: Implementation of 'dss-cms' module, processing the data objects and files in memory.
+dss-cms-stream:: Implementation of 'dss-cms' module, processing the data objects and files using streaming.
 dss-jades:: Implementation of the JAdES signature, augmentation and validation.
 dss-pades:: Common code which is shared between dss-pades-pdfbox and dss-pades-openpdf.
 dss-pades-pdfbox:: Implementation of the PAdES signature, augmentation and validation with https://pdfbox.apache.org/[PDFBox].
@@ -446,6 +449,7 @@ Also, as it was explained in the previous section, some modules are required to 
 * <<dssUtils,dss-utils>>;
 * <<dssCrlParser,dss-crl-parser>>;
 * dss-test;
+* <<dssCms,dss-cms>>;
 * <<dssPades,dss-pades>>;
 * dss-asic-common.
 

@@ -166,7 +166,7 @@ class RevocationDataVerifierFactoryTest {
         miniPublicKeySize.getAlgos().clear();
 
         revocationDataVerifier = new RevocationDataVerifierFactory(validationPolicy).create();
-        assertFalse(revocationDataVerifier.isAcceptable(ocspToken));
+        assertTrue(revocationDataVerifier.isAcceptable(ocspToken));
 
         algo.setSize(3000);
         miniPublicKeySize.getAlgos().add(algo);
@@ -180,20 +180,24 @@ class RevocationDataVerifierFactoryTest {
         assertTrue(revocationDataVerifier.isAcceptable(ocspToken));
 
         AlgoExpirationDate algoExpirationDate = cryptographic.getAlgoExpirationDate();
+        algoExpirationDate.getAlgos().clear();
         algoExpirationDate.setFormat("yyyy");
 
         algo.setDate("2025");
         algoExpirationDate.getAlgos().add(algo);
 
-        revocationDataVerifier = new RevocationDataVerifierFactory(validationPolicy).create();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.JANUARY, 1);
+
+        revocationDataVerifier = new RevocationDataVerifierFactory(validationPolicy).setValidationTime(calendar.getTime()).create();
         assertTrue(revocationDataVerifier.isAcceptable(ocspToken));
 
         algo.setDate("2015");
 
-        revocationDataVerifier = new RevocationDataVerifierFactory(validationPolicy).create();
+        revocationDataVerifier = new RevocationDataVerifierFactory(validationPolicy).setValidationTime(calendar.getTime()).create();
         assertFalse(revocationDataVerifier.isAcceptable(ocspToken));
 
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.set(Calendar.YEAR, 2000);
 

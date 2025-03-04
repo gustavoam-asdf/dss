@@ -68,7 +68,7 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
             if (cbadesSignature.hasLTAProfile() && addTimestampValidationData) {
                 removeLastValidationData(cbadesSignature, uHeaders);
 
-                final ValidationData validationDataForInclusion = validationDataContainer.getCompleteValidationDataForSignature(signature);
+                final ValidationData validationDataForInclusion = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
                 if (!validationDataForInclusion.isEmpty()) {
                     CBORObject valData = getValData(validationDataForInclusion);
                     uHeaders.addComponent(COSEConstants.VAL_DATA, valData, params.isCborBtsrWrappedComponents());

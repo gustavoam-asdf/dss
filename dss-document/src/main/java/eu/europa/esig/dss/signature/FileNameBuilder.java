@@ -149,19 +149,21 @@ public class FileNameBuilder {
         StringBuilder finalName = new StringBuilder();
 
         String originalName;
+        String originalExtension = Utils.EMPTY_STRING;
         if (isContainerMimeType(mimeType)) {
             originalName = CONTAINER_PREFIX;
         } else {
-            originalName = DSSUtils.replaceAllNonAlphanumericCharacters(originalFilename, "-");
+            originalName = originalFilename;
         }
 
-        String originalExtension = Utils.EMPTY_STRING;
         if (Utils.isStringNotEmpty(originalName)) {
             originalExtension = Utils.getFileNameExtension(originalName);
             if (Utils.isStringNotEmpty(originalExtension)) {
                 // remove extension
                 originalName = originalName.substring(0, originalName.length() - originalExtension.length() - 1);
             }
+            originalName = DSSUtils.replaceAllNonAlphanumericCharacters(originalName, "-");
+
             finalName.append(originalName);
 
         } else {

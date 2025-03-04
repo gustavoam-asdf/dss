@@ -1327,6 +1327,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelConstraint getAtsHashIndexConstraint() {
+		TimestampConstraints timestampConstraints = getTimestampConstraints();
+		if (timestampConstraints != null) {
+			return timestampConstraints.getAtsHashIndex();
+		}
+		return null;
+	}
+
+	@Override
 	public LevelConstraint getTimestampContainerSignedAndTimestampedFilesCoveredConstraint() {
 		TimestampConstraints timestampConstraints = getTimestampConstraints();
 		if (timestampConstraints != null) {
@@ -1680,10 +1689,19 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public ValueConstraint getTLVersionConstraint() {
+	public MultiValuesConstraint getTLVersionConstraint() {
 		EIDAS eIDASConstraints = getEIDASConstraints();
 		if (eIDASConstraints != null) {
 			return eIDASConstraints.getTLVersion();
+		}
+		return null;
+	}
+
+	@Override
+	public LevelConstraint getTLStructureConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return eIDASConstraints.getTLStructure();
 		}
 		return null;
 	}

@@ -119,7 +119,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
         try {
             DSSMessageDigestCalculator digestCalculator = new DSSMessageDigestCalculator(digestAlgorithm);
             writeSignedDataBinaries(digestCalculator);
-            return digestCalculator.getMessageDigest();
+            return digestCalculator.getMessageDigest(digestAlgorithm);
 
         } catch (Exception e) {
             String errorMessage = timestampToken == null ? String.format(MESSAGE_IMPRINT_ERROR, e.getMessage()) :
@@ -287,7 +287,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
                         + "The 'uHeaders' components shall have a common format (CBOR Byte String or CBOR Map)!");
             }
 
-            final DSSMessageDigest messageDigest = digestCalculator.getMessageDigest();
+            final DSSMessageDigest messageDigest = digestCalculator.getMessageDigest(digestAlgorithm);
             if (LOG.isTraceEnabled()) {
                 LOG.trace("The 'arcTst' timestamp message-imprint : {}", messageDigest);
             }

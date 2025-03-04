@@ -35,10 +35,10 @@ public abstract class AbstractParsingResult implements CachedResult {
 	private TSLType tslType;
 
 	/** The LOTL/TL sequence number */
-	private int sequenceNumber;
+	private Integer sequenceNumber;
 
 	/** LOTL/TL version */
-	private int version;
+	private Integer version;
 
 	/** The country (territory) */
 	private String territory;
@@ -51,6 +51,9 @@ public abstract class AbstractParsingResult implements CachedResult {
 
 	/** The distribution points urls */
 	private List<String> distributionPoints;
+
+	/** A list of error messages occurred during a structure validation */
+	protected List<String> structureValidationMessages;
 
 	/**
 	 * Default constructor instantiating object with null values
@@ -82,7 +85,7 @@ public abstract class AbstractParsingResult implements CachedResult {
 	 *
 	 * @return sequence number
 	 */
-	public int getSequenceNumber() {
+	public Integer getSequenceNumber() {
 		return sequenceNumber;
 	}
 
@@ -91,7 +94,7 @@ public abstract class AbstractParsingResult implements CachedResult {
 	 *
 	 * @param sequenceNumber sequence number
 	 */
-	public void setSequenceNumber(int sequenceNumber) {
+	public void setSequenceNumber(Integer sequenceNumber) {
 		this.sequenceNumber = sequenceNumber;
 	}
 
@@ -100,7 +103,7 @@ public abstract class AbstractParsingResult implements CachedResult {
 	 *
 	 * @return version
 	 */
-	public int getVersion() {
+	public Integer getVersion() {
 		return version;
 	}
 
@@ -109,7 +112,7 @@ public abstract class AbstractParsingResult implements CachedResult {
 	 *
 	 * @param version version
 	 */
-	public void setVersion(int version) {
+	public void setVersion(Integer version) {
 		this.version = version;
 	}
 
@@ -183,6 +186,24 @@ public abstract class AbstractParsingResult implements CachedResult {
 	 */
 	public void setDistributionPoints(List<String> distributionPoints) {
 		this.distributionPoints = distributionPoints;
+	}
+
+	/**
+	 * Gets a list of error messages when occurred during the structure validation
+	 *
+	 * @return a list of {@link String} structure validation messages, empty list if the structure validation succeeded
+	 */
+	public List<String> getStructureValidationMessages() {
+		return structureValidationMessages;
+	}
+
+	/**
+	 * Sets the structure validation error messages
+	 *
+	 * @param structureValidationMessages a list of {@link String} error messages when occurred on the structure validation
+	 */
+	public void setStructureValidationMessages(List<String> structureValidationMessages) {
+		this.structureValidationMessages = structureValidationMessages;
 	}
 
 }

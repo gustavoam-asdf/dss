@@ -75,6 +75,7 @@ import org.bouncycastle.cert.ocsp.OCSPResp;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.BigIntegers;
@@ -365,8 +366,31 @@ public final class DSSASN1Utils {
 	}
 
 	/**
-	 * This method computes the digest of an ASN1 signature policy (used in CAdES)
+	 * Returns {@code ASN1Encodable} of the {@code attribute}
 	 *
+	 * @param attribute {@link Attribute}
+	 * @return {@link ASN1Encodable}
+	 */
+	public static ASN1Encodable getAsn1Encodable(Attribute attribute) {
+		if (attribute == null) {
+			return null;
+		}
+		if (attribute.getAttrValues().size() == 1) {
+			return attribute.getAttrValues().getObjectAt(0);
+		} else {
+			if (LOG.isDebugEnabled()) {
+				LOG.warn("Only one value is allowed within attribute set! Found {} : {}.", attribute.getAttrValues().size(),
+						Utils.toHex(DSSASN1Utils.getDEREncoded(attribute)));
+			} else {
+				LOG.warn("Only one value is allowed within attribute set! Found {}.", attribute.getAttrValues().size());
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * This method computes the digest of an ASN1 signature policy (used in CAdES)
+	 * <p>
 	 * TS 101 733 5.8.1 : If the signature policy is defined using ASN.1, then the hash is calculated on the value
 	 * without the outer type and length
 	 * fields, and the hashing algorithm shall be as specified in the field sigPolicyHash.
@@ -739,9 +763,22 @@ public final class DSSASN1Utils {
 	 * @param cms
 	 *            CMSSignedData
 	 * @return returns {@code SignerInformation}
+	 * @deprecated since DSS 6.3. Please use {@code #getFirstSignerInformation(cms.getSignerInfos())} method instead.
 	 */
+	@Deprecated
 	public static SignerInformation getFirstSignerInformation(final CMSSignedData cms) {
-		final Collection<SignerInformation> signers = cms.getSignerInfos().getSigners();
+		return getFirstSignerInformation(cms.getSignerInfos());
+	}
+
+	/**
+	 * Returns the first {@code SignerInformation} extracted from {@code SignerInformationStore}.
+	 *
+	 * @param signerInformationStore
+	 *            {@link SignerInformationStore}
+	 * @return returns {@code SignerInformation}
+	 */
+	public static SignerInformation getFirstSignerInformation(final SignerInformationStore signerInformationStore) {
+		final Collection<SignerInformation> signers = signerInformationStore.getSigners();
 		if (signers.size() > 1) {
 			LOG.warn("!!! The framework handles only one signer (SignerInformation) !!!");
 		}
@@ -779,7 +816,9 @@ public final class DSSASN1Utils {
 	 *
 	 * @param certToken {@link CertificateToken}
 	 * @return a list of {@link String}s
+	 * @deprecated since DSS 6.3. See {@code CertificateExtensionUtils#getExtendedKeyUsage(CertificateToken)}
 	 */
+	@Deprecated
 	public static List<String> getExtendedKeyUsage(CertificateToken certToken) {
 		try {
 			return certToken.getCertificate().getExtendedKeyUsage();
@@ -935,7 +974,7 @@ public final class DSSASN1Utils {
 
 	/**
 	 * Converts the ANS.1 binary signature value to the concatenated (plain) R || S format if required
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 *
 	 * @param algorithm
@@ -955,7 +994,7 @@ public final class DSSASN1Utils {
 
 	/**
 	 * Converts an ASN.1 value to a concatenation string of R and S from ECDSA/DSA encryption algorithm
-	 *
+	 * <p>
 	 * The JAVA JCE ECDSA/DSA Signature algorithm creates ASN.1 encoded (r,s) value pairs.
 	 *
 	 * @param asn1SignatureValue

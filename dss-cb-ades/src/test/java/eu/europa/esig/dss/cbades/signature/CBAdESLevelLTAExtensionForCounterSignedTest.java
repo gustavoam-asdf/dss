@@ -4,6 +4,7 @@ import eu.europa.esig.dss.cbades.validation.AbstractCBAdESTestValidation;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
+import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
@@ -134,8 +135,13 @@ class CBAdESLevelLTAExtensionForCounterSignedTest extends AbstractCBAdESTestVali
         FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
         List<String> certificateValuesIds = foundCertificates.getRelatedCertificatesByOrigin(CertificateOrigin.ANY_VALIDATION_DATA)
                 .stream().map(CertificateWrapper::getId).collect(Collectors.toList());
+        assertEquals(2, certificateValuesIds.size());
+        List<RelatedCertificateWrapper> counterSignatureCerts = counterSignature.foundCertificates().getRelatedCertificates();
+        assertEquals(2, counterSignatureCerts.size());
+        assertEquals(3, counterSignature.getCertificateChain().size());
         for (CertificateWrapper certificateWrapper : counterSignature.getCertificateChain()) {
-            assertTrue(certificateValuesIds.contains(certificateWrapper.getId()));
+            assertTrue(counterSignatureCerts.stream().map(CertificateWrapper::getId).collect(Collectors.toList())
+                    .contains(certificateWrapper.getId()) || certificateValuesIds.contains(certificateWrapper.getId()));
         }
 
         assertTrue(Utils.isCollectionNotEmpty(signatureWrapper.foundRevocations().getRelatedRevocationsByOrigin(RevocationOrigin.ANY_VALIDATION_DATA)));

@@ -14,6 +14,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -49,8 +50,7 @@ class CBAdESLevelBDetachedOtherNameDocTest extends AbstractCBAdESTestSignature {
 
     @Override
     protected List<DSSDocument> getDetachedContents() {
-        InMemoryDocument detachedDocument = new InMemoryDocument("Hello World!".getBytes(), "helloWorld");
-        return List.of(detachedDocument);
+        return Collections.singletonList(new InMemoryDocument("Hello World!".getBytes(), "helloWorld"));
     }
 
     @Override

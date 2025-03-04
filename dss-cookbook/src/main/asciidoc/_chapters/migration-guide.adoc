@@ -14,6 +14,86 @@ For changes within Diagnostic Data XSD please refer <<DiagnosticDataChanges>>.
 For changes within XML Signature Policy please refer <<ValidationPolicyChanges>>.
 
 [cols="2,5,5"]
+.Code changes from version 6.2 to 6.3
+|===
+|Title                               |v6.2                            |v6.3
+|CAdES/PAdES signature and validation (see <<dssCms>>)             a|
+[source,xml]
+.pom.xml
+----
+<dependencies>
+    ...
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-cades</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-pades-pdfbox</artifactId>
+    </dependency>
+    ...
+</dependencies>
+----
+                                                                     a|
+[source,xml]
+.pom.xml
+----
+<dependencies>
+    ...
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-cades</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-pades-pdfbox</artifactId>
+    </dependency>
+    <!-- dss-cms implementation shall be added -->
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-cms-object</artifactId>
+    </dependency>
+    ...
+</dependencies>
+----
+
+|Old `CMSUtils` moved to `CAdESUtils`             a|
+[source,java]
+----
+import eu.europa.esig.dss.cades.CMSUtils;
+----
+                                                                     a|
+[source,java]
+----
+import eu.europa.esig.dss.cades.CAdESUtils;
+----
+
+|`CAdESSignatureExtension` and related classes             a|
+[source,java]
+----
+import eu.europa.esig.dss.cades.signature.CAdESSignatureExtension;
+import org.bouncycastle.cms.CMSSignedData;
+
+CAdESSignatureExtension cadesExtension = ...
+CMSSignedData cmsSignedData = ...
+cmsSignedData = cadesExtension.extendCMSSignatures(cmsSignedData, signatureParameters);
+----
+                                                                     a|
+Replaced by a new `CMS` object
+[source,java]
+----
+
+import eu.europa.esig.dss.cades.signature.CAdESSignatureExtension;
+import eu.europa.esig.dss.cms.CMS;
+
+CAdESSignatureExtension cadesExtension = ...
+CMS cms = ...
+cms = cadesExtension.extendCMSSignatures(cms, signatureParameters);
+----
+
+|===
+
+[cols="2,5,5"]
 .Code changes from version 6.1 to 6.2
 |===
 |Title                               |v6.1                            |v6.2
@@ -96,6 +176,126 @@ BufferedImage screenshotOne = PdfBoxScreenshotBuilder.fromDocument(docOne, passw
 BufferedImage screenshotTwo = PdfBoxScreenshotBuilder.fromDocument(docTwo, passwordTwo)
         .setDSSResourcesHandlerBuilder(tempFileResourcesHandlerBuilder).generateBufferedImageScreenshot(page);
 DSSDocument subtractionImage = PdfBoxUtils.generateSubtractionImage(screenshotOne, screenshotTwo);
+----
+
+|Digest encoding for RSA signature             a|
+[source,java]
+----
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.token.SignatureTokenConnection;
+
+SignatureTokenConnection token = ...
+byte[] digestValue = ...
+byte[] encodedDigest = DSSUtils.encodeRSADigest(DigestAlgorithm.SHA256, digestValue));
+Digest digest = new Digest(DigestAlgorithm.SHA256, encodedDigest);
+SignatureValue signatureValue = token.signDigest(digest, SignatureAlgorithm.RSA_SHA256, getPrivateKeyEntry());
+----
+                                                                     a|
+[source,java]
+----
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.token.SignatureTokenConnection;
+
+SignatureTokenConnection token = ...
+byte[] digestValue = ...
+Digest digest = new Digest(DigestAlgorithm.SHA256, digestValue);
+SignatureValue signatureValue = token.signDigest(digest, SignatureAlgorithm.RSA_SHA256, getPrivateKeyEntry());
+----
+
+|XML Trusted List signing             a|
+[source,java]
+----
+import eu.europa.esig.dss.xades.TrustedListSignatureParametersBuilder;
+import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+
+TrustedListSignatureParametersBuilder builder = new TrustedListSignatureParametersBuilder(signingCertificate, xmlTrustedList);
+XAdESSignatureParameters parameters = builder.build();
+...
+----
+                                                                     a|
+[source,java]
+----
+import eu.europa.esig.dss.xades.tsl.TrustedListV5SignatureParametersBuilder;
+import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+
+TrustedListV5SignatureParametersBuilder builder = new TrustedListV5SignatureParametersBuilder(signingCertificate, xmlTrustedList);
+XAdESSignatureParameters parameters = builder.build();
+...
+----
+
+a|Additional signature validation data is included within `AnyValidationData` element (XAdES, JAdES) after LTA-level             a|
+[source,java]
+----
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xades.signature.XAdESService;
+
+XAdESService service = new XAdESService(certificateVerifier);
+XAdESSignatureParameters signatureParameters = new XAdESSignatureParameters();
+signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+...
+DSSDocument extendedDocument = service.extendDocument(signedDocument, signatureParameters);
+----
+                                                                     a|
+To get back to previous behavior (no `AnyValidationData` is used):
+[source,java]
+----
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.enumerations.ValidationDataEncapsulationStrategy;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xades.signature.XAdESService;
+
+XAdESService service = new XAdESService(certificateVerifier);
+XAdESSignatureParameters signatureParameters = new XAdESSignatureParameters();
+signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LTA);
+signatureParameters.setValidationDataEncapsulationStrategy(ValidationDataEncapsulationStrategy.CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA);
+...
+DSSDocument extendedDocument = service.extendDocument(signedDocument, signatureParameters);
+----
+
+a|Alert behavior in `SignatureValidationContext` checks              a|
+Only when `ValidationContext` is used directly.
+[source,java]
+----
+import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
+import eu.europa.esig.dss.spi.validation.SignatureValidationContext;
+import eu.europa.esig.dss.spi.validation.ValidationContext;
+
+CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
+certificateVerifier.setAlertOnExpiredCertificate(new ExceptionOnStatusAlert());
+...
+ValidationContext validationContext = new SignatureValidationContext();
+validationContext.initialize(certificateVerifier);
+...
+validationContext.validate();
+
+boolean result = validationContext.checkAllSignaturesNotExpired(); // AlertException is thrown in case of FALSE
+----
+                                                                     a|[source,java]
+----
+import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
+import eu.europa.esig.dss.spi.validation.SignatureValidationContext;
+import eu.europa.esig.dss.spi.validation.ValidationContext;
+
+CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
+certificateVerifier.setAlertOnExpiredCertificate(new ExceptionOnStatusAlert());
+...
+ValidationContext validationContext = new SignatureValidationContext();
+validationContext.initialize(certificateVerifier);
+...
+validationContext.validate();
+
+boolean result = validationContext.checkAllSignaturesNotExpired(); // no alert execution, only boolean is returned
+
+ValidationAlerter validationAlerter = new SignatureValidationAlerter(validationContext);
+validationAlerter.assertAllSignaturesNotExpired(); // AlertException is thrown in case of check failure
 ----
 
 |===
@@ -298,7 +498,7 @@ boolean result = DSSASN1Utils.isArchiveTimeStampToken(attribute);
 a|
 [source,java]
 ----
-import eu.europa.esig.dss.cades.CMSUtils;
+import eu.europa.esig.dss.cades.CAdESUtils;
 
 List<ASN1ObjectIdentifier> oids = CMSUtils.getTimestampOids();
 boolean result = CMSUtils.isArchiveTimeStampToken(attribute);
@@ -743,19 +943,19 @@ List<SignatureScope> signatureScopes = advancedSignature.getSignatureScopes();
 
 |CMSSignedDataBuilder refactoring                               a|[source,java]
 ----
-import eu.europa.esig.dss.cades.CMSUtils;
-import eu.europa.esig.dss.cades.signature.CMSSignedDataBuilder;
+import eu.europa.esig.dss.cades.CAdESUtils;
+import eu.europa.esig.dss.cades.signature.CMSBuilder;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 
-CMSSignedDataBuilder cmsSignedDataBuilder = new CMSSignedDataBuilder(certificateVerifier);
-SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = cmsSignedDataBuilder.getSignerInfoGeneratorBuilder(dcp, parameters, true, contentToSign);
-CMSSignedDataGenerator cmsSignedDataGenerator = cmsSignedDataBuilder.createCMSSignedDataGenerator(parameters, customContentSigner, signerInfoGeneratorBuilder, originalCmsSignedData);
+CMSSignedDataBuilder cmsBuilder = new CMSSignedDataBuilder(certificateVerifier);
+SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = cmsBuilder.getSignerInfoGeneratorBuilder(dcp, parameters, true, contentToSign);
+CMSSignedDataGenerator cmsSignedDataGenerator = cmsBuilder.createCMSSignedDataGenerator(parameters, customContentSigner, signerInfoGeneratorBuilder, originalCmsSignedData);
 CMSTypedData content = CMSUtils.getContentToBeSigned(contentToSign);
 CMSSignedData cmsSignedData = CMSUtils.generateCMSSignedData(cmsSignedDataGenerator, content, encapsulate);
 ----
                                                                 a|[source,java]
 ----
-import eu.europa.esig.dss.spi.x509.CMSSignedDataBuilder;
+import eu.europa.esig.dss.cades.signature.CMSBuilder;
 import org.bouncycastle.cms.SignerInfoGenerator;
 
 SignerInfoGenerator signerInfoGenerator = new CMSSignerInfoGeneratorBuilder().build(contentToSign, parameters, customContentSigner);

@@ -1102,6 +1102,14 @@ public interface ValidationPolicy {
 	LevelConstraint getTimestampTSAGeneralNameOrderMatch();
 
 	/**
+	 * Returns timestamp AtsHashIndex constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if AtsHashIndex element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelConstraint getAtsHashIndexConstraint();
+
+	/**
 	 * Returns timestamp ContainerSignedAndTimestampedFilesCovered constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelConstraint} if ContainerSignedAndTimestampedFilesCovered element is present
@@ -1527,7 +1535,7 @@ public interface ValidationPolicy {
 	/**
 	 * Returns TLFreshness constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code TimeConstraint} if TLFreshness element is present
+	 * @return {@code LevelConstraint} if TLFreshness element is present
 	 *                                 in the constraint file, null otherwise.
 	 */
 	TimeConstraint getTLFreshnessConstraint();
@@ -1535,7 +1543,7 @@ public interface ValidationPolicy {
 	/**
 	 * Returns TLWellSigned constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code TimeConstraint} if TLWellSigned element is present
+	 * @return {@code LevelConstraint} if TLWellSigned element is present
 	 *                                 in the constraint file, null otherwise.
 	 */
 	LevelConstraint getTLWellSignedConstraint();
@@ -1543,7 +1551,7 @@ public interface ValidationPolicy {
 	/**
 	 * Returns TLNotExpired constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code TimeConstraint} if TLNotExpired element is present
+	 * @return {@code LevelConstraint} if TLNotExpired element is present
 	 *                                 in the constraint file, null otherwise.
 	 */
 	LevelConstraint getTLNotExpiredConstraint();
@@ -1551,10 +1559,18 @@ public interface ValidationPolicy {
 	/**
 	 * Returns TLVersion constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code ValueConstraint} if TLVersion element is present
+	 * @return {@code MultiValuesConstraint} if TLVersion element is present
+	 *                                       in the constraint file, null otherwise.
+	 */
+	MultiValuesConstraint getTLVersionConstraint();
+
+	/**
+	 * Returns TLStructure constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if TLStructure element is present
 	 *                                 in the constraint file, null otherwise.
 	 */
-	ValueConstraint getTLVersionConstraint();
+	LevelConstraint getTLStructureConstraint();
 
 	/**
 	 * Returns the used validation model (default is SHELL). Alternatives are CHAIN

@@ -80,7 +80,7 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
             CBAdESUHeaders uHeaders = cbadesSignature.getUHeaders();
             removeValidationData(cbadesSignature, uHeaders);
 
-            final ValidationData validationDataForInclusion = validationDataContainer.getCompleteValidationDataForSignature(signature);
+            final ValidationData validationDataForInclusion = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
             incorporateValidationData(uHeaders, validationDataForInclusion, params.isCborBtsrWrappedComponents());
         }
     }

@@ -26,6 +26,8 @@ import eu.europa.esig.dss.tsl.cache.CacheKey;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPServiceType;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -33,6 +35,9 @@ import java.util.function.Predicate;
  * Represent a Trusted List source
  */
 public class TLSource {
+
+	/** List of default supported TL versions */
+	private static final List<Integer> DEFAULT_SUPPORTED_TL_VERSIONS = Arrays.asList(5, 6);
 
 	/**
 	 * URL
@@ -46,14 +51,14 @@ public class TLSource {
 
 	/**
 	 * Allow to filter the collected trust service provider(s) with a predicate
-	 * 
+	 * <p>
 	 * Default : all trust service providers are selected
 	 */
 	private Predicate<TSPType> trustServiceProviderPredicate;
 
 	/**
 	 * Allow to filter the collected trust service(s) with a predicate
-	 * 
+	 * <p>
 	 * Default : all trust services are selected
 	 */
 	private Predicate<TSPServiceType> trustServicePredicate;
@@ -62,6 +67,11 @@ public class TLSource {
 	 * Defines whether an SDI can be considered as a trust anchor during the given period of time
 	 */
 	private Predicate<TrustServiceStatusAndInformationExtensions> trustAnchorValidityPredicate;
+
+	/**
+	 * List of TL Versions accepted for the current TLSource. When defined, an error is returned on structure validation.
+	 */
+	private List<Integer> tlVersions = DEFAULT_SUPPORTED_TL_VERSIONS;
 	
 	/**
 	 * The cached CacheKey value (the key is computed from url parameter)
@@ -169,6 +179,28 @@ public class TLSource {
 	 */
 	public void setTrustAnchorValidityPredicate(Predicate<TrustServiceStatusAndInformationExtensions> trustAnchorValidityPredicate) {
 		this.trustAnchorValidityPredicate = trustAnchorValidityPredicate;
+	}
+
+	/**
+	 * Gets a list of TL versions to be accepted for the current TL/LOTL source
+	 *
+	 * @return a list of {@link Integer}s representing acceptable XML TL versions
+	 */
+	public List<Integer> getTLVersions() {
+		return tlVersions;
+	}
+
+	/**
+	 * Sets a list of acceptable XML Trusted List versions.
+	 * When defined, an error message to be returned on structural validation.
+	 * If not defined, no structural validation is performed.
+	 * <p>
+	 * Default: 5, 6 (structure validation is performed for versions 5 and 6, while other versions are invalidated)
+	 *
+	 * @param tlVersions a list of {@link Integer}s representing a supported TL versions to be validated
+	 */
+	public void setTLVersions(List<Integer> tlVersions) {
+		this.tlVersions = tlVersions;
 	}
 
 	/**

@@ -58,9 +58,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class EuropeanLOTLSnippets {
+class EuropeanLOTLSnippets {
 	
-	private static Logger LOG = LoggerFactory.getLogger(EuropeanLOTLSnippets.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EuropeanLOTLSnippets.class);
 
 	// tag::complete-european-lotl-config[]
 	// import eu.europa.esig.dss.model.DSSException;
@@ -148,6 +148,7 @@ public class EuropeanLOTLSnippets {
 		lotlSource.setCertificateSource(officialJournalContentKeyStore());
 		lotlSource.setSigningCertificatesAnnouncementPredicate(new OfficialJournalSchemeInformationURI(OJ_URL));
 		lotlSource.setPivotSupport(true);
+		lotlSource.setTLVersions(Arrays.asList(5, 6));
 		return lotlSource;
 	}
 

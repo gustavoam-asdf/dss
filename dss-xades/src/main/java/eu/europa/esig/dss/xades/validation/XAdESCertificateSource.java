@@ -82,6 +82,7 @@ public class XAdESCertificateSource extends SignatureCertificateSource {
 		extractCertificates(xadesPaths.getEncapsulatedCertificateValuesPath(), CertificateOrigin.CERTIFICATE_VALUES);
 		extractCertificates(xadesPaths.getEncapsulatedAttrAuthoritiesCertValuesPath(), CertificateOrigin.ATTR_AUTHORITIES_CERT_VALUES);
 		extractCertificates(xadesPaths.getEncapsulatedTimeStampValidationDataCertValuesPath(), CertificateOrigin.TIMESTAMP_VALIDATION_DATA);
+		extractCertificates(xadesPaths.getEncapsulatedAnyValidationDataCertValuesPath(), CertificateOrigin.ANY_VALIDATION_DATA);
 
 		extractCertificateRefs(xadesPaths.getSigningCertificateChildren(), xadesPaths.getSigningCertificateV2Children(),
 				CertificateRefOrigin.SIGNING_CERTIFICATE);
@@ -167,10 +168,11 @@ public class XAdESCertificateSource extends SignatureCertificateSource {
 			CertificateSource signingCertificateSource) {
 		CandidatesForSigningCertificate candidatesForSigningCertificate = new CandidatesForSigningCertificate();
 		
-		/**
-		 * 5.1.4.1 XAdES processing<br>
-		 * <i>Candidates for the signing certificate extracted from ds:KeyInfo
-		 * element</i> shall be checked against all references present in the
+		/*
+		 * 5.1.4.1 XAdES processing
+		 *
+		 * Candidates for the signing certificate extracted from ds:KeyInfo
+		 * element shall be checked against all references present in the
 		 * ds:SigningCertificate property, if present, since one of these references
 		 * shall be a reference to the signing certificate.
 		 */

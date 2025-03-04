@@ -20,13 +20,22 @@
  */
 package eu.europa.esig.dss.tsl.job;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.FileDocument;
+import eu.europa.esig.dss.model.tsl.InfoRecord;
+import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
+import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
+import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.tsl.cache.state.CacheStateEnum;
+import eu.europa.esig.dss.tsl.source.TLSource;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.util.Calendar;
@@ -35,36 +44,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
-import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
-import eu.europa.esig.dss.model.tsl.InfoRecord;
-import eu.europa.esig.dss.model.tsl.TLInfo;
-import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
-import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
-import eu.europa.esig.dss.tsl.cache.state.CacheStateEnum;
-import eu.europa.esig.dss.tsl.source.TLSource;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TransitionTest {
 
 	@TempDir
 	File cacheDirectory;
 
-	private DSSDocument CZ = new FileDocument("src/test/resources/lotlCache/CZ.xml");
-	private DSSDocument CZ_NULL = null;
-	private DSSDocument CZ_NO_XML = new FileDocument("src/test/resources/lotlCache/CZ.pdf");
-	private DSSDocument CZ_BROKEN_SIG = new FileDocument("src/test/resources/lotlCache/CZ_broken-sig.xml");
-	private DSSDocument CZ_NO_SIG = new FileDocument("src/test/resources/lotlCache/CZ_no-sig.xml");
-	private DSSDocument CZ_NOT_CONFORM = new FileDocument("src/test/resources/lotlCache/CZ_not-conform.xml");
-	private DSSDocument CZ_NOT_COMPLIANT = new FileDocument("src/test/resources/lotlCache/CZ_not-compliant.xml");
+	private static final DSSDocument CZ = new FileDocument("src/test/resources/lotlCache/CZ.xml");
+	private static final DSSDocument CZ_NULL = null;
+	private static final DSSDocument CZ_NO_XML = new FileDocument("src/test/resources/lotlCache/CZ.pdf");
+	private static final DSSDocument CZ_BROKEN_SIG = new FileDocument("src/test/resources/lotlCache/CZ_broken-sig.xml");
+	private static final DSSDocument CZ_NO_SIG = new FileDocument("src/test/resources/lotlCache/CZ_no-sig.xml");
+	private static final DSSDocument CZ_NOT_CONFORM = new FileDocument("src/test/resources/lotlCache/CZ_not-conform.xml");
+	private static final DSSDocument CZ_NOT_COMPLIANT = new FileDocument("src/test/resources/lotlCache/CZ_not-compliant.xml");
+	private static final DSSDocument CZ_NOT_PARSABLE = new FileDocument("src/test/resources/lotlCache/eu-lotl_not-parsable.xml");
 
 	@Test
 	void nullDoc() {
@@ -236,7 +236,7 @@ class TransitionTest {
 
 		job.setOnlineDataLoader(getOnlineDataLoader(CZ_NOT_COMPLIANT, url));
 		job.onlineRefresh();
-		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.ERROR, CacheStateEnum.SYNCHRONIZED);
+		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED);
 
 		job.setOnlineDataLoader(getOnlineDataLoader(CZ, url));
 		job.onlineRefresh();
@@ -267,6 +267,28 @@ class TransitionTest {
 	}
 
 	@Test
+	void validToNonParsableDoc() {
+
+		String url = "valid-to-null-doc";
+
+		TLValidationJob job = new TLValidationJob();
+		job.setTrustedListCertificateSource(new TrustedListsCertificateSource());
+		job.setTrustedListSources(getTLSource(url));
+
+		job.setOnlineDataLoader(getOnlineDataLoader(CZ, url));
+		job.onlineRefresh();
+		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED);
+
+		job.setOnlineDataLoader(getOnlineDataLoader(CZ_NOT_PARSABLE, url));
+		job.onlineRefresh();
+		checkSummary(job.getSummary(), CacheStateEnum.ERROR, CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED);
+
+		job.setOnlineDataLoader(getOnlineDataLoader(CZ, url));
+		job.onlineRefresh();
+		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED);
+	}
+
+	@Test
 	void nullToNonCompliantAndThenValidDoc() {
 
 		String url = "null-to-valid-doc";
@@ -281,7 +303,7 @@ class TransitionTest {
 
 		job.setOnlineDataLoader(getOnlineDataLoader(CZ_NOT_COMPLIANT, url));
 		job.onlineRefresh();
-		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.ERROR, CacheStateEnum.SYNCHRONIZED);
+		checkSummary(job.getSummary(), CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED, CacheStateEnum.SYNCHRONIZED);
 
 		job.setOnlineDataLoader(getOnlineDataLoader(CZ, url));
 		job.onlineRefresh();
@@ -327,7 +349,7 @@ class TransitionTest {
 
 		job.onlineRefresh();
 
-		checkSummary(job.getSummary(), CacheStateEnum.DESYNCHRONIZED, CacheStateEnum.ERROR, CacheStateEnum.DESYNCHRONIZED);
+		checkSummary(job.getSummary(), CacheStateEnum.DESYNCHRONIZED, CacheStateEnum.DESYNCHRONIZED, CacheStateEnum.DESYNCHRONIZED);
 	}
 
 	@Test

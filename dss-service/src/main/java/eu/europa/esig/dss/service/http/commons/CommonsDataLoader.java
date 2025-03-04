@@ -50,9 +50,9 @@ import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.routing.HttpRoutePlanner;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpException;
@@ -62,6 +62,7 @@ import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.io.entity.BufferedHttpEntity;
 import org.apache.hc.core5.http.io.entity.InputStreamEntity;
 import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.reactor.ssl.SSLBufferMode;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 import org.apache.hc.core5.util.TimeValue;
@@ -241,6 +242,12 @@ public class CommonsDataLoader implements DataLoader {
 	 * Default: {@code CommonsHttpClientResponseHandler}
 	 */
 	private transient HttpClientResponseHandler<byte[]> httpClientResponseHandler = new CommonsHttpClientResponseHandler();
+
+	/**
+	 * Collection of allowed host names for LDAP get request.
+	 * NOTE: if not defined, all host names are allowed.
+	 */
+	private Collection<String> ldapTrustedHostnames;
 
 	/**
 	 * The default constructor for CommonsDataLoader.
@@ -763,9 +770,21 @@ public class CommonsDataLoader implements DataLoader {
 		this.httpClientResponseHandler = httpClientResponseHandler;
 	}
 
+	/**
+	 * Sets a collection of allowed host names to perform an LDAP get request.
+	 * The name of the host shall be defined in the complete form corresponding to the full domain name extracted
+	 * from an extracted LDAP URL.
+	 * E.g. "ldap.infonotary.com" for LDAP URL "ldap://ldap.infonotary.com/dc=identity-ca,dc=infonotary,dc=com".
+	 * NOTE: when not defined, all LDAP URLs will be accepted.
+	 *
+	 * @param ldapTrustedHostnames a collection of allowed host name {@link String}s
+	 */
+	public void setLdapTrustedHostnames(Collection<String> ldapTrustedHostnames) {
+		this.ldapTrustedHostnames = ldapTrustedHostnames;
+	}
+
 	@Override
 	public byte[] get(final String urlString) {
-
 		if (Protocol.isFileUrl(urlString)) {
 			return fileGet(urlString);
 		} else if (Protocol.isHttpUrl(urlString)) {
@@ -814,12 +833,18 @@ public class CommonsDataLoader implements DataLoader {
 	 * @return byte array
 	 */
 	protected byte[] ldapGet(String urlString) {
+		String host = LdapURLUtils.getHost(urlString);
+		if (ldapTrustedHostnames != null && !ldapTrustedHostnames.contains(host)) {
+			throw new DSSExternalResourceException(String.format(
+					"Cannot get data from URL [%s]. Reason : [Untrusted host name '%s']", urlString, host));
+		}
 
 		urlString = LdapURLUtils.encode(urlString);
 
 		final Hashtable<String, String> env = new Hashtable<>();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		env.put(Context.PROVIDER_URL, urlString);
+
 		try {
 
 			// parse URL according to the template: 'ldap://host:port/DN?attributes?scope?filter?extensions'
@@ -1016,9 +1041,14 @@ public class CommonsDataLoader implements DataLoader {
 		}
 	}
 
-	private HttpClientConnectionManager getConnectionManager() {
+	/**
+	 * Gets a configured {@code HttpClientConnectionManager}
+	 *
+	 * @return {@link HttpClientConnectionManager}
+	 */
+	protected HttpClientConnectionManager getConnectionManager() {
 		final PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create()
-				.setSSLSocketFactory(getConnectionSocketFactoryHttps())
+				.setTlsSocketStrategy(getTlsSocketStrategy())
 				.setDefaultSocketConfig(getSocketConfig())
 				.setMaxConnTotal(getConnectionsMaxTotal())
 				.setMaxConnPerRoute(getConnectionsMaxPerRoute());
@@ -1036,13 +1066,23 @@ public class CommonsDataLoader implements DataLoader {
 		return connectionManager;
 	}
 
-	private SocketConfig getSocketConfig() {
+	/**
+	 * Gets a configured {@code SocketConfig}
+	 *
+	 * @return {@link SocketConfig}
+	 */
+	protected SocketConfig getSocketConfig() {
 		SocketConfig.Builder socketConfigBuilder = SocketConfig.custom();
 		socketConfigBuilder.setSoTimeout(timeoutSocket);
 		return socketConfigBuilder.build();
 	}
 
-	private SSLConnectionSocketFactory getConnectionSocketFactoryHttps() {
+	/**
+	 * Gets a configured {@code SSLContextBuilder} containing an SSL connection trust configuration
+	 *
+	 * @return {@link SSLContextBuilder}
+	 */
+	protected SSLContextBuilder getSSLContextBuilder() {
 		try {
 			SSLContextBuilder sslContextBuilder = SSLContextBuilder.create();
 			sslContextBuilder.setProtocol(sslProtocol);
@@ -1067,14 +1107,23 @@ public class CommonsDataLoader implements DataLoader {
 					sslContextBuilder.loadTrustMaterial(sslKeyStore, trustStrategy);
 				}
 			}
-
-			SSLConnectionSocketFactoryBuilder sslConnectionSocketFactoryBuilder = new SSLConnectionSocketFactoryBuilder();
-			return sslConnectionSocketFactoryBuilder.setSslContext(sslContextBuilder.build())
-					.setTlsVersions(getSupportedSSLProtocols()).setCiphers(getSupportedSSLCipherSuites())
-					.setHostnameVerifier(getHostnameVerifier()).build();
-
+			return sslContextBuilder;
 		} catch (final Exception e) {
-			throw new IllegalArgumentException("Unable to configure the SSLContext/SSLConnectionSocketFactory", e);
+			throw new IllegalArgumentException("Unable to configure the SSLContext", e);
+		}
+	}
+
+	/**
+	 * Gets a configured {@code TlsSocketStrategy}
+	 *
+	 * @return {@link TlsSocketStrategy}
+	 */
+	protected TlsSocketStrategy getTlsSocketStrategy() {
+		try {
+			return new DefaultClientTlsStrategy(getSSLContextBuilder().build(), getSupportedSSLProtocols(),
+					getSupportedSSLCipherSuites(), SSLBufferMode.STATIC, getHostnameVerifier());
+		} catch (final Exception e) {
+			throw new IllegalArgumentException("Unable to configure the TLSSocketStrategy", e);
 		}
 	}
 

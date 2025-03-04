@@ -26,6 +26,8 @@ import eu.europa.esig.trustedlist.jaxb.tsl.AnyType;
 import eu.europa.esig.trustedlist.jaxb.tsl.OtherTSLPointerType;
 import eu.europa.esig.trustedlist.jaxb.tsl.OtherTSLPointersType;
 import eu.europa.esig.trustedlist.jaxb.tsl.TrustStatusListType;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.UnmarshalException;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
@@ -40,12 +42,91 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TrustedListFacadeTest {
 
 	@Test
 	void testTL() throws JAXBException, XMLStreamException, IOException, SAXException {
 		marshallUnmarshall(new File("src/test/resources/tl.xml"));
+	}
+
+	@Test
+	void testTLv5() throws JAXBException, XMLStreamException, IOException, SAXException {
+		marshallUnmarshall(new File("src/test/resources/tlv5.xml"));
+	}
+
+	@Test
+	void testTLv6() throws JAXBException, XMLStreamException, IOException, SAXException {
+		marshallUnmarshall(new File("src/test/resources/tlv6.xml"));
+	}
+
+	@Test
+	void testTLv6CustomAttribute() throws JAXBException, XMLStreamException, IOException, SAXException {
+		File file = new File("src/test/resources/tlv6_custom_attribute.xml");
+
+		TrustedListFacade facade = TrustedListFacade.newFacade();
+
+		JAXBException exception = assertThrows(UnmarshalException.class, () -> facade.unmarshall(file));
+		assertTrue(exception.getLinkedException().getMessage().contains("StreetAddress"));
+
+		TrustStatusListType trustStatusListType = facade.unmarshall(file, false);
+		assertNotNull(trustStatusListType);
+
+		String marshall = facade.marshall(trustStatusListType);
+		assertNotNull(marshall);
+	}
+
+	@Test
+	void testTLv6WrongInside() throws JAXBException, XMLStreamException, IOException, SAXException {
+		File file = new File("src/test/resources/tlv6_wrong_inside.xml");
+
+		TrustedListFacade facade = TrustedListFacade.newFacade();
+
+		JAXBException exception = assertThrows(UnmarshalException.class, () -> facade.unmarshall(file));
+		assertTrue(exception.getLinkedException().getMessage().contains("hello"));
+
+		TrustStatusListType trustStatusListType = facade.unmarshall(file, false);
+		assertNotNull(trustStatusListType);
+
+		exception = assertThrows(MarshalException.class, () -> facade.marshall(trustStatusListType));
+		assertTrue(exception.getLinkedException().getMessage().contains("SchemeInformation"));
+
+		String marshall = facade.marshall(trustStatusListType, false);
+		assertNotNull(marshall);
+	}
+
+	@Test
+	void testTLv6Empty() throws JAXBException, XMLStreamException, IOException, SAXException {
+		File file = new File("src/test/resources/tlv6_empty.xml");
+
+		TrustedListFacade facade = TrustedListFacade.newFacade();
+
+		JAXBException exception = assertThrows(UnmarshalException.class, () -> facade.unmarshall(file));
+		assertTrue(exception.getLinkedException().getMessage().contains("TrustServiceStatusList"));
+
+		TrustStatusListType trustStatusListType = facade.unmarshall(file, false);
+		assertNotNull(trustStatusListType);
+
+		exception = assertThrows(MarshalException.class, () -> facade.marshall(trustStatusListType));
+		assertTrue(exception.getLinkedException().getMessage().contains("SchemeInformation"));
+
+		String marshall = facade.marshall(trustStatusListType, false);
+		assertNotNull(marshall);
+	}
+
+	@Test
+	void testHelloWorld() {
+		File file = new File("src/test/resources/hello_world.xml");
+
+		TrustedListFacade facade = TrustedListFacade.newFacade();
+
+		JAXBException exception = assertThrows(UnmarshalException.class, () -> facade.unmarshall(file));
+		assertTrue(exception.getLinkedException().getMessage().contains("hello"));
+
+		exception = assertThrows(UnmarshalException.class, () -> facade.unmarshall(file, false));
+		assertTrue(exception.getLinkedException().getMessage().contains("hello"));
 	}
 
 	@Test
@@ -59,7 +140,19 @@ class TrustedListFacadeTest {
 		TrustStatusListType trustStatusListType = facade.unmarshall(file);
 		assertNotNull(trustStatusListType);
 
-		String marshall = facade.marshall(trustStatusListType, true);
+		trustStatusListType = facade.unmarshall(file, false);
+		assertNotNull(trustStatusListType);
+
+		trustStatusListType = facade.unmarshall(file, true);
+		assertNotNull(trustStatusListType);
+
+		String marshall = facade.marshall(trustStatusListType);
+		assertNotNull(marshall);
+
+		marshall = facade.marshall(trustStatusListType, false);
+		assertNotNull(marshall);
+
+		marshall = facade.marshall(trustStatusListType, true);
 		assertNotNull(marshall);
 	}
 

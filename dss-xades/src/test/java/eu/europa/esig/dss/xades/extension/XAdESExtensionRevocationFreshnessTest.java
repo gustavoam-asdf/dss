@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -108,6 +109,24 @@ class XAdESExtensionRevocationFreshnessTest extends PKIFactoryAccess {
 		signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
 		DSSDocument extendedDocument = service.extendDocument(signedDocument, signatureParameters);
 		
+		validate(extendedDocument);
+	}
+
+	@Test
+	void skipCheckTest() {
+		signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+
+		certificateVerifier.setAlertOnNoRevocationAfterBestSignatureTime(null);
+		certificateVerifier.setAlertOnUncoveredPOE(null);
+
+		XAdESService service = new XAdESService(certificateVerifier);
+		service.setTspSource(getAlternateGoodTsa());
+
+		DSSDocument signedDocument = sign(service, documentToSign);
+
+		signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_LT);
+		DSSDocument extendedDocument = service.extendDocument(signedDocument, signatureParameters);
+
 		validate(extendedDocument);
 	}
 	
@@ -200,7 +219,7 @@ class XAdESExtensionRevocationFreshnessTest extends PKIFactoryAccess {
 		Status statusCallback = callback.status;
 		assertNotNull(statusCallback);
 
-		assertTrue(statusCallback instanceof RevocationFreshnessStatus);
+        assertInstanceOf(RevocationFreshnessStatus.class, statusCallback);
 		RevocationFreshnessStatus revocationFreshnessStatus = (RevocationFreshnessStatus) statusCallback;
 
 		String message = revocationFreshnessStatus.getMessage();
@@ -221,7 +240,7 @@ class XAdESExtensionRevocationFreshnessTest extends PKIFactoryAccess {
 		assertEquals(new HashSet<>(relatedObjectIds), relatedTokens.stream().map(Token::getDSSIdAsString).collect(Collectors.toSet()));
 
 		Token token = relatedTokens.iterator().next();
-		assertTrue(token instanceof CertificateToken);
+        assertInstanceOf(CertificateToken.class, token);
 
 		String tokenErrorMessage = revocationFreshnessStatus.getMessageForToken(token);
 		assertTrue(Utils.isStringNotEmpty(tokenErrorMessage));
@@ -258,7 +277,7 @@ class XAdESExtensionRevocationFreshnessTest extends PKIFactoryAccess {
 		Status statusCallback = callback.status;
 		assertNotNull(statusCallback);
 
-		assertTrue(statusCallback instanceof RevocationFreshnessStatus);
+        assertInstanceOf(RevocationFreshnessStatus.class, statusCallback);
 		RevocationFreshnessStatus revocationFreshnessStatus = (RevocationFreshnessStatus) statusCallback;
 
 		String message = revocationFreshnessStatus.getMessage();
