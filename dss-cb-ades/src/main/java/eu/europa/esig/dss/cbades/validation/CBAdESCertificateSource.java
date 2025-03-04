@@ -315,6 +315,17 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
             candidatesForSigningCertificate.add(new CertificateValidity(certificateToken));
         }
 
+        // if x5chain does not contain certificates,
+        // check other certificates embedded into the signature
+        if (candidatesForSigningCertificate.isEmpty()) {
+
+            // Add all found certificates
+            for (final CertificateToken certificateToken : getCertificates()) {
+                candidatesForSigningCertificate.add(new CertificateValidity(certificateToken));
+            }
+
+        }
+
         if (signingCertificateSource != null) {
             resolveFromSource(signingCertificateSource, candidatesForSigningCertificate);
         }
