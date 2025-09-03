@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.cms;
 
 import eu.europa.esig.dss.model.DSSDocument;
@@ -45,7 +65,7 @@ public final class CMSUtils {
         Iterator<ICMSUtils> iterator = loader.iterator();
         if (!iterator.hasNext()) {
             throw new ExceptionInInitializerError(
-                    "No implementation found for ICMSUtils in classpath, please choose between dss-cades-cms or dss-cades-cms-stream");
+                    "No implementation found for ICMSUtils in classpath, please choose between dss-cms-object or dss-cms-stream");
         }
         impl = iterator.next();
     }
@@ -150,6 +170,28 @@ public final class CMSUtils {
     }
 
     /**
+     * Gets encoding of the ContentInfo of CMS
+     *
+     * @param cms {@link CMS} to check
+     * @return {@link String} encoding, e.g. 'DER' or 'BER'
+     */
+    public static String getContentInfoEncoding(CMS cms) {
+        return impl.getContentInfoEncoding(cms);
+    }
+
+    /**
+     * Writes the encoded binaries of the SignedData.digestAlgorithms field to the given {@code OutputStream}
+     * NOTE: This method is used for evidence record hash computation
+     *
+     * @param cms {@link CMS}
+     * @param os {@link OutputStream}
+     * @throws IOException if an exception occurs on bytes writing
+     */
+    public static void writeSignedDataDigestAlgorithmsEncoded(CMS cms, OutputStream os) throws IOException {
+        impl.writeSignedDataDigestAlgorithmsEncoded(cms, os);
+    }
+
+    /**
      * Writes the encoded binaries of the ContentInfo element to the given {@code OutputStream}
      * NOTE: This method is used for archive-time-stamp-v2 message-imprint computation.
      *
@@ -183,6 +225,18 @@ public final class CMSUtils {
      */
     public static void writeSignedDataCRLsEncoded(CMS cms, OutputStream os) throws IOException {
         impl.writeSignedDataCRLsEncoded(cms, os);
+    }
+
+    /**
+     * Writes the encoded binaries of the SignedData.signerInfos field to the given {@code OutputStream}
+     * NOTE: This method is used for evidence record hash computation
+     *
+     * @param cms {@link CMS}
+     * @param os {@link OutputStream}
+     * @throws IOException if an exception occurs on bytes writing
+     */
+    public static void writeSignedDataSignerInfosEncoded(CMS cms, OutputStream os) throws IOException {
+        impl.writeSignedDataSignerInfosEncoded(cms, os);
     }
 
     /**
@@ -223,6 +277,14 @@ public final class CMSUtils {
      */
     public static void assertATSv2AugmentationSupported() {
         impl.assertATSv2AugmentationSupported();
+    }
+
+    /**
+     * This method checks whether the embedding of existing Evidence Records within CMS
+     * is supported by the current implementation
+     */
+    public static void assertEvidenceRecordEmbeddingSupported() {
+        impl.assertEvidenceRecordEmbeddingSupported();
     }
 
 }

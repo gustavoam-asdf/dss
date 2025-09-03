@@ -21,7 +21,8 @@
 package eu.europa.esig.dss.validation.process.bbb.sav;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.validation.executor.AbstractTestValidationExecutor;
@@ -47,9 +48,13 @@ class ValidationTimePresentCheckTest extends AbstractTestValidationExecutor {
 		
 		Reports reports = executor.execute();
 		DetailedReport detailedReport = reports.getDetailedReport();
-		
-		XmlSAV sav = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId()).getSAV();
-		assertNotNull(sav.getCryptographicValidation().getValidationTime());
+
+		XmlBasicBuildingBlocks bbb = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+		assertNotNull(bbb);
+
+		XmlAOV aov = bbb.getAOV();
+		assertNotNull(aov);
+		assertNotNull(aov.getValidationTime());
 	}
 
 }

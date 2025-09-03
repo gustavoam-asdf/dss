@@ -26,6 +26,37 @@ a|[source,xml]
 </eIDAS>
 ----
 
+|Revocation Consistency               |
+----
+Not present
+----
+(enforced by default)
+a|[source,xml]
+----
+<Revocation>
+    ...
+    <ThisUpdatePresent Level="FAIL" />
+    <RevocationIssuerKnown Level="FAIL" />
+    <RevocationIssuerValidAtProductionTime Level="FAIL" />
+    <RevocationAfterCertificateIssuance Level="FAIL" />
+    <RevocationHasInformationAboutCertificate Level="FAIL" />
+    ...
+</Revocation>
+----
+
+|ASiC Filename Adherence               |
+----
+Not present
+----
+a|[source,xml]
+----
+<ContainerConstraints>
+    ...
+    <FilenameAdherence Level="WARN" />
+    ...
+</ContainerConstraints>
+----
+
 |===
 
 [cols="2,5,5"]

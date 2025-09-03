@@ -31,8 +31,8 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSRevocationUtils;
-import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.security.DSSContentVerifierProviderSecurityFactory;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
 import eu.europa.esig.dss.spi.x509.SignatureIntegrityValidator;
@@ -49,13 +49,11 @@ import org.bouncycastle.cert.ocsp.RevokedStatus;
 import org.bouncycastle.cert.ocsp.SingleResp;
 import org.bouncycastle.cert.ocsp.UnknownStatus;
 import org.bouncycastle.operator.ContentVerifierProvider;
-import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.PublicKey;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -156,21 +154,27 @@ public class OCSPToken extends RevocationToken<OCSP> {
 	private void extractArchiveCutOff(SingleResp bestSingleResp) {
 		Extension extension = bestSingleResp.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_archive_cutoff);
 		if (extension != null) {
-			ASN1GeneralizedTime archiveCutOffAsn1 = (ASN1GeneralizedTime) extension.getParsedValue();
 			try {
+				ASN1GeneralizedTime archiveCutOffAsn1 = (ASN1GeneralizedTime) extension.getParsedValue();
 				archiveCutOff = archiveCutOffAsn1.getDate();
-			} catch (ParseException e) {
-				LOG.warn("Unable to extract id_pkix_ocsp_archive_cutoff : {}", e.getMessage());
+
+			} catch (Exception e) {
+				String errorMessage = "Unable to extract id_pkix_ocsp_archive_cutoff : {}";
+				if (LOG.isDebugEnabled()) {
+					LOG.warn(errorMessage, e.getMessage(), e);
+				} else {
+					LOG.warn(errorMessage, e.getMessage());
+				}
 			}
 		}
 	}
 
 	/**
 	 * This method extracts the CertHash extension if present
-	 * 
+	 * <p>
 	 * Common PKI Part 4: Operational Protocols
 	 * 3.1.2 Common PKI Private OCSP Extensions
-	 * 
+	 * <p>
 	 * CertHash ::= SEQUENCE {
 	 * hashAlgorithm AlgorithmIdentifier,
 	 * certificateHash OCTET STRING }
@@ -192,7 +196,12 @@ public class OCSPToken extends RevocationToken<OCSP> {
 				certHashMatch = Arrays.equals(expectedDigest, foundDigest);
 
 			} catch (Exception e) {
-				LOG.warn("Unable to extract id_isismtt_at_certHash : {}", e.getMessage());
+				String errorMessage = "Unable to extract id_isismtt_at_certHash : {}";
+				if (LOG.isDebugEnabled()) {
+					LOG.warn(errorMessage, e.getMessage(), e);
+				} else {
+					LOG.warn(errorMessage, e.getMessage());
+				}
 			}
 		}
 	}
@@ -204,9 +213,8 @@ public class OCSPToken extends RevocationToken<OCSP> {
 		CertificateValidity certificateValidity = signingCertificateValidator.validate(candidates);
 		if (certificateValidity != null) {
 			candidates.setTheCertificateValidity(certificateValidity);
-			
-			CertificateToken certificateToken = certificateValidity.getCertificateToken();
-			this.issuerCertificateToken = certificateToken;
+
+			this.issuerCertificateToken = certificateValidity.getCertificateToken();
 		}
 	}
 
@@ -292,9 +300,7 @@ public class OCSPToken extends RevocationToken<OCSP> {
 	protected SignatureValidity checkIsSignedBy(final PublicKey publicKey) {
 		try {
 			signatureInvalidityReason = "";
-			JcaContentVerifierProviderBuilder jcaContentVerifierProviderBuilder = new JcaContentVerifierProviderBuilder();
-			jcaContentVerifierProviderBuilder.setProvider(DSSSecurityProvider.getSecurityProvider());
-			ContentVerifierProvider contentVerifierProvider = jcaContentVerifierProviderBuilder.build(publicKey);
+			ContentVerifierProvider contentVerifierProvider = DSSContentVerifierProviderSecurityFactory.INSTANCE.build(publicKey);
 			signatureValidity = SignatureValidity.get(basicOCSPResp.isSignatureValid(contentVerifierProvider));
 		} catch (Exception e) {
 			LOG.warn("An error occurred during in attempt to check signature owner : ", e);

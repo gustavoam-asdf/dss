@@ -20,13 +20,7 @@
  */
 package eu.europa.esig.dss.asic.cades.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.List;
-
 import eu.europa.esig.dss.detailedreport.DetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
@@ -36,6 +30,11 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ASiCERemovedReferenceTest extends AbstractASiCWithCAdESTestValidation {
 	
@@ -92,10 +91,9 @@ class ASiCERemovedReferenceTest extends AbstractASiCWithCAdESTestValidation {
 	@Override
 	protected void verifyDetailedReport(DetailedReport detailedReport) {
 		super.verifyDetailedReport(detailedReport);
-		
-		XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
-		assertEquals(Indication.INDETERMINATE, signatureBBB.getConclusion().getIndication());
-		assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, signatureBBB.getConclusion().getSubIndication());
+
+		assertEquals(Indication.INDETERMINATE, detailedReport.getBasicValidationIndication(detailedReport.getFirstSignatureId()));
+		assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, detailedReport.getBasicValidationSubIndication(detailedReport.getFirstSignatureId()));
 	}
 
 }

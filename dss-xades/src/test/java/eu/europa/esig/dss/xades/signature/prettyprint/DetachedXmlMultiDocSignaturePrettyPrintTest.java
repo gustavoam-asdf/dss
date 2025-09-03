@@ -21,9 +21,9 @@
 package eu.europa.esig.dss.xades.signature.prettyprint;
 
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.signature.DetachedXmlMultiDocSignatureWithKeyInfoTest;
+import eu.europa.esig.dss.xades.signature.XAdESLevelBDetachedMultipleDocumentsWithKeyInfoTest;
 
-class DetachedXmlMultiDocSignaturePrettyPrintTest extends DetachedXmlMultiDocSignatureWithKeyInfoTest {
+class DetachedXmlMultiDocSignaturePrettyPrintTest extends XAdESLevelBDetachedMultipleDocumentsWithKeyInfoTest {
 
 	@Override
 	protected XAdESSignatureParameters getSignatureParameters() {

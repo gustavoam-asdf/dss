@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.policy;
 
 import eu.europa.esig.dss.jaxb.common.AbstractJaxbFacade;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import org.xml.sax.SAXException;
 
@@ -77,50 +78,6 @@ public class ValidationPolicyFacade extends AbstractJaxbFacade<ConstraintsParame
 	@Override
 	protected JAXBElement<ConstraintsParameters> wrap(ConstraintsParameters jaxbObject) {
 		return ValidationPolicyXmlDefiner.OBJECT_FACTORY.createConstraintsParameters(jaxbObject);
-	}
-
-	/**
-	 * Gets the default validation policy
-	 *
-	 * @return {@link ValidationPolicy}
-	 * @throws JAXBException if {@link JAXBException} occurs
-	 * @throws XMLStreamException if {@link XMLStreamException} occurs
-	 * @throws IOException if {@link IOException} occurs
-	 * @throws SAXException if {@link SAXException} occurs
-	 */
-	public ValidationPolicy getDefaultValidationPolicy() throws JAXBException, XMLStreamException, IOException,
-			SAXException {
-		return loadDefault();
-	}
-
-	/**
-	 * Gets the default policy for certificate validation
-	 *
-	 * @return {@link ValidationPolicy}
-	 * @throws JAXBException if {@link JAXBException} occurs
-	 * @throws XMLStreamException if {@link XMLStreamException} occurs
-	 * @throws IOException if {@link IOException} occurs
-	 * @throws SAXException if {@link SAXException} occurs
-	 */
-	public ValidationPolicy getCertificateValidationPolicy() throws JAXBException, XMLStreamException, IOException, SAXException {
-		try (InputStream is = ValidationPolicyFacade.class.getResourceAsStream(CERTIFICATE_VALIDATION_POLICY_LOCATION)) {
-			return getValidationPolicy(is);
-		}
-	}
-
-	/**
-	 * Gets the validation policy for LOTL/TL
-	 *
-	 * @return {@link ValidationPolicy}
-	 * @throws JAXBException if {@link JAXBException} occurs
-	 * @throws XMLStreamException if {@link XMLStreamException} occurs
-	 * @throws IOException if {@link IOException} occurs
-	 * @throws SAXException if {@link SAXException} occurs
-	 */
-	public ValidationPolicy getTrustedListValidationPolicy() throws JAXBException, XMLStreamException, IOException, SAXException {
-		try (InputStream is = ValidationPolicyFacade.class.getResourceAsStream(TRUSTED_LIST_VALIDATION_POLICY_LOCATION)) {
-			return getValidationPolicy(is);
-		}
 	}
 
 	/**

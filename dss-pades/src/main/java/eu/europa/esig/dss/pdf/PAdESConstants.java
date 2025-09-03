@@ -118,6 +118,8 @@ public final class PAdESConstants {
 	public static final String FONT_NAME = "Font";
 	/** 'ITXT' (iText identifier) */
 	public static final String ITEXT_NAME = "ITXT";
+	/** 'Kids' */
+	public static final String KIDS_NAME = "Kids";
 	/** 'Length' */
 	public static final String LENGTH_NAME = "Length";
 	/** 'Location' */
@@ -158,6 +160,16 @@ public final class PAdESConstants {
 	public static final String SIG_FLAGS_NAME = "SigFlags";
 	/** 'SigRef' */
 	public static final String SIG_REF_NAME = "SigRef";
+	/** 'StructTreeRoot' */
+	public static final String STRUCT_TREE_ROOT_NAME = "StructTreeRoot";
+	/** 'IDTree' */
+	public static final String STRUCT_TREE_ROOT_ID_TREE_NAME = "IDTree";
+	/** 'K' */
+	public static final String STRUCT_TREE_ROOT_K_NAME = "K";
+	/** 'ParentTree' */
+	public static final String STRUCT_TREE_ROOT_PARENT_TREE_NAME = "ParentTree";
+	/** 'ParentTreeNextKey' */
+	public static final String STRUCT_TREE_ROOT_PARENT_TREE_NEXT_KEY_NAME = "ParentTreeNextKey";
 	/** 'SubFilter' */
 	public static final String SUB_FILTER_NAME = "SubFilter";
 	/** 'Type' */

@@ -20,14 +20,6 @@
  */
 package eu.europa.esig.dss.xades.validation;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.List;
-
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
@@ -35,6 +27,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
+import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
@@ -44,6 +37,14 @@ import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
 import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
 import eu.europa.esig.validationreport.jaxb.ValidationReportType;
 import eu.europa.esig.xades.jaxb.xades132.DigestAlgAndValueType;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class XAdESSignedPropertiesTest extends AbstractXAdESTestValidation {
 
@@ -84,8 +85,10 @@ class XAdESSignedPropertiesTest extends AbstractXAdESTestValidation {
 	protected void verifyDetailedReport(DetailedReport detailedReport) {
 		super.verifyDetailedReport(detailedReport);
 
+		assertEquals(Indication.INDETERMINATE,
+				detailedReport.getBasicValidationIndication(detailedReport.getFirstSignatureId()));
 		assertEquals(SubIndication.NO_CERTIFICATE_CHAIN_FOUND,
-				detailedReport.getBasicBuildingBlocksSubIndication(detailedReport.getFirstSignatureId()));
+				detailedReport.getBasicValidationSubIndication(detailedReport.getFirstSignatureId()));
 	}
 	
 	@Override

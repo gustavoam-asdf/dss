@@ -20,20 +20,10 @@
  */
 package eu.europa.esig.dss.xades.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
-import java.util.List;
-
 import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
@@ -55,6 +45,16 @@ import eu.europa.esig.validationreport.jaxb.POEProvisioningType;
 import eu.europa.esig.validationreport.jaxb.SignatureReferenceType;
 import eu.europa.esig.validationreport.jaxb.ValidationObjectListType;
 import eu.europa.esig.validationreport.jaxb.ValidationObjectType;
+
+import java.io.File;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class XAdESManifestSignatureScopeTest extends AbstractXAdESTestValidation {
 
@@ -160,7 +160,7 @@ class XAdESManifestSignatureScopeTest extends AbstractXAdESTestValidation {
 		super.verifyDetailedReport(detailedReport);
 		
 		XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
-		XmlSAV sav = signatureBBB.getSAV();
+		XmlAOV aov = signatureBBB.getAOV();
 		
 		I18nProvider i18nProvider = new I18nProvider();
 
@@ -168,7 +168,7 @@ class XAdESManifestSignatureScopeTest extends AbstractXAdESTestValidation {
 		boolean keyInfoChecked = false;
 		boolean signaturePropertiesChecked = false;
 		boolean manifestChecked = false;
-		for (XmlConstraint constraint : sav.getConstraint()) {
+		for (XmlConstraint constraint : aov.getConstraint()) {
 			String constraintNameString = constraint.getName().getValue();
 			if (constraintNameString.equals(i18nProvider.getMessage(MessageTag.ACCM, MessageTag.ACCM_POS_SIGND_PRT))) {
 				signedPropertiesChecked = true;

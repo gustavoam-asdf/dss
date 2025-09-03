@@ -21,13 +21,14 @@
 package eu.europa.esig.dss.validation.process.vpfswatsp.checks.psv.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlRAC;
 import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.RevocationWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
@@ -44,19 +45,24 @@ public class PastValidationAcceptableRevocationDataAvailable<T extends XmlConstr
     /** Revocation data to check */
     private final List<CertificateRevocationWrapper> revocationData;
 
+    /** List of Revocation Acceptance Checks */
+    private final List<XmlRAC> revocationAcceptanceResults;
+
     /**
      * Constructor without certificate
      *
      * @param i18nProvider {@link I18nProvider}
      * @param result the result
      * @param revocationData a list of {@link CertificateRevocationWrapper}s
-     * @param constraint {@link LevelConstraint}
+     * @param revocationAcceptanceResults a list of {@link XmlRAC}s
+     * @param constraint {@link LevelRule}
      */
     public PastValidationAcceptableRevocationDataAvailable(I18nProvider i18nProvider, T result,
                                                            List<CertificateRevocationWrapper> revocationData,
-                                                           LevelConstraint constraint) {
+                                                           final List<XmlRAC> revocationAcceptanceResults, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.revocationData = revocationData;
+        this.revocationAcceptanceResults = revocationAcceptanceResults;
     }
 
     @Override
@@ -81,7 +87,17 @@ public class PastValidationAcceptableRevocationDataAvailable<T extends XmlConstr
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.TRY_LATER;
+        return isCryptoFailure() ? SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE : SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE;
+    }
+
+    private boolean isCryptoFailure() {
+        for (XmlRAC xmlRAC : revocationAcceptanceResults) {
+            if (Indication.INDETERMINATE == xmlRAC.getConclusion().getIndication() &&
+                    SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE == xmlRAC.getConclusion().getSubIndication()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

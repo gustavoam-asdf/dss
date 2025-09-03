@@ -84,13 +84,13 @@ class JAdESServiceTest extends PKIFactoryAccess {
         exception = assertThrows(NullPointerException.class, () -> signAndValidate(documentToSign, null));
         assertEquals("SignatureParameters cannot be null!", exception.getMessage());
 
-        exception = assertThrows(IllegalArgumentException.class, () -> signAndValidate(documentToSign, signatureParameters));
-        assertEquals("Signing Certificate is not defined! Set signing certificate or use method setGenerateTBSWithoutCertificate(true).", exception.getMessage());
-        signatureParameters.setGenerateTBSWithoutCertificate(true);
-
         exception = assertThrows(NullPointerException.class, () -> signAndValidate(documentToSign, signatureParameters));
         assertEquals("SignaturePackaging shall be defined!", exception.getMessage());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+
+        exception = assertThrows(IllegalArgumentException.class, () -> signAndValidate(documentToSign, signatureParameters));
+        assertEquals("Signing Certificate is not defined! Set signing certificate or use method setGenerateTBSWithoutCertificate(true).", exception.getMessage());
+        signatureParameters.setGenerateTBSWithoutCertificate(true);
 
         exception = assertThrows(NullPointerException.class, () -> signAndValidate(documentToSign, signatureParameters));
         assertEquals("SignatureLevel shall be defined!", exception.getMessage());

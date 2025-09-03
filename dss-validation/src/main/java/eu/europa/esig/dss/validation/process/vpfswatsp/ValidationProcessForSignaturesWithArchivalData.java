@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.validation.process.vpfswatsp;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBlockType;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
@@ -27,7 +28,6 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlPSV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlProofOfExistence;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalData;
@@ -43,15 +43,16 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.ValidationPolicy;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.model.policy.LevelRule;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.Chain;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
-import eu.europa.esig.dss.validation.process.bbb.sav.SignatureAcceptanceValidation;
+import eu.europa.esig.dss.validation.process.bbb.aov.AlgorithmObsolescenceValidation;
+import eu.europa.esig.dss.validation.process.bbb.aov.SignatureAlgorithmObsolescenceValidation;
+import eu.europa.esig.dss.validation.process.bbb.aov.checks.AlgorithmObsolescenceValidationCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.LTALevelTimeStampCheck;
-import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignatureAcceptanceValidationResultCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.TLevelTimeStampCheck;
 import eu.europa.esig.dss.validation.process.vpfltvd.checks.TimestampDelayCheck;
 import eu.europa.esig.dss.validation.process.vpfswatsp.checks.EvidenceRecordValidationCheck;
@@ -160,6 +161,7 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 		 * d) If all ERs have been validated, the process shall continue with step 2).
 		 * e) The process shall continue with step 1)a).
 		 */
+		// TODO : verify evidence records indirectly covering the signature ?
 		List<EvidenceRecordWrapper> evidenceRecords = signature.getEvidenceRecords();
 		if (Utils.isCollectionNotEmpty(evidenceRecords)) {
 			for (EvidenceRecordWrapper evidenceRecord : evidenceRecords) {
@@ -368,15 +370,15 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> pastSignatureValidation(XmlPSV xmlPSV) {
-		return new PastSignatureValidationCheck(i18nProvider, result, signature, xmlPSV, getFailLevelConstraint());
+		return new PastSignatureValidationCheck(i18nProvider, result, signature, xmlPSV, getFailLevelRule());
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> longTermValidation() {
-		return new LongTermValidationCheck(i18nProvider, result, validationProcessLongTermData, getFailLevelConstraint());
+		return new LongTermValidationCheck(i18nProvider, result, validationProcessLongTermData, getFailLevelRule());
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> longTermAvailabilityAndIntegrityValidationMaterial() {
-		LevelConstraint constraint = isValid(validationProcessLongTermData) ? getInfoLevelConstraint() : getFailLevelConstraint();
+		LevelRule constraint = isValid(validationProcessLongTermData) ? getInfoLevelRule() : getFailLevelRule();
 		return new LongTermAvailabilityAndIntegrityValidationMaterialCheck(i18nProvider, result, signature, validationProcessLongTermData, constraint);
 	}
 
@@ -392,29 +394,29 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 				erValidationResult, getEvidenceRecordValidationConstraintLevel());
 	}
 
-	private LevelConstraint getTimestampValidationConstraintLevel() {
-		LevelConstraint constraint = policy.getTimestampValidConstraint();
+	private LevelRule getTimestampValidationConstraintLevel() {
+		LevelRule constraint = policy.getTimestampValidConstraint();
 		if (constraint == null) {
-			constraint = getWarnLevelConstraint();
+			constraint = getWarnLevelRule();
 		}
 		return constraint;
 	}
 
-	private LevelConstraint getEvidenceRecordValidationConstraintLevel() {
-		LevelConstraint constraint = policy.getEvidenceRecordValidConstraint();
+	private LevelRule getEvidenceRecordValidationConstraintLevel() {
+		LevelRule constraint = policy.getEvidenceRecordValidConstraint();
 		if (constraint == null) {
-			constraint = getWarnLevelConstraint();
+			constraint = getWarnLevelRule();
 		}
 		return constraint;
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> tLevelTimeStamp() {
-		LevelConstraint constraint = policy.getTLevelTimeStampConstraint(context);
+		LevelRule constraint = policy.getTLevelTimeStampConstraint(context);
 		return new TLevelTimeStampCheck<>(i18nProvider, result, signature, bbbs, xmlTimestamps, constraint);
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> ltaLevelTimeStamp() {
-		LevelConstraint constraint = policy.getLTALevelTimeStampConstraint(context);
+		LevelRule constraint = policy.getLTALevelTimeStampConstraint(context);
 		return new LTALevelTimeStampCheck<>(i18nProvider, result, signature, bbbs, xmlTimestamps, constraint);
 	}
 
@@ -423,10 +425,14 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 	}
 
 	private ChainItem<XmlValidationProcessArchivalData> signatureIsAcceptable(Date bestSignatureTime, Context context) {
-		SignatureAcceptanceValidation sav = new SignatureAcceptanceValidation(
-				i18nProvider, diagnosticData, bestSignatureTime, signature, context, bbbs, policy);
-		XmlSAV savResult = sav.execute();
-		return new SignatureAcceptanceValidationResultCheck<>(i18nProvider, result, savResult, getFailLevelConstraint());
+		// NOTE: we execute AlgorithmObsolescenceValidation check, as the only time sensitive part of SAV
+		AlgorithmObsolescenceValidation<?> algorithmObsolescenceValidation =
+				new SignatureAlgorithmObsolescenceValidation<>(i18nProvider, signature, context, bestSignatureTime, policy);
+		XmlAOV aovResult = algorithmObsolescenceValidation.execute();
+
+		MessageTag position = ValidationProcessUtils.getCryptoPosition(context);
+
+		return new AlgorithmObsolescenceValidationCheck<>(i18nProvider, result, aovResult, bestSignatureTime, position, signature.getId());
 	}
 
 	private void enrichBBBWithPSVConclusion(XmlBasicBuildingBlocks bbb, XmlPSV psv) {
@@ -500,9 +506,12 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 			conclusion.getWarnings().addAll(validationProcessLongTermData.getConclusion().getWarnings());
 			conclusion.getInfos().addAll(validationProcessLongTermData.getConclusion().getInfos());
 		}
-		if (psvResult != null && !isValid(psvResult)
-				&& psvResult.getConclusion().getSubIndication() != validationProcessLongTermData.getConclusion().getSubIndication()) {
-			conclusion.getErrors().addAll(psvResult.getConclusion().getErrors());
+		if (psvResult != null) {
+			if (!isValid(psvResult) && psvResult.getConclusion().getSubIndication() != validationProcessLongTermData.getConclusion().getSubIndication()) {
+				conclusion.getErrors().addAll(psvResult.getConclusion().getErrors());
+			}
+			conclusion.getWarnings().addAll(psvResult.getConclusion().getWarnings());
+			conclusion.getInfos().addAll(psvResult.getConclusion().getInfos());
 		}
 	}
 

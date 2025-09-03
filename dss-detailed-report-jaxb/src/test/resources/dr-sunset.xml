@@ -390,17 +390,28 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <CryptographicValidation secure="true">
+        </SAV>
+        <AOV Title="Algorithm Obsolescence Validation" ValidationTime="2022-12-30T23:00:00Z">
+            <Constraint>
+                <Name Key="ARCCM">Are cryptographic constraints met for the revocation data's signature?</Name>
+                <Status>OK</Status>
+                <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
+            </Constraint>
+            <Conclusion>
+                <Indication>PASSED</Indication>
+            </Conclusion>
+            <SignatureCryptographicValidation TokenId="R-62694FC94F6EDCD8B3D3A875AAF624AD5EF36A306A1DEE3EC45AE6B9A1FE83E0">
                 <Algorithm>
                     <Name>RSA with SHA256</Name>
                     <Uri>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</Uri>
                     <KeyLength>2048</KeyLength>
                 </Algorithm>
-                <NotAfter>2025-12-31T23:00:00Z</NotAfter>
-                <ValidationTime>2022-12-30T23:00:00Z</ValidationTime>
-                <ConcernedMaterial>R-F0F6A0349F25BFE2243F5ED05A0CBA339B89944D5FFEC01D1F59AAF14B7D2FE6</ConcernedMaterial>
-            </CryptographicValidation>
-        </SAV>
+                <NotAfter>2028-12-31T23:00:00Z</NotAfter>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </SignatureCryptographicValidation>
+        </AOV>
         <CertificateChain>
             <ChainItem Id="C-6F56FCA7F0D1BE552B0B8FD409F0AB97B6752FBCC346312D0501AA04A3699E62">
                 <Source>SIGNATURE</Source>
@@ -491,17 +502,28 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <CryptographicValidation secure="true">
+        </SAV>
+        <AOV Title="Algorithm Obsolescence Validation" ValidationTime="2022-12-30T23:00:00Z">
+            <Constraint>
+                <Name Key="ARCCM">Are cryptographic constraints met for the revocation data's signature?</Name>
+                <Status>OK</Status>
+                <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
+            </Constraint>
+            <Conclusion>
+                <Indication>PASSED</Indication>
+            </Conclusion>
+            <SignatureCryptographicValidation TokenId="R-F03E4A0FBA84A3B3F533D838493FF5AC878EAC9EF340FB2EE6D5CC73D7BDFFCD">
                 <Algorithm>
                     <Name>RSA with SHA512</Name>
                     <Uri>http://www.w3.org/2001/04/xmldsig-more#rsa-sha512</Uri>
                     <KeyLength>2048</KeyLength>
                 </Algorithm>
                 <NotAfter>2025-12-31T23:00:00Z</NotAfter>
-                <ValidationTime>2022-12-30T23:00:00Z</ValidationTime>
-                <ConcernedMaterial>R-F03E4A0FBA84A3B3F533D838493FF5AC878EAC9EF340FB2EE6D5CC73D7BDFFCD</ConcernedMaterial>
-            </CryptographicValidation>
-        </SAV>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </SignatureCryptographicValidation>
+        </AOV>
         <CertificateChain>
             <ChainItem Id="C-DE4E0E6E69ED670AC0AE41C815735B21F9394EA8A202F2497510EAAF5A4F998F">
                 <Source>TRUSTED_STORE</Source>
@@ -748,6 +770,16 @@
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
+                <Name Key="ACCM">Are cryptographic constraints met for the time-stamp?</Name>
+                <Status>OK</Status>
+                <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
+            </Constraint>
+            <Conclusion>
+                <Indication>PASSED</Indication>
+            </Conclusion>
+        </SAV>
+        <AOV Title="Algorithm Obsolescence Validation" ValidationTime="2022-12-30T23:00:00Z">
+            <Constraint>
                 <Name Key="ACCM">Are cryptographic constraints met for the time-stamp signature?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
@@ -760,17 +792,18 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <CryptographicValidation secure="true">
+            <SignatureCryptographicValidation TokenId="T-63729262FE5332E96B245E16497A2F3543EAE8CB08636866DDE948099DA03B95">
                 <Algorithm>
                     <Name>RSA with SHA256</Name>
                     <Uri>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</Uri>
                     <KeyLength>2048</KeyLength>
                 </Algorithm>
                 <NotAfter>2025-12-31T23:00:00Z</NotAfter>
-                <ValidationTime>2022-12-30T23:00:00Z</ValidationTime>
-                <ConcernedMaterial>T-63729262FE5332E96B245E16497A2F3543EAE8CB08636866DDE948099DA03B95</ConcernedMaterial>
-            </CryptographicValidation>
-        </SAV>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </SignatureCryptographicValidation>
+        </AOV>
         <PSV Title="Past Signature Validation">
             <Constraint Id="C-C28D73354E868E7E672D13A872658539C579E820059446AC04EB002DCCCB02A7" BlockType="PSV_CRS">
                 <Name Key="BBB_XCV_IARDPFC">Is an acceptable revocation data present for the certificate?</Name>
@@ -997,6 +1030,16 @@
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
+                <Name Key="ACCM">Are cryptographic constraints met for the time-stamp?</Name>
+                <Status>OK</Status>
+                <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
+            </Constraint>
+            <Conclusion>
+                <Indication>PASSED</Indication>
+            </Conclusion>
+        </SAV>
+        <AOV Title="Algorithm Obsolescence Validation" ValidationTime="2022-12-30T23:00:00Z">
+            <Constraint>
                 <Name Key="ACCM">Are cryptographic constraints met for the time-stamp signature?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
@@ -1009,17 +1052,18 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <CryptographicValidation secure="true">
+            <SignatureCryptographicValidation TokenId="T-4977ED845C11748EE4423890C5A590B79329CF7CC3C6F87980C6F8F6333E4EB8">
                 <Algorithm>
                     <Name>RSA with SHA256</Name>
                     <Uri>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</Uri>
                     <KeyLength>2048</KeyLength>
                 </Algorithm>
                 <NotAfter>2025-12-31T23:00:00Z</NotAfter>
-                <ValidationTime>2022-12-30T23:00:00Z</ValidationTime>
-                <ConcernedMaterial>T-4977ED845C11748EE4423890C5A590B79329CF7CC3C6F87980C6F8F6333E4EB8</ConcernedMaterial>
-            </CryptographicValidation>
-        </SAV>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </SignatureCryptographicValidation>
+        </AOV>
         <CertificateChain>
             <ChainItem Id="C-92149B17F94A252F57BD48434A5978160E9CE559FA4C4A1975D4D91DE895BB92">
                 <Source>TRUSTED_STORE</Source>
@@ -1500,6 +1544,16 @@
                 <Status>OK</Status>
                 <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
             </Constraint>
+            <Conclusion>
+                <Indication>PASSED</Indication>
+            </Conclusion>
+        </SAV>
+        <AOV Title="Algorithm Obsolescence Validation" ValidationTime="2022-12-30T23:00:00Z">
+            <Constraint>
+                <Name Key="ACCM">Are cryptographic constraints met for the signature creation?</Name>
+                <Status>OK</Status>
+                <AdditionalInfo>Signature algorithm RSA with SHA256 with key size 2048 at validation time : 2022-12-30 23:00</AdditionalInfo>
+            </Constraint>
             <Constraint>
                 <Name Key="ACCM">Are cryptographic constraints met for the object reference?</Name>
                 <Status>OK</Status>
@@ -1518,17 +1572,18 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <CryptographicValidation secure="true">
+            <SignatureCryptographicValidation TokenId="S-6417E9A7865F756B27A5EADB49DADAEB4110CBD1AE080B3D30BFF16EC841F629">
                 <Algorithm>
                     <Name>RSA with SHA256</Name>
                     <Uri>http://www.w3.org/2001/04/xmldsig-more#rsa-sha256</Uri>
                     <KeyLength>2048</KeyLength>
                 </Algorithm>
                 <NotAfter>2025-12-31T23:00:00Z</NotAfter>
-                <ValidationTime>2022-12-30T23:00:00Z</ValidationTime>
-                <ConcernedMaterial>S-6417E9A7865F756B27A5EADB49DADAEB4110CBD1AE080B3D30BFF16EC841F629</ConcernedMaterial>
-            </CryptographicValidation>
-        </SAV>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </SignatureCryptographicValidation>
+        </AOV>
         <PSV Title="Past Signature Validation">
             <Constraint Id="C-CF2E8D7B9B949524B8CE689CFCF337A48BAE0C0D5FA5F8C894FC1D69227B1014" BlockType="PSV_CRS">
                 <Name Key="BBB_XCV_IARDPFC">Is an acceptable revocation data present for the certificate?</Name>

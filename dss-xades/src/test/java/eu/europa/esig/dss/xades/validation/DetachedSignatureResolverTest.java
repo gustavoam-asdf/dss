@@ -24,11 +24,17 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.xades.definition.xades132.XAdES132Attribute;
+import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigElement;
+import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigNamespace;
+import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.xml.utils.SantuarioInitializer;
 import org.apache.xml.security.utils.resolver.ResourceResolverContext;
 import org.apache.xml.security.utils.resolver.ResourceResolverException;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,7 +89,7 @@ class DetachedSignatureResolverTest {
 
 	@Test
 	void nullAttributeOneDoc() throws ResourceResolverException {
-		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Arrays.asList(new InMemoryDocument(new byte[] { 1, 2, 3 })),
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 })),
 				DigestAlgorithm.SHA256);
 
 		Attr attr = null;
@@ -149,26 +155,46 @@ class DetachedSignatureResolverTest {
 
 			// document name + no document in the list
 			when(attr.getNodeValue()).thenReturn("sample.xml");
+			when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 			ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 			assertTrue(resolver.engineCanResolveURI(context));
 
 			// will throw ResourceResolverException
 			resolver.engineResolveURI(context);
 		});
-		assertEquals("Unable to find document (detached signature)", exception.getMessage());
+		assertEquals("Unable to find document 'sample.xml' (detached signature)", exception.getMessage());
 	}
 
 	@Test
-	void engineCanResolveURIWithWrongDocumentNameInList() {
+	void engineCanResolveURIWithWrongDocumentNameInList() throws ResourceResolverException {
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(
+				Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 }, "toto.xml", MimeTypeEnum.XML)),
+				DigestAlgorithm.SHA256);
+
+		Attr attr = mock(Attr.class);
+
+		// document name + wrong document in the list
+		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
+		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
+		assertTrue(resolver.engineCanResolveURI(context));
+
+		// doc not found -> exception
+		resolver.engineResolveURI(context);
+	}
+
+	@Test
+	void engineCanResolveURIWithWrongDocumentNameInPluralNodeList() {
 		Exception exception = assertThrows(ResourceResolverException.class, () -> {
 			DetachedSignatureResolver resolver = new DetachedSignatureResolver(
-					Arrays.asList(new InMemoryDocument(new byte[] { 1, 2, 3 }, "toto.xml", MimeTypeEnum.XML)),
+					Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 }, "toto.xml", MimeTypeEnum.XML)),
 					DigestAlgorithm.SHA256);
 
 			Attr attr = mock(Attr.class);
 
 			// document name + wrong document in the list
 			when(attr.getNodeValue()).thenReturn("sample.xml");
+			when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml", "altfile.xml"));
 			ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 			assertTrue(resolver.engineCanResolveURI(context));
 
@@ -179,14 +205,15 @@ class DetachedSignatureResolverTest {
 	}
 
 	@Test
-	void engineCanResolveURIWithDocumentNoNameInList() throws ResourceResolverException {
-		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Arrays.asList(new InMemoryDocument(new byte[] { 1, 2, 3 })),
+	void engineResolveURIWithDocumentNoNameInList() throws ResourceResolverException {
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 })),
 				DigestAlgorithm.SHA256);
 
 		Attr attr = mock(Attr.class);
 
 		// document name + only one document
 		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 		assertTrue(resolver.engineCanResolveURI(context));
 
@@ -196,12 +223,13 @@ class DetachedSignatureResolverTest {
 	@Test
 	void engineCanResolveURIWithDocumentNameInList() throws ResourceResolverException {
 		DetachedSignatureResolver resolver = new DetachedSignatureResolver(
-				Arrays.asList(new InMemoryDocument(new byte[] { 1, 2, 3 }, "sample.xml", MimeTypeEnum.XML)),
+				Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 }, "sample.xml", MimeTypeEnum.XML)),
 				DigestAlgorithm.SHA256);
 
 		Attr attr = mock(Attr.class);
 
 		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 		assertTrue(resolver.engineCanResolveURI(context));
 
@@ -217,6 +245,7 @@ class DetachedSignatureResolverTest {
 		Attr attr = mock(Attr.class);
 
 		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 		assertTrue(resolver.engineCanResolveURI(context));
 
@@ -227,11 +256,12 @@ class DetachedSignatureResolverTest {
 	void engineCanResolveURIWithDigestDocument() throws ResourceResolverException {
 		DigestDocument doc = new DigestDocument(DigestAlgorithm.SHA256, "abcdef");
 		doc.setName("sample.xml");
-		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Arrays.asList(doc), DigestAlgorithm.SHA256);
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Collections.singletonList(doc), DigestAlgorithm.SHA256);
 
 		Attr attr = mock(Attr.class);
 
 		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 		assertTrue(resolver.engineCanResolveURI(context));
 
@@ -242,7 +272,7 @@ class DetachedSignatureResolverTest {
 	void engineCanResolveURIWithDigestDocumentSpecialChar() throws ResourceResolverException {
 		DigestDocument doc = new DigestDocument(DigestAlgorithm.SHA256, "abcdef");
 		doc.setName("hello+world.xml");
-		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Arrays.asList(doc), DigestAlgorithm.SHA256);
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Collections.singletonList(doc), DigestAlgorithm.SHA256);
 
 		Attr attr = mock(Attr.class);
 
@@ -254,18 +284,32 @@ class DetachedSignatureResolverTest {
 	}
 
 	@Test
-	void engineCanResolveURIWithDigestDocumentNoName() throws ResourceResolverException {
+	void engineResolveURIWithDigestDocumentNoName() throws ResourceResolverException {
 		DigestDocument doc = new DigestDocument(DigestAlgorithm.SHA256, "abcdef");
 		// doc.setName("sample.xml");
-		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Arrays.asList(doc), DigestAlgorithm.SHA256);
+		DetachedSignatureResolver resolver = new DetachedSignatureResolver(Collections.singletonList(doc), DigestAlgorithm.SHA256);
 
 		Attr attr = mock(Attr.class);
 
 		when(attr.getNodeValue()).thenReturn("sample.xml");
+		when(attr.getOwnerElement()).thenReturn(getMockReferenceElement("sample.xml"));
 		ResourceResolverContext context = new ResourceResolverContext(attr, null, false);
 		assertTrue(resolver.engineCanResolveURI(context));
 
 		assertNotNull(resolver.engineResolveURI(context));
+	}
+
+	private Element getMockReferenceElement(String referenceUri, String... alternativeReferences) {
+		Document document = DomUtils.buildDOM();
+		Element rootElement = document.createElement(XMLDSigElement.SIGNED_INFO.getTagName());
+		document.appendChild(rootElement);
+		Element reference = DomUtils.addElement(document, rootElement, XMLDSigNamespace.NS, XMLDSigElement.REFERENCE);
+		DomUtils.setAttributeNS(reference, XMLDSigNamespace.NS, XAdES132Attribute.URI, referenceUri);
+		for (String altRefUri : alternativeReferences) {
+			Element altReference = DomUtils.addElement(document, rootElement, XMLDSigNamespace.NS, XMLDSigElement.REFERENCE);
+			DomUtils.setAttributeNS(altReference, XMLDSigNamespace.NS, XAdES132Attribute.URI, altRefUri);
+		}
+		return reference;
 	}
 
 }

@@ -21,7 +21,9 @@
 package eu.europa.esig.dss.validation.executor.process;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCryptographicValidation;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
@@ -35,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DSS1768ExecutorTest extends AbstractProcessExecutorTest {
@@ -96,7 +97,16 @@ class DSS1768ExecutorTest extends AbstractProcessExecutorTest {
         XmlSAV sav = signatureBBB.getSAV();
         assertEquals(Indication.INDETERMINATE, sav.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, sav.getConclusion().getSubIndication());
-        assertFalse(sav.getCryptographicValidation().isSecure());
+
+        XmlAOV aov = signatureBBB.getAOV();
+        assertEquals(1, aov.getConclusion().getErrors().size());
+        assertEquals(Indication.INDETERMINATE, aov.getConclusion().getIndication());
+        assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, aov.getConclusion().getSubIndication());
+
+        XmlCryptographicValidation cryptographicValidation = aov.getSignatureCryptographicValidation();
+        assertNotNull(cryptographicValidation);
+        assertEquals(Indication.INDETERMINATE, cryptographicValidation.getConclusion().getIndication());
+        assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, cryptographicValidation.getConclusion().getSubIndication());
 
         checkReports(reports);
     }

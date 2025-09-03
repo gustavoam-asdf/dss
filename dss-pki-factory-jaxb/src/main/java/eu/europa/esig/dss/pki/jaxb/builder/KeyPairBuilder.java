@@ -23,9 +23,11 @@ package eu.europa.esig.dss.pki.jaxb.builder;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.pki.exception.PKIException;
-import eu.europa.esig.dss.spi.DSSSecurityProvider;
+import eu.europa.esig.dss.pki.jaxb.security.DSSKeyPairGeneratorSecurityFactory;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -38,6 +40,8 @@ import java.util.Objects;
  *
  */
 public class KeyPairBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(KeyPairBuilder.class);
 
     /** Encryption algorithm to generate a key pair for */
     private final EncryptionAlgorithm encryptionAlgorithm;
@@ -66,26 +70,30 @@ public class KeyPairBuilder {
         try {
             if (EncryptionAlgorithm.ECDSA.isEquivalent(encryptionAlgorithm)) {
                 ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec(getEllipticCurveName());
-                KeyPairGenerator generator = KeyPairGenerator.getInstance(encryptionAlgorithm.getName(), DSSSecurityProvider.getSecurityProvider());
+                KeyPairGenerator generator = getKeyPairGenerator(encryptionAlgorithm.getName());
                 generator.initialize(ecSpec, new SecureRandom());
                 return generator.generateKeyPair();
             } else if (EncryptionAlgorithm.X25519 == encryptionAlgorithm) {
-                KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(SignatureAlgorithm.ED25519.getJCEId(), DSSSecurityProvider.getSecurityProvider());
+                KeyPairGenerator keyGenerator = getKeyPairGenerator(SignatureAlgorithm.ED25519.getJCEId());
                 return keyGenerator.generateKeyPair();
             } else if (EncryptionAlgorithm.X448 == encryptionAlgorithm) {
-                KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(SignatureAlgorithm.ED448.getJCEId(), DSSSecurityProvider.getSecurityProvider());
+                KeyPairGenerator keyGenerator = getKeyPairGenerator(SignatureAlgorithm.ED448.getJCEId());
                 return keyGenerator.generateKeyPair();
             } else if (EncryptionAlgorithm.EDDSA == encryptionAlgorithm) {
                 throw new UnsupportedOperationException("Please define one of X25519 or X448 EncryptionAlgorithm explicitly.");
             } else {
                 Objects.requireNonNull(keySize, "KeyLength shall be defined!");
-                KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(encryptionAlgorithm.getName(), DSSSecurityProvider.getSecurityProvider());
+                KeyPairGenerator keyGenerator = getKeyPairGenerator(encryptionAlgorithm.getName());
                 keyGenerator.initialize(keySize);
                 return keyGenerator.generateKeyPair();
             }
         } catch (GeneralSecurityException e) {
             throw new PKIException("Unable to build a key pair.", e);
         }
+    }
+
+    private KeyPairGenerator getKeyPairGenerator(String algorithmName) {
+        return DSSKeyPairGeneratorSecurityFactory.INSTANCE.build(algorithmName);
     }
 
     private String getEllipticCurveName() {

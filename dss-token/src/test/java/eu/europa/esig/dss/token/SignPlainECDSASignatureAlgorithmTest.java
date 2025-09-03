@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SignPlainECDSASignatureAlgorithmTest {
 
     static {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+        DSSSecurityProvider.initSystemProviders();
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SignPlainECDSASignatureAlgorithmTest.class);

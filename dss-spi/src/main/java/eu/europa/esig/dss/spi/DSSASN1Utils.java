@@ -27,6 +27,7 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
+import eu.europa.esig.dss.spi.security.DSSCertificateTokenSecurityFactory;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.SignerIdentifier;
 import eu.europa.esig.dss.utils.Utils;
@@ -38,7 +39,6 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
-import org.bouncycastle.asn1.ASN1OutputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.BERTags;
@@ -68,7 +68,6 @@ import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
@@ -77,20 +76,16 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.BigIntegers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.security.auth.x500.X500Principal;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.PublicKey;
-import java.security.Security;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,7 +105,7 @@ public final class DSSASN1Utils {
 	private static final Logger LOG = LoggerFactory.getLogger(DSSASN1Utils.class);
 
 	static {
-		Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+		DSSSecurityProvider.initSystemProviders();
 	}
 
 	/**
@@ -162,6 +157,18 @@ public final class DSSASN1Utils {
 	 */
 	public static byte[] getDEREncoded(ASN1Encodable asn1Encodable) {
 		return getEncoded(asn1Encodable, ASN1Encoding.DER);
+	}
+
+	/**
+	 * This method returns DL encoded ASN1 attribute. The {@code IOException} is
+	 * transformed in {@code DSSException}.
+	 *
+	 * @param asn1Encodable
+	 *            asn1Encodable to be DL encoded
+	 * @return array of bytes representing the DL encoded asn1Encodable
+	 */
+	public static byte[] getDLEncoded(ASN1Encodable asn1Encodable) {
+		return getEncoded(asn1Encodable, ASN1Encoding.DL);
 	}
 
 	/**
@@ -278,14 +285,7 @@ public final class DSSASN1Utils {
 	 * @return the DER encoded CMSSignedData
 	 */
 	public static byte[] getDEREncoded(final CMSSignedData data) {
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-			final ASN1OutputStream asn1OutputStream = ASN1OutputStream.create(baos, ASN1Encoding.DER);
-			asn1OutputStream.writeObject(data.toASN1Structure());
-			asn1OutputStream.close();
-			return baos.toByteArray();
-		} catch (IOException e) {
-			throw new DSSException("Unable to encode to DER", e);
-		}
+		return getDEREncoded(data.toASN1Structure());
 	}
 
 	/**
@@ -311,6 +311,21 @@ public final class DSSASN1Utils {
 			return getDEREncoded(ASN1Primitive.fromByteArray(bytes));
 		} catch (IOException e) {
 			throw new DSSException("Unable to encode to DER", e);
+		}
+	}
+
+	/**
+	 * Returns the ASN.1 DL encoded representation of {@code byte} array.
+	 *
+	 * @param bytes
+	 *             the binary array to encode
+	 * @return the DL encoded bytes
+	 */
+	public static byte[] getDLEncoded(final byte[] bytes) {
+		try {
+			return getDLEncoded(ASN1Primitive.fromByteArray(bytes));
+		} catch (IOException e) {
+			throw new DSSException("Unable to encode to DL", e);
 		}
 	}
 
@@ -447,16 +462,16 @@ public final class DSSASN1Utils {
 	 * @return the ASN.1 algorithm identifier structure
 	 */
 	public static AlgorithmIdentifier getAlgorithmIdentifier(DigestAlgorithm digestAlgorithm) {
-
-		/*
-		 * The recommendation (cf. RFC 3380 section 2.1) is to omit the parameter for SHA-1, but some implementations
-		 * still expect a
-		 * NULL there. Therefore we always include a NULL parameter even with SHA-1, despite the recommendation, because
-		 * the RFC
-		 * states that implementations SHOULD support it as well anyway
-		 */
-		final ASN1ObjectIdentifier asn1ObjectIdentifier = new ASN1ObjectIdentifier(digestAlgorithm.getOid());
-		return new AlgorithmIdentifier(asn1ObjectIdentifier, DERNull.INSTANCE);
+		// See {@link <a href="https://github.com/bcgit/bc-java/commit/131c39e5d86da9b4e23d48588ce095c13626a129">BC contribution</a>}
+		// Fixes {@link <a href="https://ec.europa.eu/digital-building-blocks/tracker/browse/DSS-3651">DSS-3651</a>}
+		if (DigestAlgorithm.SHAKE256_512 == digestAlgorithm) {
+			// Special case, requiring the parameter definition. BC handles only the signature algorithm properly.
+			ASN1ObjectIdentifier asn1OID = new ASN1ObjectIdentifier(DigestAlgorithm.SHAKE256_512.getOid());
+			return new AlgorithmIdentifier(asn1OID, new ASN1Integer(512));
+		} else {
+			// General handling
+			return new DefaultDigestAlgorithmIdentifierFinder().find(digestAlgorithm.getOid());
+		}
 	}
 
 	/**
@@ -536,15 +551,7 @@ public final class DSSASN1Utils {
 	 * @return {@link CertificateToken}
 	 */
 	public static CertificateToken getCertificate(final X509CertificateHolder x509CertificateHolder) {
-		try {
-			JcaX509CertificateConverter converter = new JcaX509CertificateConverter().setProvider(DSSSecurityProvider.getSecurityProviderName());
-			X509Certificate x509Certificate = converter.getCertificate(x509CertificateHolder);
-			return new CertificateToken(x509Certificate);
-
-		} catch (CertificateException e) {
-			throw new DSSException(String.format(
-					"Unable to get a CertificateToken from X509CertificateHolder : %s", e.getMessage()), e);
-		}
+		return DSSCertificateTokenSecurityFactory.X509_CERTIFICATE_HOLDER_INSTANCE.build(x509CertificateHolder);
 	}
 
 	/**
@@ -758,19 +765,6 @@ public final class DSSASN1Utils {
 	}
 
 	/**
-	 * Returns the first {@code SignerInformation} extracted from {@code CMSSignedData}.
-	 *
-	 * @param cms
-	 *            CMSSignedData
-	 * @return returns {@code SignerInformation}
-	 * @deprecated since DSS 6.3. Please use {@code #getFirstSignerInformation(cms.getSignerInfos())} method instead.
-	 */
-	@Deprecated
-	public static SignerInformation getFirstSignerInformation(final CMSSignedData cms) {
-		return getFirstSignerInformation(cms.getSignerInfos());
-	}
-
-	/**
 	 * Returns the first {@code SignerInformation} extracted from {@code SignerInformationStore}.
 	 *
 	 * @param signerInformationStore
@@ -808,23 +802,6 @@ public final class DSSASN1Utils {
 		} catch (Exception e) {
 			LOG.warn("Unable to retrieve the date {}", encodable, e);
 			return null;
-		}
-	}
-
-	/**
-	 * Extracts all extended key usages for the certificate token
-	 *
-	 * @param certToken {@link CertificateToken}
-	 * @return a list of {@link String}s
-	 * @deprecated since DSS 6.3. See {@code CertificateExtensionUtils#getExtendedKeyUsage(CertificateToken)}
-	 */
-	@Deprecated
-	public static List<String> getExtendedKeyUsage(CertificateToken certToken) {
-		try {
-			return certToken.getCertificate().getExtendedKeyUsage();
-		} catch (CertificateParsingException e) {
-			LOG.warn("Unable to retrieve ExtendedKeyUsage : {}", e.getMessage());
-			return Collections.emptyList();
 		}
 	}
 

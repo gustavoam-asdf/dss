@@ -69,7 +69,7 @@ class Asn1EvidenceRecordWrongFileValidationTest extends AbstractAsn1EvidenceReco
         assertEquals(3, referenceValidations.size());
         for (ReferenceValidation referenceValidation : referenceValidations) {
             assertEquals(DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE, referenceValidation.getType());
-            assertNull(referenceValidation.getDocumentName());
+            assertNull(referenceValidation.getDocument());
             assertFalse(referenceValidation.isFound());
             assertFalse(referenceValidation.isIntact());
         }

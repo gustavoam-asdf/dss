@@ -68,19 +68,6 @@ public abstract class CMSCRLSource extends OfflineCRLSource {
 	/**
 	 * The default constructor for CMSCRLSource.
 	 *
-	 * @param cmsSignedData      {@link CMSSignedData}
-	 * @param unsignedAttributes {@link AttributeTable} unsignedAttributes
-	 * @deprecated since DSS 6.3. Please use {@code CMSCRLSource(Store<X509CRLHolder> crls, AttributeTable unsignedAttributes)}
-	 *             constructor instead.
-	 */
-	@Deprecated
-	protected CMSCRLSource(final CMSSignedData cmsSignedData, final AttributeTable unsignedAttributes) {
-		this(cmsSignedData.getCRLs(), unsignedAttributes);
-	}
-
-	/**
-	 * The default constructor for CMSCRLSource.
-	 *
 	 * @param crls               {@link Store} containing SignedData.crls values
 	 * @param unsignedAttributes {@link AttributeTable} unsignedAttributes
 	 */

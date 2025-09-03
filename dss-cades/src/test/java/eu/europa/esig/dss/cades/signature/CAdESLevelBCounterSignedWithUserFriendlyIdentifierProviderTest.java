@@ -59,7 +59,7 @@ class CAdESLevelBCounterSignedWithUserFriendlyIdentifierProviderTest extends Abs
     void init() throws Exception {
         service = new CAdESService(getCompleteCertificateVerifier());
         service.setTspSource(getGoodTsa());
-        documentToSign = new InMemoryDocument("Hello World!".getBytes());
+        documentToSign = new InMemoryDocument("Hello World!".getBytes(), "helloworld");
         signingDate = new Date();
     }
 
@@ -137,8 +137,12 @@ class CAdESLevelBCounterSignedWithUserFriendlyIdentifierProviderTest extends Abs
         assertTrue(Utils.isCollectionNotEmpty(diagnosticData.getOriginalSignerDocuments()));
         for (SignerDataWrapper signerDataWrapper: diagnosticData.getOriginalSignerDocuments()) {
             assertTrue(signerDataWrapper.getId().contains("DOCUMENT"));
-            assertTrue(signerDataWrapper.getId().contains(
-                    DSSUtils.replaceAllNonAlphanumericCharacters(signerDataWrapper.getReferencedName(), "-")));
+            if (Utils.isStringNotEmpty(signerDataWrapper.getReferencedName())) {
+                assertTrue(signerDataWrapper.getId().contains(
+                        DSSUtils.replaceAllNonAlphanumericCharacters(signerDataWrapper.getReferencedName(), "-")));
+            } else {
+                assertEquals("DOCUMENT_FULL", signerDataWrapper.getId());
+            }
         }
     }
 

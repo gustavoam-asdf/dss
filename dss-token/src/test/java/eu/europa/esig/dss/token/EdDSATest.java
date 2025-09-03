@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class EdDSATest {
 
 	static {
-		Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+		DSSSecurityProvider.initSystemProviders();
 	}
 
 	@Test

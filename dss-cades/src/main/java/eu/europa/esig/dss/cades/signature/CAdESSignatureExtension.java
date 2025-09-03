@@ -27,12 +27,9 @@ import eu.europa.esig.dss.cades.validation.CMSDocumentAnalyzer;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.cms.CMSUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.TimestampBinary;
-import eu.europa.esig.dss.model.signature.SignatureCryptographicVerification;
 import eu.europa.esig.dss.signature.SignatureExtension;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -62,7 +59,7 @@ import java.util.Objects;
  * Base class for extending a CAdESSignature.
  *
  */
-abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignatureParameters> {
+public abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignatureParameters> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CAdESSignatureExtension.class);
 
@@ -154,7 +151,6 @@ abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignat
 	protected CMS extendCMSSignatures(CMS cms, Collection<SignerInformation> signerInformationsToExtend,
 									  CAdESSignatureParameters parameters) {
 		LOG.info("EXTEND CMS SIGNATURES.");
-		assertCMSSignaturesValid(cms, signerInformationsToExtend, parameters);
 
 		// extract signerInformations before pre-extension
 		Collection<SignerInformation> signerInformationCollection = cms.getSignerInfos().getSigners();
@@ -200,23 +196,6 @@ abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignat
 		CMS updatedCmsSignedData = CMSUtils.replaceSigners(originalCMS, newSignerStore);
 		return CMSUtils.populateDigestAlgorithmSet(updatedCmsSignedData, originalCMS.getDigestAlgorithmIDs());
 	}
-	
-	/**
-	 * Creates a CAdESSignature.
-	 * Note: recommended method to use.
-	 * 
-	 * @param cms {@link CMS} of a signature to create
-	 * @param signerInformation {@link SignerInformation}
-	 * @param detachedContents a list of detached {@link DSSDocument}s
-	 * @return created {@link CAdESSignature}
-	 */
-	protected CAdESSignature newCAdESSignature(CMS cms, SignerInformation signerInformation,
-											   List<DSSDocument> detachedContents) {
-		final CAdESSignature cadesSignature = new CAdESSignature(cms, signerInformation);
-		cadesSignature.setDetachedContents(detachedContents);
-		cadesSignature.initBaselineRequirementsChecker(certificateVerifier);
-		return cadesSignature;
-	}
 
 	/**
 	 * Generates and returns a TimeStamp attribute value
@@ -258,32 +237,6 @@ abstract class CAdESSignatureExtension implements SignatureExtension<CAdESSignat
 		}
 		final byte[] newTimeStampTokenBytes = cms.getDEREncoded();
 		return DSSASN1Utils.toASN1Primitive(newTimeStampTokenBytes);
-	}
-
-	private void assertCMSSignaturesValid(final CMS cms, Collection<SignerInformation> signerInformationsToExtend,
-										  CAdESSignatureParameters parameters) {
-		if (!SignatureForm.PAdES.equals(parameters.getSignatureLevel().getSignatureForm())) {
-			Collection<SignerInformation> signerInformationCollection = cms.getSignerInfos().getSigners();
-			for (SignerInformation signerInformation : signerInformationCollection) {
-				if (signerInformationsToExtend.contains(signerInformation)) {
-					CAdESSignature cadesSignature = newCAdESSignature(cms, signerInformation, parameters.getDetachedContents());
-					assertSignatureValid(cadesSignature, parameters);
-				}
-			}
-		}
-	}
-
-	private void assertSignatureValid(final CAdESSignature cadesSignature, final CAdESSignatureParameters parameters) {
-		if (parameters.isGenerateTBSWithoutCertificate() && cadesSignature.getCertificateSource().getNumberOfCertificates() == 0) {
-			LOG.debug("Extension of a signature without TBS certificate. Signature validity is not checked.");
-			return;
-		}
-
-		final SignatureCryptographicVerification signatureCryptographicVerification = cadesSignature.getSignatureCryptographicVerification();
-		if (!signatureCryptographicVerification.isSignatureIntact()) {
-			final String errorMessage = signatureCryptographicVerification.getErrorMessage();
-			throw new DSSException("Cryptographic signature verification has failed" + (errorMessage.isEmpty() ? "." : (" / " + errorMessage)));
-		}
 	}
 
 	/**

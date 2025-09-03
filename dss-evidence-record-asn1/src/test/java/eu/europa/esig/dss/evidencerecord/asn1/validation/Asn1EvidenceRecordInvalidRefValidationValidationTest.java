@@ -69,7 +69,8 @@ class Asn1EvidenceRecordInvalidRefValidationValidationTest extends AbstractAsn1E
             if (DigestMatcherType.EVIDENCE_RECORD_ARCHIVE_OBJECT == referenceValidation.getType()) {
                 assertTrue(referenceValidation.isFound());
                 assertTrue(referenceValidation.isIntact());
-                assertEquals("some binary content", referenceValidation.getDocumentName());
+                assertNotNull(referenceValidation.getDocument());
+                assertEquals("some binary content", referenceValidation.getDocument().getName());
                 ++foundDocCounter;
             } else if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE == referenceValidation.getType()) {
                 assertFalse(referenceValidation.isFound());

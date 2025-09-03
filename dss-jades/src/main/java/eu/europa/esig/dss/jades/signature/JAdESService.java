@@ -47,7 +47,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.signature.AbstractSignatureService;
 import eu.europa.esig.dss.signature.CounterSignatureService;
 import eu.europa.esig.dss.signature.MultipleDocumentsSignatureService;
-import eu.europa.esig.dss.signature.SigningOperation;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
@@ -139,12 +139,8 @@ public class JAdESService extends AbstractSignatureService<JAdESSignatureParamet
 	@Override
 	public ToBeSigned getDataToSign(DSSDocument toSignDocument, JAdESSignatureParameters parameters) {
 		Objects.requireNonNull(toSignDocument, "toSignDocument cannot be null!");
-		Objects.requireNonNull(parameters, "SignatureParameters cannot be null!");
-		
-		assertSigningCertificateValid(parameters);
-		
-		JAdESBuilder jadesBuilder = getJAdESBuilder(parameters, Collections.singletonList(toSignDocument));
-		return jadesBuilder.buildDataToBeSigned();
+
+		return getDataToSign(Collections.singletonList(toSignDocument), parameters);
 	}
 
 	@Override

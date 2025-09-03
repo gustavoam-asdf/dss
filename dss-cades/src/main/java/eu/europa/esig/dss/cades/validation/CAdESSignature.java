@@ -756,7 +756,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 			signatureCryptographicVerification.setReferenceDataFound(referenceDataFound);
 			signatureCryptographicVerification.setReferenceDataIntact(referenceDataIntact);
 			
-		} catch (CMSException | IOException e) {
+		} catch (CMSException e) {
 			LOG.warn(e.getMessage(), e);
 			signatureCryptographicVerification.setErrorMessage(e.getMessage());
 		}
@@ -797,7 +797,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 
 	/**
 	 * This method extracts a document content that was signed
-	 *
+	 * <p>
 	 * NOTE: Some differences are possible with PAdES
 	 *
 	 * @return {@link DSSDocument}
@@ -836,7 +836,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 			ReferenceValidation entryValidation = new ReferenceValidation();
 			entryValidation.setType(DigestMatcherType.MANIFEST_ENTRY);
 			entryValidation.setUri(entry.getUri());
-			entryValidation.setDocumentName(entry.getDocumentName());
+			entryValidation.setDocument(entry.getDocument());
 			entryValidation.setDigest(entry.getDigest());
 			entryValidation.setFound(entry.isFound());
 			entryValidation.setIntact(entry.isIntact());
@@ -879,7 +879,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 		}
 
 		if (originalDocument != null) {
-			messageDigestValidation.setDocumentName(originalDocument.getName());
+			messageDigestValidation.setDocument(originalDocument);
 			messageDigestValidation.setFound(true);
 			messageDigestValidation.setIntact(verifyDigestAlgorithm(originalDocument, digestAlgorithmCandidates, messageDigest));
 
@@ -923,7 +923,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 	
 	/**
 	 * TS 119 442 - V1.1.1 - Electronic Signatures and Infrastructures (ESI), ch. 5.1.4.2.1.3 XML component:
-	 * 
+	 * <p>
 	 * In case of CAdES signatures, the input to the digest value computation shall be one of the DER-encoded
 	 * instances of SignedInfo type present within the CMS structure. 
 	 */
@@ -961,9 +961,8 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 	 *
 	 * @return {@link SignerInformation}
 	 * @throws CMSException if CMS exception occurs
-	 * @throws IOException if IOException occurs
 	 */
-	private SignerInformation recreateSignerInformation() throws CMSException, IOException {
+	private SignerInformation recreateSignerInformation() throws CMSException {
 		final DSSDocument dssDocument = detachedContents.get(0); // only one element for CAdES Signature
 		PrecomputedDigestCalculatorProvider digestCalculatorProvider = new PrecomputedDigestCalculatorProvider(dssDocument);
 		return CMSUtils.recomputeSignerInformation(cms, getSignerId(), digestCalculatorProvider, CAdESUtils.DEFAULT_RESOURCES_HANDLER_BUILDER);
@@ -1222,6 +1221,9 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 		baselineProfile = baselineProfile && hasTProfile();
 
 		if (baselineProfile && hasLTProfile()) {
+			if (hasERSProfile()) {
+				return SignatureLevel.CAdES_ERS;
+			}
 			if (hasLTAProfile()) {
 				return SignatureLevel.CAdES_BASELINE_LTA;
 			}
@@ -1229,6 +1231,9 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 
 		} else if (hasCProfile()) {
 			if (hasXLProfile()) {
+				if (hasERSProfile()) {
+					return SignatureLevel.CAdES_ERS;
+				}
 				if (hasAProfile()) {
 					return SignatureLevel.CAdES_A;
 				}
@@ -1242,6 +1247,9 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 			return SignatureLevel.CAdES_C;
 
 		} else if (hasXLProfile()) {
+			if (hasERSProfile()) {
+				return SignatureLevel.CAdES_ERS;
+			}
 			if (hasAProfile()) {
 				return SignatureLevel.CAdES_A; // CAdES-E-A can be built on CAdES-E-T directly
 			}

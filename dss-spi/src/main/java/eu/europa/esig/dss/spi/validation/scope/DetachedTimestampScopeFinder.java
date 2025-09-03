@@ -24,9 +24,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
-import eu.europa.esig.dss.utils.Utils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,11 +70,9 @@ public class DetachedTimestampScopeFinder extends AbstractSignatureScopeFinder i
     protected List<SignatureScope> getTimestampSignatureScopeForDocument(DSSDocument document) {
         String documentName = document.getName();
         if (document instanceof DigestDocument) {
-            return Arrays.asList(new DigestSignatureScope(Utils.isStringNotEmpty(documentName) ? documentName : "Digest document",
-                    document));
+            return Collections.singletonList(new DigestSignatureScope(documentName, document));
         } else {
-            return Arrays.asList(new FullSignatureScope(Utils.isStringNotEmpty(documentName) ? documentName : "Full document",
-                    document));
+            return Collections.singletonList(new FullSignatureScope(documentName, document));
         }
     }
 

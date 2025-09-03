@@ -74,22 +74,6 @@ public abstract class CMSOCSPSource extends OfflineOCSPSource {
 	/**
 	 * The default constructor for CAdESOCSPSource.
 	 *
-	 * @param cms
-	 *            {@link CMSSignedData}
-	 * @param unsignedAttributes
-	 *            {@link AttributeTable} unsignedAttributes
-	 * @deprecated since DSS 6.3. Please use {@code new CMSOCSPSource(Store<?> ocspResponsesStore,
-	 *             Store<?> ocspBasicStore, AttributeTable unsignedAttributes)} constructor instead.
-	 */
-	@Deprecated
-	protected CMSOCSPSource(final CMSSignedData cms, final AttributeTable unsignedAttributes) {
-		this(cms.getOtherRevocationInfo(CMSObjectIdentifiers.id_ri_ocsp_response),
-				cms.getOtherRevocationInfo(OCSPObjectIdentifiers.id_pkix_ocsp_basic), unsignedAttributes);
-	}
-
-	/**
-	 * The default constructor for CAdESOCSPSource.
-	 *
 	 * @param ocspResponsesStore {@link Store} of OCSP responses
 	 * @param ocspBasicStore {@link Store} of OCSP basic responses
 	 * @param unsignedAttributes {@link AttributeTable} of the corresponding signer

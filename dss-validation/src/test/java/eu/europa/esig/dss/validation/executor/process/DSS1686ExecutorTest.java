@@ -31,15 +31,15 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessLongTermData;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.jaxb.object.Message;
-import eu.europa.esig.dss.policy.ValidationPolicy;
+import eu.europa.esig.dss.policy.EtsiValidationPolicy;
 import eu.europa.esig.dss.policy.jaxb.BasicSignatureConstraints;
-import eu.europa.esig.dss.policy.jaxb.Level;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.policy.jaxb.SignatureConstraints;
 import eu.europa.esig.dss.simplereport.SimpleReport;
@@ -149,7 +149,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
             boolean basicTstConclusiveCheckFound = false;
             boolean pastTstAcceptableCheckFound = false;
             boolean digestAlgoTstCheckFound = false;
-            boolean messageImprintTstCheckFound = false;
 
             XmlValidationProcessArchivalDataTimestamp timestampArchivalDataValidation = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
             assertEquals(Indication.PASSED, timestampArchivalDataValidation.getConclusion().getIndication());
@@ -175,10 +174,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     digestAlgoTstCheckFound = true;
 
-                } else if (MessageTag.BBB_SAV_DMICTSTMCMI.getId().equals(constraint.getName().getKey())) {
-                    assertEquals(XmlStatus.OK, constraint.getStatus());
-                    messageImprintTstCheckFound = true;
-
                 } else {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                 }
@@ -190,7 +185,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                 assertTrue(pastTstAcceptableCheckFound);
             }
             assertTrue(digestAlgoTstCheckFound);
-            assertTrue(messageImprintTstCheckFound);
         }
         assertEquals(1, basicTstSuccessCounter);
         assertEquals(2, basicTstFailureCounter);
@@ -204,7 +198,7 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
         XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(new File("src/test/resources/diag-data/DSS-1686/dss-1686.xml"));
         assertNotNull(diagnosticData);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         SignatureConstraints signatureConstraints = validationPolicy.getSignatureConstraints();
         BasicSignatureConstraints basicSignatureConstraints = signatureConstraints.getBasicSignatureConstraints();
 
@@ -313,7 +307,7 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                 .unmarshall(new File("src/test/resources/diag-data/DSS-1686/dss-1686-broken-signature-timestamp.xml"));
         assertNotNull(diagnosticData);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         BasicSignatureConstraints timestampBasicSignatureConstraints = validationPolicy.getTimestampConstraints()
                 .getBasicSignatureConstraints();
 
@@ -449,7 +443,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
             boolean basicTstConclusiveCheckFound = false;
             boolean pastTstAcceptableCheckFound = false;
             boolean digestAlgoTstCheckFound = false;
-            boolean messageImprintTstCheckFound = false;
 
             XmlValidationProcessArchivalDataTimestamp timestampArchivalDataValidation = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
             for (XmlConstraint constraint : timestampArchivalDataValidation.getConstraint()) {
@@ -478,11 +471,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     digestAlgoTstCheckFound = true;
 
-                } else if (MessageTag.BBB_SAV_DMICTSTMCMI.getId().equals(constraint.getName().getKey())) {
-                    assertEquals(XmlStatus.OK, constraint.getStatus());
-                    assertTrue(passedTst);
-                    messageImprintTstCheckFound = true;
-
                 } else {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                 }
@@ -493,7 +481,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                 assertTrue(basicTstConclusiveCheckFound);
                 assertFalse(pastTstAcceptableCheckFound);
                 assertTrue(digestAlgoTstCheckFound);
-                assertTrue(messageImprintTstCheckFound);
             }
         }
 
@@ -510,7 +497,7 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-1686/dss-1686-broken-signature-and-archival-timestamp.xml"));
         assertNotNull(diagnosticData);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         BasicSignatureConstraints timestampBasicConstraints = validationPolicy.getTimestampConstraints().getBasicSignatureConstraints();
 
         LevelConstraint levelConstraint = new LevelConstraint();
@@ -557,9 +544,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
         int basicTstSuccessCounter = 0;
         int basicTstFailureCounter = 0;
 
-        int messageImprintCheckPassedCounter = 0;
-        int messageImprintCheckFailedCounter = 0;
-
         for (eu.europa.esig.dss.detailedreport.jaxb.XmlTimestamp xmlTimestamp : xmlSignature.getTimestamps()) {
             boolean passedTst = false;
             XmlValidationProcessBasicTimestamp timestampBasicValidation = xmlTimestamp.getValidationProcessBasicTimestamp();
@@ -576,7 +560,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
             boolean basicTstConclusiveCheckFound = false;
             boolean pastTstAcceptableCheckFound = false;
             boolean digestAlgoTstCheckFound = false;
-            boolean messageImprintTstCheckFound = false;
 
             XmlValidationProcessArchivalDataTimestamp timestampArchivalDataValidation = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
             assertEquals(Indication.PASSED, timestampArchivalDataValidation.getConclusion().getIndication());
@@ -602,14 +585,6 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     digestAlgoTstCheckFound = true;
 
-                } else if (MessageTag.BBB_SAV_DMICTSTMCMI.getId().equals(constraint.getName().getKey())) {
-                    if (XmlStatus.OK.equals(constraint.getStatus())) {
-                        ++messageImprintCheckPassedCounter;
-                    } else {
-                        ++messageImprintCheckFailedCounter;
-                    }
-                    messageImprintTstCheckFound = true;
-
                 } else {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                 }
@@ -621,13 +596,10 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
                 assertTrue(pastTstAcceptableCheckFound);
             }
             assertTrue(digestAlgoTstCheckFound);
-            assertTrue(messageImprintTstCheckFound);
         }
 
         assertEquals(1, basicTstSuccessCounter);
         assertEquals(2, basicTstFailureCounter);
-        assertEquals(1, messageImprintCheckPassedCounter);
-        assertEquals(2, messageImprintCheckFailedCounter);
 
         validateBestSigningTimes(reports);
         checkReports(reports);
@@ -660,9 +632,9 @@ class DSS1686ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(4, errors.size());
 
         assertTrue(checkMessageValuePresence(errors,
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_SIG_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_SIG_SIG)));
         assertTrue(checkMessageValuePresence(errors,
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_REVOC_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_REVOC_SIG)));
         assertTrue(checkMessageValuePresence(errors, i18nProvider.getMessage(MessageTag.BBB_CV_IRDOF_ANS)));
         assertTrue(checkMessageValuePresence(errors, i18nProvider.getMessage(MessageTag.BBB_XCV_SUB_ANS)));
 

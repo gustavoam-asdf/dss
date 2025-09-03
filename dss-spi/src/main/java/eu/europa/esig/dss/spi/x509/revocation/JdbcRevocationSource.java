@@ -59,6 +59,7 @@ public abstract class JdbcRevocationSource<R extends Revocation> extends Reposit
 	 * Default constructor instantiating object with null values
 	 */
 	protected JdbcRevocationSource() {
+		// empty
 	}
 	
 	/**

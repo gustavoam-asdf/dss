@@ -82,6 +82,7 @@
 			<xs:element name="XCV" type="XCV" minOccurs="0" /> <!-- 5.2.6 X.509 certificate validation -->
 			<xs:element name="CV"  type="CV"  minOccurs="0" /> <!-- 5.2.7 Cryptographic verification -->
 			<xs:element name="SAV" type="SAV" minOccurs="0" /> <!-- 5.2.8 Signature acceptance validation (SAV) -->
+			<xs:element name="AOV" type="AOV" minOccurs="0" /> <!-- Algorithm obsolescence validation -->
 			<xs:element name="PSV" type="PSV" minOccurs="0" />
 			<xs:element name="PSV_CRS" type="CRS" minOccurs="0" />
 			<xs:element name="PCV" type="PCV" minOccurs="0" />
@@ -206,7 +207,7 @@
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
 				<xs:sequence>
-					<xs:element name="CryptographicValidation" type="CryptographicValidation" />
+					<xs:element name="AOV" type="AOV" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -295,27 +296,41 @@
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
-					<xs:element name="VerifiedAlgorithm" type="CryptographicAlgorithm" />
-					<xs:element name="NotAfter" type="xs:dateTime" minOccurs="0" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="CV">
-		<xs:complexContent>
-			<xs:extension base="ConstraintsConclusion" />
-		</xs:complexContent>
-	</xs:complexType>
-	<xs:complexType name="SAV">
-		<xs:complexContent>
-			<xs:extension base="ConstraintsConclusion">
-				<xs:sequence>
 					<xs:element name="CryptographicValidation" type="CryptographicValidation" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="XCV">
+	<xs:complexType name="CV"> <!-- Cryptographic Verification -->
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SAV"> <!-- Signature Acceptance Validation -->
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion" />
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="AOV"> <!-- Cryptographic Algorithm Obsolescence Validation -->
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="SignatureCryptographicValidation" type="CryptographicValidation" minOccurs="0" />
+					<xs:element name="SignedAttributesValidation" type="CryptographicValidation" minOccurs="0" />
+					<xs:element name="DigestMatchersValidation" type="CryptographicValidation" minOccurs="0" />
+					<xs:element name="CertificateChainCryptographicValidation" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="CertificateCryptographicValidation" type="CryptographicValidation" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="ValidationTime" type="xs:dateTime" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="XCV"> <!-- X.509 Certificate Validation -->
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
@@ -324,7 +339,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="SubXCV">
+	<xs:complexType name="SubXCV"> <!-- Sub X.509 Certificate Validation -->
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
@@ -348,7 +363,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="VTS">
+	<xs:complexType name="VTS"> <!-- Validation Time Sliding -->
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithControlTime">
 				<xs:sequence>
@@ -358,22 +373,16 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="PCV">
+	<xs:complexType name="PCV"> <!-- Past Certificate Validation -->
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithControlTime" />
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="PSV">
+	<xs:complexType name="PSV"> <!-- Past Signature Validation -->
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithControlTime" />
 		</xs:complexContent>
 	</xs:complexType>
-<!-- 	Not supported -->
-<!-- 	<xs:complexType name="ERV"> -->
-<!-- 		<xs:complexContent> -->
-<!-- 			<xs:extension base="ConstraintsConclusion" /> -->
-<!-- 		</xs:complexContent> -->
-<!-- 	</xs:complexType> -->
 	
 	<xs:complexType name="Constraint">
 		<xs:sequence>
@@ -412,6 +421,8 @@
 			<xs:enumeration value="REV_BBB" />
 			<xs:enumeration value="TST_BBB" />
 			<xs:enumeration value="CNT_TST_BBB" />
+			<xs:enumeration value="AOV" />
+			<xs:enumeration value="AOV_XCV" />
 			<xs:enumeration value="CRS" />
 			<xs:enumeration value="PSV_CRS" />
 			<xs:enumeration value="RAC" />
@@ -607,10 +618,10 @@
 		<xs:sequence>
 			<xs:element name="Algorithm" type="CryptographicAlgorithm" />
 			<xs:element name="NotAfter" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="ValidationTime" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="ConcernedMaterial" type="xs:string" />
+			<xs:element name="ConcernedMaterialDescription" type="xs:string" minOccurs="0" />
+			<xs:element name="Conclusion" type="Conclusion" />
 		</xs:sequence>
-		<xs:attribute name="secure" type="xs:boolean" use="required" />
+		<xs:attribute name="TokenId" type="xs:string" use="optional" />
 	</xs:complexType>
 
 	<xs:complexType name="CryptographicAlgorithm">

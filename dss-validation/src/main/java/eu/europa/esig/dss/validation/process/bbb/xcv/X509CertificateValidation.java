@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.validation.process.bbb.xcv;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBlockType;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
@@ -29,15 +30,15 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlXCV;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.enumerations.SubContext;
 import eu.europa.esig.dss.enumerations.SubIndication;
+import eu.europa.esig.dss.enumerations.ValidationModel;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.SubContext;
-import eu.europa.esig.dss.policy.ValidationPolicy;
-import eu.europa.esig.dss.policy.jaxb.Level;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
-import eu.europa.esig.dss.policy.jaxb.Model;
-import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
+import eu.europa.esig.dss.model.policy.LevelRule;
+import eu.europa.esig.dss.model.policy.MultiValuesRule;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.Chain;
 import eu.europa.esig.dss.validation.process.ChainItem;
@@ -56,7 +57,7 @@ import java.util.List;
 
 /**
  * 5.2.6 X.509 certificate validation
- * 
+ * <p>
  * This building block validates the signing certificate at current time.
  */
 public class X509CertificateValidation extends Chain<XmlXCV> {
@@ -73,22 +74,11 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 	/** The validation context */
 	private final Context context;
 
+	/** Result of cryptographic algorithms validation */
+	private final XmlAOV aov;
+
 	/** The validation policy */
 	private final ValidationPolicy validationPolicy;
-
-	/**
-	 * Default constructor
-	 *
-	 * @param i18nProvider {@link I18nProvider}
-	 * @param currentCertificate {@link CertificateWrapper} to validate
-	 * @param currentTime {@link Date}
-	 * @param context {@link Context}
-	 * @param validationPolicy {@link ValidationPolicy}
-	 */
-	public X509CertificateValidation(I18nProvider i18nProvider, CertificateWrapper currentCertificate,
-									 Date currentTime, Context context, ValidationPolicy validationPolicy) {
-		this(i18nProvider, currentCertificate, currentTime, currentTime, context, validationPolicy);
-	}
 
 	/**
 	 * Default constructor with usage time
@@ -98,17 +88,19 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 	 * @param currentTime {@link Date}
 	 * @param usageTime {@link Date}
 	 * @param context {@link Context}
+	 * @param aov {@link XmlAOV} result of algorithm obsolescence validation
 	 * @param validationPolicy {@link ValidationPolicy}
 	 */
-	public X509CertificateValidation(I18nProvider i18nProvider, CertificateWrapper currentCertificate,
-									 Date currentTime, Date usageTime, Context context, ValidationPolicy validationPolicy) {
+	public X509CertificateValidation(I18nProvider i18nProvider, CertificateWrapper currentCertificate, Date currentTime,
+									 Date usageTime, Context context, XmlAOV aov, ValidationPolicy validationPolicy) {
 		super(i18nProvider, new XmlXCV());
 
 		this.currentCertificate = currentCertificate;
 		this.currentTime = currentTime;
 		this.usageTime = usageTime;
-
 		this.context = context;
+
+		this.aov = aov;
 		this.validationPolicy = validationPolicy;
 	}
     
@@ -144,13 +136,14 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 		 * the sunset date. If validation time is at or after the sunset date, the building block shall set
 		 * the current status to INDETERMINATE/NO_CERTIFICATE_CHAIN_FOUND_NO_POE and shall go to step 2).
 		 */
-		ChainItem<XmlXCV> item = firstItem = prospectiveCertificateChain();
-
-		CertificateWrapper trustAnchorCandidate = currentCertificate;
 		List<CertificateWrapper> certificateChain = currentCertificate.getCertificateChain();
+
+		ChainItem<XmlXCV> item = firstItem = prospectiveCertificateChain(currentCertificate);
+		
 		SubContext subContext = SubContext.SIGNING_CERT;
 		Iterator<CertificateWrapper> certChainIt = Utils.isCollectionNotEmpty(certificateChain) ? certificateChain.iterator() : null;
 
+		CertificateWrapper trustAnchorCandidate = currentCertificate;
 		CertificateWrapper trustAnchor = null;
 
 		do {
@@ -186,12 +179,12 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 	     */
 		if (currentCertificate.isTrusted() || currentCertificate.isTrustedChain() || !prospectiveCertificateChainCheckEnforced()) {
 
-			item = item.setNextItem(trustServiceWithExpectedTypeIdentifier());
+			item = item.setNextItem(trustServiceWithExpectedTypeIdentifier(currentCertificate));
 
-			item = item.setNextItem(trustServiceWithExpectedStatus());
+			item = item.setNextItem(trustServiceWithExpectedStatus(currentCertificate));
 
 			SubX509CertificateValidation certificateValidation = new SubX509CertificateValidation(i18nProvider,
-					currentCertificate, currentTime, currentTime, context, SubContext.SIGNING_CERT, validationPolicy);
+					currentCertificate, currentTime, currentTime, context, SubContext.SIGNING_CERT, aov, validationPolicy);
 			XmlSubXCV subXCV = certificateValidation.execute();
 			result.getSubXCV().add(subXCV);
 
@@ -205,14 +198,14 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 				return;
 			}
 
-			final Model model = validationPolicy.getValidationModel();
+			final ValidationModel model = validationPolicy.getValidationModel();
 
 			// Check CA_CERTIFICATEs
-			Date lastDate = Model.SHELL.equals(model) ? currentTime : currentCertificate.getNotBefore();
+			Date lastDate = ValidationModel.SHELL.equals(model) ? currentTime : currentCertificate.getNotBefore();
 			if (Utils.isCollectionNotEmpty(certificateChain)) {
 				for (CertificateWrapper certificate : certificateChain) {
 					certificateValidation = new SubX509CertificateValidation(i18nProvider,
-							certificate, lastDate, currentTime, context, SubContext.CA_CERTIFICATE, validationPolicy);
+							certificate, lastDate, currentTime, context, SubContext.CA_CERTIFICATE, aov, validationPolicy);
 					subXCV = certificateValidation.execute();
 					result.getSubXCV().add(subXCV);
 
@@ -222,7 +215,10 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 						item = item.setNextItem(checkSubXCVResult(subXCV));
 					}
 
-					lastDate = Model.HYBRID.equals(model) ? lastDate : (Model.SHELL.equals(model) ? currentTime : certificate.getNotBefore());
+					if (ValidationModel.CHAIN.equals(model)) {
+						lastDate = certificate.getNotBefore();
+					}
+					// keep same time for SHELL and HYBRID
 
 					if (trustAnchor != null && trustAnchor == certificate) {
 						return;
@@ -233,39 +229,39 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 		}
 	}
 
-	private ChainItem<XmlXCV> prospectiveCertificateChain() {
-		LevelConstraint constraint = validationPolicy.getProspectiveCertificateChainConstraint(context);
+	private ChainItem<XmlXCV> prospectiveCertificateChain(CertificateWrapper currentCertificate) {
+		LevelRule constraint = validationPolicy.getProspectiveCertificateChainConstraint(context);
 		return new ProspectiveCertificateChainCheck<>(i18nProvider, result, currentCertificate, context, constraint);
 	}
 
 	private ChainItem<XmlXCV> validationBeforeSunsetDate(CertificateWrapper certificate, SubContext subContext, Date validationTime) {
-		LevelConstraint constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
+		LevelRule constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
 		return new CertificateValidationBeforeSunsetDateWithIdCheck<>(i18nProvider, result, certificate, validationTime,
 				ValidationProcessUtils.getConstraintOrMaxLevel(constraint, Level.WARN));
 	}
 
 	private ChainItem<XmlXCV> prospectiveCertificateChainValidAtValidationTime(CertificateWrapper certificate, SubContext subContext, Date validationTime) {
-		LevelConstraint constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
+		LevelRule constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
 		return new ProspectiveCertificateChainAtValidationTimeCheck(i18nProvider, result, certificate, validationTime, constraint);
 	}
 
-	private ChainItem<XmlXCV> trustServiceWithExpectedTypeIdentifier() {
-		MultiValuesConstraint constraint = validationPolicy.getTrustServiceTypeIdentifierConstraint(context);
+	private ChainItem<XmlXCV> trustServiceWithExpectedTypeIdentifier(CertificateWrapper currentCertificate) {
+		MultiValuesRule constraint = validationPolicy.getTrustServiceTypeIdentifierConstraint(context);
 		return new TrustServiceTypeIdentifierCheck(i18nProvider, result, currentCertificate, usageTime, context, constraint);
 	}
 
-	private ChainItem<XmlXCV> trustServiceWithExpectedStatus() {
-		MultiValuesConstraint constraint = validationPolicy.getTrustServiceStatusConstraint(context);
+	private ChainItem<XmlXCV> trustServiceWithExpectedStatus(CertificateWrapper currentCertificate) {
+		MultiValuesRule constraint = validationPolicy.getTrustServiceStatusConstraint(context);
 		return new TrustServiceStatusCheck(i18nProvider, result, currentCertificate, usageTime, context, constraint);
 	}
 
 	private ChainItem<XmlXCV> checkSubXCVResult(XmlSubXCV subXCVResult) {
-		return new CheckSubXCVResult(i18nProvider, result, subXCVResult, getFailLevelConstraint());
+		return new CheckSubXCVResult(i18nProvider, result, subXCVResult, getFailLevelRule());
 	}
 
 	private ChainItem<XmlXCV> checkTrustAnchorSubXCVResult(XmlSubXCV subXCVResult) {
 
-		return new CheckSubXCVResult(i18nProvider, result, subXCVResult, getFailLevelConstraint()) {
+		return new CheckSubXCVResult(i18nProvider, result, subXCVResult, getFailLevelRule()) {
 
 			@Override
 			protected MessageTag getErrorMessageTag() {
@@ -287,12 +283,12 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 	}
 
 	private boolean prospectiveCertificateChainCheckEnforced() {
-		LevelConstraint constraint = validationPolicy.getProspectiveCertificateChainConstraint(context);
+		LevelRule constraint = validationPolicy.getProspectiveCertificateChainConstraint(context);
 		return constraint != null && Level.FAIL == constraint.getLevel();
 	}
 
 	private boolean isTrustAnchor(CertificateWrapper certificateWrapper, Context context, SubContext subContext) {
-		LevelConstraint constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
+		LevelRule constraint = validationPolicy.getCertificateSunsetDateConstraint(context, subContext);
 		return ValidationProcessUtils.isTrustAnchor(certificateWrapper, currentTime, constraint);
 	}
 

@@ -21,6 +21,8 @@
 package eu.europa.esig.dss.model;
 
 import eu.europa.esig.dss.enumerations.MimeType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
@@ -31,6 +33,8 @@ public class ManifestEntry implements Serializable {
 
 	private static final long serialVersionUID = -7997341134695311883L;
 
+	private static final Logger LOG = LoggerFactory.getLogger(ManifestEntry.class);
+
 	/** The reference URI */
 	private String uri;
 
@@ -40,8 +44,8 @@ public class ManifestEntry implements Serializable {
 	/** The digest of the referenced entry */
 	private Digest digest;
 
-	/** Name of the matching document, when found */
-	private String documentName;
+	/** NThe matching document, when found */
+	private DSSDocument document;
 
 	/**
 	 * Defines if the referenced data is found
@@ -123,9 +127,11 @@ public class ManifestEntry implements Serializable {
 	 * Gets the name of the corresponding document
 	 *
 	 * @return {@link String}
+	 * @deprecated sicne DSS 6.4. Please use {@code getDocument().getName()} method instead.
 	 */
+	@Deprecated
 	public String getDocumentName() {
-		return documentName;
+		return document != null ? document.getName() : null;
 	}
 
 	/**
@@ -134,7 +140,25 @@ public class ManifestEntry implements Serializable {
 	 * @param documentName {@link String}
 	 */
 	public void setDocumentName(String documentName) {
-		this.documentName = documentName;
+		LOG.warn("Use of deprecated method #setDocumentName. Please switch to #setDocument. Current method processing is skipped");
+	}
+
+	/**
+	 * Gets the corresponding document
+	 *
+	 * @return {@link DSSDocument}
+	 */
+	public DSSDocument getDocument() {
+		return document;
+	}
+
+	/**
+	 * Sets the corresponding document
+	 *
+	 * @param document {@link DSSDocument}
+	 */
+	public void setDocument(DSSDocument document) {
+		this.document = document;
 	}
 
 	/**

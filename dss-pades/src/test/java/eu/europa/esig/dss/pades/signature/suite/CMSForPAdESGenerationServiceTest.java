@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CMSForPAdESGenerationServiceTest extends PKIFactoryAccess {
+class CMSForPAdESGenerationServiceTest extends PKIFactoryAccess {
 
     @Test
     void test() {
@@ -96,7 +96,7 @@ public class CMSForPAdESGenerationServiceTest extends PKIFactoryAccess {
         exception = assertThrows(AlertException.class, () ->
                 service.getDataToSign(messageDigest, parameters));
         assertTrue(exception.getMessage().contains("Error on signature creation"));
-        assertTrue(exception.getMessage().contains("is expired at signing time"));
+        assertTrue(exception.getMessage().contains("The signing certificate has expired"));
 
         parameters.setSigningCertificate(getSigningCert());
         exception = assertThrows(IllegalArgumentException.class, () ->

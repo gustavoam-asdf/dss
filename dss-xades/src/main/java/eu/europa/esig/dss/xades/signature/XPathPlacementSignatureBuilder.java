@@ -20,13 +20,23 @@
  */
 package eu.europa.esig.dss.xades.signature;
 
-import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.xades.DSSXMLUtils;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigAttribute;
+import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigPath;
+import eu.europa.esig.dss.xml.utils.DomUtils;
+import org.apache.xml.security.transforms.Transforms;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class creates signatures that are being enveloped into the parent document
@@ -36,7 +46,7 @@ import org.w3c.dom.Node;
 public abstract class XPathPlacementSignatureBuilder extends XAdESSignatureBuilder {
 
     /**
-     * The default constructor for SignatureBuilder.
+     * The default constructor for XPathPlacementSignatureBuilder for a document signing
      *
      * @param params              The set of parameters relating to the structure and process of the creation or extension of the
      *                            electronic signature.
@@ -46,6 +56,95 @@ public abstract class XPathPlacementSignatureBuilder extends XAdESSignatureBuild
     protected XPathPlacementSignatureBuilder(XAdESSignatureParameters params, DSSDocument document,
                                              CertificateVerifier certificateVerifier) {
         super(params, document, certificateVerifier);
+    }
+
+    /**
+     * The constructor for XPathPlacementSignatureBuilder for multiple documents signing
+     *
+     * @param params              The set of parameters relating to the structure and process of the creation or extension of the
+     *                            electronic signature.
+     * @param documents           The original documents to sign.
+     * @param certificateVerifier {@link CertificateVerifier}
+     */
+    protected XPathPlacementSignatureBuilder(XAdESSignatureParameters params, List<DSSDocument> documents,
+                                             CertificateVerifier certificateVerifier) {
+        super(params, documents, certificateVerifier);
+    }
+
+    /**
+     * This method verifies the conformance of the original document for an enveloped signature creation
+     */
+    protected void assertOriginalXmlDocumentValid() {
+        if (Utils.collectionSize(documents) > 1) {
+            throw new IllegalArgumentException(String.format("Only one original document is allowed for '%s' signature packaging!", params.getSignaturePackaging()));
+        }
+        if (!DomUtils.isDOM(documents.get(0))) {
+            throw new IllegalInputException("Enveloped signature cannot be created. Reason : the provided document is not XML!");
+        }
+
+        initRootDocumentDom();
+
+        final NodeList signatureNodeList = DSSXMLUtils.getAllSignaturesExceptCounterSignatures(documentDom);
+        if (signatureNodeList == null || signatureNodeList.getLength() == 0) {
+            return;
+        }
+
+        final Node parentSignatureNode = getParentNodeOfSignature();
+        final Set<Node> parentNodes = getParentNodesChain(parentSignatureNode);
+
+        for (int ii = 0; ii < signatureNodeList.getLength(); ii++) {
+            final Node signatureNode = signatureNodeList.item(ii);
+            NodeList referenceNodeList = DSSXMLUtils.getReferenceNodeList(signatureNode);
+            if (referenceNodeList == null || referenceNodeList.getLength() == 0) {
+                continue;
+            }
+
+            for (int jj = 0; jj < referenceNodeList.getLength(); jj++) {
+                final Node referenceNode = referenceNodeList.item(jj);
+                if (isSignatureCoveredNodeAffected(referenceNode, parentNodes)) {
+                    assertDoesNotContainEnvelopedTransform(referenceNode);
+                }
+            }
+        }
+
+    }
+
+    private Set<Node> getParentNodesChain(Node node) {
+        final Set<Node> nodesChain = new LinkedHashSet<>();
+        nodesChain.add(node);
+        for (Node parentNode = node.getParentNode(); parentNode != null; parentNode = parentNode.getParentNode()) {
+            nodesChain.add(parentNode);
+        }
+        return nodesChain;
+    }
+
+    private boolean isSignatureCoveredNodeAffected(Node referenceNode, Set<Node> affectedNodes) {
+        final String id = DSSXMLUtils.getAttribute(referenceNode, XMLDSigAttribute.URI.getAttributeName());
+        if (id == null) {
+            return false;
+        } else if (Utils.isStringEmpty(id)) {
+            // covers the whole file
+            return true;
+        } else {
+            Node referencedNode = DomUtils.getElementById(documentDom, id);
+            return affectedNodes.contains(referencedNode);
+        }
+    }
+
+    private void assertDoesNotContainEnvelopedTransform(final Node referenceNode) {
+        NodeList transformList = DomUtils.getNodeList(referenceNode, XMLDSigPath.TRANSFORMS_TRANSFORM_PATH);
+        if (transformList != null && transformList.getLength() > 0) {
+            for (int jj = 0; jj < transformList.getLength(); jj++) {
+                final Element transformElement = (Element) transformList.item(jj);
+                String transformAlgorithm = transformElement
+                        .getAttribute(XMLDSigAttribute.ALGORITHM.getAttributeName());
+                if (Transforms.TRANSFORM_ENVELOPED_SIGNATURE.equals(transformAlgorithm)) {
+                    throw new IllegalInputException(String.format(
+                            "The parallel signature is not possible! The provided file contains a signature with an '%s' transform.",
+                            Transforms.TRANSFORM_ENVELOPED_SIGNATURE));
+                }
+            }
+        }
     }
 
     @Override

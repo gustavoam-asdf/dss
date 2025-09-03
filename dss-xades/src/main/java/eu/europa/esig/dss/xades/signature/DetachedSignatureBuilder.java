@@ -20,13 +20,14 @@
  */
 package eu.europa.esig.dss.xades.signature;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xml.utils.DomUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * This class handles the specifics of the detached XML signature.
@@ -34,7 +35,7 @@ import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 class DetachedSignatureBuilder extends XAdESSignatureBuilder {
 
 	/**
-	 * The default constructor for DetachedSignatureBuilder.<br>
+	 * The constructor for DetachedSignatureBuilder for a document signing.
 	 * The detached signature uses by default the exclusive method of canonicalization.
 	 * 
 	 * @param params
@@ -48,6 +49,23 @@ class DetachedSignatureBuilder extends XAdESSignatureBuilder {
 	public DetachedSignatureBuilder(final XAdESSignatureParameters params, final DSSDocument document,
 									final CertificateVerifier certificateVerifier) {
 		super(params, document, certificateVerifier);
+	}
+
+	/**
+	 * The constructor for DetachedSignatureBuilder for multiple documents signing.
+	 * The detached signature uses by default the exclusive method of canonicalization.
+	 *
+	 * @param params
+	 *            The set of parameters relating to the structure and process of the creation or extension of the
+	 *            electronic signature.
+	 * @param documents
+	 *            The original documents to sign.
+	 * @param certificateVerifier
+	 *            {@link CertificateVerifier}
+	 */
+	public DetachedSignatureBuilder(final XAdESSignatureParameters params, final List<DSSDocument> documents,
+									final CertificateVerifier certificateVerifier) {
+		super(params, documents, certificateVerifier);
 	}
 
 	@Override

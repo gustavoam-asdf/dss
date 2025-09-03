@@ -74,7 +74,7 @@ public class JAXBPKILoader {
     private static final Logger LOG = LoggerFactory.getLogger(JAXBPKILoader.class);
 
     static {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+        DSSSecurityProvider.initSystemProviders();
     }
 
     /**

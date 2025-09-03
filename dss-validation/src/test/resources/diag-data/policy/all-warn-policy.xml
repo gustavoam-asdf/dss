@@ -20,6 +20,7 @@
 		</AcceptableMimeTypeFileContent>
 		<ManifestFilePresent Level="WARN" />
 		<SignedFilesPresent Level="WARN" />
+		<FilenameAdherence Level="WARN" />
 		<AllFilesSigned Level="WARN" />
 	</ContainerConstraints>
 	<PDFAConstraints>
@@ -437,6 +438,11 @@
 	</Timestamp>
 	<Revocation>
 		<UnknownStatus Level="WARN" />
+		<ThisUpdatePresent Level="WARN" />
+		<RevocationIssuerKnown Level="WARN" />
+		<RevocationIssuerValidAtProductionTime Level="WARN" />
+		<RevocationAfterCertificateIssuance Level="WARN" />
+		<RevocationHasInformationAboutCertificate Level="WARN" />
 		<OCSPResponderIdMatch Level="WARN" />
 		<SelfIssuedOCSP Level="WARN" />
 		<BasicSignatureConstraints>

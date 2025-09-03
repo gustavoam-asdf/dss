@@ -33,7 +33,7 @@ import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
-import eu.europa.esig.dss.policy.ValidationPolicy;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.bbb.xcv.crs.CertificateRevocationSelector;
@@ -41,7 +41,9 @@ import eu.europa.esig.dss.validation.process.bbb.xcv.rfc.checks.AcceptableRevoca
 import eu.europa.esig.dss.validation.process.vpfltvd.checks.RevocationDataAcceptableCheck;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Verifies and returns the latest acceptable revocation data for a long-term validation process
@@ -147,7 +149,40 @@ public class LongTermValidationCertificateRevocationSelector extends Certificate
     }
 
     private ChainItem<XmlCRS> revocationBasicValidationAcceptable(String revocationId, XmlConclusion revocationBBBConclusion) {
-        return new RevocationDataAcceptableCheck<>(i18nProvider, result, revocationId, revocationBBBConclusion, getWarnLevelConstraint());
+        return new RevocationDataAcceptableCheck<>(i18nProvider, result, revocationId, revocationBBBConclusion, getWarnLevelRule());
+    }
+
+    @Override
+    protected ChainItem<XmlCRS> acceptableRevocationDataAvailable() {
+        return new AcceptableRevocationDataAvailableCheck<XmlCRS>(i18nProvider, result, getLatestAcceptableCertificateRevocation(), getFailLevelRule()) {
+
+            @Override
+            protected Indication getFailedIndicationForConclusion() {
+                return Indication.INDETERMINATE;
+            }
+
+            @Override
+            protected SubIndication getFailedSubIndicationForConclusion() {
+                if (isTryLater()) {
+                    return SubIndication.TRY_LATER;
+                } else {
+                    return super.getFailedSubIndicationForConclusion();
+                }
+            }
+
+        };
+    }
+
+    private boolean isTryLater() {
+        List<XmlConclusion> revocationAcceptanceCheckConclusion = getCertificateRevocationData().stream()
+                .map(this::getRevocationBBBConclusion).collect(Collectors.toList());
+        for (XmlConclusion xmlConclusion : revocationAcceptanceCheckConclusion) {
+            if (Indication.INDETERMINATE == xmlConclusion.getIndication() &&
+                    SubIndication.TRY_LATER == xmlConclusion.getSubIndication()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -168,23 +203,6 @@ public class LongTermValidationCertificateRevocationSelector extends Certificate
         super.collectMessages(conclusion, constraint);
         XmlBasicBuildingBlocks xmlBasicBuildingBlocks = bbbs.get(constraint.getId());
         collectAllMessages(conclusion, xmlBasicBuildingBlocks.getConclusion());
-    }
-
-    @Override
-    protected ChainItem<XmlCRS> acceptableRevocationDataAvailable() {
-        return new AcceptableRevocationDataAvailableCheck<XmlCRS>(i18nProvider, result, getLatestAcceptableCertificateRevocation(), getFailLevelConstraint()) {
-
-            @Override
-            protected Indication getFailedIndicationForConclusion() {
-                return Indication.INDETERMINATE;
-            }
-
-            @Override
-            protected SubIndication getFailedSubIndicationForConclusion() {
-                return SubIndication.TRY_LATER;
-            }
-
-        };
     }
 
 }

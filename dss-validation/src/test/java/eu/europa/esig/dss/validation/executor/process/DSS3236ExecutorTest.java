@@ -21,16 +21,20 @@
 package eu.europa.esig.dss.validation.executor.process;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlPSV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.validation.executor.signature.DefaultSignatureProcessExecutor;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
@@ -42,7 +46,6 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
@@ -68,33 +71,62 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         XmlSAV sav = signatureBBB.getSAV();
         assertNotNull(sav);
 
-        int digestAlgorithmCheckCounter = 0;
-        boolean manifestCheckFound = false;
-        boolean signedPropertiesCheckFound = false;
-        boolean manifestEntriesCheckFound = false;
+        int cryptoCheckCounter = 0;
         for (XmlConstraint constraint : sav.getConstraint()) {
             if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
-                if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN))) {
-                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
-                            DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN, "")));
-                    manifestCheckFound = true;
-                } else if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIGND_PRT))) {
-                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
-                            DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_SIGND_PRT, "")));
-                    signedPropertiesCheckFound = true;
-                } else if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN_ENT_PL))) {
-                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAMES,
-                            DigestAlgorithm.SHA512.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN_ENT_PL, "")));
-                    manifestEntriesCheckFound = true;
-                }
-                ++digestAlgorithmCheckCounter;
+                ++cryptoCheckCounter;
             }
         }
-        assertEquals(5, digestAlgorithmCheckCounter); // + sig creation + signed-certificate ref check
-        assertTrue(manifestCheckFound);
-        assertTrue(signedPropertiesCheckFound);
-        assertTrue(manifestEntriesCheckFound);
+        assertEquals(1, cryptoCheckCounter);
+
+        XmlAOV aov = signatureBBB.getAOV();
+
+        cryptoCheckCounter = 0;
+        int sigValueCheckCounter = 0;
+        int signCertAttrCheckCounter = 0;
+        int manifestCheckCounter = 0;
+        int signedPropertiesCheckCounter = 0;
+        int manifestEntriesCheckCounter = 0;
+        int signCertCheckCounter = 0;
+        for (XmlConstraint constraint : aov.getConstraint()) {
+            if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIG_SIG))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_KEY_SIZE,
+                            SignatureAlgorithm.RSA_SHA256.getName(), "4096", ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()))));
+                    ++sigValueCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIG_CERT_REF))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_ID,
+                            DigestAlgorithm.SHA512.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_SIG_CERT_REF, "")));
+                    ++signCertAttrCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
+                            DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN, "")));
+                    ++manifestCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIGND_PRT))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
+                            DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_SIGND_PRT, "")));
+                    ++signedPropertiesCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN_ENT_PL))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAMES,
+                            DigestAlgorithm.SHA512.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN_ENT_PL, "")));
+                    ++manifestEntriesCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.SIGNING_CERTIFICATE))) {
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_KEY_SIZE,
+                            SignatureAlgorithm.RSA_SHA512.getName(), "4096", ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()))));
+                    ++signCertCheckCounter;
+                }
+                ++cryptoCheckCounter;
+            }
+        }
+        assertEquals(6, cryptoCheckCounter); // digest checks + sig creation + signed-certificate ref check
+        assertEquals(1, sigValueCheckCounter);
+        assertEquals(1, signCertAttrCheckCounter);
+        assertEquals(1, manifestCheckCounter);
+        assertEquals(1, signedPropertiesCheckCounter);
+        assertEquals(1, manifestEntriesCheckCounter);
+        assertEquals(1, signCertCheckCounter);
     }
 
     @Test
@@ -120,46 +152,77 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         XmlSAV sav = signatureBBB.getSAV();
         assertNotNull(sav);
 
-        int digestAlgorithmCheckCounter = 0;
-        boolean manifestCheckFound = false;
-        boolean signedPropertiesCheckFound = false;
-        boolean manifestEntriesCheckSuccessFound = false;
-        boolean manifestEntriesCheckFailureFound = false;
+        int cryptoCheckCounter = 0;
         for (XmlConstraint constraint : sav.getConstraint()) {
             if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
-                if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN))) {
+                assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_SIG_SIG), constraint.getError().getValue());
+                ++cryptoCheckCounter;
+            }
+        }
+        assertEquals(1, cryptoCheckCounter);
+
+        XmlAOV aov = signatureBBB.getAOV();
+
+        cryptoCheckCounter = 0;
+        int sigValueCheckCounter = 0;
+        int signCertAttrCheckCounter = 0;
+        int manifestCheckCounter = 0;
+        int signedPropertiesCheckCounter = 0;
+        int manifestEntriesCheckCounter = 0;
+        int manifestEntryCheckCounter = 0;
+        int signCertCheckCounter = 0;
+        for (XmlConstraint constraint : aov.getConstraint()) {
+            if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
+                if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIG_SIG))) {
+                    assertEquals(XmlStatus.OK, constraint.getStatus());
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_KEY_SIZE,
+                            SignatureAlgorithm.RSA_SHA256.getName(), "4096", ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()))));
+                    ++sigValueCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIG_CERT_REF))) {
+                    assertEquals(XmlStatus.OK, constraint.getStatus());
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_ID,
+                            DigestAlgorithm.SHA512.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_SIG_CERT_REF, "")));
+                    ++signCertAttrCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN))) {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
                             DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN, "")));
-                    manifestCheckFound = true;
-                } else if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIGND_PRT))) {
+                    ++manifestCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_SIGND_PRT))) {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAME,
                             DigestAlgorithm.SHA256.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_SIGND_PRT, "")));
-                    signedPropertiesCheckFound = true;
-                } else if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN_ENT_PL))) {
+                    ++signedPropertiesCheckCounter;
+                } else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN_ENT_PL))) {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
                     assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAMES,
                             DigestAlgorithm.SHA512.getName(), ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), MessageTag.ACCM_POS_MAN_ENT_PL, "")));
-                    manifestEntriesCheckSuccessFound = true;
+                    ++manifestEntriesCheckCounter;
                 } else if (constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.ACCM_POS_MAN_ENT))) {
                     assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                    assertEquals(i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1.getName(), MessageTag.ACCM_POS_MAN_ENT), constraint.getError().getValue());
                     assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE_WITH_REF_WITH_NAME,
                             i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1.getName(), MessageTag.ACCM_POS_MAN_ENT),
                             ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()), "")));
-                    manifestEntriesCheckFailureFound = true;
+                    ++manifestEntryCheckCounter;
+                }  else if (constraint.getName().getValue().contains(i18nProvider.getMessage(MessageTag.SIGNING_CERTIFICATE))) {
+                    assertEquals(XmlStatus.OK, constraint.getStatus());
+                    assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_KEY_SIZE,
+                            SignatureAlgorithm.RSA_SHA512.getName(), "4096", ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()))));
+                    ++signCertCheckCounter;
                 }
-                ++digestAlgorithmCheckCounter;
+                ++cryptoCheckCounter;
             }
         }
-        assertEquals(5, digestAlgorithmCheckCounter); // + sig creation (sign-cert not executed because of sha1 failure)
-        assertTrue(manifestCheckFound);
-        assertTrue(signedPropertiesCheckFound); // fails before
-        assertTrue(manifestEntriesCheckSuccessFound);
-        assertTrue(manifestEntriesCheckFailureFound);
-
-        XmlPSV psv = signatureBBB.getPSV();
-        assertNull(psv);
+        assertEquals(7, cryptoCheckCounter); // digest checks + sig creation + signed-certificate ref check
+        assertEquals(1, sigValueCheckCounter);
+        assertEquals(1, signCertAttrCheckCounter);
+        assertEquals(1, manifestCheckCounter);
+        assertEquals(1, signedPropertiesCheckCounter);
+        assertEquals(1, manifestEntriesCheckCounter);
+        assertEquals(1, manifestEntryCheckCounter);
+        assertEquals(1, signCertCheckCounter);
     }
 
     @Test
@@ -182,11 +245,27 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord xmlEvidenceRecord =
                 detailedReport.getXmlEvidenceRecordById(detailedReport.getFirstEvidenceRecordId());
         assertNotNull(xmlEvidenceRecord);
+
         XmlValidationProcessEvidenceRecord validationProcessEvidenceRecord = xmlEvidenceRecord.getValidationProcessEvidenceRecord();
         assertNotNull(validationProcessEvidenceRecord);
+        assertEquals(Indication.PASSED, validationProcessEvidenceRecord.getConclusion().getIndication());
+
+        int cryptoCheckCounter = 0;
+        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+            if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS, DigestAlgorithm.SHA512,
+                        ValidationProcessUtils.getFormattedDate(tstProductionDate)), constraint.getAdditionalInfo());
+                ++cryptoCheckCounter;
+            }
+        }
+        assertEquals(1, cryptoCheckCounter);
+
+        XmlAOV xmlAOV = validationProcessEvidenceRecord.getAOV();
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
 
         int digestAlgorithmCheckCounter = 0;
-        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+        for (XmlConstraint constraint : xmlAOV.getConstraint()) {
             if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 assertTrue(constraint.getAdditionalInfo().contains(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS_DM_WITH_NAMES,
@@ -206,6 +285,8 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         XmlEvidenceRecord evidenceRecord = diagnosticData.getEvidenceRecords().get(0);
         evidenceRecord.getDigestMatchers().get(0).setDigestMethod(DigestAlgorithm.SHA256);
 
+        XmlTimestamp timestamp = evidenceRecord.getEvidenceRecordTimestamps().get(0).getTimestamp();
+
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(diagnosticData);
         executor.setValidationPolicy(loadDefaultPolicy());
@@ -218,13 +299,29 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord xmlEvidenceRecord =
                 detailedReport.getXmlEvidenceRecordById(detailedReport.getFirstEvidenceRecordId());
         assertNotNull(xmlEvidenceRecord);
+
         XmlValidationProcessEvidenceRecord validationProcessEvidenceRecord = xmlEvidenceRecord.getValidationProcessEvidenceRecord();
         assertNotNull(validationProcessEvidenceRecord);
+        assertEquals(Indication.PASSED, validationProcessEvidenceRecord.getConclusion().getIndication());
+
+        int cryptoCheckCounter = 0;
+        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+            if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_SUCCESS, DigestAlgorithm.SHA256,
+                        ValidationProcessUtils.getFormattedDate(timestamp.getProductionTime())), constraint.getAdditionalInfo());
+                ++cryptoCheckCounter;
+            }
+        }
+        assertEquals(1, cryptoCheckCounter);
+
+        XmlAOV xmlAOV = validationProcessEvidenceRecord.getAOV();
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
 
         int digestAlgorithmCheckCounter = 0;
         boolean sha256AlgoCheckFound = false;
         boolean sha512AlgoCheckFound = false;
-        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+        for (XmlConstraint constraint : xmlAOV.getConstraint()) {
             if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 if (constraint.getAdditionalInfo().contains(DigestAlgorithm.SHA256.getName())) {
@@ -250,6 +347,8 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         evidenceRecord.getDigestMatchers().get(0).setDigestMethod(DigestAlgorithm.SHA256);
         evidenceRecord.getDigestMatchers().get(evidenceRecord.getDigestMatchers().size() - 1).setDigestMethod(DigestAlgorithm.SHA1);
 
+        XmlTimestamp timestamp = evidenceRecord.getEvidenceRecordTimestamps().get(0).getTimestamp();
+
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(diagnosticData);
         executor.setValidationPolicy(loadDefaultPolicy());
@@ -262,14 +361,33 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
         eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord xmlEvidenceRecord =
                 detailedReport.getXmlEvidenceRecordById(detailedReport.getFirstEvidenceRecordId());
         assertNotNull(xmlEvidenceRecord);
+
         XmlValidationProcessEvidenceRecord validationProcessEvidenceRecord = xmlEvidenceRecord.getValidationProcessEvidenceRecord();
         assertNotNull(validationProcessEvidenceRecord);
+        assertEquals(Indication.INDETERMINATE, validationProcessEvidenceRecord.getConclusion().getIndication());
+        assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessEvidenceRecord.getConclusion().getSubIndication());
+
+        int cryptoCheckCounter = 0;
+        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+            if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_EV_RECORD), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE, i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_ER_ADO),
+                                ValidationProcessUtils.getFormattedDate(timestamp.getProductionTime())), constraint.getAdditionalInfo());
+                ++cryptoCheckCounter;
+            }
+        }
+        assertEquals(1, cryptoCheckCounter);
+
+        XmlAOV xmlAOV = validationProcessEvidenceRecord.getAOV();
+        assertEquals(Indication.INDETERMINATE, xmlAOV.getConclusion().getIndication());
+        assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlAOV.getConclusion().getSubIndication());
 
         int digestAlgorithmCheckCounter = 0;
         boolean sha1AlgoCheckFound = false;
         boolean sha256AlgoCheckFound = false;
         boolean sha512AlgoCheckFound = false;
-        for (XmlConstraint constraint : validationProcessEvidenceRecord.getConstraint()) {
+        for (XmlConstraint constraint : xmlAOV.getConstraint()) {
             if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 if (constraint.getAdditionalInfo().contains(DigestAlgorithm.SHA256.getName())) {
                     assertEquals(XmlStatus.OK, constraint.getStatus());
@@ -280,8 +398,8 @@ class DSS3236ExecutorTest extends AbstractProcessExecutorTest {
                 } else if (constraint.getAdditionalInfo().contains(DigestAlgorithm.SHA1.getName())) {
                     assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
                     assertEquals(MessageTag.ASCCM_AR_ANS_ANR.getId(), constraint.getError().getKey());
-                    assertEquals(i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_ER_ADO),
-                            constraint.getError().getValue());
+                    assertEquals(i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_ER_ADO,
+                            ValidationProcessUtils.getFormattedDate(timestamp.getProductionTime())), constraint.getError().getValue());
                     sha1AlgoCheckFound = true;
                 }
                 ++digestAlgorithmCheckCounter;

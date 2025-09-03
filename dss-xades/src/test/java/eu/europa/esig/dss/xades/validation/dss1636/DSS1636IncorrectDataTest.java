@@ -20,14 +20,6 @@
  */
 package eu.europa.esig.dss.xades.validation.dss1636;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCV;
@@ -43,6 +35,14 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.xades.validation.AbstractXAdESTestValidation;
 
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class DSS1636IncorrectDataTest extends AbstractXAdESTestValidation {
 
 	@Override
@@ -52,7 +52,7 @@ class DSS1636IncorrectDataTest extends AbstractXAdESTestValidation {
 	
 	@Override
 	protected List<DSSDocument> getDetachedContents() {
-		return Arrays.asList(new InMemoryDocument(new byte[] { 1, 2, 3 }));
+		return Collections.singletonList(new InMemoryDocument(new byte[] { 1, 2, 3 }));
 	}
 	
 	@Override

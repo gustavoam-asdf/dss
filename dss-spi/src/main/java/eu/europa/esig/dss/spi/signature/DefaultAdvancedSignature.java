@@ -623,6 +623,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	}
 
 	@Override
+	public boolean hasERSProfile() {
+		return getBaselineRequirementsChecker().hasExtendedERSProfile();
+	}
+
+	@Override
 	public boolean areAllSelfSignedCertificates() {
 		ListCertificateSource certificateSources = getCompleteCertificateSource();
 		boolean certificateFound = certificateSources.getNumberOfCertificates() > 0;

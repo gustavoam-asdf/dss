@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SignDigestRSASignatureAlgorithmTest {
 
     static {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+        DSSSecurityProvider.initSystemProviders();
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(SignDigestRSATest.class);

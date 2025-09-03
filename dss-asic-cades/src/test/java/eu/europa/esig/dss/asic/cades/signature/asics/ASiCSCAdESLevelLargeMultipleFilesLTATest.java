@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.asic.cades.signature.asics;
 
 import eu.europa.esig.dss.asic.cades.ASiCWithCAdESSignatureParameters;
@@ -13,31 +33,32 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.signature.MultipleDocumentsSignatureService;
 import eu.europa.esig.dss.signature.resources.TempFileResourcesHandlerBuilder;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("slow")
 class ASiCSCAdESLevelLargeMultipleFilesLTATest extends AbstractASiCSWithCAdESMultipleDocumentsTestSignature {
 
     private ASiCWithCAdESService service;
     private ASiCWithCAdESSignatureParameters signatureParameters;
-    private List<DSSDocument> documentToSigns;
+    private List<FileDocument> documentToSigns;
+
+    private TempFileResourcesHandlerBuilder tempFileResourcesHandlerBuilder;
 
     @BeforeEach
     void init() throws Exception {
-
-        TempFileResourcesHandlerBuilder tempFileResourcesHandlerBuilder = new TempFileResourcesHandlerBuilder();
+        tempFileResourcesHandlerBuilder = new TempFileResourcesHandlerBuilder();
         tempFileResourcesHandlerBuilder.setTempFileDirectory(new File("target"));
 
         SecureContainerHandlerBuilder secureContainerHandlerBuilder = new SecureContainerHandlerBuilder()
@@ -45,9 +66,9 @@ class ASiCSCAdESLevelLargeMultipleFilesLTATest extends AbstractASiCSWithCAdESMul
         ZipUtils.getInstance().setZipContainerHandlerBuilder(secureContainerHandlerBuilder);
 
         documentToSigns = new ArrayList<>();
-        documentToSigns.add(generateLargeFile(1));
-        documentToSigns.add(generateLargeFile(2));
-        documentToSigns.add(generateLargeFile(3));
+        documentToSigns.add(generateLargeFile("1.bin"));
+        documentToSigns.add(generateLargeFile("2.bin"));
+        documentToSigns.add(generateLargeFile("3.bin"));
 
         signatureParameters = new ASiCWithCAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(new Date());
@@ -63,21 +84,16 @@ class ASiCSCAdESLevelLargeMultipleFilesLTATest extends AbstractASiCSWithCAdESMul
         service.setTspSource(getGoodTsa());
     }
 
-    private DSSDocument generateLargeFile(int count) throws IOException {
-        File file = new File("target/large-binary-" + count + ".bin");
-
-        long size = 0x00FFFFFF; // Integer.MAX_VALUE -1
-        byte [] data = new byte[(int)size];
-        SecureRandom sr = new SecureRandom();
-        sr.nextBytes(data);
-
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            for (int i = 0; i < 100; i++) {
-                fos.write(data);
-            }
+    @AfterEach
+    void clean() {
+        for (FileDocument fileDocument : documentToSigns) {
+            File file = fileDocument.getFile();
+            assertTrue(file.exists());
+            assertTrue(file.delete());
+            assertFalse(file.exists());
         }
 
-        return new FileDocument(file);
+        tempFileResourcesHandlerBuilder.clear();
     }
 
     @Test
@@ -100,7 +116,7 @@ class ASiCSCAdESLevelLargeMultipleFilesLTATest extends AbstractASiCSWithCAdESMul
 
     @Override
     protected List<DSSDocument> getDocumentsToSign() {
-        return documentToSigns;
+        return new ArrayList<>(documentToSigns);
     }
 
     @Override

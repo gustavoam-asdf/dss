@@ -20,14 +20,7 @@
  */
 package eu.europa.esig.dss.asic.cades.validation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import eu.europa.esig.dss.detailedreport.DetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
@@ -37,6 +30,12 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ASiCEBrokenReferenceTest extends AbstractASiCWithCAdESTestValidation {
 
@@ -88,10 +87,9 @@ class ASiCEBrokenReferenceTest extends AbstractASiCWithCAdESTestValidation {
 	@Override
 	protected void verifyDetailedReport(DetailedReport detailedReport) {
 		super.verifyDetailedReport(detailedReport);
-		
-		XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
-		assertEquals(Indication.FAILED, signatureBBB.getConclusion().getIndication());
-		assertEquals(SubIndication.HASH_FAILURE, signatureBBB.getConclusion().getSubIndication());
+
+		assertEquals(Indication.FAILED, detailedReport.getBasicValidationIndication(detailedReport.getFirstSignatureId()));
+		assertEquals(SubIndication.HASH_FAILURE, detailedReport.getBasicValidationSubIndication(detailedReport.getFirstSignatureId()));
 	}
 
 }

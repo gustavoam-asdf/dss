@@ -35,20 +35,22 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlXCV;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificateRevocation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.enumerations.RevocationReason;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.ValidationPolicy;
+import eu.europa.esig.dss.policy.EtsiValidationPolicy;
 import eu.europa.esig.dss.policy.jaxb.BasicSignatureConstraints;
 import eu.europa.esig.dss.policy.jaxb.CertificateConstraints;
-import eu.europa.esig.dss.policy.jaxb.Level;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.TimeConstraint;
 import eu.europa.esig.dss.policy.jaxb.TimeUnit;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.validation.executor.signature.DefaultSignatureProcessExecutor;
+import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.qualification.trust.TrustServiceStatus;
 import eu.europa.esig.dss.validation.reports.Reports;
 import org.junit.jupiter.api.Test;
@@ -69,10 +71,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -175,10 +177,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -213,7 +215,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -221,17 +223,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -240,17 +242,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -270,10 +276,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730-revoked.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -384,10 +390,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -426,7 +432,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -434,17 +440,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -453,17 +459,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -483,10 +493,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730-revoked-not-yet-valid.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -606,10 +616,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -661,7 +671,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -669,17 +679,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -688,17 +698,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -718,10 +732,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730-revoked-expired.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -841,10 +855,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -896,7 +910,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -904,17 +918,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -923,17 +937,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -953,14 +971,14 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730-revoked.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
         XmlCertificateRevocation xmlCertificateRevocation = diagnosticData.getSignatures().get(0)
                 .getSigningCertificate().getCertificate().getRevocations().get(1);
         xmlCertificateRevocation.setReason(RevocationReason.CERTIFICATE_HOLD);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -1071,10 +1089,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -1113,7 +1131,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -1121,17 +1139,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -1140,17 +1158,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -1170,10 +1192,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -1282,10 +1304,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -1320,7 +1342,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -1328,17 +1350,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -1347,17 +1369,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());
@@ -1377,10 +1403,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
                 new File("src/test/resources/diag-data/DSS-2730/dss-2730.xml"));
         assertNotNull(diagnosticData);
 
-        String sigTstId = diagnosticData.getUsedTimestamps().get(0).getId();
-        String arcTstId = diagnosticData.getUsedTimestamps().get(1).getId();
+        XmlTimestamp sigTst = diagnosticData.getUsedTimestamps().get(0);
+        XmlTimestamp arcTst = diagnosticData.getUsedTimestamps().get(1);
 
-        ValidationPolicy validationPolicy = loadDefaultPolicy();
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         CertificateConstraints signingCertificateConstraints = validationPolicy
                 .getSignatureConstraints().getBasicSignatureConstraints().getSigningCertificate();
 
@@ -1498,10 +1524,10 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         for (XmlConstraint constraint : validationProcessArchivalData.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTADC.getId().equals(constraint.getName().getKey())) {
                 if (XmlStatus.OK == constraint.getStatus()) {
-                    assertEquals(arcTstId, constraint.getId());
+                    assertEquals(arcTst.getId(), constraint.getId());
                     validTstFound = true;
                 } else if (XmlStatus.WARNING == constraint.getStatus()) {
-                    assertEquals(sigTstId, constraint.getId());
+                    assertEquals(sigTst.getId(), constraint.getId());
                     assertEquals(MessageTag.ADEST_IBSVPTADC_ANS.getId(), constraint.getWarning().getKey());
                     invalidTstFound = true;
                 }
@@ -1542,7 +1568,7 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, xmlTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, xmlTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(xmlTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessBasicTimestamp validationProcessBasicTimestamp = xmlTimestamp.getValidationProcessBasicTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessBasicTimestamp.getConclusion().getIndication());
@@ -1550,17 +1576,17 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_ICTIVRSC_ANS)));
         assertTrue(checkMessageValuePresence(convert(validationProcessBasicTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         XmlValidationProcessArchivalDataTimestamp validationProcessArchivalDataTimestamp = xmlTimestamp.getValidationProcessArchivalDataTimestamp();
         assertEquals(Indication.INDETERMINATE, validationProcessArchivalDataTimestamp.getConclusion().getIndication());
         assertEquals(SubIndication.CRYPTO_CONSTRAINTS_FAILURE_NO_POE, validationProcessArchivalDataTimestamp.getConclusion().getSubIndication());
         assertTrue(checkMessageValuePresence(convert(validationProcessArchivalDataTimestamp.getConclusion().getErrors()),
-                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_ANR, DigestAlgorithm.SHA1, MessageTag.ACCM_POS_TST_SIG)));
+                i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG)));
 
         boolean basicTstValidationCheckFound = false;
         boolean pastTstValidationCheckFound = false;
-        boolean tavCheckFound = false;
+        boolean aovCheckFound = false;
         for (XmlConstraint constraint : validationProcessArchivalDataTimestamp.getConstraint()) {
             if (MessageTag.ADEST_IBSVPTC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, constraint.getStatus());
@@ -1569,17 +1595,21 @@ class DSS2730ExecutorTest extends AbstractProcessExecutorTest {
             } else if (MessageTag.PSV_IPTVC.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
                 pastTstValidationCheckFound = true;
-            } else if (MessageTag.BBB_TAV_ISVA.getId().equals(constraint.getName().getKey())) {
+            } else if (MessageTag.ACCM.getId().equals(constraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
-                assertEquals(MessageTag.BBB_TAV_ISVA_ANS.getId(), constraint.getError().getKey());
-                tavCheckFound = true;
+                assertEquals(MessageTag.ACCM_ANS.getId(), constraint.getError().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.ACCM_ANS, MessageTag.ACCM_POS_TST_SIG), constraint.getError().getValue());
+                assertEquals(i18nProvider.getMessage(MessageTag.CRYPTOGRAPHIC_CHECK_FAILURE,
+                        i18nProvider.getMessage(MessageTag.ASCCM_AR_ANS_AKSNR, SignatureAlgorithm.RSA_SHA1.getName(), "2048", MessageTag.ACCM_POS_TST_SIG),
+                        ValidationProcessUtils.getFormattedDate(arcTst.getProductionTime())), constraint.getAdditionalInfo());
+                aovCheckFound = true;
             } else {
                 assertEquals(XmlStatus.OK, constraint.getStatus());
             }
         }
         assertTrue(basicTstValidationCheckFound);
         assertTrue(pastTstValidationCheckFound);
-        assertTrue(tavCheckFound);
+        assertTrue(aovCheckFound);
 
         xmlTimestamp = timestamps.get(1);
         assertEquals(Indication.PASSED, xmlTimestamp.getConclusion().getIndication());

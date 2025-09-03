@@ -20,19 +20,21 @@
  */
 package eu.europa.esig.dss.signature;
 
+import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.SerializableTimestampParameters;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSSecurityProvider;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
+import eu.europa.esig.dss.signature.security.DSSSignatureSecurityFactory;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public abstract class AbstractSignatureService<SP extends SerializableSignatureP
         implements DocumentSignatureService<SP, TP> {
 
     static {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+        DSSSecurityProvider.initSystemProviders();
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSignatureService.class);
@@ -195,7 +197,7 @@ public abstract class AbstractSignatureService<SP extends SerializableSignatureP
         Objects.requireNonNull(signingCertificate, "CertificateToken cannot be null!");
 
         try {
-            Signature signature = Signature.getInstance(signatureValue.getAlgorithm().getJCEId(), DSSSecurityProvider.getSecurityProviderName());
+            Signature signature = DSSSignatureSecurityFactory.INSTANCE.build(signatureValue.getAlgorithm().getJCEId());
             signature.initVerify(signingCertificate.getPublicKey());
             signature.update(toBeSigned.getBytes());
             return signature.verify(signatureValue.getValue());

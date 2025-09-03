@@ -33,6 +33,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.Closeable;
@@ -83,12 +84,12 @@ public class ApacheCommonsUtils implements IUtils {
 
 	@Override
 	public boolean areStringsEqual(String text1, String text2) {
-		return StringUtils.equals(text1, text2);
+		return Strings.CS.equals(text1, text2);
 	}
 
 	@Override
 	public boolean areStringsEqualIgnoreCase(String text1, String text2) {
-		return StringUtils.equalsIgnoreCase(text1, text2);
+		return Strings.CI.equals(text1, text2);
 	}
 
 	@Override
@@ -126,7 +127,7 @@ public class ApacheCommonsUtils implements IUtils {
 
 	@Override
 	public boolean endsWithIgnoreCase(String text, String expected) {
-		return StringUtils.endsWithIgnoreCase(text, expected);
+		return Strings.CI.endsWith(text, expected);
 	}
 
 	@Override

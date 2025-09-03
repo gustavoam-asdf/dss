@@ -34,7 +34,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -72,7 +72,7 @@ public class DSSMessageDigestCalculator {
         if (Utils.isCollectionEmpty(digestAlgorithms)) {
             throw new IllegalArgumentException("DigestAlgorithms collection cannot be empty!");
         }
-        final Map<DigestAlgorithm, MessageDigest> messageDigestList = new HashMap<>();
+        final Map<DigestAlgorithm, MessageDigest> messageDigestList = new EnumMap<>(DigestAlgorithm.class);
         for (DigestAlgorithm digestAlgorithm : digestAlgorithms) {
             Objects.requireNonNull(digestAlgorithm, "DigestAlgorithm cannot be null!");
             messageDigestList.put(digestAlgorithm, toMessageDigest(digestAlgorithm));
@@ -153,19 +153,6 @@ public class DSSMessageDigestCalculator {
     }
 
     /**
-     * Returns the {@code DSSMessageDigest} accordingly to the current state.
-     * This method resets the state of message-digest.
-     *
-     * @return {@link DSSMessageDigest}
-     * @deprecated since DSS 6.3. Please use {@code #getMessageDigest(DigestAlgorithm)} method instead.
-     */
-    @Deprecated
-    public DSSMessageDigest getMessageDigest() {
-        LOG.warn("Use of deprecated method #getMessageDigest()! Please use #getMessageDigest(DigestAlgorithm) method instead!");
-        return getMessageDigest(messageDigestMap.keySet().iterator().next());
-    }
-
-    /**
      * Returns the {@code DSSMessageDigest} accordingly to the given {@code digestAlgorithm}
      * This method resets the state of message-digest.
      *
@@ -181,7 +168,20 @@ public class DSSMessageDigestCalculator {
     }
 
     /**
-     * Gets OutputStream that can be used to calculate digest on the fly
+     * Gets OutputStream that can be used to calculate digest on the fly.
+     * This method will update the digest within the current instance of {@code DSSMessageDigestCalculator},
+     * when the returned {@code OutputStream} is being updated.
+     *
+     * @return {@link OutputStream}
+     */
+    public OutputStream getOutputStream() {
+        return getOutputStream(Utils.nullOutputStream());
+    }
+
+    /**
+     * Gets OutputStream that can be used to calculate digest on the fly.
+     * This method will write the binaries into the provided {@code outputStream} as well
+     * as will update the digest within the current instance of {@code DSSMessageDigestCalculator}
      *
      * @param outputStream to be embedded into
      * @return {@link OutputStream}
@@ -189,7 +189,8 @@ public class DSSMessageDigestCalculator {
     public OutputStream getOutputStream(OutputStream outputStream) {
         return new OutputStream() {
 
-            private OutputStream wrappedOS = outputStream;
+            /** Provided OutputStream */
+            private final OutputStream wrappedOS = outputStream;
 
             @Override
             public void write(int b) throws IOException {
@@ -208,6 +209,13 @@ public class DSSMessageDigestCalculator {
                 wrappedOS.write(b, off, len);
                 update(b, off, len);
             }
+
+            @Override
+            public void close() throws IOException {
+                wrappedOS.close();
+                super.close();
+            }
+
         };
     }
 

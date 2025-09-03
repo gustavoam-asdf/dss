@@ -45,8 +45,8 @@ import java.util.List;
 class EnvelopingSignatureBuilder extends XAdESSignatureBuilder {
 
 	/**
-	 * The default constructor for EnvelopingSignatureBuilder. The enveloped signature uses by default the inclusive
-	 * method of canonicalization.
+	 * The constructor for EnvelopingSignatureBuilder for a document signing.
+	 * The enveloped signature uses by default the inclusive method of canonicalization.
 	 * 
 	 * @param params
 	 *            The set of parameters relating to the structure and process of the creation or extension of the
@@ -59,6 +59,23 @@ class EnvelopingSignatureBuilder extends XAdESSignatureBuilder {
 	public EnvelopingSignatureBuilder(final XAdESSignatureParameters params, final DSSDocument document,
 									  final CertificateVerifier certificateVerifier) {
 		super(params, document, certificateVerifier);
+	}
+
+	/**
+	 * The constructor for EnvelopingSignatureBuilder for signing of multiple documents.
+	 * The enveloped signature uses by default the inclusive method of canonicalization.
+	 *
+	 * @param params
+	 *            The set of parameters relating to the structure and process of the creation or extension of the
+	 *            electronic signature.
+	 * @param documents
+	 *            The original documents to sign.
+	 * @param certificateVerifier
+	 *            {@link CertificateVerifier}
+	 */
+	public EnvelopingSignatureBuilder(final XAdESSignatureParameters params, final List<DSSDocument> documents,
+									  final CertificateVerifier certificateVerifier) {
+		super(params, documents, certificateVerifier);
 	}
 
 	@Override

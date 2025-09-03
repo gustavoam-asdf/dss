@@ -123,10 +123,10 @@ public class CAdESSignatureScopeFinder extends AbstractSignatureScopeFinder impl
 
         } else if (originalDocument instanceof DigestDocument) {
             DigestDocument digestDocument = (DigestDocument) originalDocument;
-            result.add(new DigestSignatureScope(fileName != null ? fileName : "Digest document", digestDocument));
+            result.add(new DigestSignatureScope(fileName, digestDocument));
 
         } else {
-            result.add(new FullSignatureScope(fileName != null ? fileName : "Full document", originalDocument));
+            result.add(new FullSignatureScope(fileName, originalDocument));
         }
         
         return result;
@@ -142,7 +142,8 @@ public class CAdESSignatureScopeFinder extends AbstractSignatureScopeFinder impl
         List<SignatureScope> result = new ArrayList<>();
         DSSDocument digestDocument = createDigestDocument(reference.getDigest());
         if (digestDocument != null) {
-            result.add(new FullSignatureScope("Full document", digestDocument));
+            String fileName = reference.getDocument() != null ? reference.getDocument().getName() : null;
+            result.add(new FullSignatureScope(fileName, digestDocument));
         }
         return result;
     }

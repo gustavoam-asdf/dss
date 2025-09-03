@@ -20,11 +20,12 @@
  */
 package eu.europa.esig.dss.validation.process.bbb.sav;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.diagnostic.RevocationWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.ValidationPolicy;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 
 import java.util.Date;
 
@@ -41,11 +42,12 @@ public class RevocationAcceptanceValidation extends AbstractAcceptanceValidation
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param currentTime {@link Date} validation time
 	 * @param revocationWrapper {@link RevocationWrapper}
+	 * @param aov {@link XmlAOV}
 	 * @param validationPolicy {@link ValidationPolicy}
 	 */
 	public RevocationAcceptanceValidation(I18nProvider i18nProvider, Date currentTime,
-										  RevocationWrapper revocationWrapper, ValidationPolicy validationPolicy) {
-		super(i18nProvider, revocationWrapper, currentTime, Context.REVOCATION, validationPolicy);
+										  RevocationWrapper revocationWrapper, XmlAOV aov, ValidationPolicy validationPolicy) {
+		super(i18nProvider, revocationWrapper, currentTime, Context.REVOCATION, aov, validationPolicy);
 	}
     
 	@Override

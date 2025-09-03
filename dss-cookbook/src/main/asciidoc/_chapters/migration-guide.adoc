@@ -14,10 +14,89 @@ For changes within Diagnostic Data XSD please refer <<DiagnosticDataChanges>>.
 For changes within XML Signature Policy please refer <<ValidationPolicyChanges>>.
 
 [cols="2,5,5"]
+.Code changes from version 6.3 to 6.4
+|===
+|Title                               |v6.3                            |v6.4
+a|Cryptographic suite's validation level definition          a|
+[source,java]
+----
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
+import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
+import java.io.File;
+
+ValidationPolicy validationPolicy = ValidationPolicyLoader
+    .fromValidationPolicy(new File("/path/to/validation/policy"))
+    // provide a cryptographic suite to be configured
+    .withCryptographicSuite(new File("/path/to/cryptographic/suite"))
+    // and/or level for validation of encryption algorithms acceptance
+    .andAcceptableEncryptionAlgorithmsLevel(Level.WARN)
+    // and/or level for validation of key sizes of encryption algorithms acceptance
+    .andAcceptableEncryptionAlgorithmsMiniKeySizeLevel(Level.WARN)
+    // create final validation policy
+    .create();
+----
+                                                                     a|
+
+[source,java]
+----
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
+import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
+import java.io.File;
+
+ValidationPolicy validationPolicy = ValidationPolicyLoader
+    .fromValidationPolicy(new File("/path/to/validation/policy"))
+    // provide a cryptographic suite to be configured
+    .withCryptographicSuite(new File("/path/to/cryptographic/suite"))
+    // and/or level for validation of signature algorithms acceptance
+    .andAcceptableSignatureAlgorithmsLevel(Level.WARN)
+    // and/or level for validation of key sizes of signature algorithms acceptance
+    .andAcceptableSignatureAlgorithmsMiniKeySizeLevel(Level.WARN)
+    // create final validation policy
+    .create();
+----
+
+|===
+
+[cols="2,5,5"]
 .Code changes from version 6.2 to 6.3
 |===
 |Title                               |v6.2                            |v6.3
-|CAdES/PAdES signature and validation (see <<dssCms>>)             a|
+a|Default validation process requires the `dss-policy-jaxb` module           a|
+[source,xml]
+.pom.xml
+----
+<dependencies>
+    ...
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-validation</artifactId>
+    </dependency>
+    ...
+</dependencies>
+----
+                                                                     a|
+In order to benefit from default XML Validation Policy, please add the `dss-policy-jaxb` module:
+
+[source,xml]
+.pom.xml
+----
+<dependencies>
+    ...
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-validation</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+        <artifactId>dss-policy-jaxb</artifactId>
+    </dependency>
+    ...
+</dependencies>
+----
+
+a|CAdES/PAdES signature and validation (see <<dssCms>>)             a|
 [source,xml]
 .pom.xml
 ----
@@ -57,7 +136,7 @@ For changes within XML Signature Policy please refer <<ValidationPolicyChanges>>
 </dependencies>
 ----
 
-|Old `CMSUtils` moved to `CAdESUtils`             a|
+a|Old `CMSUtils` moved to `CAdESUtils`             a|
 [source,java]
 ----
 import eu.europa.esig.dss.cades.CMSUtils;
@@ -68,7 +147,7 @@ import eu.europa.esig.dss.cades.CMSUtils;
 import eu.europa.esig.dss.cades.CAdESUtils;
 ----
 
-|`CAdESSignatureExtension` and related classes             a|
+a|`CAdESSignatureExtension` and related classes             a|
 [source,java]
 ----
 import eu.europa.esig.dss.cades.signature.CAdESSignatureExtension;
@@ -89,6 +168,46 @@ import eu.europa.esig.dss.cms.CMS;
 CAdESSignatureExtension cadesExtension = ...
 CMS cms = ...
 cms = cadesExtension.extendCMSSignatures(cms, signatureParameters);
+----
+
+a|Min and Max signature extension times             a|
+[source,java]
+----
+import eu.europa.esig.dss.simplereport.SimpleReport;
+import java.util.Date;
+
+SimpleReport simpleReport = reports.getSimpleReport();
+Date extensionPeriodMin = simpleReport.getSignatureExtensionPeriodMin(signatureId);
+Date extensionPeriodMax = simpleReport.getSignatureExtensionPeriodMax(signatureId);
+----
+                                                                     a|[source,java]
+----
+import eu.europa.esig.dss.simplereport.SimpleReport;
+import java.util.Date;
+
+SimpleReport simpleReport = reports.getSimpleReport();
+Date extensionPeriodMin = simpleReport.getExtensionPeriodMin(signatureId);
+Date extensionPeriodMax = simpleReport.getExtensionPeriodMax(signatureId);
+----
+
+a|`ValidationPolicy` package             a|
+[source,java]
+----
+import eu.europa.esig.dss.policy.ValidationPolicy;
+----
+                                                                     a|[source,java]
+----
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
+----
+
+a|`SigningOperation` package             a|
+[source,java]
+----
+import eu.europa.esig.dss.signature.SigningOperation;
+----
+                                                                     a|[source,java]
+----
+import eu.europa.esig.dss.enumerations.SigningOperation;
 ----
 
 |===

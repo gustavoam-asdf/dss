@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,6 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class DigestInfoEncoderTest {
+
+    static {
+        DSSSecurityProvider.initSystemProviders();
+    }
 
     @Test
     void testEncodeValid() {
@@ -125,8 +128,6 @@ class DigestInfoEncoderTest {
 
     @Test
     void crossVerificationWithBouncyCastleTest() {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
-
         byte[] data = "Hello world!".getBytes(StandardCharsets.UTF_8);
 
         for (DigestAlgorithm digestAlgorithm : DigestAlgorithm.values()) {

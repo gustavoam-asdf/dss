@@ -82,9 +82,20 @@ public class DSSDocumentXMLSignatureInput extends XMLSignatureInput {
      * Returns a document name
      *
      * @return {@link String}
+     * @deprecated since DSS 6.4. Please use {@code getDocument().getName()} method instead
      */
+    @Deprecated
     public String getDocumentName() {
-        return document.getName();
+        return document != null ? document.getName() : null;
+    }
+
+    /**
+     * Returns a document
+     *
+     * @return {@link DSSDocument}
+     */
+    public DSSDocument getDocument() {
+        return document;
     }
 
     @Override

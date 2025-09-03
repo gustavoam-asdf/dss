@@ -24,8 +24,8 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.utils.Utils;
 
 /**
  * The abstract class for {@code SignatureScope} finding

@@ -47,18 +47,6 @@ public class CMSDocumentValidator extends SignedDocumentValidator {
     /**
      * The default constructor for {@code CMSDocumentValidator}.
      *
-     * @param cmsSignedData
-     *            pkcs7-signature(s)
-     * @deprecated since DSS 6.3. Please use {@code new CMSDocumentValidator(CMS cms)} constructor instead
-     */
-    @Deprecated
-    public CMSDocumentValidator(final CMSSignedData cmsSignedData) {
-        super(new CMSDocumentAnalyzer(cmsSignedData));
-    }
-
-    /**
-     * The default constructor for {@code CMSDocumentValidator}.
-     *
      * @param cms
      *            {@link CMS} representing the pkcs7-signature(s)
      */

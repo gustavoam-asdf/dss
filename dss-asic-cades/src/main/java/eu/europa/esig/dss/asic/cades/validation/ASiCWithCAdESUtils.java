@@ -25,9 +25,6 @@ import eu.europa.esig.dss.asic.common.ASiCUtils;
 import eu.europa.esig.dss.asic.common.validation.ASiCManifestParser;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.model.ManifestEntry;
-import eu.europa.esig.dss.model.ManifestFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,29 +77,6 @@ public class ASiCWithCAdESUtils {
 		}
 		LOG.warn("Unable to extract a signed document. Reason : Unknown asic container type.");
 		return null;
-	}
-	
-	/**
-	 * Checks if a document (e.g. a signature) with the given filename is covered by a manifest
-	 * 
-	 * @param manifestDocuments a list of manifest {@link DSSDocument}s extracted from the archive
-	 * @param filename {@link String} a filename of a document to check
-	 * @return TRUE if the document is covered by a manifest, FALSE otherwise
-	 */
-	public static boolean isCoveredByManifest(List<DSSDocument> manifestDocuments, String filename) {
-		if (Utils.isCollectionNotEmpty(manifestDocuments)) {
-			for (DSSDocument archiveManifest : manifestDocuments) {
-				ManifestFile manifestFile = ASiCManifestParser.getManifestFile(archiveManifest);
-				if (manifestFile != null) {
-					for (ManifestEntry entry : manifestFile.getEntries()) {
-						if (filename != null && filename.equals(entry.getUri())) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
 	}
 
 }

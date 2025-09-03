@@ -40,7 +40,7 @@ import eu.europa.esig.dss.pdf.PDFSignatureService;
 import eu.europa.esig.dss.pdf.ServiceLoaderPdfObjFactory;
 import eu.europa.esig.dss.signature.AbstractSignatureService;
 import eu.europa.esig.dss.signature.SignatureExtension;
-import eu.europa.esig.dss.signature.SigningOperation;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
@@ -304,7 +304,7 @@ public class PAdESService extends AbstractSignatureService<PAdESSignatureParamet
 	 * @return the pdf document with the new added signature field
 	 */
 	public DSSDocument addNewSignatureField(DSSDocument document, SignatureFieldParameters parameters) {
-		return addNewSignatureField(document, parameters, (char[]) null);
+		return addNewSignatureField(document, parameters, null);
 	}
 
 	/**

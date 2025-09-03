@@ -110,11 +110,11 @@ public abstract class AbstractSignatureParameters<TP extends SerializableTimesta
 	 * @return the list of detached documents
 	 */
 	public List<DSSDocument> getDetachedContents() {
+		if (context != null && Utils.isCollectionNotEmpty(context.getDetachedContents())) {
+			return context.getDetachedContents();
+		}
 		if (Utils.isCollectionNotEmpty(detachedContents)) {
 			return detachedContents;
-		}
-		if (context != null) {
-			return context.getDetachedContents();
 		}
 		return Collections.emptyList();
 	}

@@ -32,15 +32,14 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.DigestDocument;
-import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.model.ReferenceValidation;
+import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.AbstractSignatureScopeFinder;
 import eu.europa.esig.dss.spi.validation.scope.CounterSignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.DigestSignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.FullSignatureScope;
-import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.SignatureScopeFinder;
+import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,17 +82,17 @@ public class JAdESSignatureScopeFinder extends AbstractSignatureScopeFinder impl
 						// only one document shall be present
 						return Collections.singletonList(new CounterSignatureScope(jadesSignature.getMasterSignature(), originalDocuments.get(0)));
 					} else {
-						return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0)));
+						return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0), referenceValidation));
 					}
-					
+
+				} else if (referenceValidation.getUri() != null) {
+					DSSDocument document = referenceValidation.getDocument();
+					result.add(getSignatureScopeFromOriginalDocument(document, referenceValidation));
+
 				} else if (referenceValidations.size() == 1) {
 					return getSignatureScopeFromOriginalDocuments(originalDocuments);
-					
-				} else if (referenceValidation.getUri() != null) {
-					DSSDocument documentByName = getDocumentByName(originalDocuments, referenceValidation.getUri());
-					result.add(getSignatureScopeFromOriginalDocument(documentByName));
-					
 				}
+
 			}
 		}
 		
@@ -119,33 +118,24 @@ public class JAdESSignatureScopeFinder extends AbstractSignatureScopeFinder impl
 	 * Returns a {@code SignatureScope} for the given {@code originalDocument}
 	 * 
 	 * @param originalDocument {@link DSSDocument} to get a SignatureScope for
+	 * @param referenceValidation {@link ReferenceValidation}
 	 * @return {@link SignatureScope}
 	 */
-	protected SignatureScope getSignatureScopeFromOriginalDocument(DSSDocument originalDocument) {
+	protected SignatureScope getSignatureScopeFromOriginalDocument(DSSDocument originalDocument, ReferenceValidation referenceValidation) {
+		String documentName = null;
+		if (originalDocument != null && originalDocument.getName() != null) {
+			documentName = originalDocument.getName();
+		} else if (referenceValidation.getUri() != null) {
+			documentName = referenceValidation.getUri();
+		} else if (Utils.collectionSize(referenceValidation.getDataObjectReferences()) == 1) {
+			documentName = referenceValidation.getDataObjectReferences().get(0);
+		}
 		if (originalDocument instanceof DigestDocument) {
 			DigestDocument digestDocument = (DigestDocument) originalDocument;
-			return new DigestSignatureScope(originalDocument.getName(), digestDocument);
-			
+			return new DigestSignatureScope(documentName, digestDocument);
 		} else {
-			return new FullSignatureScope(originalDocument.getName(), originalDocument);
+			return new FullSignatureScope(documentName, originalDocument);
 		}
-	}
-	
-	/**
-	 * Returns a DSSDocument with the given name from the available list of documents
-	 * 
-	 * @param documents a list of {@link DSSDocument}s
-	 * @param documentName {@link String} document name to extract
-	 * @return {@link DSSDocument}
-	 */
-	private DSSDocument getDocumentByName(List<DSSDocument> documents, String documentName) {
-		documentName = DSSUtils.decodeURI(documentName);
-		for (DSSDocument document : documents) {
-			if (documentName != null && documentName.equals(document.getName())) {
-				return document;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -161,7 +151,7 @@ public class JAdESSignatureScopeFinder extends AbstractSignatureScopeFinder impl
 		}
 		
 		for (DSSDocument originalDocument : originalDocuments) {
-			String documentName = originalDocument.getName() != null ? originalDocument.getName() : "Detached content";
+			String documentName = originalDocument.getName();
 			if (originalDocument instanceof HTTPHeader) {
 				// only http header documents shall be present
 				return getHttpHeaderSignatureScope(originalDocuments);

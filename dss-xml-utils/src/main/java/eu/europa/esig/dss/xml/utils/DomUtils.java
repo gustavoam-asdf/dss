@@ -72,6 +72,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * The utils for dealing with {@code org.w3c.dom} objects
@@ -100,6 +101,9 @@ public final class DomUtils {
 
 	/** The 'xpointer' referring the root document element */
 	private static final String XP_ROOT = "#xpointer(/)";
+
+	/** Id attribute */
+	private static final String ID_ATTRIBUTE = "Id";
 
 	/** The staring binaries of an XML file */
 	private static final byte[] xmlPreamble = new byte[] { '<' };
@@ -358,14 +362,18 @@ public final class DomUtils {
 	 *
 	 * @param parentElement {@link Element} to be extended with children values
 	 * @param toBeAdopted {@link Node} containing children to be adopted
+	 * @return a list of {@link Node}s adopted by the {@code parentElement}
 	 */
-	public static void adoptChildren(Element parentElement, Node toBeAdopted) {
+	public static List<Node> adoptChildren(Element parentElement, Node toBeAdopted) {
+		final List<Node> adoptedNodes = new ArrayList<>();
 		NodeList childNodes = toBeAdopted.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			Node child = childNodes.item(i);
 			child = parentElement.getOwnerDocument().importNode(child, true);
-			parentElement.appendChild(child);
+			Node adoptedNode = parentElement.appendChild(child);
+			adoptedNodes.add(adoptedNode);
 		}
+		return adoptedNodes;
 	}
 	
 	/**
@@ -986,6 +994,58 @@ public final class DomUtils {
 
 			default:
 				return null;
+		}
+	}
+
+	/**
+	 * This method creates a deep copy of the {@code Document} for the given {@code Element},
+	 * and returns back the corresponding {@code Element} from the copied instance of the {@code Document}.
+	 * This method addresses a canonicalization issue on document copies, reported in
+	 * <a href="https://issues.apache.org/jira/browse/SANTUARIO-139">SANTUARIO-139</a>.
+	 *
+	 * @param element {@link Element} to get a deep copy for
+	 * @return {@link Element}
+	 */
+	public static Element createDeepCopy(Element element) {
+		if (element == null) {
+			return null;
+		}
+
+		String originalId = element.getAttribute(ID_ATTRIBUTE);
+		String id = null;
+		Element copyElement = null;
+		try {
+			if (Utils.isStringBlank(originalId)) {
+				/*
+				 * We create a temporary Identifier to retrieve the element from the document copy after.
+				 * The Id attribute then will be removed from the obtained original Element and the obtained copy.
+				 */
+				id = UUID.randomUUID().toString();
+			} else {
+				id = originalId;
+			}
+			element.setAttribute(ID_ATTRIBUTE, id);
+
+			Node originalRoot = element.getOwnerDocument().getDocumentElement();
+
+			Document documentCopy = buildDOM();
+			Node copiedRoot = documentCopy.importNode(originalRoot, true);
+			documentCopy.appendChild(copiedRoot);
+
+			copyElement = getElementById(documentCopy, id);
+			return copyElement;
+
+		} finally {
+			if (Utils.isStringBlank(originalId)) {
+				removeAttribute(element, ID_ATTRIBUTE);
+				removeAttribute(copyElement, ID_ATTRIBUTE);
+			}
+		}
+	}
+
+	private static void removeAttribute(Element element, String attributeName) {
+		if (element != null && element.hasAttribute(attributeName)) {
+			element.removeAttribute(attributeName);
 		}
 	}
 

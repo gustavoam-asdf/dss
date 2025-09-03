@@ -137,6 +137,7 @@
 		<xsl:apply-templates select="dss:XCV" />
 		<xsl:apply-templates select="dss:CV" />
 		<xsl:apply-templates select="dss:SAV" />
+		<xsl:apply-templates select="dss:AOV" />
 
 		<xsl:apply-templates select="dss:PSV" />
 		<xsl:apply-templates select="dss:PSV_CRS" />
@@ -446,7 +447,7 @@
 
     </xsl:template>
      
-    <xsl:template match="dss:FC|dss:ISC|dss:VCI|dss:CRS|dss:RAC|dss:RFC|dss:CV|dss:SAV|dss:XCV|dss:SubXCV|dss:PSV|dss:PSV_CRS|dss:PCV|dss:VTS">
+    <xsl:template match="dss:FC|dss:ISC|dss:VCI|dss:CRS|dss:RAC|dss:RFC|dss:CV|dss:SAV|dss:AOV|dss:XCV|dss:SubXCV|dss:PSV|dss:PSV_CRS|dss:PCV|dss:VTS">
         
     	<fo:table table-layout="fixed">
 			<xsl:attribute name="keep-together.within-page">always</xsl:attribute>

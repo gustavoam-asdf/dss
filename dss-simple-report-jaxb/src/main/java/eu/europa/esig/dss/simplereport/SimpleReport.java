@@ -414,35 +414,41 @@ public class SimpleReport {
 	}
 
 	/**
-	 * If the signature validation is TOTAL_PASSED, the result date is the date from
-	 * when a signature extension is possible to ensure the revocation freshness
+	 * If the token validation is TOTAL_PASSED or PASSED, the result is a date indicating
+	 * when the token extension becomes possible ensuring the revocation freshness
 	 * (all certificates can be covered by a usable revocation data).
 	 * When certificate chain(s) do not require fresh revocation data
 	 * (e.g. if signature contains all necessary revocation data), NULL is returned.
-	 * 
-	 * @param signatureId the signature id
-	 * @return the minimal useful date for a signature extension (or null)
+	 * <p>
+	 * NOTE: The extension period is not computed for timestamps unambiguously
+	 *       related to other tokens (e.g. signature timestamps, etc.)
+	 *
+	 * @param tokenId {@link String} the token identifier
+	 * @return the minimal useful date for the token extension (or null)
 	 */
-	public Date getSignatureExtensionPeriodMin(final String signatureId) {
-		XmlSignature xmlSignature = getSignatureById(signatureId);
-		if (xmlSignature != null) {
-			return xmlSignature.getExtensionPeriodMin();
+	public Date getExtensionPeriodMin(final String tokenId) {
+		XmlToken token = getTokenById(tokenId);
+		if (token != null) {
+			return token.getExtensionPeriodMin();
 		}
 		return null;
 	}
 
 	/**
-	 * If the signature validation is TOTAL_PASSED, the result date is the maximum
-	 * possible date to extend the signature (before the expiration of the signing
-	 * certificate or the latest timestamping certificate).
-	 * 
-	 * @param signatureId the signature id
-	 * @return the maximum useful date for a signature extension (or null)
+	 * If the token validation is TOTAL_PASSED or PASSED, the result is a date indicating
+	 * the latest datetime when it is possible date to extend the token (i.e. before
+	 * expiration of the signing certificate or the latest timestamping certificate).
+	 * <p>
+	 * NOTE: The extension period is not computed for timestamps unambiguously
+	 *       related to other tokens (e.g. signature timestamps, etc.)
+	 *
+	 * @param tokenId {@link String} the token identifier
+	 * @return the maximum useful date for the token extension (or null)
 	 */
-	public Date getSignatureExtensionPeriodMax(final String signatureId) {
-		XmlSignature xmlSignature = getSignatureById(signatureId);
-		if (xmlSignature != null) {
-			return xmlSignature.getExtensionPeriodMax();
+	public Date getExtensionPeriodMax(final String tokenId) {
+		XmlToken token = getTokenById(tokenId);
+		if (token != null) {
+			return token.getExtensionPeriodMax();
 		}
 		return null;
 	}

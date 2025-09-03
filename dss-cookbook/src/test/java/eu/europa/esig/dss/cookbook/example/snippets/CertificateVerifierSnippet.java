@@ -24,8 +24,8 @@ import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
 import eu.europa.esig.dss.alert.LogOnStatusAlert;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
-import eu.europa.esig.dss.policy.ValidationPolicy;
-import eu.europa.esig.dss.policy.ValidationPolicyFacade;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.spi.OID;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
@@ -38,6 +38,7 @@ import eu.europa.esig.dss.spi.x509.aia.AIASource;
 import eu.europa.esig.dss.spi.x509.revocation.crl.CRLSource;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPSource;
 import eu.europa.esig.dss.validation.RevocationDataVerifierFactory;
+import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.slf4j.event.Level;
 
@@ -207,7 +208,7 @@ public class CertificateVerifierSnippet {
 
         // end::demo[]
 
-        final ValidationPolicy validationPolicy = ValidationPolicyFacade.newFacade().getDefaultValidationPolicy();
+        final ValidationPolicy validationPolicy = ValidationPolicyLoader.fromDefaultValidationPolicy().create();
         final Date validationTime = new Date();
 
         // tag::rev-data-verifier[]
@@ -238,18 +239,30 @@ public class CertificateVerifierSnippet {
         // For customization directly in RevocationDataVerifier, the following methods
         // may be used:
 
-        // #setAcceptableDigestAlgorithms method is used to provide a list of DigestAlgorithms
-        // to be accepted during the revocation data validation.
+        // Cryptographic constraints can be configured either as a list of
+        // SignatureAlgorithm's OR as a collection of DigestAlgorithm and
+        // EncryptionAlgorithm pairs.
+        // NOTE : 'OR' applies inclusively.
+
+        // #setAcceptableDigestAlgorithms method defines an explicit list of
+        // acceptable SignatureAlgorithms with the minimal accepted key length.
         // Default : collection of algorithms is synchronized with ETSI 119 312
+        Map<SignatureAlgorithm, Integer> signatureAlgorithms = new HashMap<>();
+        signatureAlgorithms.put(SignatureAlgorithm.RSA_SSA_PSS_SHA256_MGF1, 1900);
+        signatureAlgorithms.put(SignatureAlgorithm.RSA_SSA_PSS_SHA384_MGF1, 1900);
+        signatureAlgorithms.put(SignatureAlgorithm.RSA_SSA_PSS_SHA512_MGF1, 1900);
+        revocationDataVerifier.setAcceptableSignatureAlgorithmKeyLength(signatureAlgorithms);
+
+        // #setAcceptableDigestAlgorithms method is used to provide a list of DigestAlgorithms
+        // to be accepted during the revocation data validation, in a combination with
+        // corresponding EncryptionAlgorithms.
         revocationDataVerifier.setAcceptableDigestAlgorithms(Arrays.asList(
                 DigestAlgorithm.SHA224, DigestAlgorithm.SHA256, DigestAlgorithm.SHA384, DigestAlgorithm.SHA512,
                 DigestAlgorithm.SHA3_256, DigestAlgorithm.SHA3_384, DigestAlgorithm.SHA3_512));
 
         // #setAcceptableEncryptionAlgorithmKeyLength method defines a list of acceptable
-        // encryption algorithms and their corresponding key length. Revocation tokens
-        // signed with other algorithms or with a key length smaller than one defined within
-        // the map will be skipped.
-        // Default : collection of algorithms is synchronized with ETSI 119 312
+        // encryption algorithms and their corresponding minimal accepted key length,
+        // in a combination with corresponding DigestAlgorithms.
         Map<EncryptionAlgorithm, Integer> encryptionAlgos = new HashMap<>();
         encryptionAlgos.put(EncryptionAlgorithm.DSA, 2048);
         encryptionAlgos.put(EncryptionAlgorithm.RSA, 1900);

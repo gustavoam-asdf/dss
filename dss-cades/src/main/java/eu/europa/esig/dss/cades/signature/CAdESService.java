@@ -22,6 +22,8 @@ package eu.europa.esig.dss.cades.signature;
 
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.CAdESUtils;
+import eu.europa.esig.dss.cades.evidencerecord.CAdESEmbeddedEvidenceRecordBuilder;
+import eu.europa.esig.dss.cades.evidencerecord.CAdESEvidenceRecordIncorporationParameters;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.cms.CMSUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -29,6 +31,7 @@ import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.enumerations.TimestampType;
+import eu.europa.esig.dss.evidencerecord.EvidenceRecordIncorporationService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DigestDocument;
@@ -38,9 +41,10 @@ import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.signature.AbstractSignatureService;
 import eu.europa.esig.dss.signature.CounterSignatureService;
-import eu.europa.esig.dss.signature.SigningOperation;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.resources.DSSResourcesHandlerBuilder;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
@@ -63,7 +67,8 @@ import java.util.Objects;
  */
 public class CAdESService extends
 		AbstractSignatureService<CAdESSignatureParameters, CAdESTimestampParameters> 
-		implements CounterSignatureService<CAdESCounterSignatureParameters> {
+		implements CounterSignatureService<CAdESCounterSignatureParameters>,
+		           EvidenceRecordIncorporationService<CAdESEvidenceRecordIncorporationParameters> {
 
 	private static final long serialVersionUID = -7744554779153433450L;
 
@@ -151,7 +156,7 @@ public class CAdESService extends
 
 		final CustomContentSigner customContentSigner = new CustomContentSigner(signatureAlgorithm.getJCEId(), signatureValue.getValue());
 		final CMS originalCms = getOriginalCMS(toSignDocument, parameters);
-		if (originalCms == null && SignaturePackaging.DETACHED.equals(packaging) && Utils.isCollectionEmpty(parameters.getDetachedContents())) {
+		if (originalCms == null && SignaturePackaging.DETACHED.equals(packaging)) {
 			parameters.getContext().setDetachedContents(Collections.singletonList(toSignDocument));
 		}
 		final DSSDocument contentToSign = getContentToSign(toSignDocument, parameters, originalCms);
@@ -203,17 +208,15 @@ public class CAdESService extends
 	private DSSDocument getContentToSign(final DSSDocument toSignDocument, final CAdESSignatureParameters parameters,
 										 final CMS originalCms) {
 		final List<DSSDocument> detachedContents = parameters.getDetachedContents();
-		if (Utils.isCollectionNotEmpty(detachedContents)) {
+		if (originalCms == null) {
+			return toSignDocument;
+		} else if (Utils.isCollectionNotEmpty(detachedContents)) {
 			// * CAdES only can sign one document
 			// * ASiC-S -> the document to sign or package.zip
 			// * ASiC-E -> ASiCManifest
 			return detachedContents.get(0);
 		} else {
-			if (originalCms == null) {
-				return toSignDocument;
-			} else {
-				return getSignedContent(originalCms);
-			}
+			return getSignedContent(originalCms);
 		}
 	}
 
@@ -312,6 +315,11 @@ public class CAdESService extends
 		if (cms.isDetachedSignature() != (SignaturePackaging.DETACHED == parameters.getSignaturePackaging())) {
 			throw new IllegalArgumentException(String.format("Unable to create a parallel signature with packaging '%s'" +
 					" which is different than the one used in the original signature!", parameters.getSignaturePackaging()));
+		}
+		for (SignerInformation signerInformation : cms.getSignerInfos()) {
+			if (CAdESUtils.containsEvidenceRecord(signerInformation)) {
+				throw new IllegalInputException("Signature is not possible due to the CMS containing an evidence record unsigned attribute.");
+			}
 		}
 	}
 
@@ -432,6 +440,19 @@ public class CAdESService extends
 		CAdESCounterSignatureBuilder counterSignatureBuilder = new CAdESCounterSignatureBuilder(certificateVerifier);
 		counterSignatureBuilder.setResourcesHandlerBuilder(resourcesHandlerBuilder);
 		return counterSignatureBuilder;
+	}
+
+	@Override
+	public DSSDocument addSignatureEvidenceRecord(DSSDocument signatureDocument, DSSDocument evidenceRecordDocument,
+												  CAdESEvidenceRecordIncorporationParameters parameters) {
+		Objects.requireNonNull(signatureDocument, "The signature document cannot be null");
+		Objects.requireNonNull(evidenceRecordDocument, "The evidence record document cannot be null");
+
+		CAdESEmbeddedEvidenceRecordBuilder builder = new CAdESEmbeddedEvidenceRecordBuilder(certificateVerifier);
+		DSSDocument signatureWithEvidenceRecord = builder.addEvidenceRecord(signatureDocument, evidenceRecordDocument, parameters);
+		signatureWithEvidenceRecord.setName(getFinalFileName(signatureDocument, SigningOperation.ADD_EVIDENCE_RECORD));
+		signatureWithEvidenceRecord.setMimeType(signatureDocument.getMimeType());
+		return signatureWithEvidenceRecord;
 	}
 
 	private void assertCounterSignaturePossible(CAdESCounterSignatureParameters parameters) {

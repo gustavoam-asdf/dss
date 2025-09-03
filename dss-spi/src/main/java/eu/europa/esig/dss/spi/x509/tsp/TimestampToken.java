@@ -29,7 +29,6 @@ import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureValidity;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.ManifestFile;
@@ -39,8 +38,8 @@ import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
-import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.security.DSSSignerInformationVerifierSecurityFactory;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.SignerIdentifier;
@@ -57,8 +56,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
-import org.bouncycastle.operator.OperatorException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.slf4j.Logger;
@@ -400,7 +397,7 @@ public class TimestampToken extends Token {
 
 		final X509CertificateHolder x509CertificateHolder = DSSASN1Utils.getX509CertificateHolder(candidate);
 		if (timeStamp.getSID().match(x509CertificateHolder)) {
-			SignerInformationVerifier signerInformationVerifier = getSignerInformationVerifier(candidate);
+			SignerInformationVerifier signerInformationVerifier = DSSSignerInformationVerifierSecurityFactory.CERTIFICATE_TOKEN_INSTANCE.build(candidate);
 
 			// Try firstly to validate as a Timestamp and if that fails try to validate the
 			// timestamp as a CMSSignedData
@@ -457,16 +454,6 @@ public class TimestampToken extends Token {
 			}
 			signatureInvalidityReason = e.getClass().getSimpleName() + " : " + e.getMessage();
 			return false;
-		}
-	}
-
-	private SignerInformationVerifier getSignerInformationVerifier(final CertificateToken candidate) {
-		try {
-			final JcaSimpleSignerInfoVerifierBuilder verifier = new JcaSimpleSignerInfoVerifierBuilder();
-			verifier.setProvider(DSSSecurityProvider.getSecurityProviderName());
-			return verifier.build(candidate.getCertificate());
-		} catch (OperatorException e) {
-			throw new DSSException("Unable to build an instance of SignerInformationVerifier", e);
 		}
 	}
 	
@@ -823,7 +810,7 @@ public class TimestampToken extends Token {
 	 *
 	 * @return TRUE if all reference validations are valid, FALSE otherwise
 	 */
-	protected boolean areReferenceValidationsValid() {
+	public boolean areReferenceValidationsValid() {
 		if (Utils.isCollectionNotEmpty(referenceValidations)) {
 			for (ReferenceValidation referenceValidation : referenceValidations) {
 				if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE != referenceValidation.getType() &&

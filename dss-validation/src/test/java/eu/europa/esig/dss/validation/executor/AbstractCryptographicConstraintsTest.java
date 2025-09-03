@@ -23,8 +23,8 @@ package eu.europa.esig.dss.validation.executor;
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.policy.EtsiValidationPolicy;
-import eu.europa.esig.dss.policy.ValidationPolicy;
 import eu.europa.esig.dss.policy.jaxb.Algo;
 import eu.europa.esig.dss.policy.jaxb.AlgoExpirationDate;
 import eu.europa.esig.dss.policy.jaxb.BasicSignatureConstraints;
@@ -173,7 +173,7 @@ public abstract class AbstractCryptographicConstraintsTest extends AbstractTestV
 		List<Algo> algorithms = algoExpirationDate.getAlgos();
 		boolean listContainsAlgorithms = false;
 		for (Algo algorithm : algorithms) {
-			if (algorithm.getValue().equals(algorithmName) && algorithm.getSize().equals(keySize)) {
+			if (algorithm.getValue().equals(algorithmName) && algorithm.getSize().compareTo(keySize) <= 0){
 				algorithm.setDate(expirationDate);
 				listContainsAlgorithms = true;
 			}

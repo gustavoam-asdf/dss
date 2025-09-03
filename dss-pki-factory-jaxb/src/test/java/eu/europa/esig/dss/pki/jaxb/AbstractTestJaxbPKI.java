@@ -34,7 +34,7 @@ public abstract class AbstractTestJaxbPKI {
     protected static final String XML_FOLDER = "src/test/resources/pki";
 
     static {
-        Security.addProvider(DSSSecurityProvider.getSecurityProvider());
+        DSSSecurityProvider.initSystemProviders();
         loadPki();
     }
 

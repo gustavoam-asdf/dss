@@ -61,7 +61,7 @@ public class CAdESSignaturePolicyStoreBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(CAdESSignaturePolicyStoreBuilder.class);
 
 	/** This object is used to create data container objects such as an OutputStream or a DSSDocument */
-	protected DSSResourcesHandlerBuilder resourcesHandlerBuilder;
+	private DSSResourcesHandlerBuilder resourcesHandlerBuilder;
 
 	/**
 	 * Default constructor
@@ -297,6 +297,9 @@ public class CAdESSignaturePolicyStoreBuilder {
 	private void assertSignaturePolicyStoreExtensionPossible(SignerInformation signerInformation) {
 		if (CAdESUtils.containsATSTv2(signerInformation)) {
 			throw new IllegalInputException("Cannot add signature policy store to a CAdES containing an archiveTimestampV2");
+		}
+		if (CAdESUtils.containsEvidenceRecord(signerInformation)) {
+			throw new IllegalInputException("Cannot add signature policy store to a CMS containing an evidence record unsigned attribute.");
 		}
 	}
 

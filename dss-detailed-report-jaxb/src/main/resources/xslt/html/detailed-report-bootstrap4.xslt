@@ -182,7 +182,9 @@
 					<xsl:apply-templates select="dss:Timestamp">
 						<xsl:with-param name="parentId" select="$idToken"/>
 					</xsl:apply-templates>
-					<xsl:apply-templates select="dss:ValidationProcessEvidenceRecord"/>
+					<xsl:apply-templates select="dss:ValidationProcessEvidenceRecord">
+						<xsl:with-param name="parentId" select="$idToken"/>
+					</xsl:apply-templates>
 				</div>
 			</xsl:if>
 		</div>
@@ -223,6 +225,7 @@
 					<xsl:apply-templates select="dss:XCV" />
 					<xsl:apply-templates select="dss:CV" />
 					<xsl:apply-templates select="dss:SAV" />
+					<xsl:apply-templates select="dss:AOV" />
 
     				<xsl:if test="$PSV != ''">
 						<hr />
@@ -283,8 +286,18 @@
 	</xsl:template>
 
 	<xsl:template match="dss:ValidationProcessBasicTimestamp|dss:ValidationProcessArchivalDataTimestamp|dss:ValidationProcessEvidenceRecord">
-   		<div>
-   			<xsl:attribute name="class">card mb-2 mb-sm-3</xsl:attribute>
+		<xsl:param name="parentId" />
+
+		<xsl:variable name="idToken">
+			<xsl:choose>
+				<xsl:when test="$parentId"><xsl:value-of select="name()"/>-<xsl:value-of select="$parentId" /></xsl:when>
+				<xsl:otherwise><xsl:value-of select="@Id" /></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<div>
+			<xsl:attribute name="class">card mb-2 mb-sm-3</xsl:attribute>
+			<xsl:attribute name="id"><xsl:value-of select="$idToken"/></xsl:attribute>
 
     		<div>
     			<xsl:attribute name="class">card-header</xsl:attribute>
@@ -329,7 +342,10 @@
 	    		<div>
 					<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
 		        	<xsl:attribute name="id">collapse<xsl:value-of select="name(.)"/><xsl:value-of select="../@Id"/></xsl:attribute>
-		        	<xsl:apply-templates/>
+		        	<xsl:apply-templates>
+						<xsl:with-param name="parentId" select="$idToken"/>
+					</xsl:apply-templates>
+
 	    		</div>
 	    	</xsl:if>
     	</div>
@@ -543,9 +559,18 @@
         </xsl:choose>
     </xsl:template>
 	
-    <xsl:template match="dss:FC|dss:ISC|dss:VCI|dss:CV|dss:SAV|dss:XCV|dss:PSV|dss:PSV_CRS|dss:PCV|dss:VTS">
+    <xsl:template match="dss:FC|dss:ISC|dss:VCI|dss:CV|dss:SAV|dss:AOV|dss:XCV|dss:PSV|dss:PSV_CRS|dss:PCV|dss:VTS">
+		<xsl:param name="parentId" />
+
+		<xsl:variable name="currentId">
+			<xsl:choose>
+				<xsl:when test="$parentId"><xsl:value-of select="$parentId" />-<xsl:value-of select="name()"/></xsl:when>
+				<xsl:otherwise><xsl:value-of select="../@Id"/>-<xsl:value-of select="name()"/></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
 		<div>
-       		<xsl:attribute name="id"><xsl:value-of select="../@Id"/>-<xsl:value-of select="name()"/></xsl:attribute>
+       		<xsl:attribute name="id"><xsl:value-of select="$currentId"/></xsl:attribute>
 			<xsl:attribute name="class">row mt-1 pl-1 pl-sm-0 pt-1 pt-sm-0</xsl:attribute>
 			<div>
 				<xsl:attribute name="class">col</xsl:attribute>
@@ -700,6 +725,8 @@
     </xsl:template>
 
     <xsl:template match="dss:Constraint">
+		<xsl:param name="parentId" />
+
 	    <div>
 	    	<xsl:attribute name="class">row constraint mb-1 pl-1 pl-sm-0 pt-1 pt-sm-0</xsl:attribute>
 	    	<div>
@@ -758,6 +785,18 @@
 								</xsl:when>
 								<xsl:when test="$BlockType='PSV_CRS'">
 									<xsl:attribute name="href">#<xsl:value-of select="../../@Id"/>-PSV_CRS</xsl:attribute>
+								</xsl:when>
+								<xsl:when test="$BlockType='AOV_XCV' and name(..)='AOV'">
+									<xsl:attribute name="href">#SubXCV-<xsl:value-of select="concat(@Id, '-', ../../@Id)"/></xsl:attribute>
+								</xsl:when>
+								<xsl:when test="$BlockType='AOV_XCV' and name(..)='SubXCV'">
+									<xsl:attribute name="href">#<xsl:value-of select="../../../@Id"/>-AOV</xsl:attribute>
+								</xsl:when>
+								<xsl:when test="$BlockType='AOV' and name(..)='ValidationProcessEvidenceRecord'">
+									<xsl:attribute name="href">#<xsl:value-of select="$parentId"/>-AOV</xsl:attribute>
+								</xsl:when>
+								<xsl:when test="$BlockType='AOV'">
+									<xsl:attribute name="href">#<xsl:value-of select="@Id"/>-AOV</xsl:attribute>
 								</xsl:when>
 								<xsl:when test="$BlockType='PCV'">
 									<xsl:attribute name="href">#<xsl:value-of select="@Id"/>-PCV</xsl:attribute>

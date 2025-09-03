@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.cms.stream.bc;
 
 import eu.europa.esig.dss.model.DSSException;
@@ -12,7 +32,6 @@ import org.bouncycastle.asn1.BEROctetStringGenerator;
 import org.bouncycastle.asn1.BERSequenceGenerator;
 import org.bouncycastle.asn1.BERSet;
 import org.bouncycastle.asn1.BERTaggedObject;
-import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DLSet;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.asn1.cms.SignerInfo;
@@ -35,10 +54,11 @@ import java.util.Set;
 /**
  * Extension of {@code CMSSignedDataStreamGenerator} in order to provide a custom digest algorithms set.
  * NOTE: This class contains a number of copy-pasted methods from CMSSignedDataStreamGenerator.
- * An issue {@link <a href="https://github.com/bcgit/bc-java/issues/1982">https://github.com/bcgit/bc-java/issues/1982</a>}
+ * An issue {@code <a href="https://github.com/bcgit/bc-java/issues/1982">https://github.com/bcgit/bc-java/issues/1982</a>}
  * has been created in order to provide digestAlgorithms to original {@code CMSSignedDataStreamGenerator}.
  *
  */
+@SuppressWarnings("unchecked")
 public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerator {
 
     /**
@@ -80,7 +100,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
 
         sigGen.addObject(calculateVersion(eContentType));
 
-        Set<AlgorithmIdentifier> digestAlgs = new HashSet<AlgorithmIdentifier>();
+        Set<AlgorithmIdentifier> digestAlgs = new HashSet<>();
 
         //
         // add the precalculated SignerInfo digest algorithms.
@@ -285,6 +305,10 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
         return digestAlgorithms;
     }
 
+    /**
+     * This class represents a copy of a private protected class
+     * {@code CMSSignedDataStreamGenerator.CmsSignedDataOutputStream}
+     */
     private class DSSCmsSignedDataOutputStream
             extends OutputStream
     {
@@ -294,6 +318,15 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
         private BERSequenceGenerator _sigGen;
         private BERSequenceGenerator _eiGen;
 
+        /**
+         * Default constructor
+         *
+         * @param out {@link OutputStream} to write in
+         * @param contentOID {@link ASN1ObjectIdentifier} of the signed content
+         * @param sGen {@link BERSequenceGenerator}
+         * @param sigGen {@link BERSequenceGenerator}
+         * @param eiGen {@link BERSequenceGenerator}
+         */
         public DSSCmsSignedDataOutputStream(
                 OutputStream         out,
                 ASN1ObjectIdentifier contentOID,
@@ -308,6 +341,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
             _eiGen = eiGen;
         }
 
+        @Override
         public void write(
                 int b)
                 throws IOException
@@ -315,6 +349,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
             _out.write(b);
         }
 
+        @Override
         public void write(
                 byte[] bytes,
                 int    off,
@@ -324,6 +359,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
             _out.write(bytes, off, len);
         }
 
+        @Override
         public void write(
                 byte[] bytes)
                 throws IOException
@@ -331,6 +367,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
             _out.write(bytes);
         }
 
+        @Override
         public void close()
                 throws IOException
         {
@@ -359,13 +396,24 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
             ASN1EncodableVector signerInfos = new ASN1EncodableVector();
 
             //
+            // add the precalculated SignerInfo objects
+            //
+            {
+                Iterator it = _signers.iterator();
+                while (it.hasNext())
+                {
+                    SignerInformation signer = (SignerInformation)it.next();
+                    signerInfos.add(signer.toASN1Structure());
+                }
+            }
+
+            //
             // add the generated SignerInfo objects
             //
 
             for (Iterator it = signerGens.iterator(); it.hasNext();)
             {
                 SignerInfoGenerator sigGen = (SignerInfoGenerator)it.next();
-
 
                 try
                 {
@@ -381,19 +429,7 @@ public class DSSCMSSignedDataStreamGenerator extends CMSSignedDataStreamGenerato
                 }
             }
 
-            //
-            // add the precalculated SignerInfo objects
-            //
-            {
-                Iterator it = _signers.iterator();
-                while (it.hasNext())
-                {
-                    SignerInformation signer = (SignerInformation)it.next();
-                    signerInfos.add(signer.toASN1Structure());
-                }
-            }
-
-            _sigGen.getRawOutputStream().write(new DERSet(signerInfos).getEncoded());
+            _sigGen.getRawOutputStream().write(new DLSet(signerInfos).getEncoded());
 
             _sigGen.close();
             _sGen.close();

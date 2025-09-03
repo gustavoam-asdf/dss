@@ -46,7 +46,7 @@ class InternallyDetachedSignatureBuilder extends XPathPlacementSignatureBuilder 
 	private static final String DEFAULT_SIGNATURE_CONTAINER_NAME = "internally-detached";
 
 	/**
-	 * The default constructor for InternallyDetachedSignatureBuilder.<br>
+	 * The default constructor for InternallyDetachedSignatureBuilder for a document signing.
 	 * The internally detached signature uses by default the exclusive method of
 	 * canonicalization.
 	 * 
@@ -64,12 +64,40 @@ class InternallyDetachedSignatureBuilder extends XPathPlacementSignatureBuilder 
 		super(params, document, certificateVerifier);
 	}
 
+	/**
+	 * The default constructor for InternallyDetachedSignatureBuilder for multiple documents signing.
+	 * The internally detached signature uses by default the exclusive method of
+	 * canonicalization.
+	 *
+	 * @param params
+	 *                            The set of parameters relating to the structure
+	 *                            and process of the creation or extension of the
+	 *                            electronic signature.
+	 * @param documents
+	 *                            The original documents to sign.
+	 * @param certificateVerifier
+	 *                            {@link CertificateVerifier} to be used
+	 */
+	public InternallyDetachedSignatureBuilder(final XAdESSignatureParameters params, final List<DSSDocument> documents,
+											  final CertificateVerifier certificateVerifier) {
+		super(params, documents, certificateVerifier);
+	}
+
+	@Override
+	protected void assertSignaturePossible() {
+		super.assertSignaturePossible();
+
+		if (params.getRootDocument() == null && Utils.isStringNotEmpty(params.getXPathLocationString())) {
+			assertOriginalXmlDocumentValid();
+		}
+	}
+
 	@Override
 	protected Document buildRootDocumentDom() {
 		if (params.getRootDocument() != null) {
 			return params.getRootDocument();
 		} else if (Utils.isStringNotEmpty(params.getXPathLocationString())) {
-			return DomUtils.buildDOM(document);
+			return DomUtils.buildDOM(documents.get(0));
 		} else {
 			return createDefaultContainer();
 		}

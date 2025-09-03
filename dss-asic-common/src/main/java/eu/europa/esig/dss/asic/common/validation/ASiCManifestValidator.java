@@ -74,7 +74,7 @@ public class ASiCManifestValidator {
                 DSSDocument signedDocument = DSSUtils.getDocumentWithName(signedDocuments, entry.getUri());
                 if (signedDocument != null) {
                     entry.setFound(true);
-                    entry.setDocumentName(signedDocument.getName());
+                    entry.setDocument(signedDocument);
                     byte[] computedDigest = signedDocument.getDigestValue(entry.getDigest().getAlgorithm());
                     if (Arrays.equals(entry.getDigest().getValue(), computedDigest)) {
                         entry.setIntact(true);

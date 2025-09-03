@@ -20,9 +20,11 @@
  */
 package eu.europa.esig.dss.validation.process;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCRS;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCryptographicValidation;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlRAC;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlXCV;
@@ -36,14 +38,14 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.enumerations.SubContext;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.enumerations.ValidationTime;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.SubContext;
-import eu.europa.esig.dss.policy.jaxb.Level;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.vpfswatsp.POEExtraction;
 
@@ -190,12 +192,12 @@ public class ValidationProcessUtils {
 	 * @param currentTime {@link Date}
 	 * @param bbbs a map of {@link XmlBasicBuildingBlocks}
 	 * @param poe {@link POEExtraction}
-	 * @param revocationIssuerSunsetDateConstraint {@link LevelConstraint}
+	 * @param revocationIssuerSunsetDateConstraint {@link LevelRule}
 	 * @return a list of {@link CertificateRevocationWrapper}s
 	 */
 	public static List<CertificateRevocationWrapper> getAcceptableRevocationDataForPSVIfExistOrReturnAll(
 			TokenProxy token, CertificateWrapper certificate, Date currentTime, Map<String, XmlBasicBuildingBlocks> bbbs,
-			POEExtraction poe, LevelConstraint revocationIssuerSunsetDateConstraint) {
+			POEExtraction poe, LevelRule revocationIssuerSunsetDateConstraint) {
 		List<CertificateRevocationWrapper> revocationWrappers =
 				filterRevocationDataForPastSignatureValidation(token, certificate, currentTime, bbbs, poe, revocationIssuerSunsetDateConstraint);
 		if (Utils.isCollectionNotEmpty(revocationWrappers)) {
@@ -213,12 +215,12 @@ public class ValidationProcessUtils {
 	 * @param currentTime {@link Date}
 	 * @param bbbs a map of {@link XmlBasicBuildingBlocks}
 	 * @param poe {@link POEExtraction}
-	 * @param revocationIssuerSunsetDateConstraint {@link LevelConstraint}
+	 * @param revocationIssuerSunsetDateConstraint {@link LevelRule}
 	 * @return a list of {@link CertificateRevocationWrapper}s
 	 */
 	private static List<CertificateRevocationWrapper> filterRevocationDataForPastSignatureValidation(
 			TokenProxy token, CertificateWrapper certificate, Date currentTime, Map<String, XmlBasicBuildingBlocks> bbbs,
-			POEExtraction poe, LevelConstraint revocationIssuerSunsetDateConstraint) {
+			POEExtraction poe, LevelRule revocationIssuerSunsetDateConstraint) {
 		final List<CertificateRevocationWrapper> certificateRevocations = new ArrayList<>();
 
 		for (CertificateRevocationWrapper certificateRevocation : certificate.getCertificateRevocationData()) {
@@ -241,17 +243,17 @@ public class ValidationProcessUtils {
 	 *
 	 * @param certificateWrapper {@link CertificateWrapper} trust anchor candidate
 	 * @param currentTime {@link Date} to verify certificate's sunset date, when applicable
-	 * @param certificateSunsetDateConstraint {@link LevelConstraint}
+	 * @param certificateSunsetDateConstraint {@link LevelRule}
 	 * @return TRUE if the certificate is a trust anchor at the given time, FALSE otherwise
 	 */
 	public static boolean isTrustAnchor(CertificateWrapper certificateWrapper, Date currentTime,
-										LevelConstraint certificateSunsetDateConstraint) {
+										LevelRule certificateSunsetDateConstraint) {
 		return certificateWrapper.isTrusted() &&
 				(certificateWrapper.getTrustSunsetDate() == null || currentTime.before(certificateWrapper.getTrustSunsetDate()) ||
 						!certificateSunsetDateCheckEnforced(certificateSunsetDateConstraint));
 	}
 
-	private static boolean certificateSunsetDateCheckEnforced(LevelConstraint constraint) {
+	private static boolean certificateSunsetDateCheckEnforced(LevelRule constraint) {
 		return constraint != null && Level.FAIL == constraint.getLevel();
 	}
 
@@ -352,9 +354,12 @@ public class ValidationProcessUtils {
 	 * @return {@link String} formatted date
 	 */
 	public static String getFormattedDate(Date date) {
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return sdf.format(date);
+		if (date != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			return sdf.format(date);
+		}
+		return null;
 	}
 	
 	/**
@@ -389,6 +394,8 @@ public class ValidationProcessUtils {
 			return MessageTag.ACCM_POS_REVOC_SIG;
 		case CERTIFICATE:
 			return MessageTag.ACCM_POS_CERT_CHAIN;
+		case EVIDENCE_RECORD:
+			return MessageTag.ACCM_POS_EV_RECORD;
 		default:
 			throw new IllegalArgumentException("Unsupported context " + context);
 		}
@@ -461,6 +468,8 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_ER_TST;
 			case EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE:
 				return MessageTag.ACCM_POS_ER_TST_SEQ;
+			case EVIDENCE_RECORD_MASTER_SIGNATURE:
+				return MessageTag.ACCM_POS_ER_MST_SIG;
 			default:
 				throw new IllegalArgumentException(String.format(
 						"The provided DigestMatcherType '%s' is not supported!", digestMatcher.getType()));
@@ -571,14 +580,40 @@ public class ValidationProcessUtils {
 	 * @param subContext {@link SubContext}
 	 * @return {@link MessageTag}
 	 */
-	public static MessageTag getSubContextPosition(SubContext subContext) {
-		switch (subContext) {
-			case SIGNING_CERT:
-				return MessageTag.SIGNING_CERTIFICATE;
-			case CA_CERTIFICATE:
-				return MessageTag.CA_CERTIFICATE;
+	public static MessageTag getSubContextPosition(Context context, SubContext subContext) {
+		switch (context) {
+			case CERTIFICATE:
+				return MessageTag.CERTIFICATE;
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+				switch (subContext) {
+					case SIGNING_CERT:
+						return MessageTag.SIGNING_CERTIFICATE;
+					case CA_CERTIFICATE:
+						return MessageTag.CA_CERTIFICATE;
+					default:
+						throw new IllegalArgumentException("Unsupported subContext " + subContext);
+				}
+			case TIMESTAMP:
+				switch (subContext) {
+					case SIGNING_CERT:
+						return MessageTag.TIMESTAMP_SIG_CERT;
+					case CA_CERTIFICATE:
+						return MessageTag.TIMESTAMP_CA_CERT;
+					default:
+						throw new IllegalArgumentException("Unsupported subContext " + subContext);
+				}
+			case REVOCATION:
+				switch (subContext) {
+					case SIGNING_CERT:
+						return MessageTag.REVOCATION_SIG_CERT;
+					case CA_CERTIFICATE:
+						return MessageTag.REVOCATION_CA_CERT;
+					default:
+						throw new IllegalArgumentException("Unsupported subContext " + subContext);
+				}
 			default:
-				throw new IllegalArgumentException("Unsupported subContext " + subContext);
+				throw new IllegalArgumentException("Unsupported context " + context);
 		}
 	}
 
@@ -667,17 +702,107 @@ public class ValidationProcessUtils {
 	}
 
 	/**
+	 * Returns final cryptographic validation from the AOV block.
+	 * This method returns the first algorithm which is going to expire in case of failure,
+	 * or the first applicable algorithm (which is SignatureValue's signature algorithm in most of the cases).
+	 * In case of a valid cryptographic validation, returns the first available entry
+	 *
+	 * @param aov {@link XmlAOV}
+	 * @return {@link XmlCryptographicValidation}
+	 */
+	public static XmlCryptographicValidation getFinalCryptographicValidation(XmlAOV aov) {
+		if (aov == null || aov.getConclusion() == null) {
+			return null;
+		}
+		if (Indication.PASSED == aov.getConclusion().getIndication()) {
+			return getPrimaryCryptographicValidation(aov);
+		} else {
+			return getFailCryptographicValidation(aov);
+		}
+	}
+
+	/**
+	 * Returns final cryptographic validation from the AOV block.
+	 * This method returns the first algorithm which is going to expire in case of failure,
+	 * or the first applicable algorithm (which is SignatureValue's signature algorithm in most of the cases).
+	 *
+	 * @param aov {@link XmlAOV}
+	 * @return {@link XmlCryptographicValidation}
+	 */
+	public static XmlCryptographicValidation getFailCryptographicValidation(XmlAOV aov) {
+		if (aov == null) {
+			return null;
+		}
+		XmlCryptographicValidation result = null;
+		if (aov.getSignatureCryptographicValidation() != null) {
+			result = aov.getSignatureCryptographicValidation();
+		}
+		if (aov.getSignedAttributesValidation() != null &&
+				(result == null || (Indication.PASSED == result.getConclusion().getIndication() && result.getNotAfter() == null) ||
+						(aov.getSignedAttributesValidation().getNotAfter() != null && result.getNotAfter() != null && result.getNotAfter().after(aov.getSignedAttributesValidation().getNotAfter())))) {
+			result = aov.getSignedAttributesValidation();
+		}
+		if (aov.getDigestMatchersValidation() != null &&
+				(result == null || (Indication.PASSED == result.getConclusion().getIndication() && result.getNotAfter() == null) ||
+						(aov.getDigestMatchersValidation().getNotAfter() != null && result.getNotAfter() != null && result.getNotAfter().after(aov.getDigestMatchersValidation().getNotAfter())))) {
+			result = aov.getDigestMatchersValidation();
+		}
+		if (aov.getCertificateChainCryptographicValidation() != null && (
+				Utils.isCollectionNotEmpty(aov.getCertificateChainCryptographicValidation().getCertificateCryptographicValidation()))) {
+			for (XmlCryptographicValidation cryptographicValidation : aov.getCertificateChainCryptographicValidation().getCertificateCryptographicValidation()) {
+				if (cryptographicValidation != null &&
+						(result == null || (Indication.PASSED == result.getConclusion().getIndication() && result.getNotAfter() == null) ||
+								(cryptographicValidation.getNotAfter() != null && result.getNotAfter() != null && result.getNotAfter().after(cryptographicValidation.getNotAfter())))) {
+					result = cryptographicValidation;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the first available Cryptographic Validation entry
+	 *
+	 * @param aov {@link XmlAOV}
+	 * @return {@link XmlCryptographicValidation}
+	 */
+	public static XmlCryptographicValidation getPrimaryCryptographicValidation(XmlAOV aov) {
+		if (aov == null) {
+			return null;
+		}
+		XmlCryptographicValidation result = null;
+		if (aov.getSignatureCryptographicValidation() != null) {
+			result = aov.getSignatureCryptographicValidation();
+		}
+		if (result == null && aov.getSignedAttributesValidation() != null) {
+			result = aov.getSignedAttributesValidation();
+		}
+		if (result == null && aov.getDigestMatchersValidation() != null) {
+			result = aov.getDigestMatchersValidation();
+		}
+		if (result == null && aov.getCertificateChainCryptographicValidation() != null && (
+				Utils.isCollectionNotEmpty(aov.getCertificateChainCryptographicValidation().getCertificateCryptographicValidation()))) {
+			for (XmlCryptographicValidation cryptographicValidation : aov.getCertificateChainCryptographicValidation().getCertificateCryptographicValidation()) {
+				if (cryptographicValidation != null) {
+					result = cryptographicValidation;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * This method is used to return the current level with a max limit of the {@code maxLevel}
 	 *
-	 * @param constraint {@link LevelConstraint} to check
+	 * @param constraint {@link LevelRule} to check
 	 * @param maxLevel {@link Level}
-	 * @return {@link LevelConstraint}
+	 * @return {@link LevelRule}
 	 */
-	public static LevelConstraint getConstraintOrMaxLevel(LevelConstraint constraint, Level maxLevel) {
+	public static LevelRule getConstraintOrMaxLevel(LevelRule constraint, Level maxLevel) {
 		if (constraint == null || maxLevel == null) {
 			return null;
 		}
-		final LevelConstraint newConstraint = new LevelConstraint();
 		Level level;
 		switch (constraint.getLevel()) {
 			case FAIL:
@@ -705,8 +830,21 @@ public class ValidationProcessUtils {
 			default:
 				throw new IllegalArgumentException(String.format("The support of Level '%s' is not implemented!", constraint.getLevel()));
 		}
-		newConstraint.setLevel(level);
-		return newConstraint;
+
+		return getLevelRule(level);
+	}
+
+	/**
+	 * Generates an anonymous implementation of the {@code LevelRule} with the given {@code Level}
+	 *
+	 * @param level {@link Level}
+	 * @return {@link LevelRule}
+	 */
+	public static LevelRule getLevelRule(Level level) {
+		if (level == null) {
+			return null;
+		}
+		return () -> level;
 	}
 
 }

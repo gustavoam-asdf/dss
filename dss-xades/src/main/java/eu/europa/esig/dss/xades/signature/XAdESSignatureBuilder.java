@@ -40,7 +40,6 @@ import eu.europa.esig.dss.model.UserNotice;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.BaselineBCertificateSelector;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampInclude;
@@ -62,23 +61,19 @@ import eu.europa.esig.dss.xades.validation.XAdESAttributeIdentifier;
 import eu.europa.esig.dss.xml.common.definition.DSSElement;
 import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigAttribute;
 import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigElement;
-import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigPath;
 import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.xml.utils.XMLCanonicalizer;
-import org.apache.xml.security.transforms.Transforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -91,15 +86,11 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 
 	private static final Logger LOG = LoggerFactory.getLogger(XAdESSignatureBuilder.class);
 
-	/**
-	 * Indicates if the signature was already built. (Two steps building)
-	 */
+	/** Indicates if the signature was already built. (Two steps building) */
 	protected boolean built = false;
 
-	/**
-	 * This is the reference to the original document to sign
-	 */
-	protected DSSDocument document;
+	/** List of original documents to be signed */
+	protected List<DSSDocument> documents;
 
 	/** The canonicalization method used for KeyInfo signing */
 	protected String keyInfoCanonicalizationMethod;
@@ -144,7 +135,7 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 	protected static final String XADES_PREFIX = "xades-";
 
 	/**
-	 * Creates the signature according to the packaging
+	 * Creates the signature according to the packaging for signing a document.
 	 *
 	 * @param params
 	 *            The set of parameters relating to the structure and process of the creation or extension of the
@@ -157,24 +148,41 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 	 */
 	public static XAdESSignatureBuilder getSignatureBuilder(final XAdESSignatureParameters params, final DSSDocument document,
 			final CertificateVerifier certificateVerifier) {
-		Objects.requireNonNull(params.getSignaturePackaging(), "Cannot create a SignatureBuilder. SignaturePackaging is not defined!");
-		
+		return getSignatureBuilder(params, Collections.singletonList(document), certificateVerifier);
+	}
+
+	/**
+	 * Creates the signature according to the packaging for signing a list of documents.
+	 *
+	 * @param params
+	 *            The set of parameters relating to the structure and process of the creation or extension of the
+	 *            electronic signature.
+	 * @param documents
+	 *            The list of original documents to sign.
+	 * @param certificateVerifier
+	 *            the certificate verifier with its OCSPSource,...
+	 * @return the signature builder linked to the packaging
+	 */
+	public static XAdESSignatureBuilder getSignatureBuilder(final XAdESSignatureParameters params,
+			final List<DSSDocument> documents, final CertificateVerifier certificateVerifier) {
+		Objects.requireNonNull(params.getSignaturePackaging(), "Cannot create a SignatureBuilder. SignaturePackaging shall be defined!");
+
 		switch (params.getSignaturePackaging()) {
 			case ENVELOPED:
-				return new EnvelopedSignatureBuilder(params, document, certificateVerifier);
+				return new EnvelopedSignatureBuilder(params, documents, certificateVerifier);
 			case ENVELOPING:
-				return new EnvelopingSignatureBuilder(params, document, certificateVerifier);
+				return new EnvelopingSignatureBuilder(params, documents, certificateVerifier);
 			case DETACHED:
-				return new DetachedSignatureBuilder(params, document, certificateVerifier);
+				return new DetachedSignatureBuilder(params, documents, certificateVerifier);
 			case INTERNALLY_DETACHED:
-				return new InternallyDetachedSignatureBuilder(params, document, certificateVerifier);
+				return new InternallyDetachedSignatureBuilder(params, documents, certificateVerifier);
 			default:
 				throw new DSSException("Unsupported packaging " + params.getSignaturePackaging());
 		}
 	}
 
 	/**
-	 * The default constructor for SignatureBuilder.
+	 * The constructor for XAdESSignatureBuilder for a document signing.
 	 *
 	 * @param params
 	 *            The set of parameters relating to the structure and process of the creation or extension of the
@@ -185,10 +193,25 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 	 *            the certificate verifier with its OCSPSource,...
 	 */
 	protected XAdESSignatureBuilder(final XAdESSignatureParameters params, final DSSDocument document, final CertificateVerifier certificateVerifier) {
+		this(params, Collections.singletonList(document), certificateVerifier);
+	}
+
+	/**
+	 * The constructor for XAdESSignatureBuilder for multiple document signing.
+	 *
+	 * @param params
+	 *            The set of parameters relating to the structure and process of the creation or extension of the
+	 *            electronic signature.
+	 * @param documents
+	 *            The original documents to sign.
+	 * @param certificateVerifier
+	 *            the certificate verifier with its OCSPSource,...
+	 */
+	protected XAdESSignatureBuilder(final XAdESSignatureParameters params, final List<DSSDocument> documents, final CertificateVerifier certificateVerifier) {
 		super(certificateVerifier);
 		
 		this.params = params;
-		this.document = document;
+		this.documents = documents;
 		this.deterministicId = params.getDeterministicId();
 		
 		setCanonicalizationMethods(params);
@@ -250,73 +273,13 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 		built = true;
 		return canonicalizedSignedInfo;
 	}
-	
-	private void assertSignaturePossible() {
-		if (!DomUtils.isDOM(document)) {
-			return;
-		}
 
-		initRootDocumentDom();
-
-		final NodeList signatureNodeList = DSSXMLUtils.getAllSignaturesExceptCounterSignatures(documentDom);
-		if (signatureNodeList == null || signatureNodeList.getLength() == 0) {
-			return;
-		}
-
-		final Node parentSignatureNode = getParentNodeOfSignature();
-		final Set<Node> parentNodes = getParentNodesChain(parentSignatureNode);
-
-		for (int ii = 0; ii < signatureNodeList.getLength(); ii++) {
-			final Node signatureNode = signatureNodeList.item(ii);
-			NodeList referenceNodeList = DSSXMLUtils.getReferenceNodeList(signatureNode);
-			if (referenceNodeList == null || referenceNodeList.getLength() == 0) {
-				continue;
-			}
-
-			for (int jj = 0; jj < referenceNodeList.getLength(); jj++) {
-				final Node referenceNode = referenceNodeList.item(jj);
-				if (isSignatureCoveredNodeAffected(referenceNode, parentNodes)) {
-					assertDoesNotContainEnvelopedTransform(referenceNode);
-				}
-			}
-		}
-	}
-
-	private Set<Node> getParentNodesChain(Node node) {
-		final Set<Node> nodesChain = new LinkedHashSet<>();
-		nodesChain.add(node);
-		for (Node parentNode = node.getParentNode(); parentNode != null; parentNode = parentNode.getParentNode()) {
-			nodesChain.add(parentNode);
-		}
-		return nodesChain;
-	}
-
-	private boolean isSignatureCoveredNodeAffected(Node referenceNode, Set<Node> affectedNodes) {
-		final String id = DSSXMLUtils.getAttribute(referenceNode, XMLDSigAttribute.URI.getAttributeName());
-		if (id == null) {
-			return false;
-		} else if (Utils.isStringEmpty(id)) {
-			// covers the whole file
-			return true;
-		} else {
-			Node referencedNode = DomUtils.getElementById(documentDom, id);
-			return affectedNodes.contains(referencedNode);
-		}
-	}
-
-	private void assertDoesNotContainEnvelopedTransform(final Node referenceNode) {
-		NodeList transformList = DomUtils.getNodeList(referenceNode, XMLDSigPath.TRANSFORMS_TRANSFORM_PATH);
-		if (transformList != null && transformList.getLength() > 0) {
-			for (int jj = 0; jj < transformList.getLength(); jj++) {
-				final Element transformElement = (Element) transformList.item(jj);
-				String transformAlgorithm = transformElement
-						.getAttribute(XMLDSigAttribute.ALGORITHM.getAttributeName());
-				if (Transforms.TRANSFORM_ENVELOPED_SIGNATURE.equals(transformAlgorithm)) {
-					throw new IllegalInputException(String.format(
-							"The parallel signature is not possible! The provided file contains a signature with an '%s' transform.",
-							Transforms.TRANSFORM_ENVELOPED_SIGNATURE));
-				}
-			}
+	/**
+	 * This method verifies whether the provided documents allow signature creation with the given signature format
+	 */
+	protected void assertSignaturePossible() {
+		if (Utils.collectionSize(documents) == 0) {
+			throw new IllegalArgumentException("No documents have been provided to the signature creation!");
 		}
 	}
 
@@ -337,8 +300,7 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 	}
 
 	private ReferenceBuilder initReferenceBuilder() {
-		List<DSSDocument> detachedContent = Utils.isCollectionNotEmpty(params.getDetachedContents()) ?
-				params.getDetachedContents() : Arrays.asList(document);
+		List<DSSDocument> detachedContent = documents;
 		final ReferenceIdProvider referenceIdProvider = new ReferenceIdProvider();
 		referenceIdProvider.setSignatureParameters(params);
 		return new ReferenceBuilder(detachedContent, params, referenceIdProvider);
@@ -751,13 +713,13 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 			signedPropertiesDom = DSSXMLUtils.ensureNamespacesDefined(documentDom, deterministicId, xadesPath.getSignedPropertiesPath());
 		}
 
-		final byte[] canonicalizedBytes = XMLCanonicalizer.createInstance(signedPropertiesCanonicalizationMethod).canonicalize(getNodeToCanonicalize(signedPropertiesDom));
+		final byte[] digestValue = DSSXMLUtils.getDigestOnCanonicalizedNode(getNodeToCanonicalize(signedPropertiesDom),
+				digestAlgorithm, signedPropertiesCanonicalizationMethod).getValue();
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Canonicalization method  --> {}", signedPropertiesCanonicalizationMethod);
-			LOG.trace("Canonicalized REF_2      --> {}", new String(canonicalizedBytes));
+			LOG.trace("Canonicalization method REF_SigProps  --> {}", signedPropertiesCanonicalizationMethod);
+			LOG.trace("Digest on canonicalized REF_SigProps  --> {}", Utils.toHex(digestValue));
 		}
-
-		incorporateDigestValueOfReference(reference, digestAlgorithm, canonicalizedBytes);
+		incorporateDigestValueOfReference(reference, digestValue);
 		
 	}
 	
@@ -794,27 +756,26 @@ public abstract class XAdESSignatureBuilder extends XAdESBuilder implements Sign
 		
 		final DigestAlgorithm digestAlgorithm = DSSXMLUtils.getReferenceDigestAlgorithmOrDefault(params);
 		DSSXMLUtils.incorporateDigestMethod(reference, digestAlgorithm, getXmldsigNamespace());
-		
-		final byte[] canonicalizedBytes = XMLCanonicalizer.createInstance(keyInfoCanonicalizationMethod).canonicalize(getNodeToCanonicalize(keyInfoDom));
+
+		final byte[] digestValue = DSSXMLUtils.getDigestOnCanonicalizedNode(getNodeToCanonicalize(keyInfoDom),
+				digestAlgorithm, keyInfoCanonicalizationMethod).getValue();
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Canonicalization method   --> {}", keyInfoCanonicalizationMethod);
-			LOG.trace("Canonicalized REF_KeyInfo --> {}", new String(canonicalizedBytes));
+			LOG.trace("Canonicalization method REF_KeyInfo --> {}", keyInfoCanonicalizationMethod);
+			LOG.trace("Digest on canonicalized REF_KeyInfo --> {}", Utils.toHex(digestValue));
 		}
-		incorporateDigestValueOfReference(reference, digestAlgorithm, canonicalizedBytes);
+		incorporateDigestValueOfReference(reference, digestValue);
 	}
 	
 	/**
-	 * Creates the ds:DigestValue DOM object for the given {@code canonicalizedBytes}
+	 * Creates the ds:DigestValue DOM object for the given {@code digestValue}
 	 *
 	 * @param referenceDom - the parent element to append new DOM element to
-	 * @param digestAlgorithm - {@link DigestAlgorithm} to use
-	 * @param canonicalizedBytes - canonicalized byte array of the relevant reference DOM to hash
+	 * @param digestValue - digest value of the reference computed on a canonicalized content
 	 */
-	private void incorporateDigestValueOfReference(final Element referenceDom, final DigestAlgorithm digestAlgorithm,
-												   final byte[] canonicalizedBytes) {
+	private void incorporateDigestValueOfReference(final Element referenceDom, final byte[] digestValue) {
 		final Element digestValueDom = DomUtils.createElementNS(documentDom, getXmldsigNamespace(),
 				XMLDSigElement.DIGEST_VALUE);
-		final String base64EncodedDigestBytes = Utils.toBase64(DSSUtils.digest(digestAlgorithm, canonicalizedBytes));
+		final String base64EncodedDigestBytes = Utils.toBase64(digestValue);
 		final Text textNode = documentDom.createTextNode(base64EncodedDigestBytes);
 		digestValueDom.appendChild(textNode);
 		referenceDom.appendChild(digestValueDom);

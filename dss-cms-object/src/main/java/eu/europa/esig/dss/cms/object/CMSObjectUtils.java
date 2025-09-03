@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.cms.object;
 
 import eu.europa.esig.dss.cms.CMS;
@@ -11,12 +31,15 @@ import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.signature.resources.DSSResourcesHandlerBuilder;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.BEROctetString;
 import org.bouncycastle.asn1.BERSequence;
 import org.bouncycastle.asn1.BERSet;
 import org.bouncycastle.asn1.BERTaggedObject;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
@@ -50,7 +73,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 
 /**
@@ -107,9 +130,15 @@ public class CMSObjectUtils implements ICMSUtils {
 
     @Override
     public CMS replaceSigners(CMS cms, SignerInformationStore newSignerStore) {
-        CMSSignedDataObject cmsSignedDataObject = toCMSSignedDataObject(cms);
-        CMSSignedData cmsSignedData = CMSSignedData.replaceSigners(cmsSignedDataObject.getCMSSignedData(), newSignerStore);
-        return new CMSSignedDataObject(cmsSignedData);
+        try {
+            CMSSignedDataObject cmsSignedDataObject = toCMSSignedDataObject(cms);
+            CMSSignedData cmsSignedData = CMSSignedData.replaceSigners(cmsSignedDataObject.getCMSSignedData(), newSignerStore);
+            return new CMSSignedDataObject(cmsSignedData);
+
+        } catch (Exception e) {
+            throw new DSSException(String.format("Unable to replace signerInfo of CMS SignedData. " +
+                    "Corrupted content has been provided. Reason : %s", e.getMessage()), e);
+        }
     }
 
     @Override
@@ -122,8 +151,10 @@ public class CMSObjectUtils implements ICMSUtils {
             CMSSignedData cmsSignedData = CMSSignedData.replaceCertificatesAndCRLs(cmsSignedDataObject.getCMSSignedData(),
                     certificates, attributeCertificates, newCRLStore);
             return new CMSSignedDataObject(cmsSignedData);
-        } catch (CMSException e) {
-            throw new DSSException(String.format("Unable to replace content of CMS SignedData. Reason : %s", e.getMessage()), e);
+
+        } catch (Exception e) {
+            throw new DSSException(String.format("Unable to replace validation content of CMS SignedData. " +
+                    "Corrupted content has been provided. Reason : %s", e.getMessage()), e);
         }
     }
 
@@ -136,7 +167,7 @@ public class CMSObjectUtils implements ICMSUtils {
      * @return {@link Store}
      */
     public static Store<Encodable> toCRLsStore(Store<X509CRLHolder> crls, Store<?> ocspResponses, Store<?> ocspBasicResponses) {
-        final Collection<Encodable> newCrlsStore = new HashSet<>(crls.getMatches(null));
+        final Collection<Encodable> newCrlsStore = new LinkedHashSet<>(crls.getMatches(null));
         for (Object ocsp : ocspResponses.getMatches(null)) {
             newCrlsStore.add(new OtherRevocationInfoFormat(CMSObjectIdentifiers.id_ri_ocsp_response, (ASN1Encodable) ocsp));
         }
@@ -148,14 +179,20 @@ public class CMSObjectUtils implements ICMSUtils {
 
     @Override
     public CMS populateDigestAlgorithmSet(CMS cms, Collection<AlgorithmIdentifier> digestAlgorithmsToAdd) {
-        CMSSignedDataObject cmsSignedDataObject = toCMSSignedDataObject(cms);
-        CMSSignedData cmsSignedData = cmsSignedDataObject.getCMSSignedData();
-        for (AlgorithmIdentifier asn1ObjectIdentifier : digestAlgorithmsToAdd) {
-            if (!cmsSignedData.getDigestAlgorithmIDs().contains(asn1ObjectIdentifier)) {
-                cmsSignedData = CMSSignedData.addDigestAlgorithm(cmsSignedData, asn1ObjectIdentifier);
+        try {
+            CMSSignedDataObject cmsSignedDataObject = toCMSSignedDataObject(cms);
+            CMSSignedData cmsSignedData = cmsSignedDataObject.getCMSSignedData();
+            for (AlgorithmIdentifier asn1ObjectIdentifier : digestAlgorithmsToAdd) {
+                if (!cmsSignedData.getDigestAlgorithmIDs().contains(asn1ObjectIdentifier)) {
+                    cmsSignedData = CMSSignedData.addDigestAlgorithm(cmsSignedData, asn1ObjectIdentifier);
+                }
             }
+            return new CMSSignedDataObject(cmsSignedData);
+
+        } catch (Exception e) {
+            throw new DSSException(String.format("Unable to populate digest algorithms within CMS SignedData. " +
+                    "Corrupted content has been provided. Reason : %s", e.getMessage()), e);
         }
-        return new CMSSignedDataObject(cmsSignedData);
     }
 
     private static CMSSignedDataObject toCMSSignedDataObject(CMS cms) {
@@ -168,6 +205,25 @@ public class CMSObjectUtils implements ICMSUtils {
     @Override
     public CMS toCMS(TimeStampToken timeStampToken) {
         return new CMSSignedDataObject(timeStampToken.toCMSSignedData());
+    }
+
+    @Override
+    public String getContentInfoEncoding(CMS cms) {
+        CMSSignedDataObject cmsSignedDataObject = toCMSSignedDataObject(cms);
+        final ContentInfo contentInfo = cmsSignedDataObject.getCMSSignedData().toASN1Structure();
+        if (contentInfo.isDefiniteLength()) {
+            return ASN1Encoding.DL;
+        } else {
+            return ASN1Encoding.BER;
+        }
+    }
+
+    @Override
+    public void writeSignedDataDigestAlgorithmsEncoded(CMS cms, OutputStream os) throws IOException {
+        SignedData signedData = getSignedData(cms);
+
+        ASN1Set digestAlgorithms = signedData.getDigestAlgorithms();
+        digestAlgorithms.encodeTo(os);
     }
 
     @Override
@@ -252,6 +308,41 @@ public class CMSObjectUtils implements ICMSUtils {
         }
     }
 
+    @Override
+    public void writeSignedDataSignerInfosEncoded(CMS cms, OutputStream os) throws IOException {
+        SignedData signedData = getSignedData(cms);
+
+        byte[] signerInfosBytes;
+
+        SignerInformationStore signerInfos = cms.getSignerInfos();
+        if (signerInfos != null) {
+            try {
+                ASN1EncodableVector signerInfosVector = new ASN1EncodableVector();
+                for (SignerInformation signerInformation : cms.getSignerInfos()) {
+                    signerInfosVector.add(signerInformation.toASN1Structure());
+                }
+
+                if (signedData.getSignerInfos() instanceof BERSet) {
+                    signerInfosBytes = new BERSet(signerInfosVector).getEncoded();
+                } else {
+                    signerInfosBytes = new DERSet(signerInfosVector).getEncoded();
+                }
+
+            } catch (IOException e) {
+                throw new DSSException(String.format("An error occurred on reading SignedData.signerInfos field : %s", e.getMessage()), e);
+            }
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("SignerInfos: {}", DSSUtils.toHex(signerInfosBytes));
+            }
+            os.write(signerInfosBytes);
+
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("SignerInfos are not present in the SignedData.");
+            }
+        }
+    }
+
     /**
      * Gets SignedData element of the CMS
      *
@@ -293,6 +384,11 @@ public class CMSObjectUtils implements ICMSUtils {
 
     @Override
     public void assertATSv2AugmentationSupported() {
+        // supported, do nothing
+    }
+
+    @Override
+    public void assertEvidenceRecordEmbeddingSupported() {
         // supported, do nothing
     }
 

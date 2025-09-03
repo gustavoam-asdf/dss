@@ -25,7 +25,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicSignature;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
-import eu.europa.esig.dss.policy.jaxb.Level;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.vpfbs.checks.TimestampGenerationTimeNotAfterCertificateExpirationCheck;
@@ -55,7 +56,7 @@ class TimestampGenerationTimeNotAfterCertificateExpirationCheckTest extends Abst
 
         XmlValidationProcessBasicSignature result = new XmlValidationProcessBasicSignature();
         TimestampGenerationTimeNotAfterCertificateExpirationCheck tgtnacec = new TimestampGenerationTimeNotAfterCertificateExpirationCheck<>(
-                i18nProvider, result, new TimestampWrapper(xmlTimestamp), certNotAfter, constraint);
+                i18nProvider, result, new TimestampWrapper(xmlTimestamp), certNotAfter, new LevelConstraintWrapper(constraint));
         tgtnacec.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -79,7 +80,51 @@ class TimestampGenerationTimeNotAfterCertificateExpirationCheckTest extends Abst
 
         XmlValidationProcessBasicSignature result = new XmlValidationProcessBasicSignature();
         TimestampGenerationTimeNotAfterCertificateExpirationCheck tgtnacec = new TimestampGenerationTimeNotAfterCertificateExpirationCheck<>(
-                i18nProvider, result, new TimestampWrapper(xmlTimestamp), certNotAfter, constraint);
+                i18nProvider, result, new TimestampWrapper(xmlTimestamp), certNotAfter, new LevelConstraintWrapper(constraint));
+        tgtnacec.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sameTimeTest() {
+        Date datetime = new Date();
+
+        XmlTimestamp xmlTimestamp = new XmlTimestamp();
+        xmlTimestamp.setProductionTime(datetime);
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlValidationProcessBasicSignature result = new XmlValidationProcessBasicSignature();
+        TimestampGenerationTimeNotAfterCertificateExpirationCheck tgtnacec = new TimestampGenerationTimeNotAfterCertificateExpirationCheck<>(
+                i18nProvider, result, new TimestampWrapper(xmlTimestamp), datetime,  new LevelConstraintWrapper(constraint));
+        tgtnacec.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void contentTstMillisecondAfterTest() {
+        Date revocationTime = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(revocationTime);
+        calendar.add(Calendar.MILLISECOND, 1);
+
+        XmlTimestamp xmlTimestamp = new XmlTimestamp();
+        xmlTimestamp.setProductionTime(calendar.getTime());
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlValidationProcessBasicSignature result = new XmlValidationProcessBasicSignature();
+        TimestampGenerationTimeNotAfterCertificateExpirationCheck tgtnacec = new TimestampGenerationTimeNotAfterCertificateExpirationCheck<>(
+                i18nProvider, result, new TimestampWrapper(xmlTimestamp), revocationTime,  new LevelConstraintWrapper(constraint));
         tgtnacec.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

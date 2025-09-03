@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.cades.validation;
 
+import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.crl.CRLBinary;
@@ -30,7 +31,6 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.RevocationRefOrigin;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.identifier.EncapsulatedRevocationTokenIdentifier;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
@@ -106,9 +106,8 @@ class ExtendToCAdESLtaTest extends AbstractCAdESTestValidation {
 		parameters.setSignatureLevel(SignatureLevel.CAdES_BASELINE_LTA);
 		parameters.setDetachedContents(getDetachedContents());
 		DSSDocument document = getSignedDocument();
-		Exception exception = assertThrows(DSSException.class, () -> service.extendDocument(document, parameters));
-		assertEquals("Cryptographic signature verification has failed / Signature verification failed against the best candidate.", 
-				exception.getMessage());
+		Exception exception = assertThrows(AlertException.class, () -> service.extendDocument(document, parameters));
+		assertTrue(exception.getMessage().contains("Cryptographic signature verification has failed / Signature verification failed against the best candidate."));
 	}
 	
 	@Override

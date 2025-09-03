@@ -20,13 +20,14 @@
  */
 package eu.europa.esig.dss.validation.process.bbb.sav;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.policy.ValidationPolicy;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.model.policy.LevelRule;
+import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.TSAGeneralNameFieldPresentCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.TSAGeneralNameOrderMatchCheck;
@@ -47,11 +48,12 @@ public class TimestampAcceptanceValidation extends AbstractAcceptanceValidation<
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param currentTime {@link Date} validation time
 	 * @param timestamp {@link TimestampWrapper}
+	 * @param aov {@link XmlAOV}
 	 * @param validationPolicy {@link ValidationPolicy}
 	 */
 	public TimestampAcceptanceValidation(I18nProvider i18nProvider, Date currentTime, TimestampWrapper timestamp,
-										 ValidationPolicy validationPolicy) {
-		super(i18nProvider, timestamp, currentTime, Context.TIMESTAMP, validationPolicy);
+										 XmlAOV aov, ValidationPolicy validationPolicy) {
+		super(i18nProvider, timestamp, currentTime, Context.TIMESTAMP, aov, validationPolicy);
 	}
     
 	@Override
@@ -86,22 +88,20 @@ public class TimestampAcceptanceValidation extends AbstractAcceptanceValidation<
 		}
 
 		item = cryptographic(item);
-
-		item = cryptographicSignedAttributes(item);
 	}
 
 	private ChainItem<XmlSAV> tsaGeneralNamePresent() {
-		LevelConstraint constraint = validationPolicy.getTimestampTSAGeneralNamePresent();
+		LevelRule constraint = validationPolicy.getTimestampTSAGeneralNamePresent();
 		return new TSAGeneralNameFieldPresentCheck(i18nProvider, result, token, constraint);
 	}
 
 	private ChainItem<XmlSAV> tsaGeneralNameMatch() {
-		LevelConstraint constraint = validationPolicy.getTimestampTSAGeneralNameContentMatch();
+		LevelRule constraint = validationPolicy.getTimestampTSAGeneralNameContentMatch();
 		return new TSAGeneralNameValueMatchCheck(i18nProvider, result, token, constraint);
 	}
 
 	private ChainItem<XmlSAV> tsaGeneralNameOrderMatch() {
-		LevelConstraint constraint = validationPolicy.getTimestampTSAGeneralNameOrderMatch();
+		LevelRule constraint = validationPolicy.getTimestampTSAGeneralNameOrderMatch();
 		return new TSAGeneralNameOrderMatchCheck(i18nProvider, result, token, constraint);
 	}
 

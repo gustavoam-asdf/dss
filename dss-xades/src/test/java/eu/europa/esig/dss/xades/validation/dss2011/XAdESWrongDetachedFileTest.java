@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class XAdESWrongDetachedFileTest extends AbstractXAdESTestValidation {
@@ -63,12 +62,12 @@ class XAdESWrongDetachedFileTest extends AbstractXAdESTestValidation {
 		boolean referenceDigestMatcherFound = false;
 		for (XmlDigestMatcher digestMatcher : signature.getDigestMatchers()) {
 			if (DigestMatcherType.REFERENCE.equals(digestMatcher.getType())) {
-				assertFalse(digestMatcher.isDataFound());
+				assertTrue(digestMatcher.isDataFound());
 				assertFalse(digestMatcher.isDataIntact());
 				assertEquals(originalSignerDocuments.get(0).getDigestAlgoAndValue().getDigestMethod(), digestMatcher.getDigestMethod());
                 assertArrayEquals(originalSignerDocuments.get(0).getDigestAlgoAndValue().getDigestValue(), digestMatcher.getDigestValue());
 				assertEquals("sample.xml", digestMatcher.getUri());
-				assertNull(digestMatcher.getDocumentName());
+				assertEquals("sample.png", digestMatcher.getDocumentName());
 				referenceDigestMatcherFound = true;
 			}
 		}

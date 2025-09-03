@@ -20,11 +20,13 @@
  */
 package eu.europa.esig.dss.xades.signature;
 
-import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xml.utils.DomUtils;
 import org.w3c.dom.Document;
+
+import java.util.List;
 
 /**
  * This class handles the specifics of the enveloped XML signature
@@ -33,8 +35,8 @@ import org.w3c.dom.Document;
 class EnvelopedSignatureBuilder extends XPathPlacementSignatureBuilder {
 
 	/**
-	 * The default constructor for EnvelopedSignatureBuilder. The enveloped signature uses by default the exclusive
-	 * method of canonicalization.
+	 * The default constructor for EnvelopedSignatureBuilder for a document signing.
+	 * The enveloped signature uses by default the exclusive method of canonicalization.
 	 * 
 	 * @param params
 	 *            The set of parameters relating to the structure and process of the creation or extension of the
@@ -49,12 +51,34 @@ class EnvelopedSignatureBuilder extends XPathPlacementSignatureBuilder {
 	}
 
 	/**
+	 * The default constructor for EnvelopedSignatureBuilder for multiple documents signing.
+	 * The enveloped signature uses by default the exclusive method of canonicalization.
+	 *
+	 * @param params
+	 *            The set of parameters relating to the structure and process of the creation or extension of the
+	 *            electronic signature.
+	 * @param documents
+	 *            The original documents to sign.
+	 * @param certificateVerifier
+	 *            {@link CertificateVerifier}
+	 */
+	public EnvelopedSignatureBuilder(final XAdESSignatureParameters params, final List<DSSDocument> documents, final CertificateVerifier certificateVerifier) {
+		super(params, documents, certificateVerifier);
+	}
+
+	@Override
+	protected void assertSignaturePossible() {
+		super.assertSignaturePossible();
+		assertOriginalXmlDocumentValid();
+	}
+
+	/**
 	 * In case of enveloped signature, the document should be the original file. Important for inclusive
 	 * canonicalization and namespaces
 	 */
 	@Override
 	protected Document buildRootDocumentDom() {
-		return DomUtils.buildDOM(document);
+		return DomUtils.buildDOM(documents.get(0));
 	}
 
 }

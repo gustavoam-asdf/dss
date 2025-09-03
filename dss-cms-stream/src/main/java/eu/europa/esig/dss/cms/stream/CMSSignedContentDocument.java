@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.cms.stream;
 
 import eu.europa.esig.dss.model.CommonDocument;
@@ -26,27 +46,31 @@ import java.util.Objects;
  */
 public class CMSSignedContentDocument extends CommonDocument {
 
+    private static final long serialVersionUID = -8708614358530368078L;
+
     /** Main CMS document to read content from */
     private final DSSDocument cmsDocument;
 
     /** Signed content type OID */
-    private ASN1ObjectIdentifier signedContentType;
+    private final ASN1ObjectIdentifier signedContentType;
 
     /**
-     * Default constructor
+     * Constructor with a null signed content type
      *
      * @param cmsDocument {@link DSSDocument} representing the CMS document
      */
     public CMSSignedContentDocument(final DSSDocument cmsDocument) {
-        this.cmsDocument = cmsDocument;
+        this(cmsDocument, null);
     }
 
     /**
-     * Sets signed content type OID
+     * Constructor with a provided signed content type
      *
+     * @param cmsDocument {@link DSSDocument} representing the CMS document
      * @param signedContentType {@link ASN1ObjectIdentifier}
      */
-    public void setSignedContentType(ASN1ObjectIdentifier signedContentType) {
+    public CMSSignedContentDocument(final DSSDocument cmsDocument, ASN1ObjectIdentifier signedContentType) {
+        this.cmsDocument = cmsDocument;
         this.signedContentType = signedContentType;
     }
 
@@ -143,20 +167,22 @@ public class CMSSignedContentDocument extends CommonDocument {
     }
 
     @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + Objects.hashCode(cmsDocument);
-        return result;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
         CMSSignedContentDocument that = (CMSSignedContentDocument) o;
-        return Objects.equals(cmsDocument, that.cmsDocument);
+        return Objects.equals(cmsDocument, that.cmsDocument)
+                && Objects.equals(signedContentType, that.signedContentType);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(cmsDocument);
+        result = 31 * result + Objects.hashCode(signedContentType);
+        return result;
     }
 
 }

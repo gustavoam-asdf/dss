@@ -74,7 +74,7 @@ class ASiCEWithCAdESEvidenceRecordIncorrectHashFunctionValidationTest extends Ab
 
         ReferenceValidation referenceValidation = referenceValidationList.get(0);
         assertEquals(DigestMatcherType.EVIDENCE_RECORD_ARCHIVE_OBJECT, referenceValidation.getType());
-        assertNotNull(referenceValidation.getDocumentName());
+        assertNotNull(referenceValidation.getDocument());
         assertTrue(referenceValidation.isFound());
         assertTrue(referenceValidation.isIntact());
 

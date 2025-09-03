@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.signature.SignatureExtension;
-import eu.europa.esig.dss.signature.SigningOperation;
 
 /**
  * CB-AdES augmentation

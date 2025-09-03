@@ -68,12 +68,12 @@ class ASiCEWithCAdESAsn1EvidenceRecordFullRenewalNoManifestValidationTest extend
         int notFoundArchiveObjectCounter = 0;
         for (ReferenceValidation referenceValidation : referenceValidationList) {
             if (DigestMatcherType.EVIDENCE_RECORD_ARCHIVE_OBJECT == referenceValidation.getType()) {
-                assertNotNull(referenceValidation.getDocumentName());
+                assertNotNull(referenceValidation.getDocument());
                 assertTrue(referenceValidation.isFound());
                 assertTrue(referenceValidation.isIntact());
                 ++foundArchiveObjectCounter;
             } else if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE == referenceValidation.getType()) {
-                assertNull(referenceValidation.getDocumentName());
+                assertNull(referenceValidation.getDocument());
                 assertFalse(referenceValidation.isFound());
                 assertFalse(referenceValidation.isIntact());
                 ++notFoundArchiveObjectCounter;
@@ -104,12 +104,12 @@ class ASiCEWithCAdESAsn1EvidenceRecordFullRenewalNoManifestValidationTest extend
         assertEquals(2, Utils.collectionSize(tstRenewal.getReferenceValidations()));
         for (ReferenceValidation referenceValidation : tstRenewal.getReferenceValidations()) {
             if (DigestMatcherType.EVIDENCE_RECORD_ARCHIVE_TIME_STAMP == referenceValidation.getType()) {
-                assertNull(referenceValidation.getDocumentName());
+                assertNull(referenceValidation.getDocument());
                 assertTrue(referenceValidation.isFound());
                 assertTrue(referenceValidation.isIntact());
                 arcTstRefFound = true;
             } else if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE == referenceValidation.getType()) {
-                assertNull(referenceValidation.getDocumentName());
+                assertNull(referenceValidation.getDocument());
                 assertFalse(referenceValidation.isFound());
                 assertFalse(referenceValidation.isIntact());
                 orphanRefFound = true;
@@ -124,7 +124,7 @@ class ASiCEWithCAdESAsn1EvidenceRecordFullRenewalNoManifestValidationTest extend
         assertTrue(tstRenewal.isMessageImprintDataIntact());
 
         assertEquals(1, Utils.collectionSize(chainRenewalTst.getReferenceValidations()));
-        assertNull(chainRenewalTst.getReferenceValidations().get(0).getDocumentName());
+        assertNull(chainRenewalTst.getReferenceValidations().get(0).getDocument());
         assertFalse(chainRenewalTst.getReferenceValidations().get(0).isFound());
         assertFalse(chainRenewalTst.getReferenceValidations().get(0).isIntact());
     }

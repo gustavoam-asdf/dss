@@ -21,9 +21,10 @@
 package eu.europa.esig.dss.tsl.function.converter;
 
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.model.tsl.Condition;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.tsl.dto.condition.CertSubjectDNAttributeCondition;
+import eu.europa.esig.dss.tsl.dto.condition.CompositeCondition;
 import eu.europa.esig.dss.tsl.dto.condition.ExtendedKeyUsageCondition;
 import eu.europa.esig.dss.tsl.dto.condition.KeyUsageCondition;
 import eu.europa.esig.dss.tsl.dto.condition.PolicyIdCondition;
@@ -39,13 +40,12 @@ import eu.europa.esig.trustedlist.jaxb.mra.QcStatementListType;
 import eu.europa.esig.trustedlist.jaxb.mra.QcStatementType;
 import eu.europa.esig.trustedlist.jaxb.tslx.CertSubjectDNAttributeType;
 import eu.europa.esig.trustedlist.jaxb.tslx.ExtendedKeyUsageType;
-import eu.europa.esig.dss.tsl.dto.condition.CompositeCondition;
 import eu.europa.esig.xades.jaxb.xades132.IdentifierType;
 import eu.europa.esig.xades.jaxb.xades132.ObjectIdentifierType;
+import jakarta.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

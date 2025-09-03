@@ -308,12 +308,12 @@ public class XAdESSignatureParameters extends AbstractSignatureParameters<XAdEST
 	 * @return a list of {@link DSSReference}s
 	 */
 	public List<DSSReference> getReferences() {
+		XAdESProfileParameters context = getContext();
+		if (context != null && Utils.isCollectionNotEmpty(context.getReferences())) {
+			return context.getReferences();
+		}
 		if (Utils.isCollectionNotEmpty(dssReferences)) {
 			return dssReferences;
-		}
-		XAdESProfileParameters context = getContext();
-		if (context != null) {
-			return context.getReferences();
 		}
 		return null;
 	}
@@ -424,11 +424,11 @@ public class XAdESSignatureParameters extends AbstractSignatureParameters<XAdEST
 	}
 
 	/**
-	 * Sets if the signature shall be created according to ETSI EN 319 132
+	 * Sets if the signature shall be created according to ETSI EN 319 132-1
 	 * <p>
 	 * Default: true
 	 *
-	 * @param en319132 if the signature shall be created according to ETSI EN 319 132
+	 * @param en319132 if the signature shall be created according to ETSI EN 319 132-1
 	 */
 	public void setEn319132(boolean en319132) {
 		this.en319132 = en319132;
