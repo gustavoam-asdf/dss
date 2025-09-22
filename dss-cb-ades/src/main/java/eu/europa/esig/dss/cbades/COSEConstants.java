@@ -68,73 +68,61 @@ public final class COSEConstants {
     public static final long X5U = 35;
 
     /* ETSI TS 119 152 Header parameters */
-    // TODO : Tags have to be registered in IANA.
-    // TODO : For the moment, we use TBD00X or TBD0XY (TBD: To Be Defined) values, using unassigned identifiers, starting from 100.
 
-    /** Reference to signing certificate / certs in cert path. CBOR Tag 'TBD001' */
-    public static final long X5TS = 101;
+    /** Reference to signing certificate / certs in cert path. CBOR Tag '261' */
+    public static final long X5TS = 261;
 
+    // TODO : To be replaced by 'iat'
     /** Claimed signing time. CBOR Tag 'TBD002' */
     public static final long SIG_T = 102;
 
-    /** Signer commitments. CBOR Tag 'TBD003' */
-    public static final long SR_CMS = 103;
+    /** Signer commitments. CBOR Tag '262' */
+    public static final long SR_CMS = 262;
 
-    /** Signature production place. CBOR Tag 'TBD004' */
-    public static final long SIG_PL = 104;
+    /** Signature production place. CBOR Tag '263' */
+    public static final long SIG_PL = 263;
 
-    /** Signer attributes. CBOR Tag 'TBD005' */
-    public static final long SR_ATS = 105;
+    /** Signer attributes. CBOR Tag '264' */
+    public static final long SR_ATS = 264;
 
-    /** COSE payload time-stamp. CBOR Tag 'TBD006' */
-    public static final long ADO_TST = 106;
+    /** COSE payload time-stamp. CBOR Tag '265' */
+    public static final long ADO_TST = 265;
 
-    /** Signature Policy Identifier. CBOR Tag 'TBD007' */
-    public static final long SIG_PID = 107;
+    /** Signature Policy Identifier. CBOR Tag '266' */
+    public static final long SIG_PID = 266;
 
-    /** URL where a copy of the signature policy document can be obtained. CBOR Tag 'TBD008' */
-    public static final long SP_URI = 108;
-
-    /** Info displayed when signature is validated. CBOR Tag 'TBD009' */
-    public static final long SP_USER_NOTICE = 109;
-
-    /** Identifier of the technical specification that defines the syntax used for producing the signature policy document. CBOR Tag 'TBD010' */
-    public static final long SP_D_SPEC = 110;
-
-    /** Detached COSE Payload reference data. CBOR Tag 'TBD011' */
-    public static final long SIG_D = 111;
+    /** Detached COSE Payload reference data. CBOR Tag '267' */
+    public static final long SIG_D = 267;
 
     /* ETSI TS 119 152 uHeaders parameters */
-    // TODO : Tags have to be registered in IANA.
-    // TODO : For the moment, we use TBD00X or TBD0XY (TBD: To Be Defined) values, using unassigned identifiers, starting from 200.
 
-    /** uHeaders header parameter contains a list of unsigned properties qualifying the CB-AdES signature. CBOR Tag 'TBD111' */
-    public static final long U_HEADERS = 211;
+    /** uHeaders header parameter contains a list of unsigned properties qualifying the CB-AdES signature. CBOR Tag '268' */
+    public static final long U_HEADERS = 268;
 
-    /** Signature policy document. CBOR Tag 'TBD112' */
-    public static final long SIG_PST = 212;
+    /** Signature time-stamp. CBOR Tag '1' */
+    public static final long SIG_TST = 1;
 
-    /** Signature time-stamp. CBOR Tag 'TBD113' */
-    public static final long SIG_TST = 213;
+    /** Validation data. CBOR Tag '2' */
+    public static final long VAL_DATA = 2;
 
-    /** Validation data. CBOR Tag 'TBD114' */
-    public static final long VAL_DATA = 214;
+    /** Archive time-stamp. CBOR Tag '3' */
+    public static final long ARC_TST = 3;
 
-    /** Archive time-stamp. CBOR Tag 'TBD115' */
-    public static final long ARC_TST = 215;
+    /** Validation data references. CBOR Tag '4' */
+    public static final long REFS = 4;
 
-    /** Validation data references. CBOR Tag 'TBD116' */
-    public static final long REFS = 216;
+    /** Signature and validation data references time-stamp. CBOR Tag '5' */
+    public static final long SIG_R_TST = 5;
 
-    /** Signature and validation data references time-stamp. CBOR Tag 'TBD117' */
-    public static final long SIG_R_TST = 217;
+    /** Validation data references time-stamp. CBOR Tag '6' */
+    public static final long RFS_TST = 6;
 
-    /** Validation data references time-stamp. CBOR Tag 'TBD118' */
-    public static final long RFS_TST = 218;
+    /** Signature policy document. CBOR Tag '7' */
+    public static final long SIG_PST = 7;
 
     /* Subtype keys */
 
-    /** SrCm commId the commitment identifier: an oId data type. CBOR Tag '1' */
+    /** SrCm commId: the commitment identifier: an oId data type. CBOR Tag '1' */
     public static final long SR_CM_COMM_ID = 1;
 
     /** SrCm commQuals: qualifiers. CBOR Tag '2' */
@@ -229,6 +217,15 @@ public final class COSEConstants {
 
     /** sigPId sigPQuals: signature policy qualifiers. CBOR Tag '4' */
     public static final long SIG_P_ID_SIG_P_QUALS = 4;
+
+    /** SigPQual spURI: URL where a copy of the signature policy document can be obtained. CBOR Tag '1' */
+    public static final long SIG_P_QUAL_SP_URI = 1;
+
+    /** SigPQual spUserNotice: Info displayed when signature is validated. CBOR Tag '2' */
+    public static final long SIG_P_QUAL_SP_USER_NOTICE = 2;
+
+    /** SigPQual spDSpec: identifier of the technical specification that defines the syntax used for producing the signature policy document. CBOR Tag '3' */
+    public static final long SIG_P_QUAL_SP_D_SPEC = 3;
 
     /** spUserNotice noticeRef: User notice and references. CBOR Tag '1' */
     public static final long SP_USER_NOTICE_NOTICE_REF = 1;

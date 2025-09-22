@@ -472,7 +472,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
             if (!qualifierMap.isEmpty()) {
-                String spUriStr = qualifierMap.getAsString(COSEConstants.SP_URI);
+                String spUriStr = qualifierMap.getAsString(COSEConstants.SIG_P_QUAL_SP_URI);
                 if (Utils.isStringNotEmpty(spUriStr)) {
                     if (spUri == null) {
                         spUri = spUriStr;
@@ -493,7 +493,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 continue;
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
-            CBORMap spUserNotice = qualifierMap.getAsMap(COSEConstants.SP_USER_NOTICE);
+            CBORMap spUserNotice = qualifierMap.getAsMap(COSEConstants.SIG_P_QUAL_SP_USER_NOTICE);
             if (spUserNotice != null && !spUserNotice.isEmpty()) {
                 if (userNotice != null) {
                     LOG.warn("Multiple 'spUserNotice' qualifiers found. Only one entry is supported by the current implementation");
@@ -543,7 +543,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 continue;
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
-            CBORMap spDSpec = qualifierMap.getAsMap(COSEConstants.SP_D_SPEC);
+            CBORMap spDSpec = qualifierMap.getAsMap(COSEConstants.SIG_P_QUAL_SP_D_SPEC);
             if (spDSpec != null && !spDSpec.isEmpty()) {
                 if (spDocSpecification != null) {
                     LOG.warn("Multiple 'spDSpec' qualifiers found. Only one entry is supported by the current implementation");

@@ -109,7 +109,7 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
 
     protected void checkSigningCertificate(CBORMap protectedHeaderMap) {
         CBORArray x5t = protectedHeaderMap.getAsArray(34L);
-        CBORArray x5ts = protectedHeaderMap.getAsArray(101L);
+        CBORArray x5ts = protectedHeaderMap.getAsArray(261L);
         assertTrue(x5t != null ^ x5ts != null);
 
         if (x5t != null) {
@@ -166,7 +166,7 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
 
     protected void checkContentType(CBORMap protectedHeaderMap) {
         String contentType = protectedHeaderMap.getAsString(3L);
-        CBORMap sigD = protectedHeaderMap.getAsMap(111L);
+        CBORMap sigD = protectedHeaderMap.getAsMap(267L);
         assertTrue(contentType != null ^ sigD != null);
 
         if (contentType != null) {
@@ -221,7 +221,7 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
     }
 
     private void checkCrit(CBORMap protectedHeaderMap) {
-        List<Long> includedHeaders = Collections.singletonList(111L); // sigD
+        List<Long> includedHeaders = Collections.singletonList(267L); // sigD
 
         List<Long> presentHeaders = new ArrayList<>();
         for (Long protectedHeaderKey : protectedHeaderMap.getKeys()) {

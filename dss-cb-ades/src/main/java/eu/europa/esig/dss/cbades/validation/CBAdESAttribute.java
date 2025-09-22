@@ -11,6 +11,8 @@ import java.util.Objects;
  */
 public class CBAdESAttribute implements SignatureAttribute {
 
+    private static final long serialVersionUID = 4718268120160172246L;
+
     /** Id of the header */
     protected Long headerId;
 

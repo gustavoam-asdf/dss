@@ -12,8 +12,6 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.SignatureProperties;
 import eu.europa.esig.dss.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +22,6 @@ import java.util.ListIterator;
  *
  */
 public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersComponent> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CBAdESUHeaders.class);
 
     private static final long serialVersionUID = 2141375341919119408L;
 

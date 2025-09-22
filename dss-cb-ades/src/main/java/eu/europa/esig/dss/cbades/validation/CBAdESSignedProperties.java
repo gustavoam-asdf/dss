@@ -16,6 +16,8 @@ import java.util.Map;
  */
 public class CBAdESSignedProperties implements SignatureProperties<CBAdESAttribute> {
 
+    private static final long serialVersionUID = -2202028912414313535L;
+
     private static final Logger LOG = LoggerFactory.getLogger(CBAdESSignedProperties.class);
 
     /** Represent the protected header of the signature's body structure */

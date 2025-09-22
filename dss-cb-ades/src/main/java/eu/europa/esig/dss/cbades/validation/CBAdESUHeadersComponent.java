@@ -10,6 +10,8 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
  */
 public class CBAdESUHeadersComponent extends CBAdESAttribute {
 
+    private static final long serialVersionUID = 468968604999660231L;
+
     /** The component in its original representation */
     private final CBORObject component;
 

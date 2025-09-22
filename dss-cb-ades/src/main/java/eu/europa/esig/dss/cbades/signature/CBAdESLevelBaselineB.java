@@ -521,7 +521,7 @@ public class CBAdESLevelBaselineB {
 
         final String spuri = signaturePolicy.getSpuri();
         if (Utils.isStringNotEmpty(spuri)) {
-            sigPQualifiers.add(getQualifier(COSEConstants.SP_URI, spuri));
+            sigPQualifiers.add(getQualifier(COSEConstants.SIG_P_QUAL_SP_URI, spuri));
         }
 
         final UserNotice userNotice = signaturePolicy.getUserNotice();
@@ -553,14 +553,14 @@ public class CBAdESLevelBaselineB {
                 spUserNotice.put(COSEConstants.SP_USER_NOTICE_EXPL_TEXT, explicitText);
             }
 
-            sigPQualifiers.add(getQualifier(COSEConstants.SP_USER_NOTICE, spUserNotice));
+            sigPQualifiers.add(getQualifier(COSEConstants.SIG_P_QUAL_SP_USER_NOTICE, spUserNotice));
         }
 
         final SpDocSpecification spDocSpecification = signaturePolicy.getSpDocSpecification();
         if (spDocSpecification != null && Utils.isStringNotEmpty(spDocSpecification.getId())) {
             CBORMap oidObject = CBAdESUtils.getOidObject(spDocSpecification.getId(),
                     spDocSpecification.getDescription(), spDocSpecification.getDocumentationReferences());
-            sigPQualifiers.add(getQualifier(COSEConstants.SP_D_SPEC, oidObject));
+            sigPQualifiers.add(getQualifier(COSEConstants.SIG_P_QUAL_SP_D_SPEC, oidObject));
         }
 
         return sigPQualifiers;
