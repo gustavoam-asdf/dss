@@ -50,8 +50,7 @@ class CBAdESLevelLTAExtensionForCounterSignedTest extends AbstractCBAdESTestVali
     void init() {
         documentToSign = new InMemoryDocument("Hello world!".getBytes(), "HelloWorld");
 
-        service = new CBAdESService(getCompleteCertificateVerifier());
-        service.setTspSource(getGoodTsa());
+        service = new CBAdESService(getOfflineCertificateVerifier());
 
         signingAlias = SELF_SIGNED_USER;
 
@@ -105,6 +104,9 @@ class CBAdESLevelLTAExtensionForCounterSignedTest extends AbstractCBAdESTestVali
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LTA);
         signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
 
+        service = new CBAdESService(getCompleteCertificateVerifier());
+        service.setTspSource(getGoodTsa());
+
         DSSDocument ltaCBAdES = service.extendDocument(counterSignedSignature, signatureParameters);
 
         // ltaCBAdES.save("target/ltaCBAdES.cose");
@@ -135,7 +137,7 @@ class CBAdESLevelLTAExtensionForCounterSignedTest extends AbstractCBAdESTestVali
         FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
         List<String> certificateValuesIds = foundCertificates.getRelatedCertificatesByOrigin(CertificateOrigin.ANY_VALIDATION_DATA)
                 .stream().map(CertificateWrapper::getId).collect(Collectors.toList());
-        assertEquals(2, certificateValuesIds.size());
+        assertEquals(3, certificateValuesIds.size());
         List<RelatedCertificateWrapper> counterSignatureCerts = counterSignature.foundCertificates().getRelatedCertificates();
         assertEquals(2, counterSignatureCerts.size());
         assertEquals(3, counterSignature.getCertificateChain().size());

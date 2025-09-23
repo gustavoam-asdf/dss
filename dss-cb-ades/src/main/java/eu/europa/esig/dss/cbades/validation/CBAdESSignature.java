@@ -921,7 +921,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
             if (detachedDocument != null) {
                 referenceValidation.setFound(true);
-                referenceValidation.setDocumentName(detachedDocument.getName());
+                referenceValidation.setDocument(detachedDocument);
                 if (digestAlgorithm != null && isDocumentDigestMatch(detachedDocument, digestAlgorithm, expectedDigest)) {
                     referenceValidation.setIntact(true);
                 }
