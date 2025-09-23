@@ -174,6 +174,21 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
     }
 
     /**
+     * Gets a header value as {@code Double}. Returns NULL if the header is not found for the given key or
+     * its value is not of Special type with additional information 25, 26, or 27.
+     *
+     * @param key long value of the key
+     * @return {@link Double} value of the header
+     */
+    public Double getAsDouble(long key) {
+        CBORObject cborObject = getHeader(key);
+        if (cborObject != null && (cborObject.isFloatingPointNumber())) {
+            return ((CBORSimpleObject) cborObject).getValueAsDouble();
+        }
+        return null;
+    }
+
+    /**
      * Gets a header value as {@code String}. Returns NULL if the header is not found for the given key or
      * its value is not of UnicodeString type
      *

@@ -1,6 +1,8 @@
 package eu.europa.esig.dss.cbades.cbor;
 
+import co.nstant.in.cbor.model.AbstractFloat;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.MajorType;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.SimpleValueType;
@@ -54,6 +56,31 @@ public abstract class AbstractCBORObject<D extends DataItem> implements CBORObje
     @Override
     public boolean isNegativeInteger() {
         return MajorType.NEGATIVE_INTEGER == dataItem.getMajorType();
+    }
+
+    @Override
+    public boolean isFloatingPointNumber() {
+        return isDoublePrecisionFloat() || isFloatPrecisionFloat();
+    }
+
+    /**
+     * Returns whether the current CBOR object is of Special type categorized by an additional type
+     * as a double precision point float number (additional information 27).
+     *
+     * @return TRUE if the current CBOR object is of Special double precision float number type, FALSE otherwise
+     */
+    protected boolean isDoublePrecisionFloat() {
+        return MajorType.SPECIAL == dataItem.getMajorType() && dataItem instanceof DoublePrecisionFloat;
+    }
+
+    /**
+     * Returns whether the current CBOR object is of Special type categorized by an additional type
+     * as a floating precision number (additional information 25 or 26).
+     *
+     * @return TRUE if the current CBOR object is of Special floating precision number type, FALSE otherwise
+     */
+    protected boolean isFloatPrecisionFloat() {
+        return MajorType.SPECIAL == dataItem.getMajorType() && dataItem instanceof AbstractFloat;
     }
 
     @Override

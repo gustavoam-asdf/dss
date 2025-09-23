@@ -1338,6 +1338,16 @@ public final class DSSUtils {
 	}
 
 	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(double timeWithoutMillis) {
+		return (long) (timeWithoutMillis * 1000);
+	}
+
+	/**
 	 * Creates a Date based from milliseconds (starting from 1970-01-01T00:00Z)
 	 *
 	 * @param dateTimeNumber {@link Number} milliseconds

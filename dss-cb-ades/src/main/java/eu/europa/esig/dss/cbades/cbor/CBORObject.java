@@ -51,6 +51,14 @@ public interface CBORObject {
     boolean isNegativeInteger();
 
     /**
+     * Returns whether the current CBOR object is of Special type categorized by an additional type
+     * as a floating point number (additional information 25, 26, or 27).
+     *
+     * @return TRUE if the current CBOR object is of Special floating point number type, FALSE otherwise
+     */
+    boolean isFloatingPointNumber();
+
+    /**
      * Returns whether the current CBOR object is of ByteString type
      *
      * @return TRUE if the current CBOR object is of ByteString type, FALSE otherwise

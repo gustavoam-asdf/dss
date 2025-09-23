@@ -47,9 +47,10 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
             return false;
         }
         // TODO : 'crit' support ?
-        // sigT (Cardinality == 1)
-        if (cose.getProtectedHeaderValueAsLong(COSEConstants.SIG_T) == null) {
-            LOG.warn("'sigT' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
+        // iat (Cardinality == 1)
+        CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEConstants.CWT_CLAIMS);
+        if (cwtClaims == null || cwtClaims.getAsLong(COSEConstants.CWT_CLAIMS_IAT) == null) {
+            LOG.warn("'CWT Claims enclosing the iat' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
         // TODO : 'x5t' is not defined in the standard

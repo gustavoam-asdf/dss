@@ -199,12 +199,25 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public Date getSigningTime() {
-        Long sigT = cose.getProtectedHeaderValueAsLong(COSEConstants.SIG_T);
-        if (sigT != null) {
-            long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(sigT);
-            return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+        CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEConstants.CWT_CLAIMS);
+        if (cwtClaims != null && !cwtClaims.isEmpty()) {
+            CBORObject iatHeader = cwtClaims.getHeader(COSEConstants.CWT_CLAIMS_IAT);
+            if (iatHeader != null) {
+                long timeValueInMilliseconds;
+                if (iatHeader.isUnsignedInteger() || iatHeader.isNegativeInteger()) {
+                    CBORSimpleObject iat = (CBORSimpleObject) iatHeader;
+                    timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsLong());
+                } else if (iatHeader.isFloatingPointNumber()) {
+                    CBORSimpleObject iat = (CBORSimpleObject) iatHeader;
+                    timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsDouble());
+                } else {
+                    LOG.debug("Unsupported 'iat' header type found. The value is skipped");
+                    return null;
+                }
+                return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+            }
         }
-        LOG.debug("Unable to extract claimed signing-time: No 'sigT' header was found.");
+        LOG.debug("Unable to extract claimed signing-time: No 'CWT Claims enclosing the iat' header was found.");
         return null;
     }
 

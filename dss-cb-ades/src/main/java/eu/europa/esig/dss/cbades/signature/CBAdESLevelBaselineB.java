@@ -240,6 +240,19 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
+     * Incorporates 5.1.9 iat (issued at) header parameter
+     */
+    protected void incorporateSigningTime() {
+        final Date signingDate = parameters.bLevel().getSigningDate();
+        long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
+
+        CBORMap cwtClaims = new CBORMap();
+        cwtClaims.put(COSEConstants.CWT_CLAIMS_IAT, signedTimeInSeconds); // NumericDate
+
+        addHeader(COSEConstants.CWT_CLAIMS, cwtClaims);
+    }
+
+    /**
      * Incorporates RFC 9052 The crit header parameter (3.1. Common COSE Header Parameters)
      */
     protected void incorporateCritical() {
@@ -254,23 +267,14 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.2.2 sigT (claimed signing time) header parameter
-     */
-    protected void incorporateSigningTime() {
-        final Date signingDate = parameters.bLevel().getSigningDate();
-        long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
-        addHeader(COSEConstants.SIG_T, signedTimeInSeconds);
-    }
-
-    /**
-     * Incorporates 5.2.3 The x5ts (X509 certificates Thumbprints) header parameter
+     * Incorporates 5.2.2 The x5ts (X509 certificates Thumbprints) header parameter
      */
     protected void incorporateX509CertificateDigests() {
         // addition of multiple signing certificate references are not supported in DSS
     }
 
     /**
-     * Incorporates 5.2.4 The srCms (signer commitments) header parameter
+     * Incorporates 5.2.3 The srCms (signer commitments) header parameter
      */
     protected void incorporateSignerCommitments() {
         if (Utils.isCollectionEmpty(parameters.bLevel().getCommitmentTypeIndications())) {
@@ -341,7 +345,7 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.2.5 The sigPl (signature production place) header parameter
+     * Incorporates 5.2.4 The sigPl (signature production place) header parameter
      */
     protected void incorporateSignatureProductionPlace() {
         SignerLocation signerProductionPlace = parameters.bLevel().getSignerLocation();
@@ -389,7 +393,7 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.2.6 The srAts (signer attributes) header parameter
+     * Incorporates 5.2.5 The srAts (signer attributes) header parameter
      */
     protected void incorporateSignerAttributes() {
         CBORMap srAtsParams = new CBORMap();
@@ -430,7 +434,7 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.2.7 The adoTst (COSE payload time-stamp) header parameter
+     * Incorporates 5.2.6 The adoTst (COSE payload time-stamp) header parameter
      */
     protected void incorporateContentTimestamps() {
         if (Utils.isCollectionEmpty(parameters.getContentTimestamps())) {
@@ -451,7 +455,7 @@ public class CBAdESLevelBaselineB {
     }
 
     /**
-     * Incorporates 5.2.8 The sigPId (signature policy identifier) header parameter
+     * Incorporates 5.2.7 The sigPId (signature policy identifier) header parameter
      */
     protected void incorporateSignaturePolicy() {
         Policy signaturePolicy = parameters.bLevel().getSignaturePolicy();

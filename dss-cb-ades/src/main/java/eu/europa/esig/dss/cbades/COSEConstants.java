@@ -53,6 +53,16 @@ public final class COSEConstants {
     /** Counter signature0 V2. CBOR Tag '12' */
     public static final long COUNTER_SIGNATURE0_V2 = 12;
 
+    /* RFC 9597 Header Parameters */
+
+    /** CWT Claims. CBOR Tag '15' */
+    public static final long CWT_CLAIMS = 15;
+
+    /* RFC 8392 Header Parameters */
+
+    /** CWT Claims iat (issued at). CBOR Tag '6' */
+    public static final long CWT_CLAIMS_IAT = 6;
+
     /* RFC 9360 Header parameters */
 
     /** An unordered bag of X.509 certificates. CBOR Tag '32' */
@@ -71,10 +81,6 @@ public final class COSEConstants {
 
     /** Reference to signing certificate / certs in cert path. CBOR Tag '261' */
     public static final long X5TS = 261;
-
-    // TODO : To be replaced by 'iat'
-    /** Claimed signing time. CBOR Tag 'TBD002' */
-    public static final long SIG_T = 102;
 
     /** Signer commitments. CBOR Tag '262' */
     public static final long SR_CMS = 262;

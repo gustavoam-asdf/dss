@@ -35,13 +35,13 @@ import static eu.europa.esig.dss.cbades.COSEConstants.ALG;
 import static eu.europa.esig.dss.cbades.COSEConstants.CONTENT_TYPE;
 import static eu.europa.esig.dss.cbades.COSEConstants.COUNTER_SIGNATURE;
 import static eu.europa.esig.dss.cbades.COSEConstants.CRIT;
+import static eu.europa.esig.dss.cbades.COSEConstants.CWT_CLAIMS;
 import static eu.europa.esig.dss.cbades.COSEConstants.IV;
 import static eu.europa.esig.dss.cbades.COSEConstants.KID;
 import static eu.europa.esig.dss.cbades.COSEConstants.PARTIAL_IV;
 import static eu.europa.esig.dss.cbades.COSEConstants.SIG_D;
 import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PID;
 import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PL;
-import static eu.europa.esig.dss.cbades.COSEConstants.SIG_T;
 import static eu.europa.esig.dss.cbades.COSEConstants.SR_ATS;
 import static eu.europa.esig.dss.cbades.COSEConstants.SR_CMS;
 import static eu.europa.esig.dss.cbades.COSEConstants.X5BAG;
@@ -85,8 +85,10 @@ public final class CBORUtils {
                 X5BAG, X5CHAIN, X5T, X5U,
                 /* RFC 8152 */
                 COUNTER_SIGNATURE,
+                /* RFC 9597 */
+                CWT_CLAIMS,
                 /* CB-AdES TS 119 152-1 headers */
-                SIG_T, X5TS, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D
+                X5TS, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D
         ).collect(Collectors.toSet());
 
         requiredCriticalHeaders = Stream.of(

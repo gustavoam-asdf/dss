@@ -1,6 +1,8 @@
 package eu.europa.esig.dss.cbades.cbor;
 
+import co.nstant.in.cbor.model.AbstractFloat;
 import co.nstant.in.cbor.model.DataItem;
+import co.nstant.in.cbor.model.DoublePrecisionFloat;
 import co.nstant.in.cbor.model.NegativeInteger;
 import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.SimpleValueType;
@@ -32,6 +34,20 @@ public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
             return ((UnsignedInteger) toDataItem()).getValue().longValue();
         } else if (isNegativeInteger()) {
             return ((NegativeInteger) toDataItem()).getValue().longValue();
+        }
+        return null;
+    }
+
+    /**
+     * Returns a {@code Double} value of the object, if supported
+     *
+     * @return {@link Double}
+     */
+    public Double getValueAsDouble() {
+        if (isDoublePrecisionFloat()) {
+            return ((DoublePrecisionFloat) toDataItem()).getValue();
+        } else if (isFloatPrecisionFloat()) {
+            return (double) ((AbstractFloat) toDataItem()).getValue();
         }
         return null;
     }

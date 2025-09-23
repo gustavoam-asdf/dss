@@ -156,12 +156,15 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
     }
 
     protected void checkSigningTime(CBORMap protectedHeaderMap) {
-        Long sigT = protectedHeaderMap.getAsLong(102L);
-        assertNotNull(sigT);
+        CBORMap cwtClaim = protectedHeaderMap.getAsMap(15L);
+        assertNotNull(cwtClaim);
 
-        Date date = new Date(sigT * 1000L);
+        Long iat = cwtClaim.getAsLong(6L);
+        assertNotNull(iat);
+
+        Date date = new Date(iat * 1000L);
         assertNotNull(date);
-        assertEquals(signatureParameters.bLevel().getSigningDate().getTime() / 1000L, sigT);
+        assertEquals(signatureParameters.bLevel().getSigningDate().getTime() / 1000L, iat);
     }
 
     protected void checkContentType(CBORMap protectedHeaderMap) {
