@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -35,20 +36,27 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
     public boolean hasBaselineBProfile() {
         CBORSignature cose = signature.getCoseSignature();
         CBAdESUHeaders uHeaders = signature.getUHeaders();
+
+        COSEProtectedHeader signatureProtectedHeader = cose.getSignatureProtectedHeader();
+        if (signatureProtectedHeader == null) {
+            LOG.warn("Signature protected header shall be present for CB-AdES-BASELINE-B signature!");
+            return false;
+        }
+
         // alg (Cardinality == 1)
-        if (cose.getProtectedHeaderValueAsLong(COSEConstants.ALG) == null &&
-                Utils.isStringEmpty(cose.getProtectedHeaderValueAsString(COSEConstants.ALG))) {
+        if (signatureProtectedHeader.getAsLong(COSEConstants.ALG) == null &&
+                Utils.isStringEmpty(signatureProtectedHeader.getAsString(COSEConstants.ALG))) {
             LOG.warn("'alg' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
         // content type (Conditional presence)
-        if (signature.isCounterSignature() && Utils.isStringNotEmpty(cose.getProtectedHeaderValueAsString(COSEConstants.CONTENT_TYPE))) {
+        if (signature.isCounterSignature() && Utils.isStringNotEmpty(signatureProtectedHeader.getAsString(COSEConstants.CONTENT_TYPE))) {
             LOG.warn("'content type' header shall not be present for a CB-AdES-BASELINE-B counter signature!");
             return false;
         }
         // TODO : 'crit' support ?
         // iat (Cardinality == 1)
-        CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEConstants.CWT_CLAIMS);
+        CBORMap cwtClaims = signatureProtectedHeader.getAsMap(COSEConstants.CWT_CLAIMS);
         if (cwtClaims == null || cwtClaims.getAsLong(COSEConstants.CWT_CLAIMS_IAT) == null) {
             LOG.warn("'CWT Claims enclosing the iat' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
@@ -56,20 +64,22 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         // TODO : 'x5t' is not defined in the standard
         // x5chain / x5ts (Cardinality == 1)
         int certHeaders = 0;
-        if (cose.getProtectedHeaderValueAsBinaries(COSEConstants.X5CHAIN) != null) ++certHeaders;
-        if (cose.getProtectedHeaderValueAsArray(COSEConstants.X5CHAIN) != null) ++certHeaders;
-        if (cose.getProtectedHeaderValueAsArray(COSEConstants.X5TS) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsBinaries(COSEConstants.X5CHAIN) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEConstants.X5CHAIN) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEConstants.X5TS) != null) ++certHeaders;
         if (certHeaders == 0) {
             LOG.warn("At least one of x5t#x5chain, x5ts headers shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
+
         // sigPSt (Cardinality 0 or 1)
         if (uHeaders.getUnsignedPropertiesWithHeaderId(COSEConstants.SIG_PST).size() > 1) {
             LOG.warn("Only one 'sigPSt' header shall be present for CB-AdES-BASELINE-B signature (cardinality 0 or 1)!");
             return false;
         }
         // Additional requirement (b)
-        if (!isSignaturePolicyIdentifierHashPresent() && signature.getSignaturePolicyStore() != null) {
+        if ((signatureProtectedHeader.getAsMap(COSEConstants.SIG_PID) == null ||
+                !isSignaturePolicyIdentifierHashPresent()) && signature.getSignaturePolicyStore() != null) {
             LOG.warn("'sigPSt' header shall not be incorporated " +
                     "for CB-AdES-BASELINE-B signature with not defined 'sigPId/digVal' (requirement (b))!");
             return false;

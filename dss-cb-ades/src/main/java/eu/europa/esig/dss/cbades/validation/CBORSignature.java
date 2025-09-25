@@ -685,6 +685,8 @@ public class CBORSignature {
 
     /**
      * This method returns a Long value extracted from protected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return {@link Long} value if header is identified, NULL otherwise
@@ -699,6 +701,8 @@ public class CBORSignature {
 
     /**
      * This method returns a String value extracted from protected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return {@link Long} value if header is identified, NULL otherwise
@@ -713,6 +717,8 @@ public class CBORSignature {
 
     /**
      * This method returns a byte array value extracted from protected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return byte array value if header is identified, NULL otherwise
@@ -727,6 +733,8 @@ public class CBORSignature {
 
     /**
      * This method returns a CBORArray value extracted from protected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return {@link CBORArray) value if header is identified, NULL otherwise
@@ -740,7 +748,9 @@ public class CBORSignature {
     }
 
     /**
-     * This method returns a CBORMap value extracted from protected header of the signature
+     * This method returns a CBORMap value extracted from protected header of the signature.
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return {@link CBORMap) value if header is identified, NULL otherwise
@@ -754,7 +764,9 @@ public class CBORSignature {
     }
 
     /**
-     * This method returns a value extracted from protected header of the signature
+     * This method returns a value extracted from protected header of the signature.
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
      *
      * @param headerKey identifier of the header
      * @return {@link CBORObject}
@@ -782,6 +794,28 @@ public class CBORSignature {
 
     private CBORObject getSignerProtectedHeaderValue(long headerKey) {
         return signerProtectedHeader != null ? signerProtectedHeader.getHeader(headerKey) : null;
+    }
+
+    /**
+     * This method returns a protected header directly applying to the signature.
+     * For example: a signer layer protected header for COSE_Sign or body layer protected header for COSE_Sign1.
+     *
+     * @return {@link COSEProtectedHeader}
+     */
+    public COSEProtectedHeader getSignatureProtectedHeader() {
+        // NOTE: Signer layer is present for COSE_Sign signature structure
+        switch (context) {
+            case COSE_SIGN1:
+                return getBodyProtectedHeader();
+            case COSE_SIGN:
+            case COSE_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE_V2:
+                return getSignerProtectedHeader();
+            default:
+                // not applicable in other case
+                return null;
+        }
     }
 
     /**

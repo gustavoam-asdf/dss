@@ -136,12 +136,19 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     }
 
     private COSEUnprotectedHeader getUnprotectedHeader() {
-        COSEUnprotectedHeader unprotectedHeader = cose.getSignerUnprotectedHeader();
-        if (unprotectedHeader == null) {
-            // NOTE : instantiated if empty
-            unprotectedHeader = cose.getBodyUnprotectedHeader();
+        // NOTE: unprotected header map is initialized in all applicable cases
+        switch (cose.getContext()) {
+            case COSE_SIGN1:
+                return cose.getBodyUnprotectedHeader();
+            case COSE_SIGN:
+            case COSE_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE:
+            case COSE_COUNTER_SIGNATURE_V2:
+                return cose.getSignerUnprotectedHeader();
+            default:
+                // not applicable in other case (init empty)
+                return new COSEUnprotectedHeader();
         }
-        return unprotectedHeader;
     }
 
     private void assignUnprotectedHeader(COSEUnprotectedHeader unprotectedHeader) {
