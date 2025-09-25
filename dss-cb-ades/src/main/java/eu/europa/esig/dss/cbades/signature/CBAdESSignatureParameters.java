@@ -23,7 +23,6 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     private boolean includeCertificateChain = true;
 
-    // TODO : check 'x5t' usage
     /**
      * Defines whether the thumbprints of the whole X.509 certificate chain should be included, using a 'x5ts' signed header.
      * When certificate chain is not provided, only the signing-certificate will be included to the chain.

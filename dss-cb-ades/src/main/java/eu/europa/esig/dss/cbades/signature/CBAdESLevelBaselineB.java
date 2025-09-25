@@ -181,7 +181,6 @@ public class CBAdESLevelBaselineB {
 
         DigestAlgorithm digestAlgorithm = parameters.getSigningCertificateDigestMethod();
         if (parameters.isIncludeCertificateChainThumbprints()) {
-            // TODO : include trust anchor ?
             List<CertificateToken> certificateTokens = getBaselineBCertificates();
             if (Utils.isCollectionNotEmpty(certificateTokens)) {
                 CBORArray x5ts = new CBORArray(certificateTokens.size());
@@ -256,10 +255,11 @@ public class CBAdESLevelBaselineB {
      * Incorporates RFC 9052 The crit header parameter (3.1. Common COSE Header Parameters)
      */
     protected void incorporateCritical() {
-        // TODO : the header is defined in RFC 9052, but not in TS 119 152. The sigD is included similarly to JAdES.
         CBORArray criticalHeaderNames = new CBORArray();
-        if (signedProperties.containsKey(COSEConstants.SIG_D)) {
-            criticalHeaderNames.add(COSEConstants.SIG_D);
+        for (Long headerKey : signedProperties.getKeys()) {
+            if (CBORUtils.isRequiredCriticalHeader(headerKey)) {
+                criticalHeaderNames.add(headerKey);
+            }
         }
         if (!criticalHeaderNames.isEmpty()) {
             addHeader(COSEConstants.CRIT, criticalHeaderNames);
@@ -548,7 +548,7 @@ public class CBAdESLevelBaselineB {
             if (Utils.isStringNotEmpty(organization) && noticeNumbers != null && noticeNumbers.length > 0) {
                 CBORMap noticeRef = new CBORMap();
                 noticeRef.put(COSEConstants.NOTICE_REF_ORG, organization);
-                noticeRef.put(COSEConstants.NOTICE_REF_NOT_NUMBERS, getNoticeNumbersArray(noticeNumbers));
+                noticeRef.put(COSEConstants.NOTICE_REF_NOTICE_NUMBERS, getNoticeNumbersArray(noticeNumbers));
                 spUserNotice.put(COSEConstants.SP_USER_NOTICE_NOTICE_REF, noticeRef);
             }
 

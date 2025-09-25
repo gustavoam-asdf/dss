@@ -518,7 +518,6 @@ public class CBORSignature {
      * @return TRUE if the signature is valid, FALSE otherwise
      */
     public boolean verifySignature() {
-        // TODO : add additional verification (crit dict, etc.). See JWS validation
         try {
             // Create Signature object
             SignatureAlgorithm signatureAlgorithm = getAlgorithm();

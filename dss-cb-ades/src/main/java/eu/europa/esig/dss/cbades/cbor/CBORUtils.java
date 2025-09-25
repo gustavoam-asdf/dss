@@ -72,7 +72,6 @@ public final class CBORUtils {
     /**
      * Contains protected header names that are required to be present in the critical ('crit') attribute, when used
      */
-    // TODO : TS 119 152-1 does not mandate presence of 'crit' header, thus it is not yet enforced
     private static final Set<Long> requiredCriticalHeaders;
 
     static {
@@ -314,7 +313,6 @@ public final class CBORUtils {
         return supportedCriticalHeaders;
     }
 
-    // TODO : ETSI TS 119 152-1 does not (yet) define a use of 'crit' dictionary
     /**
      * Checks if the given {@code headerId} is required to be incorporated within 'crit' header, when used
      *

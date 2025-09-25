@@ -516,7 +516,6 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 try {
                     userNotice = new UserNotice();
 
-                    // TODO : the standard is unclear with 'NoticeRef' type. Use CBOR Map as a more appropriate type.
                     CBORMap noticeRef = spUserNotice.getAsMap(COSEConstants.SP_USER_NOTICE_NOTICE_REF);
                     if (noticeRef != null && !noticeRef.isEmpty()) {
                         final String organization = noticeRef.getAsString(COSEConstants.NOTICE_REF_ORG);
@@ -524,7 +523,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                             userNotice.setOrganization(organization);
                         }
 
-                        final CBORArray noticeNumbers = noticeRef.getAsArray(COSEConstants.NOTICE_REF_NOT_NUMBERS);
+                        final CBORArray noticeNumbers = noticeRef.getAsArray(COSEConstants.NOTICE_REF_NOTICE_NUMBERS);
                         if (noticeNumbers != null && !noticeNumbers.isEmpty()) {
                             userNotice.setNoticeNumbers(noticeNumbers.toListOfLongs().stream()
                                     .mapToInt(Number::intValue).toArray());

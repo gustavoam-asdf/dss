@@ -242,8 +242,8 @@ public final class COSEConstants {
     /** noticeRef org: the name of the organization. CBOR Tag '1' */
     public static final long NOTICE_REF_ORG = 1;
 
-    /** noticeRef notNumbres: the notice numbers identifying textual statements. CBOR Tag '2' */
-    public static final long NOTICE_REF_NOT_NUMBERS = 2;
+    /** noticeRef noticeNumbers: the notice numbers identifying textual statements. CBOR Tag '2' */
+    public static final long NOTICE_REF_NOTICE_NUMBERS = 2;
 
     /** sigD mId: URI identifying the mechanism used for referencing and processing each referenced data object. CBOR Tag '1' */
     public static final long SIG_D_MID = 1;

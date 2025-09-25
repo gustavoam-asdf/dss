@@ -307,7 +307,6 @@ public class CBAdESUtils {
     }
 
     private static Date getCRLIdIssueTime(CBORMap crlId) {
-        // TODO : no definition in the standard. Temporary aligned with JAdES
         String crlIdIssueTime = crlId.getAsString(COSEConstants.CRL_ID_ISSUE_TIME);
         if (crlIdIssueTime != null) {
             return getDate(crlIdIssueTime);
@@ -413,7 +412,6 @@ public class CBAdESUtils {
     }
 
     private static Date getProducedAt(CBORMap ocspId) {
-        // TODO : no definition in the standard. Temporary aligned with JAdES
         String ocspIdProducedAt = ocspId.getAsString(COSEConstants.OCSP_ID_PRODUCED_AT);
         if (ocspIdProducedAt != null) {
             return getDate(ocspIdProducedAt);
