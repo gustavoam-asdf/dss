@@ -160,7 +160,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
             coseCounterSignature = (COSECounterSignature) counterSignature.getCoseSignature().getSignerSignature();
         }
 
-        uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject(), parameters.isCborBtsrWrappedComponents());
+        uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject());
 
         CBAdESSignature upperSignature = updateMasterSignatureRecursively(masterSignature);
         COSEStructure coseSignStructure = upperSignature.getCoseSignature().getCoseSignStructure();
@@ -188,7 +188,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
                     coseSignature.getCoseSignStructure() : coseSignature.getSignerSignature());
 
             CBAdESUHeadersComponent updatedCSigAttribute = CBAdESUHeadersComponent.build(masterCSigComponent.getHeaderId(),
-                    coseSignStructure.toCBORObject(), masterCSigComponent.isCborBtsrWrapped(), masterCSigComponent.getIdentifier());
+                    coseSignStructure.toCBORObject(), masterCSigComponent.getIdentifier());
 
             replaceCSigComponent(masterSignature, updatedCSigAttribute);
         }

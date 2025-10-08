@@ -205,17 +205,11 @@ public abstract class AbstractCBAdESTestSignature
                 assertFalse(uHeaders.isEmpty());
 
                 for (CBORObject item : uHeaders.getItems()) {
-                    CBORMap itemMap;
-                    if (getSignatureParameters().isCborBtsrWrappedComponents()) {
-                        assertTrue(item.isByteString());
-                        CBORObject parsedHeader = CBORUtils.parseCbor(((CBORByteString) item).getBytes());
-                        assertNotNull(parsedHeader);
-                        assertTrue(parsedHeader.isMap());
-                        itemMap = (CBORMap) parsedHeader;
-                    } else {
-                        assertTrue(item.isMap());
-                        itemMap = (CBORMap) item;
-                    }
+                    assertTrue(item.isByteString());
+                    CBORObject parsedHeader = CBORUtils.parseCbor(((CBORByteString) item).getBytes());
+                    assertNotNull(parsedHeader);
+                    assertTrue(parsedHeader.isMap());
+                    CBORMap itemMap = (CBORMap) parsedHeader;
                     assertEquals(1, itemMap.getSize());
                 }
             }

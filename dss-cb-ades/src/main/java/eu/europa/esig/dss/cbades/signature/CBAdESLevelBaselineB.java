@@ -441,9 +441,8 @@ public class CBAdESLevelBaselineB {
             return;
         }
 
-        // canonicalization shall be null for content timestamps (see 5.2.6)
         List<TimestampBinary> contentTimestampBinaries = toTimestampBinaries(parameters.getContentTimestamps());
-        CBORMap tstContainer = CBAdESUtils.getTstContainer(contentTimestampBinaries, null);
+        CBORMap tstContainer = CBAdESUtils.getTstContainer(contentTimestampBinaries);
         addHeader(COSEConstants.ADO_TST, tstContainer);
     }
 

@@ -12,7 +12,6 @@ import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.signature.SignatureRequirementsChecker;
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationData;
@@ -68,17 +67,17 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
             if (cbadesSignature.hasLTAProfile() && addTimestampValidationData) {
                 removeLastValidationData(cbadesSignature, uHeaders);
 
-                final ValidationData validationDataForInclusion = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
+                final ValidationData validationDataForInclusion =
+                        validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
                 if (!validationDataForInclusion.isEmpty()) {
                     CBORObject valData = getValData(validationDataForInclusion);
-                    uHeaders.addComponent(COSEConstants.VAL_DATA, valData, params.isCborBtsrWrappedComponents());
+                    uHeaders.addComponent(COSEConstants.VAL_DATA, valData);
                 }
             }
 
             TimestampBinary timestampBinary = getArchiveTimestamp(cbadesSignature, params);
-            CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timestampBinary),
-                    params.getArchiveTimestampParameters().getCanonicalizationMethod());
-            uHeaders.addComponent(COSEConstants.ARC_TST, tstContainer, params.isCborBtsrWrappedComponents());
+            CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timestampBinary));
+            uHeaders.addComponent(COSEConstants.ARC_TST, tstContainer);
         }
     }
 
@@ -97,11 +96,9 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
     private TimestampBinary getArchiveTimestamp(CBAdESSignature cbadesSignature, CBAdESSignatureParameters params) {
         CBAdESTimestampParameters archiveTimestampParameters = params.getArchiveTimestampParameters();
         DigestAlgorithm digestAlgorithmForTimestampRequest = archiveTimestampParameters.getDigestAlgorithm();
-        // TODO : Support canonicalization
-        String canonicalizationMethod = archiveTimestampParameters.getCanonicalizationMethod();
 
-        final DSSMessageDigest messageDigest = cbadesSignature.getTimestampSource().getArchiveTimestampData(
-                digestAlgorithmForTimestampRequest, canonicalizationMethod);
+        final DSSMessageDigest messageDigest = cbadesSignature.getTimestampSource()
+                .getArchiveTimestampData(digestAlgorithmForTimestampRequest);
         return tspSource.getTimeStampResponse(digestAlgorithmForTimestampRequest, messageDigest.getValue());
     }
 
@@ -109,18 +106,8 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
      * Checks if the extension is possible.
      */
     private void assertExtendSignatureToLTAPossible(CBAdESSignature cbadesSignature, CBAdESSignatureParameters params) {
-        checkArchiveTimestampParameters(params);
         assertDetachedDocumentsContainBinaries(params);
-        assertUHeadersComponentsConsistent(cbadesSignature, params.isCborBtsrWrappedComponents());
-    }
-
-    private void checkArchiveTimestampParameters(CBAdESSignatureParameters params) {
-        CBAdESTimestampParameters archiveTimestampParameters = params.getArchiveTimestampParameters();
-        if (!params.isCborBtsrWrappedComponents()
-                && Utils.isStringEmpty(archiveTimestampParameters.getCanonicalizationMethod())) {
-            throw new IllegalInputException(
-                    "Unable to extend CB-AdES-BASELINE-LTA level. Clear 'uHeaders' incorporation requires a canonicalization method!");
-        }
+        assertUHeadersComponentsConsistent(cbadesSignature);
     }
 
     private void assertDetachedDocumentsContainBinaries(CBAdESSignatureParameters params) {

@@ -75,13 +75,13 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
                 continue;
             }
 
-            assertUHeadersComponentsConsistent(cbadesSignature, params.isCborBtsrWrappedComponents());
+            assertUHeadersComponentsConsistent(cbadesSignature);
 
             CBAdESUHeaders uHeaders = cbadesSignature.getUHeaders();
             removeValidationData(cbadesSignature, uHeaders);
 
             final ValidationData validationDataForInclusion = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
-            incorporateValidationData(uHeaders, validationDataForInclusion, params.isCborBtsrWrappedComponents());
+            incorporateValidationData(uHeaders, validationDataForInclusion);
         }
     }
 
@@ -97,11 +97,10 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
         cbadesSignature.resetRevocationSources();
     }
     
-    private void incorporateValidationData(CBAdESUHeaders uHeaders, final ValidationData validationDataForInclusion, 
-                                           boolean isCborBtsrWrappedComponents) {
+    private void incorporateValidationData(CBAdESUHeaders uHeaders, final ValidationData validationDataForInclusion) {
         if (!validationDataForInclusion.isEmpty()) {
             CBORObject valData = getValData(validationDataForInclusion);
-            uHeaders.addComponent(COSEConstants.VAL_DATA, valData, isCborBtsrWrappedComponents);
+            uHeaders.addComponent(COSEConstants.VAL_DATA, valData);
         }
     }
 

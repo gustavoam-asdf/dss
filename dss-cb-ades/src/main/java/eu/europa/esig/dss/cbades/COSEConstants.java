@@ -197,9 +197,6 @@ public final class COSEConstants {
     /** tstContainer tstTokens: CBOR array containing one or more time-stamp tokens. CBOR Tag '1' */
     public static final long TST_CONTAINER_TST_TOKENS = 1;
 
-    /** tstContainer canonAlg: URI reference identifying the canonicalization algorithm. CBOR Tag '2' */
-    public static final long TST_CONTAINER_CANON_ALG = 2;
-
     /** tstToken val: Encoded time-stamp token encapsulated in a CBOR byte string. CBOR Tag '1' */
     public static final long TST_TOKEN_VAL = 1;
 

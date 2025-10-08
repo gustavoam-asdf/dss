@@ -82,19 +82,17 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
      *
      * @param headerKey        {@link Long} representing the name of the 'uHeaders' entry
      * @param value            {@link CBORObject} represents a value of the 'uHeaders' entry
-     * @param cborBtsrWrapped  defines if the entry shall be incorporated in its
-     *                         corresponding CBOR btsr representation
      */
-    public void addComponent(Long headerKey, CBORObject value, boolean cborBtsrWrapped) {
+    public void addComponent(Long headerKey, CBORObject value) {
         CBORArray uHeaders = getUHeadersToEdit();
-        CBORObject etsiEntry = getComponent(headerKey, value, cborBtsrWrapped);
+        CBORObject etsiEntry = getComponent(headerKey, value);
         uHeaders.add(etsiEntry);
     }
 
-    private CBORObject getComponent(Long headerKey, CBORObject value, boolean cborBtsrWrapped) {
+    private CBORObject getComponent(Long headerKey, CBORObject value) {
         CBORMap cborMap = new CBORMap();
         cborMap.put(headerKey, value);
-        return cborBtsrWrapped ? cborMap.getByteString() : cborMap;
+        return cborMap.getByteString();
     }
 
     /**

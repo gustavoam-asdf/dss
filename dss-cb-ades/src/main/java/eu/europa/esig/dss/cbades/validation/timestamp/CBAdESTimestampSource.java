@@ -577,12 +577,10 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
      * Returns message-imprint digest for an ArchiveTimestamp
      *
      * @param digestAlgorithm {@link DigestAlgorithm} to compute digest with
-     * @param canonicalizationMethod {@link String} canonicalization method to use
      * @return {@link DSSMessageDigest} representing a message-imprint digest
      */
-    public DSSMessageDigest getArchiveTimestampData(DigestAlgorithm digestAlgorithm, String canonicalizationMethod) {
-        CBAdESTimestampMessageDigestBuilder builder = getTimestampMessageImprintDigestBuilder(digestAlgorithm)
-                .setCanonicalizationAlgorithm(canonicalizationMethod);
+    public DSSMessageDigest getArchiveTimestampData(DigestAlgorithm digestAlgorithm) {
+        CBAdESTimestampMessageDigestBuilder builder = getTimestampMessageImprintDigestBuilder(digestAlgorithm);
         return builder.getArchiveTimestampMessageDigest();
     }
 

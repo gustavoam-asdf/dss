@@ -96,10 +96,9 @@ public class CBAdESUtils {
      * Creates a 'tstContainer' JsonObject according to TS 119-152 ch. 5.4.3.3 The tstContainer type
      *
      * @param timestampBinaries a list of {@link TimestampBinary}s to incorporate
-     * @param canonicalizationMethodUri a canonicalization method (OPTIONAL, e.g. shall not be present for content timestamps)
      * @return {@link CBORMap} 'tstContainer' object
      */
-    public static CBORMap getTstContainer(List<TimestampBinary> timestampBinaries, String canonicalizationMethodUri) {
+    public static CBORMap getTstContainer(List<TimestampBinary> timestampBinaries) {
         if (Utils.isCollectionEmpty(timestampBinaries)) {
             throw new IllegalArgumentException("Impossible to create 'tstContainer'. List of TimestampBinaries cannot be null or empty!");
         }
@@ -112,10 +111,6 @@ public class CBAdESUtils {
             tstTokens.add(tstToken);
         }
         tstContainerParams.put(COSEConstants.TST_CONTAINER_TST_TOKENS, tstTokens);
-
-        if (canonicalizationMethodUri != null) {
-            tstContainerParams.put(COSEConstants.TST_CONTAINER_CANON_ALG, canonicalizationMethodUri);
-        }
 
         return tstContainerParams;
     }

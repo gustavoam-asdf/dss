@@ -373,7 +373,6 @@ public abstract class AbstractCBAdESRequirementsCheck extends AbstractCBAdESTest
         assertNotNull(tstContainer);
         assertTrue(tstContainer.isMap());
         CBORMap tstContainerMap = (CBORMap) tstContainer;
-        assertNull(tstContainerMap.getHeader(COSEConstants.TST_CONTAINER_CANON_ALG));
         CBORObject tstTokens = tstContainerMap.getHeader(COSEConstants.TST_CONTAINER_TST_TOKENS);
         assertNotNull(tstTokens);
         assertTrue(tstTokens.isArray());

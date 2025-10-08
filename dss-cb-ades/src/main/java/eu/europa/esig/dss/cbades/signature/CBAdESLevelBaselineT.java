@@ -133,7 +133,7 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
         for (AdvancedSignature signature : signaturesToExtend) {
             CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
 
-            assertUHeadersComponentsConsistent(cbadesSignature, params.isCborBtsrWrappedComponents());
+            assertUHeadersComponentsConsistent(cbadesSignature);
 
             CBAdESTimestampParameters signatureTimestampParameters = params.getSignatureTimestampParameters();
             DigestAlgorithm timestampDigestAlgorithm = signatureTimestampParameters.getDigestAlgorithm();
@@ -142,10 +142,10 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
                     .getSignatureTimestampData(timestampDigestAlgorithm);
             TimestampBinary timeStampResponse = tspSource.getTimeStampResponse(timestampDigestAlgorithm, messageDigest.getValue());
 
-            CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timeStampResponse), null);
+            CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timeStampResponse));
 
             CBAdESUHeaders uHeaders = cbadesSignature.getUHeaders();
-            uHeaders.addComponent(COSEConstants.SIG_TST, tstContainer, params.isCborBtsrWrappedComponents());
+            uHeaders.addComponent(COSEConstants.SIG_TST, tstContainer);
         }
     }
 

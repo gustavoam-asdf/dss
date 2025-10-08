@@ -331,27 +331,4 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
         this.sigDMechanism = sigDMechanism;
     }
 
-    /**
-     * Gets if the 'uHeaders' unsigned header parameter components shall be incorporated
-     * in their corresponding CBOR Byte String wrapping.
-     *
-     * @return whether 'uHeaders' components shall be CBOR Byte String encoded
-     */
-    public boolean isCborBtsrWrappedComponents() {
-        return cborBtsrWrappedComponents;
-    }
-
-    /**
-     * Sets whether components of the 'uHeaders' unsigned header parameter shall be incorporated
-     * in their corresponding CBOR Byte String wrapping representation.
-     * If set to FALSE, the 'uHeaders' components are incorporated in their clear form.
-     * <p>
-     * Default : TRUE (CBOR Byte String wrapped uHeader components)
-     *
-     * @param cborBtsrWrappedComponents whether 'uHeaders' components shall be CBOR Byte String encoded
-     */
-    public void setCborBtsrWrappedComponents(boolean cborBtsrWrappedComponents) {
-        this.cborBtsrWrappedComponents = cborBtsrWrappedComponents;
-    }
-
 }

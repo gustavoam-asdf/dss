@@ -50,9 +50,6 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
     /** Timestamp token to compute message-digest for */
     private TimestampToken timestampToken;
 
-    /** The canonicalization algorithm to be used for message-imprint computation */
-    private String canonicalizationAlgorithm;
-
     /** The signature element containing the time-stamp token */
     private CBAdESAttribute timestampAttribute;
 
@@ -79,7 +76,6 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
         Objects.requireNonNull(timestampToken, "TimestampToken cannot be null!");
         this.timestampToken = timestampToken;
         this.digestAlgorithm = timestampToken.getDigestAlgorithm();
-        this.canonicalizationAlgorithm = timestampToken.getCanonicalizationMethod();
     }
 
     /**
@@ -90,17 +86,6 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
     private CBAdESTimestampMessageDigestBuilder(final CBAdESSignature signature) {
         Objects.requireNonNull(signature, "Signature cannot be null!");
         this.signature = signature;
-    }
-
-    /**
-     * Sets the canonicalization algorithm to be used for message-digest computation
-     *
-     * @param canonicalizationAlgorithm {@link String}
-     * @return this {@code CBAdESTimestampMessageDigestBuilder}
-     */
-    public CBAdESTimestampMessageDigestBuilder setCanonicalizationAlgorithm(String canonicalizationAlgorithm) {
-        this.canonicalizationAlgorithm = canonicalizationAlgorithm;
-        return this;
     }
 
     /**
@@ -303,23 +288,6 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
             }
         }
         return DSSMessageDigest.createEmptyDigest();
-    }
-
-    private byte[] getUHeadersComponentValue(CBAdESUHeadersComponent uHeaderComponent, String canonicalizationMethod) {
-        CBORObject component = uHeaderComponent.getComponent();
-        if (uHeaderComponent.isCborBtsrWrapped()) {
-            return ((CBORByteString) component).getBytes();
-        } else {
-            return getCanonicalizedValue(component, canonicalizationMethod);
-        }
-    }
-
-    private byte[] getCanonicalizedValue(CBORObject cborObject, String canonicalizationMethod) {
-        // TODO: canonicalization is not supported yet
-        LOG.warn("Canonicalization is not supported in the current version. "
-                + "The message imprint computation can lead to an unexpected result");
-        // temporary solution
-        return CBORUtils.serializeCborObject(cborObject);
     }
     
 }

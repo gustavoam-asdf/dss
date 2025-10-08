@@ -11,7 +11,6 @@ import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
-import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -324,39 +322,6 @@ public final class CBORUtils {
     }
 
     /**
-     * Checks if all components have one type (CBOR btsr or clear objects)
-     *
-     * @param uHeaders {@link CBAdESUHeaders} of objects to check
-     * @return TRUE if all components are uniform (CBOR btsr or clear objects), FALSE
-     *         otherwise
-     */
-    public static boolean checkComponentsUnicity(CBAdESUHeaders uHeaders) {
-        return checkComponentsUnicity(uHeaders.getCBORArray());
-    }
-
-    /**
-     * Checks if all components have one type (CBOR btsr or clear objects)
-     *
-     * @param uHeaders {@link CBORArray} of objects to check
-     * @return TRUE if all components are uniform (CBOR btsr or clear objects), FALSE
-     *         otherwise
-     */
-    public static boolean checkComponentsUnicity(CBORArray uHeaders) {
-        if (uHeaders != null && !uHeaders.isEmpty()) {
-            Iterator<CBORObject> iterator = uHeaders.getItems().iterator();
-            CBORObject uHeader = iterator.next();
-            boolean stringFormat = isCborByteStringWrappedFormat(uHeader);
-            while (iterator.hasNext()) {
-                uHeader = iterator.next();
-                if (stringFormat != isCborByteStringWrappedFormat(uHeader)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
      * Checks of the object is an instance of a CBOR btsr type
      *
      * @param uHeader {@link CBORObject} to check
@@ -398,14 +363,20 @@ public final class CBORUtils {
                 uHeadersEntry = CBORUtils.parseCbor(componentSerialized);
             } catch (Exception e) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.warn("An error occurred on parsing 'uHeaders' component with value (b64-encoded) '{}' : {}", Utils.toBase64(componentSerialized), e.getMessage(), e);
+                    LOG.warn("An error occurred on parsing 'uHeaders' component with value (b64-encoded) '{}' : {}",
+                            Utils.toBase64(componentSerialized), e.getMessage(), e);
                 } else {
                     LOG.warn("An error occurred on parsing 'uHeaders' component : {}", e.getMessage());
                 }
             }
+
+        } else {
+            LOG.warn("Component of 'uHeaders' unsigned header parameter shall be of CBOR Byte String type! Entry is skipped.");
+            return null;
         }
+
         if (!uHeadersEntry.isMap()) {
-            LOG.warn("Component of 'uHeaders' unsigned header parameter shall be of CBORMap type! Entry is skipped.");
+            LOG.warn("Encoded component of 'uHeaders' unsigned header parameter shall be of CBORMap type! Entry is skipped.");
             return null;
         }
 

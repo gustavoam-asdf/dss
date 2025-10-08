@@ -20,22 +20,16 @@ public abstract class CBAdESExtensionBuilder implements SignatureExtension<CBAdE
     }
 
     /**
-     * Checks if the type of uHeaders components is consistent
+     * Checks if the uHeaders components are represented by CBOR byte strings
      *
      * @param signature {@link CBAdESSignature} to check
-     * @param isCborByteStringWrapperComponents if the new component shall be of CBOR Byte String wrapped incorporation type
      */
-    protected void assertUHeadersComponentsConsistent(CBAdESSignature signature, boolean isCborByteStringWrapperComponents) {
+    protected void assertUHeadersComponentsConsistent(CBAdESSignature signature) {
         CBORArray uHeaders = signature.getCoseSignature().getUHeaders();
         if (uHeaders != null && !uHeaders.isEmpty()) {
-            if (!CBORUtils.checkComponentsUnicity(uHeaders)) {
-                throw new IllegalInputException("Extension is not possible, because components of the 'uHeaders' header " +
-                        "parameter have different format! Shall be all clear instances or CBOR byte string.");
-            }
-            if (CBORUtils.areAllCborBtsrComponents(uHeaders) != isCborByteStringWrapperComponents) {
-                throw new IllegalInputException(String.format("Extension is not possible! The encoding of 'uHeaders' "
-                                + "components shall match! Use cbadesSignatureParameters.setCborByteStringWrapperComponents(%s)",
-                        !isCborByteStringWrapperComponents));
+            if (!CBORUtils.areAllCborBtsrComponents(uHeaders)) {
+                throw new IllegalInputException("Extension is not possible! " +
+                        "The members of 'uHeaders' component shall be represented by CBOR byte strings.");
             }
         }
     }
