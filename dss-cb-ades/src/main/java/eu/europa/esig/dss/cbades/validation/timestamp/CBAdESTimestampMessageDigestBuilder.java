@@ -1,5 +1,9 @@
 package eu.europa.esig.dss.cbades.validation.timestamp;
 
+import co.nstant.in.cbor.model.UnicodeString;
+import eu.europa.esig.dss.cbades.CBAdESUtils;
+import eu.europa.esig.dss.cbades.COSEProtectedHeader;
+import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -128,19 +132,22 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
     }
 
     private void writePayloadValue(DSSMessageDigestCalculator digestCalculator) {
-        byte[] payload = signature.getCoseSignature().getPayloadBytes();
-        if (Utils.isArrayEmpty(payload)) {
-            throw new DSSException("Unable to extract COSE payload!");
+        digestCalculator.update(getPayload().getBytes());
+    }
+
+    private CBORByteString getPayload() {
+        CBORObject payload = signature.getCoseSignature().getPayload();
+        if (payload == null || !payload.isByteString()) {
+            throw new DSSException("Unable to extract COSE payload or payload has an invalid type!");
         }
-        digestCalculator.update(payload);
+        return (CBORByteString) payload;
     }
 
     private void writeSigDReferencedOctets(DSSMessageDigestCalculator digestCalculator, SigDMechanism sigDMechanism) throws IOException {
-        List<DSSDocument> documentList;
         switch (sigDMechanism) {
             case OBJECT_ID_BY_URI:
             case OBJECT_ID_BY_URI_HASH:
-                documentList = signature.getSignedDocumentsForObjectIdByUriMechanism();
+                List<DSSDocument> documentList = signature.getSignedDocumentsForObjectIdByUriMechanism();
                 for (DSSDocument document : documentList) {
                     try (InputStream is = document.openStream()) {
                         digestCalculator.update(is);
@@ -148,7 +155,19 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
                 }
                 break;
             default:
-                LOG.warn("Unsupported SigDMechanism '{}' has been found!", sigDMechanism);
+                throw new DSSException(String.format("Unsupported SigDMechanism '%s' has been found!", sigDMechanism));
+        }
+    }
+
+    private CBORByteString getSigDReferencedOctets( SigDMechanism sigDMechanism) {
+        switch (sigDMechanism) {
+            case OBJECT_ID_BY_URI:
+            case OBJECT_ID_BY_URI_HASH:
+                List<DSSDocument> documentList = signature.getSignedDocumentsForObjectIdByUriMechanism();
+                byte[] documentOctets = CBAdESUtils.concatenateDSSDocuments(documentList);
+                return new CBORByteString(documentOctets);
+            default:
+                throw new DSSException(String.format("Unsupported SigDMechanism '%s' has been found!", sigDMechanism));
         }
     }
 
@@ -204,79 +223,120 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
             CBORSignature cose = signature.getCoseSignature();
 
             /*
-             * 5.3.6.2.1 Computation of message-imprint for uHeaders with CBOR-bstr-wrapped
+             * 5.3.5.3	Computation of message-imprint for arcTst
+             * For computing the input to the message imprint computation, indicated in step 2) in clause 5.3.5.2,
+             * the steps listed below shall be performed:
              *
-             * For computing the input to the message imprint computation, performing step 2) in clause 5.3.6.2,
-             * when the CB-AdES signature uses CBOR-bstr-wrapped incorporation for incorporating elments in
-             * the uHeaders CBOR array, the steps listed below shall be performed:
-             *
-             * 1) Initialize the final octet stream to an empty stream.
+             *  1) Initialize an empty CBOR array.
              */
-            final DSSMessageDigestCalculator digestCalculator = new DSSMessageDigestCalculator(digestAlgorithm);
+            final CBORArray array = new CBORArray();
 
             /*
-             * 2) If the sigD header parameter is absent, then:
-             *  - If the payload field is present, then concatenate the bytes encapsulated within
-             *    the bit string of the payload field.
-             *  - Else if the payload field is absent (COSE Payload is detached, and not explicitly referenced
-             *    by the sigD header parameter), then retrieve the bytes of the COSE Payload.
-             *
-             * 3) If the sigD header parameter is present, then concatenate the bytes resulting from processing
-             * the contents of its pars member as specified in clause 5.2.9.2.2 of the present document.
+             * 2) Add a context text string, whose value shall be either:
+             *  - "Signature", if the CB-AdES signature is built on the COSE_Sign structure defined in
+             *    IETF RFC 9052 [2], or
+             *  - "Signature1", if the CB-AdES signature is built on the COSE_Sign1 structure defined
+             *    in IETF RFC 9052 [2], or
+             *  - The context text string corresponding to the structure of the CB-AdES signature if it is
+             *    a counter signature, as specified in clause 3.3 of IETF RFC 9338 [6].
              */
-            writeSignedDataBinaries(digestCalculator);
+            COSESignatureContext context = cose.getContext();
+            array.add(new UnicodeString(cose.getContext().getContext()));
 
             /*
-             * 4) Concatenate the CBOR-encoded protected headers map, wrapped within a CBOR byte string.
+             * 3) Add the protected header from the body layer, encapsulated in a CBOR byte string.
+             * If the body layer does not have the protected header, add a zero-length CBOR byte string.
              */
-            // TODO : use the signature's protected header, no clear definition
-            switch (signature.getCOSESignatureContext()) {
-                case COSE_SIGN:
-                case COSE_COUNTER_SIGNATURE:
-                case COSE_COUNTER_SIGNATURE_V2:
-                    digestCalculator.update(cose.getSignerProtectedHeader().getByteString().getBytes());
-                    break;
-                case COSE_SIGN1:
-                    digestCalculator.update(cose.getBodyProtectedHeader().getByteString().getBytes());
-                    break;
-                default:
-                    throw new UnsupportedOperationException(String.format("The COSE signature context '%s' is " +
-                            "not supported for 'arcTst' message-imprint computation!", signature.getCOSESignatureContext()));
-            }
-
-            /*
-             * 5) Concatenate the value of the bytes of the COSE signature value.
-             */
-            digestCalculator.update(getSignatureValue());
-
-            /*
-             * 6) Concatenate the components present in uHeaders CBOR array, that preced (appear BEFORE)
-             * the arcTst CBOR map that contains the time-stamp token that is being validated, in the order
-             * they appear within the uHeaders CBOR array, into the final octet stream.
-             */
-            CBORArray uHeadersArray = signature.getCoseSignature().getUHeaders();
-            if (CBORUtils.checkComponentsUnicity(uHeadersArray)) {
-
-                CBAdESUHeaders uHeaders = signature.getUHeaders();
-                for (CBAdESUHeadersComponent uHeaderComponent : uHeaders.getAttributes()) {
-                    if (timestampAttribute != null && timestampAttribute.equals(uHeaderComponent)) {
-                        // the timestamp is reached, stop the iteration
-                        break;
-                    }
-
-                    digestCalculator.update(getUHeadersComponentValue(uHeaderComponent, canonicalizationAlgorithm));
-                }
-
+            COSEProtectedHeader bodyProtectedHeader = cose.getBodyProtectedHeader();
+            if (bodyProtectedHeader != null && !bodyProtectedHeader.isEmpty()) {
+                array.add(bodyProtectedHeader.getByteString());
             } else {
-                LOG.warn("Unable to process 'uHeaders' entries for an 'arcTst' timestamp. "
-                        + "The 'uHeaders' components shall have a common format (CBOR Byte String or CBOR Map)!");
+                array.add(CBORUtils.EMPTY_BYTE_STRING);
             }
 
-            final DSSMessageDigest messageDigest = digestCalculator.getMessageDigest(digestAlgorithm);
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("The 'arcTst' timestamp message-imprint : {}", messageDigest);
+            /*
+             * 4) If the CB-AdES signature is built on the COSE_Sign structure, add the protected header
+             * from the signer layer, encapsulated in a CBOR byte string. If the signer layer does not have
+             * any protected header, add a zero-length CBOR byte string.
+             */
+            if (COSESignatureContext.COSE_SIGN == context) {
+                COSEProtectedHeader signerProtectedHeader = cose.getSignerProtectedHeader();
+                if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
+                    array.add(signerProtectedHeader.getByteString());
+                } else {
+                    array.add(CBORUtils.EMPTY_BYTE_STRING);
+                }
             }
-            return messageDigest;
+
+            /*
+             * 5) Add the externally supplied data from the application, encapsulated in a CBOR byte string.
+             * If no data is externally supplied to the application, add a zero-length CBOR byte string.
+             */
+            CBORByteString externallySuppliedData = cose.getExternallySuppliedData();
+            if (externallySuppliedData != null) {
+                array.add(externallySuppliedData);
+            } else {
+                array.add(CBORUtils.EMPTY_BYTE_STRING);
+            }
+
+            /*
+             * 6) If the sigD header parameter is absent, then:
+             *  - If the payload field is present, then add the CBOR byte string of the payload field.
+             *  - Else if the payload field is absent (COSE Payload is detached, and not explicitly
+             *    referenced by the sigD header parameter), then retrieve the bytes of the COSE Payload and
+             *    add them encapsulated in a CBOR byte string.
+             */
+            SigDMechanism sigDMechanism = signature.getSigDMechanism();
+            if (sigDMechanism == null) {
+                array.add(getPayload());
+            }
+
+            /*
+             * 7) If the sigD header parameter is present, retrieve the bytes resulting from processing
+             * the contents of its pars member as specified in clause 5.2.8.2.2 of the present document,
+             * concatenate them, encapsulate them in a CBOR byte string, and add this CBOR byte string.
+             */
+            else {
+                array.add(getSigDReferencedOctets(sigDMechanism));
+            }
+
+            // TODO : include otherFields for CounterSignatureV2 ?
+//            CBORObject otherFields = cose.getOtherFields();
+//            if (context.isCounterSignatureV2() && otherFields != null) {
+//                array.add(otherFields);
+//            }
+
+            /*
+             * 8) Add the CBOR byte string in the signature component.
+             */
+            array.add(cose.getSignature());
+
+            /*
+             * 9) If the CB-AdES signature is built on the COSE_Sign structure, take the elements in
+             * the uHeaders header parameter from the signer layer in the order that they appear within
+             * uHeaders, and add them to the CBOR array. If the signer layer does not have the uHeaders
+             * header parameter, add a zero-length CBOR byte string.
+             *
+             * 10) Else if the CB-AdES signature is built on the COSE_Sign1 structure, take the elements
+             * in the uHeaders header parameter from the body layer in the order that they appear within
+             * uHeaders and add them to the CBOR array. If the body layer does not have the uHeaders
+             * header parameter, add a zero-length CBOR byte string.
+             */
+            CBAdESUHeaders uHeaders = signature.getUHeaders();
+            for (CBAdESUHeadersComponent uHeaderComponent : uHeaders.getAttributes()) {
+                if (timestampAttribute != null && timestampAttribute.equals(uHeaderComponent)) {
+                    // the timestamp is reached, stop the iteration
+                    break;
+                }
+                array.add(uHeaderComponent.getComponent());
+            }
+
+            byte[] serializedCborObject = CBORUtils.serializeCborObject(array);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("The 'arcTst' timestamp message-imprint : {}", Utils.toBase64(serializedCborObject));
+            }
+            byte[] digestValue = DSSUtils.digest(digestAlgorithm, serializedCborObject);
+            return new DSSMessageDigest(digestAlgorithm, digestValue);
 
         } catch (Exception e) {
             String errorMessage = timestampToken == null ? String.format(MESSAGE_IMPRINT_ERROR, e.getMessage()) :

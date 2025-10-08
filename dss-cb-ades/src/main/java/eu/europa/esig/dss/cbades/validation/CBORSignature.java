@@ -237,7 +237,7 @@ public class CBORSignature {
                      * the second. As an example, this would be an array of one element
                      * for the COSE_Sign1 structure containing the signature value.
                      *
-                     * NOTE: applied only for counter signature(0) v2
+                     * NOTE: applied only for counter signature(0)V2
                      */
                     cborSignature.otherFields = new CBORArray(Collections.singletonList(coseSign1.getSignature()));
                 }
@@ -444,6 +444,16 @@ public class CBORSignature {
     }
 
     /**
+     * Gets other_fields, when present (master signature's payload).
+     * NOTE: Applicable for CounterSignatureV2
+     *
+     * @return {@link CBORObject}
+     */
+    public CBORObject getOtherFields() {
+        return otherFields;
+    }
+
+    /**
      * Gets other_fields bytes, when present (master signature's payload)
      *
      * @return byte array representing the first entry of the other_fields array
@@ -568,7 +578,8 @@ public class CBORSignature {
          * 1. A text string identifying the context of the signature. The context string is:
          *   - "Signature" for signatures using the COSE_Signature structure.
          *   - "Signature1" for signatures using the COSE_Sign1 structure.
-         *   - "CounterSignature" for signatures used as counter signature attributes.
+         *
+         * NOTE: For counter signatures a context string as defined in RFC 9338 is used
          */
         array.add(new UnicodeString(context.getContext()));
 
