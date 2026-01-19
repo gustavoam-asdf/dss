@@ -19,7 +19,7 @@ This section explains the usage and build requirements for https://github.com/es
 
 The latest version of DSS framework has the following minimal requirements:
 
-* Java 8 or higher (tested up to Java 24) is required for usage;
+* Java 8 or higher (tested up to Java 25) is required for usage;
 * Java 11 or higher is required for the build. Java 15 is the minimal requirement for a build with unit tests;
 * Maven 3.6.3 and higher (if build required);
 * Memory and Disk: see minimal requirements for the used JVM. In general the higher available is better;
@@ -44,12 +44,12 @@ The simplest way to include DSS to your project is to use https://central.sonaty
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-xades</artifactId>
-        <version>6.3</version>
+        <version>6.4.RC1</version>
     </dependency>
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-validation</artifactId>
-        <version>6.3</version>
+        <version>6.4.RC1</version>
     </dependency>
     ...
 </dependencies>
@@ -94,7 +94,7 @@ The root `pom.xml` of `dss-bom` defines versions of all modules within DSS-libra
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-bom</artifactId>
-            <version>6.3</version>
+            <version>6.4.RC1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -176,7 +176,7 @@ This section explains the build and use requirements for the https://github.com/
 
 The minimal requirements to build/run DSS Demonstrations:
 
-* Java 17 or higher (tested up to Java 24) is required;
+* Java 17 or higher (tested up to Java 25) is required;
 * Maven 3.6 or higher (if build required);
 * Tomcat 10 or higher (for Web-application);
 * Memory and Disk: see minimal requirements for the used JVM. In general the highest available is the best;
@@ -206,10 +206,21 @@ The DSS demo is also available as a ready to use downloadable webapp. To use it,
 
 DSS provides a standalone application which uses JavaFX. The application does not require a server to publish the product. The application can be run locally on a client's machine.
 
-Download links for the Standalone Application (Windows x64):
+By default, DSS packages DSS Standalone for Windows x64 OS only. Should you need to create a version for Linux OS, please use the profile below:
 
-* https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-minimal-windows-x64.zip[Minimal ZIP (application + bat file)];
-* https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-complete-windows-x64.zip[Complete ZIP (application + bat file + OpenJDK + JavaFX SDK)].
+.Maven command to build DSS Standalone package for Linux
+----
+mvn clean install -P linux
+----
+
+Download links for the DSS Standalone Application:
+
+* Windows x64:
+** https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-minimal-windows-x64.zip[Minimal ZIP (application + .bat file)];
+** https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-complete-windows-x64.zip[Complete ZIP (application + .bat file + OpenJDK + JavaFX SDK)].
+* Linux:
+** https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-minimal-linux.tar.gz[Minimal TAR.GZ (application + .sh file)];
+** https://ec.europa.eu/digital-building-blocks/DSS/webapp-demo/downloads/dss-app-complete-linux.tar.gz[Complete TAR.GZ (application + .sh file + OpenJDK + JavaFX SDK)].
 
 ===== Maven build instructions
 
@@ -233,9 +244,9 @@ To build a `jar` package, the following command shall be used:
 mvn clean install -P jar
 ----
 
-If you continue with a default `war` packaging option, you may benefit from `dss-demo-bundle` module, encapsulating the created package within a Tomcat 10 bundle. After a successful build, in the directory `/dss-demo-bundle/target/` you will be able to find two containers: `dss-demo-bundle.zip` and `dss-demo-bundle.tar.gz`. Despite the different container type, the content of both containers is the same. After extracting the content, you will need to run the file `Webapp-Startup.bat` in order to launch the server and the file `Webapp-Shutdown.bat` to stop the server. After running the server, the web-application will be available at the address `http://localhost:8080/`.
+If you continue with a default `war` packaging option, you may benefit from `dss-demo-bundle` module, encapsulating the created package within a Tomcat 11 bundle. After a successful build, in the directory `/dss-demo-bundle/target/` you will be able to find two containers: `dss-demo-bundle.zip` and `dss-demo-bundle.tar.gz`. Despite the different container type, the content of both containers is the same. After extracting the content, you will need to run the file `Webapp-Startup.bat` in order to launch the server and the file `Webapp-Shutdown.bat` to stop the server. After running the server, the web-application will be available at the address `http://localhost:8080/`.
 
-NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 21. For other possibilities, please see options below in this section.
+NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 25. For other possibilities, please see options below in this section.
 
 If during TL/LOTL loading you experience problems with some particular Trusted Lists, please refer the <<KeyStore>> chapter for a resolution.
 
@@ -252,11 +263,11 @@ In order to build a bundle for JDK 17 (minimum requirement), the following profi
 mvn clean install -P java17
 ----
 
-DSS webapp version with Java 24 can be created with a command below:
+DSS webapp version with JDK 21 can be created with a command below:
 
-.Maven command to create a JDK 24 bundle
+.Maven command to create a JDK 21 bundle
 ----
-mvn clean install -P java24
+mvn clean install -P java21
 ----
 
 ====== Integration tests
@@ -304,10 +315,12 @@ dss-jaxb-parsers:: Contains a list of all classes used to transform JAXB objects
 '''
 specs-xmldsig:: W3C XSD schema for signatures http://www.w3.org/2000/09/xmldsig
 specs-xades:: ETSI EN 319 132-1 XSD schema for XAdES.
-specs-trusted-list:: ETSI TS 119 612 XSD schema for parsing Trusted Lists.
+specs-trusted-list:: ETSI TS 119 612 XSD schema for parsing Trusted Lists compatible with the newest version of the standard.
+specs-trusted-list-v211:: ETSI TS 119 612 XSD schema for parsing Trusted Lists compatible with v2.1.1 of the standard.
 specs-validation-report:: ETSI TS 119 102-2 XSD schema for the Validation report.
 specs-asic-manifest:: ETSI EN 319 162 schema for ASiCManifest.
 specs-saml-assertion:: OASIS schema for SAML Assertions.
+specs-lote-xml:: ETSI TS 119 602 XML schema for List of Trusted Entities (<<R33>>).
 
 '''
 dss-diagnostic-jaxb:: JAXB model of the diagnostic data.
@@ -320,6 +333,7 @@ dss-simple-certificate-report-jaxb:: JAXB model of the simple report for certifi
 dss-json-common:: Utils for working with JSON-based content.
 specs-jws:: JSON Schemas based on the RFC 7515 specifications (<<R22>>).
 specs-jades:: ETSI TS 119 182-1 JSON Schemas for JAdES (<<R05>>).
+specs-lote-json:: ETSI TS 119 602 JSON schema for List of Trusted Entities (<<R33>>).
 
 ===== Utils modules
 
@@ -437,6 +451,7 @@ DSS contains a bundle of JAXB-based modules, generating Java classes at runtime 
 * specs-xmldsig;
 * specs-xades;
 * specs-trusted-list;
+* specs-trusted-list-v211;
 * specs-validation-report;
 * specs-asic-manifest;
 * specs-saml-assertion;

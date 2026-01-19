@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -329,6 +330,62 @@ class PAdESSignatureFieldTest extends PKIFactoryAccess {
 		Exception exception = assertThrows(AlertException.class,
 				() -> service.addNewSignatureField(withFirstField, parameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
+	}
+
+	@Test
+	void addNewFieldSameIdTest() throws IOException {
+		DSSDocument documentToSign = new InMemoryDocument(getClass().getResourceAsStream("/EmptyPage.pdf"));
+
+		SignatureFieldParameters parameters = new SignatureFieldParameters();
+		parameters.setFieldId("Signature1");
+		parameters.setOriginX(10);
+		parameters.setOriginY(10);
+		parameters.setHeight(50);
+		parameters.setWidth(50);
+
+		DSSDocument withFirstField = service.addNewSignatureField(documentToSign, parameters);
+		assertNotNull(withFirstField);
+
+		parameters.setFieldId("Signature1");
+		parameters.setOriginX(100);
+		parameters.setOriginY(10);
+		parameters.setHeight(50);
+		parameters.setWidth(50);
+
+		Exception exception = assertThrows(IllegalArgumentException.class, () -> service.addNewSignatureField(withFirstField, parameters));
+		assertEquals("The field 'Signature1' already exists within the PDF document!", exception.getMessage());
+
+		parameters.setFieldId(null);
+
+		DSSDocument withSecondField = service.addNewSignatureField(withFirstField, parameters);
+		assertNotNull(withSecondField);
+
+		signatureParameters.getImageParameters().getFieldParameters().setFieldId("Signature1");
+		DSSDocument signed = signAndValidate(withSecondField);
+		assertNotNull(signed);
+
+		parameters.setFieldId("Signature1");
+		parameters.setOriginX(10);
+		parameters.setOriginY(100);
+		parameters.setHeight(50);
+		parameters.setWidth(50);
+
+		exception = assertThrows(IllegalArgumentException.class,
+				() -> service.addNewSignatureField(signed, parameters));
+		assertEquals("The field 'Signature1' already exists within the PDF document!", exception.getMessage());
+
+		List<String> availableSignatureFields = service.getAvailableSignatureFields(signed);
+		assertEquals(1, availableSignatureFields.size());
+		assertEquals("Signature2", availableSignatureFields.get(0));
+		parameters.setFieldId(availableSignatureFields.get(0));
+
+		exception = assertThrows(IllegalArgumentException.class, () -> service.addNewSignatureField(signed, parameters));
+		assertEquals("The field 'Signature2' already exists within the PDF document!", exception.getMessage());
+
+		parameters.setFieldId(null);
+
+		DSSDocument withThirdField = service.addNewSignatureField(signed, parameters);
+		assertNotNull(withThirdField);
 	}
 
 	@Test
@@ -924,7 +981,6 @@ class PAdESSignatureFieldTest extends PKIFactoryAccess {
 
 		DSSDocument doubleSigned = signAndValidate(doc);
 		assertNotNull(doubleSigned);
-		doubleSigned.save("target/doubleSigned.pdf");
 
 		signatureParameters.getImageParameters().getFieldParameters().setPage(2);
 		Exception exception = assertThrows(AlertException.class,
@@ -1043,10 +1099,11 @@ class PAdESSignatureFieldTest extends PKIFactoryAccess {
 		DSSDocument oneSigFieldDoc = service.addNewSignatureField(emptyDoc, parameters);
 		assertNotNull(oneSigFieldDoc);
 
+		parameters.setFieldId("signature2");
+
 		Exception exception = assertThrows(AlertException.class, () -> service.addNewSignatureField(oneSigFieldDoc, parameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		parameters.setFieldId("signature2");
 		parameters.setRotation(VisualSignatureRotation.ROTATE_90);
 
 		DSSDocument twoSigFieldDoc = service.addNewSignatureField(oneSigFieldDoc, parameters);
@@ -1111,10 +1168,11 @@ class PAdESSignatureFieldTest extends PKIFactoryAccess {
 		DSSDocument oneSigFieldDoc = service.addNewSignatureField(emptyDoc, parameters);
 		assertNotNull(oneSigFieldDoc);
 
+		parameters.setFieldId("signature2");
+
 		Exception exception = assertThrows(AlertException.class, () -> service.addNewSignatureField(oneSigFieldDoc, parameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		parameters.setFieldId("signature2");
 		parameters.setRotation(VisualSignatureRotation.ROTATE_90);
 
 		DSSDocument twoSigFieldDoc = service.addNewSignatureField(oneSigFieldDoc, parameters);

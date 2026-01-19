@@ -20,14 +20,10 @@
  */
 package eu.europa.esig.dss.jades.signature;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.File;
-import java.util.Date;
-
-import org.junit.jupiter.api.BeforeEach;
-
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.JWSSerializationType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
@@ -39,6 +35,12 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.io.File;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class JAdESLevelBSHA512Test extends AbstractJAdESTestSignature {
 
@@ -71,6 +73,7 @@ class JAdESLevelBSHA512Test extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
 		verify(converted);
 
 		converted = JWSConverter.fromJWSCompactToJSONSerialization(compactSignature);
@@ -78,7 +81,15 @@ class JAdESLevelBSHA512Test extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION);
 		verify(converted);
+
+		signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+	}
+
+	@Override
+	protected MimeType getExpectedMime() {
+		return MimeTypeEnum.JOSE;
 	}
 
 	@Override

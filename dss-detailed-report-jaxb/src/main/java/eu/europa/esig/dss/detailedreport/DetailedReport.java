@@ -22,12 +22,14 @@ package eu.europa.esig.dss.detailedreport;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateQualificationProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlProofOfExistence;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlQWACProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
@@ -36,12 +38,14 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateQualificat
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationTimestampQualification;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationTimestampQualificationAtTime;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlXCV;
 import eu.europa.esig.dss.enumerations.CertificateQualification;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.QWACProfile;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampQualification;
@@ -861,18 +865,77 @@ public class DetailedReport {
 	}
 
 	private CertificateQualification getCertificateQualificationAtTime(ValidationTime validationTime, String certificateId) {
+		if (certificateId == null) {
+			return CertificateQualification.NA;
+		}
+
 		XmlCertificate certificate = getXmlCertificateById(certificateId);
 		if (certificate != null) {
-			List<XmlValidationCertificateQualification> validationCertificateQualifications = certificate.getValidationCertificateQualification();
-			if (validationCertificateQualifications != null) {
-				for (XmlValidationCertificateQualification validationCertificateQualification : validationCertificateQualifications) {
-					if (validationTime == validationCertificateQualification.getValidationTime()) {
-						return validationCertificateQualification.getCertificateQualification();
+			XmlCertificateQualificationProcess certificateQualificationProcess = certificate.getCertificateQualificationProcess();
+			if (certificateQualificationProcess != null) {
+				List<XmlValidationCertificateQualification> validationCertificateQualifications = certificateQualificationProcess.getValidationCertificateQualification();
+				if (validationCertificateQualifications != null) {
+					for (XmlValidationCertificateQualification validationCertificateQualification : validationCertificateQualifications) {
+						if (validationTime == validationCertificateQualification.getValidationTime()) {
+							return validationCertificateQualification.getCertificateQualification();
+						}
+					}
+				}
+			}
+
+		} else {
+			List<XmlSignature> signatures = getSignatures();
+			if (signatures != null && !signatures.isEmpty()) {
+				for (XmlSignature xmlSignature : signatures) {
+					XmlValidationSignatureQualification signatureQualification = xmlSignature.getValidationSignatureQualification();
+					if (signatureQualification != null && signatureQualification.getValidationCertificateQualification() != null) {
+						for (XmlValidationCertificateQualification certificateQualification : signatureQualification.getValidationCertificateQualification()) {
+							if (certificateId.equals(certificateQualification.getId()) && validationTime == certificateQualification.getValidationTime()) {
+								return certificateQualification.getCertificateQualification();
+							}
+						}
 					}
 				}
 			}
 		}
+
 		return CertificateQualification.NA;
+	}
+
+	/**
+	 * Gets the QWAC Profile of the given certificate, if the validation has been performed.
+	 * NOTE: applicable only on QWAC validation (see {@code eu.europa.esig.dss.validation.qwac.QWACValidator})
+	 *
+	 * @param certificateId {@link String}
+	 * @return {@link QWACProfile}
+	 */
+	public QWACProfile getCertificateQWACProfile(String certificateId) {
+		if (certificateId == null) {
+			return null;
+		}
+
+		XmlQWACProcess qwacProcess = null;
+
+		XmlCertificate xmlCertificate = getXmlCertificateById(certificateId);
+		if (xmlCertificate != null) {
+			qwacProcess = xmlCertificate.getQWACProcess();
+
+		} else {
+			List<XmlSignature> signatures = getSignatures();
+			if (signatures != null && !signatures.isEmpty()) {
+				for (XmlSignature xmlSignature : signatures) {
+					XmlValidationSignatureQualification signatureQualification = xmlSignature.getValidationSignatureQualification();
+					if (signatureQualification != null) {
+						if (signatureQualification.getQWACProcess() != null
+								&& certificateId.equals(signatureQualification.getQWACProcess().getId())) {
+							qwacProcess = signatureQualification.getQWACProcess();
+						}
+					}
+				}
+			}
+		}
+
+		return qwacProcess != null ? qwacProcess.getQWACType() : null;
 	}
 
 	/**
@@ -886,28 +949,39 @@ public class DetailedReport {
 		if (certificates == null || certificates.isEmpty()) {
 			throw new UnsupportedOperationException("Only supported in report for certificate");
 		}
+
+		// process cert chain for signatures
+		List<String> signatureIds = getSignatureIds();
 		List<XmlBasicBuildingBlocks> basicBuildingBlocks = jaxbDetailedReport.getBasicBuildingBlocks();
 		for (XmlBasicBuildingBlocks xmlBasicBuildingBlocks : basicBuildingBlocks) {
+			if (!signatureIds.contains(xmlBasicBuildingBlocks.getId())) {
+				continue; // skip for signature
+			}
+
 			XmlXCV xcv = xmlBasicBuildingBlocks.getXCV();
 			if (xcv != null) {
-				boolean trustAnchorReached = false;
 				List<XmlSubXCV> subXCV = xcv.getSubXCV();
 				for (XmlSubXCV xmlSubXCV : subXCV) {
-					if (xmlSubXCV.isTrustAnchor() != null && xmlSubXCV.isTrustAnchor()) {
-						trustAnchorReached = true;
-					}
 					if (certificateId.equals(xmlSubXCV.getId())) {
 						return xmlSubXCV.getConclusion();
 					}
 				}
-				if (trustAnchorReached) {
-					XmlConclusion xmlConclusion = new XmlConclusion();
-					xmlConclusion.setIndication(Indication.PASSED);
-					return xmlConclusion;
-				} else {
-					// if {@link SubX509CertificateValidation} is not executed and
-					// the certificate is in untrusted chain, return global XmlConclusion
-					return xcv.getConclusion();
+			}
+		}
+
+		// process other certificates (certificate validation only)
+		for (XmlBasicBuildingBlocks xmlBasicBuildingBlocks : basicBuildingBlocks) {
+			if (signatureIds.contains(xmlBasicBuildingBlocks.getId())) {
+				continue; // skip for signature
+			}
+
+			XmlXCV xcv = xmlBasicBuildingBlocks.getXCV();
+			if (xcv != null) {
+				List<XmlSubXCV> subXCV = xcv.getSubXCV();
+				for (XmlSubXCV xmlSubXCV : subXCV) {
+					if (certificateId.equals(xmlSubXCV.getId())) {
+						return xmlSubXCV.getConclusion();
+					}
 				}
 			}
 		}
@@ -1143,6 +1217,39 @@ public class DetailedReport {
 	 */
 	public List<Message> getCertificateQualificationInfosAtValidationTime(String certificateId) {
 		return getMessageCollector().getCertificateQualificationInfosAtValidationTime(certificateId);
+	}
+
+	/**
+	 * Returns a list of QWAC validation errors for a certificate with the given id at certificate issuance time
+	 * NOTE: applicable only on QWAC validation (see {@code eu.europa.esig.dss.validation.qwac.QWACValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get QWAC validation errors for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getQWACValidationErrors(String certificateId) {
+		return getMessageCollector().getQWACValidationErrors(certificateId);
+	}
+
+	/**
+	 * Returns a list of QWAC validation warnings for a certificate with the given id at certificate issuance time
+	 * NOTE: applicable only on QWAC validation (see {@code eu.europa.esig.dss.validation.qwac.QWACValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get QWAC validation warnings for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getQWACValidationWarnings(String certificateId) {
+		return getMessageCollector().getQWACValidationWarnings(certificateId);
+	}
+
+	/**
+	 * Returns a list of QWAC validation information messages for a certificate with the given id at certificate issuance time
+	 * NOTE: applicable only on QWAC validation (see {@code eu.europa.esig.dss.validation.qwac.QWACValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get QWAC validation information messages for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getQWACValidationInfos(String certificateId) {
+		return getMessageCollector().getQWACValidationInfos(certificateId);
 	}
 
 }

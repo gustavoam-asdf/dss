@@ -20,15 +20,9 @@
  */
 package eu.europa.esig.dss.jades.signature;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-
+import eu.europa.esig.dss.enumerations.JWSSerializationType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -40,6 +34,14 @@ import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class JAdESLevelBDetachedWithNonB64Test extends AbstractJAdESTestSignature {
 	
@@ -86,6 +88,7 @@ class JAdESLevelBDetachedWithNonB64Test extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
 		verify(converted);
 
 		converted = JWSConverter.fromJWSCompactToJSONSerialization(compactSignature);
@@ -93,7 +96,15 @@ class JAdESLevelBDetachedWithNonB64Test extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION);
 		verify(converted);
+
+		signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+	}
+
+	@Override
+	protected MimeType getExpectedMime() {
+		return MimeTypeEnum.JOSE;
 	}
 
 	@Override

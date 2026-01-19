@@ -79,7 +79,7 @@ public abstract class CAdESSignatureExtension implements SignatureExtension<CAdE
 	 * @param certificateVerifier {@link CertificateVerifier}
 	 */
 	protected CAdESSignatureExtension(final TSPSource tspSource, final CertificateVerifier certificateVerifier) {
-		Objects.requireNonNull(tspSource, "Missing TSPSource");
+		Objects.requireNonNull(tspSource, "The TSPSource cannot be null");
 		this.tspSource = tspSource;
 		this.certificateVerifier = certificateVerifier;
 	}

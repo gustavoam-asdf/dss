@@ -44,9 +44,9 @@ import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.simplereport.SimpleReport;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.test.PKIFactoryAccess;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.reports.Reports;
 import org.junit.jupiter.api.BeforeEach;
@@ -192,6 +192,7 @@ class PAdESServiceTest extends PKIFactoryAccess {
         signAndValidate(documentToSign, signatureParameters);
 
         SignatureImageParameters imageParameters = new SignatureImageParameters();
+        imageParameters.setLegacyDPIHandling(true);
         imageParameters.setImage(null);
 
         exception = assertThrows(IllegalArgumentException.class, () -> imageParameters.setImage(new DigestDocument()));

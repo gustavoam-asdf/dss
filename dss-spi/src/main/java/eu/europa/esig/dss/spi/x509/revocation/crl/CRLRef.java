@@ -23,14 +23,16 @@ package eu.europa.esig.dss.spi.x509.revocation.crl;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSRevocationUtils;
 import eu.europa.esig.dss.spi.x509.revocation.RevocationRef;
 import org.bouncycastle.asn1.esf.CrlIdentifier;
 import org.bouncycastle.asn1.esf.CrlValidatedID;
-import org.bouncycastle.asn1.x500.X500Name;
 
+import javax.security.auth.x500.X500Principal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Reference to a X509CRL
@@ -41,10 +43,10 @@ public final class CRLRef extends RevocationRef<CRL> {
 	private static final long serialVersionUID = -6785644604097791548L;
 
 	/** Name of the CRL issuer */
-	private X500Name crlIssuer;
+	private X500Principal crlIssuer;
 
 	/** The time of CRL production */
-	private Date crlIssuedTime;
+	private Date crlIssueTime;
 
 	/** CRL number */
 	private BigInteger crlNumber;
@@ -64,14 +66,42 @@ public final class CRLRef extends RevocationRef<CRL> {
 	/**
 	 * The default constructor for CRLRef.
 	 *
+	 * @param digest {@link Digest}
+	 * @param crlIssuer {@link X500Principal}
+	 * @param crlIssueTime {@link Date}
+	 */
+	public CRLRef(Digest digest, X500Principal crlIssuer, Date crlIssueTime) {
+		this.digest = digest;
+		this.crlIssuer = crlIssuer;
+		this.crlIssueTime = crlIssueTime;
+	}
+
+	/**
+	 * The default constructor for CRLRef.
+	 *
+	 * @param digest {@link Digest}
+	 * @param crlIssuer {@link X500Principal}
+	 * @param crlIssueTime {@link Date}
+	 * @param crlNumber {@link BigInteger}
+	 */
+	public CRLRef(Digest digest, X500Principal crlIssuer, Date crlIssueTime, BigInteger crlNumber) {
+		this.digest = digest;
+		this.crlIssuer = crlIssuer;
+		this.crlIssueTime = crlIssueTime;
+		this.crlNumber = crlNumber;
+	}
+
+	/**
+	 * The default constructor for CRLRef.
+	 *
 	 * @param cmsRef {@link CrlValidatedID}
 	 */
 	public CRLRef(CrlValidatedID cmsRef) {
 		try {
 			final CrlIdentifier crlIdentifier = cmsRef.getCrlIdentifier();
 			if (crlIdentifier != null) {
-				this.crlIssuer = crlIdentifier.getCrlIssuer();
-				this.crlIssuedTime = crlIdentifier.getCrlIssuedTime().getDate();
+				this.crlIssuer = DSSASN1Utils.toX500Principal(crlIdentifier.getCrlIssuer());
+				this.crlIssueTime = crlIdentifier.getCrlIssuedTime().getDate();
 				this.crlNumber = crlIdentifier.getCrlNumber();
 			}
 			this.digest = DSSRevocationUtils.getDigest(cmsRef.getCrlHash());
@@ -83,18 +113,20 @@ public final class CRLRef extends RevocationRef<CRL> {
 	/**
 	 * Gets CRL Issuer
 	 *
-	 * @return {@link X500Name}
+	 * @return {@link X500Principal}
 	 */
-	public X500Name getCrlIssuer() {
+	public X500Principal getCrlIssuer() {
 		return crlIssuer;
 	}
 
 	/**
 	 * Sets CRL Issuer
 	 *
-	 * @param crlIssuer {@link X500Name}
+	 * @param crlIssuer {@link X500Principal}
+	 * @deprecated since DSS 6.4. To be removed.
 	 */
-	public void setCrlIssuer(X500Name crlIssuer) {
+	@Deprecated
+	public void setCrlIssuer(X500Principal crlIssuer) {
 		this.crlIssuer = crlIssuer;
 	}
 
@@ -102,18 +134,31 @@ public final class CRLRef extends RevocationRef<CRL> {
 	 * Gets CRL Issued time
 	 *
 	 * @return {@link Date}
+	 * @deprecated since DSS 6.4. Please use {@code #getCrlIssueTime} method instead.
 	 */
+	@Deprecated
 	public Date getCrlIssuedTime() {
-		return crlIssuedTime;
+		return crlIssueTime;
+	}
+
+	/**
+	 * Gets CRL Issue time
+	 *
+	 * @return {@link Date}
+	 */
+	public Date getCrlIssueTime() {
+		return crlIssueTime;
 	}
 
 	/**
 	 * Sets CRL Issued time
 	 *
-	 * @param crlIssuedTime {@link Date}
+	 * @param crlIssueTime {@link Date}
+	 * @deprecated since DSS 6.4. To be removed.
 	 */
-	public void setCrlIssuedTime(Date crlIssuedTime) {
-		this.crlIssuedTime = crlIssuedTime;
+	@Deprecated
+	public void setCrlIssuedTime(Date crlIssueTime) {
+		this.crlIssueTime = crlIssueTime;
 	}
 
 	/**
@@ -129,7 +174,9 @@ public final class CRLRef extends RevocationRef<CRL> {
 	 * Sets CRL number
 	 *
 	 * @param crlNumber {@link BigInteger}
+	 * @deprecated since DSS 6.4. To be removed.
 	 */
+	@Deprecated
 	public void setCrlNumber(BigInteger crlNumber) {
 		this.crlNumber = crlNumber;
 	}
@@ -154,7 +201,32 @@ public final class CRLRef extends RevocationRef<CRL> {
 
 	@Override
 	public String toString() {
-		return "CRL Reference with Digest [" + super.toString() + "]";
+		return "CRLRef [" +
+				"crlIssuer=" + crlIssuer +
+				", crlIssueTime=" + crlIssueTime +
+				", crlNumber=" + crlNumber +
+				"] " + super.toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+		if (!super.equals(object)) return false;
+
+		CRLRef crlRef = (CRLRef) object;
+		return Objects.equals(crlIssuer, crlRef.crlIssuer)
+				&& Objects.equals(crlIssueTime, crlRef.crlIssueTime)
+				&& Objects.equals(crlNumber, crlRef.crlNumber);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + Objects.hashCode(crlIssuer);
+		result = 31 * result + Objects.hashCode(crlIssueTime);
+		result = 31 * result + Objects.hashCode(crlNumber);
+		return result;
 	}
 
 }

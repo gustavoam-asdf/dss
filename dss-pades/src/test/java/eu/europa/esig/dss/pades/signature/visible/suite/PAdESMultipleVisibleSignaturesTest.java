@@ -89,7 +89,7 @@ class PAdESMultipleVisibleSignaturesTest extends AbstractPAdESTestValidation {
 
 		fieldParameters.setOriginX(150);
 		fieldParameters.setOriginY(150);
-		Exception exception = assertThrows(AlertException.class, () -> signAndValidate());
+		Exception exception = assertThrows(AlertException.class, this::signAndValidate);
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 		
 		fieldParameters.setOriginX(300);
@@ -141,7 +141,7 @@ class PAdESMultipleVisibleSignaturesTest extends AbstractPAdESTestValidation {
 		
 		// new signature over a timestamp
 		fieldParameters.setOriginX(350);
-		exception = assertThrows(AlertException.class, () -> signAndValidate());
+		exception = assertThrows(AlertException.class, this::signAndValidate);
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 	}
 	
@@ -167,7 +167,7 @@ class PAdESMultipleVisibleSignaturesTest extends AbstractPAdESTestValidation {
 		fieldParameters.setHeight(100);
 		imageParameters.setFieldParameters(fieldParameters);
 		
-		Exception exception = assertThrows(AlertException.class, () -> signAndValidate());
+		Exception exception = assertThrows(AlertException.class, this::signAndValidate);
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 		
 		signatureParameters.getImageParameters().getFieldParameters().setFieldId("signature1");

@@ -24,7 +24,7 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
 import eu.europa.esig.dss.model.tsl.Condition;
 import eu.europa.esig.dss.tsl.dto.condition.PolicyIdCondition;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 
 import java.util.ArrayList;
 import java.util.List;

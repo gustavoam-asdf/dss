@@ -66,7 +66,7 @@ public class SoapMultipleDocumentsSignatureServiceImpl implements SoapMultipleDo
 
 	@Override
 	public RemoteDocument extendDocument(ExtendDocumentDTO extendDocumentDto) {
-		return service.extendDocument(extendDocumentDto.getToExtendDocument(), extendDocumentDto.getParameters());
+		return service.extendDocument(extendDocumentDto.getToExtendDocument(), extendDocumentDto.getSignatureProfile(), extendDocumentDto.getParameters());
 	}
 
 	@Override

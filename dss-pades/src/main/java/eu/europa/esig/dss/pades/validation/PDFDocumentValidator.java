@@ -85,7 +85,7 @@ public class PDFDocumentValidator extends SignedDocumentValidator {
     }
 
     @Override
-    protected PAdESDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public PAdESDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new PAdESDiagnosticDataBuilder();
     }
 

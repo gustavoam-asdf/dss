@@ -57,7 +57,7 @@ class JAdESImpossibleExtensionTest extends PKIFactoryAccess {
 		parameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
 
 		Exception exception = assertThrows(IllegalInputException.class, () -> service.extendDocument(doc, parameters));
-		assertEquals("There is no signature to extend!", exception.getMessage());
+		assertEquals("No signatures found to be extended!", exception.getMessage());
 	}
 	
 	@Test

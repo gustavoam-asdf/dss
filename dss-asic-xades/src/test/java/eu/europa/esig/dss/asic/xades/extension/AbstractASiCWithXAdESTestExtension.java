@@ -22,8 +22,8 @@ package eu.europa.esig.dss.asic.xades.extension;
 
 import eu.europa.esig.dss.asic.common.ASiCContent;
 import eu.europa.esig.dss.asic.common.ZipUtils;
-import eu.europa.esig.dss.asic.xades.extract.ASiCWithXAdESContainerExtractor;
 import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+import eu.europa.esig.dss.asic.xades.extract.ASiCWithXAdESContainerExtractor;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.asic.xades.validation.ASiCEWithXAdESManifestParser;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -33,13 +33,12 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.SignatureValue;
-import eu.europa.esig.dss.model.ToBeSigned;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
-import eu.europa.esig.dss.test.extension.AbstractTestExtension;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.model.ManifestEntry;
 import eu.europa.esig.dss.model.ManifestFile;
+import eu.europa.esig.dss.model.SignatureValue;
+import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.test.extension.AbstractTestExtension;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.xades.XAdESTimestampParameters;
 
 import java.io.File;
@@ -53,16 +52,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractASiCWithXAdESTestExtension extends AbstractTestExtension<ASiCWithXAdESSignatureParameters, XAdESTimestampParameters> {
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtSignatureTime() {
-		return getGoodTsa();
-	}
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtExtensionTime() {
-		return getAlternateGoodTsa();
-	}
 
 	@Override
 	protected FileDocument getOriginalDocument() {
@@ -239,11 +228,6 @@ public abstract class AbstractASiCWithXAdESTestExtension extends AbstractTestExt
 		assertNotNull(diagnosticData.getContainerType());
 		assertNotNull(diagnosticData.getMimetypeFileContent());
 		assertTrue(Utils.isCollectionNotEmpty(diagnosticData.getContainerInfo().getContentFiles()));
-	}
-
-	@Override
-	protected String getSigningAlias() {
-		return GOOD_USER;
 	}
 
 }

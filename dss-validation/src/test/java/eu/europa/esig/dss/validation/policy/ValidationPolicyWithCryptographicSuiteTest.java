@@ -176,12 +176,10 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertNull(policy.getContentTimeStampConstraint(Context.SIGNATURE));
         assertNull(policy.getContentTimeStampMessageImprintConstraint(Context.SIGNATURE));
 
-        ValueConstraint valueConstraint = new ValueConstraint();
-        valueConstraint.setLevel(Level.FAIL);
+        signedAttr.setContentType(multi);
+        signedAttr.setContentHints(multi);
+        signedAttr.setContentIdentifier(multi);
 
-        signedAttr.setContentType(valueConstraint);
-        signedAttr.setContentHints(valueConstraint);
-        signedAttr.setContentIdentifier(valueConstraint);
         signedAttr.setContentTimeStamp(level);
         signedAttr.setContentTimeStampMessageImprint(level);
 
@@ -208,7 +206,7 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertEquals(Level.FAIL, policy.getSigningCertificateRefersCertificateChainConstraint(Context.SIGNATURE).getLevel());
         assertEquals(Level.FAIL, policy.getReferencesToAllCertificateChainPresentConstraint(Context.SIGNATURE).getLevel());
         assertEquals(Level.FAIL, policy.getSigningCertificateDigestAlgorithmConstraint(Context.SIGNATURE).getLevel());
-        assertEquals(Level.FAIL, policy.getSigningDurationRule(Context.SIGNATURE).getLevel());
+        assertEquals(Level.FAIL, policy.getSigningTimeConstraint(Context.SIGNATURE).getLevel());
         assertEquals(Level.FAIL, policy.getMessageDigestOrSignedPropertiesConstraint(Context.SIGNATURE).getLevel());
         assertEquals(Level.FAIL, policy.getEllipticCurveKeySizeConstraint(Context.SIGNATURE).getLevel());
         assertEquals(Level.FAIL, policy.getSignerLocationConstraint(Context.SIGNATURE).getLevel());
@@ -502,7 +500,7 @@ class ValidationPolicyWithCryptographicSuiteTest {
 
         // Initially all should be null
         assertNull(policy.getBestSignatureTimeBeforeExpirationDateOfSigningCertificateConstraint());
-        assertNull(policy.getRevocationTimeAgainstBestSignatureDurationRule());
+        assertNull(policy.getRevocationTimeAgainstBestSignatureTimeConstraint());
         assertNull(policy.getTimestampCoherenceConstraint());
         assertNull(policy.getTimestampDelayConstraint());
         assertNull(policy.getTimestampValidConstraint());
@@ -524,7 +522,7 @@ class ValidationPolicyWithCryptographicSuiteTest {
         timestampConstraints.setTimestampDelay(timeLevel);
 
         assertEquals(Level.FAIL, policy.getBestSignatureTimeBeforeExpirationDateOfSigningCertificateConstraint().getLevel());
-        assertEquals(Level.FAIL, policy.getRevocationTimeAgainstBestSignatureDurationRule().getLevel());
+        assertEquals(Level.FAIL, policy.getRevocationTimeAgainstBestSignatureTimeConstraint().getLevel());
         assertEquals(Level.FAIL, policy.getTimestampCoherenceConstraint().getLevel());
         assertEquals(Level.FAIL, policy.getTimestampValidConstraint().getLevel());
         assertEquals(Level.FAIL, policy.getTimestampTSAGeneralNamePresent().getLevel());

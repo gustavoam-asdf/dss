@@ -42,14 +42,14 @@ class CertificateTokenTest {
 	void getKeyUsageBits() {
 		CertificateToken certificate = DSSUtils.loadCertificate(new File("src/test/resources/citizen_ca.cer"));
 		List<KeyUsageBit> keyUsageBits = certificate.getKeyUsageBits();
-		LOG.info("Key usage citizen_ca : " + keyUsageBits);
+		LOG.info("Key usage citizen_ca : {}", keyUsageBits);
 		assertTrue(keyUsageBits.contains(KeyUsageBit.CRL_SIGN));
 		assertTrue(certificate.isCA());
 		assertEquals(0, certificate.getPathLenConstraint());
 
 		certificate = DSSUtils.loadCertificate(new File("src/test/resources/TSP_Certificate_2014.crt"));
 		keyUsageBits = certificate.getKeyUsageBits();
-		LOG.info("Key usage tsp cert : " + keyUsageBits);
+		LOG.info("Key usage tsp cert : {}", keyUsageBits);
 		assertFalse(keyUsageBits.contains(KeyUsageBit.CRL_SIGN));
 		assertFalse(certificate.isCA());
 		assertEquals(-1, certificate.getPathLenConstraint());

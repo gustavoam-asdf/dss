@@ -12,6 +12,7 @@
 			<xs:element name="ValidationDate" type="xs:dateTime" />
 			<xs:element name="ContainerInfo" type="ContainerInfo" minOccurs="0" />
 			<xs:element name="PDFAInfo" type="PDFAInfo" minOccurs="0" />
+			<xs:element name="ConnectionInfo" type="ConnectionInfo" minOccurs="0" />
 			<xs:element name="Signatures" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -133,6 +134,23 @@
 		</xs:sequence>
 		<xs:attribute name="compliant" type="xs:boolean" use="required" />
 	</xs:complexType>
+
+	<xs:complexType name="ConnectionInfo">
+		<xs:sequence>
+			<xs:element name="TLSCertificate" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="Certificate" type="xs:IDREF" use="required" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TLSCertificateBindingUrl" type="xs:string" minOccurs="0" />
+			<xs:element name="TLSCertificateBindingSignature" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="Signature" type="xs:IDREF" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="url" type="xs:string" use="required" />
+	</xs:complexType>
 	
 	<xs:complexType name="AbstractToken" abstract="true">
 		<xs:attribute name="Id" type="xs:ID" use="required" />
@@ -147,7 +165,9 @@
 					<xs:element name="SignatureFilename" type="xs:string" />
 					<xs:element name="ErrorMessage" type="xs:string" minOccurs="0" />
 					<xs:element name="ClaimedSigningTime" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="ExpirationTime" type="xs:dateTime" minOccurs="0" />
 					<xs:element name="SignatureFormat" type="SignatureFormat" />
+					<xs:element name="JWSSerializationType" type="JWSSerializationType" minOccurs="0" /> <!-- JAdES only -->
 					<xs:element name="SignatureType" type="xs:string" minOccurs="0" /> <!-- JAdES only -->
 		
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
@@ -690,6 +710,8 @@
 					<xs:element name="QcCClegislation" type="QcCClegislation" minOccurs="0" />
 					<xs:element name="SemanticsIdentifier" type="OID" minOccurs="0" />
 					<xs:element name="PSD2QcInfo" type="PSD2QcInfo" minOccurs="0" />
+					<xs:element name="QcQSCDlegislation" type="QcQSCDlegislation" minOccurs="0" />
+					<xs:element name="QcIdentMethod" type="OID" minOccurs="0" />
 					<xs:element name="OtherOIDs" type="OtherOIDs" minOccurs="0" />
 					<xs:element name="MRACertificateMapping" type="MRACertificateMapping" minOccurs="0" />
 				</xs:sequence>
@@ -718,6 +740,7 @@
 			<xs:element name="QcSSCD" type="QcSSCD" minOccurs="0" />
 			<xs:element name="QcTypes" type="QcTypes" minOccurs="0" />
 			<xs:element name="QcCClegislation" type="QcCClegislation" minOccurs="0" />
+			<xs:element name="QcQSCDlegislation" type="QcQSCDlegislation" minOccurs="0" />
 			<xs:element name="OtherOIDs" type="OtherOIDs" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
@@ -745,6 +768,12 @@
 	<xs:complexType name="QcCClegislation">
 		<xs:sequence>
 			<xs:element name="CountryName" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="QcQSCDlegislation">
+		<xs:sequence>
+			<xs:element name="QSCDCountryName" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
@@ -887,6 +916,14 @@
 			<xs:enumeration value="CB-AdES-BASELINE-LT" />
 			<xs:enumeration value="CB-AdES-BASELINE-LTA" />
 			<xs:enumeration value="UNKNOWN" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="JWSSerializationType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COMPACT_SERIALIZATION" />
+			<xs:enumeration value="JSON_SERIALIZATION" />
+			<xs:enumeration value="FLATTENED_JSON_SERIALIZATION" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1360,6 +1397,7 @@
 					<xs:element name="ProductionDate" type="xs:dateTime" minOccurs="0" /> <!-- Can be null in case of no SUCCESSFUL response of OCSP -->
 					<xs:element name="ThisUpdate" type="xs:dateTime" minOccurs="0" />
 					<xs:element name="NextUpdate" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="CRLNumber" type="xs:integer" minOccurs="0" /> <!-- CRL -->
 					<xs:element name="ExpiredCertsOnCRL" type="xs:dateTime" minOccurs="0" /> <!-- CRL -->
 					<xs:element name="ArchiveCutOff" type="xs:dateTime" minOccurs="0" /> <!-- OCSP -->
 					<xs:element name="CertHashExtensionPresent" type="xs:boolean" minOccurs="0" /> <!-- OCSP -->
@@ -1428,6 +1466,8 @@
 			<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" />
 			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" />
 			<xs:element name="ResponderId" type="SignerInfo" minOccurs="0" /> <!-- OCSP -->
+			<xs:element name="Issuer" type="xs:string" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="IssueTime" type="xs:dateTime" minOccurs="0" /> <!-- CRL -->
 			<xs:element name="CRLNumber" type="xs:integer" minOccurs="0" /> <!-- CRL -->
 			<xs:element name="Uri" type="xs:string" minOccurs="0" />
 		</xs:sequence>

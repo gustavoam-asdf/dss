@@ -70,7 +70,7 @@ class JAdESCounterSignSampleJSONTest extends AbstractJAdESCounterSignatureTest {
     @Test
     void test() {
         Exception exception = assertThrows(IllegalInputException.class, () -> counterSign(documentToSign, "Id-1"));
-        assertEquals("There is no signature to extend!", exception.getMessage());
+        assertEquals("No signatures found to be extended!", exception.getMessage());
     }
 
     @Override

@@ -7,6 +7,16 @@
 [[TrustedLists]]
 == Trusted Lists
 
+NOTE: In accordance with https://eur-lex.europa.eu/eli/dec_impl/2025/2164/oj/eng[Commission Implementing Decision (EU) 2025/2164], amending https://eur-lex.europa.eu/eli/dec_impl/2015/1505/oj/eng[Commission Implementing Decision (EU) 2015/1505], Trusted Lists provided for in Article 22(1) of Regulation (EU) No 910/2014 <<R12>> shall conform to the specifications and requirements laid down in ETSI TS 119 612 v2.4.1 <<R11>>, which introduces the Trusted List v6 format. Those specifications shall apply from 28 April 2026 at 22:00:00 UTC.
+
+The followings versions of DSS are compatible with both Trusted Lists v5 and Trusted Lists v6: `5.13.1`, `6.0.1`, `6.1.1` and all other versions starting from `6.2` or higher.
+
+All implementors are strongly advised to upgrade their systems to one of the aforementioned versions of DSS.
+
+WARNING: Failure to upgrade DSS version may result to inability to process the Trusted Lists v6.
+
+For signing a Trusted List of v5 or v6, please see the chapter <<TLSigning>>.
+
 [[tlValidationJob]]
 === Configuration of TL validation job
 
@@ -368,6 +378,7 @@ To enable Trust Service Equivalence Mapping in DSS, the corresponding instance o
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/validate/mra/ThirdCountryLOTLTest.java[tags=demo]
 ----
 
+[[TLSigning]]
 === Signing a trusted list
 
 The standard ETSI TS 119 612 (cf. <<R11>>) specifies in its annex B the XML structure and the format of the signature (XAdES, enveloped signature, transformation, canonicalization, etc.).

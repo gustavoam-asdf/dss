@@ -1,8 +1,8 @@
-<ConstraintsParameters Name="QES AdESQC TL based (Test WebServices)" xmlns="http://dss.esig.europa.eu/validation/policy">
-	<Description>Validate electronic signatures and indicates whether they are Advanced electronic Signatures (AdES), AdES supported by a Qualified Certificate (AdES/QC) or a
-		Qualified electronic Signature (QES). All certificates and their related chains supporting the signatures are validated against the EU Member State Trusted Lists (this includes
-		signer's certificate and certificates used to validate certificate validity status services - CRLs, OCSP, and time-stamps).
-	</Description>
+<ConstraintsParameters Name="QES AES/QC AES TL based (Test WebServices)" xmlns="http://dss.esig.europa.eu/validation/policy">
+    <Description>Validates electronic signatures and indicates whether they are advanced electronic signatures (AES), AES supported by a qualified certificate (AES/QC) or a
+        qualified electronic signature (QES). All certificates and their related chains supporting the signatures are validated against the EU Member State Trusted Lists (this includes
+        signer's certificate and certificates used to validate certificate validity status services - CRLs, OCSP, and time-stamps).
+    </Description>
 	<ContainerConstraints>
 		<AcceptableContainerTypes Level="FAIL">
 			<Id>ASiC-S</Id>
@@ -74,6 +74,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<NoRevAvail Level="WARN" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
@@ -127,6 +128,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -194,8 +197,13 @@
 			<CertDigestMatch Level="FAIL" />
 			<IssuerSerialMatch Level="WARN" />
 			<SigningTime Level="FAIL" />
-<!--		<ContentType Level="FAIL" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="FAIL" value="*" />
+			<SigningTimeInCertRange Level="FAIL" />
+<!--		<ContentType Level="FAIL">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="FAIL">
+				<Id>*</Id>
+			</ContentHints>
 			<CommitmentTypeIndication Level="FAIL">
 				<Id>1.2.840.113549.1.9.16.6.1</Id>
 				<Id>1.2.840.113549.1.9.16.6.4</Id>
@@ -251,6 +259,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<NoRevAvail Level="WARN" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
@@ -304,6 +313,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -371,8 +382,13 @@
 			<CertDigestMatch Level="FAIL" />
 			<IssuerSerialMatch Level="WARN" />
 			<SigningTime Level="FAIL" />
-<!--		<ContentType Level="FAIL" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="FAIL" value="*" />
+			<SigningTimeInCertRange Level="FAIL" />
+<!--		<ContentType Level="FAIL">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="FAIL">
+				<Id>*</Id>
+			</ContentHints>
 			<CommitmentTypeIndication Level="FAIL">
 				<Id>1.2.840.113549.1.9.16.6.1</Id>
 				<Id>1.2.840.113549.1.9.16.6.4</Id>
@@ -406,6 +422,7 @@
 				<RevocationDataAvailable Level="FAIL" />
 				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationFreshness Level="FAIL" Unit="DAYS" Value="0" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<IssuerName Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -449,6 +466,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -530,6 +549,7 @@
 				<RevocationDataAvailable Level="FAIL" />
 				<CRLNextUpdatePresent Level="WARN" />
 				<RevocationFreshness Level="FAIL" Unit="DAYS" Value="0" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<IssuerName Level="FAIL" />
 				<NotRevoked Level="FAIL" />
 				<NotOnHold Level="FAIL" />
@@ -572,6 +592,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->

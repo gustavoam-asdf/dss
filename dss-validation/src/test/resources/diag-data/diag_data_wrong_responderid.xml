@@ -130,6 +130,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>B5mW4ltHtN9pJGv4l1vxjWwEC28=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>
@@ -184,6 +187,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://proxy.fineid.fi/arl/vrkroot2a.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>j9PTrVyaisMlcPZdzi459+M+ATg=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>B5mW4ltHtN9pJGv4l1vxjWwEC28=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -244,6 +253,12 @@
                 <AuthorityInformationAccess OID="1.3.6.1.5.5.7.1.1" critical="false">
                     <caIssuersUrl>http://proxy.fineid.fi/ca/vrkcqc3.crt</caIssuersUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>1pPiv5ZKiQN4Q+bJRx2THde0s+o=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>j9PTrVyaisMlcPZdzi459+M+ATg=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -307,6 +322,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://proxy.fineid.fi/crl/vrkcqc3c.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>1pPiv5ZKiQN4Q+bJRx2THde0s+o=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>j9PTrVyaisMlcPZdzi459+M+ATg=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>

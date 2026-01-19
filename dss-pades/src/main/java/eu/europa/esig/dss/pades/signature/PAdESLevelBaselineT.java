@@ -65,7 +65,7 @@ class PAdESLevelBaselineT implements SignatureExtension<PAdESSignatureParameters
 	 * @param pdfObjectFactory {@link IPdfObjFactory}
 	 */
 	protected PAdESLevelBaselineT(TSPSource tspSource, CertificateVerifier certificateVerifier, IPdfObjFactory pdfObjectFactory) {
-		Objects.requireNonNull(tspSource, "TSPSource shall be defined!");
+		Objects.requireNonNull(tspSource, "The TSPSource cannot be null");
 		Objects.requireNonNull(certificateVerifier, "CertificateVerifier shall be defined!");
 		Objects.requireNonNull(pdfObjectFactory, "pdfObjectFactory shall be defined!");
 		this.tspSource = tspSource;

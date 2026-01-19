@@ -26,7 +26,10 @@ import java.util.List;
 
 /**
  * XAdES signature creation profile
+ *
+ * @deprecated since DSS 6.4. Please switch to {@code eu.europa.esig.dss.xades.XAdESSignatureProfile} instead.
  */
+@Deprecated
 public interface SignatureProfile {
 
 	/**

@@ -99,10 +99,16 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.4788.2.31.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QCYR03rEd9CHTm6a00H1sFtTBDQ=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcEuRetentionPeriod>10</QcEuRetentionPeriod>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>WsO6BZGHehG64VBKZLCH2uUR8tg=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -247,6 +253,12 @@
                     <crlUrl>http://crl.d-trust.net/crl/d-trust_ca_3-1_2016.crl</crlUrl>
                     <crlUrl>http://cdn.d-trust-cloudcrl.net/crl/d-trust_ca_3-1_2016.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>m98+/S5/JUTw7ZNAkLaRhFQ9zzE=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>gqZxDptY8+89LgcwpTqZOkrVBlM=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -318,6 +330,12 @@
                     <crlUrl>http://crl.d-trust.net/crl/d-trust_ca_3-1_2016.crl</crlUrl>
                     <crlUrl>http://cdn.d-trust-cloudcrl.net/crl/d-trust_ca_3-1_2016.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>pMJZYvH2IccK0j8hM/r1//bIqBs=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>gqZxDptY8+89LgcwpTqZOkrVBlM=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -390,9 +408,15 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.4788.2.31.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>WsO6BZGHehG64VBKZLCH2uUR8tg=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>b8oWMaJgZRdogEC9X3OdcUrF7JA=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -516,6 +540,9 @@
                 <AuthorityInformationAccess OID="1.3.6.1.5.5.7.1.1" critical="false">
                     <ocspUrl>http://qual.ocsp.d-trust.net</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>b8oWMaJgZRdogEC9X3OdcUrF7JA=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -606,6 +633,9 @@
                     <crlUrl>ldap://directory.d-trust.net/CN=D-TRUST%20Root%20CA%203%202016,O=D-Trust%20GmbH,C=DE?certificaterevocationlist</crlUrl>
                     <crlUrl>http://crl.d-trust.net/crl/d-trust_root_ca_3_2016.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>gqZxDptY8+89LgcwpTqZOkrVBlM=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-C876A5D23654549B5B16B869E1368AFF6EB2E5ECD13F05C489E23F6A919A2164" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">

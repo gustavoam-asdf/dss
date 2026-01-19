@@ -73,6 +73,30 @@ class JWSUtilsTest {
 		
 		validateSignature(jws);
 	}
+
+	@Test
+	void jsonFlattenedErrorTest() {
+		InputStream is = JWSUtilsTest.class.getResourceAsStream("/jws-flattened-error.json");
+		JsonObjectWrapper jws = new JSONParser().parse(is);
+
+		List<String> errors = jwsUtils.validateAgainstSchema(jws);
+		assertTrue(errors.isEmpty());
+
+		String protectedBase64String = jws.getAsString("protected");
+		assertNotNull(protectedBase64String);
+
+		byte[] decodedProtected = Base64.getDecoder().decode(protectedBase64String);
+		String protectedString = new String(decodedProtected);
+
+		errors = jwsProtectedHeaderUtils.validateAgainstSchema(protectedString);
+		assertErrorFound(errors, "alg");
+
+		JsonObjectWrapper header = jws.getAsObject("header");
+		assertNotNull(header);
+
+		errors = jwsUnprotectedHeaderUtils.validateAgainstSchema(header);
+		assertTrue(errors.isEmpty());
+	}
 	
 	private void validateSignature(JsonObjectWrapper signature) {
 		String protectedBase64String = signature.getAsString("protected");
@@ -90,6 +114,17 @@ class JWSUtilsTest {
 		
 		errors = jwsUnprotectedHeaderUtils.validateAgainstSchema(header);
 		assertTrue(errors.isEmpty());
+	}
+
+	private void assertErrorFound(List<String> errors, String errorMessage) {
+		boolean errorFound = false;
+		for (String error : errors) {
+			if (error.contains(errorMessage)) {
+				errorFound = true;
+				break;
+			}
+		}
+		assertTrue(errorFound, errorMessage);
 	}
 
 }

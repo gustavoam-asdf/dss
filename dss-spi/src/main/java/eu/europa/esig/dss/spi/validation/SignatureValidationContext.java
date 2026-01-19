@@ -572,6 +572,11 @@ public class SignatureValidationContext implements ValidationContext {
 			return issuerCertificateToken;
 		}
 
+		// See DSS-3720
+		if (token instanceof CertificateToken && isSelfSigned(token)) {
+			return (CertificateToken) token;
+		}
+
 		// Find issuer candidates from a particular certificate source
 		Set<CertificateToken> candidates = Collections.emptySet();
 
@@ -614,7 +619,7 @@ public class SignatureValidationContext implements ValidationContext {
 		// Request AIA only when no issuer has been found yet
 		if (issuerCertificateToken == null && aiaSource != null
 				&& token instanceof CertificateToken && !tokenIssuerMap.containsKey(token)) {
-			final AIACertificateSource aiaCertificateSource = new AIACertificateSource((CertificateToken) token, aiaSource);
+			final AIACertificateSource aiaCertificateSource = AIACertificateSource.forCertificateToken((CertificateToken) token, aiaSource);
 			issuerCertificateToken = aiaCertificateSource.getIssuerFromAIA();
 			addCertificateSource(aiaCertificateSources, aiaCertificateSource);
 		}
@@ -1435,7 +1440,7 @@ public class SignatureValidationContext implements ValidationContext {
 		return isSelfSigned(certToken) || isTrustedAtTime(certToken, controlTime);
 	}
 
-	private boolean isSelfSigned(CertificateToken certToken) {
+	private boolean isSelfSigned(Token certToken) {
 		return certToken.isSelfSigned();
 	}
 

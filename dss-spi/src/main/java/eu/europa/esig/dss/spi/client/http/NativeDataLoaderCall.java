@@ -33,7 +33,9 @@ import java.util.concurrent.Callable;
 /**
  * The call of native java DataLoader using the java.net.URL class.
  *
+ * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.client.http.NativeHTTPDataLoaderCall} class instead.
  */
+@Deprecated
 public class NativeDataLoaderCall implements Callable<byte[]> {
 
 	/** The default error message */
@@ -64,7 +66,9 @@ public class NativeDataLoaderCall implements Callable<byte[]> {
 	 * @param content byte array
 	 * @param useCaches if the caches shall be used
 	 * @param maxInputSize maximum InputStream size
+	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.client.http.NativeHTTPDataLoaderCall} class instead.
 	 */
+	@Deprecated
 	public NativeDataLoaderCall(String url, byte[] content, boolean useCaches, int maxInputSize) {
 		this(url, content, useCaches, maxInputSize, 0, 0);
 	}
@@ -78,7 +82,9 @@ public class NativeDataLoaderCall implements Callable<byte[]> {
 	 * @param maxInputSize maximum InputStream size
 	 * @param connectTimeout timeout on opening a connection (in milliseconds)
 	 * @param readTimeout timeout on reading a response from a remote resource (in milliseconds)
+	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.client.http.NativeHTTPDataLoaderCall} class instead.
 	 */
+	@Deprecated
 	public NativeDataLoaderCall(String url, byte[] content, boolean useCaches, int maxInputSize,
 								int connectTimeout, int readTimeout) {
 		this.url = url;
@@ -89,6 +95,7 @@ public class NativeDataLoaderCall implements Callable<byte[]> {
 		this.readTimeout = readTimeout;
 	}
 	
+	@Deprecated
 	@Override
 	public byte[] call() {
 		OutputStream os = null;

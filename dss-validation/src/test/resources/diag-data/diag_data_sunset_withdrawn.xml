@@ -135,6 +135,9 @@
                         <QcType Description="qc-type-esign">0.4.0.1862.1.6.1</QcType>
                     </QcTypes>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>P9C0pdkRThSn1xeKMYIe7a34PlU=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-269D5F53B06C45CC3A93F452721C26E5F95D3AB01846B9858944E4A7DB7027A2" LOTL="LOTL-721CD722096C5A36BBFFA85580E2FE44E4626A1682566CBA39A83A560F7B90F8">

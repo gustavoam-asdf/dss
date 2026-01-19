@@ -23,6 +23,7 @@ package eu.europa.esig.dss.service.ocsp;
 import eu.europa.esig.dss.enumerations.RevocationOrigin;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.OnlineSourceTest;
+import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPToken;
 import org.junit.jupiter.api.AfterEach;
@@ -118,6 +119,58 @@ class FileCacheOCSPSourceTest extends OnlineSourceTest {
 		refreshedRevocationToken = fileCacheOCSPSource.getRevocationToken(certificateToken, rootToken);
 		assertNotNull(refreshedRevocationToken);
 		assertEquals(RevocationOrigin.EXTERNAL, refreshedRevocationToken.getExternalOrigin());
+	}
+
+	@Test
+	void testMultipleOCSPUsers() {
+		CommonsDataLoader dataLoader = new CommonsDataLoader();
+
+		CertificateToken goodUser = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/good-user.crt"));
+		CertificateToken altGoodUser = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/good-dsa-user.crt"));
+		CertificateToken goodCa = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/good-ca.crt"));
+
+		OCSPToken firstOCSPToken = fileCacheOCSPSource.getRevocationToken(goodUser, goodCa);
+		assertNull(firstOCSPToken);
+
+		OCSPToken secondOCSPToken = fileCacheOCSPSource.getRevocationToken(altGoodUser, goodCa);
+		assertNull(secondOCSPToken);
+
+		fileCacheOCSPSource.setProxySource(new OnlineOCSPSource());
+		fileCacheOCSPSource.setDefaultNextUpdateDelay(180L); // cache expiration in 180 seconds
+
+		firstOCSPToken = fileCacheOCSPSource.getRevocationToken(goodUser, goodCa);
+		assertNotNull(firstOCSPToken);
+		secondOCSPToken = fileCacheOCSPSource.getRevocationToken(altGoodUser, goodCa);
+		assertNotNull(secondOCSPToken);
+
+		assertNotEquals(firstOCSPToken.getDSSIdAsString(), secondOCSPToken.getDSSIdAsString());
+
+		OCSPToken firstOCSPTokenUpdated = fileCacheOCSPSource.getRevocationToken(goodUser, goodCa);
+		assertNotNull(firstOCSPTokenUpdated);
+		OCSPToken secondOCSPTokenUpdated = fileCacheOCSPSource.getRevocationToken(altGoodUser, goodCa);
+		assertNotNull(secondOCSPTokenUpdated);
+
+		assertNotEquals(firstOCSPTokenUpdated.getDSSIdAsString(), secondOCSPTokenUpdated.getDSSIdAsString());
+		assertEquals(firstOCSPToken.getDSSIdAsString(), firstOCSPTokenUpdated.getDSSIdAsString());
+		assertEquals(secondOCSPToken.getDSSIdAsString(), secondOCSPTokenUpdated.getDSSIdAsString());
+
+		// Force refresh (1 second)
+		fileCacheOCSPSource.setMaxNextUpdateDelay(1L);
+
+		// wait one second
+		Calendar nextSecond = Calendar.getInstance();
+		nextSecond.setTime(secondOCSPTokenUpdated.getThisUpdate());
+		nextSecond.add(Calendar.SECOND, 1);
+		await().atMost(2, TimeUnit.SECONDS).until(() -> Calendar.getInstance().getTime().after(nextSecond.getTime()));
+
+		firstOCSPTokenUpdated = fileCacheOCSPSource.getRevocationToken(goodUser, goodCa);
+		assertNotNull(firstOCSPTokenUpdated);
+		secondOCSPTokenUpdated = fileCacheOCSPSource.getRevocationToken(altGoodUser, goodCa);
+		assertNotNull(secondOCSPTokenUpdated);
+
+		assertNotEquals(firstOCSPTokenUpdated.getDSSIdAsString(), secondOCSPTokenUpdated.getDSSIdAsString());
+		assertNotEquals(firstOCSPToken.getDSSIdAsString(), firstOCSPTokenUpdated.getDSSIdAsString());
+		assertNotEquals(secondOCSPToken.getDSSIdAsString(), secondOCSPTokenUpdated.getDSSIdAsString());
 	}
 
 	@AfterEach

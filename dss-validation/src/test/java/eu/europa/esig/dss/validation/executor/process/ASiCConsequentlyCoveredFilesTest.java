@@ -45,11 +45,13 @@ import eu.europa.esig.dss.validation.reports.Reports;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ASiCConsequentlyCoveredFilesTest extends AbstractProcessExecutorTest {
@@ -426,6 +428,59 @@ class ASiCConsequentlyCoveredFilesTest extends AbstractProcessExecutorTest {
 
         XmlFC fc = sigTstBBB.getFC();
         assertNull(fc);
+
+        validateBestSigningTimes(reports);
+        checkReports(reports);
+    }
+
+    // See DSS-3780
+    @Test
+    void testASiCE40Tsts() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_asice_40_tsts.xml"));
+        assertNotNull(diagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        validationPolicy.getTimestampConstraints().setContainerSignedAndTimestampedFilesCovered(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = assertTimeout(Duration.ofSeconds(1), executor::execute);
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(40, detailedReport.getTimestampIds().size());
+
+        int firstTstCounter = 0;
+        int otherTstCounter = 0;
+        for (String tstId : detailedReport.getTimestampIds()) {
+            XmlBasicBuildingBlocks tstBBB = detailedReport.getBasicBuildingBlockById(tstId);
+            assertNotNull(tstBBB);
+            assertEquals(Indication.PASSED, tstBBB.getConclusion().getIndication());
+
+            XmlFC fc = tstBBB.getFC();
+            assertNotNull(fc);
+            assertEquals(Indication.PASSED, fc.getConclusion().getIndication());
+
+            boolean signedContentCheckFound = false;
+            for (XmlConstraint xmlConstraint : fc.getConstraint()) {
+                if (MessageTag.BBB_FC_ISFP_ASTFORAMC.getId().equals(xmlConstraint.getName().getKey())) {
+                    assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                    signedContentCheckFound = true;
+                }
+            }
+            if (signedContentCheckFound) {
+                ++otherTstCounter;
+            } else {
+                ++firstTstCounter;
+            }
+        }
+        assertEquals(1, firstTstCounter);
+        assertEquals(39, otherTstCounter);
 
         validateBestSigningTimes(reports);
         checkReports(reports);

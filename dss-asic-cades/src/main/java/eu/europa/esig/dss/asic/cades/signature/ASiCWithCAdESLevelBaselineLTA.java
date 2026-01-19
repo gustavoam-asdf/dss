@@ -31,7 +31,7 @@ import eu.europa.esig.dss.asic.common.validation.ASiCManifestParser;
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESLevelBaselineLT;
 import eu.europa.esig.dss.cades.signature.CAdESSignatureExtension;
-import eu.europa.esig.dss.cades.signature.CMSBuilder;
+import eu.europa.esig.dss.cms.CMSBuilder;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.cms.CMSUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;

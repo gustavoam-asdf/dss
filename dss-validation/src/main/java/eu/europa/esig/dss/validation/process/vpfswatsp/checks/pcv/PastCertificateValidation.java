@@ -110,8 +110,6 @@ public class PastCertificateValidation extends Chain<XmlPCV> {
 	@Override
 	protected void initChain() {
 
-		CertificateWrapper signingCertificate = token.getSigningCertificate();
-
 		/*
 		 * 1) The building block shall build a new prospective certificate chain that
 		 * has not yet been evaluated:

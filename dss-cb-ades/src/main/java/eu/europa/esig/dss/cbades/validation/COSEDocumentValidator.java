@@ -31,7 +31,7 @@ public class COSEDocumentValidator extends SignedDocumentValidator {
     }
 
     @Override
-    protected SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new CBAdESDiagnosticDataBuilder();
     }
 

@@ -148,6 +148,12 @@
                     <caIssuersUrl>http://tqrca1.pki.telesec.de/crt/TeleSec_PKS_eIDAS_QES_CA_1.crt</caIssuersUrl>
                     <ocspUrl>http://ocsp.pks.telesec.de/ocspr</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>4Wdpvt7C32ONLmJ1H91W1BJiutQ=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>etfYwic3v+tAHS41VkQBorI6ySQ=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -207,6 +213,12 @@
                 <AuthorityInformationAccess OID="1.3.6.1.5.5.7.1.1" critical="false">
                     <ocspUrl>http://ocsp.exceet.cloud/ocsp</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>o5GgEYUqQyHyPfYpJrtungMFbB8=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>Vq2gWDZCLPJKmiCMa4mm0nVA1aY=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -265,10 +277,16 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy cpsUrl="http://pks.telesec.de/cps" Description="qcp-natural-qscd">0.4.0.194112.1.2</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>BoYt0aSUTmSLIRAIR2vNzGwluns=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>etfYwic3v+tAHS41VkQBorI6ySQ=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -319,6 +337,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>/tqmCNUC8VttyKpCkU/F3GRJMkA=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -368,6 +389,9 @@
                 <AuthorityInformationAccess OID="1.3.6.1.5.5.7.1.1" critical="false">
                     <ocspUrl>http://ocsp.exceet.cloud/ocsp</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>Vq2gWDZCLPJKmiCMa4mm0nVA1aY=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -422,6 +446,12 @@
                 <AuthorityInformationAccess OID="1.3.6.1.5.5.7.1.1" critical="false">
                     <ocspUrl>http://ocsp.exceet.cloud/ocsp</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>vh+ClXXiYP7E/xxj6qUPFajnGJM=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>Vq2gWDZCLPJKmiCMa4mm0nVA1aY=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -478,6 +508,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://tqrca1.pki.telesec.de/rl/TeleSec_qualified_Root_CA_1.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>etfYwic3v+tAHS41VkQBorI6ySQ=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>/tqmCNUC8VttyKpCkU/F3GRJMkA=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -533,6 +569,12 @@
                     <caIssuersUrl>http://tqrca1.pki.telesec.de/crt/TeleSec_PKS_eIDAS_QES_CA_1.crt</caIssuersUrl>
                     <ocspUrl>http://ocsp.pks.telesec.de/ocspr</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>xvdlDeEoHOKTFmNa+fs5mivz+ys=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>etfYwic3v+tAHS41VkQBorI6ySQ=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>

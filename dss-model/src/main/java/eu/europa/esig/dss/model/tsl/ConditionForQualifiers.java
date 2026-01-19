@@ -22,6 +22,7 @@ package eu.europa.esig.dss.model.tsl;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is a DTO representation for qualifier and conditions
@@ -93,6 +94,25 @@ public class ConditionForQualifiers implements Serializable {
 	@Override
 	public String toString() {
 		return "ConditionForQualifiers [qualifiers=" + qualifiers + ", condition=" + condition + ", critical=" + critical + "]";
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		ConditionForQualifiers that = (ConditionForQualifiers) object;
+		return critical == that.critical
+				&& Objects.equals(condition, that.condition)
+				&& Objects.equals(qualifiers, that.qualifiers);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(condition);
+		result = 31 * result + Objects.hashCode(qualifiers);
+		result = 31 * result + Boolean.hashCode(critical);
+		return result;
 	}
 
 }

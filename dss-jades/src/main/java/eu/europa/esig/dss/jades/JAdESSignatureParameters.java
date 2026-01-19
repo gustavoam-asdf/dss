@@ -20,13 +20,14 @@
  */
 package eu.europa.esig.dss.jades;
 
-import eu.europa.esig.dss.signature.AbstractSignatureParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.signature.AbstractSignatureParameters;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -38,36 +39,44 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 
 	/**
 	 * Defines if certificate chain binaries must be included into the signed header ('x5c' attribute)
-	 *
+	 * <p>
 	 * DEFAULT: TRUE (the certificate chain header will be included into the signed header)
 	 */
 	private boolean includeCertificateChain = true;
 	
 	/**
 	 * Defines if the signature must incorporate its MimeType definition in the signed header ('typ' attribute)
-	 *
+	 * <p>
 	 * DEFAULT: TRUE (the signature MimeType will be included into the signed header)
 	 */
 	private boolean includeSignatureType = true;
 
 	/**
 	 * This property defines whether a 'kid' (key identifier) header parameter should be added to a protected header.
-	 *
+	 * <p>
 	 * NOTE: a signing certificate shall be provided to embed the 'kid' header
-	 *
+	 * <p>
 	 * DEFAULT: TRUE ('kid' header parameter is included into the signed header, provided that
 	 *           the signing-certificate is defined within the signature parameters).
 	 */
 	private boolean includeKeyIdentifier = true;
 
 	/**
+	 * This property defines the value of the 'cty' (content type) header parameter.
+	 * When set, the value of 'cty' header parameter will be defined with a given String.
+	 * If not set, the value of 'cty' header parameter will be derived from a MimeType of the signer document
+	 * (except for detached packaging).
+	 */
+	private String contentType;
+
+	/**
 	 * This property defines a value for the 'x5u' signed header parameter. The value shall refer to a URI where
 	 * the X.509 public key certificate or certificate chain corresponding to the key used to digitally sign the JWS
 	 * can be retrieved from.
-	 *
+	 * <p>
 	 * NOTE: use methods {@code #setSigningCertificate} and {@code #includeCertificateChain}
 	 *       to disable encapsulation of the signing certificate and certificate chain binaries
-	 *
+	 * <p>
 	 * DEFAULT: NULL (the 'x5u' header parameter is not included)
 	 */
 	private String x509Url;
@@ -75,9 +84,9 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * Defines if the payload has to be base64url encoded
 	 * If false, original signed document binaries will be used according to RFC 7797
-	 * 
+	 * <p>
 	 * NOTE: the parameter is independent from {@code base64UrlEncodedEtsiUComponents}
-	 * 
+	 * <p>
 	 * Default : TRUE (base64url encoded payload)
 	 */
 	private boolean base64UrlEncodedPayload = true;
@@ -88,13 +97,12 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 * appear as clear JSON instances.
 	 * The parameter is used for Serialization (or Flattened) format only with an unprotected header.
 	 * All the components of 'etsiU' header shall appear in the same representation
-	 * 
+	 * <p>
 	 * NOTE: the parameter is independent from {@code base64UrlEncodedPayload}
-	 * 
+	 * <p>
 	 * Default : TRUE (base64url encoded etsiU components)
-	 * 
 	 */
-	private boolean base64UrlEncodedEtsiUComponents = true;
+	private Boolean base64UrlEncodedEtsiUComponents;
 
 	/**
 	 * The DigestAlgorithm used to create a reference to a signing certificate,
@@ -104,7 +112,7 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	
 	/**
 	 * Defines a JWS signature type according to RFC 7515, 3. JSON Web Signature (JWS) Overview
-	 * 
+	 * <p>
 	 * Default: JWSSerializationType.COMPACT_SERIALIZATION
 	 */
 	private JWSSerializationType jwsSerializationType = JWSSerializationType.COMPACT_SERIALIZATION;
@@ -118,6 +126,12 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 * Identifies a type of claimed signing time header to be used on JAdES signature creation
 	 */
 	private JAdESSigningTimeType jadesSigningTimeType = JAdESSigningTimeType.IAT;
+
+	/**
+	 * The value of the 'exp' (expiration time) signed header parameter as per ETSI TS 119 411-5.
+	 * The value is used for a TLS Certificate Binding signature and contains the expiry date of the binding.
+	 */
+	private Date expirationTime;
 
 	/**
 	 * Default constructor instantiating object with default parameters
@@ -188,7 +202,7 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 
 	/**
 	 * Sets if the signature MimeType string must be included into the signed header ('typ' attribute)
-	 *
+	 * <p>
 	 * Default: TRUE (the signature MimeType will be included into the signed header)
 	 *
 	 * @param includeSignatureType if the signature MimeType be included into the signed header
@@ -209,13 +223,38 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * Sets whether a 'kid' (key identifier) header parameter should be created within a protected header,
 	 * provided that a signing-certificate is defined within the signature parameters.
-	 *
+	 * <p>
 	 * DEFAULT : TRUE (the 'kid' header parameter is created)
 	 *
 	 * @param includeKeyIdentifier identifies whether 'kid' should be created (when a signing-certificate is provided)
 	 */
 	public void setIncludeKeyIdentifier(boolean includeKeyIdentifier) {
 		this.includeKeyIdentifier = includeKeyIdentifier;
+	}
+
+	/**
+	 * Gets value of the 'cty' (content type) signed header parameter is to be included in
+	 * a protected header of the signature.
+	 *
+	 * @return {@link String} value of the 'cty' (content type) signed header parameter
+	 */
+	public String getContentType() {
+		return contentType;
+	}
+
+	/**
+	 * Sets value of the 'cty' (content type) signed header parameter is to be included in
+	 * a protected header of the signature.
+	 * When set, the 'cty' (content type) protected header parameter will be created and use the given value
+	 * (omitting "application/" prefix, if applicable).
+	 * If not set, the value of the 'cty' (content type) protected header parameter will be derived from
+	 * a MimeType of the signer document (except when a 'sigD' mechanism is used).
+	 *
+	 * @param contentType {@link String} value of the 'cty' (content type) signed header parameter
+	 *                                   to be included in a protected header of the signature
+	 */
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 
 	/**
@@ -330,6 +369,29 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	}
 
 	/**
+	 * Gets the expiration time of the signature.
+	 * NOTE: The signed header is used for an ETSI TS 119 411-5 TLS Certificate Binding signature and
+	 * contains an expiry date of the binding.
+	 *
+	 * @return {@link Date}
+	 */
+	public Date getExpirationTime() {
+		return expirationTime;
+	}
+
+	/**
+	 * Sets the value for the 'exp' (expiration time) signed header of the signature.
+	 * The claim identifies the expiration time on or after which the signature should not be accepted for processing.
+	 * NOTE: The signed header is used for an ETSI TS 119 411-5 TLS Certificate Binding signature and
+	 * contains an expiry date of the binding.
+	 *
+	 * @param expirationTime {@link Date}
+	 */
+	public void setExpirationTime(Date expirationTime) {
+		this.expirationTime = expirationTime;
+	}
+
+	/**
 	 * Gets if base64Url encoded payload shall be used
 	 * 
 	 * @return TRUE if to use base64url encoded payload, FALSE otherwise
@@ -341,11 +403,11 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * Sets if base64Url encoded payload shall be used If FALSE, the unencoded
 	 * (original) payload will be used according to RFC 7797
-	 * 
+	 * <p>
 	 * NOTE: some restrictions for payload content can apply when dealing with
 	 * unencoded payload. For more information please see RFC 7797. 
 	 * The parameter is independent from {@code base64UrlEncodedEtsiUComponents}
-	 * 
+	 * <p>
 	 * Default : TRUE (base64Url encoded payload will be used)
 	 * 
 	 * @param base64EncodedPayload true if the payload shall be present in its corresponding base64url encoding,
@@ -358,14 +420,14 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * Gets if the instances of the 'etsiU' unprotected header shall appear in their
 	 * corresponding base64url encoding
-	 * 
+	 * <p>
 	 * Default : TRUE (base64Url encoded etsiU components will be used)
 	 * 
 	 * @return TRUE if the components of 'etsiU' header shall appear in their
 	 *         corresponding base64url encoding, otherwise in their clear JSON
 	 *         incorporation
 	 */
-	public boolean isBase64UrlEncodedEtsiUComponents() {
+	public Boolean isBase64UrlEncodedEtsiUComponents() {
 		return base64UrlEncodedEtsiUComponents;
 	}
 
@@ -374,9 +436,9 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 * corresponding base64url encoding. If FALSE the components of 'etsiU' will
 	 * appear in their clear JSON incorporation. The parameter is used for
 	 * Serialization (or Flattened) format only with unsigned properties.
-	 * 
+	 * <p>
 	 * NOTE: the parameter is independent from {@code base64UrlEncodedPayload}
-	 * 
+	 * <p>
 	 * Default : TRUE (base64url encoded etsiU components)
 	 * 
 	 * @param base64UrlEncodedEtsiUComponents if the components of 'etsiU' unsigned

@@ -213,6 +213,12 @@
                     <crlUrl>http://lcr.certificados.com.br/repositorio/lcr/serasarfbv2.crl</crlUrl>
                     <crlUrl>http://repositorio.icpbrasil.gov.br/lcr/Serasa/repositorio/lcr/serasarfbv2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>5xEcKmzX+OpFDB8v8Nf6gXIKN5c=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>hsUcKHJGRKaRWL/xv4AiDoR0gUI=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -261,6 +267,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://acraiz.icpbrasil.gov.br/LCRacraizv2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>f2fryNwH+7WnmTpaMvOzPaZp6+8=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -324,6 +333,12 @@
                     <crlUrl>http://icp-brasil.outralcr.com.br/repositorio/lcr/ACCertisignTempo/LatestCRL.crl</crlUrl>
                     <crlUrl>http://repositorio.icpbrasil.gov.br/lcr/Certisign/ACCertisignTempo/LatestCRL.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>uP9uXA6I6tCFGSnh7JCGDGHBAuc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>XIsVftyQ+qev+EopzSf9oSnuvZs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -380,6 +395,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://www.receita.fazenda.gov.br/acrfb/acrfbv3.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>hsUcKHJGRKaRWL/xv4AiDoR0gUI=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>NQ9IUQZhaxqs1HnKgQbLltcHGzw=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -432,6 +453,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://acraiz.icpbrasil.gov.br/LCRacraizv2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QgryLA37j0bNwaGsCIjtyJKNJLU=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>f2fryNwH+7WnmTpaMvOzPaZp6+8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -485,6 +512,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>ldap:///CN=docusignhq-SEA-CAS-01-CA,CN=SEA-CAS-01,CN=CDP,CN=Public%20Key%20Services,CN=Services,CN=Configuration,DC=docusignhq,DC=com?certificateRevocationList?base?objectClass=cRLDistributionPoint</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QgryLA37j0bNwaGsCIjtyJKNJLU=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -537,6 +567,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://acraiz.icpbrasil.gov.br/LCRacraizv2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>NQ9IUQZhaxqs1HnKgQbLltcHGzw=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>f2fryNwH+7WnmTpaMvOzPaZp6+8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -591,6 +627,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://icp-brasil.certisign.com.br/repositorio/lcr/ACCertisignG6/LatestCRL.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>XIsVftyQ+qev+EopzSf9oSnuvZs=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>QgryLA37j0bNwaGsCIjtyJKNJLU=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>

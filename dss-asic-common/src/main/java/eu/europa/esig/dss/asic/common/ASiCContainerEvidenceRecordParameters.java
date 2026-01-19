@@ -22,6 +22,8 @@ package eu.europa.esig.dss.asic.common;
 
 import eu.europa.esig.dss.model.DSSDocument;
 
+import java.util.Objects;
+
 /**
  * Parameters defining the configuration for creation of an ASiC container containing an evidence record document
  *
@@ -61,6 +63,30 @@ public class ASiCContainerEvidenceRecordParameters extends ASiCParameters {
      */
     public void setAsicEvidenceRecordManifest(DSSDocument asicEvidenceRecordManifest) {
         this.asicEvidenceRecordManifest = asicEvidenceRecordManifest;
+    }
+
+    @Override
+    public String toString() {
+        return "ASiCContainerEvidenceRecordParameters [" +
+                "asicEvidenceRecordManifest=" + asicEvidenceRecordManifest +
+                "] " + super.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+
+        ASiCContainerEvidenceRecordParameters that = (ASiCContainerEvidenceRecordParameters) object;
+        return Objects.equals(asicEvidenceRecordManifest, that.asicEvidenceRecordManifest);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(asicEvidenceRecordManifest);
+        return result;
     }
 
 }

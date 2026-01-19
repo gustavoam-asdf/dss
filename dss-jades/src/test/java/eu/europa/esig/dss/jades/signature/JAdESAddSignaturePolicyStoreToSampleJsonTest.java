@@ -67,7 +67,7 @@ class JAdESAddSignaturePolicyStoreToSampleJsonTest extends AbstractJAdESTestSign
 
         Exception exception = assertThrows(IllegalInputException.class, () ->
                 service.addSignaturePolicyStore(documentToSign, signaturePolicyStore));
-        assertEquals("There is no signature to extend!", exception.getMessage());
+        assertEquals("No signatures found to be extended!", exception.getMessage());
     }
 
     @Override

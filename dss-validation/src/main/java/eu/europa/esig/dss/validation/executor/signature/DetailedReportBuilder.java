@@ -108,8 +108,6 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 	 */
 	public XmlDetailedReport build() {
 		XmlDetailedReport detailedReport = init();
-		
-		detailedReport.setValidationTime(currentTime);
 
 		List<XmlTLAnalysis> tlAnalysis = detailedReport.getTLAnalysis();
 

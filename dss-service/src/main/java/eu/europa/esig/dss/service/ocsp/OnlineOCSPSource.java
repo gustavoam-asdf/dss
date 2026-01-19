@@ -320,6 +320,12 @@ public class OnlineOCSPSource implements OCSPSource, RevocationSourceAlternateUr
 			 * extensions SHOULD NOT be flagged as critical
 			 */
 			if (nonce != null) {
+				/*
+				 * NOTE: The value of the id_pkix_ocsp_nonce extension is DER encoded twice:
+				 * - once for the Nonce definition; and
+				 * - once for incorporation within the Extension.extnValue field.
+				 * Please see DSS-1114 for more detail.
+				 */
 				DEROctetString encodedNonceValue = new DEROctetString(nonce);
 				Extension extension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
 						new DEROctetString(encodedNonceValue));

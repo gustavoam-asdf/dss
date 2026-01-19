@@ -80,7 +80,7 @@ class PAdESAllSelfSignedCertsTest extends PKIFactoryAccess {
 		certificateVerifier.setAugmentationAlertOnSelfSignedCertificateChains(new ExceptionOnStatusAlert());
 
 		parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LT);
-		Exception exception = assertThrows(AlertException.class, () -> sign());
+		Exception exception = assertThrows(AlertException.class, this::sign);
 		assertTrue(exception.getMessage().contains("Error on signature augmentation to LT-level."));
 		assertTrue(exception.getMessage().contains("The signature contains only self-signed certificate chains."));
 
@@ -95,7 +95,7 @@ class PAdESAllSelfSignedCertsTest extends PKIFactoryAccess {
 		certificateVerifier.setAugmentationAlertOnSelfSignedCertificateChains(new ExceptionOnStatusAlert());
 
 		parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_LTA);
-		Exception exception = assertThrows(AlertException.class, () -> sign());
+		Exception exception = assertThrows(AlertException.class, this::sign);
 		assertTrue(exception.getMessage().contains("Error on signature augmentation to LT-level."));
 		assertTrue(exception.getMessage().contains("The signature contains only self-signed certificate chains."));
 

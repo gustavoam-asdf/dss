@@ -33,6 +33,7 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.policy.DefaultSignaturePolicyValidatorLoader;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.spi.validation.executor.CompleteValidationContextExecutor;
@@ -143,6 +144,12 @@ class SignedDocumentValidatorTest {
 		// Default : false
 		documentValidator.setIncludeSemantics(true);
 		// end::demo-semantics[]
+
+		// tag::demo-sig-policy-loader[]
+		// Sets logic on choosing a relevant SignaturePolicyValidator
+		// Default : SignaturePolicyValidator is loaded based on the signature specification
+		documentValidator.setSignaturePolicyValidatorLoader(DefaultSignaturePolicyValidatorLoader.policyBasedSignaturePolicyValidatorLoader());
+		// end::demo-sig-policy-loader[]
 
 		// Executes the validation process and produces validation reports:
 		// Simple report, Detailed report, Diagnostic data and ETSI Validation Report (if enabled)

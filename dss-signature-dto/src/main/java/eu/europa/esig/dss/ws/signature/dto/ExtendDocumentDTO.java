@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.ws.signature.dto;
 
+import eu.europa.esig.dss.enumerations.SignatureProfile;
 import eu.europa.esig.dss.ws.dto.RemoteDocument;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteSignatureParameters;
 
@@ -28,13 +29,20 @@ import java.io.Serializable;
 /**
  * This class is a DTO to transfer required objects to execute extendDocument method
  * It's only possible to transfer an object by POST and REST.
- * It's impossible to transfer big objects by GET (url size limitation)
+ * It's impossible to transfer big objects by GET (url size limitation).
+ * <p>
+ * NOTE: In addition to {@code toExtendDocument} (mandatory), at least one of
+ *       {@code signatureProfile} or {@code parameters} shall be provided.
+ *
  */
 @SuppressWarnings("serial")
 public class ExtendDocumentDTO implements Serializable {
 
 	/** Document to extend */
 	private RemoteDocument toExtendDocument;
+
+	/** Target signature extension profile */
+	private SignatureProfile signatureProfile;
 
 	/** Extension parameters */
 	private RemoteSignatureParameters parameters;
@@ -47,13 +55,35 @@ public class ExtendDocumentDTO implements Serializable {
 	}
 
 	/**
-	 * Default constructor
+	 * Simplified constructor with a target signature augmentation profile definition
+	 *
+	 * @param toExtendDocument {@link RemoteDocument}
+	 * @param signatureProfile {@link SignatureProfile}
+	 */
+	public ExtendDocumentDTO(RemoteDocument toExtendDocument, SignatureProfile signatureProfile) {
+		this(toExtendDocument, signatureProfile, null);
+	}
+
+	/**
+	 * Constructor with signature parameters definition
 	 *
 	 * @param toExtendDocument {@link RemoteDocument}
 	 * @param parameters {@link RemoteSignatureParameters}
 	 */
 	public ExtendDocumentDTO(RemoteDocument toExtendDocument, RemoteSignatureParameters parameters) {
+		this(toExtendDocument, null, parameters);
+	}
+
+	/**
+	 * Constructor with a target signature augmentation profile and signature parameters definitions
+	 *
+	 * @param toExtendDocument {@link RemoteDocument}
+	 * @param signatureProfile {@link SignatureProfile}
+	 * @param parameters {@link RemoteSignatureParameters}
+	 */
+	public ExtendDocumentDTO(RemoteDocument toExtendDocument, SignatureProfile signatureProfile, RemoteSignatureParameters parameters) {
 		this.toExtendDocument = toExtendDocument;
+		this.signatureProfile = signatureProfile;
 		this.parameters = parameters;
 	}
 
@@ -76,6 +106,24 @@ public class ExtendDocumentDTO implements Serializable {
 	}
 
 	/**
+	 * Gets the target signature augmentation profile
+	 *
+	 * @return {@link SignatureProfile}
+	 */
+	public SignatureProfile getSignatureProfile() {
+		return signatureProfile;
+	}
+
+	/**
+	 * Sets the target signature augmentation profile
+	 *
+	 * @param signatureProfile {@link SignatureProfile}
+	 */
+	public void setSignatureProfile(SignatureProfile signatureProfile) {
+		this.signatureProfile = signatureProfile;
+	}
+
+	/**
 	 * Gets the extension parameters
 	 *
 	 * @return {@link RemoteSignatureParameters}
@@ -95,7 +143,7 @@ public class ExtendDocumentDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "DataToSignDTO [toExtendDocument=" + toExtendDocument + ", parameters=" + parameters + "]";
+		return "DataToSignDTO [toExtendDocument=" + toExtendDocument + ", signatureProfile=" + signatureProfile + ", parameters=" + parameters + "]";
 	}
 
 	@Override
@@ -103,6 +151,7 @@ public class ExtendDocumentDTO implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + ((parameters == null) ? 0 : parameters.hashCode());
+		result = (prime * result) + ((signatureProfile == null) ? 0 : signatureProfile.hashCode());
 		result = (prime * result) + ((toExtendDocument == null) ? 0 : toExtendDocument.hashCode());
 		return result;
 	}
@@ -131,6 +180,13 @@ public class ExtendDocumentDTO implements Serializable {
 				return false;
 			}
 		} else if (!toExtendDocument.equals(other.toExtendDocument)) {
+			return false;
+		}
+		if (signatureProfile == null) {
+			if (other.signatureProfile != null) {
+				return false;
+			}
+		} else if (!signatureProfile.equals(other.signatureProfile)) {
 			return false;
 		}
 		return true;

@@ -97,12 +97,12 @@ public class JAdESCounterSignatureBuilder extends JAdESExtensionBuilder {
 		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 
 		JAdESSignature jadesSignature = (JAdESSignature) extractSignatureById(signatures, parameters.getSignatureIdToCounterSign());
-		assertEtsiUComponentsConsistent(jadesSignature.getJws(), parameters.isBase64UrlEncodedEtsiUComponents());
+		assertEtsiUComponentsConsistent(jadesSignature.getJws(), parameters);
 
 		Object cSig = getCSig(counterSignature, parameters.getJwsSerializationType());
 		
 		JAdESEtsiUHeader etsiUHeader = jadesSignature.getEtsiUHeader();
-		etsiUHeader.addComponent(JAdESHeaderParameterNames.C_SIG, cSig, parameters.isBase64UrlEncodedEtsiUComponents());
+		etsiUHeader.addComponent(JAdESHeaderParameterNames.C_SIG, cSig, Utils.isTrue(parameters.isBase64UrlEncodedEtsiUComponents()));
 		
 		updateMasterSignatureRecursively(jadesSignature);
 

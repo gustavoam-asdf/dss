@@ -141,6 +141,12 @@
                     <extendedKeyUsageOid Description="ocspSigning">1.3.6.1.5.5.7.3.9</extendedKeyUsageOid>
                 </ExtendedKeyUsages>
                 <IdPkixOcspNoCheck OID="1.3.6.1.5.5.7.48.1.5" critical="false" present="true" />
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>HdBEn3u9VTQm/H1p6oUtLt1xuHU=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>TCodVckN+nG/kguIp2aue/ddvZs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>
@@ -193,6 +199,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/ee-root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>7Ir6E9dOQNeSZfE6oQLZ+NH/rdI=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>roLKQZrybsEI1FU6v0DMSeoz99o=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -246,6 +258,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>eexFC1Pa5KJ/7ix+k440a+VXez8=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>TCodVckN+nG/kguIp2aue/ddvZs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -299,6 +317,12 @@
                     <caIssuersUrl>http://dss.nowina.lu/pki-factory/crt/good-ca.crt</caIssuersUrl>
                     <ocspUrl>http://dss.nowina.lu/pki-factory/ocsp/good-ca</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>0QnGTMH01shOlz1Do7s932jrDDg=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>y7rSTUHc8ezncU57blwVXINSRM8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -356,6 +380,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>y7rSTUHc8ezncU57blwVXINSRM8=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>TCodVckN+nG/kguIp2aue/ddvZs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <Revocations>
                 <CertificateRevocation Revocation="R-F03E4A0FBA84A3B3F533D838493FF5AC878EAC9EF340FB2EE6D5CC73D7BDFFCD">
@@ -405,6 +435,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>TCodVckN+nG/kguIp2aue/ddvZs=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <Revocations/>
             <DigestAlgoAndValue>
@@ -447,6 +480,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>gXw+KGQZtD5y5W7p0wvSmErtks8=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <Revocations/>
             <DigestAlgoAndValue>
@@ -489,6 +525,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>roLKQZrybsEI1FU6v0DMSeoz99o=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>

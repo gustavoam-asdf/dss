@@ -121,6 +121,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.luxtrust.lu/LTGRCA2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>9bMBoehl4kSq/yOEgqehJFQUTG0=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-LU" LOTL="LOTL-EU">
@@ -202,6 +205,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy cpsUrl="http://repository.eid.belgium.be">2.16.56.12.1.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>x7vaBh6wUc7ghF9rvlnRrj2CNHk=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-BE" LOTL="LOTL-EU">
@@ -285,10 +291,16 @@
                     <certificatePolicy cpsUrl="https://repository.luxtrust.lu">1.3.171.1.1.10.3.1</certificatePolicy>
                     <certificatePolicy Description="qcp-public-with-sscd">0.4.0.1456.1.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>rb+tazwxvOuN/AHzyCzl3fBDeBw=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>9bMBoehl4kSq/yOEgqehJFQUTG0=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-LU" LOTL="LOTL-EU">
@@ -383,6 +395,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.pki.belgium.be/belgium4.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>cQ7FBTMMaLtvXriJHPNAAUEWS+E=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>x7vaBh6wUc7ghF9rvlnRrj2CNHk=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-BE" LOTL="LOTL-EU">
@@ -454,6 +472,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.luxtrust.lu/LTGQCA3-OCSP.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QCYR03rEd9CHTm6a00H1sFtTBDQ=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>9bMBoehl4kSq/yOEgqehJFQUTG0=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-LU" LOTL="LOTL-EU">

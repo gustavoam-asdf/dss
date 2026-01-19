@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 		<artifactId>sd-dss</artifactId>
-		<version>6.4-SNAPSHOT</version>
+		<version>6.5-SNAPSHOT</version>
 	</parent>
 
-	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dss-bom</artifactId>
 	<name>DSS Bill of Materials (BOM)</name>
 	<packaging>pom</packaging>
@@ -61,6 +62,11 @@
 			</dependency>
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>specs-trusted-list-v211</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>specs-validation-report</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -76,6 +82,11 @@
 			</dependency>
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>specs-lote-xml</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>specs-xmlers</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -87,6 +98,11 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>specs-jades</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>specs-lote-json</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

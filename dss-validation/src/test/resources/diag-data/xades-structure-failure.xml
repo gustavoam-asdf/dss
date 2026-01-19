@@ -120,6 +120,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.luxtrust.lu/LTGQCA3.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>hwKX+0K3lkbg7iA6FXU2dx60/Cs=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>

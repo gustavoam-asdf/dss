@@ -185,7 +185,7 @@ class SignaturePoolTest extends AbstractDocumentTestValidation {
 		LOG.info("Begin : {}", fileToTest.getAbsolutePath());
 		document = new FileDocument(fileToTest);
 		try {
-			assertTimeout(ofSeconds(3L), () -> super.validate(), "Execution exceeded timeout for file " + fileToTest);
+			assertTimeout(ofSeconds(3L), super::validate, "Execution exceeded timeout for file " + fileToTest);
 			LOG.info("End : {}", fileToTest.getAbsolutePath());
 		} catch (Exception e) {
 			fail("Validation of " + fileToTest + " failed", e);

@@ -129,6 +129,8 @@ class ERAdditionSnippet {
         // Create an ASiC container with the incorporated evidence record.
         DSSDocument containerWithER = service.addContainerEvidenceRecord(archiveDataObject, evidenceRecordDocument, parameters);
         // end::er-to-asic[]
+
+        assertNotNull(containerWithER);
     }
 
 }

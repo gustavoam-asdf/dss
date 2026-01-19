@@ -26,7 +26,6 @@ import eu.europa.esig.dss.spi.OID;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1GeneralizedTime;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1UTCTime;
 import org.bouncycastle.asn1.DERSet;
@@ -40,13 +39,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CAdESUtilsTest {
@@ -100,28 +97,6 @@ class CAdESUtilsTest {
 		assertEquals(date, CAdESUtils.readSigningDate(new ASN1GeneralizedTime(date)));
 		date = DSSUtils.getUtcDate(2100, 0, 1);
 		assertEquals(date, CAdESUtils.readSigningDate(new ASN1GeneralizedTime(date)));
-	}
-
-	@Test
-	void isEmpty() {
-		assertTrue(CAdESUtils.isEmpty(null));
-		assertTrue(CAdESUtils.isEmpty(new AttributeTable(new Hashtable<>())));
-		Hashtable<ASN1ObjectIdentifier, Object> nonEmpty = new Hashtable<>();
-		nonEmpty.put(new ASN1ObjectIdentifier("1.2.3.4.5"), 4);
-		assertFalse(CAdESUtils.isEmpty(new AttributeTable(nonEmpty)));
-	}
-
-	@Test
-	void emptyIfNull() {
-		assertNotNull(CAdESUtils.emptyIfNull(null));
-
-		Hashtable<ASN1ObjectIdentifier, Object> nonEmpty = new Hashtable<>();
-		nonEmpty.put(new ASN1ObjectIdentifier("1.2.3.4.5"), 4);
-		AttributeTable attributeTable = new AttributeTable(nonEmpty);
-
-		AttributeTable emptyIfNull = CAdESUtils.emptyIfNull(attributeTable);
-		assertNotNull(emptyIfNull);
-		assertEquals(attributeTable, emptyIfNull);
 	}
 
 	@Test

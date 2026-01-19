@@ -47,18 +47,22 @@ class ASiCEWithXAdESDetachedCounterSignatureTest extends AbstractASiCWithXAdESTe
 	protected void checkMessageDigestAlgorithm(DiagnosticData diagnosticData) {
 		super.checkMessageDigestAlgorithm(diagnosticData);
 
-		boolean detachedCounterSignatureFound = false;
+		boolean detachedCounterSignatureDocFound = false;
+		boolean detachedCounterSignatureRefFound = false;
 		boolean counterSignedSignatureValueFound = false;
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.COUNTER_SIGNATURE.equals(digestMatcher.getType())) {
-					detachedCounterSignatureFound = true;
+				if (DigestMatcherType.REFERENCE.equals(digestMatcher.getType()) && "META-INF/signatures0.xml".equals(digestMatcher.getDocumentName())) {
+					detachedCounterSignatureDocFound = true;
+				} else if (DigestMatcherType.COUNTER_SIGNATURE.equals(digestMatcher.getType())) {
+					detachedCounterSignatureRefFound = true;
 				} else if (DigestMatcherType.COUNTER_SIGNED_SIGNATURE_VALUE.equals(digestMatcher.getType())) {
 					counterSignedSignatureValueFound = true;
 				}
 			}
 		}
-		assertTrue(detachedCounterSignatureFound);
+		assertTrue(detachedCounterSignatureDocFound);
+		assertFalse(detachedCounterSignatureRefFound);
 		assertFalse(counterSignedSignatureValueFound);
 	}
 

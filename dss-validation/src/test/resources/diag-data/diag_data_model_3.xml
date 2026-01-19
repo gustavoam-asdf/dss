@@ -108,9 +108,15 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.5.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>gqZxDptY8+89LgcwpTqZOkrVBlM=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>OldwnU/xyVUr3BO/wZ0ycJtF094=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-0013AA239E312832FED38D6561B49CB57FFD4E32D3BBE78747AA0709BD6F556B">
@@ -182,6 +188,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.5.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>7MmKyqCFLHraeZ0uJ23qUbEiVyA=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
@@ -256,9 +265,15 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.5.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QiRyrOzX8qaQBAqpSw8r5+3V3Ug=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>so8Z1gCSuyTCn4OZBH9vql1jf/k=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-0013AA239E312832FED38D6561B49CB57FFD4E32D3BBE78747AA0709BD6F556B">
@@ -333,9 +348,15 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.5.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>so8Z1gCSuyTCn4OZBH9vql1jf/k=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>7MmKyqCFLHraeZ0uJ23qUbEiVyA=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-0013AA239E312832FED38D6561B49CB57FFD4E32D3BBE78747AA0709BD6F556B">
@@ -406,6 +427,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.5.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>OldwnU/xyVUr3BO/wZ0ycJtF094=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                 </QcStatements>
@@ -478,10 +502,16 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.21679.1.1.1.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>HzzuFHv/9AYWyQcjojdKy0Y0LZ4=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>QiRyrOzX8qaQBAqpSw8r5+3V3Ug=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-0013AA239E312832FED38D6561B49CB57FFD4E32D3BBE78747AA0709BD6F556B">

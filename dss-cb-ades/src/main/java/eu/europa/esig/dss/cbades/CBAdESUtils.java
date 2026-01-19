@@ -268,16 +268,15 @@ public class CBAdESUtils {
             if (digAlgVal != null) {
                 Digest digest = getDigestAlgAndVal(digAlgVal);
                 if (digest != null) {
-                    final CRLRef crlRef = new CRLRef(digest);
                     CBORMap crlId = crlRefMap.getAsMap(COSEConstants.CRL_REF_CRL_ID);
                     if (crlId != null) {
-                        crlRef.setCrlIssuer(getCRLIdIssuer(crlId));
-                        crlRef.setCrlIssuedTime(getCRLIdIssueTime(crlId));
-                        crlRef.setCrlNumber(getCRLIdNumber(crlId));
+                        X500Principal issuer = getCRLIdIssuer(crlId);
+                        Date crlIdIssueTime = getCRLIdIssueTime(crlId);
+                        BigInteger crlIdNumber = getCRLIdNumber(crlId);
+                        CRLRef crlRef = new CRLRef(digest, issuer, crlIdIssueTime, crlIdNumber);
                         crlRef.setCrlUri(getCRLIdUri(crlId));
+                        return crlRef;
                     }
-                    return crlRef;
-
                 }
             } else {
                 LOG.warn("Mandatory header 'DigAlgVal' is missed within CRLRef. The entry is skipped.");
@@ -289,11 +288,11 @@ public class CBAdESUtils {
         return null;
     }
 
-    private static X500Name getCRLIdIssuer(CBORMap crlId) {
+    private static X500Principal getCRLIdIssuer(CBORMap crlId) {
         byte[] crlIdIssuer = crlId.getAsBinaries(COSEConstants.CRL_ID_ISSUER);
         if (Utils.isArrayNotEmpty(crlIdIssuer)) {
             try {
-                return X500Name.getInstance(crlIdIssuer);
+                return DSSASN1Utils.toX500Principal(X500Name.getInstance(crlIdIssuer));
             } catch (Exception e) {
                 LOG.warn("Unable to extract 'CRLId.issuer' header : {}", e.getMessage(), e);
             }

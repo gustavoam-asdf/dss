@@ -32,6 +32,7 @@ import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
 
 /**
  * Checks if the country code or set of country codes defined in QcCCLegislation is supported by the policy
+ *
  */
 public class CertificateQcCCLegislationCheck extends AbstractMultiValuesCheckItem<XmlSubXCV> {
 
@@ -69,7 +70,7 @@ public class CertificateQcCCLegislationCheck extends AbstractMultiValuesCheckIte
     @Override
     protected MessageTag getErrorMessageTag() {
         if (Utils.isCollectionEmpty(constraint.getValues())) {
-            /**
+            /*
              * See EN 319 412-5 ch. 4.2.1
              *
              * A certificate that includes the esi4-qcStatement-1 statement with the aim to declare that it is

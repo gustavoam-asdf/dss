@@ -29,6 +29,8 @@ import com.github.erosb.jsonsKema.SchemaLoaderConfig;
 import com.github.erosb.jsonsKema.ValidationFailure;
 import com.github.erosb.jsonsKema.Validator;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -44,6 +46,8 @@ import java.util.stream.Collectors;
  *
  */
 public abstract class JSONSchemaAbstractUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JSONSchemaAbstractUtils.class);
 
     /** The JSON Draft 07 schema of definitions */
     private static final String JSON_DRAFT_07_SCHEMA_LOCATION = "/schema/json-schema-draft-07.json";
@@ -109,7 +113,18 @@ public abstract class JSONSchemaAbstractUtils {
         ValidationFailure validationFailure = validator.validate(json);
         if (validationFailure != null) {
             Set<ValidationFailure> causes = validationFailure.getCauses();
-            return causes.stream().map(v -> new ValidationMessage(v).getMessage()).collect(Collectors.toList());
+            if (causes != null && !causes.isEmpty()) {
+                return causes.stream().map(v -> new ValidationMessage(v).getMessage()).collect(Collectors.toList());
+            }
+            // for single issues
+            String message = validationFailure.getMessage();
+            if (message != null && validationFailure.getInstance() != null) {
+                return Collections.singletonList(String.format("%s, location: %s", message, validationFailure.getInstance().getLocation()));
+            }
+            // in case the error format is not supported
+            LOG.warn("Unknown validation failure '{}' format on JSON Schema validation : {}",
+                    validationFailure.getClass().getSimpleName(), validationFailure.toString());
+            return Collections.singletonList(validationFailure.toString());
         }
         return Collections.emptyList();
     }

@@ -79,7 +79,7 @@ public class CMSDocumentValidator extends SignedDocumentValidator {
     }
 
     @Override
-    protected CAdESDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public CAdESDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new CAdESDiagnosticDataBuilder();
     }
 

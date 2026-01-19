@@ -3,9 +3,10 @@
 {
   "diagnosticData" : {
     "DocumentName" : null,
-    "ValidationDate" : "2025-08-04T07:04:35Z",
+    "ValidationDate" : "2025-12-18T07:27:31Z",
     "ContainerInfo" : null,
     "PDFAInfo" : null,
+    "ConnectionInfo" : null,
     "Signature" : null,
     "EvidenceRecord" : null,
     "Certificate" : [ {
@@ -90,8 +91,7 @@
       "PolicyName" : "Certificate policy TL based",
       "PolicyDescription" : "Validates electronic certificates and indicates its qualification status at issuance and validation time.\n        All certificates and their related chains are validated against the EU Member State Trusted Lists (this includes\n        target certificate and certificates used to validate certificate validity status services - CRLs, OCSP).\n    "
     },
-    "ChainItem" : [ {
-      "id" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C",
+    "Certificate" : {
       "subject" : {
         "commonName" : "SignerFake",
         "surname" : null,
@@ -118,6 +118,8 @@
       "qualificationDetailsAtIssuance" : null,
       "qualificationAtValidation" : "N/A",
       "qualificationDetailsAtValidation" : null,
+      "qwacProfile" : null,
+      "qwacDetails" : null,
       "enactedMRA" : null,
       "revocation" : {
         "thisUpdate" : null,
@@ -136,41 +138,67 @@
         } ],
         "Warning" : [ ],
         "Info" : [ ]
-      }
-    } ],
-    "ValidationTime" : "2025-08-04T07:04:35Z"
+      },
+      "ChainItem" : [ ],
+      "TLSBindingSignature" : null,
+      "Id" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C"
+    },
+    "ConnectionDetails" : null,
+    "ValidationTime" : "2025-12-18T07:27:31Z"
   },
   "detailedReport" : {
     "signatureOrTimestampOrEvidenceRecord" : [ {
       "Certificate" : {
-        "ValidationCertificateQualification" : [ ],
-        "Constraint" : [ {
-          "Name" : {
-            "value" : "Is the result of the Basic Building Block conclusive?",
-            "Key" : "BBB_ACCEPT"
-          },
-          "Status" : "WARNING",
-          "Error" : null,
-          "Warning" : {
-            "value" : "The result of the Basic Building Block is not conclusive!",
-            "Key" : "BBB_ACCEPT_ANS"
-          },
-          "Info" : null,
-          "AdditionalInfo" : null,
-          "Id" : null,
-          "BlockType" : null
-        } ],
-        "Conclusion" : {
-          "Indication" : "INDETERMINATE",
-          "SubIndication" : null,
-          "Errors" : [ ],
-          "Warnings" : [ {
-            "value" : "The result of the Basic Building Block is not conclusive!",
-            "Key" : "BBB_ACCEPT_ANS"
+        "CertificateQualificationProcess" : {
+          "ValidationCertificateQualification" : [ ],
+          "Constraint" : [ {
+            "Name" : {
+              "value" : "Is the result of the Basic Building Block conclusive?",
+              "Key" : "BBB_ACCEPT"
+            },
+            "Status" : "WARNING",
+            "Error" : null,
+            "Warning" : {
+              "value" : "The result of the Basic Building Block is not conclusive!",
+              "Key" : "BBB_ACCEPT_ANS"
+            },
+            "Info" : null,
+            "AdditionalInfo" : null,
+            "Id" : null,
+            "BlockType" : null
+          }, {
+            "Name" : {
+              "value" : "Has been an acceptable trusted list found?",
+              "Key" : "QUAL_VALID_TRUSTED_LIST_PRESENT"
+            },
+            "Status" : "NOT OK",
+            "Error" : {
+              "value" : "No acceptable trusted lists has been found!",
+              "Key" : "QUAL_VALID_TRUSTED_LIST_PRESENT_ANS"
+            },
+            "Warning" : null,
+            "Info" : null,
+            "AdditionalInfo" : null,
+            "Id" : null,
+            "BlockType" : null
           } ],
-          "Infos" : null
+          "Conclusion" : {
+            "Indication" : "FAILED",
+            "SubIndication" : null,
+            "Errors" : [ {
+              "value" : "No acceptable trusted lists has been found!",
+              "Key" : "QUAL_VALID_TRUSTED_LIST_PRESENT_ANS"
+            } ],
+            "Warnings" : [ {
+              "value" : "The result of the Basic Building Block is not conclusive!",
+              "Key" : "BBB_ACCEPT_ANS"
+            } ],
+            "Infos" : null
+          },
+          "Title" : "Certificate Qualification",
+          "Id" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C"
         },
-        "Title" : "Certificate Qualification",
+        "QWACProcess" : null,
         "Id" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C"
       }
     } ],
@@ -210,6 +238,61 @@
       },
       "CV" : null,
       "SAV" : null,
+      "AOV" : {
+        "SignatureCryptographicValidation" : null,
+        "SignedAttributesValidation" : null,
+        "DigestMatchersValidation" : null,
+        "CertificateChainCryptographicValidation" : {
+          "CertificateCryptographicValidation" : [ {
+            "Algorithm" : {
+              "Name" : "RSA with SHA256",
+              "Uri" : "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
+              "KeyLength" : "?"
+            },
+            "NotAfter" : null,
+            "ConcernedMaterialDescription" : null,
+            "Conclusion" : {
+              "Indication" : "INDETERMINATE",
+              "SubIndication" : "CRYPTO_CONSTRAINTS_FAILURE_NO_POE",
+              "Errors" : [ {
+                "value" : "The key size is unknown for certificate!",
+                "Key" : "ASCCM_PKSK_ANS"
+              } ],
+              "Warnings" : [ ],
+              "Infos" : [ ]
+            },
+            "TokenId" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C"
+          } ]
+        },
+        "Constraint" : [ {
+          "Name" : {
+            "value" : "Are cryptographic constraints met for the certificate?",
+            "Key" : "ACCM"
+          },
+          "Status" : "NOT OK",
+          "Error" : {
+            "value" : "The key size is unknown for certificate!",
+            "Key" : "ASCCM_PKSK_ANS"
+          },
+          "Warning" : null,
+          "Info" : null,
+          "AdditionalInfo" : "The key size is unknown for certificate! Validation time : 2025-12-18 07:27",
+          "Id" : "C-02F3EBCA0163274253BC809D27498DD41BB0316D7E6B066960115DE155589D9C",
+          "BlockType" : "AOV_XCV"
+        } ],
+        "Conclusion" : {
+          "Indication" : "INDETERMINATE",
+          "SubIndication" : "CRYPTO_CONSTRAINTS_FAILURE_NO_POE",
+          "Errors" : [ {
+            "value" : "The key size is unknown for certificate!",
+            "Key" : "ASCCM_PKSK_ANS"
+          } ],
+          "Warnings" : null,
+          "Infos" : null
+        },
+        "Title" : "Algorithm Obsolescence Validation",
+        "ValidationTime" : "2025-12-18T07:27:31Z"
+      },
       "PSV" : null,
       "PSV_CRS" : null,
       "PCV" : null,
@@ -230,7 +313,7 @@
     } ],
     "TLAnalysis" : [ ],
     "Semantic" : null,
-    "ValidationTime" : null
+    "ValidationTime" : "2025-12-18T07:27:31Z"
   }
 }
 ----

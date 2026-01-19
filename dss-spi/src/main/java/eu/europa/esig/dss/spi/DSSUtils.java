@@ -25,7 +25,6 @@ import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.ObjectIdentifierQualifier;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
-import eu.europa.esig.dss.enumerations.X520Attributes;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
@@ -67,8 +66,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -85,6 +85,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -120,7 +122,11 @@ public final class DSSUtils {
 	private static final byte[] LINE_BREAK_CHARS = { CARRIAGE_RETURN, LINE_FEED };
 
 	/** The URN OID prefix (RFC 3061) */
-	public static final String OID_NAMESPACE_PREFIX = "urn:oid:";
+	private static final String OID_NAMESPACE_PREFIX = "urn:oid:";
+
+	/** URI regex defined in RFC 3986 Appendix B */
+	private static final Pattern RFC3986_URI_PATTERN = Pattern.compile(
+			"^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
 
 	/**
 	 * This class is a utility class and cannot be instantiated.
@@ -797,14 +803,11 @@ public final class DSSUtils {
 	 * @param x500PrincipalString
 	 *            a {@code String} representation of the {@code X500Principal}
 	 * @return {@code X500Principal} or null
+	 * @deprecated since DSS 6.4. Please use {@code DSSASN1Utils#getX500PrincipalOrNull} method instead.
 	 */
+	@Deprecated
 	public static X500Principal getX500PrincipalOrNull(final String x500PrincipalString) {
-		try {
-			return new X500Principal(x500PrincipalString, X520Attributes.getUppercaseDescriptionForOids());
-		} catch (Exception e) {
-			LOG.warn("Unable to create an instance of X500Principal : {}", e.getMessage());
-			return null;
-		} 
+		return DSSASN1Utils.getX500PrincipalOrNull(x500PrincipalString);
 	}
 
 	/**
@@ -878,34 +881,41 @@ public final class DSSUtils {
 	}
 	
 	/**
-	 * This method encodes a URI to be compliant with the RFC 3986 (see DSS-1475 for details)
+	 * This method encodes a URI (e.g. to be used within a ds:Reference element).
+	 * NOTE: This method aims for compliance with the RFC 2396 / RFC 3986 (see DSS-1475 and DSS-3750 for details),
+	 * but keeps non Unicode letter characters in their plain representation as they are allowed for definition within
+	 * filenames and/or XML elements.
 	 *
 	 * @param fileURI the uri to be encoded
 	 * @return the encoded result
 	 */
 	public static String encodeURI(String fileURI) {
-		StringBuilder sb = new StringBuilder();
-		String uriDelimiter = "";
-		final String[] uriParts = fileURI.split("/");
-		for (String part : uriParts) {
-			sb.append(uriDelimiter);
-			sb.append(encodePartURI(part));
-			uriDelimiter = "/";
+		if (fileURI == null) {
+			return null;
 		}
-		return sb.toString();
-	}
-	
-	/**
-	 * This method encodes a partial URI to be compliant with the RFC 3986 (see DSS-1475 for details)
-	 * @param uriPart the partial uri to be encoded
-	 * @return the encoded result
-	 */
-	private static String encodePartURI(String uriPart) {
+
+        Matcher matcher = RFC3986_URI_PATTERN.matcher(fileURI);
+		if (!matcher.matches()) {
+			LOG.warn("URI does not match RFC 3986 pattern: {}. Original URI is returned.", fileURI);
+			return fileURI;
+		}
+
+		String scheme = matcher.group(2);
+		String authority = matcher.group(4);
+		String path = matcher.group(5);
+		String query = matcher.group(7);
+		String fragment = matcher.group(9);
 		try {
-			return URLEncoder.encode(uriPart, UTF8_ENCODING).replace("+", "%20");
-		} catch (Exception e) {
-			LOG.warn("Unable to encode uri '{}' : {}", uriPart, e.getMessage());
-			return uriPart;
+			URI safeUri = new URI(scheme, authority, path, query, fragment);
+			return safeUri.toString();
+		} catch (URISyntaxException e) {
+			String errorMessage = "URI does not match RFC 3986 pattern: {}. Reason {}. Original URI is returned.";
+			if (LOG.isDebugEnabled()) {
+				LOG.warn(errorMessage, fileURI, e.getMessage(), e);
+			} else {
+				LOG.warn(errorMessage, fileURI, e.getMessage());
+			}
+			return fileURI;
 		}
 	}
 	
@@ -1368,6 +1378,34 @@ public final class DSSUtils {
 			return new Date(dateTimeNumber.longValue());
 		}
 		return null;
+	}
+
+	/**
+	 * Gets host name based on the given URL string.
+	 * E.g. for "ldap://ldap.infonotary.com/dc=identity-ca,dc=infonotary,dc=com" returns -> "ldap.infonotary.com"
+	 *
+	 * @param urlString {@link String}
+	 * @return {@link String} corresponding to a host name
+	 */
+	public static String getHost(String urlString) {
+		if (Utils.isStringEmpty(urlString)) {
+			return "";
+		}
+
+		int doubleslash = urlString.indexOf("//");
+		if (doubleslash == -1) {
+			doubleslash = 0;
+		} else {
+			doubleslash += 2;
+		}
+
+		int end = urlString.indexOf('/', doubleslash);
+		end = end >= 0 ? end : urlString.length();
+
+		int port = urlString.indexOf(':', doubleslash);
+		end = (port > 0 && port < end) ? port : end;
+
+		return urlString.substring(doubleslash, end);
 	}
 
 }

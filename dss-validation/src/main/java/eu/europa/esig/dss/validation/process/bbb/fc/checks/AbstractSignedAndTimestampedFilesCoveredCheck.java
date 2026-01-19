@@ -32,6 +32,8 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -75,26 +77,45 @@ public abstract class AbstractSignedAndTimestampedFilesCoveredCheck<T extends Xm
     }
 
     private boolean checkManifestFilesCovered(XmlManifestFile timestampManifest) {
-        return checkManifestFilesCoveredRecursively(timestampManifest.getEntries(), timestampManifest);
+        return checkManifestFilesCovered(timestampManifest.getEntries());
+    }
+
+    /**
+     * This method is used to run the validation process for the manifest entries coverage
+     *
+     * @param entries a list of {@link String} entries covered by a timestamp or a manifest
+     * @return TRUE if all manifest entries are covered recursively, FALSE otherwise
+     */
+    protected boolean checkManifestFilesCovered(List<String> entries) {
+        return checkManifestFilesCoveredRecursively(entries, entries, new HashSet<>(), true);
     }
 
     /**
      * This method verifies whether all entries in a {@code manifestFile} are covered by {@code coveredEntries} recursively
      *
      * @param coveredEntries a list of {@link String} entries covered by a timestamp or a manifest
-     * @param manifestFile {@link XmlManifestFile} to verify against
+     * @param manifestEntries a list of {@link String}s containing manifest entries to be evaluated
+     * @param checkedEntries a collection of {@link String}s containing already processed entries
+     * @param rootProcess whether the root manifest is processed
      * @return TRUE if all manifest entries are covered recursively, FALSE otherwise
      */
-    protected boolean checkManifestFilesCoveredRecursively(List<String> coveredEntries, XmlManifestFile manifestFile) {
-        if (manifestFile != null) {
-            for (String manifestEntry : manifestFile.getEntries()) {
-                if (!coveredEntries.contains(manifestEntry)) {
-                    return false;
+    protected boolean checkManifestFilesCoveredRecursively(List<String> coveredEntries, List<String> manifestEntries, Collection<String> checkedEntries, boolean rootProcess) {
+        if (Utils.isCollectionNotEmpty(manifestEntries)) {
+            for (String manifestEntry : manifestEntries) {
+                // skip validation for the first loop (same manifest is evaluated)
+                if (!rootProcess) {
+                    if (!coveredEntries.contains(manifestEntry)) {
+                        return false;
+                    }
+                    if (checkedEntries.contains(manifestEntry)) {
+                        continue;
+                    }
                 }
                 XmlManifestFile entryManifest = diagnosticData.getManifestFileForFilename(manifestEntry);
-                if (entryManifest != null && !checkManifestFilesCoveredRecursively(coveredEntries, entryManifest)) {
+                if (entryManifest != null && !checkManifestFilesCoveredRecursively(coveredEntries, entryManifest.getEntries(), checkedEntries, false)) {
                     return false;
                 }
+                checkedEntries.add(manifestEntry);
             }
         }
         return true;

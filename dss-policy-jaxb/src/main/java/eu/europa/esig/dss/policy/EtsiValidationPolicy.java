@@ -286,8 +286,14 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return null;
 	}
 
+	@Deprecated
 	@Override
 	public LevelRule getSigningDurationRule(Context context) {
+		return getSigningTimeConstraint(context);
+	}
+
+	@Override
+	public LevelRule getSigningTimeConstraint(Context context) {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
 		if (signedAttributeConstraints != null) {
 			return toLevelRule(signedAttributeConstraints.getSigningTime());
@@ -296,10 +302,37 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public ValueRule getContentTypeConstraint(Context context) {
+	public LevelRule getSigningTimeInCertRangeConstraint(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toLevelRule(signedAttributeConstraints.getSigningTimeInCertRange());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getContentTypeConstraint(Context context) {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
 		if (signedAttributeConstraints != null) {
 			return toRule(signedAttributeConstraints.getContentType());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getContentHintsConstraint(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toRule(signedAttributeConstraints.getContentHints());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getContentIdentifierConstraint(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toRule(signedAttributeConstraints.getContentIdentifier());
 		}
 		return null;
 	}
@@ -372,24 +405,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		UnsignedAttributesConstraints unsignedAttributeConstraints = getUnsignedAttributeConstraints(context);
 		if (unsignedAttributeConstraints != null) {
 			return toLevelRule(unsignedAttributeConstraints.getLTALevelTimeStamp());
-		}
-		return null;
-	}
-
-	@Override
-	public ValueRule getContentHintsConstraint(Context context) {
-		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
-		if (signedAttributeConstraints != null) {
-			return toRule(signedAttributeConstraints.getContentHints());
-		}
-		return null;
-	}
-
-	@Override
-	public ValueRule getContentIdentifierConstraint(Context context) {
-		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
-		if (signedAttributeConstraints != null) {
-			return toRule(signedAttributeConstraints.getContentIdentifier());
 		}
 		return null;
 	}
@@ -527,15 +542,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getCertificateIssuerNameConstraint(Context context, SubContext subContext) {
-		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
-		if (certificateConstraints != null) {
-			return toLevelRule(certificateConstraints.getIssuerName());
-		}
-		return null;
-	}
-
-	@Override
 	public LevelRule getCertificateMaxPathLengthConstraint(Context context, SubContext subContext) {
 		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
 		if (certificateConstraints != null) {
@@ -581,6 +587,24 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelRule getCertificateAuthorityKeyIdentifierPresentConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toLevelRule(certificateConstraints.getAuthorityKeyIdentifierPresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getCertificateSubjectKeyIdentifierPresentConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toLevelRule(certificateConstraints.getSubjectKeyIdentifierPresent());
+		}
+		return null;
+	}
+
+	@Override
 	public LevelRule getCertificateNoRevAvailConstraint(Context context, SubContext subContext) {
 		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
 		if (certificateConstraints != null) {
@@ -603,6 +627,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
 		if (certificateConstraints != null) {
 			return toRule(certificateConstraints.getForbiddenExtensions());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getCertificateIssuerNameConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toLevelRule(certificateConstraints.getIssuerName());
 		}
 		return null;
 	}
@@ -1157,6 +1190,24 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public MultiValuesRule getCertificateQcQSCDLegislationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcQSCDLegislation());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcIdentificationMethodConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcIdentificationMethod());
+		}
+		return null;
+	}
+
+	@Override
 	public LevelRule getSigningCertificateRecognitionConstraint(Context context) {
 		CertificateConstraints certificateConstraints = getSigningCertificateByContext(context);
 		if (certificateConstraints != null) {
@@ -1319,8 +1370,14 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return null;
 	}
 
+	@Deprecated
 	@Override
 	public LevelRule getRevocationTimeAgainstBestSignatureDurationRule() {
+		return getRevocationTimeAgainstBestSignatureTimeConstraint();
+	}
+
+	@Override
+	public LevelRule getRevocationTimeAgainstBestSignatureTimeConstraint() {
 		TimestampConstraints timestampConstraints = getTimestampConstraints();
 		if (timestampConstraints != null) {
 			return toLevelRule(timestampConstraints.getRevocationTimeAgainstBestSignatureTime());

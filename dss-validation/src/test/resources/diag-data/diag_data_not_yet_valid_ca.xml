@@ -133,6 +133,9 @@
                 <ExtendedKeyUsages OID="2.5.29.37" critical="false">
                     <extendedKeyUsageOid Description="timeStamping">1.3.6.1.5.5.7.3.8</extendedKeyUsageOid>
                 </ExtendedKeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>OKqgmK+lux+0lsPumGyu38MXFs0=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>
@@ -180,6 +183,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://localhost:9999/pki-factory/crl/ocsp-skip-not-yet-valid-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>n/udwJAiKHUw9+Q3KRlweAqqC84=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>8O8mG7wCbNqC384B5iqdIcQvMCs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -228,6 +237,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>QwI66H3609rLcj1JJgP5N+L4BZk=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>
@@ -278,6 +290,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://localhost:9999/pki-factory/crl/ocsp-skip-root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>8O8mG7wCbNqC384B5iqdIcQvMCs=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>QwI66H3609rLcj1JJgP5N+L4BZk=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <Revocations>
                 <CertificateRevocation Revocation="R-BF4723FF4FBE1FD64509AC90A9C23FA13CFDAA615C6F95FE50866E6B0DD1B8F5">

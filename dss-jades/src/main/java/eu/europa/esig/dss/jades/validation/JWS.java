@@ -20,9 +20,10 @@
  */
 package eu.europa.esig.dss.jades.validation;
 
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
+import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.lang.JoseException;
 
@@ -173,6 +174,19 @@ public class JWS extends JsonWebSignature implements Serializable {
 	 */
 	public void setJwsJsonSerializationObject(JWSJsonSerializationObject jwsJsonSerializationObject) {
 		this.jwsJsonSerializationObject = jwsJsonSerializationObject;
+	}
+
+	/**
+	 * Gets the signature's serialization type (compact, flattened, etc.)
+	 *
+	 * @return {@link JWSSerializationType}
+	 */
+	public JWSSerializationType getJwsSerializationType() {
+		if (jwsJsonSerializationObject != null) {
+			return jwsJsonSerializationObject.getJWSSerializationType();
+		} else {
+			return JWSSerializationType.COMPACT_SERIALIZATION;
+		}
 	}
 	
 	/**

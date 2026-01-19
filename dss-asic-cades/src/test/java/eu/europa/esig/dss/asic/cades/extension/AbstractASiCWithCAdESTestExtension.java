@@ -20,9 +20,9 @@
  */
 package eu.europa.esig.dss.asic.cades.extension;
 
-import eu.europa.esig.dss.asic.cades.extract.ASiCWithCAdESContainerExtractor;
 import eu.europa.esig.dss.asic.cades.ASiCWithCAdESSignatureParameters;
 import eu.europa.esig.dss.asic.cades.ASiCWithCAdESTimestampParameters;
+import eu.europa.esig.dss.asic.cades.extract.ASiCWithCAdESContainerExtractor;
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.common.ASiCContent;
 import eu.europa.esig.dss.asic.common.validation.ASiCManifestParser;
@@ -42,7 +42,6 @@ import eu.europa.esig.dss.model.ManifestFile;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import eu.europa.esig.dss.test.extension.AbstractTestExtension;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.reports.Reports;
@@ -64,16 +63,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractASiCWithCAdESTestExtension extends AbstractTestExtension<ASiCWithCAdESSignatureParameters, ASiCWithCAdESTimestampParameters> {
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtSignatureTime() {
-		return getGoodTsa();
-	}
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtExtensionTime() {
-		return getAlternateGoodTsa();
-	}
 
 	@Override
 	protected FileDocument getOriginalDocument() {
@@ -250,11 +239,6 @@ public abstract class AbstractASiCWithCAdESTestExtension extends AbstractTestExt
 				assertTrue(Utils.isCollectionEmpty(timestampWrapper.getAtsHashIndexValidationMessages()));
 			}
 		}
-	}
-
-	@Override
-	protected String getSigningAlias() {
-		return GOOD_USER;
 	}
 
 }

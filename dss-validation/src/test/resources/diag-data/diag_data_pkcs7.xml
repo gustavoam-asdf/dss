@@ -130,6 +130,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy cpsUrl="https://www.certinomis.fr/documents-et-liens/nos-politiques">1.2.250.1.86.2.3.3.2.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ePEDkA5ZFIgbpYg1/cmHfFD5trE=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
@@ -141,6 +144,9 @@
                     </QcTypes>
                     <QcCClegislation/>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>1wkC08pKLj/1r8y+6iYWEfCjzbk=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
             <Revocations>
@@ -192,6 +198,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.igc-g3.certinomis.com/RACINE_G3/crl/AC_Racine_G3-crl-1.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>1wkC08pKLj/1r8y+6iYWEfCjzbk=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
             <DigestAlgoAndValue>
@@ -246,6 +255,12 @@
                     <crlUrl>http://crl.igc-g3.certinomis.com/INSTANCE_SHA2/crl/AC_PRIME-crl-1.crl</crlUrl>
                     <crlUrl>http://www.certinomis.com/crl/acg3-PRIME.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>87IyRGoxR5kuiCoaij9/BYdwo34=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>1wkC08pKLj/1r8y+6iYWEfCjzbk=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
             <DigestAlgoAndValue>

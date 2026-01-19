@@ -35,15 +35,14 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
+import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.revocation.OfflineRevocationSource;
 import eu.europa.esig.dss.spi.x509.revocation.RevocationCertificateSource;
 import eu.europa.esig.dss.spi.x509.revocation.RevocationToken;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
+import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.test.extension.AbstractTestExtension;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import eu.europa.esig.dss.spi.SignatureCertificateSource;
-import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.XAdESTimestampParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
@@ -59,16 +58,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractXAdESTestExtension extends AbstractTestExtension<XAdESSignatureParameters, XAdESTimestampParameters> {
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtSignatureTime() {
-		return getGoodTsa();
-	}
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtExtensionTime() {
-		return getAlternateGoodTsa();
-	}
 
 	@Override
 	protected FileDocument getOriginalDocument() {
@@ -222,11 +211,6 @@ public abstract class AbstractXAdESTestExtension extends AbstractTestExtension<X
 			super.checkRevocationDataEncapsulation(diagnosticData);
 		}
 		// skip for not BASELINE profiles
-	}
-
-	@Override
-	protected String getSigningAlias() {
-		return GOOD_USER;
 	}
 
 }

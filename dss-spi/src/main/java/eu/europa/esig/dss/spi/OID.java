@@ -145,6 +145,18 @@ public class OID {
 	public static final ASN1ObjectIdentifier id_etsi_qcs_QcCClegislation = new ASN1ObjectIdentifier("0.4.0.1862.1.7");
 
 	/**
+	 * esi4-qcStatement-8 QC-STATEMENT ::= { SYNTAX QcIdentMethod IDENTIFIED BY id-etsi-qcs-QcIdentMethod }
+	 * id-etsi-qcs-QcIdentMethod OBJECT IDENTIFIER ::= { id-etsi-qcs 8 }
+	 */
+	public static final ASN1ObjectIdentifier id_etsi_qcs_QcIdentMethod = new ASN1ObjectIdentifier("0.4.0.1862.1.8");
+
+	/**
+	 * esi4-qcStatement-9 QC-STATEMENT ::= { SYNTAX QcQSCDlegislation IDENTIFIED BY id-etsi-qcs-QcQCSDlegislation }
+	 * id-etsi-qcs-QcQSCDlegislation OBJECT IDENTIFIER ::= { id-etsi-qcs 9 }
+	 */
+	public static final ASN1ObjectIdentifier id_etsi_qcs_QcQSCDlegislation = new ASN1ObjectIdentifier("0.4.0.1862.1.9");
+
+	/**
 	 * EN 319 412-1 "5.2.2 Validity Assured - Short Term"
 	 *
 	 * id-etsi-ext OBJECT IDENTIFIER ::= { itu-t(0) identified-organization(4) etsi(0) id-cert-profile(194121) 2 }

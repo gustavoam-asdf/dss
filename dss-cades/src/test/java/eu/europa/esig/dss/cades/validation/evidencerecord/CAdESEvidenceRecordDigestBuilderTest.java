@@ -23,14 +23,13 @@ package eu.europa.esig.dss.cades.validation.evidencerecord;
 import eu.europa.esig.dss.cades.evidencerecord.CAdESEvidenceRecordDigestBuilder;
 import eu.europa.esig.dss.cms.CMSSignedDocument;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.OID;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSet;
@@ -49,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CAdESEvidenceRecordDigestBuilderTest {
 
@@ -68,9 +68,8 @@ class CAdESEvidenceRecordDigestBuilderTest {
                 new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).build().getHexValue());
         assertEquals("07970EDEDBDE66AE5E28C984FFC6739B62C5AE3164E2DFE81C64431267BC104BA3800F250D368669BE12D7FB8345C29B40F258FB705CF5A510C72E89F24B53C9",
                 new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(false).build().getHexValue());
-        // TODO : disabled because of BC issue. See https://github.com/bcgit/bc-java/issues/1585
-        //  assertEquals("07970EDEDBDE66AE5E28C984FFC6739B62C5AE3164E2DFE81C64431267BC104BA3800F250D368669BE12D7FB8345C29B40F258FB705CF5A510C72E89F24B53C9",
-        //          new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(true).build().getHexValue());
+        assertEquals("07970EDEDBDE66AE5E28C984FFC6739B62C5AE3164E2DFE81C64431267BC104BA3800F250D368669BE12D7FB8345C29B40F258FB705CF5A510C72E89F24B53C9",
+                new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(true).build().getHexValue());
     }
 
     @Test
@@ -82,9 +81,8 @@ class CAdESEvidenceRecordDigestBuilderTest {
 
         assertEquals("6F29495CC39F94044E13B94DC913EAF001C50A8710DEE14D1589BE5098ECE6E7C722AFA31EF0D6EB7FF21A9521DB0EF0153D657DECC60CDFD9B9A31A92F68535",
                 new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(false).build().getHexValue());
-        // TODO : disabled because of BC issue. See https://github.com/bcgit/bc-java/issues/1585
-        //  assertEquals("07970EDEDBDE66AE5E28C984FFC6739B62C5AE3164E2DFE81C64431267BC104BA3800F250D368669BE12D7FB8345C29B40F258FB705CF5A510C72E89F24B53C9",
-        //          new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(true).build().getHexValue());
+        assertEquals("07970EDEDBDE66AE5E28C984FFC6739B62C5AE3164E2DFE81C64431267BC104BA3800F250D368669BE12D7FB8345C29B40F258FB705CF5A510C72E89F24B53C9",
+                new CAdESEvidenceRecordDigestBuilder(document, DigestAlgorithm.SHA512).setParallelEvidenceRecord(true).build().getHexValue());
     }
 
     @Test
@@ -305,7 +303,8 @@ class CAdESEvidenceRecordDigestBuilderTest {
     @Test
     void notCmsTest() {
         DSSDocument document = new InMemoryDocument("test 123".getBytes());
-        assertThrows(DSSException.class, () -> new CAdESEvidenceRecordDigestBuilder(document).build());
+        Exception exception = assertThrows(IllegalInputException.class, () -> new CAdESEvidenceRecordDigestBuilder(document).build());
+        assertTrue(exception.getMessage().contains("Not a valid CAdES file."));
     }
 
 }

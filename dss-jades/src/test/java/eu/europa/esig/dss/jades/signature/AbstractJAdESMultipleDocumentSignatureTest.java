@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -121,6 +122,13 @@ public abstract class AbstractJAdESMultipleDocumentSignatureTest extends Abstrac
 					assertFalse(Utils.isCollectionNotEmpty(xmlDigestMatcher.getDataObjectReferences()));
 				}
 			}
+		}
+	}
+
+	@Override
+	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			assertEquals(getSignatureParameters().getJwsSerializationType(), signatureWrapper.getJWSSerializationType());
 		}
 	}
 

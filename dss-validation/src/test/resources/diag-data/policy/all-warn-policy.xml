@@ -96,6 +96,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<NoRevAvail Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
@@ -141,6 +142,8 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -175,8 +178,13 @@
 			<IssuerSerialMatch Level="WARN" />
 			<KeyIdentifierMatch Level="WARN" />
 			<SigningTime Level="WARN" />
-			<ContentType Level="WARN" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="WARN" value="*" />
+			<SigningTimeInCertRange Level="WARN" />
+			<ContentType Level="WARN">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="WARN">
+				<Id>*</Id>
+			</ContentHints>
 			<MessageDigestOrSignedPropertiesPresent Level="WARN" />
 			<EllipticCurveKeySize Level="WARN" />
 			<CommitmentTypeIndication Level="WARN">
@@ -235,6 +243,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<NoRevAvail Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
@@ -278,6 +287,8 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -312,8 +323,13 @@
 			<IssuerSerialMatch Level="WARN" />
 			<KeyIdentifierMatch Level="WARN" />
 			<SigningTime Level="WARN" />
-			<ContentType Level="WARN" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="WARN" value="*" />
+			<SigningTimeInCertRange Level="WARN" />
+			<ContentType Level="WARN">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="WARN">
+				<Id>*</Id>
+			</ContentHints>
 			<MessageDigestOrSignedPropertiesPresent Level="WARN" />
 			<EllipticCurveKeySize Level="WARN" />
 			<CommitmentTypeIndication Level="WARN">
@@ -364,6 +380,7 @@
 				</ExtendedKeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -400,6 +417,8 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -465,6 +484,7 @@
 				<RevocationFreshness Level="WARN" Unit="DAYS" Value="0" />
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -498,6 +518,8 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="WARN" />
 				<SupportedCriticalExtensions Level="WARN">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->

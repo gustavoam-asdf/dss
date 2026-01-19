@@ -23,16 +23,24 @@ package eu.europa.esig.dss.validation.process.bbb.sav.checks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.model.policy.ValueRule;
-import eu.europa.esig.dss.validation.process.bbb.AbstractValueCheckItem;
+import eu.europa.esig.dss.model.policy.MultiValuesRule;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Checks if the content type is acceptable
  */
-public class ContentTypeCheck extends AbstractValueCheckItem<XmlSAV> {
+public class ContentTypeCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
+
+	/** RFC 7515 content type prefix */
+	private static final String MIME_TYPE_APPLICATION_PREFIX = "application/";
 
 	/** The signature to check */
 	private final SignatureWrapper signature;
@@ -43,18 +51,44 @@ public class ContentTypeCheck extends AbstractValueCheckItem<XmlSAV> {
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param result {@link XmlSAV}
 	 * @param signature {@link SignatureWrapper}
-	 * @param constraint {@link ValueRule}
+	 * @param constraint {@link MultiValuesRule}
 	 */
 	public ContentTypeCheck(I18nProvider i18nProvider, XmlSAV result, SignatureWrapper signature,
-							ValueRule constraint) {
+							MultiValuesRule constraint) {
 		super(i18nProvider, result, constraint);
 		this.signature = signature;
 	}
 
 	@Override
 	protected boolean process() {
-		String contentType = signature.getContentType();
-		return processValueCheck(contentType);
+		return processValuesCheck(getContentType());
+	}
+
+	private List<String> getContentType() {
+		final List<String> contentTypes = new ArrayList<>();
+		if (signature.getContentType() != null) {
+			contentTypes.add(signature.getContentType());
+		}
+		// NOTE: 'cty' (content type) signed header is used to define signed content's MimeType (see 102-2).
+		// The check is merged for simplicity of the users.
+		if (SignatureForm.JAdES == signature.getSignatureFormat().getSignatureForm() && signature.getMimeType() != null) {
+			contentTypes.add(getRFC7515ContentType(signature.getMimeType()));
+		}
+		return contentTypes;
+	}
+
+	private String getRFC7515ContentType(String mimeType) {
+		/*
+		 * RFC 7515 requires to handle the ContentType, as it has an omitted "application/" prefix.
+		 * Therefore, we add additional value to ensure its correct processing
+		 */
+		String shortMimeTypeString = DSSUtils.stripFirstLeadingOccurrence(mimeType, MIME_TYPE_APPLICATION_PREFIX);
+		if (!shortMimeTypeString.contains("/")) {
+			return shortMimeTypeString;
+		} else {
+			// return original if contains other '/'
+			return mimeType;
+		}
 	}
 
 	@Override

@@ -40,15 +40,16 @@ import eu.europa.esig.dss.xades.validation.XAdESSignature;
 import eu.europa.esig.dss.xades.validation.XAdESUnsignedSigProperties;
 import eu.europa.esig.dss.xml.common.definition.DSSElement;
 import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigPath;
+import eu.europa.esig.dss.xml.common.xpath.XPathQuery;
 import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.xml.utils.XMLCanonicalizer;
+import eu.europa.esig.dss.xml.utils.xpath.XPathUtils;
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.apache.xml.security.signature.Reference;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -364,7 +365,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 			// Canonicalization copy is used in order to allow XL/A levels creation
 			Element unsignedProperties = getUnsignedSignaturePropertiesCanonicalizationCopy();
 			if (unsignedProperties == null) {
-				throw new NullPointerException(xadesPaths.getUnsignedSignaturePropertiesPath());
+				throw new IllegalStateException("UnsignedSignatureProperties are not initialized!");
 			}
 
 			XAdESUnsignedSigProperties xadesUnsignedSigProperties = new XAdESUnsignedSigProperties(unsignedProperties, xadesPaths);
@@ -442,7 +443,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 			// Canonicalization copy is used in order to allow XL/A level creation
 			Element unsignedProperties = getUnsignedSignaturePropertiesCanonicalizationCopy();
 			if (unsignedProperties == null) {
-				throw new NullPointerException(xadesPaths.getUnsignedSignaturePropertiesPath());
+				throw new IllegalStateException("UnsignedSignatureProperties are not initialized!");
 			}
 
 			XAdESUnsignedSigProperties xadesUnsignedSigProperties = new XAdESUnsignedSigProperties(unsignedProperties, xadesPaths);
@@ -585,9 +586,9 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 		return null;
 	}
 
-	private void writeCanonicalizedValue(final DSSMessageDigestCalculator digestCalculator, final String xPathString,
+	private void writeCanonicalizedValue(final DSSMessageDigestCalculator digestCalculator, final XPathQuery xPathString,
 										 final String canonicalizationMethod) {
-		final Element element = DomUtils.getElement(signature, xPathString);
+		final Element element = XPathUtils.getElement(signature, xPathString);
 		if (element != null) {
 			writeDigestValueOnCanonicalizedNode(digestCalculator, element, canonicalizationMethod);
 		}
@@ -612,7 +613,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 	}
 
 	private Element getUnsignedSignaturePropertiesDom() {
-		return DomUtils.getElement(signature, xadesPaths.getUnsignedSignaturePropertiesPath());
+		return XPathUtils.getElement(signature, xadesPaths.getUnsignedSignaturePropertiesPath());
 	}
 	
 	private Element getUnsignedSignaturePropertiesCanonicalizationCopy() {
@@ -691,7 +692,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 			unsignedProperties = getUnsignedSignaturePropertiesDom();
 		}
 		if (unsignedProperties == null) {
-			throw new NullPointerException(xadesPaths.getUnsignedSignaturePropertiesPath());
+			throw new IllegalStateException("UnsignedSignatureProperties are not initialized!");
 		}
 
 		return new XAdESUnsignedSigProperties(unsignedProperties, xadesPaths);
@@ -722,7 +723,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 	 * @return {@link NodeList}
 	 */
 	private NodeList getObjects() {
-		return DomUtils.getNodeList(signature, XMLDSigPath.OBJECT_PATH);
+		return XPathUtils.getNodeList(signature, XMLDSigPath.OBJECT_PATH);
 	}
 	
 	private void writeObjectBytes(final DSSMessageDigestCalculator digestCalculator, final NodeList objects,
@@ -730,7 +731,7 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 		final boolean xades141 = (timestampToken == null) || !ArchiveTimestampType.XAdES.equals(timestampToken.getArchiveTimestampType());
 		for (int ii = 0; ii < objects.getLength(); ii++) {
 			final Node node = objects.item(ii);
-			final Node qualifyingProperties = DomUtils.getElement(node, xadesPaths.getCurrentQualifyingPropertiesPath());
+			final Node qualifyingProperties = XPathUtils.getElement(node, xadesPaths.getCurrentQualifyingPropertiesPath());
 			if (qualifyingProperties != null) {
 				continue;
 			}
@@ -743,20 +744,12 @@ public class XAdESTimestampMessageDigestBuilder implements TimestampMessageDiges
 				 * If ds:Canonicalization is present, the algorithm indicated by this element is used.
 				 * If not, the standard canonicalization method specified by XMLDSIG is used.
 				 */
-				final NamedNodeMap attributes = node.getAttributes();
-				final int length = attributes.getLength();
-				String id = "";
-				for (int jj = 0; jj < length; jj++) {
-					final Node item = attributes.item(jj);
-					final String nodeName = item.getNodeName();
-					if (Utils.areStringsEqualIgnoreCase("ID", nodeName)) {
-						id = item.getNodeValue();
-						break;
+				String id = DSSXMLUtils.getIDIdentifier(node);
+				if (id != null) {
+					final boolean contains = referenceURIs.contains(id);
+					if (contains) {
+						continue;
 					}
-				}
-				final boolean contains = referenceURIs.contains(id);
-				if (contains) {
-					continue;
 				}
 			}
 			writeDigestValueOnCanonicalizedNode(digestCalculator, node, canonicalizationMethod);

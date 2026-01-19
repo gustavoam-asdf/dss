@@ -33,6 +33,7 @@ import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
+import eu.europa.esig.dss.spi.policy.SignaturePolicyValidatorLoader;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationContext;
@@ -234,6 +235,11 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 	@Override
 	public void setSignaturePolicyProvider(SignaturePolicyProvider signaturePolicyProvider) {
 		documentAnalyzer.setSignaturePolicyProvider(signaturePolicyProvider);
+	}
+
+	@Override
+	public void setSignaturePolicyValidatorLoader(SignaturePolicyValidatorLoader signaturePolicyValidatorLoader) {
+		documentAnalyzer.setSignaturePolicyValidatorLoader(signaturePolicyValidatorLoader);
 	}
 
 	@Override
@@ -459,7 +465,7 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 	 *
 	 * @return {@link SignedDocumentDiagnosticDataBuilder}
 	 */
-	protected SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+	public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
 		// default implementation
 		return new SignedDocumentDiagnosticDataBuilder();
 	}

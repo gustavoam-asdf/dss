@@ -32,6 +32,7 @@ import eu.europa.esig.dss.diagnostic.OrphanCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.enumerations.GeneralNameType;
+import eu.europa.esig.dss.enumerations.QCIdentMethodEnum;
 import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.RevocationType;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
@@ -158,6 +159,31 @@ class CertificateValidatorTest {
 		assertEquals(QCTypeEnum.QCT_ESIGN, certificateWrapper.getQcTypes().iterator().next());
 		assertEquals(1, certificateWrapper.getQcLegislationCountryCodes().size());
 		assertEquals("TC", certificateWrapper.getQcLegislationCountryCodes().iterator().next());
+
+		validateReports(reports);
+	}
+
+	@Test
+	void qcStatementsQSCDLegislationAndIdentMethodTest() throws Exception {
+		CertificateValidator cv = CertificateValidator
+				.fromCertificate(DSSUtils.loadCertificate(new File("src/test/resources/certificates/charlie_doe_tc.crt")));
+		cv.setCertificateVerifier(new CommonCertificateVerifier());
+		CertificateReports reports = cv.validate();
+
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
+		assertEquals(1, usedCertificates.size());
+
+		CertificateWrapper certificateWrapper = usedCertificates.get(0);
+		assertTrue(certificateWrapper.isQcCompliance());
+		assertTrue(certificateWrapper.isSupportedByQSCD());
+		assertEquals(1, certificateWrapper.getQcTypes().size());
+		assertEquals(QCTypeEnum.QCT_ESIGN, certificateWrapper.getQcTypes().iterator().next());
+		assertEquals(1, certificateWrapper.getQcLegislationCountryCodes().size());
+		assertEquals("ZZ", certificateWrapper.getQcLegislationCountryCodes().iterator().next());
+		assertEquals(1, certificateWrapper.getQcQSCDLegislation().size());
+		assertEquals("ZZ", certificateWrapper.getQcQSCDLegislation().iterator().next());
+		assertEquals(QCIdentMethodEnum.QCT_EIDAS2_B, certificateWrapper.getQcIdentMethod());
 
 		validateReports(reports);
 	}

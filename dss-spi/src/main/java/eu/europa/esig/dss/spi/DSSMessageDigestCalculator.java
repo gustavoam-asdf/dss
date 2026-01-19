@@ -24,8 +24,6 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,8 +41,6 @@ import java.util.Objects;
  *
  */
 public class DSSMessageDigestCalculator {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DSSMessageDigestCalculator.class);
 
     /** The Map of DigestAlgorithm and corresponding computed message-digest */
     private final Map<DigestAlgorithm, MessageDigest> messageDigestMap;

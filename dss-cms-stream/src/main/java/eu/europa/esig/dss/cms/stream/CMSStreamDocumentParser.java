@@ -27,6 +27,7 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DSSMessageDigest;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
@@ -76,8 +77,10 @@ public class CMSStreamDocumentParser {
             CMSSignedDataParser cmsSignedDataParser = new CMSSignedDataParser(new MessageDigestCalculatorProvider(), bis);
             return parseCMSSignedDataStream(document, cmsSignedDataParser);
 
-        } catch (CMSException | IOException e) {
-            throw new DSSException(String.format("Unable to read a CMS. Reason : %s", e.getMessage()), e);
+        } catch (IOException e) {
+            throw new DSSException(String.format("Unable to read a document. Reason : %s", e.getMessage()), e);
+        } catch (CMSException e) {
+            throw new IllegalInputException(String.format("Not a valid CAdES file. Reason : %s", e.getMessage()), e);
         }
     }
     /**

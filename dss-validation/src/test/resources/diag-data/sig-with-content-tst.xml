@@ -121,6 +121,12 @@
                     <extendedKeyUsageOid Description="ocspSigning">1.3.6.1.5.5.7.3.9</extendedKeyUsageOid>
                 </ExtendedKeyUsages>
                 <IdPkixOcspNoCheck OID="1.3.6.1.5.5.7.48.1.5" critical="false" present="true" />
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>eibJ0EJjIar0HT4OmV/zQTx1ygM=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>RWmGUpb0P4VQ0tGQL+Ubu4xOQ5U=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>
@@ -172,6 +178,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>eibJ0EJjIar0HT4OmV/zQTx1ygM=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>RWmGUpb0P4VQ0tGQL+Ubu4xOQ5U=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -225,6 +237,12 @@
                     <caIssuersUrl>http://dss.nowina.lu/pki-factory/crt/good-ca.crt</caIssuersUrl>
                     <ocspUrl>http://dss.nowina.lu/pki-factory/ocsp/good-ca</ocspUrl>
                 </AuthorityInformationAccess>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>XoHAuO9IjqDYHWapqOhZPLJ65tg=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>77l0XXjczsNUnYLAbvRljE6L8lY=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -281,6 +299,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>77l0XXjczsNUnYLAbvRljE6L8lY=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>RWmGUpb0P4VQ0tGQL+Ubu4xOQ5U=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <Revocations>
                 <CertificateRevocation Revocation="R-A26003903DC891EA9E589518CA10A0F8CEBE953C012EA07CDE6D10EFB08245A8">
@@ -329,6 +353,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>RWmGUpb0P4VQ0tGQL+Ubu4xOQ5U=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <Revocations/>
             <DigestAlgoAndValue>

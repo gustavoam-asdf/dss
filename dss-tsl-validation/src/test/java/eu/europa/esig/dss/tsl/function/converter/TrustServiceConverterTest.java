@@ -24,7 +24,7 @@ import eu.europa.esig.dss.model.tsl.ConditionForQualifiers;
 import eu.europa.esig.dss.model.tsl.TrustService;
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 import eu.europa.esig.trustedlist.jaxb.ecc.CriteriaListType;
 import eu.europa.esig.trustedlist.jaxb.ecc.QualificationElementType;
 import eu.europa.esig.trustedlist.jaxb.ecc.QualificationsType;

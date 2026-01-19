@@ -88,7 +88,7 @@ class RemoteCertificateValidationServiceTest {
 		CertificateToValidateDTO certificateDTO = getCompleteCertificateToValidateDTO();
 		certificateDTO.setCertificateChain(null);
 		CertificateReportsDTO reportsDTO = validationService.validateCertificate(certificateDTO);
-		validateReports(reportsDTO);
+		validateReports(reportsDTO, false);
 	}
 	
 	@Test
@@ -97,7 +97,7 @@ class RemoteCertificateValidationServiceTest {
 		certificateDTO.setCertificateChain(null);
 		certificateDTO.setTokenExtractionStrategy(null);
 		CertificateReportsDTO reportsDTO = validationService.validateCertificate(certificateDTO);
-		validateReports(reportsDTO);
+		validateReports(reportsDTO, false);
 	}
 
 	@Test
@@ -231,16 +231,23 @@ class RemoteCertificateValidationServiceTest {
 		return new CertificateToValidateDTO(remoteCertificate, Collections.singletonList(issuerCertificate), validationDate,
 				TokenExtractionStrategy.EXTRACT_CERTIFICATES_AND_REVOCATION_DATA);
 	}
-	
-	protected void validateReports(CertificateReportsDTO reportsDTO) {
+
+	private void validateReports(CertificateReportsDTO reportsDTO) {
+		validateReports(reportsDTO, true);
+	}
+
+	private void validateReports(CertificateReportsDTO reportsDTO, boolean chainFound) {
 		assertNotNull(reportsDTO.getDiagnosticData());
 		assertNotNull(reportsDTO.getSimpleCertificateReport());
 		assertNotNull(reportsDTO.getDetailedReport());
 		
 		XmlDiagnosticData diagnosticData = reportsDTO.getDiagnosticData();
-		List<XmlChainItem> chain = reportsDTO.getSimpleCertificateReport().getChain();
-		assertNotNull(chain);
-		assertTrue(Utils.isCollectionNotEmpty(chain));
+		XmlChainItem certificate = reportsDTO.getSimpleCertificateReport().getCertificate();
+		assertNotNull(certificate);
+
+		List<XmlChainItem> chain = certificate.getChain();
+		assertEquals(chainFound, Utils.isCollectionNotEmpty(chain));
+
 		List<XmlCertificate> usedCertificates = diagnosticData.getUsedCertificates();
 		assertNotNull(usedCertificates);
 		assertTrue(Utils.isCollectionNotEmpty(usedCertificates));

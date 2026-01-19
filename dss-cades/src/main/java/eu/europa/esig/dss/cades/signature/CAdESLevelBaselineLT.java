@@ -26,6 +26,7 @@ import eu.europa.esig.dss.cades.TimeStampTokenProductionComparator;
 import eu.europa.esig.dss.cades.validation.CAdESSignature;
 import eu.europa.esig.dss.cades.validation.CMSDocumentAnalyzer;
 import eu.europa.esig.dss.cms.CMS;
+import eu.europa.esig.dss.cms.CMSBuilder;
 import eu.europa.esig.dss.cms.CMSUtils;
 import eu.europa.esig.dss.signature.SignatureRequirementsChecker;
 import eu.europa.esig.dss.spi.DSSASN1Utils;

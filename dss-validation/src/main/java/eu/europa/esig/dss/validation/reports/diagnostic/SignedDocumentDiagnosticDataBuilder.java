@@ -272,10 +272,12 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 	 */
 	@Override
 	public XmlDiagnosticData build() {
-		Objects.requireNonNull(signedDocument, "signedDocument shall be provided! Use 'document()' method.");
+		assertConfigurationValid();
 
 		XmlDiagnosticData diagnosticData = super.build(); // fill certificates and revocation data
-		diagnosticData.setDocumentName(removeSpecialCharsForXml(signedDocument.getName()));
+		if (signedDocument != null) {
+			diagnosticData.setDocumentName(removeSpecialCharsForXml(signedDocument.getName()));
+		}
 
 		// collect original signer documents
 		Collection<XmlSignerData> xmlSignerData = buildXmlSignerDataList(signatures, usedTimestamps, evidenceRecords);
@@ -315,6 +317,13 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 		}
 
 		return diagnosticData;
+	}
+
+	/**
+	 * This method verifies whether the configuration is valid in order to build a Diagnostic Data
+	 */
+	protected void assertConfigurationValid() {
+		Objects.requireNonNull(signedDocument, "signedDocument shall be provided! Use 'document()' method.");
 	}
 
 	@Override
@@ -1152,7 +1161,9 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 				digestMatcher.setDataFound(entry.isFound());
 				digestMatcher.setDataIntact(entry.isIntact());
 				digestMatcher.setUri(entry.getUri());
-				digestMatcher.setDocumentName(entry.getDocumentName());
+				if (entry.getDocument() != null) {
+					digestMatcher.setDocumentName(entry.getDocument().getName());
+				}
 
 				digestMatchers.add(digestMatcher);
 			}

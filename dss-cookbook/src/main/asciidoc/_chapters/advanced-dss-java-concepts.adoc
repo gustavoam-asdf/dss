@@ -22,6 +22,7 @@ The following modules are provided with independent implementations:
 
 * DSS Utils;
 * DSS CRL Parser;
+* DSS CMS;
 * DSS PAdES.
 
 WARNING: At least one implementation shall be chosen.
@@ -105,7 +106,7 @@ In order to allow signing and/or augmentation of CAdES signatures encapsulating 
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/SignCAdESWithTempFileTest.java[tags=demo]
 ----
 
-NOTE: The implementation `dss-cms-stream` is experimental. While it may provide a better performance as well as a possibility of large documents signing and validation, we advise implementors to carefully evaluate the produced results before switching to this implementation.
+NOTE: The implementation `dss-cms-stream` is experimental. While it may provide a better performance as well as a possibility of large documents signing and validation, we advise implementers to carefully evaluate the produced results before switching to this implementation.
 
 [[dssPades]]
 ==== DSS PAdES
@@ -356,7 +357,7 @@ In order to instantiate the security providers within the system's `java.securit
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/DSSSecurityProviderSnippetTest.java[tags=init-providers]
 ----
 
-This code will ensure that all security providers defined within the class instance, will be added in runtime within the system's `java.security.Security` properties. Please note that DSS does execute this method on its own when the use of security providers is required, therefore it is very unlikely you would ever need to call the method.
+This code will ensure that all security providers defined within the class instance, will be added at runtime within the system's `java.security.Security` properties. Please note that DSS does execute this method on its own when the use of security providers is required, therefore it is very unlikely you would ever need to call the method.
 
 NOTE: Once the security providers have been added within the system's `java.security.Security` properties, modifications of the `DSSSecurityProvider` class configuration will not result to a removal of the providers from the `java.security.Security` properties. If you need to remove certain providers, you have to do it using the `java.security.Security` class directly.
 
@@ -457,7 +458,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/SignASiCEWithX
 [[zipUtils]]
 === ZIP Utils
 
-For parsing and creation of ZIP archives a special class `ZipUtils` is provided. This is a singleton class, and its behavior can be customized using an implementation of `ZipContainerHandler` interface. An implementation of `ZipContainerHandler` can be provided in runtime and the defined class will be used on all calls of `ZipUtils` across DSS's code
+For parsing and creation of ZIP archives a special class `ZipUtils` is provided. This is a singleton class, and its behavior can be customized using an implementation of `ZipContainerHandler` interface. An implementation of `ZipContainerHandler` can be provided at runtime and the defined class will be used on all calls of `ZipUtils` across DSS's code
 
 By default, an instance of `SecureContainerHandler` is used, allowing to parse ZIP container securely, by reporting a presence of a ZIP-bomb (see https://unforgettable.dk/[42.zip]) and/or malicious documents within a given archive.
 

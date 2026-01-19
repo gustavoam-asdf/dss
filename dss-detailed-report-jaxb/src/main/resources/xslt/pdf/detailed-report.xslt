@@ -211,7 +211,7 @@
 
     </xsl:template>
     
-    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord">
+    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:Certificate">
 	    
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
@@ -281,7 +281,7 @@
     
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessBasicTimestamp|dss:ValidationProcessLongTermData
 			|dss:ValidationProcessArchivalData|dss:ValidationProcessArchivalDataTimestamp|dss:ValidationProcessEvidenceRecord
-			|dss:Certificate">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess">
 
 		<xsl:variable name="poeStringValue">
 			<xsl:choose>
@@ -446,6 +446,78 @@
     	</fo:block-container>
 
     </xsl:template>
+
+	<xsl:template match="dss:QWACProcess">
+
+		<fo:table table-layout="fixed">
+			<xsl:attribute name="keep-with-next">always</xsl:attribute>
+			<xsl:attribute name="page-break-inside">avoid</xsl:attribute>
+
+			<xsl:attribute name="margin-top">4px</xsl:attribute>
+			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
+
+			<fo:table-column>
+				<xsl:attribute name="column-width">60%</xsl:attribute>
+			</fo:table-column>
+			<fo:table-column>
+				<xsl:attribute name="column-width">40%</xsl:attribute>
+			</fo:table-column>
+
+			<fo:table-body>
+				<xsl:attribute name="start-indent">0</xsl:attribute>
+				<xsl:attribute name="end-indent">0</xsl:attribute>
+
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="font-weight">bold</xsl:attribute>
+
+							<xsl:value-of select="@Title" />
+						</fo:block>
+					</fo:table-cell>
+
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="font-weight">bold</xsl:attribute>
+							<xsl:attribute name="text-align">right</xsl:attribute>
+
+							<xsl:choose>
+								<xsl:when test="@QWACType">
+									<xsl:value-of select="@QWACType"/>
+								</xsl:when>
+								<xsl:otherwise>
+									Not QWAC
+								</xsl:otherwise>
+							</xsl:choose>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+
+			</fo:table-body>
+		</fo:table>
+
+
+		<fo:block-container>
+			<xsl:attribute name="border-left-style">solid</xsl:attribute>
+			<xsl:attribute name="border-color">#004494</xsl:attribute>
+			<xsl:attribute name="border-width">1px</xsl:attribute>
+
+			<xsl:attribute name="margin-top">2px</xsl:attribute>
+			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
+
+			<fo:block-container>
+				<xsl:attribute name="margin-left">10px</xsl:attribute>
+				<fo:block-container>
+					<xsl:attribute name="margin">0</xsl:attribute>
+					<fo:block>
+						<xsl:apply-templates select="*[not(self::dss:Conclusion)]" />
+					</fo:block>
+				</fo:block-container>
+			</fo:block-container>
+
+		</fo:block-container>
+
+	</xsl:template>
      
     <xsl:template match="dss:FC|dss:ISC|dss:VCI|dss:CRS|dss:RAC|dss:RFC|dss:CV|dss:SAV|dss:AOV|dss:XCV|dss:SubXCV|dss:PSV|dss:PSV_CRS|dss:PCV|dss:VTS">
         

@@ -74,7 +74,7 @@ public class PDFADocumentValidator extends PDFDocumentValidator {
     }
 
     @Override
-    protected PAdESWithPDFADiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public PAdESWithPDFADiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         final PAdESWithPDFADiagnosticDataBuilder padesWithPDFADiagnosticDataBuilder = new PAdESWithPDFADiagnosticDataBuilder();
         padesWithPDFADiagnosticDataBuilder.pdfaValidationResult(getPdfaValidationResult());
         return padesWithPDFADiagnosticDataBuilder;

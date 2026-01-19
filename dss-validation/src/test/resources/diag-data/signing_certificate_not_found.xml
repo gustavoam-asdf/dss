@@ -84,6 +84,12 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.11290.1.1.3</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>cFVWz2HHmWmmW8MYgrBl5LVbAp8=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>mbfwk3DwFePNQ2sl86CzqI9grBc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
                         <TrustServiceProviders />
 			<Revocations>
@@ -129,6 +135,9 @@
                     <keyUsageBit>crlSign</keyUsageBit>
                     <keyUsageBit>keyCertSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>mbfwk3DwFePNQ2sl86CzqI9grBc=</ski>
+                </SubjectKeyIdentifier>
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.11290.1.1.1</certificatePolicy>
                 </CertificatePolicies>
@@ -180,11 +189,17 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.11290.1.1.1.1</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>5Ias/SOKD8WB8Itqit/hXRz+abI=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
                     <SemanticsIdentifier Description="Semantics identifier for natural person">0.4.0.194121.1.1</SemanticsIdentifier>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>mbfwk3DwFePNQ2sl86CzqI9grBc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
 			<Revocations>

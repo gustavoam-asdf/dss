@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,9 +51,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("slow")
 class ASiCECAdESLevelLargeMultipleFilesLTATest extends AbstractASiCEWithCAdESMultipleDocumentsTestSignature {
 
+    private static FileDocument largeFileDocument;
+
     private ASiCWithCAdESService service;
     private ASiCWithCAdESSignatureParameters signatureParameters;
-    private List<FileDocument> documentToSigns;
+    private List<FileDocument> documentsToSign;
 
     private TempFileResourcesHandlerBuilder tempFileResourcesHandlerBuilder;
 
@@ -65,10 +68,7 @@ class ASiCECAdESLevelLargeMultipleFilesLTATest extends AbstractASiCEWithCAdESMul
                 .setResourcesHandlerBuilder(tempFileResourcesHandlerBuilder);
         ZipUtils.getInstance().setZipContainerHandlerBuilder(secureContainerHandlerBuilder);
 
-        documentToSigns = new ArrayList<>();
-        documentToSigns.add(generateLargeFile("1.bin"));
-        documentToSigns.add(generateLargeFile("2.bin"));
-        documentToSigns.add(generateLargeFile("3.bin"));
+        documentsToSign = createDocumentsToSign();
 
         signatureParameters = new ASiCWithCAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(new Date());
@@ -78,20 +78,36 @@ class ASiCECAdESLevelLargeMultipleFilesLTATest extends AbstractASiCEWithCAdESMul
         signatureParameters.aSiC().setContainerType(ASiCContainerType.ASiC_E);
 
         // precompute
-        documentToSigns.parallelStream().forEach(d -> d.getDigestValue(signatureParameters.getDigestAlgorithm()));
+        documentsToSign.parallelStream().forEach(d -> d.getDigestValue(signatureParameters.getDigestAlgorithm()));
 
         service = new ASiCWithCAdESService(getCompleteCertificateVerifier());
         service.setTspSource(getGoodTsa());
     }
 
+    private List<FileDocument> createDocumentsToSign() throws IOException {
+        List<FileDocument> documentsToSign = new ArrayList<>();
+
+        largeFileDocument = generateLargeFile();
+
+        // -Dlarge.file.number=...
+        String filesNumberStr = System.getProperty("large.file.number", "2");
+        final int filesNumber = Integer.parseInt(filesNumberStr);
+
+        for (int i = 1; i <= filesNumber; i++) {
+            FileDocument file = new FileDocument(largeFileDocument.getFile());
+            file.setName(i + ".bin");
+            documentsToSign.add(file);
+        }
+
+        return documentsToSign;
+    }
+
     @AfterEach
     void clean() {
-        for (FileDocument fileDocument : documentToSigns) {
-            File file = fileDocument.getFile();
-            assertTrue(file.exists());
-            assertTrue(file.delete());
-            assertFalse(file.exists());
-        }
+        File file = largeFileDocument.getFile();
+        assertTrue(file.exists());
+        assertTrue(file.delete());
+        assertFalse(file.exists());
 
         tempFileResourcesHandlerBuilder.clear();
     }
@@ -116,7 +132,7 @@ class ASiCECAdESLevelLargeMultipleFilesLTATest extends AbstractASiCEWithCAdESMul
 
     @Override
     protected List<DSSDocument> getDocumentsToSign() {
-        return new ArrayList<>(documentToSigns);
+        return new ArrayList<>(documentsToSign);
     }
 
     @Override

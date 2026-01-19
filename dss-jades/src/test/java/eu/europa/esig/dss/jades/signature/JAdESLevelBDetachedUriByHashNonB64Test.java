@@ -24,6 +24,9 @@ import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignerDataWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.JWSSerializationType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -64,6 +67,7 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
     private DocumentSignatureService<JAdESSignatureParameters, JAdESTimestampParameters> service;
     private DSSDocument documentToSign;
     private Date signingDate;
+    private JAdESSignatureParameters signatureParameters;
 
     @BeforeEach
     void init() throws Exception {
@@ -71,11 +75,8 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
         service.setTspSource(getGoodTsa());
         documentToSign = new FileDocument(new File("src/test/resources/sample.json"));
         signingDate = new Date();
-    }
 
-    @Override
-    protected JAdESSignatureParameters getSignatureParameters() {
-        JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
+        signatureParameters = new JAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(signingDate);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
@@ -83,6 +84,10 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
         signatureParameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH);
         signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
         signatureParameters.setBase64UrlEncodedPayload(false);
+    }
+
+    @Override
+    protected JAdESSignatureParameters getSignatureParameters() {
         return signatureParameters;
     }
 
@@ -102,6 +107,7 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
         assertNotNull(converted.getMimeType());
         assertNotNull(converted.getName());
 
+        signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
         verify(converted);
 
         converted = JWSConverter.fromJWSCompactToJSONSerialization(compactSignature);
@@ -109,7 +115,10 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
         assertNotNull(converted.getMimeType());
         assertNotNull(converted.getName());
 
+        signatureParameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION);
         verify(converted);
+
+        signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
     }
 
     private void assertRequirementsValid(String encodedHeader) {
@@ -152,6 +161,11 @@ class JAdESLevelBDetachedUriByHashNonB64Test extends AbstractJAdESTestSignature 
         } catch (JoseException e) {
             fail(e);
         }
+    }
+
+    @Override
+    protected MimeType getExpectedMime() {
+        return MimeTypeEnum.JOSE;
     }
 
     @Override

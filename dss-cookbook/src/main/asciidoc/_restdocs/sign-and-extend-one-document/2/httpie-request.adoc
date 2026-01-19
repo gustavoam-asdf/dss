@@ -14,8 +14,8 @@ $ echo '{
     "manifestSignature" : false,
     "jwsSerializationType" : null,
     "sigDMechanism" : null,
-    "base64UrlEncodedPayload" : true,
-    "base64UrlEncodedEtsiUComponents" : true,
+    "base64UrlEncodedPayload" : null,
+    "base64UrlEncodedEtsiUComponents" : null,
     "digestAlgorithm" : "SHA256",
     "encryptionAlgorithm" : null,
     "referenceDigestAlgorithm" : null,
@@ -40,7 +40,7 @@ $ echo '{
     "signatureIdToCounterSign" : null,
     "blevelParams" : {
       "trustAnchorBPPolicy" : true,
-      "signingDate" : 1754291068712,
+      "signingDate" : 1766042847738,
       "claimedSignerRoles" : null,
       "signedAssertions" : null,
       "policyId" : null,
@@ -60,7 +60,7 @@ $ echo '{
   },
   "signatureValue" : {
     "algorithm" : "RSA_SHA256",
-    "value" : "A9XEsNPml7cLjAIs/ux3KsbcCiFF+cwDCfxwiYPdEvG04h6i5HeKQlP58ikcSHGY6ojG7SlOIbAlBpq2IiNfDFi4PVE/rAp5mENQtv8FQDBLfD208qwGlx2bguMHc+LTzXIytu/pA4UeVsUH0P/Dk3g7HPL2kB4E1vu4/OHQzGAkjdTm+QI/ow0GYJIcGZoiYmpm+B7Ki0wxcGBIb5/c8pAby347BnpeajAuxnqglYDyskgK9JgL1ES0XfG0cp7B9dsC1wkY65/HGTNq4IBNQ/iZwpCk4GQJ9KaBSc5/6/WgxSiPA9P3a/U0tTCwK5E8floFtsCBEL8xvVtIxneFcg=="
+    "value" : "vkrHHmd88ZRYAQ1fL1FVT8Fof9Q4ArL2u15HrXGoKLYu7R3DSyTV9mEUtRgMyoO/xujj1v5m5SmjY/3LO6BLbQlob5jWIY/7Q+rN39gzgssSFrs9FTImQSWlpg+diWH9KrzpY+FOdQnFT7eRJm72bXUBratPNFOA2FzLOBuBz7rCD2ntWDTusSX4bgIqURmgH0jcVfyz9MnDsa6dmdCAjAktpXjBQUUHWoz2itW9b5IEP9JMs2F1SrgA1OAmbTr0bjhDJe9Cs2s+ssaUswjGXrB2hJLEELj5z5Ykv8dtvRlIDve2XhFNdksMKKnb5ioIeTmcchNthJv80vNkzYfFtQ=="
   },
   "toSignDocument" : {
     "bytes" : "SGVsbG8=",

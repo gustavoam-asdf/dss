@@ -274,7 +274,7 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 				DSSResourcesHandler resourcesHandler = instantiateResourcesHandler();
 				OutputStream os = resourcesHandler.createOutputStream();
 				ITextDocumentReader documentReader = new ITextDocumentReader(toSignDocument, getPasswordBytes(parameters.getPasswordProtection()), pdfMemoryUsageSetting)
-			) {
+		) {
 
 			final SignatureFieldParameters fieldParameters = parameters.getImageParameters().getFieldParameters();
 			checkPdfPermissions(documentReader, fieldParameters);
@@ -307,27 +307,21 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 
 	@Override
 	protected DSSDocument signDocument(final DSSDocument toSignDocument, final byte[] cmsSignedData,
-							final PAdESCommonParameters parameters) {
+									   final PAdESCommonParameters parameters) {
 		try (
 				DSSResourcesHandler resourcesHandler = instantiateResourcesHandler();
 				OutputStream os = resourcesHandler.createOutputStream();
 				ITextDocumentReader documentReader = new ITextDocumentReader(toSignDocument, getPasswordBytes(parameters.getPasswordProtection()), pdfMemoryUsageSetting)
-			) {
+		) {
 
 			final SignatureFieldParameters fieldParameters = parameters.getImageParameters().getFieldParameters();
 			checkPdfPermissions(documentReader, fieldParameters);
+			assertContentSizeSufficient(cmsSignedData, parameters);
 
 			PdfStamper stp = prepareStamper(documentReader, os, parameters);
 			PdfSignatureAppearance sap = stp.getSignatureAppearance();
 
 			int csize = parameters.getContentSize();
-			if (csize < cmsSignedData.length) {
-				throw new IllegalArgumentException(
-						String.format("Unable to save a document. Reason : The signature size [%s] is too small " +
-								"for the signature value with a length [%s]. Use setContentSize(...) method " +
-								"to define a bigger length.", csize, cmsSignedData.length));
-			}
-
 			byte[] outc = new byte[csize];
 			System.arraycopy(cmsSignedData, 0, outc, 0, cmsSignedData.length);
 
@@ -349,9 +343,9 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 										char[] pwd, boolean includeVRIDict) {
 		try (DSSResourcesHandler resourcesHandler = instantiateResourcesHandler();
 			 OutputStream os = resourcesHandler.createOutputStream();
-			 
+
 			 ITextDocumentReader documentReader = new ITextDocumentReader(document, getPasswordBytes(pwd), pdfMemoryUsageSetting);
-             PdfReader reader = documentReader.getPdfReader()) {
+			 PdfReader reader = documentReader.getPdfReader()) {
 
 			PdfStamper stp = new PdfStamper(reader, os, '\0', true);
 			PdfWriter writer = stp.getWriter();
@@ -533,7 +527,7 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 	@Override
 	public List<String> getAvailableSignatureFields(final DSSDocument document, final char[] pwd) {
 		try (InputStream is = document.openStream();
-				PdfReader reader = new PdfReader(is, getPasswordBytes(pwd))) {
+			 PdfReader reader = new PdfReader(is, getPasswordBytes(pwd))) {
 			AcroFields acroFields = reader.getAcroFields();
 			return acroFields.getFieldNamesWithBlankSignatures();
 		} catch (BadPasswordException e) {
@@ -550,7 +544,7 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 				DSSResourcesHandler resourcesHandler = instantiateResourcesHandler();
 				OutputStream os = resourcesHandler.createOutputStream();
 				ITextDocumentReader documentReader = new ITextDocumentReader(document, getPasswordBytes(pwd), pdfMemoryUsageSetting)
-			) {
+		) {
 			checkPdfPermissions(documentReader, parameters);
 
 			final PdfReader reader = documentReader.getPdfReader();
@@ -558,12 +552,13 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 				throw new IllegalArgumentException(String.format("The page number '%s' does not exist in the file!",
 						parameters.getPage()));
 			}
+			String fieldId = getFieldId(reader, parameters.getFieldId());
 
 			PdfStamper stp = new PdfStamper(reader, os, '\0', true);
-			
+
 			AnnotationBox annotationBox = getVisibleSignatureFieldBoxPosition(new ITextDocumentReader(reader), parameters);
-			
-			stp.addSignature(parameters.getFieldId(), parameters.getPage(),
+
+			stp.addSignature(fieldId, parameters.getPage(),
 					annotationBox.getMinX(), annotationBox.getMinY(), annotationBox.getMaxX(), annotationBox.getMaxY());
 
 			stp.close();
@@ -574,6 +569,51 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 		} catch (IOException e) {
 			throw new DSSException("Unable to add a signature field", e);
 		}
+	}
+
+	private String getFieldId(final PdfReader reader, String fieldId) {
+		if (Utils.isStringNotEmpty(fieldId)) {
+			AcroFields acroFields = reader.getAcroFields();
+			if (acroFields.getFieldItem(fieldId) != null) {
+				throw new IllegalArgumentException(String.format(
+						"The field '%s' already exists within the PDF document!", fieldId));
+			}
+			return fieldId;
+		}
+		return getNewSigName(reader);
+	}
+
+	/**
+	 * Gets a new signature field name.
+	 * NOTE: adding a new signature field with IText does not generate a signature field Id,
+	 * when not provided explicitly. The code is copied from {@code com.lowagie.text.pdf.PdfSignatureAppearance}
+	 * aiming to replicate the signature creation process.
+	 *
+	 * @param reader {@link PdfReader}
+	 * @return {@link String} a new signature field name
+	 */
+	private String getNewSigName(final PdfReader reader) {
+		AcroFields af = reader.getAcroFields();
+		String name = "Signature";
+		int step = 0;
+		boolean found = false;
+		while (!found) {
+			++step;
+			String n1 = name + step;
+			if (af.getFieldItem(n1) != null) {
+				continue;
+			}
+			n1 += ".";
+			found = true;
+			for (String fn : af.getAllFields().keySet()) {
+				if (fn.startsWith(n1)) {
+					found = false;
+					break;
+				}
+			}
+		}
+		name += step;
+		return name;
 	}
 
 	@Override

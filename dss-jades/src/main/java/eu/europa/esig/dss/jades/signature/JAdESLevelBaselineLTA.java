@@ -69,7 +69,7 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 
 		for (AdvancedSignature signature : signatures) {
 			JAdESSignature jadesSignature = (JAdESSignature) signature;
-			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params.isBase64UrlEncodedEtsiUComponents());
+			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params);
 			assertExtendSignatureToLTAPossible(jadesSignature, params);
 
 			if (jadesSignature.hasLTAProfile()) {
@@ -117,11 +117,11 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA:
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA_LT_SEPARATED:
 				validationData = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
-				incorporateTstValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateTstValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA_AND_ANY_VALIDATION_DATA:
 				validationData = validationDataContainer.getValidationDataForSignatureTimestampsForInclusion(signature);
-				incorporateTstValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateTstValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case CERTIFICATE_REVOCATION_VALUES_AND_ANY_VALIDATION_DATA:
@@ -157,14 +157,14 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 				validationData.addValidationData(validationDataContainer.getValidationDataForCounterSignaturesForInclusion(signature));
 				validationData.addValidationData(validationDataContainer.getValidationDataForCounterSignatureTimestampsForInclusion(signature));
 				validationData.excludeValidationData(validationDataToExclude);
-				incorporateAnyValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateAnyValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case CERTIFICATE_REVOCATION_VALUES_AND_ANY_VALIDATION_DATA:
 			case ANY_VALIDATION_DATA_ONLY:
 				validationData = validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
 				validationData.excludeValidationData(validationDataToExclude);
-				incorporateAnyValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateAnyValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				// skip
 				break;
 
@@ -185,7 +185,7 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 		JsonObject arcTst = DSSJsonUtils.getTstContainer(Collections.singletonList(timestampBinary),
 				signatureParameters.getArchiveTimestampParameters().getCanonicalizationMethod());
 		etsiUHeader.addComponent(JAdESHeaderParameterNames.ARC_TST, arcTst,
-				signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 	}
 	
 	private TimestampBinary getArchiveTimestamp(JAdESSignature jadesSignature, JAdESSignatureParameters params) {
@@ -210,7 +210,7 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 	
 	private void checkArchiveTimestampParameters(JAdESSignatureParameters params) {
 		JAdESTimestampParameters archiveTimestampParameters = params.getArchiveTimestampParameters();
-		if (!params.isBase64UrlEncodedEtsiUComponents()
+		if (!Utils.isTrue(params.isBase64UrlEncodedEtsiUComponents())
 				&& Utils.isStringEmpty(archiveTimestampParameters.getCanonicalizationMethod())) {
 			throw new IllegalInputException(
 					"Unable to extend JAdES-LTA level. Clear 'etsiU' incorporation requires a canonicalization method!");

@@ -26,13 +26,13 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
-import eu.europa.esig.dss.model.policy.ValueRule;
-import eu.europa.esig.dss.validation.process.bbb.AbstractValueCheckItem;
+import eu.europa.esig.dss.model.policy.MultiValuesRule;
+import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
 
 /**
  * Checks if the content identifier is acceptable
  */
-public class ContentIdentifierCheck extends AbstractValueCheckItem<XmlSAV> {
+public class ContentIdentifierCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
 
 	/** The signature to check */
 	private final SignatureWrapper signature;
@@ -43,10 +43,10 @@ public class ContentIdentifierCheck extends AbstractValueCheckItem<XmlSAV> {
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param result {@link XmlSAV}
 	 * @param signature {@link SignatureWrapper}
-	 * @param constraint {@link ValueRule}
+	 * @param constraint {@link MultiValuesRule}
 	 */
 	public ContentIdentifierCheck(I18nProvider i18nProvider, XmlSAV result, SignatureWrapper signature,
-								  ValueRule constraint) {
+								  MultiValuesRule constraint) {
 		super(i18nProvider, result, constraint);
 		this.signature = signature;
 	}

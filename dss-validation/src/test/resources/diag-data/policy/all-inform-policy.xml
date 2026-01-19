@@ -96,6 +96,7 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
 				<NoRevAvail Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
@@ -141,6 +142,8 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
+				<SubjectKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -175,8 +178,13 @@
 			<IssuerSerialMatch Level="INFORM" />
 			<KeyIdentifierMatch Level="INFORM" />
 			<SigningTime Level="INFORM" />
-			<ContentType Level="INFORM" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="INFORM" value="*" />
+			<SigningTimeInCertRange Level="INFORM" />
+			<ContentType Level="INFORM">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="INFORM">
+				<Id>*</Id>
+			</ContentHints>
 			<MessageDigestOrSignedPropertiesPresent Level="INFORM" />
 			<EllipticCurveKeySize Level="INFORM" />
 			<CommitmentTypeIndication Level="INFORM">
@@ -235,6 +243,7 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
 				<NoRevAvail Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
@@ -278,6 +287,8 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
+				<SubjectKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -312,8 +323,13 @@
 			<IssuerSerialMatch Level="INFORM" />
 			<KeyIdentifierMatch Level="INFORM" />
 			<SigningTime Level="INFORM" />
-			<ContentType Level="INFORM" value="1.2.840.113549.1.7.1" />
-			<ContentHints Level="INFORM" value="*" />
+			<SigningTimeInCertRange Level="INFORM" />
+			<ContentType Level="INFORM">
+				<Id>1.2.840.113549.1.7.1</Id>
+			</ContentType>
+			<ContentHints Level="INFORM">
+				<Id>*</Id>
+			</ContentHints>
 			<MessageDigestOrSignedPropertiesPresent Level="INFORM" />
 			<EllipticCurveKeySize Level="INFORM" />
 			<CommitmentTypeIndication Level="INFORM">
@@ -364,6 +380,7 @@
 				</ExtendedKeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -400,6 +417,8 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
+				<SubjectKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -465,6 +484,7 @@
 				<RevocationFreshness Level="INFORM" Unit="DAYS" Value="0" />
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->
@@ -498,6 +518,8 @@
 				</KeyUsage>
 				<PolicyTree Level="INFORM" />
 				<NameConstraints Level="INFORM" />
+				<AuthorityKeyIdentifierPresent Level="INFORM" />
+				<SubjectKeyIdentifierPresent Level="INFORM" />
 				<SupportedCriticalExtensions Level="INFORM">
 					<Id>2.5.29.15</Id> <!-- keyUsage -->
 					<Id>2.5.29.32</Id> <!-- certificatePolicies -->

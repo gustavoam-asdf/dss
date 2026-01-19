@@ -69,6 +69,21 @@ class PDFGenerationTest {
 	void generateSimpleCertificateReport3() throws Exception {
 		createAndValidate("simple-cert-report3.xml");
 	}
+
+	@Test
+	void generateSimpleCertificateReport1Qwac() throws Exception {
+		createAndValidate("simple-cert-report-1-qwac.xml");
+	}
+
+	@Test
+	void generateSimpleCertificateReport2Qwac() throws Exception {
+		createAndValidate("simple-cert-report-2-qwac.xml");
+	}
+
+	@Test
+	void generateSimpleCertificateReportNotQwac() throws Exception {
+		createAndValidate("simple-cert-report-not-qwac.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		SimpleCertificateReportFacade facade = SimpleCertificateReportFacade.newFacade();

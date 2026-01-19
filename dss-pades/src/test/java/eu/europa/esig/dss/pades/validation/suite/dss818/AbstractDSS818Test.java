@@ -68,11 +68,11 @@ public abstract class AbstractDSS818Test extends AbstractPAdESTestValidation {
 			SignedData signedData = SignedData.getInstance(ASN1TaggedObject.getInstance(asn1Seq.getObjectAt(1)).getBaseObject());
 	
 			ASN1Set signerInfosAsn1 = signedData.getSignerInfos();
-			LOG.debug("SIGNER INFO ASN1 : " + signerInfosAsn1.toString());
+			LOG.debug("SIGNER INFO ASN1 : {}", signerInfosAsn1.toString());
 			SignerInfo signedInfo = SignerInfo.getInstance(ASN1Sequence.getInstance(signerInfosAsn1.getObjectAt(0)));
 	
 			ASN1Set authenticatedAttributeSet = signedInfo.getAuthenticatedAttributes();
-			LOG.debug("AUTHENTICATED ATTR : " + authenticatedAttributeSet);
+			LOG.debug("AUTHENTICATED ATTR : {}", authenticatedAttributeSet);
 	
 			boolean correctOrder = true;
 			int previousSize = 0;
@@ -80,7 +80,7 @@ public abstract class AbstractDSS818Test extends AbstractPAdESTestValidation {
 				Attribute attribute = Attribute.getInstance(authenticatedAttributeSet.getObjectAt(i));
 				ASN1ObjectIdentifier attrTypeOid = attribute.getAttrType();
 				int size = attrTypeOid.getEncoded().length + attribute.getEncoded().length;
-				LOG.debug("ATTR " + i + " : size=" + size);
+				LOG.debug("ATTR {} : size = {}", i, size);
 	
 				if (size >= previousSize) {
 					correctOrder = false;

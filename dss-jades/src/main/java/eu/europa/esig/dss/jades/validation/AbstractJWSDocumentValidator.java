@@ -43,7 +43,7 @@ public abstract class AbstractJWSDocumentValidator extends SignedDocumentValidat
     }
 
     @Override
-    protected SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new JAdESDiagnosticDataBuilder();
     }
 

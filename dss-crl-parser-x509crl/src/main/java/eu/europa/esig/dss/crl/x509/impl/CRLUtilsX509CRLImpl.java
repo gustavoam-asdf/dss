@@ -97,6 +97,7 @@ public class CRLUtilsX509CRLImpl extends AbstractCRLUtils implements ICRLUtils {
 			crlValidity.setCriticalExtensionsOid(x509CRL.getCriticalExtensionOIDs());
 			extractIssuingDistributionPointBinary(crlValidity, x509CRL.getExtensionValue(Extension.issuingDistributionPoint.getId()));
 			extractExpiredCertsOnCRL(crlValidity, x509CRL.getExtensionValue(Extension.expiredCertsOnCRL.getId()));
+			extractCrlNumber(crlValidity, x509CRL.getExtensionValue(Extension.cRLNumber.getId()));
 
 			checkSignatureValue(x509CRL, issuerToken, crlValidity);
 			if (crlValidity.isSignatureIntact()) {

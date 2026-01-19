@@ -94,7 +94,7 @@ public class JAdESLevelBaselineLT extends JAdESLevelBaselineT {
 				continue;
 			}
 
-			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params.isBase64UrlEncodedEtsiUComponents());
+			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params);
 
 			JAdESEtsiUHeader etsiUHeader = jadesSignature.getEtsiUHeader();
 
@@ -177,12 +177,12 @@ public class JAdESLevelBaselineLT extends JAdESLevelBaselineT {
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA_LT_SEPARATED:
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA_AND_ANY_VALIDATION_DATA:
 			case CERTIFICATE_REVOCATION_VALUES_AND_ANY_VALIDATION_DATA:
-				incorporateXVals(etsiUHeader, certificateValuesToAdd, signatureParameters.isBase64UrlEncodedEtsiUComponents());
-				incorporateRVals(etsiUHeader, crlsToAdd, ocspsToAdd, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateXVals(etsiUHeader, certificateValuesToAdd, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
+				incorporateRVals(etsiUHeader, crlsToAdd, ocspsToAdd, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case ANY_VALIDATION_DATA_ONLY:
-				incorporateAnyValidationData(etsiUHeader, validationDataForInclusion, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateAnyValidationData(etsiUHeader, validationDataForInclusion, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			default:
@@ -212,26 +212,26 @@ public class JAdESLevelBaselineLT extends JAdESLevelBaselineT {
 				validationData = validationDataContainer.getValidationDataForSignatureTimestampsForInclusion(signature);
 				validationData.addValidationData(validationDataContainer.getValidationDataForCounterSignatureTimestampsForInclusion(signature));
 				validationData.excludeValidationData(validationDataToExclude);
-				incorporateTstValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateTstValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA_AND_ANY_VALIDATION_DATA:
 				validationData = validationDataContainer.getValidationDataForSignatureTimestampsForInclusion(signature);
 				validationData.excludeValidationData(validationDataToExclude);
-				incorporateTstValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateTstValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 
 				// incorporate validation data for counter-signature timestamps within AnyValidationData element
 				ValidationData counterSigTstValidationData = validationDataContainer.getValidationDataForCounterSignatureTimestampsForInclusion(signature);
 				counterSigTstValidationData.excludeValidationData(validationData);
 				counterSigTstValidationData.excludeValidationData(validationDataToExclude);
-				incorporateAnyValidationData(etsiUHeader, counterSigTstValidationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateAnyValidationData(etsiUHeader, counterSigTstValidationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case CERTIFICATE_REVOCATION_VALUES_AND_ANY_VALIDATION_DATA:
 				validationData = validationDataContainer.getValidationDataForSignatureTimestampsForInclusion(signature);
 				validationData.addValidationData(validationDataContainer.getValidationDataForCounterSignatureTimestampsForInclusion(signature));
 				validationData.excludeValidationData(validationDataToExclude);
-				incorporateAnyValidationData(etsiUHeader, validationData, signatureParameters.isBase64UrlEncodedEtsiUComponents());
+				incorporateAnyValidationData(etsiUHeader, validationData, Utils.isTrue(signatureParameters.isBase64UrlEncodedEtsiUComponents()));
 				break;
 
 			case CERTIFICATE_REVOCATION_VALUES_AND_TIMESTAMP_VALIDATION_DATA:

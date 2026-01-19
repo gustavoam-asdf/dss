@@ -592,7 +592,7 @@ public class ValidationProcessForSignaturesWithLongTermValidationData extends Ch
 	private ChainItem<XmlValidationProcessLongTermData> revocationDateAfterBestSignatureTimeValidation(
 			ChainItem<XmlValidationProcessLongTermData> item, Date bestSignatureTime, SubIndication subIndication) {
 
-		LevelRule constraint = policy.getRevocationTimeAgainstBestSignatureDurationRule();
+		LevelRule constraint = policy.getRevocationTimeAgainstBestSignatureTimeConstraint();
 		
 		for (Map.Entry<CertificateWrapper, CertificateRevocationWrapper> certRevMapEntry : certificateRevocationMap.entrySet()) {
 			CertificateWrapper certificate = certRevMapEntry.getKey();
@@ -653,7 +653,7 @@ public class ValidationProcessForSignaturesWithLongTermValidationData extends Ch
 	}
 
 	private ChainItem<XmlValidationProcessLongTermData> signingTimeAttributePresent(Context context) {
-		return new SigningTimeAttributePresentCheck(i18nProvider, result, currentSignature, policy.getSigningDurationRule(context));
+		return new SigningTimeAttributePresentCheck(i18nProvider, result, currentSignature, policy.getSigningTimeConstraint(context));
 	}
 
 	private ChainItem<XmlValidationProcessLongTermData> timestampDelay(Date bestSignatureTime) {

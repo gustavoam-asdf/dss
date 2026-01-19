@@ -475,6 +475,18 @@ public final class JAdESHeaderParameterNames {
 	public static final String ANY_VAL_DATA = "anyValData";
 
 	/**
+	 * RFC 7519 "JSON Web Token (JWT)", 4.1.4.  "exp" (Expiration Time) Claim
+	 * The "exp" (expiration time) claim identifies the expiration time on
+	 * or after which the JWT MUST NOT be accepted for processing.  The
+	 * processing of the "exp" claim requires that the current date/time
+	 * MUST be before the expiration date/time listed in the "exp" claim.
+	 * Implementers MAY provide for some small leeway, usually no more than
+	 * a few minutes, to account for clock skew. Its value MUST be a number
+	 * containing a NumericDate value. Use of this claim is OPTIONAL.
+	 */
+	public static final String EXP = "exp";
+
+	/**
 	 * RFC 7519 "JSON Web Token (JWT)", 4.1.6. "iat" (Issued At) Claim
 	 * The "iat" (issued at) claim identifies the time at which the JWT was
 	 * issued. This claim can be used to determine the age of the JWT. Its

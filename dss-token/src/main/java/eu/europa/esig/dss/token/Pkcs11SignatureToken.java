@@ -320,11 +320,23 @@ public class Pkcs11SignatureToken extends AbstractKeyStoreTokenConnection {
             }));
 			return keyStore;
 		} catch (Exception e) {
-			if ("CKR_PIN_INCORRECT".equals(e.getMessage())) {
+			String causeMessage = getErrorCauseCode(e);
+			if ("CKR_PIN_INCORRECT".equals(causeMessage)) {
 				throw new DSSException("Bad password for PKCS11", e);
+			} else if ("CKR_SLOT_ID_INVALID".equals(causeMessage)) {
+				throw new DSSException("Bad slot id for PKCS11", e);
 			}
-			throw new DSSException("Can't initialize Sun PKCS#11 security provider. Reason: " + e.getMessage(), e);
+			throw new DSSException(String.format("Can't initialize Sun PKCS#11 security provider. " +
+					"Provider returned error: '%s'. More: %s", causeMessage, e.getMessage()), e);
 		}
+	}
+
+	private String getErrorCauseCode(Exception e) {
+		Throwable ex = e;
+		while (ex.getCause() != null) {
+			ex = ex.getCause();
+		}
+		return ex.getMessage();
 	}
 
 	/**

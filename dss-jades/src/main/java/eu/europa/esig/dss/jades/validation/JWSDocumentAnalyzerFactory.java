@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.jades.validation;
 
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.analyzer.DocumentAnalyzerFactory;
 
 /**
@@ -64,7 +65,7 @@ public class JWSDocumentAnalyzerFactory implements DocumentAnalyzerFactory {
 			return new JWSSerializationAnalyzerValidator(document);
 		}
 
-		throw new IllegalArgumentException("Not supported document");
+		throw new IllegalInputException("Not a valid JWS file.");
 	}
 
 }

@@ -28,6 +28,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.RevocationOrigin;
 import eu.europa.esig.dss.enumerations.RevocationType;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -106,6 +107,16 @@ public class RevocationWrapper extends AbstractTokenProxy {
 	 */
 	public Date getNextUpdate() {
 		return revocation.getNextUpdate();
+	}
+
+	/**
+	 * Returns the value of CRLNumber extension, when present.
+	 * NOTE: CRL only
+	 *
+	 * @return {@link BigInteger}
+	 */
+	public BigInteger getCRLNumber() {
+		return revocation.getCRLNumber();
 	}
 
 	/**

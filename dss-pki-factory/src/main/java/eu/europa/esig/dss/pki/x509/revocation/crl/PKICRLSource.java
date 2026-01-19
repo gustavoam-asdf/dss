@@ -287,6 +287,7 @@ public class PKICRLSource implements CRLSource {
         }
 
         addRevocationsToCRL(builder, revocationList);
+        addCRLExtensions(builder);
 
         ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm.getJCEId()).build(crlIssuer.getPrivateKey());
 
@@ -328,6 +329,15 @@ public class PKICRLSource implements CRLSource {
                 builder.addCRLEntry(entry.getSerialNumber(), value.getRevocationDate(), value.getRevocationReason().getValue());
             });
         }
+    }
+
+    /**
+     * Adds CRL extensions to be included within a generated CRL
+     *
+     * @param builder {@link X509v2CRLBuilder}
+     */
+    protected void addCRLExtensions(X509v2CRLBuilder builder) {
+        // extend the class to implement the method
     }
 
 }

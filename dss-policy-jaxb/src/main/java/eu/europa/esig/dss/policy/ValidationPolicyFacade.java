@@ -40,15 +40,6 @@ import java.util.Objects;
  */
 public class ValidationPolicyFacade extends AbstractJaxbFacade<ConstraintsParameters> {
 
-	/** The default validation policy path */
-	private static final String DEFAULT_VALIDATION_POLICY_LOCATION = "/policy/constraint.xml";
-
-	/** The path for default certificate validation policy */
-	private static final String CERTIFICATE_VALIDATION_POLICY_LOCATION = "/policy/certificate-constraint.xml";
-
-	/** The path for a LOTL/TL validation policy */
-	private static final String TRUSTED_LIST_VALIDATION_POLICY_LOCATION = "/policy/tsl-constraint.xml";
-
 	/**
 	 * Default constructor
 	 */
@@ -124,12 +115,6 @@ public class ValidationPolicyFacade extends AbstractJaxbFacade<ConstraintsParame
 	public ValidationPolicy getValidationPolicy(File file) throws JAXBException, XMLStreamException, IOException, SAXException {
 		Objects.requireNonNull(file, "The provided validation policy is null");
 		return new EtsiValidationPolicy(unmarshall(file));
-	}
-
-	private ValidationPolicy loadDefault() throws JAXBException, XMLStreamException, IOException, SAXException {
-		try (InputStream defaultIs = ValidationPolicyFacade.class.getResourceAsStream(DEFAULT_VALIDATION_POLICY_LOCATION)) {
-			return getValidationPolicy(defaultIs);
-		}
 	}
 
 }

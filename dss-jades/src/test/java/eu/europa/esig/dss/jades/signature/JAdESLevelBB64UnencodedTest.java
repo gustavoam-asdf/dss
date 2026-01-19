@@ -21,6 +21,8 @@
 package eu.europa.esig.dss.jades.signature;
 
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -79,6 +81,7 @@ class JAdESLevelBB64UnencodedTest extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
 		verify(converted);
 
 		converted = JWSConverter.fromJWSCompactToJSONSerialization(compactSignature);
@@ -86,7 +89,15 @@ class JAdESLevelBB64UnencodedTest extends AbstractJAdESTestSignature {
 		assertNotNull(converted.getMimeType());
 		assertNotNull(converted.getName());
 
+		signatureParameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION);
 		verify(converted);
+
+		signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+	}
+
+	@Override
+	protected MimeType getExpectedMime() {
+		return MimeTypeEnum.JOSE;
 	}
 	
 	@Test

@@ -41,7 +41,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -96,7 +96,7 @@ public class DefaultCryptographicSuiteTest {
     void getAcceptableDigestAlgorithmsWithExpirationDatesTest(CryptographicSuite cryptographicSuite) {
         Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> acceptableDigestAlgorithms = cryptographicSuite.getAcceptableDigestAlgorithms();
 
-        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expectedMap = new HashMap<>();
+        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expectedMap = new EnumMap<>(DigestAlgorithm.class);
 
         expectedMap.put(DigestAlgorithm.MD5, createEvaluations(new EvaluationDTO("2004-08-01")));
         expectedMap.put(DigestAlgorithm.SHA1, createEvaluations(new EvaluationDTO("2012-08-01")));
@@ -124,7 +124,7 @@ public class DefaultCryptographicSuiteTest {
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendar.clear();
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expectedMap = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expectedMap = new EnumMap<>(SignatureAlgorithm.class);
 
         expectedMap.put(SignatureAlgorithm.RSA_MD5, createEvaluations(
                 new EvaluationDTO("2004-08-01", Collections.singletonList(new ParameterDTO(786, MODULES_LENGTH))),

@@ -35,7 +35,7 @@ import eu.europa.esig.dss.tsl.sync.TrustServiceProviderBuilder;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.tsl.dto.condition.CompositeCondition;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

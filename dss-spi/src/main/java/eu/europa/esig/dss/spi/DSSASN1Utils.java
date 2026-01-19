@@ -22,6 +22,7 @@ package eu.europa.esig.dss.spi;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.X520Attributes;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.TimestampBinary;
@@ -93,6 +94,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -582,6 +584,23 @@ public final class DSSASN1Utils {
 			throw new DSSException(String.format("Cannot extract X500Principal! Reason : %s", e.getMessage()), e);
 		}
 	}
+
+	/**
+	 * This method returns the {@code X500Principal} corresponding to the given string or {@code null} if the conversion
+	 * is not possible.
+	 *
+	 * @param x500PrincipalString
+	 *            a {@code String} representation of the {@code X500Principal}
+	 * @return {@code X500Principal} or null
+	 */
+	public static X500Principal getX500PrincipalOrNull(final String x500PrincipalString) {
+		try {
+			return new X500Principal(x500PrincipalString, X520Attributes.getUppercaseDescriptionForOids());
+		} catch (Exception e) {
+			LOG.warn("Unable to create an instance of X500Principal : {}", e.getMessage());
+			return null;
+		}
+	}
 	
 	/**
 	 * This method transforms token's issuer and serial number information into a
@@ -627,7 +646,7 @@ public final class DSSASN1Utils {
 	 * @return true if the two parameters contain the same key/values
 	 */
 	public static boolean x500PrincipalAreEquals(final X500Principal firstX500Principal, final X500Principal secondX500Principal) {
-		if ((firstX500Principal == null) || (secondX500Principal == null)) {
+		if (firstX500Principal == null || secondX500Principal == null) {
 			return false;
 		}
 		if (firstX500Principal.equals(secondX500Principal)) {
@@ -684,7 +703,10 @@ public final class DSSASN1Utils {
 		}
 
 		try {
-			return IETFUtils.valueToString(attributeValue);
+			/*
+			 * NOTE: trim whitespaces. See RFC 4518 "2.6.1. Insignificant Space Handling" for more detail.
+			 */
+			return IETFUtils.valueToString(attributeValue).trim();
 		} catch (Exception e) {
 			if (LOG.isDebugEnabled()) {
 				LOG.warn("Unable to handle attribute of class '{}' : {}", attributeValue.getClass().getName(), e.getMessage());
@@ -838,7 +860,7 @@ public final class DSSASN1Utils {
 			if (gnames != null) {
 				GeneralName[] names = gnames.getNames();
 				if (names.length == 1) {
-					signerIdentifier.setIssuerName(new X500Principal(names[0].getName().toASN1Primitive().getEncoded(ASN1Encoding.DER)));
+					signerIdentifier.setIssuerName(DSSASN1Utils.toX500Principal(X500Name.getInstance(names[0].getName())));
 				} else {
 					LOG.warn("More than one GeneralName");
 				}
@@ -870,6 +892,44 @@ public final class DSSASN1Utils {
 		}
 		Attributes attributes = new Attributes(encodableVector);
 		return attributes.getAttributes();
+	}
+
+	/**
+	 * Checks if the {@code attributeTable} is empty
+	 *
+	 * @param attributeTable {@link AttributeTable}
+	 * @return TRUE if the attribute table is empty, FALSE otherwise
+	 */
+	public static boolean isEmpty(AttributeTable attributeTable) {
+		return (attributeTable == null) || (attributeTable.size() == 0);
+	}
+
+	/**
+	 * Returns the current {@code originalAttributeTable} if instantiated, an empty {@code AttributeTable} if null
+	 *
+	 * @param originalAttributeTable {@link AttributeTable}
+	 * @return {@link AttributeTable}
+	 */
+	public static AttributeTable emptyIfNull(AttributeTable originalAttributeTable) {
+		if (originalAttributeTable != null) {
+			return originalAttributeTable;
+		}
+		return new AttributeTable(new Hashtable<ASN1ObjectIdentifier, Attribute>());
+	}
+
+	/**
+	 * Checks if the given attribute is an instance of the expected asn1ObjectIdentifier type
+	 *
+	 * @param attribute {@link Attribute} to check
+	 * @param asn1ObjectIdentifier {@link ASN1ObjectIdentifier} type to check against
+	 * @return TRUE if the attribute is of type asn1ObjectIdentifier, FALSE otherwise
+	 */
+	public static boolean isAttributeOfType(Attribute attribute, ASN1ObjectIdentifier asn1ObjectIdentifier) {
+		if (attribute == null) {
+			return false;
+		}
+		ASN1ObjectIdentifier objectIdentifier = attribute.getAttrType();
+		return asn1ObjectIdentifier.equals(objectIdentifier);
 	}
 	
 	/**

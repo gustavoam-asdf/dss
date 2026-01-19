@@ -117,23 +117,21 @@ public class SignatureAlgorithmCryptographicChecker extends AbstractAlgorithmCry
 
 	@Override
 	protected XmlCryptographicAlgorithm getAlgorithm() {
-		{
-			if (cryptographicAlgorithm == null) {
-				cryptographicAlgorithm = new XmlCryptographicAlgorithm();
-				if (signatureAlgorithm != null) {
-					// if SignatureAlgorithm is defined
-					cryptographicAlgorithm.setName(signatureAlgorithm.getName());
-					cryptographicAlgorithm.setUri(getSignatureAlgorithmUri(signatureAlgorithm));
-					cryptographicAlgorithm.setKeyLength(keyLengthUsedToSignThisToken);
+		if (cryptographicAlgorithm == null) {
+			cryptographicAlgorithm = new XmlCryptographicAlgorithm();
+			if (signatureAlgorithm != null) {
+				// if SignatureAlgorithm is defined
+				cryptographicAlgorithm.setName(signatureAlgorithm.getName());
+				cryptographicAlgorithm.setUri(getSignatureAlgorithmUri(signatureAlgorithm));
+				cryptographicAlgorithm.setKeyLength(keyLengthUsedToSignThisToken);
 
-				} else {
-					// if SignatureAlgorithm is not found
-					cryptographicAlgorithm.setName(ALGORITHM_UNIDENTIFIED);
-					cryptographicAlgorithm.setUri(ALGORITHM_UNIDENTIFIED_URN);
-				}
+			} else {
+				// if SignatureAlgorithm is not found
+				cryptographicAlgorithm.setName(ALGORITHM_UNIDENTIFIED);
+				cryptographicAlgorithm.setUri(ALGORITHM_UNIDENTIFIED_URN);
 			}
-			return cryptographicAlgorithm;
 		}
+		return cryptographicAlgorithm;
 	}
 
 	private String getSignatureAlgorithmUri(SignatureAlgorithm signatureAlgorithm) {

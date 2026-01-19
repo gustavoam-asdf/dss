@@ -115,7 +115,7 @@ public class JAdESLevelBaselineT extends JAdESExtensionBuilder implements JAdESL
 
 		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 		if (Utils.isCollectionEmpty(signatures)) {
-			throw new IllegalInputException("There is no signature to extend!");
+			throw new IllegalInputException("No signatures found to be extended!");
 		}
 
 		List<AdvancedSignature> signaturesToExtend = signatures;
@@ -152,7 +152,7 @@ public class JAdESLevelBaselineT extends JAdESExtensionBuilder implements JAdESL
 		for (AdvancedSignature signature : signaturesToExtend) {
 			JAdESSignature jadesSignature = (JAdESSignature) signature;
 
-			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params.isBase64UrlEncodedEtsiUComponents());
+			assertEtsiUComponentsConsistent(jadesSignature.getJws(), params);
 
 			JAdESTimestampParameters signatureTimestampParameters = params.getSignatureTimestampParameters();
 			DigestAlgorithm timestampDigestAlgorithm = signatureTimestampParameters.getDigestAlgorithm();
@@ -165,7 +165,7 @@ public class JAdESLevelBaselineT extends JAdESExtensionBuilder implements JAdESL
 
 			JAdESEtsiUHeader etsiUHeader = jadesSignature.getEtsiUHeader();
 			etsiUHeader.addComponent(JAdESHeaderParameterNames.SIG_TST, tstContainer,
-					params.isBase64UrlEncodedEtsiUComponents());
+					Utils.isTrue(params.isBase64UrlEncodedEtsiUComponents()));
 		}
 	}
 

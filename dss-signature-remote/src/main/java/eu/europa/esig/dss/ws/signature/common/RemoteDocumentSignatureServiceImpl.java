@@ -25,9 +25,12 @@ import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
+import eu.europa.esig.dss.enumerations.SignatureProfile;
 import eu.europa.esig.dss.enumerations.TimestampContainerForm;
+import eu.europa.esig.dss.extension.SignedDocumentExtender;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SerializableCounterSignatureParameters;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.TimestampParameters;
@@ -234,17 +237,41 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 		return RemoteDocumentConverter.toRemoteDocument(signDocument);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
+	@Deprecated
 	public RemoteDocument extendDocument(RemoteDocument remoteDocument, RemoteSignatureParameters remoteParameters) {
+		return extendDocument(remoteDocument, null, remoteParameters);
+	}
+
+	@Override
+	public RemoteDocument extendDocument(RemoteDocument remoteDocument, SignatureProfile signatureProfile, RemoteSignatureParameters remoteParameters) throws DSSException {
 		Objects.requireNonNull(remoteDocument, "remoteDocument must be defined!");
-		Objects.requireNonNull(remoteParameters, "remoteParameters must be defined!");
-		Objects.requireNonNull(remoteParameters.getSignatureLevel(), "signatureLevel must be defined!");
+		if (signatureProfile == null && (remoteParameters == null || remoteParameters.getSignatureLevel() == null)) {
+			throw new NullPointerException("One of the signatureProfile or remoteParameters.signatureLevel must be defined!");
+		}
 		LOG.info("ExtendDocument in process...");
-		SerializableSignatureParameters parameters = createParameters(remoteParameters);
-		DocumentSignatureService service = getServiceForSignature(remoteParameters.getSignatureLevel().getSignatureForm(), remoteParameters.getAsicContainerType());
+
 		DSSDocument dssDocument = RemoteDocumentConverter.toDSSDocument(remoteDocument);
-		DSSDocument extendDocument = service.extendDocument(dssDocument, parameters);
+		SignedDocumentExtender documentExtender = SignedDocumentExtender.fromDocument(dssDocument);
+		documentExtender.setServices(xadesService, cadesService, padesService, jadesService, asicWithXAdESService, asicWithCAdESService);
+
+		SignatureForm signatureForm = documentExtender.getSignatureForm();
+		SerializableSignatureParameters signatureParameters;
+		if (remoteParameters == null) {
+			signatureParameters = null;
+		} else if (documentExtender.isASiC()) {
+			signatureParameters = getASiCSignatureParameters(null, signatureForm);
+		} else {
+			signatureParameters = getExtensionParameters(signatureForm, remoteParameters);
+		}
+
+		fillParameters(signatureParameters, remoteParameters, signatureForm);
+
+		if (signatureProfile == null) {
+			signatureProfile = remoteParameters.getSignatureLevel().getSignatureProfile();
+		}
+
+		DSSDocument extendDocument = documentExtender.extendDocument(signatureProfile, signatureParameters);
 		LOG.info("ExtendDocument is finished");
 		return RemoteDocumentConverter.toRemoteDocument(extendDocument);
 	}

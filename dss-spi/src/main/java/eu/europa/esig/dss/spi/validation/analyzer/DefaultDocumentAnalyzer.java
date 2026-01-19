@@ -58,7 +58,6 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -138,6 +137,11 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      * Provides methods to extract a policy content by its identifier
      */
     private SignaturePolicyProvider signaturePolicyProvider;
+
+    /**
+     * Loads a {@code SignaturePolicyValidator} to perform a signature policy validation
+     */
+    private SignaturePolicyValidatorLoader signaturePolicyValidatorLoader;
 
     /**
      * Cached list of signatures extracted from the document
@@ -299,6 +303,11 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
     @Override
     public void setSignaturePolicyProvider(SignaturePolicyProvider signaturePolicyProvider) {
         this.signaturePolicyProvider = signaturePolicyProvider;
+    }
+
+    @Override
+    public void setSignaturePolicyValidatorLoader(SignaturePolicyValidatorLoader signaturePolicyValidatorLoader) {
+        this.signaturePolicyValidatorLoader = signaturePolicyValidatorLoader;
     }
 
     @Override
@@ -498,7 +507,21 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      * @return {@link SignaturePolicyValidatorLoader}
      */
     public SignaturePolicyValidatorLoader getSignaturePolicyValidatorLoader() {
-        return new DefaultSignaturePolicyValidatorLoader();
+        if (signaturePolicyValidatorLoader == null) {
+            signaturePolicyValidatorLoader = DefaultSignaturePolicyValidatorLoader
+                    .defaultUnlessSpecifiedSignaturePolicyValidatorLoader(getDefaultSignaturePolicyValidator());
+        }
+        return signaturePolicyValidatorLoader;
+    }
+
+    /**
+     * Gets a signature format dependent {@code SignaturePolicyValidator}, based on the specification.
+     * E.g. {@code XMLSignaturePolicyValidator} for XAdES, etc.
+     *
+     * @return {@link SignaturePolicyValidator}
+     */
+    protected SignaturePolicyValidator getDefaultSignaturePolicyValidator() {
+        return null;
     }
 
     /**
@@ -631,7 +654,9 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      * Returns a list of timestamp validators for timestamps embedded into the container
      *
      * @return a list of {@link TimestampAnalyzer}s
+     * @deprecated since DSS 6.5. To be removed.
      */
+    @Deprecated
     protected List<TimestampAnalyzer> getTimestampReaders() {
         // nothing by default
         return Collections.emptyList();

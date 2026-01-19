@@ -116,6 +116,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/ee-root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>hmO5ygDLzKXi5yF3Y6/4GDFK7f0=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <DigestAlgoAndValue>

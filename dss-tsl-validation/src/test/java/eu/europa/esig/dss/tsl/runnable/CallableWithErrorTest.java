@@ -41,7 +41,7 @@ class CallableWithErrorTest extends AbstractTestRunnable {
 
         Future<PivotProcessingResult> future = executorService.submit(process);
 
-        assertThrows(ExecutionException.class, () -> future.get());
+        assertThrows(ExecutionException.class, future::get);
 
         shutdownNowAndAwaitTermination(executorService);
     }

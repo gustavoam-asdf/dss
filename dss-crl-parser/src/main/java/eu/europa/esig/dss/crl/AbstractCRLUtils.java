@@ -22,6 +22,7 @@ package eu.europa.esig.dss.crl;
 
 import eu.europa.esig.dss.model.DSSException;
 import org.bouncycastle.asn1.ASN1GeneralizedTime;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1String;
@@ -34,6 +35,8 @@ import org.bouncycastle.asn1.x509.IssuingDistributionPoint;
 import org.bouncycastle.asn1.x509.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 
 /**
  * The abstract class containing common code for CRL parsing
@@ -137,6 +140,28 @@ public abstract class AbstractCRLUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Extracts the CRL Number extension and sets it in the CRLValidity object.
+	 *
+	 * @param crlValidity the {@link CRLValidity} object to populate
+	 * @param extensionContent the raw extension content from CRLInfo
+	 */
+	protected void extractCrlNumber(CRLValidity crlValidity, byte[] extensionContent) {
+		if (extensionContent != null) {
+			try {
+				ASN1OctetString octetString = (ASN1OctetString) ASN1Primitive.fromByteArray(extensionContent);
+				// The extension content from CRLInfo is the INTEGER
+				ASN1Primitive primitive = ASN1Primitive.fromByteArray(octetString.getOctets());
+				if (primitive instanceof ASN1Integer) {
+					BigInteger crlNumber = ((ASN1Integer) primitive).getPositiveValue();
+					crlValidity.setCRLNumber(crlNumber);
+				}
+			} catch (Exception e) {
+				LOG.warn("Unable to extract CRL Number extension : {}", e.getMessage(), e);
+			}
+		}
 	}
 
 }

@@ -29,6 +29,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.model.x509.revocation.Revocation;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -81,6 +82,11 @@ public abstract class RevocationToken<R extends Revocation> extends Token {
 	 * revoked)
 	 */
 	protected Date revocationDate;
+
+	/**
+	 * Sequential number of revocation token (applicable for CRLs only)
+	 */
+	protected BigInteger crlNumber;
 
 	/**
 	 * expired-certs-on-crl time extension
@@ -216,6 +222,15 @@ public abstract class RevocationToken<R extends Revocation> extends Token {
 	 */
 	public Date getRevocationDate() {
 		return revocationDate;
+	}
+
+	/**
+	 * Gets sequential number of the revocation token, when present (CRL only)
+	 *
+	 * @return {@link BigInteger}
+	 */
+	public BigInteger getCRLNumber() {
+		return crlNumber;
 	}
 
 	/**

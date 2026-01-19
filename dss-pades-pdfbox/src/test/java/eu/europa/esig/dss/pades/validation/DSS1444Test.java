@@ -51,7 +51,7 @@ class DSS1444Test {
 	void testValidation() throws IOException {
 		try (InputStream is = getClass().getResourceAsStream("/EmptyPage-corrupted.pdf")) {
 			PDFDocumentAnalyzer analyzer = new PDFDocumentAnalyzer(new InMemoryDocument(is));
-			Exception exception = assertThrows(DSSException.class, () -> analyzer.getSignatures());
+			Exception exception = assertThrows(DSSException.class, analyzer::getSignatures);
 			assertTrue(exception.getMessage().contains("Page tree root must be a dictionary"));
 		}
 	}
@@ -69,7 +69,7 @@ class DSS1444Test {
 	void test2Validation() throws IOException {
 		try (InputStream is = getClass().getResourceAsStream("/EmptyPage-corrupted2.pdf")) {
 			PDFDocumentAnalyzer analyzer = new PDFDocumentAnalyzer(new InMemoryDocument(is));
-			Exception exception = assertThrows(DSSException.class, () -> analyzer.getSignatures());
+			Exception exception = assertThrows(DSSException.class, analyzer::getSignatures);
 			assertTrue(exception.getMessage().contains("Page tree root must be a dictionary"));
 		}
 	}

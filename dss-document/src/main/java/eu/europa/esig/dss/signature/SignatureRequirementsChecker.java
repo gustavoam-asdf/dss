@@ -713,7 +713,7 @@ public class SignatureRequirementsChecker {
         SignatureStatus status = new SignatureStatus();
         for (AdvancedSignature signature : signaturesToValidate) {
             final SignatureCryptographicVerification signatureCryptographicVerification = signature.getSignatureCryptographicVerification();
-            if (!signatureCryptographicVerification.isSignatureIntact()) {
+            if (!signatureCryptographicVerification.isSignatureValid()) {
                 final String errorMessage = signatureCryptographicVerification.getErrorMessage();
                 status.addRelatedTokenAndErrorMessage(signature, "Cryptographic signature verification has failed"
                         + (errorMessage.isEmpty() ? "." : (" / " + errorMessage)));

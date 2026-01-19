@@ -37,6 +37,8 @@ import javax.xml.crypto.dsig.CanonicalizationMethod;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 class ERDataObjectBuilderTest {
 
     @Test
@@ -67,6 +69,8 @@ class ERDataObjectBuilderTest {
         // Extract hash value to be included within a preservation system / evidence record
         byte[] value = digest.getValue();
         // end::xml-er[]
+
+        assertNotNull(value);
 
         // tag::asn1-er[]
         // import eu.europa.esig.dss.evidencerecord.asn1.digest.ASN1EvidenceRecordDataObjectDigestBuilder;
@@ -158,6 +162,8 @@ class ERDataObjectBuilderTest {
         List<Digest> digests = cadesEvidenceRecordDigestBuilder.buildExternalEvidenceRecordDigest();
         // end::cades-er[]
 
+        assertNotNull(signatureDigest);
+
         // tag::xmlers-renewal-er[]
         // import eu.europa.esig.dss.enumerations.DigestAlgorithm;
         // import eu.europa.esig.dss.evidencerecord.xml.digest.XMLEvidenceRecordRenewalDigestBuilder;
@@ -200,6 +206,8 @@ class ERDataObjectBuilderTest {
         List<Digest> digestGroup = xmlEvidenceRecordRenewalDigestBuilder.buildHashTreeRenewalDigestGroup();
         // end::xmlers-renewal-er[]
 
+        assertNotNull(tstRenewalDigest);
+
         // tag::ers-renewal-er[]
         // import eu.europa.esig.dss.enumerations.DigestAlgorithm;
         // import eu.europa.esig.dss.evidencerecord.asn1.digest.ASN1EvidenceRecordRenewalDigestBuilder;
@@ -236,6 +244,8 @@ class ERDataObjectBuilderTest {
         // ArchiveTimeStampSequence attribute and provided detached content documents
         List<Digest> ersDigestGroup = asn1EvidenceRecordRenewalDigestBuilder.buildHashTreeRenewalDigestGroup();
         // end::ers-renewal-er[]
+
+        assertNotNull(ersTstRenewalDigest);
 
     }
 

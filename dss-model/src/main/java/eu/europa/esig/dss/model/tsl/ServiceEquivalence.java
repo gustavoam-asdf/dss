@@ -26,6 +26,7 @@ import eu.europa.esig.dss.model.timedependent.BaseTimeDependent;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class represents a wrapper for TrustServiceEquivalenceInformation element from MRA scheme
@@ -325,6 +326,45 @@ public class ServiceEquivalence extends BaseTimeDependent {
 			return this;
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		return "ServiceEquivalence [" +
+				"legalInfoIdentifier='" + legalInfoIdentifier + '\'' +
+				", status=" + status +
+				", typeAsiEquivalence=" + typeAsiEquivalence +
+				", statusEquivalence=" + statusEquivalence +
+				", certificateContentEquivalences=" + certificateContentEquivalences +
+				", qualifierEquivalence=" + qualifierEquivalence +
+				"] " + super.toString();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+		if (!super.equals(object)) return false;
+
+		ServiceEquivalence that = (ServiceEquivalence) object;
+		return Objects.equals(legalInfoIdentifier, that.legalInfoIdentifier)
+				&& status == that.status
+				&& Objects.equals(typeAsiEquivalence, that.typeAsiEquivalence)
+				&& Objects.equals(statusEquivalence, that.statusEquivalence)
+				&& Objects.equals(certificateContentEquivalences, that.certificateContentEquivalences)
+				&& Objects.equals(qualifierEquivalence, that.qualifierEquivalence);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + Objects.hashCode(legalInfoIdentifier);
+		result = 31 * result + Objects.hashCode(status);
+		result = 31 * result + Objects.hashCode(typeAsiEquivalence);
+		result = 31 * result + Objects.hashCode(statusEquivalence);
+		result = 31 * result + Objects.hashCode(certificateContentEquivalences);
+		result = 31 * result + Objects.hashCode(qualifierEquivalence);
+		return result;
 	}
 
 }

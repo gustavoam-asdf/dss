@@ -521,6 +521,38 @@ public abstract class AbstractTestCRLUtils extends AbstractCRLParserTestUtils {
 		}
 	}
 
+	@Test
+	public void testCRLNumberExtraction() throws Exception {
+		try (InputStream is = AbstractTestCRLUtils.class.getResourceAsStream("/root_issued_CRL.crl");
+			 InputStream isCer = AbstractTestCRLUtils.class.getResourceAsStream("/root_CRL_issuer.pem")) {
+			CertificateToken certificateToken = loadCert(isCer);
+			CRLBinary crlBinary = CRLUtils.buildCRLBinary(toByteArray(is));
+			CRLValidity validCRL = CRLUtils.buildCRLValidity(crlBinary, certificateToken);
+			assertNotNull(validCRL);
+
+			// Test that CRL Number extraction works (may be null if extension not present)
+			// This is acceptable - the method should not throw an exception
+			BigInteger crlNumber = validCRL.getCRLNumber();
+			assertNotNull(crlNumber);
+			assertEquals(5, crlNumber.intValue());
+		}
+	}
+
+	@Test
+	public void testCRLNumberExtractionNull() throws Exception {
+		try (InputStream is = AbstractTestCRLUtils.class.getResourceAsStream("/belgium2.crl");
+				InputStream isCer = AbstractTestCRLUtils.class.getResourceAsStream("/belgiumrs2.crt")) {
+			CertificateToken certificateToken = loadCert(isCer);
+			CRLBinary crlBinary = CRLUtils.buildCRLBinary(toByteArray(is));
+			CRLValidity validCRL = CRLUtils.buildCRLValidity(crlBinary, certificateToken);
+			assertNotNull(validCRL);
+
+			// Test that getCrlNumber() method works on CRLValidity
+			BigInteger crlNumber = validCRL.getCRLNumber();
+			assertNull(crlNumber);
+		}
+	}
+
 	protected CertificateToken loadCert(InputStream is) throws CertificateException {
 		X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(is);
 		return new CertificateToken(certificate);

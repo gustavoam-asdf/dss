@@ -57,6 +57,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 				</ForbiddenExtensions>
@@ -77,6 +78,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -93,6 +96,7 @@
 			<CertDigestMatch Level="FAIL"/>
 			<IssuerSerialMatch Level="WARN"/>
 			<SigningTime Level="INFORM"/>
+			<SigningTimeInCertRange Level="FAIL" />
 			<MessageDigestOrSignedPropertiesPresent Level="FAIL"/>
 		</SignedAttributes>
 		<UnsignedAttributes/>
@@ -124,6 +128,7 @@
 				</KeyUsage>
 				<PolicyTree Level="WARN" />
 				<NameConstraints Level="WARN" />
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 				</ForbiddenExtensions>
@@ -144,6 +149,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -160,6 +167,7 @@
 			<CertDigestMatch Level="FAIL"/>
 			<IssuerSerialMatch Level="WARN"/>
 			<SigningTime Level="INFORM"/>
+			<SigningTimeInCertRange Level="FAIL" />
 			<MessageDigestOrSignedPropertiesPresent Level="FAIL"/>
 		</SignedAttributes>
 	</CounterSignatureConstraints>
@@ -189,6 +197,7 @@
 				<ExtendedKeyUsage Level="FAIL">
 					<Id>timeStamping</Id>
 				</ExtendedKeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 				</ForbiddenExtensions>
@@ -207,6 +216,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->
@@ -290,6 +301,7 @@
 				<RevocationDataAvailable Level="FAIL"/>
 				<CRLNextUpdatePresent Level="WARN"/>
 				<RevocationFreshness Unit="DAYS" Value="0" Level="IGNORE"/>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
 				<NotRevoked Level="FAIL"/>
 				<NotOnHold Level="FAIL"/>
 				<Cryptographic/>
@@ -304,6 +316,8 @@
 				<KeyUsage Level="FAIL">
 					<Id>keyCertSign</Id>
 				</KeyUsage>
+				<AuthorityKeyIdentifierPresent Level="WARN" />
+				<SubjectKeyIdentifierPresent Level="FAIL" />
 				<ForbiddenExtensions Level="FAIL">
 					<Id>1.3.6.1.5.5.7.48.1.5</Id> <!-- ocsp_noCheck -->
 					<Id>2.5.29.56</Id> <!-- noRevAvail -->

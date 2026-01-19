@@ -43,6 +43,21 @@ class SimpleCertificateReportFacadeTest {
 	void test3() throws Exception {
 		createAndValidate("simple-cert-report3.xml");
 	}
+
+	@Test
+	void test1Qwac() throws Exception {
+		createAndValidate("simple-cert-report-1-qwac.xml");
+	}
+
+	@Test
+	void test2Qwac() throws Exception {
+		createAndValidate("simple-cert-report-2-qwac.xml");
+	}
+
+	@Test
+	void testNotQwac() throws Exception {
+		createAndValidate("simple-cert-report-not-qwac.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		SimpleCertificateReportFacade facade = SimpleCertificateReportFacade.newFacade();
@@ -52,6 +67,8 @@ class SimpleCertificateReportFacadeTest {
 
 		String htmlReport = facade.generateHtmlReport(simpleCertificateReport);
 		assertNotNull(htmlReport);
+
+		assertNotNull(facade.generateHtmlReport(htmlReport));
 	}
 
 }

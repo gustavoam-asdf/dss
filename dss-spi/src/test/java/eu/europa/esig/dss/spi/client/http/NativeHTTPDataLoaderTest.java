@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.spi.client.http;
 
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.http.ResponseEnvelope;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 import org.junit.jupiter.api.Test;
@@ -121,23 +122,28 @@ class NativeHTTPDataLoaderTest {
 		private MockNativeDataLoaderCall nativeDataLoaderCall;
 
 		@Override
-		protected Callable<byte[]> createNativeDataLoaderCall(String url, HttpMethod method, byte[] content, boolean refresh) {
+		protected Callable<ResponseEnvelope> createNativeHTTPDataLoaderCall(String url, HttpMethod method, byte[] content, boolean refresh,
+																			boolean includeResponseDetails, boolean includeResponseBody) {
 			if (nativeDataLoaderCall == null) {
-				nativeDataLoaderCall = new MockNativeDataLoaderCall(
-						url, content, refresh, getMaxInputSize(), getConnectTimeout(), getReadTimeout());
+				nativeDataLoaderCall = new MockNativeDataLoaderCall(url, content);
+				nativeDataLoaderCall.setConnectTimeout(getConnectTimeout());
+				nativeDataLoaderCall.setReadTimeout(getReadTimeout());
+				nativeDataLoaderCall.setMaxInputSize(getMaxInputSize());
+				nativeDataLoaderCall.setUseCaches(!refresh);
+				nativeDataLoaderCall.setIncludeResponseDetails(includeResponseDetails);
+				nativeDataLoaderCall.setIncludeResponseBody(includeResponseBody);
 			}
 			return nativeDataLoaderCall;
 		}
 
 	}
 
-	private static class MockNativeDataLoaderCall extends NativeDataLoaderCall {
+	private static class MockNativeDataLoaderCall extends NativeHTTPDataLoaderCall {
 
 		private URLConnection connection;
 
-		public MockNativeDataLoaderCall(String url, byte[] content, boolean useCaches, int maxInputSize,
-										int connectTimeout, int readTimeout) {
-			super(url, content, useCaches, maxInputSize, connectTimeout, readTimeout);
+		public MockNativeDataLoaderCall(String url, byte[] content) {
+			super(url, content);
 		}
 
 		@Override

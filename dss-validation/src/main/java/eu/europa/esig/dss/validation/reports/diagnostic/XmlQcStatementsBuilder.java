@@ -87,6 +87,12 @@ public class XmlQcStatementsBuilder {
         if (qcStatements.getPsd2QcType() != null) {
             result.setPSD2QcInfo(buildPSD2QcInfo(qcStatements.getPsd2QcType()));
         }
+        if (Utils.isCollectionNotEmpty(qcStatements.getQcQSCDLegislationCountryCodes())) {
+            result.setQcQSCDlegislation(qcStatements.getQcQSCDLegislationCountryCodes());
+        }
+        if (qcStatements.getQcIdentMethod() != null) {
+            result.setQcIdentMethod(getXmlOid(qcStatements.getQcIdentMethod()));
+        }
         if (Utils.isCollectionNotEmpty(qcStatements.getOtherOids())) {
             result.setOtherOIDs(buildXmlOIDs(qcStatements.getOtherOids()));
         }
@@ -289,6 +295,13 @@ public class XmlQcStatementsBuilder {
             copy.getQcTypes().add(xmlQcType);
         }
         copy.getQcCClegislation().addAll(xmlQcStatements.getQcCClegislation());
+        copy.getQcQSCDlegislation().addAll(xmlQcStatements.getQcQSCDlegislation());
+        if (xmlQcStatements.getQcIdentMethod() != null) {
+            XmlOID xmlQcIdentMethod = new XmlOID();
+            xmlQcIdentMethod.setDescription(xmlQcStatements.getQcIdentMethod().getDescription());
+            xmlQcIdentMethod.setValue(xmlQcStatements.getQcIdentMethod().getValue());
+            copy.setQcIdentMethod(xmlQcIdentMethod);
+        }
         for (XmlOID xmlOID : xmlQcStatements.getOtherOIDs()) {
             XmlOID xmlOtherOID = new XmlOID();
             xmlOtherOID.setDescription(xmlOID.getDescription());

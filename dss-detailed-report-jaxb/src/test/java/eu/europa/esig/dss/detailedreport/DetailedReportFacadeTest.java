@@ -53,6 +53,36 @@ class DetailedReportFacadeTest {
 	void sigAndTstTest() throws Exception {
 		createAndValidate("dr-sig-and-tst.xml");
 	}
+
+	@Test
+	void sigAndErTest() throws Exception {
+		createAndValidate("dr-sig-lt-and-er.xml");
+	}
+
+	@Test
+	void erTest() throws Exception {
+		createAndValidate("dr-er.xml");
+	}
+
+	@Test
+	void sunsetTest() throws Exception {
+		createAndValidate("dr-sunset.xml");
+	}
+
+	@Test
+	void dss3434Test() throws Exception {
+		createAndValidate("dr-dss-3434.xml");
+	}
+
+	@Test
+	void qwac1Test() throws Exception {
+		createAndValidate("dr-1qwac.xml");
+	}
+
+	@Test
+	void qwac2Test() throws Exception {
+		createAndValidate("dr-2qwac.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		DetailedReportFacade facade = DetailedReportFacade.newFacade();

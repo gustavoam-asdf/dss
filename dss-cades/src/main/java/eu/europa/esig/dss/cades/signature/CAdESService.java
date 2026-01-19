@@ -26,10 +26,13 @@ import eu.europa.esig.dss.cades.evidencerecord.CAdESEmbeddedEvidenceRecordBuilde
 import eu.europa.esig.dss.cades.evidencerecord.CAdESEvidenceRecordIncorporationParameters;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.cms.CMSUtils;
+import eu.europa.esig.dss.cms.operator.CustomContentSigner;
+import eu.europa.esig.dss.cms.operator.CustomContentSignerBuilder;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.evidencerecord.EvidenceRecordIncorporationService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -41,7 +44,6 @@ import eu.europa.esig.dss.model.TimestampBinary;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.signature.AbstractSignatureService;
 import eu.europa.esig.dss.signature.CounterSignatureService;
-import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -50,8 +52,8 @@ import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.tsp.TSPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,21 +127,14 @@ public class CAdESService extends
 		final SignaturePackaging packaging = parameters.getSignaturePackaging();
 		assertSignaturePackaging(packaging);
 
-		final SignatureAlgorithm signatureAlgorithm = parameters.getSignatureAlgorithm();
-		final CustomContentSigner customContentSigner = new CustomContentSigner(signatureAlgorithm.getJCEId());
-
 		final CMS originalCms = getOriginalCMS(toSignDocument, parameters);
 		final DSSDocument contentToSign = getContentToSign(toSignDocument, parameters, originalCms);
 
-		final SignerInfoGenerator signerInfoGenerator = new CMSSignerInfoGeneratorBuilder()
-				.build(contentToSign, parameters, customContentSigner);
-
-		final CMSBuilder cmsBuilder = getCMSBuilder(parameters).setOriginalCMS(originalCms);
-		CMS cms = cmsBuilder.createCMS(signerInfoGenerator, contentToSign);
-		CMSUtils.writeToDSSDocument(cms, resourcesHandlerBuilder);
-
-		final byte[] bytes = customContentSigner.getOutputStream().toByteArray();
-		return new ToBeSigned(bytes);
+		CustomContentSigner contentSigner = new CustomContentSignerBuilder().build(parameters.getSignatureAlgorithm());
+		CMSForCAdESBuilderHelper cmsBuilderHelper = initCMSBuilderHelper(contentToSign, parameters, contentSigner)
+				.setOriginalCMS(originalCms);
+		cmsBuilderHelper.createCMS();
+		return new ToBeSigned(contentSigner.getOutputStream().toByteArray());
 	}
 
 	@Override
@@ -154,19 +149,18 @@ public class CAdESService extends
 		final SignatureAlgorithm signatureAlgorithm = parameters.getSignatureAlgorithm();
 		signatureValue = ensureSignatureValue(signatureAlgorithm, signatureValue);
 
-		final CustomContentSigner customContentSigner = new CustomContentSigner(signatureAlgorithm.getJCEId(), signatureValue.getValue());
 		final CMS originalCms = getOriginalCMS(toSignDocument, parameters);
 		if (originalCms == null && SignaturePackaging.DETACHED.equals(packaging)) {
 			parameters.getContext().setDetachedContents(Collections.singletonList(toSignDocument));
 		}
 		final DSSDocument contentToSign = getContentToSign(toSignDocument, parameters, originalCms);
 
-		final SignerInfoGenerator signerInfoGenerator = new CMSSignerInfoGeneratorBuilder()
+		CustomContentSigner contentSigner = new CustomContentSignerBuilder().build(parameters.getSignatureAlgorithm(), signatureValue);
+		CMSForCAdESBuilderHelper cmsBuilderHelper = initCMSBuilderHelper(contentToSign, parameters, contentSigner)
 				.setIncludeUnsignedAttributes(true)
-				.build(contentToSign, parameters, customContentSigner);
+				.setOriginalCMS(originalCms);
 
-		final CMSBuilder cmsBuilder = getCMSBuilder(parameters).setOriginalCMS(originalCms);
-		CMS cms = cmsBuilder.createCMS(signerInfoGenerator, contentToSign);
+		CMS cms = cmsBuilderHelper.createCMS();
 
 		final SignatureLevel signatureLevel = parameters.getSignatureLevel();
 		if (!SignatureLevel.CAdES_BASELINE_B.equals(signatureLevel)) {
@@ -323,18 +317,18 @@ public class CAdESService extends
 		}
 	}
 
-	private CMSBuilder getCMSBuilder(CAdESSignatureParameters parameters) {
-		return new CMSBuilder()
-				.setSigningCertificate(parameters.getSigningCertificate())
-				.setCertificateChain(parameters.getCertificateChain())
-				.setGenerateWithoutCertificates(parameters.isGenerateTBSWithoutCertificate())
-				.setTrustAnchorBPPolicy(parameters.bLevel().isTrustAnchorBPPolicy())
-				.setTrustedCertificateSource(certificateVerifier.getTrustedCertSources())
-				.setEncapsulate(isEncapsulateSignerData(parameters));
-	}
-
-	private boolean isEncapsulateSignerData(CAdESSignatureParameters signatureParameters) {
-		return !SignaturePackaging.DETACHED.equals(signatureParameters.getSignaturePackaging());
+	/**
+	 * Instantiates a {@code CMSForCAdESBuilderHelper}
+	 *
+	 * @param contentToSign {@link DSSDocument}
+	 * @param signatureParameters {@link CAdESSignatureParameters}
+	 * @param contentSigner {@link ContentSigner}
+	 * @return {@link CMSForCAdESBuilderHelper}
+	 */
+	protected CMSForCAdESBuilderHelper initCMSBuilderHelper(DSSDocument contentToSign, CAdESSignatureParameters signatureParameters,
+															ContentSigner contentSigner) {
+		return new CMSForCAdESBuilderHelper(contentToSign, signatureParameters, contentSigner)
+				.setTrustedCertificateSource(certificateVerifier.getTrustedCertSources());
 	}
 
 	/**
@@ -401,9 +395,9 @@ public class CAdESService extends
 	 * @return {@link ToBeSigned}
 	 */
 	public ToBeSigned getDataToBeCounterSigned(SignerInformation signerInfoToCounterSign,
-												  CAdESSignatureParameters parameters) {
+											   CAdESSignatureParameters parameters) {
 		final SignatureAlgorithm signatureAlgorithm = parameters.getSignatureAlgorithm();
-		final CustomContentSigner customContentSigner = new CustomContentSigner(signatureAlgorithm.getJCEId());
+		final CustomContentSigner customContentSigner = new CustomContentSignerBuilder().build(signatureAlgorithm);
 
 		final CAdESCounterSignatureBuilder counterSignatureBuilder = getCAdESCounterSignatureBuilder();
 		counterSignatureBuilder.generateCounterSignature(signerInfoToCounterSign, parameters, customContentSigner);

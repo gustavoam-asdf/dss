@@ -101,6 +101,8 @@ class XAdESWithASN1SignaturePolicyTest extends AbstractXAdESTestSignature {
         assertTrue(signature.isPolicyDigestAlgorithmsEqual());
         assertFalse(signature.isPolicyAsn1Processable()); // processed as binaries
         assertTrue(signature.isPolicyDigestValid());
+        assertEquals(DigestAlgorithm.SHA256, signature.getPolicyDigestAlgoAndValue().getDigestMethod());
+        assertEquals("c5qCSaJLaB5LIoDhYFXSVLJraEp6x7wOWsojTMBQa70=", Utils.toBase64(signature.getPolicyDigestAlgoAndValue().getDigestValue()));
         assertTrue(Utils.isStringEmpty(signature.getPolicyProcessingError()));
 
         List<String> policyTransforms = signature.getPolicyTransforms();

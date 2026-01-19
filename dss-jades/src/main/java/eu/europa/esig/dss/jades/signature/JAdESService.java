@@ -412,6 +412,10 @@ public class JAdESService extends AbstractSignatureService<JAdESSignatureParamet
 			throw new IllegalArgumentException("The JWSSerializationType.JSON_SERIALIZATION parameter " +
 					"is not supported for a JAdES Counter Signature!");
 		}
+		if (parameters.getContentType() != null) {
+			throw new IllegalArgumentException("Content Type protected header shall not be present " +
+					"for a JAdES Counter Signature!");
+		}
 	}
 
 	@Override

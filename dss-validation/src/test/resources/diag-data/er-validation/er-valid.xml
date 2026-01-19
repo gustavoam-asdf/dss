@@ -158,6 +158,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ek0zqwFuoxiLJwjVOXDg6RFTKT4=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>
@@ -221,6 +224,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://dss.nowina.lu/pki-factory/crl/root-ca.crl</crlUrl>
                 </CRLDistributionPoints>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ek0zqwFuoxiLJwjVOXDg6RFTKT4=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations>

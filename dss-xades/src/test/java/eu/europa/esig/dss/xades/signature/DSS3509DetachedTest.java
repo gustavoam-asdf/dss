@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class DSS3509DetachedTest extends AbstractXAdESTestSignature {
+class DSS3509DetachedTest extends AbstractXAdESTestSignature {
 
     private DocumentSignatureService<XAdESSignatureParameters, XAdESTimestampParameters> service;
     private XAdESSignatureParameters signatureParameters;

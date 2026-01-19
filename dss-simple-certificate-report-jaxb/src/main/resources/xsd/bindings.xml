@@ -45,6 +45,24 @@
 				printMethod="eu.europa.esig.dss.jaxb.parsers.KeyUsageBitParser.print" />
 		</jaxb:bindings>
 
+		<jaxb:bindings node="//xs:simpleType[@name='QWACProfile']">
+			<jaxb:javaType name="eu.europa.esig.dss.enumerations.QWACProfile"
+						   parseMethod="eu.europa.esig.dss.jaxb.parsers.QWACProfileParser.parse"
+						   printMethod="eu.europa.esig.dss.jaxb.parsers.QWACProfileParser.print" />
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='SignatureFormat']">
+			<jaxb:javaType name="eu.europa.esig.dss.enumerations.SignatureLevel"
+						   parseMethod="eu.europa.esig.dss.jaxb.parsers.SignatureFormatParser.parse"
+						   printMethod="eu.europa.esig.dss.jaxb.parsers.SignatureFormatParser.print" />
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='ScopeType']">
+			<jaxb:javaType name="eu.europa.esig.dss.enumerations.SignatureScopeType"
+						   parseMethod="eu.europa.esig.dss.jaxb.parsers.SignatureScopeTypeParser.parse"
+						   printMethod="eu.europa.esig.dss.jaxb.parsers.SignatureScopeTypeParser.print" />
+		</jaxb:bindings>
+
 	</jaxb:bindings>
 
 </jaxb:bindings>

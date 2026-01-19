@@ -117,6 +117,9 @@ public class JAdESLevelBaselineB {
 		incorporateSigningCertificate();
 		incorporateCertificateChain();
 		incorporateType();
+
+		// RFC 7519 headers
+		incorporateExpirationTime();
 		
 		// RFC 7797
 		incorporateB64();
@@ -154,18 +157,23 @@ public class JAdESLevelBaselineB {
 	 * Incorporates 5.1.3 The cty (content type) header parameter
 	 */
 	protected void incorporateContentType() {
-		if (SignaturePackaging.DETACHED.equals(parameters.getSignaturePackaging())) {
-			// not applicable for detached signatures (see TS 119-182 ch.5.1.3)
+		if (SignaturePackaging.DETACHED.equals(parameters.getSignaturePackaging()) && parameters.getContentType() == null) {
+			// SHOULD NOT be used for detached signatures (see EN 119-182 ch.5.1.3)
 			return;
 		}
-		MimeType mimeType = documentsToSign.get(0).getMimeType();
-		if (mimeType != null) {
-			String mimeTypeString = getRFC7515ConformantMimeTypeString(mimeType);
-			addHeader(HeaderParameterNames.CONTENT_TYPE, mimeTypeString);
+		String mimeTypeString = parameters.getContentType();
+		if (mimeTypeString == null) {
+			MimeType mimeType = documentsToSign.get(0).getMimeType();
+			if (mimeType != null) {
+				mimeTypeString = mimeType.getMimeTypeString();
+			}
+		}
+		if (mimeTypeString != null) {
+			addHeader(HeaderParameterNames.CONTENT_TYPE, getRFC7515ConformantMimeTypeString(mimeTypeString));
 		}
 	}
 	
-	private String getRFC7515ConformantMimeTypeString(MimeType mimeType) {
+	private String getRFC7515ConformantMimeTypeString(String mimeTypeString) {
 		/*
 		 * RFC 7515 :
 		 * To keep messages compact in common situations, it is RECOMMENDED that
@@ -173,7 +181,6 @@ public class JAdESLevelBaselineB {
 		 * "cty" Header Parameter when no other '/' appears in the media type
 		 * value.
 		 */
-		String mimeTypeString = mimeType.getMimeTypeString();
 		String shortMimeTypeString = DSSUtils.stripFirstLeadingOccurrence(mimeTypeString, DSSJsonUtils.MIME_TYPE_APPLICATION_PREFIX);
 		if (!shortMimeTypeString.contains("/")) {
 			return shortMimeTypeString;
@@ -302,7 +309,7 @@ public class JAdESLevelBaselineB {
 							parameters.getJwsSerializationType()));
 			}
 			
-			String type = getRFC7515ConformantMimeTypeString(signatureMimeType);
+			String type = getRFC7515ConformantMimeTypeString(signatureMimeType.getMimeTypeString());
 			addHeader(HeaderParameterNames.TYPE, type);
 		}
 	}
@@ -875,7 +882,7 @@ public class JAdESLevelBaselineB {
 			if (mimeType == null) {
 				mimeType = MimeTypeEnum.BINARY;
 			}
-			String rfc7515MimeType = getRFC7515ConformantMimeTypeString(mimeType);
+			String rfc7515MimeType = getRFC7515ConformantMimeTypeString(mimeType.getMimeTypeString());
 			mimeTypes.add(rfc7515MimeType);
 		}
 		return new JSONArray(mimeTypes);
@@ -908,6 +915,16 @@ public class JAdESLevelBaselineB {
 		}
 		
 		return httpHeaderNames;
+	}
+
+	/**
+	 * Incorporates RFC 7519 : 4.1.4. "exp" (Expiration Time) Claim
+	 */
+	private void incorporateExpirationTime() {
+		if (parameters.getExpirationTime() != null) {
+			long expirationTimeInSeconds = DSSUtils.getTimeValueInSeconds(parameters.getExpirationTime().getTime());
+			addHeader(JAdESHeaderParameterNames.EXP, expirationTimeInSeconds);
+		}
 	}
 	
 	/**

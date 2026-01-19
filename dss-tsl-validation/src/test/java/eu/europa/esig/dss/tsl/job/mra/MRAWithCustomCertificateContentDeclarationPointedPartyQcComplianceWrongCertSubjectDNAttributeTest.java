@@ -24,7 +24,7 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
 import eu.europa.esig.dss.model.tsl.Condition;
 import eu.europa.esig.dss.tsl.dto.condition.CertSubjectDNAttributeCondition;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 
 import java.util.Arrays;

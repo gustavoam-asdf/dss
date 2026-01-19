@@ -66,7 +66,7 @@ public class RestMultipleDocumentSignatureServiceImpl implements RestMultipleDoc
 
 	@Override
 	public RemoteDocument extendDocument(ExtendDocumentDTO extendDocumentDto) {
-		return service.extendDocument(extendDocumentDto.getToExtendDocument(), extendDocumentDto.getParameters());
+		return service.extendDocument(extendDocumentDto.getToExtendDocument(), extendDocumentDto.getSignatureProfile(), extendDocumentDto.getParameters());
 	}
 
 	@Override

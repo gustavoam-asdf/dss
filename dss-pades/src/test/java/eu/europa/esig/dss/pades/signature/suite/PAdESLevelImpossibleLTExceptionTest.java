@@ -20,12 +20,6 @@
  */
 package eu.europa.esig.dss.pades.signature.suite;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -34,6 +28,11 @@ import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.PAdESTimestampParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PAdESLevelImpossibleLTExceptionTest extends AbstractPAdESTestSignature {
 
@@ -57,9 +56,8 @@ class PAdESLevelImpossibleLTExceptionTest extends AbstractPAdESTestSignature {
 	@Override
 	@Test
 	public void signAndVerify() {
-		Exception exception = assertThrows(AlertException.class, () -> {
-			super.signAndVerify(); // unable to extend to LT (no online CRL/OCSP)
-		});
+        // unable to extend to LT (no online CRL/OCSP)
+        Exception exception = assertThrows(AlertException.class, super::signAndVerify);
 		assertTrue(exception.getMessage().contains("Revocation data is missing for one or more certificate(s)."));
 	}
 

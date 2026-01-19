@@ -130,6 +130,12 @@
                     <crlUrl>http://www2.postsignum.cz/crl/psrootqca2.crl</crlUrl>
                     <crlUrl>http://postsignum.ttc.cz/crl/psrootqca2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>puyGkWA7Wo6eQ+WWgvcvd5/DPcc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>/hkoxyP4+fHsbEDBUazklGFKsLo=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-57FCA8BD35213403F3B984949365A5B03DB909F620AFE49D66A1470F964C551F" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
@@ -247,6 +253,12 @@
                     <crlUrl>http://www2.postsignum.cz/crl/psqualifiedca2.crl</crlUrl>
                     <crlUrl>http://postsignum.ttc.cz/crl/psqualifiedca2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>puyGkWA7Wo6eQ+WWgvcvd5/DPcc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>puyGkWA7Wo6eQ+WWgvcvd5/DPcc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-57FCA8BD35213403F3B984949365A5B03DB909F620AFE49D66A1470F964C551F" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
@@ -329,6 +341,9 @@
                     <crlUrl>http://www2.postsignum.cz/crl/psrootqca2.crl</crlUrl>
                     <crlUrl>http://postsignum.ttc.cz/crl/psrootqca2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>/hkoxyP4+fHsbEDBUazklGFKsLo=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>

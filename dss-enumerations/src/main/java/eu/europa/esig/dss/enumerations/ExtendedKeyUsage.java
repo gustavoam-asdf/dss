@@ -57,7 +57,17 @@ public enum ExtendedKeyUsage implements OidDescription {
 	 * id-tsl-kp OBJECT IDENTIFIER ::= { id-tsl kp(3) }
 	 * id-tsl-kp-tslSigning OBJECT IDENTIFIER ::= { id-tsl-kp tsl-signing(0) }
 	 */
-	TSL_SIGNING("tslSigning", "0.4.0.2231.3.0");
+	TSL_SIGNING("tslSigning", "0.4.0.2231.3.0"),
+
+	/**
+	 * ETSI TS 119 411-5 (Annex A (normative): id-kp-tlsBinding EKU specification)
+	 * The following ASN.1 module shall be interpreted using the syntax defined in Recommendation ITU-T X.680 [11]. It
+	 * defines the KeyPurposeID id-kp-tls-binding.
+	 * <p>
+	 * TLSBindingMod { itu-t(0) identified-organization(4) etsi(0)
+	 *  id-qwacImplementation(194115) id-mod(0) id-mod-tlsbinding(1) v1(0) }
+	 */
+	TSL_BINDING_MOD("tslBindingMod", "0.4.0.194115.0.1.0");
 
 	/** ExtendedKeyUsage description */
 	private final String description;

@@ -45,6 +45,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://rdc.f.hr/Root/fRootCA.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>vsdmZA3U9sCquYPc7FKSNJKNf9w=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-59DBC56C0EBAC2D3BCFA7859C2457C19FF2F033D33FFC4B989F24432A16E2F72" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -141,6 +144,12 @@
                     <crlUrl>http://rdc.f.hr/RDC2015/fRDCCA2015.crl</crlUrl>
                     <crlUrl>ldap://rdc-ldap2.f.hr/cn=f%20RDC%202015,o=f%20a,c=HR?certificateRevocationList%3Bbinary</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>8UTjomJKdTNE8p5ENAnM7uLmjcc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>vsdmZA3U9sCquYPc7FKSNJKNf9w=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-59DBC56C0EBAC2D3BCFA7859C2457C19FF2F033D33FFC4B989F24432A16E2F72" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -227,12 +236,18 @@
                     <certificatePolicy cpsUrl="http://rdc.f.hr/RDC2015/fRDC2015-CPSQC1-0-en.pdf">1.3.124.1104.5.12.12.2.2</certificatePolicy>
                     <certificatePolicy Description="qcp-natural">0.4.0.194112.1.0</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>cKqX+IW0WoYxsOmAG6raGzZ8DSo=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcTypes>
                         <QcType Description="qc-type-esign">0.4.0.1862.1.6.1</QcType>
                     </QcTypes>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>vsdmZA3U9sCquYPc7FKSNJKNf9w=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-59DBC56C0EBAC2D3BCFA7859C2457C19FF2F033D33FFC4B989F24432A16E2F72" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">

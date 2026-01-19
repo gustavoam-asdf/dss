@@ -167,8 +167,9 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 
 			final SignatureFieldParameters fieldParameters = parameters.getImageParameters().getFieldParameters();
 			checkPdfPermissions(documentReader, fieldParameters);
+			assertContentSizeSufficient(cmsSignedData, parameters);
 
-			signDocumentAndReturnDigest(parameters, cmsSignedData, os, documentReader);
+			signDocument(parameters, cmsSignedData, os, documentReader);
 
 			DSSDocument signedDocument = resourcesHandler.writeToDSSDocument();
 			signedDocument.setMimeType(MimeTypeEnum.PDF);
@@ -179,8 +180,18 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 		}
 	}
 
+	private DSSMessageDigest signDocument(final PAdESCommonParameters parameters, final byte[] cmsSignedData,
+										  final OutputStream outputStream, final PdfBoxDocumentReader documentReader) {
+		return signDocumentAndReturnDigest(parameters, cmsSignedData, outputStream, documentReader, false);
+	}
+
 	private DSSMessageDigest signDocumentAndReturnDigest(final PAdESCommonParameters parameters, final byte[] cmsSignedData,
 			final OutputStream outputStream, final PdfBoxDocumentReader documentReader) {
+		return signDocumentAndReturnDigest(parameters, cmsSignedData, outputStream, documentReader, true);
+	}
+
+	private DSSMessageDigest signDocumentAndReturnDigest(final PAdESCommonParameters parameters, final byte[] cmsSignedData,
+			final OutputStream outputStream, final PdfBoxDocumentReader documentReader, boolean computeDigest) {
 		PDDocument pdDocument = documentReader.getPDDocument();
 
 		final DigestAlgorithm digestAlgorithm = parameters.getDigestAlgorithm();
@@ -189,11 +200,14 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 
 			@Override
 			public byte[] sign(InputStream content) throws IOException {
-
-				byte[] b = new byte[8192];
-				int count;
-				while ((count = content.read(b)) > 0) {
-					digest.update(b, 0, count);
+				if (computeDigest) {
+					byte[] b = new byte[8192];
+					int count;
+					while ((count = content.read(b)) > 0) {
+						digest.update(b, 0, count);
+					}
+				} else {
+					Utils.closeQuietly(content);
 				}
 				return cmsSignedData;
 			}
@@ -240,7 +254,11 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 
 			checkEncryptedAndSaveIncrementally(pdDocument, outputStream, parameters);
 
-			return new DSSMessageDigest(digestAlgorithm, digest.digest());
+			if (computeDigest) {
+				return new DSSMessageDigest(digestAlgorithm, digest.digest());
+			} else {
+				return DSSMessageDigest.createEmptyDigest();
+			}
 
 		} catch (IOException e) {
 			throw new DSSException(String.format("Unable to compute digest for a PDF : %s", e.getMessage()), e);
@@ -250,25 +268,32 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 	private PDSignatureField findExistingSignatureField(final PDDocument pdDocument, final SignatureFieldParameters fieldParameters) {
 		String targetFieldId = fieldParameters.getFieldId();
 		if (Utils.isStringNotEmpty(targetFieldId)) {
-			PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
-			if (acroForm != null) {
-				PDField field = acroForm.getField(targetFieldId);
-				if (field != null) {
-					if (field instanceof PDSignatureField) {
-						PDSignatureField signatureField = (PDSignatureField) field;
-						PDSignature signature = signatureField.getSignature();
-						if (signature != null) {
-							throw new IllegalArgumentException(String.format(
-									"The signature field '%s' can not be signed since its already signed.", targetFieldId));
-						}
-						return signatureField;
-					} else {
-						throw new IllegalArgumentException(String.format("The field '%s' is not a signature field!",
-								targetFieldId));
+			PDField field = getFieldWithId(pdDocument, targetFieldId);
+			if (field != null) {
+				if (field instanceof PDSignatureField) {
+					PDSignatureField signatureField = (PDSignatureField) field;
+					PDSignature signature = signatureField.getSignature();
+					if (signature != null) {
+						throw new IllegalArgumentException(String.format(
+								"The signature field '%s' can not be signed since its already signed.", targetFieldId));
 					}
+					return signatureField;
+				} else {
+					throw new IllegalArgumentException(String.format("The field '%s' is not a signature field!",
+							targetFieldId));
 				}
 			}
 			throw new IllegalArgumentException(String.format("The signature field '%s' does not exist.", targetFieldId));
+		}
+		return null;
+	}
+
+	private PDField getFieldWithId(final PDDocument pdDocument, final String fieldId) {
+		if (Utils.isStringNotEmpty(fieldId)) {
+			PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
+			if (acroForm != null) {
+				return acroForm.getField(fieldId);
+			}
 		}
 		return null;
 	}
@@ -692,8 +717,14 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 			}
 
 			PDSignatureField signatureField = new PDSignatureField(acroForm);
-			if (Utils.isStringNotBlank(parameters.getFieldId())) {
-				signatureField.setPartialName(parameters.getFieldId());
+			String targetFieldId = parameters.getFieldId();
+			if (Utils.isStringNotBlank(targetFieldId)) {
+				if (getFieldWithId(pdfDoc, targetFieldId) == null) {
+					signatureField.setPartialName(targetFieldId);
+				} else {
+					throw new IllegalArgumentException(String.format(
+							"The field '%s' already exists within the PDF document!", targetFieldId));
+				}
 			}
 
 			AnnotationBox annotationBox = getVisibleSignatureFieldBoxPosition(documentReader, parameters);
@@ -745,7 +776,7 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 			checkPdfPermissions(documentReader, fieldParameters);
 
 			final byte[] signatureValue = DSSUtils.EMPTY_BYTE_ARRAY;
-			signDocumentAndReturnDigest(parameters, signatureValue, os, documentReader);
+			signDocument(parameters, signatureValue, os, documentReader);
 
 			DSSDocument doc = resourcesHandler.writeToDSSDocument();
 
@@ -771,7 +802,7 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 					parameters.getImageParameters().getFieldParameters().getPage());
 
 			final byte[] signatureValue = DSSUtils.EMPTY_BYTE_ARRAY;
-			signDocumentAndReturnDigest(parameters, signatureValue, os, documentReader);
+			signDocument(parameters, signatureValue, os, documentReader);
 
 			DSSDocument doc = resourcesHandler.writeToDSSDocument();
 			return getNewSignatureFieldScreenshot(doc, parameters, originalAnnotations);

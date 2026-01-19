@@ -796,11 +796,11 @@ class CryptographicSuiteXmlCatalogueTest {
 
         assertEquals(result.size(), 1);
         CryptographicSuiteAlgorithm rsa = result.get(0);
-        assertEquals(rsa.getAlgorithmIdentifierName(), "SHA256withRSA");
-        assertEquals(rsa.getAlgorithmIdentifierOIDs(), Collections.singletonList("1.2.840.113549.1.1.11"));
-        assertEquals(rsa.getAlgorithmIdentifierURIs(), Collections.singletonList("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"));
-        assertEquals(rsa.getInformationTextList(), Collections.singletonList("Widely used secure algorithm"));
-        assertEquals(rsa.getEvaluationList().size(), 1);
+        assertEquals("SHA256withRSA", rsa.getAlgorithmIdentifierName());
+        assertEquals(Collections.singletonList("1.2.840.113549.1.1.11"), rsa.getAlgorithmIdentifierOIDs());
+        assertEquals(Collections.singletonList("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"), rsa.getAlgorithmIdentifierURIs());
+        assertEquals(Collections.singletonList("Widely used secure algorithm"), rsa.getInformationTextList());
+        assertEquals(1, rsa.getEvaluationList().size());
 
         CryptographicSuiteEvaluation evaluation = rsa.getEvaluationList().get(0);
         assertEquals(evaluation.getParameterList().size(), 1);
@@ -812,8 +812,8 @@ class CryptographicSuiteXmlCatalogueTest {
 
         assertEquals(toDate("2020-01-01"), evaluation.getValidityStart());
         assertEquals(toDate("2030-01-01"), evaluation.getValidityEnd());
-        assertEquals(evaluation.getAlgorithmUsage(), Collections.singletonList(CryptographicSuiteAlgorithmUsage.SIGN_DATA));
-        assertEquals(evaluation.getRecommendation(), CryptographicSuiteRecommendation.RECOMMENDED);
+        assertEquals(Collections.singletonList(CryptographicSuiteAlgorithmUsage.SIGN_DATA), evaluation.getAlgorithmUsage());
+        assertEquals(CryptographicSuiteRecommendation.RECOMMENDED, evaluation.getRecommendation());
     }
 
     @Test
@@ -834,8 +834,8 @@ class CryptographicSuiteXmlCatalogueTest {
 
         assertEquals(result.size(), 1);
         CryptographicSuiteAlgorithm sha256 = result.get(0);
-        assertEquals(sha256.getAlgorithmIdentifierName(), "SHA256");
-        assertEquals(sha256.getAlgorithmIdentifierOIDs(), Collections.singletonList("2.16.840.1.101.3.4.2.1"));
+        assertEquals("SHA256", sha256.getAlgorithmIdentifierName());
+        assertEquals(Collections.singletonList("2.16.840.1.101.3.4.2.1"), sha256.getAlgorithmIdentifierOIDs());
         assertTrue(sha256.getAlgorithmIdentifierURIs().isEmpty());
         assertTrue(sha256.getInformationTextList().isEmpty());
         assertTrue(sha256.getEvaluationList().isEmpty());
@@ -963,10 +963,10 @@ class CryptographicSuiteXmlCatalogueTest {
         assertEquals(1, result.size());
         List<CryptographicSuiteParameter> params = result.get(0).getEvaluationList().get(0).getParameterList();
         assertEquals(2, params.size());
-        assertEquals(params.get(0).getMin(), 1024);
+        assertEquals(1024, params.get(0).getMin());
         assertNull(params.get(0).getMax());
         assertNull(params.get(1).getMin());
-        assertEquals(params.get(1).getMax(), 8192);
+        assertEquals(8192, params.get(1).getMax());
     }
 
     private AlgorithmType createDigestAlgorithmXmlDefinition(DigestAlgorithm digestAlgorithm, List<EvaluationDTO> evaluationList) {

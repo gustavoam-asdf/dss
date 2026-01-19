@@ -25,7 +25,6 @@ import eu.europa.esig.dss.spi.DSSSecurityProvider;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.io.File;
-import java.security.Security;
 import java.util.Collection;
 
 public abstract class AbstractTestJaxbPKI {

@@ -23,6 +23,7 @@ package eu.europa.esig.dss.spi.validation;
 import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
 import eu.europa.esig.dss.alert.SilentOnStatusAlert;
 import eu.europa.esig.dss.enumerations.TimestampType;
+import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -184,7 +185,29 @@ class SignatureValidationContextTest {
 																					// determine the trust anchor
 	}
 
-	public CertificateToken getRootCertificate(CertificateToken token, Set<CertificateToken> allCerts) {
+	@Test
+	void testAIAVerticalCertificateChain() {
+		CertificateVerifier certificateVerifier = new CommonCertificateVerifier();
+		CertificateSource certSource = new CommonTrustedCertificateSource();
+		certificateVerifier.setTrustedCertSources(certSource);
+
+		Map<String, byte[]> dataMap = new HashMap<>();
+		dataMap.put("http://dss.nowina.lu/pki-factory/crt/Test-Qualified-CA1-from-ZZ.crt", DSSUtils.toByteArray(new FileDocument("src/test/resources/zz-certChain.p7c")));
+		certificateVerifier.setAIASource(new DefaultAIASource(new MemoryDataLoader(dataMap)));
+
+		ValidationContext vc = new SignatureValidationContext();
+		vc.initialize(certificateVerifier);
+		CertificateToken certificateToken = DSSUtils.loadCertificate(new File("src/test/resources/zz-cert.cer"));
+		vc.addCertificateTokenForVerification(certificateToken);
+
+		vc.validate();
+
+		Set<CertificateToken> processedCertificates = vc.getProcessedCertificates();
+		assertEquals(4, processedCertificates.size()); // all chain is provided
+		assertNotNull(getRootCertificate(certificateToken, processedCertificates));
+	}
+
+	private CertificateToken getRootCertificate(CertificateToken token, Set<CertificateToken> allCerts) {
 		Set<CertificateToken> processed = new HashSet<>();
 		while (token.getPublicKeyOfTheSigner() != null) {
 			if (processed.contains(token)) {

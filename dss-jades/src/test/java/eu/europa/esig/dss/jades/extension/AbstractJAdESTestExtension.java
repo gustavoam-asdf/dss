@@ -35,10 +35,9 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
+import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import eu.europa.esig.dss.test.extension.AbstractTestExtension;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
 import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
@@ -58,19 +57,20 @@ public abstract class AbstractJAdESTestExtension
 		extends AbstractTestExtension<JAdESSignatureParameters, JAdESTimestampParameters> {
 
 	@Override
-	protected TSPSource getUsedTSPSourceAtSignatureTime() {
-		return getGoodTsa();
-	}
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtExtensionTime() {
-		return getAlternateGoodTsa();
-	}
-
-	@Override
 	protected void checkSignatureIdentifier(DiagnosticData diagnosticData) {
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			assertNotNull(signatureWrapper.getSignatureValue());
+		}
+	}
+
+	@Override
+	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			if (getOriginalSignatureLevel() == signatureWrapper.getSignatureFormat()) {
+				assertEquals(getSignatureParameters().getJwsSerializationType(), signatureWrapper.getJWSSerializationType());
+			} else if (getFinalSignatureLevel() == signatureWrapper.getSignatureFormat()) {
+				assertEquals(getExtensionParameters().getJwsSerializationType(), signatureWrapper.getJWSSerializationType());
+			}
 		}
 	}
 
@@ -162,11 +162,6 @@ public abstract class AbstractJAdESTestExtension
 					foundCertificates.getRelatedCertificateRefsByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size() +
 							foundCertificates.getOrphanCertificateRefsByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER).size());
 		}
-	}
-
-	@Override
-	protected String getSigningAlias() {
-		return GOOD_USER;
 	}
 
 }

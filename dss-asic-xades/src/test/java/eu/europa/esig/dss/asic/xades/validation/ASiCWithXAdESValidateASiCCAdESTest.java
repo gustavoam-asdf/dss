@@ -37,7 +37,7 @@ class ASiCWithXAdESValidateASiCCAdESTest extends AbstractASiCWithXAdESTestValida
     @Test
     @Override
     public void validate() {
-        Exception exception = assertThrows(UnsupportedOperationException.class, () -> super.validate());
+        Exception exception = assertThrows(UnsupportedOperationException.class, super::validate);
         assertEquals("Document format not recognized/handled", exception.getMessage());
     }
 

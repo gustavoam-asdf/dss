@@ -46,6 +46,9 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://nt-qwac.nowina.solutions/res/caqctsp/sub-ca_tc.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>dmdulVVqLyovFXmOdaBQUBwNhLo=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="false"/>
@@ -56,6 +59,9 @@
                         <CountryName>TC</CountryName>
                     </QcCClegislation>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>KrAxPktrCiBmM8EXV0Iqz0c6qA0=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-563C0B20B508FB710778518E766712847E3829EBE483962DCE07016B1BFC2EA8">
@@ -122,6 +128,9 @@
                     <keyUsageBit>keyCertSign</keyUsageBit>
                     <keyUsageBit>crlSign</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>hwKX+0K3lkbg7iA6FXU2dx60/Cs=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <Revocations/>
             <DigestAlgoAndValue>
@@ -173,6 +182,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://18.202.217.18/res/caqctsp/root-ca_tc.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>KrAxPktrCiBmM8EXV0Iqz0c6qA0=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>hwKX+0K3lkbg7iA6FXU2dx60/Cs=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-563C0B20B508FB710778518E766712847E3829EBE483962DCE07016B1BFC2EA8">

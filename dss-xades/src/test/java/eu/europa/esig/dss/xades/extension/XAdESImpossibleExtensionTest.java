@@ -79,7 +79,7 @@ class XAdESImpossibleExtensionTest extends PKIFactoryAccess {
 		parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_T);
 
 		Exception exception = assertThrows(IllegalInputException.class, () -> service.extendDocument(doc, parameters));
-		assertEquals("There is no signature to extend!", exception.getMessage());
+		assertEquals("No signatures found to be extended!", exception.getMessage());
 	}
 	
 	@Test

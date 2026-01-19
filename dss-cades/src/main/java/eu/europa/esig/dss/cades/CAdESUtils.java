@@ -20,8 +20,8 @@
  */
 package eu.europa.esig.dss.cades;
 
-import eu.europa.esig.dss.cades.signature.CustomMessageDigestCalculatorProvider;
-import eu.europa.esig.dss.cades.validation.PrecomputedDigestCalculatorProvider;
+import eu.europa.esig.dss.cms.operator.CustomMessageDigestCalculatorProvider;
+import eu.europa.esig.dss.cms.operator.PrecomputedDigestCalculatorProvider;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EvidenceRecordIncorporationType;
@@ -170,7 +170,7 @@ public final class CAdESUtils {
 	 */
 	public static AttributeTable getUnsignedAttributes(final SignerInformation signerInformation) {
 		final AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-		return emptyIfNull(unsignedAttributes);
+		return DSSASN1Utils.emptyIfNull(unsignedAttributes);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public final class CAdESUtils {
 	 */
 	public static AttributeTable getSignedAttributes(final SignerInformation signerInformation) {
 		final AttributeTable signedAttributes = signerInformation.getSignedAttributes();
-		return emptyIfNull(signedAttributes);
+		return DSSASN1Utils.emptyIfNull(signedAttributes);
 	}
 
 	/**
@@ -354,13 +354,15 @@ public final class CAdESUtils {
 	 * @param toSignDocument {@link DSSDocument} to sign
 	 * @param digestAlgorithm {@link DigestAlgorithm} to use
 	 * @return {@link DigestCalculatorProvider}
+	 * @deprecated since DSS 6.4. To be removed
 	 */
+	@Deprecated
 	public static DigestCalculatorProvider getDigestCalculatorProvider(DSSDocument toSignDocument,
 																	   DigestAlgorithm digestAlgorithm) {
 		if (digestAlgorithm != null) {
 			return new CustomMessageDigestCalculatorProvider(digestAlgorithm, toSignDocument.getDigestValue(digestAlgorithm));
 		} else if (toSignDocument instanceof DigestDocument) {
-			return new PrecomputedDigestCalculatorProvider((DigestDocument) toSignDocument);
+			return new PrecomputedDigestCalculatorProvider(toSignDocument);
 		}
 		return new BcDigestCalculatorProvider();
 	}
@@ -375,7 +377,7 @@ public final class CAdESUtils {
 		AttributeTable unsignedAttributes = getUnsignedAttributes(signerInformation);
 		Attribute[] attributes = unsignedAttributes.toASN1Structure().getAttributes();
 		for (final Attribute attribute : attributes) {
-			if (isAttributeOfType(attribute, OID.id_aa_ets_archiveTimestampV2)) {
+			if (DSSASN1Utils.isAttributeOfType(attribute, OID.id_aa_ets_archiveTimestampV2)) {
 				return true;
 			}
 		}
@@ -709,7 +711,9 @@ public final class CAdESUtils {
 	 *
 	 * @param attributeTable {@link AttributeTable}
 	 * @return TRUE if the attribute table is empty, FALSE otherwise
+	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#isEmpty} method instead.
 	 */
+	@Deprecated
 	public static boolean isEmpty(AttributeTable attributeTable) {
 		return (attributeTable == null) || (attributeTable.size() == 0);
 	}
@@ -719,7 +723,9 @@ public final class CAdESUtils {
 	 *
 	 * @param originalAttributeTable {@link AttributeTable}
 	 * @return {@link AttributeTable}
+	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#emptyIfNull} method instead.
 	 */
+	@Deprecated
 	public static AttributeTable emptyIfNull(AttributeTable originalAttributeTable) {
 		if (originalAttributeTable != null) {
 			return originalAttributeTable;
@@ -733,7 +739,9 @@ public final class CAdESUtils {
 	 * @param attribute {@link Attribute} to check
 	 * @param asn1ObjectIdentifier {@link ASN1ObjectIdentifier} type to check against
 	 * @return TRUE if the attribute is of type asn1ObjectIdentifier, FALSE otherwise
+	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#isAttributeOfType} method instead.
 	 */
+	@Deprecated
 	public static boolean isAttributeOfType(Attribute attribute, ASN1ObjectIdentifier asn1ObjectIdentifier) {
 		if (attribute == null) {
 			return false;

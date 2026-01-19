@@ -26,8 +26,6 @@ import eu.europa.esig.dss.spi.x509.SignatureIntegrityValidator;
 import org.bouncycastle.cms.CMSSignerDigestMismatchException;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.PublicKey;
 
@@ -35,8 +33,6 @@ import java.security.PublicKey;
  * Validates integrity of a CAdES signature
  */
 public class CAdESSignatureIntegrityValidator extends SignatureIntegrityValidator {
-
-	private static final Logger LOG = LoggerFactory.getLogger(CAdESSignatureIntegrityValidator.class);
 
 	/** The corresponding SignerInformation */
 	private final SignerInformation signerInformation;

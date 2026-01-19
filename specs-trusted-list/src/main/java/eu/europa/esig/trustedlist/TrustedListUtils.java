@@ -39,9 +39,9 @@ public final class TrustedListUtils extends XSDAbstractUtils {
 	public static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
 	/** The Trusted List XSD schema location */
-	public static final String TRUSTED_LIST_SCHEMA_LOCATION = "/xsd/ts_119612v020301_xsd.xsd";
-	public static final String TRUSTED_LIST_SIE_SCHEMA_LOCATION = "/xsd/ts_119612v020101_sie_xsd.xsd";
-	public static final String TRUSTED_LIST_ADDITIONALTYPES_SCHEMA_LOCATION = "/xsd/ts_119612v020101_additionaltypes_xsd.xsd";
+	public static final String TRUSTED_LIST_SCHEMA_LOCATION = "/xsd/ts_119612v020401_xsd.xsd";
+	public static final String TRUSTED_LIST_SIE_SCHEMA_LOCATION = "/xsd/ts_119612v020401_sie_xsd.xsd";
+	public static final String TRUSTED_LIST_ADDITIONALTYPES_SCHEMA_LOCATION = "/xsd/ts_119612v020401_additionaltypes_xsd.xsd";
 
 	/** Singleton */
 	private static TrustedListUtils singleton;

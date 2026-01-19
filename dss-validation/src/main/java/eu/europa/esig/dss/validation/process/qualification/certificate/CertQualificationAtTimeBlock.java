@@ -273,13 +273,18 @@ public class CertQualificationAtTimeBlock extends Chain<XmlValidationCertificate
 		TrustServiceFilter filterConsistentByQSCD = TrustServicesFilterFactory.createConsistentServiceByQSCDFilter();
 		List<TrustServiceWrapper> trustServicesByQSCD = filterConsistentByQSCD.filter(filteredServices);
 
-		item = item.setNextItem(hasConsistentByQSCDTrustService(trustServicesByQSCD));
-
 		selectedTrustService = !trustServicesByQSCD.isEmpty() ? trustServicesByQSCD.get(0) : null;
 
 		QSCDStrategy qscdStrategy = QSCDStrategyFactory.createQSCDFromCertAndTL(signingCertificate, selectedTrustService, qualifiedStatus);
 		QSCDStatus qscdStatus = qscdStrategy.getQSCDStatus();
-		item = item.setNextItem(isQscd(qscdStatus));
+
+		if (executeQSCDCheck()) {
+
+			item = item.setNextItem(hasConsistentByQSCDTrustService(trustServicesByQSCD));
+
+			item = item.setNextItem(isQscd(qscdStatus));
+
+		}
 
 		certificateQualification = CertQualificationMatrix.getCertQualification(qualifiedStatus, type, qscdStatus);
 
@@ -373,6 +378,16 @@ public class CertQualificationAtTimeBlock extends Chain<XmlValidationCertificate
 
 	private ChainItem<XmlValidationCertificateQualification> isQscd(QSCDStatus qscdStatus) {
 		return new QSCDCheck(i18nProvider, result, qscdStatus, validationTime, getWarnLevelRule());
+	}
+
+	/**
+	 * This method defines whether a QSCD check should be processed for certificate qualification determination.
+	 * NOTE: Can be disabled in some cases, e.g. for QWAC validation
+	 *
+	 * @return whether QSCD check should be executed
+	 */
+	protected boolean executeQSCDCheck() {
+		return true;
 	}
 
 	private boolean isMRAEnactedForTrustedList(List<TrustServiceWrapper> trustServices) {

@@ -41,7 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +97,7 @@ public class CryptographicConstraintWrapper extends LevelConstraintWrapper imple
     @Override
     public Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> getAcceptableDigestAlgorithms() {
         if (acceptableDigestAlgorithms == null) {
-            acceptableDigestAlgorithms = new HashMap<>();
+            acceptableDigestAlgorithms = new EnumMap<>(DigestAlgorithm.class);
 
             // Step 1. Build evaluations based on acceptable algo list
             ListAlgo digestAlgo = ((CryptographicConstraint) constraint).getAcceptableDigestAlgo();
@@ -141,7 +141,7 @@ public class CryptographicConstraintWrapper extends LevelConstraintWrapper imple
     @Override
     public Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> getAcceptableSignatureAlgorithms() {
         if (acceptableSignatureAlgorithms == null) {
-            acceptableSignatureAlgorithms = new HashMap<>();
+            acceptableSignatureAlgorithms = new EnumMap<>(SignatureAlgorithm.class);
 
             Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> acceptableDigestAlgorithmsMap = getAcceptableDigestAlgorithms();
 

@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -119,9 +120,9 @@ class JAdESWithValidationDataTstsTest extends AbstractJAdESTestValidation {
 		List<RevocationRef<CRL>> crlCompleteRefs = crlSource.getCompleteRevocationRefs();
 		assertEquals(1, crlCompleteRefs.size());
 		for (RevocationRef<CRL> crlRef : crlCompleteRefs) {
-			assertTrue(crlRef instanceof CRLRef);
+            assertInstanceOf(CRLRef.class, crlRef);
 			assertNotNull(((CRLRef)crlRef).getCrlIssuer());
-			assertNotNull(((CRLRef)crlRef).getCrlIssuedTime());
+			assertNotNull(((CRLRef)crlRef).getCrlIssueTime());
 			
 			assertNotNull(crlRef.getDigest());
 			assertNotNull(crlRef.getDigest().getAlgorithm());
@@ -133,7 +134,7 @@ class JAdESWithValidationDataTstsTest extends AbstractJAdESTestValidation {
 		List<RevocationRef<OCSP>> ocspCompleteRefs = ocspSource.getCompleteRevocationRefs();
 		assertEquals(1, ocspCompleteRefs.size());
 		for (RevocationRef<OCSP> ocspRef : ocspCompleteRefs) {
-			assertTrue(ocspRef instanceof OCSPRef);
+            assertInstanceOf(OCSPRef.class, ocspRef);
 			
 			assertNotNull(ocspRef.getDigest());
 			assertNotNull(ocspRef.getDigest().getAlgorithm());

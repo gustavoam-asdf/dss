@@ -24,6 +24,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.ManifestFile;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
+import eu.europa.esig.dss.spi.policy.SignaturePolicyValidatorLoader;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationContext;
@@ -175,6 +176,13 @@ public interface DocumentAnalyzer {
      * @param signaturePolicyProvider {@link SignaturePolicyProvider}
      */
     void setSignaturePolicyProvider(SignaturePolicyProvider signaturePolicyProvider);
+
+    /**
+     * Sets a loader for a {@code SignaturePolicyValidator}
+     *
+     * @param signaturePolicyValidatorLoader {@link SignaturePolicyValidatorLoader}
+     */
+    void setSignaturePolicyValidatorLoader(SignaturePolicyValidatorLoader signaturePolicyValidatorLoader);
 
     /**
      * This method returns the signed document(s) without their signature(s)

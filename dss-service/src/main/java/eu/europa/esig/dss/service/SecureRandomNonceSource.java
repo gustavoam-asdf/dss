@@ -24,6 +24,7 @@ import java.security.SecureRandom;
 
 /**
  * This class produces nonce values based on a SecureRandom.
+ *
  */
 public class SecureRandomNonceSource implements NonceSource {
 
@@ -32,16 +33,33 @@ public class SecureRandomNonceSource implements NonceSource {
 	/** The secure random instance */
 	private final SecureRandom secureRandom = new SecureRandom();
 
+	/** The size of the nonce value for the requests */
+	private final int nonceSize;
+
 	/**
-	 * Default constructor instantiating a SecureRandom
+	 * Default constructor instantiating a SecureRandom.
+	 * This constructor creates a nonce with a value length of 32 octets.
 	 */
 	public SecureRandomNonceSource() {
-		// empty
+		this(32);
+	}
+
+	/**
+	 * Constructor instantiating a SecureRandom with the defined target nonce size.
+	 * The nonce will be generated with the octets length equal to the provided value.
+	 *
+	 * @param nonceSize the size of the nonce value to be generated on request
+	 */
+	public SecureRandomNonceSource(final int nonceSize) {
+		if (nonceSize < 1) {
+			throw new IllegalArgumentException("The nonce size cannot be 0 or smaller!");
+		}
+		this.nonceSize = nonceSize;
 	}
 
 	@Override
 	public byte[] getNonceValue() {
-		byte[] bytes = new byte[32];
+		byte[] bytes = new byte[nonceSize];
 		secureRandom.nextBytes(bytes);
 		return bytes;
 	}

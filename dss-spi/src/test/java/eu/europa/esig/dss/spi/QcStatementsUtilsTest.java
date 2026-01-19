@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.spi;
 
+import eu.europa.esig.dss.enumerations.QCIdentMethodEnum;
 import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.SemanticsIdentifier;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -27,6 +28,7 @@ import eu.europa.esig.dss.model.x509.extension.PSD2QcType;
 import eu.europa.esig.dss.model.x509.extension.QCLimitValue;
 import eu.europa.esig.dss.model.x509.extension.QcStatements;
 import eu.europa.esig.dss.model.x509.extension.RoleOfPSP;
+import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequence;
@@ -151,6 +153,34 @@ class QcStatementsUtilsTest {
         }
         assertEquals("Czech National Bank", psd2QcType.getNcaName());
         assertEquals("CZ-CNB", psd2QcType.getNcaId());
+    }
+
+    @Test
+    void certWithQcQSCDlegislationQcStatement() {
+        CertificateToken cert = DSSUtils.loadCertificateFromBase64EncodedString(
+                "MIIFPzCCBCegAwIBAgIDAYcTMA0GCSqGSIb3DQEBCwUAMH8xIzAhBgNVBAMMGlRlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMB4XDTI1MDExNjA4NTgzOVoXDTI2MTExNjA4NTgzOVowcDEUMBIGA1UEAwwLQ2hhcmxpZSBEb2UxODA2BgNVBAoML1Rlc3QgUXVhbGlmaWVkIFRydXN0IFNlcnZpY2UgUHJvdmlkZXIgMSBmcm9tIFpaMREwDwYDVQQLDAhQS0ktVEVTVDELMAkGA1UEBhMCWlowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC0b3EyFB6ylmIbjBYEVNFp4ABeXKh8/soaT06iLvydYzgdaJOvXj4o0R05wTGbDxrztqhE/cpo9w7cnPeLe+ZcIixeDWv0sXlxK23n+EMrgQcVe8cgTgrCPYEGm5ylrWffVv/gDZey59f+bto3MCIJSkfdvDLXXAftEpftT4fjdIUnAsexgmPcIkM7lzR3ijFpg0Pt4CE1h2I4G2kZtCvm+TR0oeWBXxgZY8wrH/MUp+9cV/VC5bClGdvLTm105h0uNzrLGEeAf0mnSKaMT9es2BqvNZKKs9X7YKja1LEw0wYqSykD6FSQEAkCvUOJCQyM6X9UuhPXx7Dmhia64TALAgMBAAGjggHRMIIBzTAOBgNVHQ8BAf8EBAMCBkAwGgYDVR0gAQH/BBAwDjAMBgorBgEEAZOWLwECMFcGCCsGAQUFBwEDBEswSTAIBgYEAI5GAQEwCAYGBACORgEEMBMGBgQAjkYBBjAJBgcEAI5GAQYBMA4GBgQAjkYBBzAEEwJaWjAOBgYEAI5GAQkwBBMCWlowVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2Rzcy5ub3dpbmEubHUvcGtpLWZhY3RvcnkvY3JsL1Rlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaLmNybDCBrwYIKwYBBQUHAQEEgaIwgZ8wTAYIKwYBBQUHMAGGQGh0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L29jc3AvVGVzdC1RdWFsaWZpZWQtQ0ExLWZyb20tWlowTwYIKwYBBQUHMAKGQ2h0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L2NydC9UZXN0LVF1YWxpZmllZC1DQTEtZnJvbS1aWi5jcnQwHwYDVR0jBBgwFoAUPV89E3wZnRG2b3OlwtjoXWMcbNkwHQYDVR0OBBYEFOIUK0edTcV3Xd+v+K5MTx1toKjFMA0GCSqGSIb3DQEBCwUAA4IBAQCFwN/GYAQs2PaOPhXMrKlR7XwiB0BqinVFElbxGNru2YLMfX/I/rUo6O5UFHVC9hM8Z6+iUbjO1egr851irwtmDPNTztMxH/kp+/k8nBBeipCBcjWQGtuWmtSgoN9hEuiRgsLmsgOONcbqNyUXys2deoZJqJvtxAWW93dgqp8euFmkqw6dy24GtALI1X52E8r5jqTobjCmsMyIrXQzICRvlq8L6t8tYzDuKtpZtkH2JMo+p7oT/Ew5Rr8sc0n7mLdwUHLN0JhvC7zIKW/WdZAVx3BJMBqeGeP52KOcg8DD8rFf7mzhdK+wek9t8KMXg0Eya3rpzypGJM5VD0hJ5VVK");
+        assertNotNull(cert);
+
+        QcStatements qcStatements = QcStatementUtils.getQcStatements(cert);
+        assertNotNull(qcStatements);
+
+        assertEquals(1, Utils.collectionSize(qcStatements.getQcQSCDLegislationCountryCodes()));
+        assertEquals("ZZ", qcStatements.getQcQSCDLegislationCountryCodes().get(0));
+
+        assertTrue(QcStatementUtils.isQcQSCDlegislationPresent(qcStatements, "ZZ"));
+        assertFalse(QcStatementUtils.isQcQSCDlegislationPresent(qcStatements, "XX"));
+    }
+
+    @Test
+    void certWithQcIdentMethodQcStatement() {
+        CertificateToken cert = DSSUtils.loadCertificateFromBase64EncodedString(
+                "MIIFVDCCBDygAwIBAgIDAYcTMA0GCSqGSIb3DQEBCwUAMH8xIzAhBgNVBAMMGlRlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMB4XDTI1MDExNjA5MDExM1oXDTI2MTExNjA5MDExM1owcDEUMBIGA1UEAwwLQ2hhcmxpZSBEb2UxODA2BgNVBAoML1Rlc3QgUXVhbGlmaWVkIFRydXN0IFNlcnZpY2UgUHJvdmlkZXIgMSBmcm9tIFpaMREwDwYDVQQLDAhQS0ktVEVTVDELMAkGA1UEBhMCWlowggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+1BLF1RnMK4Z8WzFDeB3Y8tUmNroe2Xg3LkrP41HRmuzNt7rOH4wWGqm+MKhSDY+zuKxwO8or5H+SYn9rmTsPSaohO2SQ/n4jIvInCiuSB+pN4cG18pdLTWiVRrSE59V79bY57ILarfyfkkPgFg+HxshkXoYZfr2IlTnYmRrjdeYHkauEJBSBxkYXKnXPEsw62JrADX5TtS01nBcL9dST2CF2dd33waJHINp/i16exNv3NBy0+iPWZTEr2dhpI03TLw6JoFT4WZS6qFJz/H1i/x654Zhz6wEBzb9Vcb4s6KlsI+XgcR5QjP4ToZDkftDRusSl1ZIzrLmBPga8Vyu/AgMBAAGjggHmMIIB4jAOBgNVHQ8BAf8EBAMCBkAwGgYDVR0gAQH/BBAwDjAMBgorBgEEAZOWLwECMGwGCCsGAQUFBwEDBGAwXjAIBgYEAI5GAQEwCAYGBACORgEEMBMGBgQAjkYBBjAJBgcEAI5GAQYBMA4GBgQAjkYBBzAEEwJaWjAOBgYEAI5GAQkwBBMCWlowEwYGBACORgEIMAkGBwQAjkYBCAQwVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2Rzcy5ub3dpbmEubHUvcGtpLWZhY3RvcnkvY3JsL1Rlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaLmNybDCBrwYIKwYBBQUHAQEEgaIwgZ8wTAYIKwYBBQUHMAGGQGh0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L29jc3AvVGVzdC1RdWFsaWZpZWQtQ0ExLWZyb20tWlowTwYIKwYBBQUHMAKGQ2h0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L2NydC9UZXN0LVF1YWxpZmllZC1DQTEtZnJvbS1aWi5jcnQwHwYDVR0jBBgwFoAUSm9V4sB8+kyT68EUetz0sILLfEkwHQYDVR0OBBYEFEeREyNWEjMaMiwKZV8I1mbThcLmMA0GCSqGSIb3DQEBCwUAA4IBAQAQi5e98xhT5o5/W1D7cyKgsEAhahxXo9TUDuiiEwyfory9jgtwhCvVlGZca53QVUoOAAtKFKOa6hPyhYdfxNEDzV6c9FiZbLSwVWgf7p8vzPxa8tMtzxnstp1ZXf56hhgKQBQMoM2gS1uOyH3TQ8vX2gQ8JYcreIjjNlWt/rn1M/sni5QT6IJDxcLYsSJtObBL/2hbqoQWgrv1TZ4pkWupObHTqBYDb9U/G1KMB6iLZbvipYzj+WTQYud5XRsH+L4m4etFoJ71g4gg09P8LmX2w0BB9so3US9Eo1F4arp5FHAW2wDatfb4/vCT0dE/GuoBSeAEHwlfz8G2uRG67bKo");
+        assertNotNull(cert);
+
+        QcStatements qcStatements = QcStatementUtils.getQcStatements(cert);
+        assertNotNull(qcStatements);
+
+        assertEquals(QCIdentMethodEnum.QCT_EIDAS2_B, qcStatements.getQcIdentMethod());
     }
 
     @Test

@@ -117,11 +117,27 @@ public enum CertificatePolicy implements OidDescription {
 	QCP_LEGAL_QSCD("qcp-legal-qscd", "0.4.0.194112.1.3"),
 
 	/**
-	 * QCP-w: certificate policy for EU qualified website authentication certificates;
+	 * QEVCP-w: certificate policy for EU qualified website authentication certificates based on EVCP;
 	 * itu-t(0) identified-organization(4) etsi(0) qualified-certificate-policies(194112)
 	 * policy-identifiers(1) qcp-web (4)
 	 */
-	QCP_WEB("qcp-web", "0.4.0.194112.1.4");
+	QCP_WEB("qcp-web", "0.4.0.194112.1.4"),
+
+	/**
+	 * QNCP-w: certificate policy for EU qualified website authentication certificates
+	 *         based on NCP, and OVCP or IVCP;
+	 * itu-t(0) identified-organization(4) etsi(0) qualified-certificate-policies(194112)
+	 * policy-identifiers(1) qncp-web (5)
+	 */
+	QNCP_WEB("qncp-web", "0.4.0.194112.1.5"),
+
+	/**
+	 * QNCP-w-gen: certificate policy for EU qualified website authentication based on NCP and requirements
+	 *             tagged as [WEB] in ETSI EN 319 411-1 [2].
+	 * itu-t(0) identified-organization(4) etsi(0) qualified-certificate-policies(194112)
+	 * policy-identifiers(1) qncp-web-gen (6)
+	 */
+	QNCP_WEB_GEN("qncp-web-gen", "0.4.0.194112.1.6");
 
 	private final String description;
 	private final String oid;

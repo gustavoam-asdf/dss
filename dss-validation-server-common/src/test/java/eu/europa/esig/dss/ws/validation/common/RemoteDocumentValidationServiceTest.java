@@ -121,7 +121,7 @@ class RemoteDocumentValidationServiceTest {
 		DataToValidateDTO dto = new DataToValidateDTO(signedFile, originalFile, null);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ class RemoteDocumentValidationServiceTest {
 		DataToValidateDTO dto = new DataToValidateDTO(signedFile, originalFile, policy);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class RemoteDocumentValidationServiceTest {
 		DataToValidateDTO dto = new DataToValidateDTO(signedFile, originalFile, policy, cryptographicSuite);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class RemoteDocumentValidationServiceTest {
 		dto.setCryptographicSuite(cryptographicSuite);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -199,7 +199,7 @@ class RemoteDocumentValidationServiceTest {
 		DataToValidateDTO dto = new DataToValidateDTO(signedFile, originalFile, null);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -223,7 +223,7 @@ class RemoteDocumentValidationServiceTest {
 		DataToValidateDTO dto = new DataToValidateDTO(signedFile, originalFile, policy);
 		WSReportsDTO result = validationService.validateDocument(dto);
 		validateReports(result);
-		assertEquals("QES AdESQC TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
+		assertEquals("QES AES/QC AES TL based (Test WebServices)", result.getSimpleReport().getValidationPolicy().getPolicyName());
 	}
 
 	@Test

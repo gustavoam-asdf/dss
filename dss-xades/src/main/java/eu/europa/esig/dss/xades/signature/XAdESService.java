@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.xades.signature;
 
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.evidencerecord.EvidenceRecordIncorporationService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignaturePolicyStore;
@@ -30,14 +31,13 @@ import eu.europa.esig.dss.signature.AbstractSignatureService;
 import eu.europa.esig.dss.signature.CounterSignatureService;
 import eu.europa.esig.dss.signature.MultipleDocumentsSignatureService;
 import eu.europa.esig.dss.signature.SignatureExtension;
-import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.xades.DSSXMLUtils;
-import eu.europa.esig.dss.xades.SignatureProfile;
 import eu.europa.esig.dss.xades.XAdESProfileParameters;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xades.XAdESSignatureProfile;
 import eu.europa.esig.dss.xades.XAdESTimestampParameters;
 import eu.europa.esig.dss.xades.evidencerecord.EmbeddedEvidenceRecordBuilder;
 import eu.europa.esig.dss.xades.evidencerecord.XAdESEvidenceRecordIncorporationParameters;
@@ -137,7 +137,7 @@ public class XAdESService extends AbstractSignatureService<XAdESSignatureParamet
 		assertDocumentsValid(toSignDocuments);
 
 		parameters.getContext().setOperationKind(SigningOperation.SIGN);
-		SignatureProfile profile;
+		XAdESSignatureProfile profile;
 		final XAdESProfileParameters context = parameters.getContext();
 		if (context.getProfile() != null) {
 			profile = context.getProfile();

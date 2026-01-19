@@ -388,6 +388,9 @@
                 <ExtendedKeyUsages OID="2.5.29.37" critical="false">
                     <extendedKeyUsageOid Description="timeStamping">1.3.6.1.5.5.7.3.8</extendedKeyUsageOid>
                 </ExtendedKeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZGXv16mYI3EqwMu+61U6nnB6TAc=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-10E93A54A71196D0F9E03448439F9BD66FB9389420488565F23A8D2977034401" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
@@ -453,6 +456,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy cpsUrl="https://repository.luxtrust.lu">1.3.171.1.1.1.10</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZGXv16mYI3EqwMu+61U6nnB6TAc=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -510,6 +516,9 @@
                     <certificatePolicy cpsUrl="https://repository.luxtrust.lu">1.3.171.1.1.10.3.26</certificatePolicy>
                     <certificatePolicy Description="qcp-natural-qscd">0.4.0.194112.1.2</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZGXv16mYI3EqwMu+61U6nnB6TAc=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcSSCD present="true"/>
@@ -517,6 +526,9 @@
                         <QcType Description="qc-type-esign">0.4.0.1862.1.6.1</QcType>
                     </QcTypes>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ZGXv16mYI3EqwMu+61U6nnB6TAc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-A4705EE88C1CDAA3C8A1EB944A9F87A15232063ED2B76E53E31AF4C5EC3E406F" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
@@ -624,6 +636,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.luxtrust.lu/LTGRCA2.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZGXv16mYI3EqwMu+61U6nnB6TAc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ZGXv16mYI3EqwMu+61U6nnB6TAc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-A4705EE88C1CDAA3C8A1EB944A9F87A15232063ED2B76E53E31AF4C5EC3E406F" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
@@ -725,6 +743,12 @@
                 <CRLDistributionPoints OID="2.5.29.31" critical="false">
                     <crlUrl>http://crl.luxtrust.lu/LTGQCA3-OCSP.crl</crlUrl>
                 </CRLDistributionPoints>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZGXv16mYI3EqwMu+61U6nnB6TAc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ZGXv16mYI3EqwMu+61U6nnB6TAc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-A4705EE88C1CDAA3C8A1EB944A9F87A15232063ED2B76E53E31AF4C5EC3E406F" LOTL="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">

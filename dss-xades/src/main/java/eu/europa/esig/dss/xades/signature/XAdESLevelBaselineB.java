@@ -23,10 +23,10 @@ package eu.europa.esig.dss.xades.signature;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
-import eu.europa.esig.dss.xml.utils.SantuarioInitializer;
 import eu.europa.esig.dss.xades.SignatureBuilder;
-import eu.europa.esig.dss.xades.SignatureProfile;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
+import eu.europa.esig.dss.xades.XAdESSignatureProfile;
+import eu.europa.esig.dss.xml.utils.SantuarioInitializer;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
  *
  *
  */
-public class XAdESLevelBaselineB implements SignatureProfile {
+public class XAdESLevelBaselineB implements XAdESSignatureProfile {
 
 	static {
 		SantuarioInitializer.init();

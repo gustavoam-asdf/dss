@@ -100,41 +100,45 @@ class PDFSignatureServiceTest {
 		DSSDocument doc90Degrees = service.addNewSignatureField(documentToSign, fieldParameters);
 		assertNotNull(doc90Degrees);
 
+		fieldParameters.setFieldId("Signature2");
+
 		Exception exception = assertThrows(AlertException.class,
 				() -> service.addNewSignatureField(doc90Degrees, fieldParameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		fieldParameters.setFieldId("Signature2");
 		fieldParameters.setRotation(VisualSignatureRotation.ROTATE_180);
 
 		DSSDocument doc180Degrees = service.addNewSignatureField(doc90Degrees, fieldParameters);
 		assertNotNull(doc180Degrees);
 
+		fieldParameters.setFieldId("Signature3");
+
 		exception = assertThrows(AlertException.class,
 				() -> service.addNewSignatureField(doc180Degrees, fieldParameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		fieldParameters.setFieldId("Signature3");
 		fieldParameters.setRotation(VisualSignatureRotation.ROTATE_270);
 
 		DSSDocument doc270Degrees = service.addNewSignatureField(doc180Degrees, fieldParameters);
 		assertNotNull(doc270Degrees);
 
+		fieldParameters.setFieldId("Signature4");
+
 		exception = assertThrows(AlertException.class,
 				() -> service.addNewSignatureField(doc270Degrees, fieldParameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		fieldParameters.setFieldId("Signature4");
 		fieldParameters.setRotation(VisualSignatureRotation.NONE);
 
 		DSSDocument docZeroDegrees = service.addNewSignatureField(doc270Degrees, fieldParameters);
 		assertNotNull(docZeroDegrees);
 
+		fieldParameters.setFieldId("Signature5");
+
 		exception = assertThrows(AlertException.class,
 				() -> service.addNewSignatureField(docZeroDegrees, fieldParameters));
 		assertEquals("The new signature field position overlaps with an existing annotation!", exception.getMessage());
 
-		fieldParameters.setFieldId("Signature5");
 		fieldParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
 
 		exception = assertThrows(AlertException.class,

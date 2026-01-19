@@ -268,17 +268,22 @@
 					<xsd:documentation>Checks the presence of the signing-time attribute</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="ContentType" type="ValueConstraint" minOccurs="0">
+			<xsd:element name="SigningTimeInCertRange" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks whether the claimed signing-time value is within the signing-certificate validity range, when present</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ContentType" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the content-type attribute has the expected value</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="ContentHints" type="ValueConstraint" minOccurs="0">
+			<xsd:element name="ContentHints" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the content-hints attribute (CAdES) has the expected value</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="ContentIdentifier" type="ValueConstraint" minOccurs="0">
+			<xsd:element name="ContentIdentifier" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the content-identifier attribute (CAdES) has the expected value</xsd:documentation>
 				</xsd:annotation>
@@ -825,6 +830,16 @@
 					<xsd:documentation>Performs validation of the certificate distinguished and subject alternative names against the name constraints imposed by its certificate chain</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="AuthorityKeyIdentifierPresent" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks whether the certificate contains the Authority Key Identifier certificate extension. Check is not executed for self-signed certificates.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="SubjectKeyIdentifierPresent" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks whether the certificate contains the Subject Key Identifier certificate extension</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="NoRevAvail" type="LevelConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Performs validation of certificate's compliance to RFC 9608, when noRevAvail (OID: 2.5.29.56) certificate extension is present</xsd:documentation>
@@ -1018,6 +1033,16 @@
 			<xsd:element name="PSD2QcCompetentAuthorityId" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the certificate's PSD2QcType Id of competent authority is in the acceptable values list</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="QcQSCDLegislation" type="MultiValuesConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks that the private key related to the certified public key resides in an SCD recognized as qualified within a defined legal framework from an identified country, or set of countries. Shall be empty for EU qualified certificates.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="QcIdentificationMethod" type="MultiValuesConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks the identification method used for the certificate issuance, according to eIDAS Article 24</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="UsePseudonym" type="LevelConstraint" minOccurs="0">

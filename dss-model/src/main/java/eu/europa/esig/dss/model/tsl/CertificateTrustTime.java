@@ -31,6 +31,8 @@ import java.util.Objects;
  */
 public class CertificateTrustTime extends BaseTimeDependent {
 
+    private static final long serialVersionUID = -5006781640706750658L;
+
     /** Defines whether the current object identifies a trusted certificate */
     private final boolean trusted;
 
@@ -109,6 +111,30 @@ public class CertificateTrustTime extends BaseTimeDependent {
         } else {
             return dateTwo;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "CertificateTrustTime [" +
+                "trusted=" + trusted +
+                "] " + super.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+
+        CertificateTrustTime that = (CertificateTrustTime) object;
+        return trusted == that.trusted;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Boolean.hashCode(trusted);
+        return result;
     }
 
 }

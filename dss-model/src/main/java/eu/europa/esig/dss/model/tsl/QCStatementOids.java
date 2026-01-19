@@ -22,6 +22,7 @@ package eu.europa.esig.dss.model.tsl;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This objects represents a collection of properties extracted from an MRA condition
@@ -162,6 +163,43 @@ public class QCStatementOids implements Serializable {
 	 */
 	public void setQcCClegislationsToRemove(List<String> qcCClegislationsToRemove) {
 		this.qcCClegislationsToRemove = qcCClegislationsToRemove;
+	}
+
+	@Override
+	public String toString() {
+		return "QCStatementOids [" +
+				"qcStatementIds=" + qcStatementIds +
+				", qcTypeIds=" + qcTypeIds +
+				", qcCClegislations=" + qcCClegislations +
+				", qcStatementIdsToRemove=" + qcStatementIdsToRemove +
+				", qcTypeIdsToRemove=" + qcTypeIdsToRemove +
+				", qcCClegislationsToRemove=" + qcCClegislationsToRemove +
+				']';
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		QCStatementOids that = (QCStatementOids) object;
+		return Objects.equals(qcStatementIds, that.qcStatementIds)
+				&& Objects.equals(qcTypeIds, that.qcTypeIds)
+				&& Objects.equals(qcCClegislations, that.qcCClegislations)
+				&& Objects.equals(qcStatementIdsToRemove, that.qcStatementIdsToRemove)
+				&& Objects.equals(qcTypeIdsToRemove, that.qcTypeIdsToRemove)
+				&& Objects.equals(qcCClegislationsToRemove, that.qcCClegislationsToRemove);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(qcStatementIds);
+		result = 31 * result + Objects.hashCode(qcTypeIds);
+		result = 31 * result + Objects.hashCode(qcCClegislations);
+		result = 31 * result + Objects.hashCode(qcStatementIdsToRemove);
+		result = 31 * result + Objects.hashCode(qcTypeIdsToRemove);
+		result = 31 * result + Objects.hashCode(qcCClegislationsToRemove);
+		return result;
 	}
 
 }

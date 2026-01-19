@@ -27,7 +27,7 @@ import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.enumerations.MRAStatus;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Calendar;

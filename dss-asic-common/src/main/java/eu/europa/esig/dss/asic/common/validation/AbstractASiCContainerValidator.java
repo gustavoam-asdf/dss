@@ -190,7 +190,7 @@ public abstract class AbstractASiCContainerValidator extends SignedDocumentValid
     }
 
     @Override
-    protected SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         final ASiCContainerDiagnosticDataBuilder builder = instantiateASiCDiagnosticDataBuilder();
         builder.containerInfo(getDocumentAnalyzer().getContainerInfo());
         return builder;

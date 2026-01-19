@@ -84,17 +84,14 @@ class XAdESTemperedManifestValidationTest extends AbstractXAdESTestValidation {
                 ++manifestCounter;
 
             } else if (DigestMatcherType.MANIFEST_ENTRY.equals(digestMatcher.getType())) {
-                if (digestMatcher.isDataFound()) {
-                    assertTrue(digestMatcher.isDataFound());
-                    assertTrue(digestMatcher.isDataIntact());
+                assertTrue(digestMatcher.isDataFound());
+                if (digestMatcher.isDataIntact()) {
                     assertNotNull(digestMatcher.getUri());
                     assertNotNull(digestMatcher.getDocumentName());
                     assertNotNull(digestMatcher.getDigestMethod());
                     assertNotNull(digestMatcher.getDigestValue());
                     ++manifestEntryValidCounter;
                 } else {
-                    assertFalse(digestMatcher.isDataFound());
-                    assertFalse(digestMatcher.isDataIntact());
                     assertNotNull(digestMatcher.getUri());
                     assertNotNull(digestMatcher.getDocumentName());
                     assertNull(digestMatcher.getDigestMethod());

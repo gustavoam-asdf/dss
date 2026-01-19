@@ -108,6 +108,13 @@ public abstract class AbstractJAdESTestValidation extends AbstractDocumentTestVa
 	}
 
 	@Override
+	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			assertNotNull(signatureWrapper.getJWSSerializationType());
+		}
+	}
+
+	@Override
 	protected void validateETSIDataObjectFormatType(SADataObjectFormatType dataObjectFormat) {
 		super.validateETSIDataObjectFormatType(dataObjectFormat);
 

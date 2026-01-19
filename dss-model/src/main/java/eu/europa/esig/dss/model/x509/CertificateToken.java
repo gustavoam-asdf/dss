@@ -341,9 +341,10 @@ public class CertificateToken extends Token {
         if (keyUsageBits == null) {
             keyUsageBits = new ArrayList<>();
             final boolean[] keyUsageArray = x509Certificate.getKeyUsage();
-            if (keyUsageArray != null) {
+            if (keyUsageArray != null && keyUsageArray.length > 0) {
                 for (KeyUsageBit keyUsageBit : KeyUsageBit.values()) {
-                    if (keyUsageArray[keyUsageBit.getIndex()]) {
+                    int index = keyUsageBit.getIndex();
+                    if (keyUsageArray.length > index && keyUsageArray[index]) {
                         keyUsageBits.add(keyUsageBit);
                     }
                 }

@@ -127,26 +127,46 @@ public interface ValidationPolicy {
 	 *
 	 * @param context {@link Context}
 	 * @return {@code LevelRule} if SigningTime element is present in the constraint file, null otherwise.
+	 * @deprecated since DSS 6.4. Please use {@code #getSigningTimeConstraint} method instead.
 	 */
+	@Deprecated
 	LevelRule getSigningDurationRule(Context context);
+
+	/**
+	 * Indicates if the signed property: signing-time should be checked. If SigningTime element is absent within the
+	 * constraint file then null is returned.
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if SigningTime element is present in the constraint file, null otherwise.
+	 */
+	LevelRule getSigningTimeConstraint(Context context);
+
+	/**
+	 * Indicates if the signed property: signing-time should be checked against the signing-certificate's
+	 * validity period. If SigningTimeInCertRange element is absent within the constraint file then null is returned.
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if SigningTimeInCertRange element is present in the constraint file, null otherwise.
+	 */
+	LevelRule getSigningTimeInCertRangeConstraint(Context context);
 
 	/**
 	 * Indicates if the signed property: content-type should be checked. If ContentType element is absent within the
 	 * constraint file then null is returned.
 	 *
 	 * @param context {@link Context}
-	 * @return {@code ValueRule} if ContentType element is present in the constraint file, null otherwise.
+	 * @return {@code MultiValuesRule} if ContentType element is present in the constraint file, null otherwise.
 	 */
-	ValueRule getContentTypeConstraint(Context context);
+	MultiValuesRule getContentTypeConstraint(Context context);
 
 	/**
 	 * Indicates if the signed property: content-hints should be checked. If ContentHints element is absent within the
 	 * constraint file then null is returned.
 	 *
 	 * @param context {@link Context}
-	 * @return {@code ValueRule} if ContentHints element is present in the constraint file, null otherwise.
+	 * @return {@code MultiValuesRule} if ContentHints element is present in the constraint file, null otherwise.
 	 */
-	ValueRule getContentHintsConstraint(Context context);
+	MultiValuesRule getContentHintsConstraint(Context context);
 
 	/**
 	 * Indicates if the signed property: content-identifier should be checked. If ContentIdentifier element is absent
@@ -154,9 +174,9 @@ public interface ValidationPolicy {
 	 * returned.
 	 *
 	 * @param context {@link Context}
-	 * @return {@code ValueRule} if ContentIdentifier element is present in the constraint file, null otherwise.
+	 * @return {@code MultiValuesRule} if ContentIdentifier element is present in the constraint file, null otherwise.
 	 */
-	ValueRule getContentIdentifierConstraint(Context context);
+	MultiValuesRule getContentIdentifierConstraint(Context context);
 
 	/**
 	 * Indicates if the signed property: message-digest (for CAdES) or SignedProperties (for XAdES) should be checked.
@@ -279,16 +299,6 @@ public interface ValidationPolicy {
 	LevelRule getCertificateCAConstraint(Context context, SubContext subContext);
 
 	/**
-	 * Returns certificate IssuerName constraint
-	 *
-	 * @param context {@link Context}
-	 * @param subContext {@link SubContext}
-	 * @return {@code LevelRule} if IssuerName for a given context element is present in the constraint file,
-	 *         null otherwise.
-	 */
-	LevelRule getCertificateIssuerNameConstraint(Context context, SubContext subContext);
-
-	/**
 	 * Returns certificate MaxPathLength constraint
 	 *
 	 * @param context {@link Context}
@@ -337,6 +347,26 @@ public interface ValidationPolicy {
 	 *         null otherwise.
 	 */
 	LevelRule getCertificateNameConstraintsConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Returns certificate AuthorityKeyIdentifierPresent constraint
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code LevelRule} if AuthorityKeyIdentifierPresent for a given context element is present in the constraint file,
+	 *         null otherwise.
+	 */
+	LevelRule getCertificateAuthorityKeyIdentifierPresentConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Returns certificate SubjectKeyIdentifierPresent constraint
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code LevelRule} if SubjectKeyIdentifierPresent for a given context element is present in the constraint file,
+	 *         null otherwise.
+	 */
+	LevelRule getCertificateSubjectKeyIdentifierPresentConstraint(Context context, SubContext subContext);
 
 	/**
 	 * Returns certificate NoRevAvail constraint
@@ -710,7 +740,7 @@ public interface ValidationPolicy {
 	/**
 	 * Indicates the country or set of countries under the legislation of which the certificate is issued as a
 	 * qualified certificate is present.
-	 *
+	 * <p>
 	 * NOTE: in order to verify the EU compliance, the value shall be empty (no QcCCLegislation is allowed)
 	 *
 	 * @param context {@link Context}
@@ -776,6 +806,27 @@ public interface ValidationPolicy {
 	 * @return {@code MultiValuesRule} the set of acceptable QC PS2D ids
 	 */
 	MultiValuesRule getCertificatePS2DQcCompetentAuthorityIdConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the country or set of countries under the legislation of which the corresponding
+	 * signature creation device has a qualified status.
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the country or set of countries under the legislation of which the corresponding
+	 *  	 signature creation device has a qualified status
+	 */
+	MultiValuesRule getCertificateQcQSCDLegislationConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for issuance of the certificate according to eIDAS Article 24
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method used for issuance of the certificate
+	 * 		 according to eIDAS Article 24
+	 */
+	MultiValuesRule getCertificateQcIdentificationMethodConstraint(Context context, SubContext subContext);
 
 	/**
 	 * Indicates if signing-certificate has been identified.
@@ -1144,8 +1195,18 @@ public interface ValidationPolicy {
 	 *
 	 * @return {@code LevelRule} if RevocationTimeAgainstBestSignatureTime element is present
 	 *                                 in the constraint file, null otherwise.
+	 * @deprecated since DSS 6.4. Please use {@code #getRevocationTimeAgainstBestSignatureTimeConstraint} method instead.
 	 */
+	@Deprecated
 	LevelRule getRevocationTimeAgainstBestSignatureDurationRule();
+
+	/**
+	 * Returns RevocationTimeAgainstBestSignatureTime constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if RevocationTimeAgainstBestSignatureTime element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getRevocationTimeAgainstBestSignatureTimeConstraint();
 
 	/**
 	 * Returns whether the evidence record is valid (passed a complete evidence record validation process).
@@ -1346,6 +1407,16 @@ public interface ValidationPolicy {
 	 *                                 in the constraint file, null otherwise.
 	 */
 	MultiValuesRule getCertificateOrganizationUnitConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Returns certificate IssuerName constraint
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code LevelRule} if IssuerName for a given context element is present in the constraint file,
+	 *         null otherwise.
+	 */
+	LevelRule getCertificateIssuerNameConstraint(Context context, SubContext subContext);
 
 	/**
 	 * Returns CertificateSurname constraint if present in the policy, null otherwise

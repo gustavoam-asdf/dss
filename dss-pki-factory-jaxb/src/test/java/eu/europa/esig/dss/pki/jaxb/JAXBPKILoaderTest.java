@@ -277,6 +277,15 @@ class JAXBPKILoaderTest extends AbstractTestJaxbPKI {
 
         assertEquals(1, qcStatements.getQcLegislationCountryCodes().size());
         assertEquals("ZZ", qcStatements.getQcLegislationCountryCodes().get(0));
+        assertTrue(Utils.isCollectionEmpty(qcStatements.getQcQSCDLegislationCountryCodes()));
+
+        JAXBCertEntity charlieDoe = repository.getCertEntityBySubject("Charlie Doe");
+        assertEquals(100115, charlieDoe.getSerialNumber());
+        assertEquals("Charlie Doe", charlieDoe.getSubject());
+
+        qcStatements = CertificateExtensionsUtils.getQcStatements(charlieDoe.getCertificateToken());
+        assertEquals(1, qcStatements.getQcQSCDLegislationCountryCodes().size());
+        assertEquals("ZZ", qcStatements.getQcQSCDLegislationCountryCodes().get(0));
 
         JAXBCertEntity nonQualified = repository.getCertEntityBySubject("Test-Non-Qualified-TSA-from-ZZ");
         assertEquals(100140, nonQualified.getSerialNumber());

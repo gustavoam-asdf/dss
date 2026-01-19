@@ -23,10 +23,11 @@ package eu.europa.esig.dss.tsl.dto.condition;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.tsl.Condition;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.unmodifiableList;
 
@@ -147,4 +148,22 @@ public class CompositeCondition implements Condition {
 	public String toString() {
 		return toString("");
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		CompositeCondition that = (CompositeCondition) object;
+		return matchingCriteriaIndicator == that.matchingCriteriaIndicator
+				&& Objects.equals(children, that.children);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(matchingCriteriaIndicator);
+		result = 31 * result + Objects.hashCode(children);
+		return result;
+	}
+
 }

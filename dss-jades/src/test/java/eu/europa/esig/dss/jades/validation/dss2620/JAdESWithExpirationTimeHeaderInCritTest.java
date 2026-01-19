@@ -37,7 +37,7 @@ class JAdESWithExpirationTimeHeaderInCritTest extends AbstractJAdESTestValidatio
 
     @Override
     protected void checkSignatureLevel(DiagnosticData diagnosticData) {
-        assertEquals(SignatureLevel.JSON_NOT_ETSI, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
+        assertEquals(SignatureLevel.JAdES_BASELINE_B, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
     }
 
 }

@@ -25,17 +25,23 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOID;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustService;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustServiceProvider;
+import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlConnectionDetails;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlDetails;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlMessage;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlRevocation;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlSignature;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlSimpleCertificateReport;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlSubject;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlTrustAnchor;
@@ -100,18 +106,23 @@ public class SimpleReportForCertificateBuilder {
 		addValidationTime(simpleReport);
 
 		simpleReport.setValidationTime(currentTime);
-		List<XmlChainItem> chain = new ArrayList<>();
 
 		CertificateWrapper certificate = diagnosticData.getUsedCertificateById(certificateId);
-		XmlChainItem firstChainItem = getChainItem(certificate);
-		addQualifications(firstChainItem, certificate);
-		chain.add(firstChainItem);
+		XmlChainItem targetCertificate = getChainItem(certificate, false);
+		addQualifications(targetCertificate, certificate);
+		addQWACValidationDetails(targetCertificate, certificate);
+		simpleReport.setCertificate(targetCertificate);
 
+		List<XmlChainItem> chain = new ArrayList<>();
+		boolean trustAnchorReached = false;
 		List<CertificateWrapper> certificateChain = certificate.getCertificateChain();
 		for (CertificateWrapper cert : certificateChain) {
-			chain.add(getChainItem(cert));
+			trustAnchorReached |= cert.isTrusted();
+			chain.add(getChainItem(cert, trustAnchorReached));
 		}
-		simpleReport.setChain(chain);
+		targetCertificate.setChain(chain);
+
+		addConnectionDetails(simpleReport);
 
 		return simpleReport;
 	}
@@ -127,7 +138,7 @@ public class SimpleReportForCertificateBuilder {
 		report.setValidationTime(currentTime);
 	}
 
-	private XmlChainItem getChainItem(CertificateWrapper certificate) {
+	private XmlChainItem getChainItem(CertificateWrapper certificate, boolean trustAnchorReached) {
 		XmlChainItem item = new XmlChainItem();
 		item.setId(certificate.getId());
 		item.setSubject(getSubject(certificate));
@@ -183,10 +194,20 @@ public class SimpleReportForCertificateBuilder {
 		}
 
 		XmlConclusion conclusion = detailedReport.getCertificateXCVConclusion(certificate.getId());
-		item.setIndication(conclusion.getIndication());
-		item.setSubIndication(conclusion.getSubIndication());
+		if (conclusion != null) {
+			item.setIndication(conclusion.getIndication());
+			item.setSubIndication(conclusion.getSubIndication());
 
-		XmlDetails validationDetails = getX509ValidationDetails(certificate.getId());
+		} else if (certificate.isTrusted() || trustAnchorReached) {
+			item.setIndication(Indication.PASSED);
+
+		} else {
+			// if certificate was not validated or not trusted
+			item.setIndication(Indication.INDETERMINATE);
+			item.setSubIndication(SubIndication.NO_CERTIFICATE_CHAIN_FOUND);
+		}
+
+		XmlDetails validationDetails = getValidationDetails(certificate.getId());
 		if (isNotEmpty(validationDetails)) {
 			item.setX509ValidationDetails(validationDetails);
 		}
@@ -269,17 +290,17 @@ public class SimpleReportForCertificateBuilder {
 		return listUrls;
 	}
 
-	private void addQualifications(XmlChainItem firstChainItem, CertificateWrapper certificate) {
-		firstChainItem.setQualificationAtIssuance(detailedReport.getCertificateQualificationAtIssuance(certificateId));
-		firstChainItem.setQualificationAtValidation(detailedReport.getCertificateQualificationAtValidation(certificateId));
+	private void addQualifications(XmlChainItem chainItem, CertificateWrapper certificate) {
+		chainItem.setQualificationAtIssuance(detailedReport.getCertificateQualificationAtIssuance(certificate.getId()));
+		chainItem.setQualificationAtValidation(detailedReport.getCertificateQualificationAtValidation(certificate.getId()));
 
 		XmlDetails qualificationDetailsAtIssuanceTime = getCertificateQualificationDetailsAtIssuanceTime(certificate.getId());
 		if (isNotEmpty(qualificationDetailsAtIssuanceTime)) {
-			firstChainItem.setQualificationDetailsAtIssuance(qualificationDetailsAtIssuanceTime);
+			chainItem.setQualificationDetailsAtIssuance(qualificationDetailsAtIssuanceTime);
 		}
 		XmlDetails qualificationDetailsAtValidationTime = getCertificateQualificationDetailsAtValidationTime(certificate.getId());
 		if (isNotEmpty(qualificationDetailsAtValidationTime)) {
-			firstChainItem.setQualificationDetailsAtValidation(qualificationDetailsAtValidationTime);
+			chainItem.setQualificationDetailsAtValidation(qualificationDetailsAtValidationTime);
 		}
 
 		Boolean enactedMRA = null;
@@ -290,10 +311,23 @@ public class SimpleReportForCertificateBuilder {
 				break;
 			}
 		}
-		firstChainItem.setEnactedMRA(enactedMRA);
+		chainItem.setEnactedMRA(enactedMRA);
 	}
 
-	private XmlDetails getX509ValidationDetails(String tokenId) {
+	private void addQWACValidationDetails(XmlChainItem chainItem, CertificateWrapper certificate) {
+		addQWACProfile(chainItem, certificate);
+		addTLSBindingSignature(chainItem);
+	}
+
+	private void addQWACProfile(XmlChainItem chainItem, CertificateWrapper certificate) {
+		chainItem.setQwacProfile(detailedReport.getCertificateQWACProfile(certificate.getId()));
+		XmlDetails qwacValidationDetails = getQWACValidationDetails(certificate.getId());
+		if (isNotEmpty(qwacValidationDetails)) {
+			chainItem.setQwacDetails(qwacValidationDetails);
+		}
+	}
+
+	private XmlDetails getValidationDetails(String tokenId) {
 		XmlDetails validationDetails = new XmlDetails();
 		validationDetails.getError().addAll(convert(detailedReport.getAdESValidationErrors(tokenId)));
 		validationDetails.getWarning().addAll(convert(detailedReport.getAdESValidationWarnings(tokenId)));
@@ -317,6 +351,85 @@ public class SimpleReportForCertificateBuilder {
 		return qualificationDetails;
 	}
 
+	private XmlDetails getQWACValidationDetails(String tokenId) {
+		XmlDetails qualificationDetails = new XmlDetails();
+		qualificationDetails.getError().addAll(convert(detailedReport.getQWACValidationErrors(tokenId)));
+		qualificationDetails.getWarning().addAll(convert(detailedReport.getQWACValidationWarnings(tokenId)));
+		qualificationDetails.getInfo().addAll(convert(detailedReport.getQWACValidationInfos(tokenId)));
+		return qualificationDetails;
+	}
+
+	private void addTLSBindingSignature(XmlChainItem chainItem) {
+		SignatureWrapper bindingSignature = diagnosticData.getTLSCertificateBindingSignature();
+		if (bindingSignature != null) {
+			XmlSignature xmlSignature = new XmlSignature();
+			xmlSignature.setId(bindingSignature.getId());
+			xmlSignature.setUrl(diagnosticData.getTLSCertificateBindingUrl());
+			xmlSignature.setSigningTime(bindingSignature.getClaimedSigningTime());
+			xmlSignature.setSignatureFormat(bindingSignature.getSignatureFormat());
+			addSignatureScope(bindingSignature, xmlSignature);
+			addFinalIndication(bindingSignature, xmlSignature);
+			addAdESValidationDetails(bindingSignature, xmlSignature);
+			addChain(bindingSignature, xmlSignature);
+
+			chainItem.setTLSBindingSignature(xmlSignature);
+		}
+	}
+
+	private void addSignatureScope(final SignatureWrapper signature, final XmlSignature xmlSignature) {
+		List<eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope> signatureScopes = signature.getSignatureScopes();
+		if (Utils.isCollectionNotEmpty(signatureScopes)) {
+			for (eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope signatureScope : signatureScopes) {
+				xmlSignature.getSignatureScope().add(getXmlSignatureScope(signatureScope));
+			}
+		}
+	}
+
+	private void addFinalIndication(final SignatureWrapper signature, final XmlSignature xmlSignature) {
+		xmlSignature.setIndication(detailedReport.getFinalIndication(signature.getId()));
+		SubIndication subIndication = detailedReport.getFinalSubIndication(signature.getId());
+		if (subIndication != null) {
+			xmlSignature.setSubIndication(subIndication);
+		}
+	}
+
+	private void addAdESValidationDetails(final SignatureWrapper signature, final XmlSignature xmlSignature) {
+		XmlDetails validationDetails = getValidationDetails(signature.getId());
+		if (isNotEmpty(validationDetails)) {
+			xmlSignature.setAdESValidationDetails(validationDetails);
+		}
+	}
+
+	private XmlSignatureScope getXmlSignatureScope(eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope signatureScope) {
+		XmlSignatureScope xmlSignatureScope = new XmlSignatureScope();
+		xmlSignatureScope.setId(signatureScope.getSignerData().getId());
+		xmlSignatureScope.setName(signatureScope.getName());
+		xmlSignatureScope.setScope(signatureScope.getScope());
+		xmlSignatureScope.setValue(signatureScope.getDescription());
+		return xmlSignatureScope;
+	}
+
+	private void addChain(SignatureWrapper bindingSignature, XmlSignature xmlSignature) {
+		List<CertificateWrapper> certificateChain = bindingSignature.getCertificateChain();
+		if (Utils.isCollectionEmpty(certificateChain)) {
+			return;
+		}
+
+		boolean trustAnchorReached = false;
+		final List<XmlChainItem> chain = new ArrayList<>();
+		for (CertificateWrapper cert : certificateChain) {
+			trustAnchorReached |= cert.isTrusted();
+			XmlChainItem chainItem = getChainItem(cert, trustAnchorReached);
+			if (bindingSignature.getSigningCertificate() != null
+					&& bindingSignature.getSigningCertificate().getId().equals(cert.getId())) {
+				addQualifications(chainItem, cert);
+				addQWACProfile(chainItem, cert);
+			}
+			chain.add(chainItem);
+		}
+		xmlSignature.setChain(chain);
+	}
+
 	private List<XmlMessage> convert(Collection<Message> messages) {
 		return messages.stream().map(m -> {
 			XmlMessage xmlMessage = new XmlMessage();
@@ -324,6 +437,15 @@ public class SimpleReportForCertificateBuilder {
 			xmlMessage.setValue(m.getValue());
 			return xmlMessage;
 		}).collect(Collectors.toList());
+	}
+
+	private void addConnectionDetails(XmlSimpleCertificateReport simpleReport) {
+		if (diagnosticData.getWebsiteUrl() != null) {
+			XmlConnectionDetails xmlConnectionDetails = new XmlConnectionDetails();
+			xmlConnectionDetails.setUrl(diagnosticData.getWebsiteUrl());
+			xmlConnectionDetails.setTLSCertificateBindingLink(diagnosticData.getTLSCertificateBindingUrl());
+			simpleReport.setConnectionDetails(xmlConnectionDetails);
+		}
 	}
 
 	private boolean isNotEmpty(XmlDetails details) {

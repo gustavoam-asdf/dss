@@ -898,8 +898,8 @@ public class TimestampToken extends Token {
 		if (tsaGeneralName != null) {
 			try {
 				X500Name x500Name = X500Name.getInstance(tsaGeneralName.getName());
-				return new X500Principal(x500Name.getEncoded());
-			} catch (IOException e) {
+				return DSSASN1Utils.toX500Principal(x500Name);
+			} catch (Exception e) {
 				LOG.warn("Unable to decode TSTInfo.tsa attribute value to X500Principal. Reason : {}", e.getMessage(), e);
 			}
 		}

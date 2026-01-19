@@ -37,7 +37,6 @@ import eu.europa.esig.dss.pades.validation.PDFDocumentValidator;
 import eu.europa.esig.dss.pades.validation.PdfObjectKey;
 import eu.europa.esig.dss.pdf.PdfDssDict;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPResponseBinary;
-import eu.europa.esig.dss.spi.x509.tsp.TSPSource;
 import eu.europa.esig.dss.test.extension.AbstractTestExtension;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
@@ -64,16 +63,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class AbstractPAdESTestExtension extends AbstractTestExtension<PAdESSignatureParameters, PAdESTimestampParameters> {
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtSignatureTime() {
-		return getGoodTsa();
-	}
-
-	@Override
-	protected TSPSource getUsedTSPSourceAtExtensionTime() {
-		return getAlternateGoodTsa();
-	}
 
 	@Override
 	protected FileDocument getOriginalDocument() {
@@ -220,11 +209,6 @@ public abstract class AbstractPAdESTestExtension extends AbstractTestExtension<P
 				assertArrayEquals(signature.getSignatureValue(), signatureIdentifier.getSignatureValue().getValue());
 			}
 		}
-	}
-
-	@Override
-	protected String getSigningAlias() {
-		return GOOD_USER;
 	}
 
 }

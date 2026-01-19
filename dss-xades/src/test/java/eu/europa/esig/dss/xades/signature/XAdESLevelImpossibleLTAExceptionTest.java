@@ -20,14 +20,6 @@
  */
 package eu.europa.esig.dss.xades.signature;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import eu.europa.esig.dss.alert.exception.AlertException;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -36,6 +28,13 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.XAdESTimestampParameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class XAdESLevelImpossibleLTAExceptionTest extends AbstractXAdESTestSignature {
 
@@ -59,9 +58,8 @@ class XAdESLevelImpossibleLTAExceptionTest extends AbstractXAdESTestSignature {
 	@Override
 	@Test
 	public void signAndVerify() {
-		Exception exception = assertThrows(AlertException.class, () -> {
-			super.signAndVerify(); // unable to extend to LT (no online CRL/OCSP)
-		});
+        // unable to extend to LT (no online CRL/OCSP)
+        Exception exception = assertThrows(AlertException.class, super::signAndVerify);
 		assertTrue(exception.getMessage().contains("Revocation data is missing for one or more certificate(s)."));
 	}
 

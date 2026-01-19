@@ -39,6 +39,7 @@ import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.enumerations.QWACProfile;
 import eu.europa.esig.dss.enumerations.SubContext;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampType;
@@ -577,6 +578,7 @@ public class ValidationProcessUtils {
 	/**
 	 * Returns the message tag for the given subContext
 	 *
+	 * @param context {@link Context}
 	 * @param subContext {@link SubContext}
 	 * @return {@link MessageTag}
 	 */
@@ -637,6 +639,25 @@ public class ValidationProcessUtils {
 				return MessageTag.VT_TST_POE_TIME;
 			default:
 				throw new IllegalArgumentException(String.format("The validation time [%s] is not supported", validationTime));
+		}
+	}
+
+	/**
+	 * Returns a {@code MessageTag} corresponding to the given {@code ValidationTime} type
+	 *
+	 * @param qwacProfile {@link QWACProfile}
+	 * @return {@link MessageTag}
+	 */
+	public static MessageTag getQWACValidationMessageTag(QWACProfile qwacProfile) {
+		switch (qwacProfile) {
+			case QWAC_1:
+				return MessageTag.QWAC1_PROFILE;
+			case QWAC_2:
+				return MessageTag.QWAC2_PROFILE;
+			case TLS_BY_QWAC_2:
+				return MessageTag.TLS_BY_QWAC2_PROFILE;
+			default:
+				throw new IllegalArgumentException(String.format("The QWAC profile  [%s] is not supported", qwacProfile));
 		}
 	}
 

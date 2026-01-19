@@ -57,7 +57,7 @@ class ZipExtractorTest extends PKIFactoryAccess {
 	
 	
 	@BeforeEach
-	void init() throws Exception {
+	void init() {
 		openDocument = new FileDocument(new File("src/test/resources/signable/open-document.odt"));
 		zipArchive = new FileDocument(new File("src/test/resources/signable/test.zip"));
 	}

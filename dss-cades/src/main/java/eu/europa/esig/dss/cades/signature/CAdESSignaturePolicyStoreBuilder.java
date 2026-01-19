@@ -237,7 +237,11 @@ public class CAdESSignaturePolicyStoreBuilder {
 		}
 		signaturePolicy.setPolicyContent(signaturePolicyContent);
 
-		SignaturePolicyValidator validator = new DefaultSignaturePolicyValidatorLoader().loadValidator(signaturePolicy);
+		/*
+		 * The input to hash computation of sigPolicyHash depends on the technical specification of the signature policy.
+		 */
+		DefaultSignaturePolicyValidatorLoader signaturePolicyValidatorLoader = DefaultSignaturePolicyValidatorLoader.policyBasedSignaturePolicyValidatorLoader();
+		SignaturePolicyValidator validator = signaturePolicyValidatorLoader.loadValidator(signaturePolicy);
 		Digest computedDigest = validator.getComputedDigest(signaturePolicyContent, expectedDigest.getAlgorithm());
 
 		boolean digestMatch = expectedDigest.equals(computedDigest);

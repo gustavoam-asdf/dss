@@ -32,10 +32,12 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificateExtension;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificatePolicies;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificatePolicy;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlChainItem;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDistinguishedName;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIdPkixOcspNoCheck;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyUsages;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSubjectAlternativeNames;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
@@ -49,6 +51,7 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.policy.EtsiValidationPolicy;
+import eu.europa.esig.dss.policy.jaxb.BasicSignatureConstraints;
 import eu.europa.esig.dss.policy.jaxb.CertificateConstraints;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
@@ -61,6 +64,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -1427,6 +1431,448 @@ class RFC5280ValidationExecutorTest extends AbstractProcessExecutorTest {
             }
         }
         assertTrue(issuerNameCheckFound);
+    }
+
+    @Test
+    void skiPresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        basicSignatureConstraints.getSigningCertificate().setSubjectKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setSubjectKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.PASSED, sigBBB.getConclusion().getIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.PASSED, xcv.getConclusion().getIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int skiCheckedCounter = 0;
+        int skiNotCheckedCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+
+            boolean skiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_ISKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                    skiCheckFound = true;
+                }
+            }
+            if (skiCheckFound) {
+                ++skiCheckedCounter;
+            } else {
+                ++skiNotCheckedCounter;
+            }
+        }
+        assertEquals(2, skiCheckedCounter);
+        assertEquals(1, skiNotCheckedCounter);
+    }
+
+    @Test
+    void skiNotPresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlSignature xmlSignature = xmlDiagnosticData.getSignatures().get(0);
+        XmlChainItem caChainItem = xmlSignature.getCertificateChain().get(1);
+
+        List<XmlCertificateExtension> certificateExtensions = caChainItem.getCertificate().getCertificateExtensions();
+        Iterator<XmlCertificateExtension> iterator = certificateExtensions.iterator();
+        while (iterator.hasNext()) {
+            XmlCertificateExtension certificateExtension = iterator.next();
+            if (CertificateExtensionEnum.SUBJECT_KEY_IDENTIFIER.getOid().equals(certificateExtension.getOID())) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        basicSignatureConstraints.getSigningCertificate().setSubjectKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setSubjectKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_ISKIP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.INDETERMINATE, sigBBB.getConclusion().getIndication());
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, sigBBB.getConclusion().getSubIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.INDETERMINATE, xcv.getConclusion().getIndication());
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, xcv.getConclusion().getSubIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int skiCheckPassedCounter = 0;
+        int skiCheckFailedCounter = 0;
+        int noSkiCheckCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            boolean skiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_ISKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    if (XmlStatus.OK == xmlConstraint.getStatus()) {
+                        assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+                        ++skiCheckPassedCounter;
+
+                    } else if (XmlStatus.NOT_OK == xmlConstraint.getStatus()) {
+                        assertEquals(Indication.INDETERMINATE, subXCV.getConclusion().getIndication());
+                        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, subXCV.getConclusion().getSubIndication());
+                        assertEquals(MessageTag.BBB_XCV_ISKIP_ANS.getId(), xmlConstraint.getError().getKey());
+                        ++skiCheckFailedCounter;
+                    }
+                    skiCheckFound = true;
+                }
+            }
+            if (!skiCheckFound) {
+                assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+                ++noSkiCheckCounter;
+            }
+        }
+        assertEquals(1, skiCheckPassedCounter);
+        assertEquals(1, skiCheckFailedCounter);
+        assertEquals(1, noSkiCheckCounter);
+    }
+
+    @Test
+    void skiNotPresentWarnLevelTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlSignature xmlSignature = xmlDiagnosticData.getSignatures().get(0);
+        XmlChainItem caChainItem = xmlSignature.getCertificateChain().get(1);
+
+        List<XmlCertificateExtension> certificateExtensions = caChainItem.getCertificate().getCertificateExtensions();
+        Iterator<XmlCertificateExtension> iterator = certificateExtensions.iterator();
+        while (iterator.hasNext()) {
+            XmlCertificateExtension certificateExtension = iterator.next();
+            if (CertificateExtensionEnum.SUBJECT_KEY_IDENTIFIER.getOid().equals(certificateExtension.getOID())) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.WARN);
+        basicSignatureConstraints.getSigningCertificate().setSubjectKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setSubjectKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_ISKIP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.PASSED, sigBBB.getConclusion().getIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.PASSED, xcv.getConclusion().getIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int skiCheckPassedCounter = 0;
+        int skiCheckFailedCounter = 0;
+        int noSkiCheckCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+
+            boolean skiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_ISKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    if (XmlStatus.OK == xmlConstraint.getStatus()) {
+                        ++skiCheckPassedCounter;
+
+                    } else if (XmlStatus.WARNING == xmlConstraint.getStatus()) {
+                        assertEquals(MessageTag.BBB_XCV_ISKIP_ANS.getId(), xmlConstraint.getWarning().getKey());
+                        ++skiCheckFailedCounter;
+                    }
+                    skiCheckFound = true;
+                }
+            }
+            if (!skiCheckFound) {
+                ++noSkiCheckCounter;
+            }
+        }
+        assertEquals(1, skiCheckPassedCounter);
+        assertEquals(1, skiCheckFailedCounter);
+        assertEquals(1, noSkiCheckCounter);
+    }
+
+    @Test
+    void akiPresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        basicSignatureConstraints.getSigningCertificate().setAuthorityKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setAuthorityKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.PASSED, sigBBB.getConclusion().getIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.PASSED, xcv.getConclusion().getIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int akiCheckedCounter = 0;
+        int akiNotCheckedCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+
+            boolean akiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_IAKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                    akiCheckFound = true;
+                }
+            }
+            if (akiCheckFound) {
+                ++akiCheckedCounter;
+            } else {
+                ++akiNotCheckedCounter;
+            }
+        }
+        assertEquals(2, akiCheckedCounter);
+        assertEquals(1, akiNotCheckedCounter);
+    }
+
+    @Test
+    void akiNotPresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlSignature xmlSignature = xmlDiagnosticData.getSignatures().get(0);
+        XmlChainItem certChainItem = xmlSignature.getCertificateChain().get(0);
+
+        List<XmlCertificateExtension> certificateExtensions = certChainItem.getCertificate().getCertificateExtensions();
+        Iterator<XmlCertificateExtension> iterator = certificateExtensions.iterator();
+        while (iterator.hasNext()) {
+            XmlCertificateExtension certificateExtension = iterator.next();
+            if (CertificateExtensionEnum.AUTHORITY_KEY_IDENTIFIER.getOid().equals(certificateExtension.getOID())) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        basicSignatureConstraints.getSigningCertificate().setAuthorityKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setAuthorityKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_IAKIP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.INDETERMINATE, sigBBB.getConclusion().getIndication());
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, sigBBB.getConclusion().getSubIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.INDETERMINATE, xcv.getConclusion().getIndication());
+        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, xcv.getConclusion().getSubIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int akiCheckPassedCounter = 0;
+        int akiCheckFailedCounter = 0;
+        int noAkiCheckCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            boolean akiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_IAKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    if (XmlStatus.OK == xmlConstraint.getStatus()) {
+                        assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+                        ++akiCheckPassedCounter;
+
+                    } else if (XmlStatus.NOT_OK == xmlConstraint.getStatus()) {
+                        assertEquals(Indication.INDETERMINATE, subXCV.getConclusion().getIndication());
+                        assertEquals(SubIndication.CERTIFICATE_CHAIN_GENERAL_FAILURE, subXCV.getConclusion().getSubIndication());
+                        assertEquals(MessageTag.BBB_XCV_IAKIP_ANS.getId(), xmlConstraint.getError().getKey());
+                        ++akiCheckFailedCounter;
+                    }
+                    akiCheckFound = true;
+                }
+            }
+            if (!akiCheckFound) {
+                assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+                ++noAkiCheckCounter;
+            }
+        }
+        assertEquals(1, akiCheckPassedCounter);
+        assertEquals(1, akiCheckFailedCounter);
+        assertEquals(1, noAkiCheckCounter);
+    }
+
+    @Test
+    void akiNotPresentWarnLevelTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlSignature xmlSignature = xmlDiagnosticData.getSignatures().get(0);
+        XmlChainItem certChainItem = xmlSignature.getCertificateChain().get(0);
+
+        List<XmlCertificateExtension> certificateExtensions = certChainItem.getCertificate().getCertificateExtensions();
+        Iterator<XmlCertificateExtension> iterator = certificateExtensions.iterator();
+        while (iterator.hasNext()) {
+            XmlCertificateExtension certificateExtension = iterator.next();
+            if (CertificateExtensionEnum.AUTHORITY_KEY_IDENTIFIER.getOid().equals(certificateExtension.getOID())) {
+                iterator.remove();
+                break;
+            }
+        }
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        BasicSignatureConstraints basicSignatureConstraints = validationPolicy.getSignatureConstraints().getBasicSignatureConstraints();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.WARN);
+        basicSignatureConstraints.getSigningCertificate().setAuthorityKeyIdentifierPresent(constraint);
+        basicSignatureConstraints.getCACertificate().setAuthorityKeyIdentifierPresent(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationWarnings(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_IAKIP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks sigBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(sigBBB);
+        assertEquals(Indication.PASSED, sigBBB.getConclusion().getIndication());
+
+        XmlXCV xcv = sigBBB.getXCV();
+        assertNotNull(xcv);
+        assertEquals(Indication.PASSED, xcv.getConclusion().getIndication());
+
+        List<XmlSubXCV> subXCVs = xcv.getSubXCV();
+        assertEquals(3, subXCVs.size());
+
+        int akiCheckPassedCounter = 0;
+        int akiCheckFailedCounter = 0;
+        int noAkiCheckCounter = 0;
+        for (XmlSubXCV subXCV : subXCVs) {
+            assertEquals(Indication.PASSED, subXCV.getConclusion().getIndication());
+
+            boolean akiCheckFound = false;
+            for (XmlConstraint xmlConstraint : subXCV.getConstraint()) {
+                if (MessageTag.BBB_XCV_IAKIP.getId().equals(xmlConstraint.getName().getKey())) {
+                    if (XmlStatus.OK == xmlConstraint.getStatus()) {
+                        ++akiCheckPassedCounter;
+
+                    } else if (XmlStatus.WARNING == xmlConstraint.getStatus()) {
+                        assertEquals(MessageTag.BBB_XCV_IAKIP_ANS.getId(), xmlConstraint.getWarning().getKey());
+                        ++akiCheckFailedCounter;
+                    }
+                    akiCheckFound = true;
+                }
+            }
+            if (!akiCheckFound) {
+                ++noAkiCheckCounter;
+            }
+        }
+        assertEquals(1, akiCheckPassedCounter);
+        assertEquals(1, akiCheckFailedCounter);
+        assertEquals(1, noAkiCheckCounter);
     }
 
 }

@@ -53,6 +53,7 @@ import eu.europa.esig.dss.validation.process.bbb.xcv.crs.CertificateRevocationSe
 import eu.europa.esig.dss.validation.process.bbb.xcv.rfc.RevocationFreshnessChecker;
 import eu.europa.esig.dss.validation.process.bbb.xcv.rfc.checks.RevocationDataAvailableCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.AuthorityInfoAccessPresentCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.AuthorityKeyIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.BasicConstraintsCACheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.BasicConstraintsMaxPathLengthCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateAlgorithmObsolescenceValidationCheck;
@@ -77,6 +78,8 @@ import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcCCL
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcComplianceCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcEuLimitValueCurrencyCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcEuPDSLocationCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcIdentificationMethodCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcQSCDLegislationCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcSSCDCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcTypeCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateRevocationSelectorResultCheck;
@@ -106,6 +109,7 @@ import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.RevocationIssuer
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.RevocationIssuerValidityRangeCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.SerialNumberCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.StateCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.SubjectKeyIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.SurnameCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.TitleCheck;
 
@@ -265,6 +269,10 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 
 		item = item.setNextItem(certificatePS2DQcCompetentAuthorityId(currentCertificate, subContext));
 
+		item = item.setNextItem(certificateQcQCSDLegislation(currentCertificate, subContext));
+
+		item = item.setNextItem(certificateQcIdentificationMethod(currentCertificate, subContext));
+
 		item = item.setNextItem(certificateSignatureValid(currentCertificate, subContext));
 
 		item = item.setNextItem(ca(currentCertificate, subContext));
@@ -282,6 +290,17 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 		item = item.setNextItem(policyTree(currentCertificate, subContext));
 
 		item = item.setNextItem(nameConstraints(currentCertificate, subContext));
+
+		/*
+		 * RFC 5280, "4.2.1.1. Authority Key Identifier".
+		 * There is one exception; where a CA distributes its public key in the form of a "self-signed"
+		 * certificate, the authority key identifier MAY be omitted.
+		 */
+		if (!currentCertificate.isSelfSigned()) {
+			item = item.setNextItem(authorityKeyIdentifierPresent(currentCertificate, subContext));
+		}
+
+		item = item.setNextItem(subjectKeyIdentifierPresent(currentCertificate, subContext));
 
 		if (currentCertificate.isNoRevAvail()) {
 			item = item.setNextItem(noRevAvail(currentCertificate, subContext));
@@ -452,6 +471,16 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 	private ChainItem<XmlSubXCV> nameConstraints(CertificateWrapper certificate, SubContext subContext) {
 		LevelRule constraint = validationPolicy.getCertificateNameConstraintsConstraint(context, subContext);
 		return new CertificateNameConstraintsCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private AuthorityKeyIdentifierPresentCheck authorityKeyIdentifierPresent(CertificateWrapper certificate, SubContext subContext) {
+		LevelRule constraint = validationPolicy.getCertificateAuthorityKeyIdentifierPresentConstraint(context, subContext);
+		return new AuthorityKeyIdentifierPresentCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> subjectKeyIdentifierPresent(CertificateWrapper certificate, SubContext subContext) {
+		LevelRule constraint = validationPolicy.getCertificateSubjectKeyIdentifierPresentConstraint(context, subContext);
+		return new SubjectKeyIdentifierPresentCheck(i18nProvider, result, certificate, constraint);
 	}
 
 	private ChainItem<XmlSubXCV> noRevAvail(CertificateWrapper certificate, SubContext subContext) {
@@ -674,6 +703,16 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 	private ChainItem<XmlSubXCV> certificatePS2DQcCompetentAuthorityId(CertificateWrapper certificate, SubContext subContext) {
 		MultiValuesRule constraint = validationPolicy.getCertificatePS2DQcCompetentAuthorityIdConstraint(context, subContext);
 		return new CertificatePS2DQcCompetentAuthorityIdCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> certificateQcQCSDLegislation(CertificateWrapper certificate, SubContext subContext) {
+		MultiValuesRule constraint = validationPolicy.getCertificateQcQSCDLegislationConstraint(context, subContext);
+		return new CertificateQcQSCDLegislationCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> certificateQcIdentificationMethod(CertificateWrapper certificate, SubContext subContext) {
+		MultiValuesRule constraint = validationPolicy.getCertificateQcIdentificationMethodConstraint(context, subContext);
+		return new CertificateQcIdentificationMethodCheck(i18nProvider, result, certificate, constraint);
 	}
 
 	private ChainItem<XmlSubXCV> certificateCryptographic() {

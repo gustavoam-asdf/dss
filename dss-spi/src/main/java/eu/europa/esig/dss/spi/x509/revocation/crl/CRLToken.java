@@ -86,6 +86,7 @@ public class CRLToken extends RevocationToken<CRL> {
 		this.thisUpdate = crlValidity.getThisUpdate();
 		this.productionDate = crlValidity.getThisUpdate(); // dates are equals in case of CRL
 		this.nextUpdate = crlValidity.getNextUpdate();
+		this.crlNumber = crlValidity.getCRLNumber();
 		this.expiredCertsOnCRL = crlValidity.getExpiredCertsOnCRL();
 
 		CertificateToken issuerToken = crlValidity.getIssuerToken();

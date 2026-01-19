@@ -30,7 +30,7 @@ import eu.europa.esig.dss.tsl.dto.condition.KeyUsageCondition;
 import eu.europa.esig.dss.tsl.dto.condition.PolicyIdCondition;
 import eu.europa.esig.dss.tsl.dto.condition.QCStatementCondition;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 import eu.europa.esig.trustedlist.jaxb.ecc.CriteriaListType;
 import eu.europa.esig.trustedlist.jaxb.ecc.KeyUsageBitType;
 import eu.europa.esig.trustedlist.jaxb.ecc.KeyUsageType;

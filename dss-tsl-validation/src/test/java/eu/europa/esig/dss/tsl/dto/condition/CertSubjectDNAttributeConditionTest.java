@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.trustedlist.enums.Assert;
+import eu.europa.esig.dss.enumerations.Assert;
 
 class CertSubjectDNAttributeConditionTest {
 

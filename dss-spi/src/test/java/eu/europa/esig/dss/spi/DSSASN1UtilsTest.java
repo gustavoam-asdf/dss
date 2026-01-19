@@ -37,6 +37,7 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTCTime;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.DERUniversalString;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -54,6 +55,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Hashtable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -235,21 +237,31 @@ class DSSASN1UtilsTest {
 		String issuerName3 = "2.5.4.97=#0C0E4E545245452D3130373437303133,O=AS Sertifitseerimiskeskus,C=EE,CN=ESTEID-SK 2015";
 		String issuerName4 = "2.5.4.97=#0C0E4E545245452D3130373437303133,O=AS Sertifitseerimiskeskus,C=BE,CN=ESTEID-SK 2015";
 		String issuerName5 = "2.5.4.97=#0C0E4E545245452D3130373437303133,O=AS Sertifitseerimiskeskus,CN=ESTEID-SK 2015";
-		X500Principal x500Principal1 = DSSUtils.getX500PrincipalOrNull(issuerName1);
+		String issuerName6 = "CN=ESTEID-SK 2015,\n   2.5.4.97=#0C0E4E545245452D3130373437303133,\n   O=AS Sertifitseerimiskeskus,\n   C=EE\n   ";
+		String issuerName7 = "2.5.4.97=#0C0E4E545245452D3130373437303133,   \n   O=AS Sertifitseerimiskeskus,   \n   C=EE,   \n   CN=ESTEID-SK 2015   \n   ";
+		X500Principal x500Principal1 = DSSASN1Utils.getX500PrincipalOrNull(issuerName1);
 		assertNotNull(x500Principal1);
-		X500Principal x500Principal2 = DSSUtils.getX500PrincipalOrNull(issuerName2);
+		X500Principal x500Principal2 = DSSASN1Utils.getX500PrincipalOrNull(issuerName2);
 		assertNotNull(x500Principal2);
-		X500Principal x500Principal3 = DSSUtils.getX500PrincipalOrNull(issuerName3);
+		X500Principal x500Principal3 = DSSASN1Utils.getX500PrincipalOrNull(issuerName3);
 		assertNotNull(x500Principal3);
-		X500Principal x500Principal4 = DSSUtils.getX500PrincipalOrNull(issuerName4);
+		X500Principal x500Principal4 = DSSASN1Utils.getX500PrincipalOrNull(issuerName4);
 		assertNotNull(x500Principal4);
-		X500Principal x500Principal5 = DSSUtils.getX500PrincipalOrNull(issuerName5);
+		X500Principal x500Principal5 = DSSASN1Utils.getX500PrincipalOrNull(issuerName5);
 		assertNotNull(x500Principal5);
+		X500Principal x500Principal6 = DSSASN1Utils.getX500PrincipalOrNull(issuerName6);
+		assertNotNull(x500Principal6);
+		X500Principal x500Principal7 = DSSASN1Utils.getX500PrincipalOrNull(issuerName7);
+		assertNotNull(x500Principal7);
         assertTrue(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal2));
         assertTrue(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal3));
         assertFalse(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal4));
+		assertFalse(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal5));
         assertFalse(DSSASN1Utils.x500PrincipalAreEquals(x500Principal5, x500Principal4));
 		assertFalse(DSSASN1Utils.x500PrincipalAreEquals(x500Principal4, x500Principal5));
+		assertTrue(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal6));
+		assertTrue(DSSASN1Utils.x500PrincipalAreEquals(x500Principal1, x500Principal7));
+		assertTrue(DSSASN1Utils.x500PrincipalAreEquals(x500Principal6, x500Principal7));
 	}
 
 	@Test
@@ -342,6 +354,28 @@ class DSSASN1UtilsTest {
 		assertFalse(DSSASN1Utils.isAsn1Encoded(new Date().toString().getBytes()));
 		assertFalse(DSSASN1Utils.isAsn1Encoded(DSSUtils.EMPTY_BYTE_ARRAY));
 		assertFalse(DSSASN1Utils.isAsn1Encoded(null));
+	}
+
+	@Test
+	void isEmpty() {
+		assertTrue(DSSASN1Utils.isEmpty(null));
+		assertTrue(DSSASN1Utils.isEmpty(new AttributeTable(new Hashtable<>())));
+		Hashtable<ASN1ObjectIdentifier, Object> nonEmpty = new Hashtable<>();
+		nonEmpty.put(new ASN1ObjectIdentifier("1.2.3.4.5"), 4);
+		assertFalse(DSSASN1Utils.isEmpty(new AttributeTable(nonEmpty)));
+	}
+
+	@Test
+	void emptyIfNull() {
+		assertNotNull(DSSASN1Utils.emptyIfNull(null));
+
+		Hashtable<ASN1ObjectIdentifier, Object> nonEmpty = new Hashtable<>();
+		nonEmpty.put(new ASN1ObjectIdentifier("1.2.3.4.5"), 4);
+		AttributeTable attributeTable = new AttributeTable(nonEmpty);
+
+		AttributeTable emptyIfNull = DSSASN1Utils.emptyIfNull(attributeTable);
+		assertNotNull(emptyIfNull);
+		assertEquals(attributeTable, emptyIfNull);
 	}
 
 	@Test

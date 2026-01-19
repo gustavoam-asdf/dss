@@ -23,6 +23,7 @@ package eu.europa.esig.dss.model.tsl;
 import eu.europa.esig.dss.enumerations.MRAEquivalenceContext;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Contains information about MRA equivalence mapping
@@ -100,6 +101,34 @@ public class CertificateContentEquivalence implements Serializable {
 	 */
 	public void setContentReplacement(QCStatementOids contentReplacement) {
 		this.contentReplacement = contentReplacement;
+	}
+
+	@Override
+	public String toString() {
+		return "CertificateContentEquivalence [" +
+				"context=" + context +
+				", condition=" + condition +
+				", contentReplacement=" + contentReplacement +
+				']';
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		CertificateContentEquivalence that = (CertificateContentEquivalence) object;
+		return context == that.context
+				&& Objects.equals(condition, that.condition)
+				&& Objects.equals(contentReplacement, that.contentReplacement);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(context);
+		result = 31 * result + Objects.hashCode(condition);
+		result = 31 * result + Objects.hashCode(contentReplacement);
+		return result;
 	}
 
 }

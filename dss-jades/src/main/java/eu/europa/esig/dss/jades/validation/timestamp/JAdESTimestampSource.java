@@ -445,9 +445,12 @@ public class JAdESTimestampSource extends SignatureTimestampSource<JAdESSignatur
 	protected List<AdvancedSignature> getCounterSignatures(JAdESAttribute unsignedAttribute) {
 		if (unsignedAttribute instanceof EtsiUComponent) {
 			EtsiUComponent etsiUComponent = (EtsiUComponent) unsignedAttribute;
-			JAdESSignature counterSignature = DSSJsonUtils.extractJAdESCounterSignature(etsiUComponent, signature);
-			if (counterSignature != null) {
-				return Collections.singletonList(counterSignature);
+			List<AdvancedSignature> counterSignatures = signature.getCounterSignatures();
+			for (AdvancedSignature counterSignature : counterSignatures) {
+				if (etsiUComponent == ((JAdESSignature) counterSignature).getMasterCSigComponent()) {
+					// NOTE: only one counter signature is allowed within the CounterSignature unprotected header
+					return Collections.singletonList(counterSignature);
+				}
 			}
 		}
 		return Collections.emptyList();

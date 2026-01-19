@@ -20,18 +20,13 @@
  */
 package eu.europa.esig.dss.crl.x509.impl;
 
-import org.junit.jupiter.api.Disabled;
-
 import eu.europa.esig.dss.crl.AbstractTestCRLUtils;
-import org.junit.jupiter.api.Test;
 
 class CRLUtilsX509CRLImplTest extends AbstractTestCRLUtils {
 
-	@Test
 	@Override
-	@Disabled("memory crash")
 	public void testHugeCRL() {
-		// empty
+		// disabled (memory chrash)
 	}
 
 }

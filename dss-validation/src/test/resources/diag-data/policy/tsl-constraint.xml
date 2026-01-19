@@ -38,6 +38,7 @@
 			<CertDigestPresent Level="FAIL" />
 			<CertDigestMatch Level="FAIL" />
 			<SigningTime Level="FAIL" />
+			<SigningTimeInCertRange Level="FAIL" />
 		</SignedAttributes>
 	</SignatureConstraints>
 </ConstraintsParameters>

@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -126,6 +127,58 @@ class FileCacheCRLSourceTest extends OnlineSourceTest {
 		assertNotNull(savedRevocationToken);
 		assertEquals(revocationToken.getNextUpdate(), savedRevocationToken.getNextUpdate());
 		assertEquals(RevocationOrigin.EXTERNAL, savedRevocationToken.getExternalOrigin()); // expired crl
+	}
+
+	@Test
+	void testMultipleCRLUsers() {
+		CommonsDataLoader dataLoader = new CommonsDataLoader();
+
+		CertificateToken goodCa = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/good-ca.crt"));
+		CertificateToken altCa = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/expired-ca.crt"));
+		CertificateToken rootCa = DSSUtils.loadCertificate(dataLoader.get(ONLINE_PKI_HOST + "/crt/root-ca.crt"));
+
+		CRLToken firstCRLToken = fileCacheCRLSource.getRevocationToken(goodCa, rootCa);
+		assertNull(firstCRLToken);
+
+		CRLToken secondCRLToken = fileCacheCRLSource.getRevocationToken(altCa, rootCa);
+		assertNull(secondCRLToken);
+
+		fileCacheCRLSource.setProxySource(new OnlineCRLSource());
+		fileCacheCRLSource.setDefaultNextUpdateDelay(180L); // cache expiration in 180 seconds
+
+		firstCRLToken = fileCacheCRLSource.getRevocationToken(goodCa, rootCa);
+		assertNotNull(firstCRLToken);
+		secondCRLToken = fileCacheCRLSource.getRevocationToken(altCa, rootCa);
+		assertNotNull(secondCRLToken);
+
+		assertEquals(firstCRLToken.getDSSIdAsString(), secondCRLToken.getDSSIdAsString());
+
+		CRLToken firstCRLTokenUpdated = fileCacheCRLSource.getRevocationToken(goodCa, rootCa);
+		assertNotNull(firstCRLTokenUpdated);
+		CRLToken secondCRLTokenUpdated = fileCacheCRLSource.getRevocationToken(altCa, rootCa);
+		assertNotNull(secondCRLTokenUpdated);
+
+		assertEquals(firstCRLTokenUpdated.getDSSIdAsString(), secondCRLTokenUpdated.getDSSIdAsString());
+		assertEquals(firstCRLToken.getDSSIdAsString(), firstCRLTokenUpdated.getDSSIdAsString());
+		assertEquals(secondCRLToken.getDSSIdAsString(), secondCRLTokenUpdated.getDSSIdAsString());
+
+		// Force refresh (1 second)
+		fileCacheCRLSource.setMaxNextUpdateDelay(1L);
+
+		// wait one second
+		Calendar nextSecond = Calendar.getInstance();
+		nextSecond.setTime(secondCRLTokenUpdated.getThisUpdate());
+		nextSecond.add(Calendar.SECOND, 1);
+		await().atMost(2, TimeUnit.SECONDS).until(() -> Calendar.getInstance().getTime().after(nextSecond.getTime()));
+
+		firstCRLTokenUpdated = fileCacheCRLSource.getRevocationToken(goodCa, rootCa);
+		assertNotNull(firstCRLTokenUpdated);
+		secondCRLTokenUpdated = fileCacheCRLSource.getRevocationToken(altCa, rootCa);
+		assertNotNull(secondCRLTokenUpdated);
+
+		assertEquals(firstCRLTokenUpdated.getDSSIdAsString(), secondCRLTokenUpdated.getDSSIdAsString());
+		assertNotEquals(firstCRLToken.getDSSIdAsString(), firstCRLTokenUpdated.getDSSIdAsString());
+		assertNotEquals(secondCRLToken.getDSSIdAsString(), secondCRLTokenUpdated.getDSSIdAsString());
 	}
 
 	private void compareTokens(CRLToken originalCRL, CRLToken cachedCRL) {

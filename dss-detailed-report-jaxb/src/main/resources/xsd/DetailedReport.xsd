@@ -64,6 +64,14 @@
 	</xs:complexType>
 	
 	<xs:complexType name="Certificate">
+		<xs:sequence>
+			<xs:element name="CertificateQualificationProcess" type="CertificateQualificationProcess" />
+			<xs:element name="QWACProcess" type="QWACProcess" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="Id" type="xs:string" />
+	</xs:complexType>
+	
+	<xs:complexType name="CertificateQualificationProcess">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
@@ -109,6 +117,7 @@
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
 					<xs:element name="ValidationCertificateQualification" type="ValidationCertificateQualification" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="QWACProcess" type="QWACProcess" minOccurs="0" />
 				</xs:sequence>
 				<xs:attribute name="SignatureQualification" type="SignatureQualification" use="required" />
 			</xs:extension>
@@ -122,6 +131,27 @@
         		<xs:attribute name="DateTime" type="xs:dateTime" />
         		<xs:attribute name="ValidationTime" type="ValidationTime" />
 				<xs:attribute name="CertificateQualification" type="CertificateQualification" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="QWACProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="ValidationQWACProcess" type="ValidationQWACProcess" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="Id" type="xs:string" use="required" />
+				<xs:attribute name="QWACType" type="QWACProfile" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationQWACProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:attribute name="Id" type="xs:string" use="required" />
+				<xs:attribute name="QWACType" type="QWACProfile" use="optional" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -575,6 +605,15 @@
 			<xs:enumeration value="VALIDATION_TIME" />
 			<xs:enumeration value="TIMESTAMP_GENERATION_TIME" />
 			<xs:enumeration value="TIMESTAMP_POE_TIME" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="QWACProfile" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="1-QWAC" />
+			<xs:enumeration value="2-QWAC" />
+			<xs:enumeration value="TLS certificate supported by 2-QWAC" />
+			<xs:enumeration value="Not QWAC" />
 		</xs:restriction>
 	</xs:simpleType>
 	

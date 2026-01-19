@@ -135,7 +135,7 @@ public class ASiCEWithXAdESManifestBuilder {
 			DomUtils.setAttributeNS(fileDom, ManifestNamespace.NS, ManifestAttribute.FULL_PATH, entry.getUri());
 			MimeType mimeType = entry.getMimeType();
 			if (mimeType == null) {
-				LOG.warn("No MimeType is defined for a manifest entry with name '{}'! Using a default MimeType...", entry.getDocumentName());
+				LOG.warn("No MimeType is defined for a manifest entry with URI '{}'! Using a default MimeType...", entry.getUri());
 				mimeType = MimeTypeEnum.BINARY;
 			}
 			DomUtils.setAttributeNS(fileDom, ManifestNamespace.NS, ManifestAttribute.MEDIA_TYPE, mimeType.getMimeTypeString());

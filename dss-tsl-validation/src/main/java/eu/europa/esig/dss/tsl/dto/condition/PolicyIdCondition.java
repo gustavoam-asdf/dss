@@ -94,4 +94,19 @@ public class PolicyIdCondition implements Condition {
 	public String toString() {
 		return toString("");
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		PolicyIdCondition that = (PolicyIdCondition) object;
+		return policyOid.equals(that.policyOid);
+	}
+
+	@Override
+	public int hashCode() {
+		return policyOid.hashCode();
+	}
+
 }

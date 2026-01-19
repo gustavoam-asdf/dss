@@ -22,59 +22,66 @@ package eu.europa.esig.dss.pades.signature;
 
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESLevelBaselineB;
-import eu.europa.esig.dss.spi.DSSASN1Utils;
-import eu.europa.esig.dss.utils.Utils;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import eu.europa.esig.dss.model.DSSMessageDigest;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.cms.CMSAttributeTableGenerator;
-
-import java.util.Map;
 
 /**
  * PAdES Baseline B signature
  *
  */
-class PAdESLevelBaselineB {
+public class PAdESLevelBaselineB extends CAdESLevelBaselineB {
+
+	/** Message digest computed on the PAdES revision */
+	private final DSSMessageDigest messageDigest;
 
 	/**
-	 * Builds the signed attributes {@code AttributeTable}
+	 * Default constructor
 	 *
-	 * @param params map of parameters
-	 * @param cadesProfile {@link CAdESLevelBaselineB}
-	 * @param parameters {@link CAdESSignatureParameters}
-	 * @param messageDigest the message digest value
-	 * @return {@link AttributeTable}
+	 * @param messageDigest {@link DSSMessageDigest}
 	 */
-	AttributeTable getSignedAttributes(Map<?, ?> params, CAdESLevelBaselineB cadesProfile,
-									   CAdESSignatureParameters parameters, byte[] messageDigest) {
+	public PAdESLevelBaselineB(final DSSMessageDigest messageDigest) {
+		this.messageDigest = messageDigest;
+	}
 
-		AttributeTable signedAttributes = cadesProfile.getSignedAttributes(parameters);
+	@Override
+	protected void addSigningTimeAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		// In PAdES, we don't include the signing time : ETSI TS 102 778-3 V1.2.1
+		// (2010-07): 4.5.3 signing-time Attribute
+	}
 
-		if (Utils.isArrayEmpty(DSSASN1Utils.getAsn1Attributes(signedAttributes, CMSAttributes.contentType))) {
-			ASN1ObjectIdentifier contentType = (ASN1ObjectIdentifier) params.get(CMSAttributeTableGenerator.CONTENT_TYPE);
-			// contentType will be null if we're trying to generate a counter signature.
-			if (contentType != null) {
-				signedAttributes = signedAttributes.add(CMSAttributes.contentType, contentType);
-			}
-		}
+	@Override
+	protected void addSignerLocation(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		// In PAdES, the role is in the signature dictionary
+	}
 
-		if (Utils.isArrayEmpty(DSSASN1Utils.getAsn1Attributes(signedAttributes, CMSAttributes.messageDigest))) {
-			signedAttributes = signedAttributes.add(CMSAttributes.messageDigest, new DEROctetString(messageDigest));
-		}
+	@Override
+	protected void addContentIdentifier(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		// this attribute is prohibited in PAdES B
+	}
 
-		return signedAttributes;
+	@Override
+	protected void addMimeType(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		// skip for PAdES
+	}
+
+	@Override
+	protected void addSignedAttributes(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		super.addSignedAttributes(parameters, signedAttributes);
+		addMessageImprint(parameters, signedAttributes);
 	}
 
 	/**
-	 * Builds the unsigned attributes {@code AttributeTable}
+	 * Adds a message-imprint property
 	 *
-	 * @return {@link AttributeTable}
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
 	 */
-	AttributeTable getUnsignedAttributes() {
-		// Unsigned attributes can't be an empty set (RFC 5652 5.3.)
-		return null;
+	protected void addMessageImprint(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+		signedAttributes.add(new Attribute(CMSAttributes.messageDigest, new DERSet(new DEROctetString(messageDigest.getValue()))));
 	}
 
 }

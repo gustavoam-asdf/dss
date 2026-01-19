@@ -458,22 +458,6 @@ public class CadesLevelBaselineLTATimestampExtractor {
 		return new DEROctetString(digest);
 	}
 
-	private void handleRevocationEncoded(List<DEROctetString> crlHashesList, byte[] revocationEncoded, DigestAlgorithm hashIndexDigestAlgorithm) {
-
-		final byte[] digest = DSSUtils.digest(hashIndexDigestAlgorithm, revocationEncoded);
-		final DEROctetString derOctetStringDigest = new DEROctetString(digest);
-		if (crlHashesList.remove(derOctetStringDigest)) {
-			// attribute present in signature and in timestamp
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("CRL/OCSP present in timestamp {}", DSSUtils.toHex(derOctetStringDigest.getOctets()));
-			}
-		} else {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("CRL/OCSP not present in timestamp {}", DSSUtils.toHex(derOctetStringDigest.getOctets()));
-			}
-		}
-	}
-
 	/**
 	 * The field unsignedAttrsHashIndex is a sequence of octet strings. Each one contains the hash value of one
 	 * instance of Attribute within unsignedAttrs field of the SignerInfo. A hash value for every instance of
@@ -622,7 +606,7 @@ public class CadesLevelBaselineLTATimestampExtractor {
 			LOG.debug("Archive Timestamp Data v3 is:");
 		}
 
-		bytes = getEncodedContentType(signature.getCMS()); // OID
+		bytes = getEncodedContentType(); // OID
 		digestCalculator.update(bytes);
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("eContentType={}", bytes != null ? Utils.toHex(bytes) : bytes);
@@ -654,10 +638,9 @@ public class CadesLevelBaselineLTATimestampExtractor {
 	/**
 	 * 1) The SignedData.encapContentInfo.eContentType.
 	 *
-	 * @param cms {@link CMS}
 	 * @return cms.getSignedContentTypeOID() as DER encoded
 	 */
-	private byte[] getEncodedContentType(final CMS cms) {
+	private byte[] getEncodedContentType() {
 		return DSSASN1Utils.getDEREncoded(signature.getCMS().getSignedContentType());
 	}
 

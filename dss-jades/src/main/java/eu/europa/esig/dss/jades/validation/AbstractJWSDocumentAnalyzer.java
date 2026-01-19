@@ -23,9 +23,8 @@ package eu.europa.esig.dss.jades.validation;
 import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.spi.policy.DefaultSignaturePolicyValidatorLoader;
 import eu.europa.esig.dss.spi.policy.NonASN1SignaturePolicyValidator;
-import eu.europa.esig.dss.spi.policy.SignaturePolicyValidatorLoader;
+import eu.europa.esig.dss.spi.policy.SignaturePolicyValidator;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.analyzer.DefaultDocumentAnalyzer;
 import org.slf4j.Logger;
@@ -93,10 +92,8 @@ public abstract class AbstractJWSDocumentAnalyzer extends DefaultDocumentAnalyze
 	protected abstract JWSJsonSerializationObject buildJwsJsonSerializationObject();
 
 	@Override
-	public SignaturePolicyValidatorLoader getSignaturePolicyValidatorLoader() {
-		DefaultSignaturePolicyValidatorLoader signaturePolicyValidatorLoader = new DefaultSignaturePolicyValidatorLoader();
-		signaturePolicyValidatorLoader.setDefaultSignaturePolicyValidator(new NonASN1SignaturePolicyValidator());
-		return signaturePolicyValidatorLoader;
+	protected SignaturePolicyValidator getDefaultSignaturePolicyValidator() {
+		return new NonASN1SignaturePolicyValidator();
 	}
 
 }

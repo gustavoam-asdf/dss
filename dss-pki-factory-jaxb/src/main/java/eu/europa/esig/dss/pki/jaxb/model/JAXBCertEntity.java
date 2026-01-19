@@ -29,6 +29,7 @@ import eu.europa.esig.dss.pki.model.CertEntity;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
@@ -270,6 +271,15 @@ public class JAXBCertEntity implements CertEntity {
         } catch (GeneralSecurityException e) {
             throw new DSSException("Unable to regenerate the private key");
         }
+    }
+
+    /**
+     * Gets public key of the certificate entity
+     *
+     * @return {@link PublicKey}
+     */
+    public PublicKey getPublicKey() {
+        return getCertificateToken().getPublicKey();
     }
 
     /**

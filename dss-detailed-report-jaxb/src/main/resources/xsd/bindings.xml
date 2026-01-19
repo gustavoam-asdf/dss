@@ -68,6 +68,12 @@
 				parseMethod="eu.europa.esig.dss.jaxb.parsers.RevocationReasonParser.parseShortName" 
 				printMethod="eu.europa.esig.dss.jaxb.parsers.RevocationReasonParser.printShortName" />
 		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:simpleType[@name='QWACProfile']">
+			<jaxb:javaType name="eu.europa.esig.dss.enumerations.QWACProfile"
+						   parseMethod="eu.europa.esig.dss.jaxb.parsers.QWACProfileParser.parse"
+						   printMethod="eu.europa.esig.dss.jaxb.parsers.QWACProfileParser.print" />
+		</jaxb:bindings>
 		
 		
 		<jaxb:bindings node="//xs:complexType[@name='Signature']//xs:element[@name='Timestamp']">

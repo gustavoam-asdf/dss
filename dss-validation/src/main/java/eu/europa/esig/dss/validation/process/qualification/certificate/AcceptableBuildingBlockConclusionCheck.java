@@ -20,8 +20,8 @@
  */
 package eu.europa.esig.dss.validation.process.qualification.certificate;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -32,8 +32,9 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 /**
  * Verifies whether the BasicBuildingBlock's validation succeeded
  *
+ * @param <T> {@code XmlConstraintsConclusion}
  */
-public class AcceptableBuildingBlockConclusionCheck extends ChainItem<XmlCertificate> {
+public class AcceptableBuildingBlockConclusionCheck<T extends XmlConstraintsConclusion> extends ChainItem<T> {
 
 	/** BasicBuildingBlock's validation conclusion */
 	private final XmlConclusion buildingBlockConclusion;
@@ -42,11 +43,11 @@ public class AcceptableBuildingBlockConclusionCheck extends ChainItem<XmlCertifi
 	 * Default constructor
 	 *
 	 * @param i18nProvider {@link I18nProvider}
-	 * @param result {@link XmlCertificate}
+	 * @param result {@link XmlConstraintsConclusion}
 	 * @param buildingBlockConclusion {@link XmlConclusion} to verify
 	 * @param constraint {@link LevelRule}
 	 */
-	public AcceptableBuildingBlockConclusionCheck(I18nProvider i18nProvider, XmlCertificate result,
+	public AcceptableBuildingBlockConclusionCheck(I18nProvider i18nProvider, T result,
 												  XmlConclusion buildingBlockConclusion, LevelRule constraint) {
 		super(i18nProvider, result, constraint);
 

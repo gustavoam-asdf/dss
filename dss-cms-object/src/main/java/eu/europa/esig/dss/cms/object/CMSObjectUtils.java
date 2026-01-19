@@ -29,6 +29,7 @@ import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.signature.resources.DSSResourcesHandlerBuilder;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -99,8 +100,10 @@ public class CMSObjectUtils implements ICMSUtils {
         try (InputStream is = document.openStream()) {
             CMSSignedData cmsSignedData = new CMSSignedData(is);
             return new CMSSignedDataObject(cmsSignedData);
-        } catch (IOException | CMSException e) {
-            throw new DSSException("Not a valid CAdES file", e);
+        } catch (IOException e) {
+            throw new DSSException(String.format("Unable to read a document. Reason : %s", e.getMessage()), e);
+        } catch (CMSException e) {
+            throw new IllegalInputException(String.format("Not a valid CAdES file. Reason : %s", e.getMessage()), e);
         }
     }
 
@@ -110,7 +113,7 @@ public class CMSObjectUtils implements ICMSUtils {
             CMSSignedData cmsSignedData = new CMSSignedData(binaries);
             return new CMSSignedDataObject(cmsSignedData);
         } catch (CMSException e) {
-            throw new DSSException("Not a valid CAdES file", e);
+            throw new IllegalInputException(String.format("Not a valid CAdES file. Reason : %s", e.getMessage()), e);
         }
     }
 

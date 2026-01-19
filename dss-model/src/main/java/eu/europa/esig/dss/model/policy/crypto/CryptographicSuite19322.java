@@ -27,7 +27,7 @@ import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.policy.CryptographicSuite;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +160,7 @@ public class CryptographicSuite19322 implements CryptographicSuite {
 
     public Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> getAcceptableDigestAlgorithms() {
         if (acceptableDigestAlgorithms == null) {
-            acceptableDigestAlgorithms = new HashMap<>();
+            acceptableDigestAlgorithms = new EnumMap<>(DigestAlgorithm.class);
             for (CryptographicSuiteAlgorithm algorithm : algorithmList) {
                 DigestAlgorithm digestAlgorithm = getDigestAlgorithm(algorithm);
                 if (digestAlgorithm == null) {
@@ -207,7 +207,7 @@ public class CryptographicSuite19322 implements CryptographicSuite {
     @Override
     public Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> getAcceptableSignatureAlgorithms() {
         if (acceptableSignatureAlgorithms == null) {
-            acceptableSignatureAlgorithms = new HashMap<>();
+            acceptableSignatureAlgorithms = new EnumMap<>(SignatureAlgorithm.class);
 
             // Step 1. Find all entries matching the SignatureAlgorithm definition
             for (CryptographicSuiteAlgorithm algorithm : algorithmList) {
@@ -224,7 +224,7 @@ public class CryptographicSuite19322 implements CryptographicSuite {
 
             // Step 2b. Extract supported encryption algorithms for mapping
             // NOTE: we build a temp map to avoid conflict with acceptableSignatureAlgorithms during map building
-            Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> tempMap = new HashMap<>();
+            Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> tempMap = new EnumMap<>(SignatureAlgorithm.class);
             for (CryptographicSuiteAlgorithm algorithm : algorithmList) {
                 EncryptionAlgorithm encryptionAlgorithm = getEncryptionAlgorithm(algorithm);
                 if (encryptionAlgorithm == null) {

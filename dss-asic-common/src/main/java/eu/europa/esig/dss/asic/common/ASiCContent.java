@@ -330,7 +330,7 @@ public class ASiCContent implements Serializable {
 	}
 
 	/**
-	 * Sets package.zip" documents
+	 * Sets "package.zip" documents
 	 *
 	 * @param containerDocuments a list of {@link DSSDocument}s
 	 */

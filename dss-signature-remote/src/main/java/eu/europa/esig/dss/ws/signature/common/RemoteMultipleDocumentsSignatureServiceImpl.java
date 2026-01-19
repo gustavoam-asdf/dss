@@ -20,15 +20,16 @@
  */
 package eu.europa.esig.dss.ws.signature.common;
 
-import eu.europa.esig.dss.asic.cades.ASiCWithCAdESSignatureParameters;
-import eu.europa.esig.dss.asic.cades.ASiCWithCAdESTimestampParameters;
-import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
+import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
+import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
+import eu.europa.esig.dss.enumerations.SignatureProfile;
 import eu.europa.esig.dss.enumerations.TimestampContainerForm;
-import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import eu.europa.esig.dss.jades.JAdESTimestampParameters;
+import eu.europa.esig.dss.extension.SignedDocumentExtender;
+import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.TimestampParameters;
 import eu.europa.esig.dss.model.ToBeSigned;
@@ -40,8 +41,7 @@ import eu.europa.esig.dss.ws.dto.SignatureValueDTO;
 import eu.europa.esig.dss.ws.dto.ToBeSignedDTO;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteSignatureParameters;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteTimestampParameters;
-import eu.europa.esig.dss.xades.XAdESSignatureParameters;
-import eu.europa.esig.dss.xades.XAdESTimestampParameters;
+import eu.europa.esig.dss.xades.signature.XAdESService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,16 +59,16 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 	private static final Logger LOG = LoggerFactory.getLogger(RemoteMultipleDocumentsSignatureServiceImpl.class);
 
 	/** XAdES multiple signature service */
-	private MultipleDocumentsSignatureService<XAdESSignatureParameters, XAdESTimestampParameters> xadesService;
+	private XAdESService xadesService;
 
 	/** JAdES multiple signature service */
-	private MultipleDocumentsSignatureService<JAdESSignatureParameters, JAdESTimestampParameters> jadesService;
+	private JAdESService jadesService;
 
 	/** ASiC with XAdES multiple signature service */
-	private MultipleDocumentsSignatureService<ASiCWithCAdESSignatureParameters, ASiCWithCAdESTimestampParameters> asicWithCAdESService;
+	private ASiCWithXAdESService asicWithXAdESService;
 
 	/** ASiC with CAdES multiple signature service */
-	private MultipleDocumentsSignatureService<ASiCWithXAdESSignatureParameters, XAdESTimestampParameters> asicWithXAdESService;
+	private ASiCWithCAdESService asicWithCAdESService;
 
 	/**
 	 * Default constructor instantiating object with null services
@@ -80,36 +80,36 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 	/**
 	 * Sets the XAdES multiple signature service
 	 *
-	 * @param xadesService {@link MultipleDocumentsSignatureService}
+	 * @param xadesService {@link XAdESService}
 	 */
-	public void setXadesService(MultipleDocumentsSignatureService<XAdESSignatureParameters, XAdESTimestampParameters> xadesService) {
+	public void setXadesService(XAdESService xadesService) {
 		this.xadesService = xadesService;
 	}
 
 	/**
 	 * Sets the JAdES multiple signature service
 	 *
-	 * @param jadesService {@link MultipleDocumentsSignatureService}
+	 * @param jadesService {@link JAdESService}
 	 */
-	public void setJadesService(MultipleDocumentsSignatureService<JAdESSignatureParameters, JAdESTimestampParameters> jadesService) {
+	public void setJadesService(JAdESService jadesService) {
 		this.jadesService = jadesService;
 	}
 
 	/**
 	 * Sets the ASiC with XAdES multiple signature service
 	 *
-	 * @param asicWithXAdESService {@link MultipleDocumentsSignatureService}
+	 * @param asicWithXAdESService {@link ASiCWithXAdESService}
 	 */
-	public void setAsicWithXAdESService(MultipleDocumentsSignatureService<ASiCWithXAdESSignatureParameters, XAdESTimestampParameters> asicWithXAdESService) {
+	public void setAsicWithXAdESService(ASiCWithXAdESService asicWithXAdESService) {
 		this.asicWithXAdESService = asicWithXAdESService;
 	}
 
 	/**
 	 * Sets the ASiC with CAdES multiple signature service
 	 *
-	 * @param asicWithCAdESService {@link MultipleDocumentsSignatureService}
+	 * @param asicWithCAdESService {@link ASiCWithCAdESService}
 	 */
-	public void setAsicWithCAdESService(MultipleDocumentsSignatureService<ASiCWithCAdESSignatureParameters, ASiCWithCAdESTimestampParameters> asicWithCAdESService) {
+	public void setAsicWithCAdESService(ASiCWithCAdESService asicWithCAdESService) {
 		this.asicWithCAdESService = asicWithCAdESService;
 	}
 
@@ -181,17 +181,40 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 		return RemoteDocumentConverter.toRemoteDocument(signDocument);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
+	@Deprecated
 	public RemoteDocument extendDocument(RemoteDocument toExtendDocument, RemoteSignatureParameters remoteParameters) {
-		Objects.requireNonNull(toExtendDocument, "toSignDocuments must be defined!");
-		Objects.requireNonNull(remoteParameters, "remoteParameters must be defined!");
-		Objects.requireNonNull(remoteParameters.getSignatureLevel(), "signatureLevel must be defined!");
+		return extendDocument(toExtendDocument, null, remoteParameters);
+	}
+
+	@Override
+	public RemoteDocument extendDocument(RemoteDocument remoteDocument, SignatureProfile signatureProfile, RemoteSignatureParameters remoteParameters) throws DSSException {
+		Objects.requireNonNull(remoteDocument, "remoteDocument must be defined!");
+		if (signatureProfile == null && (remoteParameters == null || remoteParameters.getSignatureLevel() == null)) {
+			throw new NullPointerException("One of the signatureProfile or remoteParameters.signatureLevel must be defined!");
+		}
 		LOG.info("ExtendDocument in process...");
-		SerializableSignatureParameters parameters = createParameters(remoteParameters);
-		MultipleDocumentsSignatureService service = getServiceForSignature(remoteParameters.getSignatureLevel().getSignatureForm(), remoteParameters.getAsicContainerType());
-		DSSDocument dssDocument = RemoteDocumentConverter.toDSSDocument(toExtendDocument);
-		DSSDocument extendDocument = service.extendDocument(dssDocument, parameters);
+
+		DSSDocument dssDocument = RemoteDocumentConverter.toDSSDocument(remoteDocument);
+		SignedDocumentExtender documentExtender = SignedDocumentExtender.fromDocument(dssDocument);
+		documentExtender.setServices(xadesService, jadesService, asicWithXAdESService, asicWithCAdESService);
+
+		SignatureForm signatureForm = documentExtender.getSignatureForm();
+		SerializableSignatureParameters signatureParameters;
+		if (remoteParameters == null) {
+			signatureParameters = null;
+		} else if (documentExtender.isASiC()) {
+			signatureParameters = getASiCSignatureParameters(null, signatureForm);
+		} else {
+			signatureParameters = getSignatureParameters(signatureForm, remoteParameters);
+		}
+		fillParameters(signatureParameters, remoteParameters, signatureForm);
+
+		if (signatureProfile == null) {
+			signatureProfile = remoteParameters.getSignatureLevel().getSignatureProfile();
+		}
+
+		DSSDocument extendDocument = documentExtender.extendDocument(signatureProfile, signatureParameters);
 		LOG.info("ExtendDocument is finished");
 		return RemoteDocumentConverter.toRemoteDocument(extendDocument);
 	}

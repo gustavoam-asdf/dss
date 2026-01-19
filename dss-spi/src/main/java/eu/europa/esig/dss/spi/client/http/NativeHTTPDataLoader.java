@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.spi.client.http;
 
+import eu.europa.esig.dss.model.http.ResponseEnvelope;
 import eu.europa.esig.dss.spi.exception.DSSExternalResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import java.util.concurrent.Callable;
  * Implementation of native java DataLoader using the java.net.URL class.
  *
  */
-public class NativeHTTPDataLoader implements DataLoader {
+public class NativeHTTPDataLoader implements DataLoader, AdvancedDataLoader {
 
 	private static final long serialVersionUID = 4075489539157157286L;
 
@@ -128,10 +129,52 @@ public class NativeHTTPDataLoader implements DataLoader {
 	 * @param content request content
 	 * @param refresh if enforce the refresh
 	 * @return response binaries
+	 * @deprecated since DSS 6.4. Please use {@code #request(url, method, content, refresh, true, false)} method instead.
 	 */
+	@Deprecated
 	protected byte[] request(String url, HttpMethod method, byte[] content, boolean refresh) {
+		return request(url, method, content, refresh, false, true).getResponseBody();
+	}
+
+	/**
+	 * This method creates a task call to be executed by NativeHTTPDataLoader
+	 *
+	 * @param url {@link String} URL to call
+	 * @param method {@link HttpMethod} of the request
+	 * @param content byte array containing a body of the request, when required
+	 * @param refresh defined if the cache should be used
+	 * @param includeResponseDetails whether HTTP content information is to be included in the response object
+	 * @param includeResponseBody whether the response message body is to be included in the output response object
+	 * @return {@link Callable} task
+	 */
+	protected Callable<ResponseEnvelope> createNativeHTTPDataLoaderCall(String url, HttpMethod method, byte[] content,
+			boolean refresh, boolean includeResponseDetails, boolean includeResponseBody) {
+		NativeHTTPDataLoaderCall httpDataLoaderCall = new NativeHTTPDataLoaderCall(url, content);
+		httpDataLoaderCall.setUseCaches(!refresh);
+		httpDataLoaderCall.setMaxInputSize(maxInputSize);
+		httpDataLoaderCall.setConnectTimeout(connectTimeout);
+		httpDataLoaderCall.setReadTimeout(readTimeout);
+		httpDataLoaderCall.setIncludeResponseDetails(includeResponseDetails);
+		httpDataLoaderCall.setIncludeResponseBody(includeResponseBody);
+		return httpDataLoaderCall;
+	}
+
+	/**
+	 * Execute the request
+	 *
+	 * @param url {@link String}
+	 * @param method {@link HttpMethod}
+	 * @param content request content
+	 * @param refresh if enforce the refresh
+	 * @param includeResponseDetails whether HTTP content information is to be included in the response object
+	 * @param includeResponseBody whether the response message body is to be included in the output response object
+	 * @return response binaries
+	 */
+	protected ResponseEnvelope request(String url, HttpMethod method, byte[] content, boolean refresh,
+									   boolean includeResponseDetails, boolean includeResponseBody) {
 		try {
-			Callable<byte[]> task = createNativeDataLoaderCall(url, method, content, refresh);
+			Callable<ResponseEnvelope> task = createNativeHTTPDataLoaderCall(
+					url, method, content, refresh, includeResponseDetails, includeResponseBody);
 			return task.call();
 		} catch (DSSExternalResourceException e) {
 			throw e;
@@ -148,7 +191,10 @@ public class NativeHTTPDataLoader implements DataLoader {
 	 * @param content byte array containing a body of the request, when required
 	 * @param refresh defined if the cache should be used
 	 * @return {@link Callable} task
+	 * @deprecated since DSS 6.4. Please use {@code #createNativeHTTPDataLoaderCall(
+	 *             String url, HttpMethod method, byte[] content, boolean refresh, boolean includeHTTPContent)} method instead
 	 */
+	@Deprecated
 	protected Callable<byte[]> createNativeDataLoaderCall(String url, HttpMethod method, byte[] content, boolean refresh) {
 		return new NativeDataLoaderCall(url, content, !refresh, maxInputSize, connectTimeout, readTimeout);
 	}
@@ -183,12 +229,42 @@ public class NativeHTTPDataLoader implements DataLoader {
 	 * @return binaries of the extracted data object
 	 */
 	public byte[] get(String url, boolean refresh) {
-		return request(url, HttpMethod.GET, null, refresh);
+		return request(url, HttpMethod.GET, null, refresh, false, true).getResponseBody();
 	}
 
 	@Override
 	public byte[] post(String url, byte[] content) {
-		return request(url, HttpMethod.POST, content, true);
+		return request(url, HttpMethod.POST, content, false, false, true).getResponseBody();
+	}
+
+	@Override
+	public ResponseEnvelope requestGet(String url) {
+		return request(url, HttpMethod.GET, null, false, true, true);
+	}
+
+	@Override
+	public ResponseEnvelope requestGet(String url, boolean includeResponseDetails) {
+		return request(url, HttpMethod.GET, null, false, includeResponseDetails, true);
+	}
+
+	@Override
+	public ResponseEnvelope requestGet(String url, boolean includeResponseDetails, boolean includeResponseBody) {
+		return request(url, HttpMethod.GET, null, false, includeResponseDetails, includeResponseBody);
+	}
+
+	@Override
+	public ResponseEnvelope requestPost(String url, byte[] content) {
+		return request(url, HttpMethod.POST, content, false, true, true);
+	}
+
+	@Override
+	public ResponseEnvelope requestPost(String url, byte[] content, boolean includeResponseDetails) {
+		return request(url, HttpMethod.POST, content, false, includeResponseDetails, true);
+	}
+
+	@Override
+	public ResponseEnvelope requestPost(String url, byte[] content, boolean includeResponseDetails, boolean includeResponseBody) {
+		return request(url, HttpMethod.POST, content, false, includeResponseDetails, includeResponseBody);
 	}
 
 	/**

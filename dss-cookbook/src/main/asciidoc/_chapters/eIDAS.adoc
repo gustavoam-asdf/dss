@@ -48,17 +48,37 @@ An example of a qualification data extraction for a certificate, can be found be
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/validate/CertificateQualificationTest.java[tags=demo]
 ----
 
+[[QWACValidation]]
 ==== Qualified certificate for WebSite Authentication (QWAC)
 
-With DSS, it is possible to validate a SSL certificate against the EUMS TL and the ETSI TS 119 615 (cf. <<R14>>) to determine if it is a Qualified certificate for WebSite Authentication (QWAC).
+Since version `6.4` DSS provides a support of the ETSI TS 119 411-5 <<R32>> standard, allowing validation of qualified certificates for website authentication (QWAC) as in amended Regulation 910/2014 <<R12>>.
 
-DSS provides a special class `SSLCertificateLoader` allowing to extract the SSL certificate chain from the given URL. The qualification verification is similar to the example defined in chapter <<CertificateQualificationDetermination>>.
+DSS supports validation of the following profiles, according to the standard:
+
+* 1-QWAC;
+* 2-QWAC.
+
+For validation, a website URL should be provided to the `QWACValidator` class in order to establish whether the secure connection is supported by a QWAC.
 
 [source,java,indent=0]
-.Validate an SSL certificate and retrieve its qualification level
+.Validate a TLS/SSL certificate and retrieve its qualification status
 ----
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/validate/QWACValidationTest.java[tags=demo]
 ----
+
+For configuration of the validation constraints related to a TLS certificate and/or TLS Certificate Binding signature, please see <<validationPolicy>>. For validation of TLS certificates, the constraints provided within the `<SignatureConstraints>/<BasicSignatureConstraints>/<SigningCertificate>` element apply.
+
+NOTE: The configuration of the validation checks applies exclusively to basic X.509 certificate or signature validation processes. The qualification checks enforced in the ETSI TS 119 615 <<R14>> and/or ETSI TS 119 411-5 <<R32>> are not configurable.
+
+It is also possible to validate a particular certificate as a TLS/SSL certificate "candidate" against a website URL, without requesting the actual TLS/SSL certificates from a URL connection, as shown in the example below:
+
+[source,java,indent=0]
+.Offline validation of TLS/SSL certificate
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/validate/QWACValidationTest.java[tags=demo-offline]
+----
+
+NOTE: The aforementioned method may not work "out of the box" for 2-QWAC profile validation, that requires extraction of HTTP response headers and access to a TLS Certificate Binding signature. For validation of this profile with a provided certificate an additional configuration may be required, which is out of scope of this documentation.
 
 === Overview of AdES signatures
 

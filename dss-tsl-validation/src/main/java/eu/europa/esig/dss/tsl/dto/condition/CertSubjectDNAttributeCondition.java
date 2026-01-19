@@ -29,6 +29,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Collections.unmodifiableList;
 
@@ -101,6 +102,20 @@ public class CertSubjectDNAttributeCondition implements Condition {
 	@Override
 	public String toString() {
 		return toString("");
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		CertSubjectDNAttributeCondition that = (CertSubjectDNAttributeCondition) object;
+		return Objects.equals(subjectAttributeOids, that.subjectAttributeOids);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(subjectAttributeOids);
 	}
 
 }

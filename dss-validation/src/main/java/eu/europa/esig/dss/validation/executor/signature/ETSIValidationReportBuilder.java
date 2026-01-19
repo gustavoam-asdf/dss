@@ -72,6 +72,7 @@ import eu.europa.esig.dss.enumerations.RevocationRefOrigin;
 import eu.europa.esig.dss.enumerations.RevocationType;
 import eu.europa.esig.dss.enumerations.SignaturePolicyType;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampQualification;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.jaxb.object.Message;
@@ -821,8 +822,14 @@ public class ETSIValidationReportBuilder {
 	}
 
 	private void fillIndicationSubIndication(ValidationStatusType validationStatus, String tokenId) {
-		validationStatus.setMainIndication(detailedReport.getFinalIndication(tokenId));
-		validationStatus.getSubIndication().add(detailedReport.getFinalSubIndication(tokenId));
+		Indication finalIndication = detailedReport.getFinalIndication(tokenId);
+		if (finalIndication != null) {
+			validationStatus.setMainIndication(finalIndication);
+		}
+		SubIndication finalSubIndication = detailedReport.getFinalSubIndication(tokenId);
+		if (finalSubIndication != null) {
+			validationStatus.getSubIndication().add(finalSubIndication);
+		}
 	}
 
 	private void fillMessages(ValidationStatusType validationStatus, String tokenId) {

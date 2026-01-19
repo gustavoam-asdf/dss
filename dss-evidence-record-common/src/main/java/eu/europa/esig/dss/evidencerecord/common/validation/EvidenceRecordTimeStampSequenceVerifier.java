@@ -221,7 +221,7 @@ public abstract class EvidenceRecordTimeStampSequenceVerifier {
                     if (matchingDocument != null) {
                         digestValues.add(getDocumentDigest(matchingDocument, archiveTimeStampChain));
                     } else {
-                        LOG.warn("Unable to find a matching document for a manifest entry with name {}.", manifestEntry.getDocumentName());
+                        LOG.warn("Unable to find a matching document for a manifest entry with URI {}.", manifestEntry.getUri());
                         digestValues.add(DSSUtils.EMPTY_BYTE_ARRAY);
                     }
 

@@ -38,7 +38,7 @@ public class XAdESProfileParameters extends ProfileParameters {
 	/**
 	 * The XAdES creation profile
 	 */
-	private SignatureProfile profile;
+	private XAdESSignatureProfile profile;
 
 	/**
 	 * The builder used to create the signature structure.
@@ -67,7 +67,7 @@ public class XAdESProfileParameters extends ProfileParameters {
 	 *
 	 * @return the SignatureProfile
 	 */
-	public SignatureProfile getProfile() {
+	public XAdESSignatureProfile getProfile() {
 		return profile;
 	}
 
@@ -75,9 +75,9 @@ public class XAdESProfileParameters extends ProfileParameters {
 	 * Sets the current Profile used to generate the signature or its extension
 	 * 
 	 * @param profile
-	 *            the SignatureProfile
+	 *            the {@link XAdESSignatureProfile}
 	 */
-	public void setProfile(SignatureProfile profile) {
+	public void setProfile(XAdESSignatureProfile profile) {
 		this.profile = profile;
 	}
 

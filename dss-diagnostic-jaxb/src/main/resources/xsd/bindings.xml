@@ -187,6 +187,12 @@
 						 printMethod="eu.europa.esig.dss.jaxb.parsers.PdfLockActionParser.print" />
 	  </jaxb:bindings>
 
+	  <jaxb:bindings node="//xs:simpleType[@name='JWSSerializationType']">
+		  <jaxb:javaType name="eu.europa.esig.dss.enumerations.JWSSerializationType"
+						 parseMethod="eu.europa.esig.dss.jaxb.parsers.JWSSerializationTypeParser.parse"
+						 printMethod="eu.europa.esig.dss.jaxb.parsers.JWSSerializationTypeParser.print" />
+	  </jaxb:bindings>
+
 	  <jaxb:bindings node="//xs:simpleType[@name='CertificationPermission']">
 		  <jaxb:javaType name="eu.europa.esig.dss.enumerations.CertificationPermission"
 						 parseMethod="eu.europa.esig.dss.jaxb.parsers.CertificationPermissionParser.parse"
@@ -362,6 +368,17 @@
             <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList" />
         </jaxb:property>
     </jaxb:bindings>
+
+	  <jaxb:bindings node="//xs:complexType[@name='ConnectionInfo']//xs:element[@name='TLSCertificate']//xs:attribute[@name='Certificate']">
+		  <jaxb:property>
+			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate" />
+		  </jaxb:property>
+	  </jaxb:bindings>
+	  <jaxb:bindings node="//xs:complexType[@name='ConnectionInfo']//xs:element[@name='TLSCertificateBindingSignature']//xs:attribute[@name='Signature']">
+		  <jaxb:property>
+			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignature" />
+		  </jaxb:property>
+	  </jaxb:bindings>
 
   </jaxb:bindings>
 

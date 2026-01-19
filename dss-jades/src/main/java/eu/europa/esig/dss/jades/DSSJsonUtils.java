@@ -79,6 +79,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.ADO_TST;
+import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.EXP;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.IAT;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_D;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_PID;
@@ -165,9 +166,10 @@ public class DSSJsonUtils {
 				/* JAdES TS 119 182-1 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
-				IAT,
+				IAT, EXP,
 				/* RFC7797 'b64' */
-				BASE64URL_ENCODE_PAYLOAD ).collect(Collectors.toSet());
+				BASE64URL_ENCODE_PAYLOAD
+		).collect(Collectors.toSet());
 		
 		criticalHeaderExceptions = Stream.of(
 				/* RFC 7515 */

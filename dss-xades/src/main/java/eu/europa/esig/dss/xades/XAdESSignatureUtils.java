@@ -21,19 +21,19 @@
 package eu.europa.esig.dss.xades;
 
 
-import eu.europa.esig.dss.xades.definition.xadesen.XAdESEvidencerecordNamespaceElement;
-import eu.europa.esig.dss.xades.validation.XAdESAttribute;
-import eu.europa.esig.dss.xades.validation.XAdESUnsignedSigProperties;
-import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.signature.SignatureCryptographicVerification;
+import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.xades.definition.xadesen.XAdESEvidencerecordNamespaceElement;
+import eu.europa.esig.dss.xades.validation.XAdESAttribute;
 import eu.europa.esig.dss.xades.validation.XAdESSignature;
+import eu.europa.esig.dss.xades.validation.XAdESUnsignedSigProperties;
+import eu.europa.esig.dss.xml.utils.DomUtils;
 import org.apache.xml.security.signature.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

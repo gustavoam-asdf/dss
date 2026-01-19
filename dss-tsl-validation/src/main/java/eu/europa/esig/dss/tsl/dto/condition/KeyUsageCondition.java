@@ -105,4 +105,21 @@ public class KeyUsageCondition implements Condition {
 		return toString("");
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		KeyUsageCondition that = (KeyUsageCondition) object;
+		return value == that.value
+				&& bit == that.bit;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(bit);
+		result = 31 * result + Boolean.hashCode(value);
+		return result;
+	}
+
 }

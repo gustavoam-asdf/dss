@@ -20,7 +20,7 @@
  */
 package eu.europa.esig.validationreport;
 
-import eu.europa.esig.trustedlist.TrustedListUtils;
+import eu.europa.esig.trustedlist211.TrustedList211Utils;
 import eu.europa.esig.validationreport.jaxb.ObjectFactory;
 import eu.europa.esig.dss.jaxb.common.XSDAbstractUtils;
 
@@ -76,7 +76,7 @@ public final class ValidationReportUtils extends XSDAbstractUtils {
 
 	@Override
 	public List<Source> getXSDSources() {
-		List<Source> xsdSources = TrustedListUtils.getInstance().getXSDSources();
+		List<Source> xsdSources = TrustedList211Utils.getInstance().getXSDSources();
 		xsdSources.add(new StreamSource(ValidationReportUtils.class.getResourceAsStream(VALIDATION_REPORT_SCHEMA_LOCATION)));
 		return xsdSources;
 	}

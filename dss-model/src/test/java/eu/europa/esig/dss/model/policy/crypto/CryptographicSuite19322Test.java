@@ -1,3 +1,23 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package eu.europa.esig.dss.model.policy.crypto;
 
 import eu.europa.esig.dss.enumerations.CryptographicSuiteAlgorithmUsage;
@@ -13,7 +33,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +102,7 @@ class CryptographicSuite19322Test {
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
                 Collections.singletonList(new EvaluationDTO("2021-01-01"))));
 
-        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(DigestAlgorithm.class);
 
         expected.put(DigestAlgorithm.SHA224, createEvaluations(
                 Collections.singletonList(new EvaluationDTO("2021-01-01"))));
@@ -99,7 +119,7 @@ class CryptographicSuite19322Test {
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
                 Collections.singletonList(new EvaluationDTO("2029-01-01"))));
 
-        expected = new HashMap<>();
+        expected = new EnumMap<>(DigestAlgorithm.class);
 
         expected.put(DigestAlgorithm.SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2021-01-01"), new EvaluationDTO("2029-01-01")
@@ -131,7 +151,7 @@ class CryptographicSuite19322Test {
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
                 Collections.singletonList(new EvaluationDTO(null))));
 
-        expected = new HashMap<>();
+        expected = new EnumMap<>(DigestAlgorithm.class);
 
         expected.put(DigestAlgorithm.SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2021-01-01"), new EvaluationDTO("2029-01-01"), new EvaluationDTO(null)
@@ -195,7 +215,7 @@ class CryptographicSuite19322Test {
         calendar.clear();
         calendar.set(2029, Calendar.JANUARY, 1);
 
-        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(DigestAlgorithm.class);
         expected.put(DigestAlgorithm.SHA224, createEvaluations(Collections.singletonList(new EvaluationDTO("2029-01-01"))));
         expected.put(DigestAlgorithm.SHA256, Collections.singleton(new CryptographicSuiteEvaluation()));
         expected.put(DigestAlgorithm.SHA384, Collections.singleton(new CryptographicSuiteEvaluation()));
@@ -223,7 +243,7 @@ class CryptographicSuite19322Test {
         calendar.clear();
         calendar.set(2029, Calendar.JANUARY, 1);
 
-        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<DigestAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(DigestAlgorithm.class);
         expected.put(DigestAlgorithm.SHA224, createEvaluations(Collections.singletonList(
                 new EvaluationDTO("2000-01-01", "2029-01-01", null, null))));
         expected.put(DigestAlgorithm.SHA256, createEvaluations(Collections.singletonList(
@@ -322,7 +342,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
         
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
         assertEquals(expected, cryptographicSuite.getAcceptableSignatureAlgorithms());
 
         // Add DigestAlgorithm definition
@@ -406,7 +426,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.ECDSA_SHA224, createEvaluations(Collections.singletonList(
                 new EvaluationDTO("2029-01-01"))
@@ -473,7 +493,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.RSA_SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2029-01-01", Collections.singletonList(new ParameterDTO(1900, MODULES_LENGTH))),
@@ -548,7 +568,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.DSA_SHA224, createEvaluations(Collections.singletonList(
                 new EvaluationDTO("2000-01-01", "2029-01-01", Collections.emptyList(), null)
@@ -624,7 +644,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.RSA_SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2010-08-01", Collections.singletonList(new ParameterDTO(786, MODULES_LENGTH))),
@@ -879,7 +899,7 @@ class CryptographicSuite19322Test {
 
         CryptographicSuite19322 cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new HashMap<>();
+        Map<SignatureAlgorithm, Set<CryptographicSuiteEvaluation>> expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.ECDSA_SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2012-08-01", Arrays.asList(
@@ -1060,7 +1080,7 @@ class CryptographicSuite19322Test {
 
         cryptographicSuite = new CryptographicSuite19322(new CryptographicSuiteMetadata(), algorithmList);
 
-        expected = new HashMap<>();
+        expected = new EnumMap<>(SignatureAlgorithm.class);
 
         expected.put(SignatureAlgorithm.ECDSA_SHA224, createEvaluations(Arrays.asList(
                 new EvaluationDTO("2012-08-01", Arrays.asList(

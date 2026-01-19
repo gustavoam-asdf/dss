@@ -22,6 +22,7 @@ package eu.europa.esig.dss.validation.executor.DSS2049;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateQualificationProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
@@ -127,8 +128,9 @@ class DSS2049CertQualTest extends AbstractTestValidationExecutor {
 		
 		List<XmlCertificate> certificates = detailedReport.getCertificates();
 		XmlCertificate xmlCertificate = certificates.get(0);
-		
-		List<XmlConstraint> constraints = xmlCertificate.getConstraint();
+
+		XmlCertificateQualificationProcess certificateQualificationProcess = xmlCertificate.getCertificateQualificationProcess();
+		List<XmlConstraint> constraints = certificateQualificationProcess.getConstraint();
 			
 		int lotlsProcessed = 0;
 		int tlsProcessed = 0;

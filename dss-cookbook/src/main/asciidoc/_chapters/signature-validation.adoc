@@ -205,7 +205,7 @@ By default, DSS provides a JAXB-based XML implementation of a validation policy 
 
 NOTE: The `dss-policy-jaxb` has to be explicitly added within the list of dependencies of your project starting from DSS `6.3`, if a support of XML Validation Policy is required.
 
-The default validation process in DSS is supplied with an AdES based validation policy, allowing a comprehensive validation of both advanced and qualified electronic signatures and seals (please see <<defaultXmlPolicy>> for more information). Should one need to use a customized validation policy, an instance of a `ValidationPolicy` class, containing the desired validation policy should be provided on validation.
+The default validation process in DSS is supplied with an AES based validation policy, allowing a comprehensive validation of both advanced and qualified electronic signatures and seals (please see <<defaultXmlPolicy>> for more information). Should one need to use a customized validation policy, an instance of a `ValidationPolicy` class, containing the desired validation policy should be provided on validation.
 
 The configuration can be provided to a `DocumentValidator`, as demonstrated below:
 
@@ -223,7 +223,7 @@ The `DocumentValidator` may also load the validation policy from a file, see bel
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/Snippets.java[tags=validationPolicyFile]
 ----
 
-This method will search for an available `ValidationPolicyFactory` implementation in the runtime by means of the <<ServiceLoaderAdvanced>>.
+This method will search for an available `ValidationPolicyFactory` implementation at runtime by means of the <<ServiceLoaderAdvanced>>.
 
 For more information about XML Validation Policy and its configuration, please see the section <<JaxbValidationPolicy>>.
 
@@ -289,7 +289,13 @@ Cryptographic constraints define a list of acceptable cryptographic algorithms a
 [[defaultXmlPolicy]]
 ==== The default XML policy
 
-The default XML validation policy is present below.
+DSS provides, within its core code, a validation policy suitable for validating qualified electronic signatures (QES) and advanced electronic signatures (AES). This validation policy is loaded by default when a signature or certificate validation is initiated.
+
+The default validation policy aims to enforce best practices for electronic signature creation and validation; however, its scope may not be exhaustive. It supports the validation of ETSI advanced electronic signature and container formats (i.e. *AdES formats) as well as other popular signature profiles, such as PKCS#7.
+
+NOTE: DSS accepts no responsibility or liability whatsoever regarding the use of the provided validation policy. It is the responsibility of implementers to define a validation policy appropriate for their specific applicability framework.
+
+The default XML validation policy is shown below.
 
 .constraint.xml
 [source,xml]
@@ -330,7 +336,7 @@ A custom cryptographic suite can be provided to a `DocumentValidator` next to th
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/Snippets.java[tags=validationPolicyAndCryptoSuite]
 ----
 
-The `DocumentValidator` will search for an available implementation of a `CryptographicSuiteFactory`, supporting the given cryptographic suite file, in the runtime by means of the <<ServiceLoaderAdvanced>>.
+The `DocumentValidator` will search for an available implementation of a `CryptographicSuiteFactory`, supporting the given cryptographic suite file, at runtime by means of the <<ServiceLoaderAdvanced>>.
 
 NOTE: The cryptographic suite, when provided, overwrites all configuration for validation of cryptographic algorithms, defined in the main validation policy.
 
@@ -392,7 +398,7 @@ As the use of `algorithmUsage` element is optional, it also stays possible to de
 
 In order to create a customized Validation Policy, the class `ValidationPolicyLoader` can be used, incorporating the logic of loading a validation policy with applicable cryptographic suite(s).
 
-In a simple use-case scenario, a default validation policy can be loaded, provided the implementation is discoverable and available to the application in the runtime:
+In a simple use-case scenario, a default validation policy can be loaded, provided the implementation is discoverable and available to the application at runtime:
 
 [source,java,indent=0]
 .Default validation policy creation
@@ -408,7 +414,7 @@ Or, alternatively, the `Validation Policy` can be also loaded from a custom file
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/Snippets.java[tags=validationPolicyLoaderFromFile]
 ----
 
-With the `ValidationPolicyLoader` verifying whether a module supporting the provided validation policy is available in the runtime, and loading the policy using the first found implementation, supporting the given validation policy file.
+With the `ValidationPolicyLoader` verifying whether a module supporting the provided validation policy is available at runtime, and loading the policy using the first found implementation, supporting the given validation policy file.
 
 After that, the created `ValidationPolicy` object can be used to perform a validation of document, as demonstrated below:
 
@@ -926,6 +932,7 @@ The following implementation of a validator factory is present in DSS:
 * `XMLEvidenceRecordValidatorFactory`: loads `XMLEvidenceRecordValidator`, used for an RFC 6283 XMLERS Evidence Record (cf. <<R23>>) validation (delivered in `dss-evidence-record-xml` module);
 * `ANS1EvidenceRecordValidatorFactory`: loads `ASN1EvidenceRecordValidator`, used for an RFC 4998 Evidence Record Syntax (ERS) (cf. <<R24>>) validation (delivered in `dss-evidence-record-asn1` module).
 
+[[SignaturePolicyValidator]]
 ==== Signature Policy Validator
 
 During the signature validation process, the signature policy shall be validated to verify that the retrieved policy is the one that was used for the signature creation. This can be achieved by verifying whether the digest within the `SignaturePolicyIdentifier` signed attribute of the signature matches the computed digest of the retrieved signature policy document.
@@ -940,7 +947,72 @@ The interface `SignaturePolicyValidator` is used to validate a signature policy 
 * `ZeroHashSignaturePolicyValidator`: validates a policy if "zero hash" value is defined in a signature (see <<R02>>);
 * `EmptySignaturePolicyValidator`: is proceeded if a policy file is not found or not accessible.
 
+==== Signature Policy Validator Loader
+
+Signature Policy Validator Loader is used to define a behavior of loading a relevant <<SignaturePolicyValidator>>, e.g. based on the signature and/or signature policy technical specifications.
+
+NOTE: This chapter represents advanced configurations of the validation process. Modifications within the parameter may result to a different validation result.
+
+The chosen `SignaturePolicyValidatorLoader` can be provided directly within a `DocumentValidator` used for the signature validation, as shown below:
+
+[source,java,indent=0]
+.Signature Policy Validator Loader definition
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/SignedDocumentValidatorTest.java[tags=demo-sig-policy-loader]
+----
+
+Within the framework code, DSS delivers a `DefaultSignaturePolicyValidatorLoader` implementation, providing following options:
+
+* *Signature based* signature policy validator loader : the default configuration, that will process the signature policy according to the rules defined in the corresponded AdES signature specification. E.g. when used in XAdES signatures, hash of the signature policy will be computed based on the de-referenced content of the signature policy obtained after processing `SigPolicyId` and `ds:Transforms`, with the exception to the signature policy identifiers definitions explicitly stating the "SPDocDigestAsInSpecification" transform (then the hash computation will be signature policy specific). No configuration should be changed to achieve this behavior.
+* *Chosen validator first* signature policy validator loader : similar to the default configuration from above, but instead of applying the rules based on the signature format specification, it will use the provided "default" `SignaturePolicyValidator` to be loaded for a signature policy hash computation, unless a signature policy technical specification is explicitly specified by a "SPDocDigestAsInSpecification" transform or alternative parameter. The loader can be created by using the `DefaultSignaturePolicyValidatorLoader#defaultUnlessSpecifiedSignaturePolicyValidatorLoader` method.
+* *Chosen validator only* signature policy validator loader : this loader will always use the provided "default" `SignaturePolicyValidator`, in all signature configurations, if set. The loader can be created by using the `DefaultSignaturePolicyValidatorLoader#defaultOnlySignaturePolicyValidatorLoader` method.
+* *Signature Policy based* signature policy validator loader : will load the `SignaturePolicyValidator` implementation solely based on the technical specification of the signature policy, ignoring the signature specific requirements. The loader can be created by using the `DefaultSignaturePolicyValidatorLoader#policyBasedSignaturePolicyValidatorLoader` method.
+
+If a more advanced configuration of the `SignaturePolicyValidator` loading process is required, a custom implementation of the `SignaturePolicyValidatorLoader` can be created.
+
 === Format specificities
+
+==== XAdES
+
+[[XPathQueryExpressions]]
+===== XPath query expressions
+
+Since version `6.5` DSS provides a customization of XPath queries execution, used on a XAdES processing for elements of interest lookup and extraction (mainly in augmentation and validation processes).
+
+The configuration of the default behavior can be useful on processing of large XML documents with many XML nodes inside in order to improve performance of a XAdES augmentation and/or validation.
+
+For customization of the behavior, DSS provides the following interfaces:
+
+* `eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor` - performs node extraction based on XPath expressions execution on XAdES processing, including augmentation and validation processes (less on signing, as it is required only occasionally).
+* `eu.europa.esig.dss.xml.utils.xpath.XPathStringExecutor` - performs string XPath queries execution. Currently only used in pair with the `XAdESSignatureParameters#setXPathLocationString` method usage.
+
+NOTE: The scope of the XPath executors is limited to the aforementioned components. As such, the XPath executors do not currently apply on XPath transform processing within a `ds:Reference` element.
+
+Alternative implementations shall implement the target interface. Within DSS package the following implementations are provided:
+
+* `JavaXmlXPathQueryExecutor` _(Default)_ - The XPath expressions processing implementation based on the `javax.xml.xpath` package classes. This implementation replicates the behavior on XPath processing in previous versions of DSS, before `6.4` (inclusive).
+* `NativeDOMXPathQueryExecutor` _(Experimental)_ - Alternative implementation of XPath expressions handling, aiming to improve the performance of XPath queries execution. This implementation works on pure `org.w3c.dom` package elements, such as `Node` lookup and processing.
+
+NOTE: DSS `6.5` uses the _legacy_ implementation of XPath expressions execution. We aim to switch the default implementation to the `NativeDOMXPathQueryExecutor` in the future version of DSS, thus improving XML processing performance out of the box.
+
+DSS provides two ways of the implementation configuration:
+
+1) Using a `ServiceLoader` _(recommended)_. A definition of the class implementation shall be provided in the folder `META-INF/services` within the root directory of the project, in a file with a name corresponding to the full path of the target interface. For instance, for a `XPathQueryExecutor` implementation configuration, the filename `eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor` shall be used. The file itself shall contain a selected implementation, as shown below for an example:
+[source,indent=0]
+./META-INF/services/eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor
+----
+eu.europa.esig.dss.xml.utils.xpath.NativeDOMXPathQueryExecutor
+----
+
+2) Using `XPathUtils` (for `XPathQueryExecutor` only). The chosen implementation can be provided directly using a corresponding setter within the `XPathUtils` class, as shown below:
+
+[source,java,indent=0]
+.XPathQueryExecutor configuration using XPathUtils
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/XPathSnippet.java[tags=demo]
+----
+
+NOTE: It is also possible to integrate a third-party dependency to be used within a custom alternative XPath executor implementation. As such, successful tests have been performed on using a `Saxon-HE` library for XPath execution.
 
 ==== PAdES
 

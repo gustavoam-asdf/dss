@@ -42,12 +42,18 @@
                 <KeyUsages OID="2.5.29.15" critical="false">
                     <keyUsageBit>digitalSignature</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZjvPAIsofk8PMIMCSz+oGKpUlt8=</ski>
+                </SubjectKeyIdentifier>
                 <OtherExtension OID="2.16.840.1.113730.1.1" critical="false">
                     <octets>BAQDAgAH</octets>
                 </OtherExtension>
                 <OtherExtension OID="2.16.840.1.113730.1.13" critical="false">
                     <octets>BBEWD3hjYSBjZXJ0aWZpY2F0ZQ==</octets>
                 </OtherExtension>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>uVdfoe6yGHtHT5B6r1wWM4Up+Gk=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <Revocations/>
             <DigestAlgoAndValue>
@@ -92,6 +98,12 @@
                 <KeyUsages OID="2.5.29.15" critical="false">
                     <keyUsageBit>digitalSignature</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>jDeHfV69iGnXw+C098R+f5vPujc=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>ICCSqdbQ3q0jpD7J0y/zMDuYuKc=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -137,6 +149,9 @@
                 <KeyUsages OID="2.5.29.15" critical="false">
                     <keyUsageBit>digitalSignature</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>qYlOUIrPmtyAUnh4+qYGU9makF8=</ski>
+                </SubjectKeyIdentifier>
                 <OtherExtension OID="2.16.840.1.113730.1.1" critical="false">
                     <octets>BAQDAgAH</octets>
                 </OtherExtension>

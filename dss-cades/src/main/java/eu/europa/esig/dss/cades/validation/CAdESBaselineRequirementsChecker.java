@@ -445,21 +445,23 @@ public class CAdESBaselineRequirementsChecker extends BaselineRequirementsChecke
     @Override
     public boolean hasExtendedCProfile() {
         SignerInformation signerInformation = signature.getSignerInformation();
+        // NOTE: at least complete-certificate-references shall be present for all self-signed certificates
         // complete-certificate-references
-        if (Utils.arraySize(CAdESUtils.getUnsignedAttributes(signerInformation, PKCSObjectIdentifiers.id_aa_ets_certificateRefs)) != 1) {
+        Attribute[] certificateRefAttrs = CAdESUtils.getUnsignedAttributes(signerInformation, PKCSObjectIdentifiers.id_aa_ets_certificateRefs);
+        int completeCertificateRefsNumberOfOccurrences = getAttributeValuesSize(certificateRefAttrs);
+        if (completeCertificateRefsNumberOfOccurrences > 1 || (completeCertificateRefsNumberOfOccurrences == 0)) {
             LOG.debug("complete-certificate-references attribute shall be present for CAdES-C signature (cardinality == 1)!");
             return false;
         }
-        // complete-revocation-references
+
         ListCertificateSource certificateSources = getCertificateSourcesExceptLastArchiveTimestamp();
         boolean certificateFound = certificateSources.getNumberOfCertificates() > 0;
         boolean allSelfSigned = certificateFound && certificateSources.isAllSelfSigned();
-        Attribute[] revocationRefAttrs = CAdESUtils.getUnsignedAttributes(signerInformation, PKCSObjectIdentifiers.id_aa_ets_revocationRefs);
-        if (getAttributeValuesSize(revocationRefAttrs) > 1) {
-            LOG.debug("complete-revocation-references attribute shall be present only once for CAdES-C signature (cardinality == 1)!");
-            return false;
 
-        } else if (!allSelfSigned && getAttributeValuesSize(revocationRefAttrs) != 1) {
+        // complete-revocation-references
+        Attribute[] revocationRefAttrs = CAdESUtils.getUnsignedAttributes(signerInformation, PKCSObjectIdentifiers.id_aa_ets_revocationRefs);
+        int completeRevocationRefsNumberOfOccurrences = getAttributeValuesSize(revocationRefAttrs);
+        if (completeRevocationRefsNumberOfOccurrences > 1 || (!allSelfSigned && completeRevocationRefsNumberOfOccurrences == 0)) {
             LOG.debug("complete-revocation-references attribute shall be present for CAdES-C signature (cardinality == 1)!");
             return false;
         }
@@ -471,7 +473,7 @@ public class CAdESBaselineRequirementsChecker extends BaselineRequirementsChecke
         SignerInformation signerInformation = signature.getSignerInformation();
         if (Utils.arraySize(CAdESUtils.getUnsignedAttributes(signerInformation, id_aa_ets_certCRLTimestamp)) +
                 Utils.arraySize(CAdESUtils.getUnsignedAttributes(signerInformation, id_aa_ets_escTimeStamp)) != 1) {
-            LOG.debug("complete-revocation-references attribute shall be present for CAdES-C signature (cardinality == 1)!");
+            LOG.debug("CAdES-C-timestamp or time-stamped-certs-crls-references attribute shall be present for CAdES-X signature (cardinality == 1)!");
             return false;
         }
         return true;

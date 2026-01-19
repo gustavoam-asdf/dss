@@ -79,7 +79,7 @@ public class XAdESReferenceValidation extends ReferenceValidation {
 					transforms = transformsDescriptionBuilder.build();
 				}
 			} catch (XMLSecurityException e) {
-				LOG.warn("Unable to analyze trasnformations", e);
+				LOG.warn("Unable to analyze transformations", e);
 			}
 		}
 		return transforms;

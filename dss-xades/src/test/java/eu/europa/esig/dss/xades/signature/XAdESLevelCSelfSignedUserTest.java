@@ -29,11 +29,15 @@ import eu.europa.esig.dss.diagnostic.RevocationRefWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.RevocationRefOrigin;
+import eu.europa.esig.dss.xades.definition.XAdESPath;
+import eu.europa.esig.dss.xml.utils.xpath.XPathUtils;
 import eu.europa.esig.validationreport.jaxb.SACertIDListType;
 import eu.europa.esig.validationreport.jaxb.SARevIDListType;
 import eu.europa.esig.validationreport.jaxb.SignatureAttributesType;
-
 import jakarta.xml.bind.JAXBElement;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,6 +94,15 @@ class XAdESLevelCSelfSignedUserTest extends XAdESLevelCTest {
             assertEquals(signatureParameters.getTokenReferencesDigestAlgorithm(),
                     revocationRefWrapper.getDigestAlgoAndValue().getDigestMethod());
         }
+    }
+
+    @Override
+    protected void validateCompleteRevocationRefsList(NodeList completeRevocationRefsList, XAdESPath paths) {
+        Node completeRevocationRefNode = completeRevocationRefsList.item(0);
+        NodeList crlRefs = XPathUtils.getNodeList(completeRevocationRefNode, paths.getCurrentCRLRefsChildren());
+        assertEquals(1, crlRefs.getLength());
+        NodeList ocspRefs = XPathUtils.getNodeList(completeRevocationRefNode, paths.getCurrentOCSPRefsChildren());
+        assertEquals(0, ocspRefs.getLength());
     }
 
     @Override

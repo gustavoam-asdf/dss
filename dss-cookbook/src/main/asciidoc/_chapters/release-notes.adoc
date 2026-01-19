@@ -11,6 +11,37 @@
 |===
 |Version           |Release date             |Features
 
+|v6.4.RC1          |December 2025           a|Main new features / improvements :
+
+                                            * QWAC Validator as per ETSI TS 119 411-5 <<R32>>;
+                                            * Generic Signature Augmentation mechanism based on Service Loader;
+                                            * Support of TS 119 602 <<R33>> Lists of trusted entities XML and JSON schemas;
+                                            * Support of new QcStatements introduced in ETSI EN 319 412 v2.5.1 <<R28>>;
+                                            * Extended support of ETSI TS 119 322 <<R21>> cryptographic suite properties;
+                                            * Algorithm Obsolescence Check validation block;
+                                            * Support of alternative security providers;
+                                            * DSS Standalone bundle for Linux OS;
+                                            * DSS Demonstrations updates (file cache revocation sources, sunset date, nonce, etc.);
+                                            * Dependencies update (BouncyCastle, PdfBox, sKema, HttpClient5, etc.);
+                                            * Java 25 support.
+
+|v6.4.RC1          |December 2025           a|Bug fixes :
+
+                                            * Incorrect URI Encoding in XAdES Detached Signature;
+                                            * Enveloped countersignature ignored when Reference Type is missing;
+                                            * Fix XAdES Archive Timestamp v1.3.2 message-imprint computation for enveloped signatures;
+                                            * Inconsistent behavior when validating XML detached and manifest signatures with `DSSDocument` name attribute;
+                                            * KeyUsage leads to `ArrayIndexOutOfBoundsException` when used with an alternative security provider;
+                                            * `FileCacheOCSPSource` shall create OCSP key based on URL+Certificate combination;
+                                            * `AIACertificateSource` ignores candidates when full certification path is returned;
+                                            * XAdES and JAdES counter signatures are validated multiple times;
+                                            * IssuerSerial not matching when DN has line breaks after non-space text ending;
+                                            * Fixed wrong behavior on `PAdESService#addNewSignatureField` method usage;
+                                            * Performance of timestamp's `ContainerSignedAndTimestampedFilesCovered` constraint;
+                                            * ASiC augmentation issues (using detached content or embedded archive-time-stamp(-v3));
+                                            * Validation fails when a third country Trust Service defines qualifiers, but no MRA mapping is provided;
+                                            * PKI Factory : missing Authority Key Identifier certificate extension.
+
 |v6.3              |August 2025             a|Main new features / improvements :
 
                                             * Introduced file cache revocation sources (experimental);
@@ -112,6 +143,12 @@ Bug fixes :
                                             * DiagnosticData misses certificate references when custom TokeIdentifierProvider is used;
                                             * CXF OpenAPI generates wrong JSON schema (webApplication).
 
+|v6.1.1          |March 2025               a|Main new features / improvements :
+
+                                            * Trusted List v6 support (ETSI TS 119 612 v2.3.1);
+                                            * Updated dependencies (BouncyCastle, VeraPdf, FOP, logback);
+                                            * Fixed expired unit tests.
+
 |v6.1              |September 2024          a|Main new features / improvements :
 
                                             * ASN.1 Evidence Records (RFC 4998) support;
@@ -154,6 +191,17 @@ Bug fixes :
                                             * CertificateValues/RevocationValues have invalid format in ETSI Validation Report;
                                             * JAXBPKILoader : invalid behavior for multiple cross certificates.
 
+|v6.0.1          |March 2025               a|Main new features / improvements :
+
+                                            * Trusted List v6 support (ETSI TS 119 612 v2.3.1);
+                                            * Updated dependencies (BouncyCastle, VeraPdf, FOP, logback);
+                                            * Fixed expired unit tests.
+
+Bug fixes :
+
+                                            * Possible memory leak during XAdES signature creation;
+                                            * CertificateValues/RevocationValues incorrect format in ETSI Validation Report.
+
 |v6.0             |December 2023            a|Main new features / improvements :
 
                                             * Transition from `javax.\*` to `jakarta.*` namespaces;
@@ -163,6 +211,17 @@ Bug fixes :
 Bug fixes :
 
                                             * KeyEntityTSPSource : add null safe processing.
+
+|v5.13.1          |March 2025               a|Main new features / improvements :
+
+                                            * Trusted List v6 support (ETSI TS 119 612 v2.3.1);
+                                            * Updated dependencies (BouncyCastle, VeraPdf, FOP, logback);
+                                            * Fixed expired unit tests.
+
+Bug fixes :
+
+                                            * Possible memory leak during XAdES signature creation;
+                                            * CertificateValues/RevocationValues incorrect format in ETSI Validation Report.
 
 |v5.13             |December 2023           a|Main new features / improvements :
 
@@ -493,14 +552,14 @@ _pass:[*] October 2015: Implementing Acts Art. 27 & 37 (eSig formats)_
 
 To upgrade version of DSS, locate to the `pom.xml` file of your project, search for the properties and then change the dss version in the corresponding field(s).
 
-The example below shows how to switch to DSS version `6.3` using <<BomModule>>:
+The example below shows how to switch to DSS version `6.4.RC1` using <<BomModule>>:
 
 [source,xml]
 .pom.xml
 ----
 <properties>
     ...
-    <dss.version>6.3</dss.version>
+    <dss.version>6.4.RC1</dss.version>
     ...
 </properties>
 

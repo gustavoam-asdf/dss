@@ -26,8 +26,6 @@ import eu.europa.esig.dss.pki.exception.PKIException;
 import eu.europa.esig.dss.pki.jaxb.security.DSSKeyPairGeneratorSecurityFactory;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -40,8 +38,6 @@ import java.util.Objects;
  *
  */
 public class KeyPairBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(KeyPairBuilder.class);
 
     /** Encryption algorithm to generate a key pair for */
     private final EncryptionAlgorithm encryptionAlgorithm;

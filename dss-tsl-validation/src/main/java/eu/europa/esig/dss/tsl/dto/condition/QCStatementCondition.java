@@ -26,6 +26,8 @@ import eu.europa.esig.dss.spi.QcStatementUtils;
 import eu.europa.esig.dss.model.tsl.Condition;
 import eu.europa.esig.dss.utils.Utils;
 
+import java.util.Objects;
+
 /**
  * This class contains an information extracted for a certificate equivalence condition
  *
@@ -117,6 +119,25 @@ public class QCStatementCondition implements Condition {
 	@Override
 	public String toString() {
 		return toString("");
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		QCStatementCondition that = (QCStatementCondition) object;
+		return Objects.equals(oid, that.oid)
+				&& Objects.equals(type, that.type)
+				&& Objects.equals(legislation, that.legislation);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(oid);
+		result = 31 * result + Objects.hashCode(type);
+		result = 31 * result + Objects.hashCode(legislation);
+		return result;
 	}
 
 }

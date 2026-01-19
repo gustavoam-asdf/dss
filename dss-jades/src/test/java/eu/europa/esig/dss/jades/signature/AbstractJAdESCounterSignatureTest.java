@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -180,6 +181,17 @@ public abstract class AbstractJAdESCounterSignatureTest extends AbstractCounterS
 	protected void checkSignatureIdentifier(DiagnosticData diagnosticData) {
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			assertNotNull(signatureWrapper.getSignatureValue());
+		}
+	}
+
+	@Override
+	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			if (signatureWrapper.isCounterSignature()) {
+				assertEquals(getCounterSignatureParameters().getJwsSerializationType(), signatureWrapper.getJWSSerializationType());
+			} else {
+				assertEquals(getSignatureParameters().getJwsSerializationType(), signatureWrapper.getJWSSerializationType());
+			}
 		}
 	}
 	

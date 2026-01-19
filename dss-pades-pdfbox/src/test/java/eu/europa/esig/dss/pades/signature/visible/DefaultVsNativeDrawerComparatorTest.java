@@ -273,7 +273,7 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 		imageParameters.setImage(new InMemoryDocument(getClass().getResourceAsStream("/signature-image.png"), "signature-image.png", MimeTypeEnum.PNG));
 		
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
-		fieldParameters.setOriginX(100);
+		fieldParameters.setOriginX(50);
 		fieldParameters.setOriginY(100);
 		imageParameters.setFieldParameters(fieldParameters);
 
@@ -610,6 +610,7 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 
 		SignatureImageParameters imageParameters = new SignatureImageParameters();
 		imageParameters.setImage(new InMemoryDocument(getClass().getResourceAsStream("/visualSignature/signature.png")));
+
 		SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
 		textParameters.setText("My signature\nsecond line\nlong line is very long line with long text example this");
 		textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
@@ -621,6 +622,7 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 		textParameters.setFont(font);
 		imageParameters.setTextParameters(textParameters);
 		imageParameters.setBackgroundColor(new Color(0, 0, 1, 0.25f));
+		imageParameters.setLegacyDPIHandling(true);
 		
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
 		fieldParameters.setOriginX(20);
@@ -776,11 +778,12 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 	}
 	
 	@Test
-	void dpiTest() throws IOException {
+	void dpiLegacyTest() throws IOException {
 		initPdfATest();
 		SignatureImageParameters imageParameters = new SignatureImageParameters();
 		imageParameters.setImage(new InMemoryDocument(getClass().getResourceAsStream("/signature-image.png"), "signature-image.png", MimeTypeEnum.PNG));
 		imageParameters.setDpi(300);
+		imageParameters.setLegacyDPIHandling(true);
 
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
 		fieldParameters.setOriginX(20);
@@ -794,6 +797,28 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 
 		fieldParameters.setWidth(400);
 		fieldParameters.setHeight(200);
+		drawAndCompareVisually();
+	}
+
+	@Test
+	void dpiTest() throws IOException {
+		initPdfATest();
+		SignatureImageParameters imageParameters = new SignatureImageParameters();
+		imageParameters.setImage(new InMemoryDocument(getClass().getResourceAsStream("/signature-image.png"), "signature-image.png", MimeTypeEnum.PNG));
+		imageParameters.setDpi(72);
+		imageParameters.setLegacyDPIHandling(false);
+
+		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
+		fieldParameters.setOriginX(20);
+		fieldParameters.setOriginY(50);
+		imageParameters.setFieldParameters(fieldParameters);
+
+		signatureParameters.setImageParameters(imageParameters);
+
+		Exception exception = assertThrows(AlertException.class, () -> drawAndCompareVisually());
+		assertTrue(exception.getMessage().contains("The new signature field position is outside the page dimensions!"));
+
+		imageParameters.setDpi(300);
 		drawAndCompareVisually();
 	}
 	
@@ -1408,6 +1433,39 @@ class DefaultVsNativeDrawerComparatorTest extends AbstractTestVisualComparator {
 		textParameters.setTextWrapping(TextWrapping.FONT_BASED);
 		textParameters.setSignerTextPosition(SignerTextPosition.RIGHT);
 		imageParameters.setTextParameters(textParameters);
+
+		signatureParameters.setImageParameters(imageParameters);
+
+		drawAndCompareVisually();
+	}
+
+	@Test
+	void dss3779Test() throws IOException {
+		initPdfATest();
+
+		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
+		SignatureImageTextParameters textParameters = new SignatureImageTextParameters();
+		SignatureImageParameters imageParameters = new SignatureImageParameters();
+		imageParameters.setImage(new InMemoryDocument(getClass().getResourceAsStream("/small-red.jpg"), "small-red.jpg", MimeTypeEnum.JPEG));
+
+		imageParameters.setAlignmentHorizontal(VisualSignatureAlignmentHorizontal.NONE);
+		imageParameters.setAlignmentVertical(VisualSignatureAlignmentVertical.NONE);
+		imageParameters.setImageScaling(ImageScaling.CENTER);
+		imageParameters.setBackgroundColor(new Color(0, 0, 0, 0));
+
+		fieldParameters.setRotation(VisualSignatureRotation.AUTOMATIC);
+
+		textParameters.setText("Signed by: Bob Dylan\n" +
+				"Organization: World Music");
+
+		textParameters.setPadding(0f);
+		textParameters.setSignerTextPosition(SignerTextPosition.BOTTOM);
+		textParameters.setSignerTextHorizontalAlignment(SignerTextHorizontalAlignment.LEFT);
+		textParameters.setSignerTextVerticalAlignment(SignerTextVerticalAlignment.BOTTOM);
+		textParameters.setBackgroundColor(new Color(0, 0, 0, 0));
+		textParameters.setTextWrapping(TextWrapping.FONT_BASED);
+		imageParameters.setTextParameters(textParameters);
+		imageParameters.setFieldParameters(fieldParameters);
 
 		signatureParameters.setImageParameters(imageParameters);
 

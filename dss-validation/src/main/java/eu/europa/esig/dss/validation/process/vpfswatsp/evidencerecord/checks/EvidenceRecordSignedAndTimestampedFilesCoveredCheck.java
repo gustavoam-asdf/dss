@@ -24,10 +24,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EvidenceRecordWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlManifestFile;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.model.policy.LevelRule;
-import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.bbb.fc.checks.AbstractSignedAndTimestampedFilesCoveredCheck;
 
 import java.util.List;
@@ -66,15 +64,7 @@ public class EvidenceRecordSignedAndTimestampedFilesCoveredCheck extends Abstrac
         }
 
         List<String> coveredDocumentEntries = getCoveredDocumentEntries();
-        if (Utils.isCollectionNotEmpty(coveredDocumentEntries)) {
-            for (String coveredDocumentName : coveredDocumentEntries) {
-                XmlManifestFile manifestFile = diagnosticData.getManifestFileForFilename(coveredDocumentName);
-                if (manifestFile != null && !checkManifestFilesCoveredRecursively(coveredDocumentEntries, manifestFile)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return checkManifestFilesCovered(coveredDocumentEntries);
     }
 
     private List<String> getCoveredDocumentEntries() {

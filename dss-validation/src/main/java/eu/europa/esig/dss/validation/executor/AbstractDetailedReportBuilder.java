@@ -79,6 +79,7 @@ public abstract class AbstractDetailedReportBuilder {
 	 */
 	protected XmlDetailedReport init() {
 		XmlDetailedReport detailedReport = new XmlDetailedReport();
+		detailedReport.setValidationTime(currentTime);
 
 		if (policy.isEIDASConstraintPresent()) {
 			detailedReport.getTLAnalysis().addAll(executeAllTlAnalysis(diagnosticData, policy, currentTime));

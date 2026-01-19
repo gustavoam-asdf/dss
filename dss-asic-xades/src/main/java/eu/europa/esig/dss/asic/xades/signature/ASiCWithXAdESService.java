@@ -35,11 +35,11 @@ import eu.europa.esig.dss.asic.xades.evidencerecord.ASiCWithXAdESContainerEviden
 import eu.europa.esig.dss.asic.xades.extract.ASiCWithXAdESContainerExtractor;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignaturePolicyStore;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
-import eu.europa.esig.dss.enumerations.SigningOperation;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
@@ -50,12 +50,12 @@ import eu.europa.esig.dss.xades.evidencerecord.XAdESEvidenceRecordIncorporationP
 import eu.europa.esig.dss.xades.signature.XAdESCounterSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
 import eu.europa.esig.dss.xml.utils.DomUtils;
+import eu.europa.esig.dss.xml.utils.xpath.XPathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,8 +74,8 @@ public class ASiCWithXAdESService extends AbstractASiCSignatureService<ASiCWithX
 	private ASiCWithXAdESFilenameFactory asicFilenameFactory = new DefaultASiCWithXAdESFilenameFactory();
 
 	static {
-		DomUtils.registerNamespace(ASiCManifestNamespace.NS);
-		DomUtils.registerNamespace(ManifestNamespace.NS);
+		XPathUtils.registerNamespace(ASiCManifestNamespace.NS);
+		XPathUtils.registerNamespace(ManifestNamespace.NS);
 	}
 
 	/**
@@ -172,18 +172,20 @@ public class ASiCWithXAdESService extends AbstractASiCSignatureService<ASiCWithX
 		List<DSSDocument> signatureDocuments = extensionHelper.getSignatureDocuments();
 
 		boolean openDocument = ASiCUtils.isOpenDocument(asicContent.getMimeTypeDocument());
-		List<DSSDocument> detachedContents = getDetachedContents(asicContent, openDocument);
+
+		parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+		parameters.getContext().setDetachedContents(getDetachedContents(asicContent, openDocument));
 
 		for (DSSDocument signature : signatureDocuments) {
-			XAdESSignatureParameters xadesParameters = getXAdESParameters(parameters, Collections.emptyList(), openDocument);
-			xadesParameters.getContext().setDetachedContents(detachedContents);
-
-			DSSDocument extendedDocument = getXAdESService().extendDocument(signature, xadesParameters);
+			DSSDocument extendedDocument = getXAdESService().extendDocument(signature, parameters);
 			extendedDocument.setName(signature.getName());
 			ASiCUtils.addOrReplaceDocument(signatureDocuments, extendedDocument);
 		}
+
 		final DSSDocument extensionResult = buildASiCContainer(asicContent, parameters.bLevel().getSigningDate());
 		extensionResult.setName(getFinalDocumentName(toExtendDocument, SigningOperation.EXTEND, parameters.getSignatureLevel(), toExtendDocument.getMimeType()));
+
+		parameters.reinit();
 		return extensionResult;
 	}
 

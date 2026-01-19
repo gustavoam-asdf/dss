@@ -66,9 +66,13 @@ public abstract class AbstractTestExtension<SP extends SerializableSignaturePara
 
 	protected abstract DocumentSignatureService<SP, TP> getSignatureServiceToExtend();
 
-	protected abstract TSPSource getUsedTSPSourceAtSignatureTime();
+	protected TSPSource getUsedTSPSourceAtSignatureTime() {
+		return getGoodTsa();
+	}
 
-	protected abstract TSPSource getUsedTSPSourceAtExtensionTime();
+	protected TSPSource getUsedTSPSourceAtExtensionTime() {
+		return getAlternateGoodTsa();
+	}
 
 	@Test
 	public void extendAndVerify() throws Exception {
@@ -272,6 +276,11 @@ public abstract class AbstractTestExtension<SP extends SerializableSignaturePara
 		assertNotNull(extendedDocument.getMimeType());
 		assertNotNull(DSSUtils.toByteArray(extendedDocument));
 		assertNotNull(extendedDocument.getName());
+	}
+
+	@Override
+	protected String getSigningAlias() {
+		return GOOD_USER;
 	}
 
 }

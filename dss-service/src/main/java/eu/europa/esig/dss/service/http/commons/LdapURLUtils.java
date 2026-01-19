@@ -122,7 +122,9 @@ public final class LdapURLUtils {
 	 *
 	 * @param urlString {@link String}
 	 * @return {@link String} corresponding to a host name
+	 * @deprecated since DSS 6.4. Please use {@code DSSUtils#getHost} method instead
 	 */
+	@Deprecated
 	public static String getHost(String urlString) {
 		if (Utils.isStringEmpty(urlString)) {
 			return "";

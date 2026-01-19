@@ -93,6 +93,18 @@ public final class ZipUtils {
 	}
 
 	/**
+	 * Creates a ZIP-Archive with the given {@code containerEntries}.
+	 * This method uses the current time and no zip comment for definition of the ZIP container.
+	 *
+	 * @param containerEntries a list of {@link DSSDocument}s to embed into the new
+	 *                         container instance
+	 * @return {@link DSSDocument} ZIP-Archive
+	 */
+	public DSSDocument createZipArchive(List<DSSDocument> containerEntries) {
+		return createZipArchive(containerEntries, new Date(), null);
+	}
+
+	/**
 	 * Creates a ZIP-Archive with the given {@code containerEntries}
 	 * 
 	 * @param containerEntries a list of {@link DSSDocument}s to embed into the new

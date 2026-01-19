@@ -17,8 +17,8 @@ $ curl 'http://localhost:8080/services/rest/signature/external-cms/getDataToSign
     "manifestSignature" : false,
     "jwsSerializationType" : null,
     "sigDMechanism" : null,
-    "base64UrlEncodedPayload" : true,
-    "base64UrlEncodedEtsiUComponents" : true,
+    "base64UrlEncodedPayload" : null,
+    "base64UrlEncodedEtsiUComponents" : null,
     "digestAlgorithm" : "SHA256",
     "encryptionAlgorithm" : null,
     "referenceDigestAlgorithm" : null,
@@ -63,7 +63,7 @@ $ curl 'http://localhost:8080/services/rest/signature/external-cms/getDataToSign
   },
   "messageDigest" : {
     "algorithm" : "SHA256",
-    "value" : "H8eVA+CpNf/IEa/WL51P44PRy/eSVX96GFWjxcT1ZvA="
+    "value" : "j/386xOS78tt7afXNY4G3uTlvFDvHldPMREJtF++y2o="
   }
 }'
 ----

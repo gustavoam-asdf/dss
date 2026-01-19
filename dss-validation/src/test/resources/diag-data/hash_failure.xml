@@ -157,12 +157,18 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.36203.1.1.2</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>UTVoRBehzHUd4+KseOq/CkuMR9k=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcEuRetentionPeriod>10</QcEuRetentionPeriod>
                     <QcSSCD present="true"/>
                     <SemanticsIdentifier Description="Semantics identifier for natural person">0.4.0.194121.1.1</SemanticsIdentifier>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>4/hv7vxwc1jXxwZhocqqsG4PPT8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
 			<Revocations>
@@ -212,6 +218,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>2.5.29.32.0</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>4/hv7vxwc1jXxwZhocqqsG4PPT8=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
                         <TrustServiceProviders />
             <DigestAlgoAndValue>
@@ -258,6 +267,12 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.36203.1.1.4</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>rZ2QDOCencWSI3NjL33I7RlrevU=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>4/hv7vxwc1jXxwZhocqqsG4PPT8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
                         <TrustServiceProviders />
             <DigestAlgoAndValue>
@@ -305,12 +320,18 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.3.6.1.4.1.36203.1.1.2</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ZS6jjMzB5OlBCwU9aDQ1mgVTYeQ=</ski>
+                </SubjectKeyIdentifier>
                 <QcStatements OID="1.3.6.1.5.5.7.1.3" critical="false">
                     <QcCompliance present="true"/>
                     <QcEuRetentionPeriod>10</QcEuRetentionPeriod>
                     <QcSSCD present="true"/>
                     <SemanticsIdentifier Description="Semantics identifier for natural person">0.4.0.194121.1.1</SemanticsIdentifier>
                 </QcStatements>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>4/hv7vxwc1jXxwZhocqqsG4PPT8=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders />
             <Revocations>

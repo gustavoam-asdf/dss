@@ -96,7 +96,7 @@ class XAdESDoubleSignatureParallelWithEnvelopedTransformTest extends AbstractXAd
 	@Override
 	@Test
 	public void signAndVerify() {
-		Exception exception = assertThrows(IllegalInputException.class, () -> sign());
+		Exception exception = assertThrows(IllegalInputException.class, this::sign);
 		assertEquals(
 				"The parallel signature is not possible! The provided file contains a signature "
 						+ "with an 'http://www.w3.org/2000/09/xmldsig#enveloped-signature' transform.",

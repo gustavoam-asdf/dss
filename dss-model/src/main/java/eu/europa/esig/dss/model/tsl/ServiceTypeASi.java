@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.model.tsl;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Contains information extracted from TrustServiceTSLType element
@@ -79,4 +80,28 @@ public class ServiceTypeASi implements Serializable {
 		this.asi = asi;
 	}
 
+	@Override
+	public String toString() {
+		return "ServiceTypeASi [" +
+				"type='" + type + '\'' +
+				", asi='" + asi + '\'' +
+				']';
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		ServiceTypeASi that = (ServiceTypeASi) object;
+		return Objects.equals(type, that.type)
+				&& Objects.equals(asi, that.asi);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hashCode(type);
+		result = 31 * result + Objects.hashCode(asi);
+		return result;
+	}
 }

@@ -20,9 +20,7 @@
  */
 package eu.europa.esig.dss.ws.signature.common;
 
-import java.io.Serializable;
-import java.util.List;
-
+import eu.europa.esig.dss.enumerations.SignatureProfile;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.ws.dto.RemoteDocument;
 import eu.europa.esig.dss.ws.dto.SignatureValueDTO;
@@ -30,11 +28,14 @@ import eu.europa.esig.dss.ws.dto.ToBeSignedDTO;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteSignatureParameters;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteTimestampParameters;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * This interface {@code RemoteMultipleDocumentsSignatureService} provides operations for the signature creation.
- * 
+ * <p>
  * This interface allows to sign a set of documents.
- * 
+ * <p>
  * Supported implementations :
  * -XAdES Enveloping
  * -XAdES Detached
@@ -75,7 +76,8 @@ public interface RemoteMultipleDocumentsSignatureService extends Serializable {
 	 * @throws DSSException
 	 *             if an error occurred
 	 */
-	RemoteDocument signDocument(final List<RemoteDocument> toSignDocuments, final RemoteSignatureParameters parameters, SignatureValueDTO signatureValue) throws DSSException;
+	RemoteDocument signDocument(final List<RemoteDocument> toSignDocuments, final RemoteSignatureParameters parameters,
+								final SignatureValueDTO signatureValue) throws DSSException;
 
 	/**
 	 * Extends the level of the signatures in the {@code toExtendDocument}
@@ -87,8 +89,27 @@ public interface RemoteMultipleDocumentsSignatureService extends Serializable {
 	 * @return the extended signature
 	 * @throws DSSException
 	 *             if an error occurred
+	 * @deprecated since DSS 6.4. Please use {@code #extendDocument(toExtendDocument, signatureProfile, parameters)} method instead.
 	 */
+	@Deprecated
 	RemoteDocument extendDocument(final RemoteDocument toExtendDocument, final RemoteSignatureParameters parameters) throws DSSException;
+
+	/**
+	 * Extends the level of the signatures in the {@code toExtendDocument} according
+	 * to the defined target {@code signatureProfile} and/or {@code parameters}
+	 *
+	 * @param toExtendDocument
+	 *            document to extend
+	 * @param signatureProfile
+	 *            (conditional presence) target signature augmentation profile
+	 * @param parameters
+	 *            set of the driving signing parameters
+	 * @return the extended signature
+	 * @throws DSSException
+	 *             if an error occurred
+	 */
+	RemoteDocument extendDocument(final RemoteDocument toExtendDocument, final SignatureProfile signatureProfile,
+								  final RemoteSignatureParameters parameters) throws DSSException;
 	
 	/**
 	 * Adds timestamps to the given list of documents

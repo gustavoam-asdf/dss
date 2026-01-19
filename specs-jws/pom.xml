@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 		<artifactId>sd-dss</artifactId>
-		<version>6.4-SNAPSHOT</version>
+		<version>6.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>specs-jws</artifactId>
-	<name>JWS Schema Module</name>
+	<name>JWS Schema Model</name>
 	<description>Generated sources from JWS JSON schema</description>
 
 	<properties>

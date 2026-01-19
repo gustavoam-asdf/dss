@@ -26,8 +26,9 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.enumerations.Level;
-import eu.europa.esig.dss.policy.ValueConstraintWrapper;
-import eu.europa.esig.dss.policy.jaxb.ValueConstraint;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
+import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ContentTypeCheck;
 import org.junit.jupiter.api.Test;
@@ -42,13 +43,14 @@ class ContentTypeCheckTest extends AbstractTestCheck {
 	void contentTypeCheck() {
 		XmlSignature sig = new XmlSignature();
 		sig.setContentType("Valid_Value");
+		sig.setSignatureFormat(SignatureLevel.XAdES_BASELINE_B);
 
-		ValueConstraint constraint = new ValueConstraint();
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
 		constraint.setLevel(Level.FAIL);
-		constraint.setValue("Valid_Value");
+		constraint.getId().add("Valid_Value");
 
 		XmlSAV result = new XmlSAV();
-		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new ValueConstraintWrapper(constraint));
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
 		ctc.execute();
 
 		List<XmlConstraint> constraints = result.getConstraint();
@@ -60,17 +62,95 @@ class ContentTypeCheckTest extends AbstractTestCheck {
 	void failedContentTypeCheck() {
 		XmlSignature sig = new XmlSignature();
 		sig.setContentType("Invalid_Value");
+		sig.setSignatureFormat(SignatureLevel.XAdES_BASELINE_B);
 
-		ValueConstraint constraint = new ValueConstraint();
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
 		constraint.setLevel(Level.FAIL);
-		constraint.setValue("Valid_Value");
+		constraint.getId().add("Valid_Value");
 
 		XmlSAV result = new XmlSAV();
-		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new ValueConstraintWrapper(constraint));
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
 		ctc.execute();
 
 		List<XmlConstraint> constraints = result.getConstraint();
 		assertEquals(1, constraints.size());
 		assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
 	}
+
+	@Test
+	void tlsBindingCheck() {
+		XmlSignature sig = new XmlSignature();
+		sig.setMimeType("application/TLS-Certificate-Binding-v1");
+		sig.setSignatureFormat(SignatureLevel.JAdES_BASELINE_B);
+
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
+		constraint.setLevel(Level.FAIL);
+		constraint.getId().add("TLS-Certificate-Binding-v1");
+
+		XmlSAV result = new XmlSAV();
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
+		ctc.execute();
+
+		List<XmlConstraint> constraints = result.getConstraint();
+		assertEquals(1, constraints.size());
+		assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+	}
+
+	@Test
+	void tlsBindingClearCheck() {
+		XmlSignature sig = new XmlSignature();
+		sig.setMimeType("TLS-Certificate-Binding-v1");
+		sig.setSignatureFormat(SignatureLevel.JAdES_BASELINE_B);
+
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
+		constraint.setLevel(Level.FAIL);
+		constraint.getId().add("TLS-Certificate-Binding-v1");
+
+		XmlSAV result = new XmlSAV();
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
+		ctc.execute();
+
+		List<XmlConstraint> constraints = result.getConstraint();
+		assertEquals(1, constraints.size());
+		assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+	}
+
+	@Test
+	void tlsBindingJsonCheck() {
+		XmlSignature sig = new XmlSignature();
+		sig.setMimeType("application/TLS-Certificate-Binding-v1");
+		sig.setSignatureFormat(SignatureLevel.JSON_NOT_ETSI);
+
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
+		constraint.setLevel(Level.FAIL);
+		constraint.getId().add("TLS-Certificate-Binding-v1");
+
+		XmlSAV result = new XmlSAV();
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
+		ctc.execute();
+
+		List<XmlConstraint> constraints = result.getConstraint();
+		assertEquals(1, constraints.size());
+		assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+	}
+
+	@Test
+	void tlsBindingXmlCheck() {
+		XmlSignature sig = new XmlSignature();
+		sig.setContentType("application/TLS-Certificate-Binding-v1");
+		sig.setSignatureFormat(SignatureLevel.XAdES_BASELINE_B);
+
+		MultiValuesConstraint constraint = new MultiValuesConstraint();
+		constraint.setLevel(Level.FAIL);
+		constraint.getId().add("TLS-Certificate-Binding-v1");
+
+		XmlSAV result = new XmlSAV();
+		ContentTypeCheck ctc = new ContentTypeCheck(i18nProvider, result, new SignatureWrapper(sig), new MultiValuesConstraintWrapper(constraint));
+		ctc.execute();
+
+		List<XmlConstraint> constraints = result.getConstraint();
+		assertEquals(1, constraints.size());
+		assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+	}
+
 }

@@ -20,15 +20,38 @@
  */
 package eu.europa.esig.dss.xades.validation.dss2208;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.RevocationWrapper;
+import eu.europa.esig.dss.enumerations.RevocationType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.xades.validation.AbstractXAdESTestValidation;
+
+import java.math.BigInteger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class XAdESTstsWithEmptyC14NTest extends AbstractXAdESTestValidation {
 
 	@Override
 	protected DSSDocument getSignedDocument() {
 		return new FileDocument("src/test/resources/validation/dss2208/xades-tsts-empty-c14n.xml");
+	}
+
+	@Override
+	protected void checkRevocationData(DiagnosticData diagnosticData) {
+		super.checkRevocationData(diagnosticData);
+
+		int crlCounter = 0;
+		for (RevocationWrapper revocationWrapper : diagnosticData.getAllRevocationData()) {
+			if (RevocationType.CRL == revocationWrapper.getRevocationType()) {
+				BigInteger crlNumber = revocationWrapper.getCRLNumber();
+				assertNull(crlNumber);
+				++crlCounter;
+			}
+		}
+		assertEquals(1, crlCounter);
 	}
 
 }

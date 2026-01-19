@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.validation.executor.certificate;
 
+import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlSimpleCertificateReport;
@@ -34,7 +35,7 @@ import java.util.Objects;
 public class DefaultCertificateProcessExecutor extends AbstractProcessExecutor implements CertificateProcessExecutor {
 
 	/** Id of a certificate to validate */
-	private String certificateId;
+	protected String certificateId;
 
 	/**
 	 * Default constructor instantiating object with null certificate id
@@ -53,17 +54,46 @@ public class DefaultCertificateProcessExecutor extends AbstractProcessExecutor i
 		assertConfigurationValid();
 		Objects.requireNonNull(certificateId, "The certificate id is missing");
 
-		DiagnosticData diagnosticData = new DiagnosticData(jaxbDiagnosticData);
+		DiagnosticData diagnosticData = getDiagnosticData();
 
-		DetailedReportForCertificateBuilder detailedReportBuilder = new DetailedReportForCertificateBuilder(
-				getI18nProvider(), diagnosticData, policy, currentTime, certificateId);
-		XmlDetailedReport detailedReport = detailedReportBuilder.build();
+		DetailedReportForCertificateBuilder detailedReportBuilder = getDetailedReportBuilder(diagnosticData);
+		XmlDetailedReport xmlDetailedReport = detailedReportBuilder.build();
+		DetailedReport detailedReport = new DetailedReport(xmlDetailedReport);
 
-		SimpleReportForCertificateBuilder simpleReportBuilder = new SimpleReportForCertificateBuilder(diagnosticData,
-				new eu.europa.esig.dss.detailedreport.DetailedReport(detailedReport), policy, currentTime, certificateId);
+		SimpleReportForCertificateBuilder simpleReportBuilder = getSimpleReportBuilder(diagnosticData, detailedReport);
 		XmlSimpleCertificateReport simpleReport = simpleReportBuilder.build();
 
-		return new CertificateReports(jaxbDiagnosticData, detailedReport, simpleReport);
+		return new CertificateReports(jaxbDiagnosticData, xmlDetailedReport, simpleReport);
+	}
+
+	/**
+	 * Gets the Diagnostic Data
+	 *
+	 * @return {@link DiagnosticData}
+	 */
+	protected DiagnosticData getDiagnosticData() {
+		return new DiagnosticData(jaxbDiagnosticData);
+	}
+
+	/**
+	 * Gets the Detailed report builder
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @return {@link DetailedReportForCertificateBuilder}
+	 */
+	protected DetailedReportForCertificateBuilder getDetailedReportBuilder(DiagnosticData diagnosticData) {
+		return new DetailedReportForCertificateBuilder(getI18nProvider(), diagnosticData, policy, currentTime, certificateId);
+	}
+
+	/**
+	 * Gets the Simple report builder
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @param detailedReport {@link DetailedReport}
+	 * @return {@link DetailedReportForCertificateBuilder}
+	 */
+	protected SimpleReportForCertificateBuilder getSimpleReportBuilder(DiagnosticData diagnosticData, DetailedReport detailedReport) {
+		return new SimpleReportForCertificateBuilder(diagnosticData, detailedReport, policy, currentTime, certificateId);
 	}
 
 }

@@ -48,6 +48,26 @@ class SimpleReportFacadeTest {
 	void sigAndTstTest() throws Exception {
 		createAndValidate("sr-sig-and-tst.xml");
 	}
+
+	@Test
+	void sigAndErTest() throws Exception {
+		createAndValidate("sr-sig-lt-and-er.xml");
+	}
+
+	@Test
+	void erTest() throws Exception {
+		createAndValidate("sr-er.xml");
+	}
+
+	@Test
+	void tstAndErTest() throws Exception {
+		createAndValidate("sr-tst-and-er.xml");
+	}
+
+	@Test
+	void sunsetTest() throws Exception {
+		createAndValidate("sr-sunset.xml");
+	}
 	
 	@Test
 	void generateSemantics() throws Exception {

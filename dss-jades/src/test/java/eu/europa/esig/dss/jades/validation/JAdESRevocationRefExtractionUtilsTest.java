@@ -90,7 +90,7 @@ class JAdESRevocationRefExtractionUtilsTest {
 		CRLRef crlRef = JAdESRevocationRefExtractionUtils.createCRLRef(crlRefJson);
 		assertNotNull(crlRef);
 		assertNotNull(crlRef.getDigest());
-		assertNotNull(crlRef.getCrlIssuedTime());
+		assertNotNull(crlRef.getCrlIssueTime());
 		assertNotNull(crlRef.getCrlIssuer());
 		assertNotNull(crlRef.getCrlNumber());
 

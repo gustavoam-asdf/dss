@@ -109,7 +109,7 @@ public final class JAdESRevocationRefExtractionUtils {
 	 */
 	public static CRLRef createCRLRef(Map<?, ?> crlRefMap) {
 
-		X500Name crlIssuer = null;
+		X500Principal crlIssuer = null;
 		Date crlIssuedTime = null;
 		BigInteger crlNumber = null;
 
@@ -118,7 +118,7 @@ public final class JAdESRevocationRefExtractionUtils {
 			if (Utils.isMapNotEmpty(crlId)) {
 				String issuerB64 = (String) crlId.get(JAdESHeaderParameterNames.ISSUER);
 				if (Utils.isStringNotEmpty(issuerB64) && Utils.isBase64Encoded(issuerB64)) {
-					crlIssuer = X500Name.getInstance(Utils.fromBase64(issuerB64));
+					crlIssuer = DSSASN1Utils.toX500Principal(X500Name.getInstance(Utils.fromBase64(issuerB64)));
 				}
 
 				String issueTimeStr = (String) crlId.get(JAdESHeaderParameterNames.ISSUE_TIME);
@@ -134,11 +134,7 @@ public final class JAdESRevocationRefExtractionUtils {
 
 			Digest digest = DSSJsonUtils.getDigest(crlRefMap);
 			if (digest != null) {
-				CRLRef crlRef = new CRLRef(digest);
-				crlRef.setCrlIssuer(crlIssuer);
-				crlRef.setCrlIssuedTime(crlIssuedTime);
-				crlRef.setCrlNumber(crlNumber);
-				return crlRef;
+				return new CRLRef(digest, crlIssuer, crlIssuedTime, crlNumber);
 
 			} else {
 				LOG.warn("Missing digest information in CRLRef");

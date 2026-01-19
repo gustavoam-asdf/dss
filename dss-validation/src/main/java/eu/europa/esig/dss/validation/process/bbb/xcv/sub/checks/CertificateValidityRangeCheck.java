@@ -64,6 +64,20 @@ public class CertificateValidityRangeCheck<T extends XmlConstraintsConclusion> e
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param result the result
 	 * @param certificate {@link CertificateWrapper}
+	 * @param currentTime {@link Date} validation time
+	 * @param constraint {@link LevelRule}
+	 */
+	protected CertificateValidityRangeCheck(I18nProvider i18nProvider, T result, CertificateWrapper certificate,
+										    Date currentTime, LevelRule constraint) {
+		this(i18nProvider, result, certificate, null, false, false, false, currentTime, constraint);
+	}
+
+	/**
+	 * Default constructor
+	 *
+	 * @param i18nProvider {@link I18nProvider}
+	 * @param result the result
+	 * @param certificate {@link CertificateWrapper}
 	 * @param usedCertificateRevocation {@link CertificateRevocationWrapper}
 	 * @param revocationDataRequired whether a revocation data is required for the given certificate
 	 * @param revocationIssuerTrusted whether the revocation issuer is trusted, when applicable

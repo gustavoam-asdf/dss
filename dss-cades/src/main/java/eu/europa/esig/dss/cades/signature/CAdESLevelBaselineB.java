@@ -22,9 +22,9 @@ package eu.europa.esig.dss.cades.signature;
 
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.CAdESUtils;
-import eu.europa.esig.dss.cades.SignedAssertion;
-import eu.europa.esig.dss.cades.SignedAssertions;
-import eu.europa.esig.dss.cades.SignerAttributeV2;
+import eu.europa.esig.dss.cms.asn1.SignedAssertion;
+import eu.europa.esig.dss.cms.asn1.SignedAssertions;
+import eu.europa.esig.dss.cms.asn1.SignerAttributeV2;
 import eu.europa.esig.dss.enumerations.CommitmentType;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -98,9 +98,6 @@ public class CAdESLevelBaselineB {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CAdESLevelBaselineB.class);
 
-	/** Defines if the CMS signature will be created for a PAdES */
-	private final boolean padesUsage;
-
 	/** The document to be signed */
 	private final DSSDocument documentToSign;
 
@@ -108,16 +105,19 @@ public class CAdESLevelBaselineB {
 	 * The default constructor for CAdESLevelBaselineB.
 	 */
 	public CAdESLevelBaselineB() {
-		this(false);
+		this(null);
 	}
 
 	/**
 	 * The constructor for CAdESLevelBaselineB with a {@code padesUsage} indication
 	 *
 	 * @param padesUsage defines if the CMS signature shall be created a PAdES
+	 * @deprecated since DSS 6.4. Please use {@code new PAdESLevelBaselineB()} instead.
 	 */
+	@Deprecated
 	public CAdESLevelBaselineB(boolean padesUsage) {
-		this(null, padesUsage);
+		throw new UnsupportedOperationException("Constructor CAdESLevelBaselineB(boolean padesUsage) has been deprecated. " +
+				"Please use PAdESLevelBaselineB instead.");
 	}
 
 	/**
@@ -126,18 +126,7 @@ public class CAdESLevelBaselineB {
 	 * @param documentToSign {@link DSSDocument} document to be signed
 	 */
 	public CAdESLevelBaselineB(DSSDocument documentToSign) {
-		this(documentToSign, false);
-	}
-
-	/**
-	 * The constructor for CAdESLevelBaselineB with a {@code documentToSign} and {@code padesUsage}
-	 *
-	 * @param documentToSign {@link DSSDocument} document to be signed
-	 * @param padesUsage defines if the CMS signature shall be created a PAdES
-	 */
-	CAdESLevelBaselineB(DSSDocument documentToSign, boolean padesUsage) {
 		this.documentToSign = documentToSign;
-		this.padesUsage = padesUsage;
 	}
 
 	/**
@@ -162,6 +151,17 @@ public class CAdESLevelBaselineB {
 		}
 
 		ASN1EncodableVector signedAttributes = new ASN1EncodableVector();
+		addSignedAttributes(parameters, signedAttributes);
+		return new AttributeTable(signedAttributes);
+	}
+
+	/**
+	 * Adds the signed attributes to the {@code signedAttributes} vector
+	 *
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
+	 */
+	protected void addSignedAttributes(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		addSigningCertificateAttribute(parameters, signedAttributes);
 		addSigningTimeAttribute(parameters, signedAttributes);
 		addSignerAttribute(parameters, signedAttributes);
@@ -172,15 +172,13 @@ public class CAdESLevelBaselineB {
 		addCommitmentType(parameters, signedAttributes);
 		addSignerLocation(parameters, signedAttributes);
 		addContentTimestamps(parameters, signedAttributes);
-
-		return new AttributeTable(signedAttributes);
 	}
 
 	/**
 	 * ETSI TS 101 733 V2.2.1 (2013-04)
 	 * 5.11.3 signer-attributes Attribute
 	 * NOTE 1: Only a single signer-attributes can be used.
-	 *
+	 * <p>
 	 * The signer-attributes attribute specifies additional attributes of the signer (e.g. role).
 	 * It may be either:
 	 * • claimed attributes of the signer; or
@@ -190,7 +188,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addSignerAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+	protected void addSignerAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		final List<String> claimedSignerRoles = parameters.bLevel().getClaimedSignerRoles();
 		if (claimedSignerRoles != null) {
 
@@ -229,15 +227,13 @@ public class CAdESLevelBaselineB {
 		}
 	}
 
-	private void addSigningTimeAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
-		/*
-		 * In PAdES, we don't include the signing time : ETSI TS 102 778-3 V1.2.1
-		 * (2010-07): 4.5.3 signing-time Attribute
-		 */
-		if (padesUsage) {
-			return;
-		}
-
+	/**
+	 * Adds a signing time attribute
+	 *
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
+	 */
+	protected void addSigningTimeAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		final Date signingDate = parameters.bLevel().getSigningDate();
 		if (signingDate != null) {
 			final DERSet attrValues = new DERSet(new Time(signingDate));
@@ -258,14 +254,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addSignerLocation(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
-		/*
-		 * In PAdES, the role is in the signature dictionary
-		 */
-		if (padesUsage) {
-			return;
-		}
-
+	protected void addSignerLocation(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		final eu.europa.esig.dss.model.SignerLocation signerLocationParameter = parameters.bLevel().getSignerLocation();
 		if (signerLocationParameter != null && !signerLocationParameter.isEmpty()) {
 
@@ -293,7 +282,7 @@ public class CAdESLevelBaselineB {
 
 	/**
 	 * ETSI TS 101 733 V2.2.1 (2013-04)
-	 *
+	 * <p>
 	 * 5.11.1 commitment-type-indication Attribute
 	 * There may be situations where a signer wants to explicitly indicate to a verifier that by signing the data, it
 	 * illustrates a
@@ -303,7 +292,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addCommitmentType(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+	protected void addCommitmentType(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		final List<CommitmentType> commitmentTypeIndications = parameters.bLevel().getCommitmentTypeIndications();
 		if (Utils.isCollectionNotEmpty(commitmentTypeIndications)) {
 			final int size = commitmentTypeIndications.size();
@@ -326,7 +315,8 @@ public class CAdESLevelBaselineB {
 
 	/**
 	 * This method creates a set of CommitmentQualifiers.
-	 *
+	 * <p>
+	 * {@code
 	 * CommitmentTypeQualifier ::= SEQUENCE {
 	 *  commitmentQualifierId COMMITMENT-QUALIFIER.&id,
 	 *  qualifier COMMITMENT-QUALIFIER.&Qualifier OPTIONAL
@@ -337,11 +327,12 @@ public class CAdESLevelBaselineB {
 	 * WITH SYNTAX {
 	 *  COMMITMENT-QUALIFIER-ID &id
 	 *  [COMMITMENT-TYPE &Qualifier] }
+	 * }
 	 *
 	 * @param commitmentType {@link CommitmentType}
 	 * @return {@link ASN1Sequence}
 	 */
-	private ASN1Sequence getCommitmentQualifiers(CommitmentType commitmentType) {
+	protected ASN1Sequence getCommitmentQualifiers(CommitmentType commitmentType) {
 		ASN1Sequence qualifiers = null;
 		if (commitmentType instanceof CommonCommitmentType) {
 			CommitmentQualifier[] commitmentTypeQualifiers = ((CommonCommitmentType) commitmentType).getCommitmentTypeQualifiers();
@@ -379,20 +370,20 @@ public class CAdESLevelBaselineB {
 	 * A content time-stamp allows a time-stamp token of the data to be signed to be incorporated into the signed
 	 * information.
 	 * It provides proof of the existence of the data before the signature was created.
-	 *
+	 * <p>
 	 * A content time-stamp attribute is the time-stamp token of the signed data content before it is signed.
 	 * This attribute is a signed attribute.
 	 * Its object identifier is :
 	 * id-aa-ets-contentTimestamp OBJECT IDENTIFIER ::= { iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-9(9)
 	 * smime(16) id-aa(2) 20}
-	 *
+	 * <p>
 	 * Content time-stamp attribute values have ASN.1 type ContentTimestamp:
 	 * ContentTimestamp ::= TimeStampToken
-	 *
+	 * <p>
 	 * The value of messageImprint of TimeStampToken (as described in RFC 3161) is the hash of the message digest as
 	 * defined in
 	 * ETSI standard 101733 v.2.2.1, clause 5.6.1.
-	 *
+	 * <p>
 	 * NOTE: content-time-stamp indicates that the signed information was formed before the date included in the
 	 * content-time-stamp.
 	 * NOTE (bis): There is a small difference in treatment between the content-time-stamp and the archive-timestamp
@@ -404,7 +395,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addContentTimestamps(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+	protected void addContentTimestamps(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 
 		if (Utils.isCollectionNotEmpty(parameters.getContentTimestamps())) {
 
@@ -421,7 +412,7 @@ public class CAdESLevelBaselineB {
 
 	/**
 	 * ETSI TS 101 733 V2.2.1 (2013-04)
-	 *
+	 * <p>
 	 * 5.10.3 content-hints Attribute
 	 * The content-hints attribute provides information on the innermost signed content of a multi-layer message where
 	 * one content is encapsulated in another.
@@ -443,7 +434,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addContentHints(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+	protected void addContentHints(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		if (Utils.isStringNotBlank(parameters.getContentHintsType())) {
 
 			final ASN1ObjectIdentifier contentHintsType = new ASN1ObjectIdentifier(parameters.getContentHintsType());
@@ -462,7 +453,7 @@ public class CAdESLevelBaselineB {
 
 	/**
 	 * ETSI TS 101 733 V2.2.1 (2013-04)
-	 *
+	 * <p>
 	 * 5.10.2 content-identifier Attribute
 	 * The content-identifier attribute provides an identifier for the signed content, for use when a reference may be
 	 * later required to that content; for example, in the content-reference attribute in other signed data sent later.
@@ -470,7 +461,7 @@ public class CAdESLevelBaselineB {
 	 * content-identifier shall be a signed attribute. content-identifier attribute type values for the ES have an ASN.1
 	 * type ContentIdentifier, as defined in
 	 * ESS (RFC 2634 [5]).
-	 *
+	 * <p>
 	 * The minimal content-identifier attribute should contain a concatenation of user-specific identification
 	 * information (such as a user name or public keying material identification information), a GeneralizedTime string,
 	 * and a random number.
@@ -478,12 +469,7 @@ public class CAdESLevelBaselineB {
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @param signedAttributes {@link ASN1EncodableVector} signed attributes
 	 */
-	private void addContentIdentifier(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
-		/* this attribute is prohibited in PAdES B */
-		if (padesUsage) {
-			return;
-		}
-
+	protected void addContentIdentifier(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		final String contentIdentifierPrefix = parameters.getContentIdentifierPrefix();
 		if (Utils.isStringNotBlank(contentIdentifierPrefix)) {
 			if (Utils.isStringBlank(parameters.getContentIdentifierSuffix())) {
@@ -500,8 +486,13 @@ public class CAdESLevelBaselineB {
 		}
 	}
 
-	private void addSignaturePolicyId(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
-
+	/**
+	 * Adds a signature policy identifier
+	 *
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
+	 */
+	protected void addSignaturePolicyId(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		Policy policy = parameters.bLevel().getSignaturePolicy();
 		if (policy != null) {
 
@@ -576,7 +567,13 @@ public class CAdESLevelBaselineB {
 		return new SigPolicyQualifiers(qualifierInfos.toArray(new SigPolicyQualifierInfo[0]));
 	}
 
-	private void addSigningCertificateAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
+	/**
+	 * Adds a signing-certificate attribute
+	 *
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
+	 */
+	protected void addSigningCertificateAttribute(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		if (parameters.getSigningCertificate() == null && parameters.isGenerateTBSWithoutCertificate()) {
 			LOG.debug("Signing certificate not available and must be added to signed attributes later");
 			return;
@@ -585,10 +582,13 @@ public class CAdESLevelBaselineB {
 		CAdESUtils.addSigningCertificateAttribute(signedAttributes, parameters.getDigestAlgorithm(), parameters.getSigningCertificate());
 	}
 
-	private void addMimeType(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
-		if (padesUsage) {
-			return;
-		}
+	/**
+	 * Adds a MimeType attribute
+	 *
+	 * @param parameters {@link CAdESSignatureParameters}
+	 * @param signedAttributes {@link ASN1EncodableVector}
+	 */
+	protected void addMimeType(final CAdESSignatureParameters parameters, final ASN1EncodableVector signedAttributes) {
 		if (parameters instanceof CAdESCounterSignatureParameters) {
 			return;
 		}

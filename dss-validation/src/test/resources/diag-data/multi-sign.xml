@@ -318,6 +318,9 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>2.5.29.32.0</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>oHvZ5r0NRYQuY3DHpU0PlUexEUU=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-B1FD94CECADE070554A93C3AC56FC591B535B75BFFD69B882E3FAF1CAEF89E3C" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">
@@ -384,6 +387,9 @@
                 <KeyUsages OID="2.5.29.15" critical="true">
                     <keyUsageBit>nonRepudiation</keyUsageBit>
                 </KeyUsages>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>ym7p73cJ6sphJFkdaHjDKbBg5+g=</ski>
+                </SubjectKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders/>
             <Revocations/>
@@ -430,6 +436,12 @@
                 <CertificatePolicies OID="2.5.29.32" critical="true">
                     <certificatePolicy>1.2.616.1.113560.10.1.1.0</certificatePolicy>
                 </CertificatePolicies>
+                <SubjectKeyIdentifier OID="2.5.29.14" critical="false">
+                    <ski>/Tz2aURijVgFD6ED9SnrlitrWec=</ski>
+                </SubjectKeyIdentifier>
+                <AuthorityKeyIdentifier OID="2.5.29.35">
+                    <keyIdentifier>oHvZ5r0NRYQuY3DHpU0PlUexEUU=</keyIdentifier>
+                </AuthorityKeyIdentifier>
             </CertificateExtensions>
             <TrustServiceProviders>
                 <TrustServiceProvider TL="TL-B1FD94CECADE070554A93C3AC56FC591B535B75BFFD69B882E3FAF1CAEF89E3C" LOTL="LOTL-5593FFFD1C67322CB1EDD3E26916E1487F630F7FA22644ADA5B90DA7F1C9E05E">

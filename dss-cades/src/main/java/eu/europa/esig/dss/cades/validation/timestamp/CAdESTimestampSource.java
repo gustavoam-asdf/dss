@@ -576,8 +576,12 @@ public class CAdESTimestampSource extends SignatureTimestampSource<CAdESSignatur
 		List<CertificateRef> certRefs = new ArrayList<>();
 		ASN1Sequence seq = (ASN1Sequence) unsignedAttribute.getASN1Object();
 		for (int ii = 0; ii < seq.size(); ii++) {
-			OtherCertID otherCertId = OtherCertID.getInstance(seq.getObjectAt(ii));
-			certRefs.add(DSSASN1Utils.getCertificateRef(otherCertId));
+			try {
+				OtherCertID otherCertId = OtherCertID.getInstance(seq.getObjectAt(ii));
+				certRefs.add(DSSASN1Utils.getCertificateRef(otherCertId));
+			} catch (Exception e) {
+				LOG.warn("Unable to parse encapsulated OtherCertID : {}", e.getMessage());
+			}
 		}
 		return certRefs;
 	}

@@ -21,6 +21,8 @@
 package eu.europa.esig.dss.validation.executor.certificate;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateQualificationProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -63,26 +65,83 @@ public class DetailedReportForCertificateBuilder extends AbstractDetailedReportB
 	 *
 	 * @return {@link XmlDetailedReport}
 	 */
-	XmlDetailedReport build() {
-
+	public XmlDetailedReport build() {
 		XmlDetailedReport detailedReport = init();
 
-		CertificateWrapper certificate = diagnosticData.getUsedCertificateById(certificateId);
-		if (certificate == null) {
-			throw new IllegalArgumentException(String.format("The certificate with the given Id '%s' has not been found in DiagnosticData", certificateId));
-		}
-
-		Map<String, XmlBasicBuildingBlocks> bbbs = new HashMap<>();
-		process(Collections.singleton(certificate), Context.CERTIFICATE, bbbs);
+		Map<String, XmlBasicBuildingBlocks> bbbs = executeAllBasicBuildingBlocks();
 		detailedReport.getBasicBuildingBlocks().addAll(bbbs.values());
 
-		XmlBasicBuildingBlocks basicBuildingBlocks = bbbs.get(certificate.getId());
-
-		CertificateQualificationBlock cqb = new CertificateQualificationBlock(i18nProvider, basicBuildingBlocks.getConclusion(), currentTime, certificate,
-				detailedReport.getTLAnalysis());
-		detailedReport.getSignatureOrTimestampOrEvidenceRecord().add(cqb.execute());
-
+		executeValidation(detailedReport, bbbs);
 		return detailedReport;
+	}
+
+	/**
+	 * Gets the certificate to be validated
+	 *
+	 * @return {@link CertificateWrapper}
+	 */
+	protected CertificateWrapper getCertificate() {
+		CertificateWrapper certificate = diagnosticData.getUsedCertificateById(certificateId);
+		if (certificate == null) {
+			throw new IllegalArgumentException(String.format(
+					"The certificate with the given Id '%s' has not been found in DiagnosticData", certificateId));
+		}
+		return certificate;
+	}
+
+	/**
+	 * This method executes all basic building blocks required on validation
+	 *
+	 * @return a map of {@link XmlBasicBuildingBlocks} and corresponding token identifiers
+	 */
+	protected Map<String, XmlBasicBuildingBlocks> executeAllBasicBuildingBlocks() {
+		final Map<String, XmlBasicBuildingBlocks> bbbs = new HashMap<>();
+		process(Collections.singleton(getCertificate()), Context.CERTIFICATE, bbbs);
+		return bbbs;
+	}
+
+	/**
+	 * Performs validation for the given tokens
+	 *
+	 * @param detailedReport {@link XmlDetailedReport}
+	 * @param bbbs map of {@link XmlBasicBuildingBlocks}
+	 */
+	protected void executeValidation(XmlDetailedReport detailedReport, Map<String, XmlBasicBuildingBlocks> bbbs) {
+		buildXmlCertificate(detailedReport, bbbs);
+	}
+
+	/**
+	 * Executes certificate validation and builds a {@code XmlCertificate} object
+	 *
+	 * @param detailedReport {@link XmlDetailedReport}
+	 * @param bbbs map of {@link XmlBasicBuildingBlocks}
+	 * @return {@link XmlCertificate}
+	 */
+	protected XmlCertificate buildXmlCertificate(XmlDetailedReport detailedReport, Map<String, XmlBasicBuildingBlocks> bbbs) {
+		XmlBasicBuildingBlocks basicBuildingBlocks = bbbs.get(certificateId);
+
+		XmlCertificate xmlCertificate = new XmlCertificate();
+		xmlCertificate.setId(certificateId);
+
+		CertificateQualificationBlock cqb = getCertificateQualificationBlock(detailedReport, basicBuildingBlocks);
+		XmlCertificateQualificationProcess xmlCertificateQualificationProcess = cqb.execute();
+		xmlCertificate.setCertificateQualificationProcess(xmlCertificateQualificationProcess);
+
+		detailedReport.getSignatureOrTimestampOrEvidenceRecord().add(xmlCertificate);
+
+		return xmlCertificate;
+	}
+
+	/**
+	 * Gets the certificate qualification block
+	 *
+	 * @param detailedReport {@link XmlDetailedReport}
+	 * @param basicBuildingBlocks {@link XmlBasicBuildingBlocks}
+	 * @return {@link CertificateQualificationBlock}
+	 */
+	protected CertificateQualificationBlock getCertificateQualificationBlock(XmlDetailedReport detailedReport, XmlBasicBuildingBlocks basicBuildingBlocks) {
+		return new CertificateQualificationBlock(i18nProvider, basicBuildingBlocks.getConclusion(), currentTime,
+				getCertificate(), detailedReport.getTLAnalysis());
 	}
 
 }

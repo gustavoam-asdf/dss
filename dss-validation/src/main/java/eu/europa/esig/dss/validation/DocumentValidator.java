@@ -28,6 +28,7 @@ import eu.europa.esig.dss.model.ManifestFile;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.spi.policy.SignaturePolicyProvider;
+import eu.europa.esig.dss.spi.policy.SignaturePolicyValidatorLoader;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationDataContainer;
@@ -194,6 +195,13 @@ public interface DocumentValidator extends ProcessExecutorProvider<DocumentProce
 	 * @param signaturePolicyProvider {@link SignaturePolicyProvider}
 	 */
 	void setSignaturePolicyProvider(SignaturePolicyProvider signaturePolicyProvider);
+
+	/**
+	 * Sets a loader for a {@code SignaturePolicyValidator}
+	 *
+	 * @param signaturePolicyValidatorLoader {@link SignaturePolicyValidatorLoader}
+	 */
+	void setSignaturePolicyValidatorLoader(SignaturePolicyValidatorLoader signaturePolicyValidatorLoader);
 
 	/**
 	 * Validates the document and all its signatures. The default constraint file is used.

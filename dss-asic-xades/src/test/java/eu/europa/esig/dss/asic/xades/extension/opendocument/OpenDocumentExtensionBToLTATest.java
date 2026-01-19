@@ -20,7 +20,6 @@
  */
 package eu.europa.esig.dss.asic.xades.extension.opendocument;
 
-import eu.europa.esig.dss.asic.xades.extension.AbstractTestOpenDocumentExtension;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 

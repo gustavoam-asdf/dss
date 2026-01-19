@@ -67,7 +67,7 @@ class JAXBCertEntityBuilderTest extends AbstractTestJaxbPKI {
 
         CertificateToken certificateToken = new X509CertificateBuilder()
                 .subject(x500Name, BigInteger.valueOf(101), keyPair.getPublic())
-                .issuer(goodCa.getCertificateToken(), goodCa.getPrivateKey(), SignatureAlgorithm.RSA_SHA256)
+                .issuer(goodCa.getCertificateToken(), new KeyPair(goodCa.getPublicKey(), goodCa.getPrivateKey()), SignatureAlgorithm.RSA_SHA256)
                 .notBefore(notBefore).notAfter(notAfter)
                 .ocsp("http://dss.nowina.lu/pki/ocsp")
                 .build();

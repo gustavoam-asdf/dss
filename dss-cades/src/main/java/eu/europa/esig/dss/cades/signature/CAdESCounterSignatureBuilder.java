@@ -25,7 +25,9 @@ import eu.europa.esig.dss.cades.CAdESUtils;
 import eu.europa.esig.dss.cades.validation.CAdESSignature;
 import eu.europa.esig.dss.cades.validation.CMSDocumentAnalyzer;
 import eu.europa.esig.dss.cms.CMS;
+import eu.europa.esig.dss.cms.CMSBuilder;
 import eu.europa.esig.dss.cms.CMSUtils;
+import eu.europa.esig.dss.cms.operator.CustomContentSigner;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -50,6 +52,7 @@ import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.operator.ContentSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,8 +231,8 @@ public class CAdESCounterSignatureBuilder {
 	public SignerInformationStore generateCounterSignature(
 			SignerInformation signerInformation, CAdESSignatureParameters parameters, CustomContentSigner customContentSigner) {
 		InMemoryDocument toSignDocument = new InMemoryDocument(signerInformation.getSignature());
-		final SignerInfoGenerator signerInfoGenerator = new CMSSignerInfoGeneratorBuilder()
-				.build(toSignDocument, parameters, customContentSigner);
+		CMSForCAdESBuilderHelper cmsBuilderHelper = initCMSBuilderHelper(toSignDocument, parameters, customContentSigner);
+		final SignerInfoGenerator signerInfoGenerator = cmsBuilderHelper.createSignerInfoGenerator();
 
 		try {
 
@@ -297,6 +300,20 @@ public class CAdESCounterSignatureBuilder {
 		if (CAdESUtils.containsEvidenceRecord(signerInformation)) {
 			throw new IllegalInputException("Cannot add a counter signature to a CMS containing an evidence record unsigned attribute.");
 		}
+	}
+
+	/**
+	 * Instantiates a {@code CMSForCAdESBuilderHelper}
+	 *
+	 * @param contentToSign {@link DSSDocument}
+	 * @param signatureParameters {@link CAdESSignatureParameters}
+	 * @param contentSigner {@link ContentSigner}
+	 * @return {@link CMSForCAdESBuilderHelper}
+	 */
+	protected CMSForCAdESBuilderHelper initCMSBuilderHelper(DSSDocument contentToSign, CAdESSignatureParameters signatureParameters,
+															ContentSigner contentSigner) {
+		return new CMSForCAdESBuilderHelper(contentToSign, signatureParameters, contentSigner)
+				.setTrustedCertificateSource(certificateVerifier.getTrustedCertSources());
 	}
 
 }
