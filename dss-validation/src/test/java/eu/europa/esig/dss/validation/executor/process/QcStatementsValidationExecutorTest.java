@@ -21,6 +21,8 @@
 package eu.europa.esig.dss.validation.executor.process;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForPID;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForWallet;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
@@ -28,6 +30,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlOID;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPSD2QcInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcCompliance;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcEuLimitValue;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlQcPSB;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcSSCD;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcStatements;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlRoleOfPSP;
@@ -825,6 +828,247 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         xmlOID = new XmlOID();
         xmlOID.setValue(QCIdentMethodEnum.QCT_EIDAS2_B.getOid());
         xmlQcStatements.setQcIdentMethod(xmlOID);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+    }
+
+    @Test
+    void certForPIDTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlCertificate signingCertificate = xmlDiagnosticData.getSignatures().get(0)
+                .getSigningCertificate().getCertificate();
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+        signingCertificate.getCertificateExtensions().add(xmlQcStatements);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
+                .getBasicSignatureConstraints().getSigningCertificate();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        certificateConstraints.setCertForPID(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPIDPC_ANS)));
+
+        XmlCertForPID xmlCertForPID = new XmlCertForPID();
+        xmlCertForPID.setPresent(true);
+        xmlQcStatements.setCertForPID(xmlCertForPID);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+    }
+
+    @Test
+    void certForWalletTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlCertificate signingCertificate = xmlDiagnosticData.getSignatures().get(0)
+                .getSigningCertificate().getCertificate();
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+        signingCertificate.getCertificateExtensions().add(xmlQcStatements);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
+                .getBasicSignatureConstraints().getSigningCertificate();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        certificateConstraints.setCertForWallet(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCWPC_ANS)));
+
+        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
+        xmlCertForWallet.setPresent(true);
+        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+    }
+
+    @Test
+    void qcPSBCountryOfLegislationTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlCertificate signingCertificate = xmlDiagnosticData.getSignatures().get(0)
+                .getSigningCertificate().getCertificate();
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+        signingCertificate.getCertificateExtensions().add(xmlQcStatements);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
+                .getBasicSignatureConstraints().getSigningCertificate();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("EU");
+        certificateConstraints.setQcPSBCountryOfLegislation(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBCLA_ANS)));
+
+        XmlQcPSB xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setCountryOfLegislation("FR");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBCLA_ANS)));
+
+        xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setCountryOfLegislation("EU");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+    }
+
+    @Test
+    void qcPSBAuthSourceIdentificationTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlCertificate signingCertificate = xmlDiagnosticData.getSignatures().get(0)
+                .getSigningCertificate().getCertificate();
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+        signingCertificate.getCertificateExtensions().add(xmlQcStatements);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
+                .getBasicSignatureConstraints().getSigningCertificate();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("Id-12345");
+        certificateConstraints.setQcPSBAuthSourceIdentification(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBASIA_ANS)));
+
+        XmlQcPSB xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setAuthSourceIdentification("Id-56789");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBASIA_ANS)));
+
+        xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setAuthSourceIdentification("Id-12345");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+    }
+
+    @Test
+    void qcPSBLegislationIdentificationTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/valid-diag-data.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlCertificate signingCertificate = xmlDiagnosticData.getSignatures().get(0)
+                .getSigningCertificate().getCertificate();
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+        signingCertificate.getCertificateExtensions().add(xmlQcStatements);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
+                .getBasicSignatureConstraints().getSigningCertificate();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("Id-12345");
+        certificateConstraints.setQcPSBLegislationIdentification(constraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBLIA_ANS)));
+
+        XmlQcPSB xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setLegislationIdentification("Id-56789");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
+
+        reports = executor.execute();
+        simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPSBLIA_ANS)));
+
+        xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setLegislationIdentification("Id-12345");
+        xmlQcStatements.setQcPSB(xmlQcPSB);
 
         reports = executor.execute();
         simpleReport = reports.getSimpleReport();

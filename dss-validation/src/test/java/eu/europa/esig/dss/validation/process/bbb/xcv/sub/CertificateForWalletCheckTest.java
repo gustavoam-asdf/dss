@@ -1,0 +1,112 @@
+package eu.europa.esig.dss.validation.process.bbb.xcv.sub;
+
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
+import eu.europa.esig.dss.diagnostic.CertificateWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForWallet;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlQcStatements;
+import eu.europa.esig.dss.enumerations.CertificateExtensionEnum;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.policy.LevelConstraintWrapper;
+import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateForWalletCheck;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class CertificateForWalletCheckTest extends AbstractTestCheck {
+
+    @Test
+    void validTest() {
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+
+        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
+        xmlCertForWallet.setPresent(true);
+        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlCertificate xc = new XmlCertificate();
+        xc.getCertificateExtensions().add(xmlQcStatements);
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateForWalletCheck cfwc = new CertificateForWalletCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new LevelConstraintWrapper(constraint));
+        cfwc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void invalidTest() {
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+
+        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
+        xmlCertForWallet.setPresent(false);
+        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlCertificate xc = new XmlCertificate();
+        xc.getCertificateExtensions().add(xmlQcStatements);
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateForWalletCheck cfwc = new CertificateForWalletCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new LevelConstraintWrapper(constraint));
+        cfwc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void notDefinedTest() {
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlCertificate xc = new XmlCertificate();
+        xc.getCertificateExtensions().add(xmlQcStatements);
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateForWalletCheck cfwc = new CertificateForWalletCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new LevelConstraintWrapper(constraint));
+        cfwc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void noQcStatementsTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlCertificate xc = new XmlCertificate();
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateForWalletCheck cfwc = new CertificateForWalletCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new LevelConstraintWrapper(constraint));
+        cfwc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+}

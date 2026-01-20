@@ -1061,6 +1061,39 @@ public class CertificateWrapper extends AbstractTokenProxy {
 	}
 
 	/**
+	 * Gets whether the certificate is for Personal Identification Data (PID) provider certificate
+	 *
+	 * @return whether the certificate is for Personal Identification Data (PID)
+	 */
+	public boolean isCertForPID() {
+		XmlQcStatements xmlQcStatements = getXmlQcStatements();
+		return xmlQcStatements != null && xmlQcStatements.getCertForPID() != null && xmlQcStatements.getCertForPID().isPresent();
+	}
+
+	/**
+	 * Gets whether the certificate is for Wallet provider certificate
+	 *
+	 * @return whether the certificate is for Wallet
+	 */
+	public boolean isCertForWallet() {
+		XmlQcStatements xmlQcStatements = getXmlQcStatements();
+		return xmlQcStatements != null && xmlQcStatements.getCertForWallet() != null && xmlQcStatements.getCertForWallet().isPresent();
+	}
+
+	/**
+	 * Gets QcPSB defined in the QcStatements of the certificate, when present
+	 *
+	 * @return {@link QCPSBWrapper}
+	 */
+	public QCPSBWrapper getQcPSB() {
+		XmlQcStatements xmlQcStatements = getXmlQcStatements();
+		if (xmlQcStatements != null && xmlQcStatements.getQcPSB() != null) {
+			return new QCPSBWrapper(xmlQcStatements.getQcPSB());
+		}
+		return null;
+	}
+
+	/**
 	 * Returns a list of QcStatements OIDs not supported by the implementation
 	 *
 	 * @return a list of {@link String}s

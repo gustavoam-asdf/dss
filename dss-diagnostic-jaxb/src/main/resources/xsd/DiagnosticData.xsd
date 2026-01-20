@@ -712,6 +712,9 @@
 					<xs:element name="PSD2QcInfo" type="PSD2QcInfo" minOccurs="0" />
 					<xs:element name="QcQSCDlegislation" type="QcQSCDlegislation" minOccurs="0" />
 					<xs:element name="QcIdentMethod" type="OID" minOccurs="0" />
+					<xs:element name="CertForPID" type="CertForPID" minOccurs="0" />
+					<xs:element name="CertForWallet" type="CertForWallet" minOccurs="0" />
+					<xs:element name="QcPSB" type="QcPSB" minOccurs="0" />
 					<xs:element name="OtherOIDs" type="OtherOIDs" minOccurs="0" />
 					<xs:element name="MRACertificateMapping" type="MRACertificateMapping" minOccurs="0" />
 				</xs:sequence>
@@ -817,6 +820,22 @@
 			<xs:element name="currency" type="xs:string" />
 			<xs:element name="amount" type="xs:int" />
 			<xs:element name="exponent" type="xs:int" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CertForPID">
+		<xs:attribute name="present" type="xs:boolean" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="CertForWallet">
+		<xs:attribute name="present" type="xs:boolean" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="QcPSB">
+		<xs:sequence>
+			<xs:element name="countryOfLegislation" type="xs:string" />
+			<xs:element name="authSourceIdentification" type="xs:string" />
+			<xs:element name="legislationIdentification" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
 

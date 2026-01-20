@@ -111,6 +111,25 @@ public class QcStatements extends CertificateExtension {
     private List<String> qcQSCDLegislationCountryCodes;
 
     /**
+     * id-etsi-qct-pid OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 1 }
+     *  -- Certificate for PID provider sign/seal certificate
+     */
+    private boolean certForPID;
+
+    /**
+     * id-etsi-qct-wal OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 2 }
+     *  -- Certificate for Wallet provider sign/seal certificate
+     */
+    private boolean certForWallet;
+
+    /**
+     *  -- PSB certificate mandatory data
+     *  esi4-qcStatement-10 QC-STATEMENT ::= { SYNTAX QcPSB IDENTIFIED
+     *  BY id-etsi-qcs-QcPSB }
+     */
+    private QCPSB qcPSB;
+
+    /**
      * This list contains OIDs defined in QcStatements, which are not supported by the current implementation
      */
     private List<String> otherOids = new ArrayList<>();
@@ -318,6 +337,60 @@ public class QcStatements extends CertificateExtension {
      */
     public void setQcQSCDLegislationCountryCodes(List<String> qcQSCDLegislationCountryCodes) {
         this.qcQSCDLegislationCountryCodes = qcQSCDLegislationCountryCodes;
+    }
+
+    /**
+     * Gets whether the certificate is for PID issuance
+     *
+     * @return whether the certificate is for PID issuance
+     */
+    public boolean isCertForPID() {
+        return certForPID;
+    }
+
+    /**
+     * Sets whether the certificate is for PID issuance
+     *
+     * @param certForPID whether the certificate is for PID issuance
+     */
+    public void setCertForPID(boolean certForPID) {
+        this.certForPID = certForPID;
+    }
+
+    /**
+     * Gets whether the certificate is for a Wallet Provider sign/seal certificate
+     *
+     * @return whether the certificate is for Wallet
+     */
+    public boolean isCertForWallet() {
+        return certForWallet;
+    }
+
+    /**
+     * Sets whether the certificate is for a Wallet Provider sign/seal certificate
+     *
+     * @param certForWallet whether the certificate is for Wallet
+     */
+    public void setCertForWallet(boolean certForWallet) {
+        this.certForWallet = certForWallet;
+    }
+
+    /**
+     * Gets information for a Public Sector Body's Electronic Attestation of Attributes (PSBEAA) provider certificate
+     *
+     * @return {@link QCPSB}
+     */
+    public QCPSB getQcPSB() {
+        return qcPSB;
+    }
+
+    /**
+     * Sets information for a Public Sector Body's Electronic Attestation of Attributes (PSBEAA) provider certificate
+     *
+     * @param qcPSB {@link QCPSB}
+     */
+    public void setQcPSB(QCPSB qcPSB) {
+        this.qcPSB = qcPSB;
     }
 
     /**

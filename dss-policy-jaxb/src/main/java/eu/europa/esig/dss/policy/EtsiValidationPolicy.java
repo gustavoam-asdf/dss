@@ -1208,6 +1208,51 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelRule getCertificateForPIDConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toLevelRule(certificateConstraints.getCertForPID());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getCertificateForWalletConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toLevelRule(certificateConstraints.getCertForWallet());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBCountryOfLegislation());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBAuthSourceIdentification());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBLegislationIdentification());
+		}
+		return null;
+	}
+
+	@Override
 	public LevelRule getSigningCertificateRecognitionConstraint(Context context) {
 		CertificateConstraints certificateConstraints = getSigningCertificateByContext(context);
 		if (certificateConstraints != null) {

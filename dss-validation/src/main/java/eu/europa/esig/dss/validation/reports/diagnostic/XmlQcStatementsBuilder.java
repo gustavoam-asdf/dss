@@ -20,11 +20,14 @@
  */
 package eu.europa.esig.dss.validation.reports.diagnostic;
 
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForPID;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForWallet;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOID;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPSD2QcInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcCompliance;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcEuLimitValue;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlQcPSB;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcSSCD;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcStatements;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlRoleOfPSP;
@@ -34,6 +37,7 @@ import eu.europa.esig.dss.enumerations.RoleOfPspOid;
 import eu.europa.esig.dss.model.x509.extension.PSD2QcType;
 import eu.europa.esig.dss.model.x509.extension.PdsLocation;
 import eu.europa.esig.dss.model.x509.extension.QCLimitValue;
+import eu.europa.esig.dss.model.x509.extension.QCPSB;
 import eu.europa.esig.dss.model.x509.extension.QcStatements;
 import eu.europa.esig.dss.model.x509.extension.RoleOfPSP;
 import eu.europa.esig.dss.utils.Utils;
@@ -92,6 +96,11 @@ public class XmlQcStatementsBuilder {
         }
         if (qcStatements.getQcIdentMethod() != null) {
             result.setQcIdentMethod(getXmlOid(qcStatements.getQcIdentMethod()));
+        }
+        result.setCertForPID(buildXmlCertForPID(qcStatements.isCertForPID()));
+        result.setCertForWallet(buildXmlCertForWallet(qcStatements.isCertForWallet()));
+        if (qcStatements.getQcPSB() != null) {
+            result.setQcPSB(buildXmlQcPSB(qcStatements.getQcPSB()));
         }
         if (Utils.isCollectionNotEmpty(qcStatements.getOtherOids())) {
             result.setOtherOIDs(buildXmlOIDs(qcStatements.getOtherOids()));
@@ -235,6 +244,50 @@ public class XmlQcStatementsBuilder {
     }
 
     /**
+     * Builds {@code XmlCertForPID}
+     *
+     * @param present TRUE if qct-pid is present, FALSE otherwise
+     * @return {@link XmlCertForPID}
+     */
+    public XmlCertForPID buildXmlCertForPID(boolean present) {
+        if (present) {
+            XmlCertForPID xmlCertForPID = new XmlCertForPID();
+            xmlCertForPID.setPresent(true);
+            return xmlCertForPID;
+        }
+        return null;
+    }
+
+    /**
+     * Builds {@code XmlCertForWallet}
+     *
+     * @param present TRUE if qct-wal is present, FALSE otherwise
+     * @return {@link XmlCertForWallet}
+     */
+    public XmlCertForWallet buildXmlCertForWallet(boolean present) {
+        if (present) {
+            XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
+            xmlCertForWallet.setPresent(true);
+            return xmlCertForWallet;
+        }
+        return null;
+    }
+
+    /**
+     * Builds {@code XmlQcPSB}
+     *
+     * @param qcPSB {@link QCPSB}
+     * @return {@link XmlQcPSB}
+     */
+    public XmlQcPSB buildXmlQcPSB(QCPSB qcPSB) {
+        XmlQcPSB xmlQcPSB = new XmlQcPSB();
+        xmlQcPSB.setCountryOfLegislation(qcPSB.getCountryOfLegislation());
+        xmlQcPSB.setAuthSourceIdentification(qcPSB.getAuthSourceIdentification());
+        xmlQcPSB.setLegislationIdentification(qcPSB.getLegislationIdentification());
+        return xmlQcPSB;
+    }
+
+    /**
      * Builds a deep copy of {@code XmlQcStatements}
      * NOTE: does not copy MRA content
      *
@@ -301,6 +354,23 @@ public class XmlQcStatementsBuilder {
             xmlQcIdentMethod.setDescription(xmlQcStatements.getQcIdentMethod().getDescription());
             xmlQcIdentMethod.setValue(xmlQcStatements.getQcIdentMethod().getValue());
             copy.setQcIdentMethod(xmlQcIdentMethod);
+        }
+        if (xmlQcStatements.getCertForPID() != null) {
+            XmlCertForPID xmlCertForPID = new XmlCertForPID();
+            xmlCertForPID.setPresent(xmlQcStatements.getCertForPID().isPresent());
+            copy.setCertForPID(xmlCertForPID);
+        }
+        if (xmlQcStatements.getCertForWallet() != null) {
+            XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
+            xmlCertForWallet.setPresent(xmlQcStatements.getCertForWallet().isPresent());
+            copy.setCertForWallet(xmlCertForWallet);
+        }
+        if (xmlQcStatements.getQcPSB() != null) {
+            XmlQcPSB xmlQcPSB = new XmlQcPSB();
+            xmlQcPSB.setCountryOfLegislation(xmlQcStatements.getQcPSB().getCountryOfLegislation());
+            xmlQcPSB.setAuthSourceIdentification(xmlQcStatements.getQcPSB().getAuthSourceIdentification());
+            xmlQcPSB.setLegislationIdentification(xmlQcStatements.getQcPSB().getLegislationIdentification());
+            copy.setQcPSB(xmlQcPSB);
         }
         for (XmlOID xmlOID : xmlQcStatements.getOtherOIDs()) {
             XmlOID xmlOtherOID = new XmlOID();

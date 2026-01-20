@@ -829,6 +829,51 @@ public interface ValidationPolicy {
 	MultiValuesRule getCertificateQcIdentificationMethodConstraint(Context context, SubContext subContext);
 
 	/**
+	 * Indicates the verification method used for PID provider sign/seal certificate
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method used PID provider sign/seal certificate
+	 */
+	LevelRule getCertificateForPIDConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for Wallet provider sign/seal certificate
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method used Wallet provider sign/seal certificate
+	 */
+	LevelRule getCertificateForWalletConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for country of legislation of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for country of legislation of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for authentic source of identification of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for authentic source of identification of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for legislation identification of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for legislation identification of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext);
+
+	/**
 	 * Indicates if signing-certificate has been identified.
 	 *
 	 * @param context {@link Context}

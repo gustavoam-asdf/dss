@@ -561,6 +561,31 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getCertificateForPIDConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateForPIDConstraint(context, subContext);
+    }
+
+    @Override
+    public LevelRule getCertificateForWalletConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateForWalletConstraint(context, subContext);
+    }
+
+    @Override
+    public MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBCountryOfLegislationConstraint(context, subContext);
+    }
+
+    @Override
+    public MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBAuthSourceIdentificationConstraint(context, subContext);
+    }
+
+    @Override
+    public MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBLegislationIdentificationConstraint(context, subContext);
+    }
+
+    @Override
     public LevelRule getSigningCertificateRecognitionConstraint(Context context) {
         return validationPolicy.getSigningCertificateRecognitionConstraint(context);
     }
