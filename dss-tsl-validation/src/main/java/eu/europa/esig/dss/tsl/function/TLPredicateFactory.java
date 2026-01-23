@@ -70,7 +70,7 @@ public class TLPredicateFactory {
     /**
      * This method creates a Predicate used to filter XML European Trusted Lists (TL)
      * with the defined Scheme Territory codes
-     *
+     * <p>
      * Example : "DE", "FR"
      *
      * @param countryCodes an array of {@link String}s representing Scheme Territory codes to filter Trusted Lists by
@@ -101,7 +101,7 @@ public class TLPredicateFactory {
 
     /**
      * This method creates a predicate used to filter all Trusted Lists (TL) with the defined mimetype
-     *
+     * <p>
      * Example : "application/vnd.etsi.tsl+xml" to filter XML Trusted Lists (TL)
      *
      * @param mimetype {@link String} defyining the MimeType

@@ -26,7 +26,7 @@ import java.util.Objects;
  * Defines a TSLType element of a Trusted List
  *
  */
-public interface TSLType extends UriBasedEnum {
+public interface TSLType extends ListType {
 
     /**
      * Gets label
@@ -39,7 +39,7 @@ public interface TSLType extends UriBasedEnum {
      * This method returns a {@code TSLType} for the given URI
      *
      * @param uri {@link String}
-     * @return {@link TSLTypeEnum}
+     * @return {@link TSLType}
      */
     static TSLType fromUri(String uri) {
         Objects.requireNonNull(uri, "URI cannot be null!");

@@ -1,0 +1,309 @@
+/**
+ * DSS - Digital Signature Services
+ * Copyright (C) 2015 European Commission, provided under the CEF programme
+ * <p>
+ * This file is part of the "DSS - Digital Signature Services" project.
+ * <p>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * <p>
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+package eu.europa.esig.dss.lote.dto;
+
+import eu.europa.esig.dss.enumerations.ListType;
+import eu.europa.esig.dss.model.lote.OtherListPointer;
+import eu.europa.esig.dss.model.lote.TrustedEntity;
+import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
+import eu.europa.esig.dss.model.tsl.TrustService;
+import eu.europa.esig.dss.utils.Utils;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * The parsing record DTO
+ */
+public class ParsingCacheDTO extends AbstractCacheDTO implements ParsingInfoRecord {
+	
+	private static final long serialVersionUID = 5464908480606825440L;
+
+	/** The List Type */
+	private ListType type;
+
+	/** The LOTL/TL sequence number */
+	private Integer sequenceNumber;
+
+	/** LOTL/TL version */
+	private Integer version;
+
+	/** The country (territory) */
+	private String territory;
+
+	/** The issuance date of the LOTL/TL */
+	private Date issueDate;
+
+	/** The next update date */
+	private Date nextUpdateDate;
+
+	/** The distribution points urls */
+	private List<String> distributionPoints;
+
+	/** List of found trusted entities */
+	private List<TrustedEntity> trustedEntities;
+
+	/** List of Lists of Lists other pointers */
+	private List<OtherListPointer> listOfListsOtherPointers;
+
+	/** List of List other pointers */
+	private List<OtherListPointer> listOtherPointers;
+
+	/** List of pivot URLs */
+	private List<String> pivotUrls;
+
+	/** Signing certificate announcement URL */
+	private String signingCertificateAnnouncementUrl;
+
+	/** A list of error messages occurred during a structure validation */
+	protected List<String> structureValidationMessages;
+
+	/**
+	 * Default constructor
+	 */
+	public ParsingCacheDTO() {
+		// empty
+	}
+
+	/**
+	 * Copies the cache DTO
+	 *
+	 * @param cacheDTO {@link AbstractCacheDTO}
+	 */
+	public ParsingCacheDTO(AbstractCacheDTO cacheDTO) {
+		super(cacheDTO);
+	}
+
+	@Override
+	public ListType getType() {
+		return type;
+	}
+
+	/**
+	 * Sets the List Type
+	 *
+	 * @param type {@link ListType}
+	 */
+	public void setType(ListType type) {
+		this.type = type;
+	}
+
+	@Override
+	public Integer getSequenceNumber() {
+		return sequenceNumber;
+	}
+
+	/**
+	 * Sets the sequence number
+	 *
+	 * @param sequenceNumber {@link Integer}
+	 */
+	public void setSequenceNumber(Integer sequenceNumber) {
+		this.sequenceNumber = sequenceNumber;
+	}
+
+	@Override
+	public Integer getVersion() {
+		return version;
+	}
+
+	/**
+	 * Sets the version
+	 *
+	 * @param version {@link Integer}
+	 */
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+	@Override
+	public String getTerritory() {
+		return territory;
+	}
+
+	/**
+	 * Sets the territory
+	 *
+	 * @param territory {@link String}
+	 */
+	public void setTerritory(String territory) {
+		this.territory = territory;
+	}
+
+	@Override
+	public Date getIssueDate() {
+		return issueDate;
+	}
+
+	/**
+	 * Sets the issue date
+	 *
+	 * @param issueDate {@link Date}
+	 */
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	@Override
+	public Date getNextUpdateDate() {
+		return nextUpdateDate;
+	}
+
+	/**
+	 * Sets the next update date
+	 *
+	 * @param nextUpdateDate {@link Date}
+	 */
+	public void setNextUpdateDate(Date nextUpdateDate) {
+		this.nextUpdateDate = nextUpdateDate;
+	}
+
+	@Override
+	public List<String> getDistributionPoints() {
+		return distributionPoints;
+	}
+
+	/**
+	 * Sets a list of distribution point urls
+	 *
+	 * @param distributionPoints a list of {@link String}s
+	 */
+	public void setDistributionPoints(List<String> distributionPoints) {
+		this.distributionPoints = distributionPoints;
+	}
+
+	@Override
+	public List<TrustedEntity> getTrustedEntities() {
+		return trustedEntities;
+		}
+
+	/**
+	 * Sets trust service providers
+	 *
+	 * @param trustedEntities a list of {@link TrustedEntity}s
+	 */
+	public void setTrustedEntities(List<TrustedEntity> trustedEntities) {
+		this.trustedEntities = trustedEntities;
+	}
+
+	@Override
+	public List<OtherListPointer> getListOfListsOtherPointers() {
+		return listOfListsOtherPointers;
+	}
+
+	/**
+	 * Sets List of Lists other pointers
+	 *
+	 * @param listOfListsOtherPointers a list of {@link OtherListPointer}s
+	 */
+	public void setListOfListsOtherPointers(List<OtherListPointer> listOfListsOtherPointers) {
+		this.listOfListsOtherPointers = listOfListsOtherPointers;
+	}
+
+	@Override
+	public List<OtherListPointer> getListOtherPointers() {
+		return listOtherPointers;
+	}
+
+	/**
+	 * Sets Lists other pointers
+	 *
+	 * @param listOtherPointers a list of {@link OtherListPointer}s
+	 */
+	public void setListOtherPointers(List<OtherListPointer> listOtherPointers) {
+		this.listOtherPointers = listOtherPointers;
+	}
+
+	@Override
+	public List<String> getPivotUrls() {
+		return pivotUrls;
+	}
+
+	/**
+	 * Sets pivot URLs
+	 *
+	 * @param pivotUrls a list of {@link String}s
+	 */
+	public void setPivotUrls(List<String> pivotUrls) {
+		this.pivotUrls = pivotUrls;
+	}
+
+	@Override
+	public String getSigningCertificateAnnouncementUrl() {
+		return signingCertificateAnnouncementUrl;
+	}
+
+	/**
+	 * Sets the signing certificate announcement URL
+	 *
+	 * @param signingCertificateAnnouncementUrl {@link String}
+	 */
+	public void setSigningCertificateAnnouncementUrl(String signingCertificateAnnouncementUrl) {
+		this.signingCertificateAnnouncementUrl = signingCertificateAnnouncementUrl;
+	}
+
+	@Override
+	public int getTrustedEntitiesNumber() {
+		if (Utils.isCollectionNotEmpty(trustedEntities)) {
+			return trustedEntities.size();
+		}
+		return 0;
+	}
+
+	@Override
+	public int getTrustedServicesNumber() {
+		int tsNumber = 0;
+		if (Utils.isCollectionNotEmpty(trustedEntities)) {
+			for (TrustedEntity tsp : trustedEntities) {
+				tsNumber += tsp.getServices().size();
+			}
+		}
+		return tsNumber;
+	}
+
+	@Override
+	public int getCertNumber() {
+		int certNumber = 0;
+		if (Utils.isCollectionNotEmpty(trustedEntities)) {
+			for (TrustedEntity tsp : trustedEntities) {
+				for (Object trustService : tsp.getServices()) {
+					certNumber += ((TrustService) trustService).getCertificates().size();
+				}
+			}
+		}
+		return certNumber;
+	}
+
+	@Override
+	public List<String> getStructureValidationMessages() {
+		return structureValidationMessages;
+	}
+
+	/**
+	 * Sets the structure validation error messages
+	 *
+	 * @param structureValidationMessages a list of {@link String} error messages when occurred on the structure validation
+	 */
+	public void setStructureValidationMessages(List<String> structureValidationMessages) {
+		this.structureValidationMessages = structureValidationMessages;
+	}
+
+}

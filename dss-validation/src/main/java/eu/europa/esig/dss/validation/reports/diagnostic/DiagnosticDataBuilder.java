@@ -122,6 +122,7 @@ import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSPKUtils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.lote.TrustedEntitiesCertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateTokenRefMatcher;
@@ -326,6 +327,9 @@ public abstract class DiagnosticDataBuilder {
 		linkSigningCertificateAndChains(usedCertificates);
 		linkCertificatesAndRevocations(usedCertificates);
 
+		if (isUseLoTEs()) {
+
+		}
 		if (isUseTrustedLists()) {
 			Collection<XmlTrustedList> trustedLists = buildXmlTrustedLists(allCertificateSources);
 			diagnosticData.getTrustedLists().addAll(trustedLists);
@@ -338,6 +342,17 @@ public abstract class DiagnosticDataBuilder {
 		if (!allCertificateSources.isEmpty()) {
 			for (CertificateSource certificateSource : allCertificateSources.getSources()) {
 				if (certificateSource instanceof TrustPropertiesCertificateSource) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isUseLoTEs() {
+		if (!allCertificateSources.isEmpty()) {
+			for (CertificateSource certificateSource : allCertificateSources.getSources()) {
+				if (certificateSource instanceof TrustedEntitiesCertificateSource) {
 					return true;
 				}
 			}

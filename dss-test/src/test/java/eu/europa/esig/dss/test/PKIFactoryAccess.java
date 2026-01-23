@@ -408,9 +408,9 @@ public abstract class PKIFactoryAccess {
         return getTrustedCertificateSourceByPKIName("good-pki");
     }
 
-    private CertificateSource getTrustedCertificateSourceByPKIName(String pkiName) {
+    protected CertificateSource getTrustedCertificateSourceByPKIName(String pkiName) {
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
-        List<JAXBCertEntity> certEntities = certEntityRepository.getByPkiName(pkiName);
+        List<JAXBCertEntity> certEntities = getCertEntityRepository().getByPkiName(pkiName);
         if (Utils.isCollectionNotEmpty(certEntities)) {
             certEntities.stream().filter(JAXBCertEntity::isTrustAnchor).map(JAXBCertEntity::getCertificateToken).forEach(trustedCertificateSource::addCertificate);
         }

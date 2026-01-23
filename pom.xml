@@ -146,6 +146,7 @@
 		<module>dss-asic-common</module>
 		<module>dss-asic-xades</module>
 		<module>dss-asic-cades</module>
+		<module>dss-lote-validation</module>
 		<module>dss-tsl-validation</module>
 		<module>dss-evidence-record-common</module>
 		<module>dss-evidence-record-xml</module>
@@ -186,7 +187,8 @@
 
 		<module>dss-jacoco-coverage</module>
 		<module>dss-bom</module>
-	</modules>
+        <module>dss-lote-validation-xml</module>
+    </modules>
 
 	<build>
 		<plugins>
@@ -854,6 +856,11 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-timestamp-remote-soap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-lote-validation</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
