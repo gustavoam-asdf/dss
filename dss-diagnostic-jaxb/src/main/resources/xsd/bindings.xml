@@ -353,7 +353,7 @@
 	    </jaxb:property>
     </jaxb:bindings>
 
-    <jaxb:bindings node="//xs:complexType[@name='TrustService']//xs:attribute[@name='ServiceDigitalIdentifier']">
+    <jaxb:bindings node="//xs:complexType[@name='TrustedEntityService']//xs:attribute[@name='ServiceDigitalIdentifier']">
         <jaxb:property>
             <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate" />
         </jaxb:property>
@@ -368,6 +368,16 @@
             <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList" />
         </jaxb:property>
     </jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='TrustedEntity']//xs:attribute[@name='LoTE']">
+	    <jaxb:property>
+	        <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList" />
+	    </jaxb:property>
+	</jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='TrustedEntity']//xs:attribute[@name='LoLoTE']">
+		<jaxb:property>
+	        <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList" />
+	    </jaxb:property>
+	</jaxb:bindings>
 
 	  <jaxb:bindings node="//xs:complexType[@name='ConnectionInfo']//xs:element[@name='TLSCertificate']//xs:attribute[@name='Certificate']">
 		  <jaxb:property>

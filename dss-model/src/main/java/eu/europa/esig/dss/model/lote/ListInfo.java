@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.model.lote;
 
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.model.identifier.IdentifierBasedObject;
 import eu.europa.esig.dss.model.lote.record.DownloadInfoRecord;
 import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
 import eu.europa.esig.dss.model.lote.record.ValidationInfoRecord;
@@ -9,7 +10,7 @@ import eu.europa.esig.dss.model.lote.record.ValidationInfoRecord;
  * Represents information extracted on a List processing (e.g. Trusted List or List of Trusted Entities)
  *
  */
-public interface ListInfo {
+public interface ListInfo extends IdentifierBasedObject {
 
     /**
      * Returns Download Cache Info

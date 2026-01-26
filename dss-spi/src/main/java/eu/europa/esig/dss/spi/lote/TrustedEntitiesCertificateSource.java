@@ -2,7 +2,7 @@ package eu.europa.esig.dss.spi.lote;
 
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
 import eu.europa.esig.dss.model.identifier.EntityIdentifier;
-import eu.europa.esig.dss.model.lote.ListValidationJobSummary;
+import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
 import eu.europa.esig.dss.model.lote.TrustedPropertiesCertificateSource;
@@ -30,7 +30,7 @@ public class TrustedEntitiesCertificateSource extends CommonTrustedCertificateSo
     private static final Logger LOG = LoggerFactory.getLogger(TrustedEntitiesCertificateSource.class);
 
     /** The TL Validation job summary */
-    private ListValidationJobSummary summary;
+    private LoTEValidationJobSummary summary;
 
     /** The map of trust properties by EntityIdentifier (public keys) */
     private Map<EntityIdentifier, List<TrustedProperties>> trustPropertiesByEntity = new HashMap<>();
@@ -48,14 +48,14 @@ public class TrustedEntitiesCertificateSource extends CommonTrustedCertificateSo
     /**
      * Gets LoTE Validation job summary
      *
-     * @return {@link ListValidationJobSummary}
+     * @return {@link LoTEValidationJobSummary}
      */
-    public ListValidationJobSummary getSummary() {
+    public LoTEValidationJobSummary getSummary() {
         return summary;
     }
 
     @Override
-    public void setSummary(ListValidationJobSummary summary) {
+    public void setSummary(LoTEValidationJobSummary summary) {
         this.summary = summary;
     }
 
@@ -169,7 +169,7 @@ public class TrustedEntitiesCertificateSource extends CommonTrustedCertificateSo
         List<String> urls = new ArrayList<>();
         List<TrustedProperties> trustPropertiesList = getTrustedProperties(trustAnchor);
         for (TrustedProperties trustProperties : trustPropertiesList) {
-            for (ServiceStatusAndInformationExtensions statusAndInfo : trustProperties.getTrustServices()) {
+            for (ServiceStatusAndInformationExtensions statusAndInfo : trustProperties.getTrustedServices()) {
                 List<String> serviceSupplyPoints = statusAndInfo.getServiceSupplyPoints();
                 if (Utils.isCollectionNotEmpty(serviceSupplyPoints)) {
                     for (String serviceSupplyPoint : serviceSupplyPoints) {

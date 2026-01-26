@@ -16,16 +16,16 @@ public interface TrustedPropertiesCertificateSource extends TrustedCertificateSo
     /**
      * Gets TL Validation job summary
      *
-     * @return {@link ListValidationJobSummary}
+     * @return {@link LoTEValidationJobSummary}
      */
-    ListValidationJobSummary getSummary();
+    LoTEValidationJobSummary getSummary();
 
     /**
      * Sets TL Validation job summary
      *
-     * @param summary {@link ListValidationJobSummary}
+     * @param summary {@link LoTEValidationJobSummary}
      */
-    void setSummary(ListValidationJobSummary summary);
+    void setSummary(LoTEValidationJobSummary summary);
 
     /**
      * Returns TrustedProperties for the given certificate, when applicable

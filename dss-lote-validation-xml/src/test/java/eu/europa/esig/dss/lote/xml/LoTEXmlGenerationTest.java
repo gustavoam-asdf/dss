@@ -14,10 +14,13 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.lote.TrustedEntitiesCertificateSource;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.test.PKIFactoryAccess;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.CertificateValidator;
+import eu.europa.esig.dss.validation.reports.CertificateReports;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.reference.CanonicalizationTransform;
 import eu.europa.esig.dss.xades.reference.DSSReference;
@@ -130,6 +133,17 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         LoTEValidationJobSummary summary = validationJob.getSummary();
         assertEquals(1, trustedEntitiesCertificateSource.getNumberOfCertificates());
         assertEquals(Indication.TOTAL_PASSED, summary.getOtherListInfos().get(0).getValidationCacheInfo().getIndication());
+
+        assertEquals(1, trustedEntitiesCertificateSource.getCertificates().size());
+
+        CertificateValidator validator = CertificateValidator.fromCertificate(pubEaaCertificate);
+
+        CertificateVerifier certificateVerifier = getCompleteCertificateVerifier();
+        certificateVerifier.setTrustedCertSources(trustedEntitiesCertificateSource);
+        validator.setCertificateVerifier(certificateVerifier);
+
+        CertificateReports reports = validator.validate();
+        reports.print();
 
     }
 

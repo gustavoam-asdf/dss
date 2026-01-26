@@ -70,7 +70,7 @@ public class TrustedProperties implements Serializable {
      *
      * @return {@link ListInfo}
      */
-    public ListInfo getTLInfo() {
+    public ListInfo getListInfo() {
         return listInfo;
     }
 
@@ -88,7 +88,7 @@ public class TrustedProperties implements Serializable {
      *
      * @return {@link TimeDependentValues}
      */
-    public TimeDependentValues<ServiceStatusAndInformationExtensions> getTrustServices() {
+    public TimeDependentValues<ServiceStatusAndInformationExtensions> getTrustedServices() {
         return trustServices;
     }
 
