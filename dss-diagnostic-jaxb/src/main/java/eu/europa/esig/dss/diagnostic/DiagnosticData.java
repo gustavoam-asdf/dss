@@ -34,6 +34,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignerData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignerRole;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
@@ -1409,6 +1410,20 @@ public class DiagnosticData {
 			if (xmlTrustedList.isLOTL()) {
 				result.add(xmlTrustedList);
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * This method returns the JAXB model of the used lists of trusted entities
+	 *
+	 * @return the JAXB model of the used lists of trusted entities
+	 */
+	public List<XmlTrustSourceList> getListsOfTrustedEntities() {
+		List<XmlTrustSourceList> result = new ArrayList<>();
+		List<XmlTrustSourceList> trustSourceLists = wrapped.getListOfTrustedEntities();
+		for (XmlTrustSourceList xmlTrustedSource : trustSourceLists) {
+			result.add(xmlTrustedSource);
 		}
 		return result;
 	}

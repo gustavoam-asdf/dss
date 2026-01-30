@@ -1,5 +1,7 @@
 package eu.europa.esig.dss.lote.xml;
 
+import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -12,6 +14,7 @@ import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
+import eu.europa.esig.dss.simplecertificatereport.SimpleCertificateReport;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.lote.TrustedEntitiesCertificateSource;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -110,7 +113,7 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
     }
 
     @Test
-    void test() {
+    void test() throws Exception {
         DSSDocument loTE = createLoTE();
 
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
@@ -143,7 +146,23 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         validator.setCertificateVerifier(certificateVerifier);
 
         CertificateReports reports = validator.validate();
-        reports.print();
+
+        String certId = pubEaaCertificate.getDSSIdAsString();
+        SimpleCertificateReport simpleReport = reports.getSimpleReport();
+
+        List<CertificateUsage> certificateUsageAtCertificateIssuance = simpleReport.getCertificateUsageAtCertificateIssuance();
+        assertEquals(1, certificateUsageAtCertificateIssuance.size());
+        assertEquals(CertificateUsageEnum.NOTIFIED_CERT_FOR_PUB_EAA_ISSUANCE, certificateUsageAtCertificateIssuance.get(0));
+        assertEquals(0, simpleReport.getCertificateUsageErrorsAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateUsageWarningsAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateUsageInfoAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
+
+        List<CertificateUsage> certificateUsageAtValidationTime = simpleReport.getCertificateUsageAtValidationTime();
+        assertEquals(1, certificateUsageAtValidationTime.size());
+        assertEquals(CertificateUsageEnum.NOTIFIED_CERT_FOR_PUB_EAA_ISSUANCE, certificateUsageAtValidationTime.get(0));
+        assertEquals(0, simpleReport.getCertificateUsageErrorsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateUsageWarningsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateUsageInfoAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
 
     }
 
@@ -268,7 +287,6 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
             ToBeSigned dataToSign = service.getDataToSign(loteToSign, signatureParameters);
             SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
             DSSDocument signedLoTE = service.signDocument(loteToSign, signatureParameters, signatureValue);
-            signedLoTE.save("target/signedLoTE.xml");
             return signedLoTE;
 
         } catch (Exception e) {

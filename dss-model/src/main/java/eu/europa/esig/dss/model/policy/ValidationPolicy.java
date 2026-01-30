@@ -1718,6 +1718,46 @@ public interface ValidationPolicy {
 	LevelRule getTLStructureConstraint();
 
 	/**
+	 * Returns LoTEFreshness constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEFreshness element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	DurationRule getLoTEFreshnessConstraint();
+
+	/**
+	 * Returns LoTEWellSigned constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEWellSigned element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTEWellSignedConstraint();
+
+	/**
+	 * Returns LoTENotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTENotExpired element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTENotExpiredConstraint();
+
+	/**
+	 * Returns LoTEVersion constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if LoTEVersion element is present
+	 *                                       in the constraint file, null otherwise.
+	 */
+	MultiValuesRule getLoTEVersionConstraint();
+
+	/**
+	 * Returns LoTEStructure constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEStructure element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTEStructureConstraint();
+
+	/**
 	 * Returns the used validation model (default is SHELL). Alternatives are CHAIN and HYBRID
 	 * 
 	 * @return the validation model to be used

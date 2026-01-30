@@ -647,5 +647,12 @@
 			<Id>6</Id>
 		</TLVersion>
 		<TLStructure Level="WARN" />
+		<LoTEFreshness Level="WARN" Unit="HOURS" Value="6" />
+		<LoTENotExpired Level="WARN" />
+		<LoTEWellSigned Level="WARN" />
+		<LoTEVersion Level="FAIL">
+			<Id>1</Id>
+		</LoTEVersion>
+		<LoTEStructure Level="WARN" />
 	</eIDAS>
 </ConstraintsParameters>

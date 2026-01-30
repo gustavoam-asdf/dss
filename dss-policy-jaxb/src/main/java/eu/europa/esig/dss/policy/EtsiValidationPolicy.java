@@ -1874,6 +1874,51 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public DurationRule getLoTEFreshnessConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toRule(eIDASConstraints.getLoTEFreshness());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTEWellSignedConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTEWellSigned());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTENotExpiredConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTENotExpired());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getLoTEVersionConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toRule(eIDASConstraints.getLoTEVersion());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTEStructureConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTEStructure());
+		}
+		return null;
+	}
+
+	@Override
 	public ValidationModel getValidationModel() {
 		ValidationModel currentModel = DEFAULT_VALIDATION_MODEL;
 		ModelConstraint modelConstraint = policy.getModel();

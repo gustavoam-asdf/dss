@@ -21,7 +21,7 @@
 package eu.europa.esig.dss.validation.process.qualification.trust.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -38,7 +38,7 @@ import java.util.Date;
 public class TLFreshnessCheck extends ChainItem<XmlTLAnalysis> {
 
 	/** Trusted List to check */
-	private final XmlTrustedList currentTL;
+	private final XmlTrustSourceList currentTL;
 
 	/** Validation time */
 	private final Date currentTime;
@@ -51,11 +51,11 @@ public class TLFreshnessCheck extends ChainItem<XmlTLAnalysis> {
 	 *
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param result {@link XmlTLAnalysis}
-	 * @param currentTL {@link XmlTrustedList}
+	 * @param currentTL {@link XmlTrustSourceList}
 	 * @param currentTime {@link Date}
 	 * @param durationRule {@link DurationRule}
 	 */
-	public TLFreshnessCheck(I18nProvider i18nProvider, XmlTLAnalysis result, XmlTrustedList currentTL,
+	public TLFreshnessCheck(I18nProvider i18nProvider, XmlTLAnalysis result, XmlTrustSourceList currentTL,
 							Date currentTime, DurationRule durationRule) {
 		super(i18nProvider, result, durationRule);
 		this.currentTL = currentTL;

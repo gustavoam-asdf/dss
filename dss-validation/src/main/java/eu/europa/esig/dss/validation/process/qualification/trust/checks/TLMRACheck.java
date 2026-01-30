@@ -67,7 +67,7 @@ public class TLMRACheck extends ChainItem<XmlTLAnalysis> {
     protected MessageTag getErrorMessageTag() {
         XmlTrustedList parentTL = currentTL.getParent();
         if (parentTL != null) {
-            String tslType = parentTL.getTSLType();
+            String tslType = parentTL.getType();
             if (TSLTypeEnum.EUlistofthelists.getUri().equals(tslType)) {
                 return MessageTag.QUAL_TL_IMRA_ANS_V1;
             } else if (TSLTypeEnum.AdESlistofthelists.getUri().equals(tslType)) {

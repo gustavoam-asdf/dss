@@ -616,7 +616,7 @@ public abstract class DiagnosticDataBuilder {
 		ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getTSLType() != null) {
-				result.setTSLType(parsingCacheInfo.getTSLType().getUri());
+				result.setType(parsingCacheInfo.getTSLType().getUri());
 			}
 			result.setCountryCode(parsingCacheInfo.getTerritory());
 			result.setIssueDate(parsingCacheInfo.getIssueDate());
@@ -747,7 +747,7 @@ public abstract class DiagnosticDataBuilder {
 		eu.europa.esig.dss.model.lote.record.ParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getType() != null) {
-				result.setTSLType(parsingCacheInfo.getType().getUri());
+				result.setType(parsingCacheInfo.getType().getUri());
 			}
 			result.setCountryCode(parsingCacheInfo.getTerritory());
 			result.setIssueDate(parsingCacheInfo.getIssueDate());

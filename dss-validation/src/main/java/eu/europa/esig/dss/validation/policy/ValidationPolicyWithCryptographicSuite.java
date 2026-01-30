@@ -1062,6 +1062,31 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public DurationRule getLoTEFreshnessConstraint() {
+        return validationPolicy.getLoTEFreshnessConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTEWellSignedConstraint() {
+        return validationPolicy.getLoTEWellSignedConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTENotExpiredConstraint() {
+        return validationPolicy.getLoTENotExpiredConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getLoTEVersionConstraint() {
+        return validationPolicy.getLoTEVersionConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTEStructureConstraint() {
+        return validationPolicy.getLoTEStructureConstraint();
+    }
+
+    @Override
     public ValidationModel getValidationModel() {
         return validationPolicy.getValidationModel();
     }

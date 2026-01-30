@@ -1201,6 +1201,31 @@
 					<xsd:documentation>Checks if the Trusted List passes the structure validation</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="LoTEFreshness" type="TimeConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks the List of Trusted Entities freshness to ensure the validation uses an up-to-date version</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LoTENotExpired" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the List of Trusted Entities is not expired (NextUpdate)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LoTEWellSigned" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the signature of the List of Trusted Entities is valid</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LoTEVersion" type="MultiValuesConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the version (LoTEVersionIdentifier) of the List of Trusted Entities is equals to one of the given values</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LoTEStructure" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the List of Trusted Entities passes the structure validation</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	

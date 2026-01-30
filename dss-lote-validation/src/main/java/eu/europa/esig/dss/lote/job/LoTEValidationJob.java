@@ -55,7 +55,7 @@ public class LoTEValidationJob {
     /**
      * Array of zero, one or more Lists sources.
      * <p>
-     * These trusted lists are not referenced in a List Of Trusted Lists (LOTL)
+     * These trusted lists are not referenced in a List Of Trusted Lists (LOLoTE)
      */
     private ListSource[] listSources;
 
@@ -221,9 +221,9 @@ public class LoTEValidationJob {
      */
     public synchronized void offlineRefresh() {
         Objects.requireNonNull(offlineLoader, "The offlineLoader must be defined!");
-        LOG.info("Offline refresh is running...");
+        LOG.info("Offline LoTE refresh is running...");
         refresh(offlineLoader);
-        LOG.info("Offline refresh is DONE.");
+        LOG.info("Offline LoTE refresh is DONE.");
     }
 
     /**
@@ -232,9 +232,9 @@ public class LoTEValidationJob {
      */
     public synchronized void onlineRefresh() {
         Objects.requireNonNull(onlineLoader, "The onlineLoader must be defined!");
-        LOG.info("Online refresh is running...");
+        LOG.info("Online LoTE refresh is running...");
         refresh(onlineLoader);
-        LOG.info("Online refresh is DONE.");
+        LOG.info("Online LoTE refresh is DONE.");
     }
 
     private void refresh(DSSFileLoader dssFileLoader) {
@@ -246,7 +246,7 @@ public class LoTEValidationJob {
 
         // TODO : execute List of Lists
 
-        // And then, execute all TLs (manual configs + TLs from LOTLs)
+        // And then, execute all LoTEs (manual configs + LoTEs from LOLoTEs)
         executeListSourcesAnalysis(currentListSources, dssFileLoader);
 
         // alerts()
@@ -261,8 +261,8 @@ public class LoTEValidationJob {
             cacheAccessFactory.getDebugCacheAccess().dump();
         }
 
-        // TLCerSource sync + cache sync if needed
-        synchronizeTLCertificateSource();
+        // LoTECerSource sync + cache sync if needed
+        synchronizeLoTECertificateSource();
 
         executeCacheCleaner();
 
@@ -273,17 +273,17 @@ public class LoTEValidationJob {
     }
 
     private void executeListSourcesAnalysis(List<ListSource> listSources, DSSFileLoader dssFileLoader) {
-        int nbTLSources = listSources.size();
-        if (nbTLSources == 0) {
-            LOG.info("No TL to be analyzed");
+        int nbLoTESources = listSources.size();
+        if (nbLoTESources == 0) {
+            LOG.info("No LoTE to be analyzed");
             return;
         }
 
         checkNoDuplicateUrls(listSources);
 
-        LOG.info("Running analysis for {} TLSource(s)", nbTLSources);
+        LOG.info("Running analysis for {} LoTESource(s)", nbLoTESources);
 
-        CountDownLatch latch = new CountDownLatch(nbTLSources);
+        CountDownLatch latch = new CountDownLatch(nbLoTESources);
         for (ListSource listSource : listSources) {
             final CacheAccessByKey cacheAccess = cacheAccessFactory.getCacheAccess(listSource.getCacheKey());
             executorService.submit(new ListAnalysis(listSource, cacheAccess, dssFileLoader, latch));
@@ -291,16 +291,16 @@ public class LoTEValidationJob {
 
         try {
             latch.await();
-            LOG.info("Analysis is DONE for {} TLSource(s)", nbTLSources);
+            LOG.info("Analysis is DONE for {} LoTESource(s)", nbLoTESources);
         } catch (InterruptedException e) {
-            LOG.error("Interruption in the TLAnalysis process", e);
+            LOG.error("Interruption in the LoTEAnalysis process", e);
             Thread.currentThread().interrupt();
         }
     }
 
-    private void synchronizeTLCertificateSource() {
+    private void synchronizeLoTECertificateSource() {
         if (trustPropertiesCertificateSource == null) {
-            LOG.warn("No TrustedListCertificateSource to be synchronized");
+            LOG.warn("No TrustedEntitiesCertificateSource to be synchronized");
             return;
         }
 

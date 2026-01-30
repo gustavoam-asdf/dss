@@ -457,7 +457,7 @@ class MRAProcessExecutorTest extends AbstractProcessExecutorTest {
         assertNotNull(xmlDiagnosticData);
 
         XmlTrustedList xmlTrustedList = xmlDiagnosticData.getTrustedLists().get(1);
-        xmlTrustedList.setTSLType("http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists");
+        xmlTrustedList.setType("http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists");
 
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(xmlDiagnosticData);
@@ -518,7 +518,7 @@ class MRAProcessExecutorTest extends AbstractProcessExecutorTest {
         assertNotNull(xmlDiagnosticData);
 
         XmlTrustedList xmlTrustedList = xmlDiagnosticData.getTrustedLists().get(1);
-        xmlTrustedList.setTSLType("http://ec.europa.eu/tools/lotl/mra/ades-lotl-tsl-type");
+        xmlTrustedList.setType("http://ec.europa.eu/tools/lotl/mra/ades-lotl-tsl-type");
 
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(xmlDiagnosticData);

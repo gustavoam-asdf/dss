@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.validation.process.qualification.trust.filter;
 
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
+import eu.europa.esig.dss.diagnostic.TrustedSourceServiceWrapper;
 
 import java.util.List;
 
@@ -31,10 +32,10 @@ import java.util.List;
 public interface TrustServiceFilter {
 
 	/**
-	 * Filters a list of {@code TrustServiceWrapper}s
+	 * Filters a list of {@code TrustedSourceServiceWrapper}s
 	 *
-	 * @param trustServices a list of {@link TrustServiceWrapper}s to filter
-	 * @return filtered list of {@link TrustServiceWrapper}s
+	 * @param trustServices a list of {@link TrustedSourceServiceWrapper}s to filter
+	 * @return filtered list of {@link TrustedSourceServiceWrapper}s
 	 */
 	List<TrustServiceWrapper> filter(List<TrustServiceWrapper> trustServices);
 

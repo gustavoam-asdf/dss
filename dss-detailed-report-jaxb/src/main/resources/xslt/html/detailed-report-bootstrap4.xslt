@@ -222,6 +222,7 @@
 					<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
 					<xsl:attribute name="id">collapseCertificate<xsl:value-of select="$idToken"/></xsl:attribute>
 					<xsl:apply-templates select="dss:CertificateQualificationProcess" />
+					<xsl:apply-templates select="dss:CertificateUsageProcess" />
 					<xsl:apply-templates select="dss:QWACProcess" />
 				</div>
 			</xsl:if>
@@ -288,10 +289,10 @@
     </xsl:template>
 
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessLongTermData|dss:ValidationProcessArchivalData
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess">
 		<div>
 			<xsl:choose>
-				<xsl:when test="name()='ValidationQWACProcess'">
+				<xsl:when test="name()='ValidationQWACProcess' or name()='CertificateUsageProcess'">
 					<xsl:attribute name="class">card mt-3</xsl:attribute>
 				</xsl:when>
 				<xsl:otherwise>
@@ -556,6 +557,56 @@
     		</div>
    		</div>
     </xsl:template>
+
+	<xsl:template match="dss:ValidationCertificateUsage">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#cert-qual-<xsl:value-of select="generate-id(.)"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<span>
+					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
+					<xsl:choose>
+						<xsl:when test="dss:CertificateUsage/@label">
+							<xsl:value-of select="dss:CertificateUsage/@label"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="dss:CertificateUsage/dss:ServiceTypeIdentifier"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</span>
+
+				<xsl:value-of select="concat(@Title, ' ')"/>
+
+				<i>
+					<xsl:attribute name="class">constraint-tooltip fa fa-clock-o</xsl:attribute>
+					<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
+					<xsl:attribute name="data-placement">top</xsl:attribute>
+					<xsl:attribute name="title"><xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="@DateTime"/></xsl:call-template></xsl:attribute>
+				</i>
+				<span class="constraint-text d-none">(<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="@DateTime"/></xsl:call-template>)</span>
+				<xsl:if test="@Id">
+					<br />
+					<span><xsl:value-of select="concat('Id = ', @Id)"/></span>
+					<i>
+						<xsl:attribute name="class">id-copy fa fa-clipboard btn btn-outline-light cursor-pointer text-dark border-0 p-2 ml-1 mr-1</xsl:attribute>
+						<xsl:attribute name="data-id"><xsl:value-of select="@Id"/></xsl:attribute>
+						<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
+						<xsl:attribute name="data-placement">right</xsl:attribute>
+						<xsl:attribute name="data-success-text">Id copied successfully!</xsl:attribute>
+						<xsl:attribute name="title">Copy Id to clipboard</xsl:attribute>
+					</i>
+				</xsl:if>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">cert-qual-<xsl:value-of select="generate-id(.)"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
 
 	<xsl:template match="dss:QWACProcess">
 		<div>

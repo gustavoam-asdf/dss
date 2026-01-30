@@ -434,7 +434,7 @@ public class SimpleReportBuilder {
 				final XmlTrustAnchor trustAnchor = new XmlTrustAnchor();
 				if (trustServiceProvider.getTL() != null) {
 					trustAnchor.setCountryCode(trustServiceProvider.getTL().getCountryCode());
-					trustAnchor.setTSLType(trustServiceProvider.getTL().getTSLType());
+					trustAnchor.setTSLType(trustServiceProvider.getTL().getType());
 				}
 				trustAnchor.setTrustServiceProvider(getEnOrFirst(trustServiceProvider.getTSPNames()));
 				List<String> tspRegistrationIdentifiers = trustServiceProvider.getTSPRegistrationIdentifiers();

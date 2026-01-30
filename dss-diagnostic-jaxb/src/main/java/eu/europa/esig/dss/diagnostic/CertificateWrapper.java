@@ -54,6 +54,8 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSubjectAlternativeNames;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSubjectKeyIdentifier;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustService;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustServiceProvider;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlValAssuredShortTermCertificate;
 import eu.europa.esig.dss.enumerations.CertificateExtensionEnum;
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
@@ -705,6 +707,61 @@ public class CertificateWrapper extends AbstractTokenProxy {
 								wrapper.setOriginalTCAdditionalServiceInfos(new ArrayList<>(originalThirdCountryMapping.getAdditionalServiceInfoUris()));
 							}
 						}
+
+						result.add(wrapper);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns if the List of Trusted Entities has been reached for the particular certificate
+	 *
+	 * @return TRUE if the List of Trusted Entities has been reached, FALSE otherwise
+	 */
+	public boolean isListOfTrustedEntitiesReached() {
+		List<XmlTrustedEntity> tes = certificate.getTrustedEntities();
+		return tes != null && !tes.isEmpty();
+	}
+
+	/**
+	 * Returns a list of {@code XmlTrustedEntity}s
+	 *
+	 * @return a list of {@link eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity}s
+	 */
+	public List<XmlTrustedEntity> getTrustedEntities() {
+		return certificate.getTrustedEntities();
+	}
+
+	/**
+	 * Returns a list of {@code eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper}s
+	 *
+	 * @return a list of {@link TrustedEntityServiceWrapper}s
+	 */
+	public List<TrustedEntityServiceWrapper> getTrustedEntityServices() {
+		List<TrustedEntityServiceWrapper> result = new ArrayList<>();
+		List<XmlTrustedEntity> tes = getTrustedEntities();
+		if (tes != null) {
+			for (XmlTrustedEntity te : tes) {
+				List<String> entityNames = getValues(te.getNames());
+				List<String> tradeNames = getValues(te.getTradeNames());
+				List<XmlTrustedEntityService> trustedEntityServices = te.getTrustedEntityServices();
+				if (trustedEntityServices != null) {
+					for (XmlTrustedEntityService trustedService : trustedEntityServices) {
+						TrustedEntityServiceWrapper wrapper = new TrustedEntityServiceWrapper();
+						wrapper.setTrustedSourceList(te.getLoTE());
+						wrapper.setEntityNames(entityNames);
+						wrapper.setTradeNames(tradeNames);
+						wrapper.setServiceDigitalIdentifier(new CertificateWrapper(trustedService.getServiceDigitalIdentifier()));
+						wrapper.setServiceNames(getValues(trustedService.getServiceNames()));
+						wrapper.setStatus(trustedService.getStatus());
+						wrapper.setType(trustedService.getServiceType());
+						wrapper.setStartDate(trustedService.getStartDate());
+						wrapper.setEndDate(trustedService.getEndDate());
+						wrapper.setCapturedQualifiers(new ArrayList<>(trustedService.getCapturedQualifiers()));
+						wrapper.setAdditionalServiceInfos(new ArrayList<>(trustedService.getAdditionalServiceInfoUris()));
 
 						result.add(wrapper);
 					}

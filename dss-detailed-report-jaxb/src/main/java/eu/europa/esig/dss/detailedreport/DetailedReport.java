@@ -23,6 +23,8 @@ package eu.europa.esig.dss.detailedreport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateQualificationProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
@@ -35,6 +37,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
@@ -43,6 +46,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationTimestampQualificatio
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationTimestampQualificationAtTime;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlXCV;
 import eu.europa.esig.dss.enumerations.CertificateQualification;
+import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.QWACProfile;
@@ -54,6 +59,7 @@ import eu.europa.esig.dss.jaxb.object.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -939,6 +945,67 @@ public class DetailedReport {
 	}
 
 	/**
+	 * Gets certificate usages obtained on TS 119 602 List(s) of Trusted Entities processing for
+	 * the certificate with the given identifier at the certificate issuance time
+	 *
+	 * @param certificateId {@link String} representing identifier of a certificate to get usages for
+	 * @return list of {@link CertificateUsage}s
+	 */
+	public List<CertificateUsage> getCertificateUsagesAtIssuanceTime(String certificateId) {
+		return getCertificateUsagesAtTime(certificateId, ValidationTime.CERTIFICATE_ISSUANCE_TIME);
+	}
+
+	/**
+	 * Gets certificate usages obtained on TS 119 602 List(s) of Trusted Entities processing for
+	 * the certificate with the given identifier at the certificate validation time
+	 *
+	 * @param certificateId {@link String} representing identifier of a certificate to get usages for
+	 * @return list of {@link CertificateUsage}s
+	 */
+	public List<CertificateUsage> getCertificateUsagesAtValidationTime(String certificateId) {
+		return getCertificateUsagesAtTime(certificateId, ValidationTime.VALIDATION_TIME);
+	}
+
+	private List<CertificateUsage> getCertificateUsagesAtTime(String certificateId, ValidationTime validationTime) {
+		if (certificateId == null) {
+			return Collections.emptyList();
+		}
+
+		final List<CertificateUsage> result = new ArrayList<>();
+
+		XmlCertificate certificate = getXmlCertificateById(certificateId);
+		if (certificate != null) {
+			XmlCertificateUsageProcess certificateUsageProcess = certificate.getCertificateUsageProcess();
+			if (certificateUsageProcess != null) {
+				List<XmlValidationCertificateUsage> validationCertificateUsages = certificateUsageProcess.getValidationCertificateUsage();
+				if (validationCertificateUsages != null) {
+					for (XmlValidationCertificateUsage validationCertificateUsage : validationCertificateUsages) {
+						if (validationTime == validationCertificateUsage.getValidationTime()) {
+							CertificateUsage certificateUsage = buildFromXmlCertificateUsage(validationCertificateUsage.getCertificateUsage());
+							result.add(certificateUsage);
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private CertificateUsage buildFromXmlCertificateUsage(XmlCertificateUsage xmlCertificateUsage) {
+		if (xmlCertificateUsage == null) {
+			return null;
+		}
+		CertificateUsage result = CertificateUsage.fromDefinition(xmlCertificateUsage.getListType(),
+				xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
+		if (result != null && result.getLabel() != null && CertificateUsageEnum.CERT_FOR_UNKNOWN != result) {
+			return result;
+		}
+		return CertificateUsage.create(CertificateUsageEnum.CERT_FOR_UNKNOWN.getLabel(), xmlCertificateUsage.getListType(),
+				xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
+	}
+
+	/**
 	 * Gets XCV building block conclusion for a certificate with id
 	 *
 	 * @param certificateId {@link String}
@@ -1250,6 +1317,78 @@ public class DetailedReport {
 	 */
 	public List<Message> getQWACValidationInfos(String certificateId) {
 		return getMessageCollector().getQWACValidationInfos(certificateId);
+	}
+
+	/**
+	 * Returns a list of qualification validation errors for a certificate with
+	 * the given id at certificate issuance time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageErrorsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageErrorsAtIssuanceTime(certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of qualification validation warnings for a certificate with
+	 * the given id at certificate issuance time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification warnings for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageWarningsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageWarningsAtIssuanceTime(certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of qualification validation information messages for a certificate with
+	 * the given id at certificate issuance time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification information messages for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageInfosAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageInfosAtIssuanceTime(certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of qualification validation errors for a certificate with
+	 * the given id at validation time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageErrorsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageErrorsAtValidationTime(certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of qualification validation warnings for a certificate with
+	 * the given id at validation time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification warnings for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageWarningsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageWarningsAtValidationTime(certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of qualification validation information messages for a certificate with
+	 * the given id at validation time for the given {@code certificateUsage}
+	 * NOTE: applicable only on certificate validation (see {@code eu.europa.esig.dss.validation.CertificateValidator})
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification information messages for
+	 * @return a list of {@link Message}s
+	 */
+	public List<Message> getCertificateUsageInfosAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return getMessageCollector().getCertificateUsageInfosAtValidationTime(certificateId, certificateUsage);
 	}
 
 }

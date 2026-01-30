@@ -66,6 +66,7 @@
 	<xs:complexType name="Certificate">
 		<xs:sequence>
 			<xs:element name="CertificateQualificationProcess" type="CertificateQualificationProcess" />
+			<xs:element name="CertificateUsageProcess" type="CertificateUsageProcess" minOccurs="0" />
 			<xs:element name="QWACProcess" type="QWACProcess" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="Id" type="xs:string" />
@@ -76,6 +77,17 @@
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
 					<xs:element name="ValidationCertificateQualification" type="ValidationCertificateQualification" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="Id" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateUsageProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="ValidationCertificateUsage" type="ValidationCertificateUsage" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:attribute name="Id" type="xs:string" />
 			</xs:extension>
@@ -133,6 +145,28 @@
 				<xs:attribute name="CertificateQualification" type="CertificateQualification" use="optional" />
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationCertificateUsage">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="CertificateUsage" type="CertificateUsage" />
+				</xs:sequence>
+				<xs:attribute name="Id" type="xs:string" use="required" />
+				<xs:attribute name="DateTime" type="xs:dateTime" />
+				<xs:attribute name="ValidationTime" type="ValidationTime" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateUsage">
+		<xs:sequence>
+			<xs:element name="ListType" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceTypeIdentifier" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceStatus" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="label" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="QWACProcess">

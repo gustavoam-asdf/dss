@@ -25,10 +25,10 @@ public enum LoTETypeEnum implements ListType {
     EURegistrarsAndRegistersList("http://uri.etsi.org/19602/LoTEType/EURegistrarsAndRegistersList", "EU List of registrars and registers");
 
     /** URI associated with the TSPType */
-    private String uri;
+    private final String uri;
 
     /** Name of the TSLType */
-    private String label;
+    private final String label;
 
     /**
      * Default constructor

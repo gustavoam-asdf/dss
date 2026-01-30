@@ -21,7 +21,7 @@
 package eu.europa.esig.dss.validation.process.qualification.trust.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -37,17 +37,17 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 public class TLWellSignedCheck extends ChainItem<XmlTLAnalysis> {
 
 	/** Trusted List to check */
-	private final XmlTrustedList currentTL;
+	private final XmlTrustSourceList currentTL;
 
 	/**
 	 * Default constructor
 	 *
 	 * @param i18nProvider {@link I18nProvider}
 	 * @param result {@link XmlTLAnalysis}
-	 * @param currentTl {@link XmlTrustedList}
+	 * @param currentTl {@link XmlTrustSourceList}
 	 * @param constraint {@link ValueRule}
 	 */
-	public TLWellSignedCheck(I18nProvider i18nProvider, XmlTLAnalysis result, XmlTrustedList currentTl,
+	public TLWellSignedCheck(I18nProvider i18nProvider, XmlTLAnalysis result, XmlTrustSourceList currentTl,
 							 LevelRule constraint) {
 		super(i18nProvider, result, constraint);
 		this.currentTL = currentTl;
