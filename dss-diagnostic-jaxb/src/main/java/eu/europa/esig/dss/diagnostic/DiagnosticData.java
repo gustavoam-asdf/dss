@@ -23,6 +23,7 @@ package eu.europa.esig.dss.diagnostic;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlContainerInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEncapsulationType;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlManifestFile;
@@ -76,6 +77,9 @@ public class DiagnosticData {
 
 	/** List of found evidence records */
 	private List<EvidenceRecordWrapper> foundEvidenceRecords;
+
+	/** List of found EAA presentations */
+	private List<EAAPresentationWrapper> foundEAAPresentations;
 
 	/**
 	 * Default constructor
@@ -999,6 +1003,41 @@ public class DiagnosticData {
 		for (EvidenceRecordWrapper evidenceRecord : evidenceRecords) {
 			if (id.equals(evidenceRecord.getId())) {
 				return evidenceRecord;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * This method retrieves a list of EAA presentation wrappers
+	 *
+	 * @return a list of EAA presentation wrappers
+	 */
+	public List<EAAPresentationWrapper> getEAAPresentations() {
+		if (foundEAAPresentations == null) {
+			foundEAAPresentations = new ArrayList<>();
+			List<XmlEAAPresentation> xmlEAAPresentations = wrapped.getEAAPresentations();
+			if (xmlEAAPresentations != null) {
+				for (XmlEAAPresentation xmlEAAPresentation : xmlEAAPresentations) {
+					foundEAAPresentations.add(new EAAPresentationWrapper(xmlEAAPresentation));
+				}
+			}
+		}
+		return foundEAAPresentations;
+	}
+
+	/**
+	 * Returns the EAAPresentationWrapper corresponding to the given id.
+	 *
+	 * @param id
+	 *            EAA presentation id
+	 * @return evidence record wrapper or null
+	 */
+	public EAAPresentationWrapper getEAAPresentationById(String id) {
+		List<EAAPresentationWrapper> eaaPresentations = getEAAPresentations();
+		for (EAAPresentationWrapper eaaPresentation : eaaPresentations) {
+			if (id.equals(eaaPresentation.getId())) {
+				return eaaPresentation;
 			}
 		}
 		return null;

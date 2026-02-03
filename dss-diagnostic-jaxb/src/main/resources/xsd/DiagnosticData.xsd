@@ -13,6 +13,13 @@
 			<xs:element name="ContainerInfo" type="ContainerInfo" minOccurs="0" />
 			<xs:element name="PDFAInfo" type="PDFAInfo" minOccurs="0" />
 			<xs:element name="ConnectionInfo" type="ConnectionInfo" minOccurs="0" />
+			<xs:element name="EAAPresentations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAAPresentation" type="EAAPresentation" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="Signatures" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -1630,6 +1637,29 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="EAAPresentation">
+		<xs:complexContent>
+			<xs:extension base="AbstractToken">
+				<xs:sequence>
+					<xs:element name="DocumentName" type="xs:string" minOccurs="0" />
+					<xs:element name="Type" type="EAAPresentationType" />
+					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
+					<xs:element name="DigestMatchers" type="DigestMatchers" minOccurs="0" />
+					<xs:element name="EAAPresentationSignature" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="KeyBindingSignature" minOccurs="0">
+						<xs:complexType>
+							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="DigestMatchers">
 		<xs:sequence>
 			<xs:element name="DigestMatcher" type="DigestMatcher" minOccurs="0" maxOccurs="unbounded" />
@@ -1655,6 +1685,15 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="INTERNAL_EVIDENCE_RECORD" />
 			<xs:enumeration value="EXTERNAL_EVIDENCE_RECORD" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="EAAPresentationType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SD_JWT_VC" />
+			<xs:enumeration value="ISO_IEC_MDOC" />
+			<xs:enumeration value="W3C_VC" />
+			<xs:enumeration value="X509_AC" />
 		</xs:restriction>
 	</xs:simpleType>
 

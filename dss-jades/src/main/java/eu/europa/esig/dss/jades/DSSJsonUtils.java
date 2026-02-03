@@ -49,6 +49,7 @@ import org.jose4j.base64url.Base64Url;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.json.internal.json_simple.JSONArray;
 import org.jose4j.json.internal.json_simple.JSONValue;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.jwx.CompactSerializer;
 import org.jose4j.lang.JoseException;
@@ -1360,6 +1361,29 @@ public class DSSJsonUtils {
 	 */
 	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
 		return NumericDate.fromSeconds(timeWithoutMillis).getValueInMillis();
+	}
+
+	/**
+	 * Parses provided base64url encoded string and returns the corresponding object.
+	 * The string shall conform to a JSON object specification, but not necessarily be a root element (i.e. a map).
+	 *
+	 * @param b64UrlEncodedString {@link String} to decode
+	 * @return {@link Object}
+	 */
+	public static Object parseB64UrlEncoded(String b64UrlEncodedString) {
+		if (b64UrlEncodedString == null) {
+			return null;
+		}
+		if (!DSSJsonUtils.isBase64UrlEncoded(b64UrlEncodedString)) {
+			throw new IllegalArgumentException("Base64Url encoded string is expected.");
+		}
+		try {
+			String decodedString = new String(DSSJsonUtils.fromBase64Url(b64UrlEncodedString));
+			return new JSONParser().parse(decodedString);
+
+		} catch (Exception e) {
+			throw new DSSException(String.format("An error occurred on decoding the string. Reason : %s", e.getMessage()), e);
+		}
 	}
 
 }

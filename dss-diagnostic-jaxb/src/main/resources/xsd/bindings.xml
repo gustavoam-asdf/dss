@@ -133,6 +133,12 @@
 						 printMethod="eu.europa.esig.dss.jaxb.parsers.EvidenceRecordIncorporationTypeParser.print" />
 	  </jaxb:bindings>
 
+	  <jaxb:bindings node="//xs:simpleType[@name='EAAPresentationType']">
+		  <jaxb:javaType name="eu.europa.esig.dss.enumerations.EAAPresentationType"
+						 parseMethod="eu.europa.esig.dss.jaxb.parsers.EAAPresentationTypeParser.parse"
+						 printMethod="eu.europa.esig.dss.jaxb.parsers.EAAPresentationTypeParser.print" />
+	  </jaxb:bindings>
+
   	<jaxb:bindings node="//xs:complexType[@name='BasicSignature']//xs:element[@name='EncryptionAlgoUsedToSignThisToken']">
 			<jaxb:javaType name="eu.europa.esig.dss.enumerations.EncryptionAlgorithm"
 				parseMethod="eu.europa.esig.dss.jaxb.parsers.EncryptionAlgorithmParser.parse"
@@ -335,7 +341,17 @@
 		    <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignerData" />
 	    </jaxb:property>
 	</jaxb:bindings>
-	  <jaxb:bindings node="//xs:complexType[@name='EvidenceRecord']//xs:attribute[@name='Parent']">
+	<jaxb:bindings node="//xs:complexType[@name='EvidenceRecord']//xs:attribute[@name='Parent']">
+		  <jaxb:property>
+			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignature" />
+		  </jaxb:property>
+	  </jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='EAAPresentation']//xs:element[@name='EAAPresentationSignature']//xs:attribute[@name='Signature']">
+		  <jaxb:property>
+			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignature" />
+		  </jaxb:property>
+	  </jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='EAAPresentation']//xs:element[@name='KeyBindingSignature']//xs:attribute[@name='Signature']">
 		  <jaxb:property>
 			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignature" />
 		  </jaxb:property>
