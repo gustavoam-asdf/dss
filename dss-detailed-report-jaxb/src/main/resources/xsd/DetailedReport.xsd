@@ -12,6 +12,7 @@
 					<xs:element name="Signature" type="Signature" />
 					<xs:element name="Timestamp" type="Timestamp" />
 					<xs:element name="EvidenceRecord" type="EvidenceRecord" />
+					<xs:element name="EAAPresentation" type="EAAPresentation" />
 					<xs:element name="Certificate" type="Certificate" />
 				</xs:choice>
 			</xs:sequence>
@@ -57,6 +58,19 @@
 		<xs:sequence>
 			<xs:element name="ValidationProcessEvidenceRecord" type="ValidationProcessEvidenceRecord"  />
 			<xs:element name="Timestamp" type="Timestamp" minOccurs="0" maxOccurs="unbounded" />
+
+			<xs:element name="Conclusion" type="Conclusion" />
+		</xs:sequence>
+		<xs:attribute name="Id" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="EAAPresentation">
+		<xs:sequence>
+			<xs:element name="ValidationProcessEAAPresentation" type="ValidationProcessEAAPresentation"  />
+			<xs:element name="Signature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
+
+			<xs:element name="ValidationEAAQualification" type="ValidationEAAQualification" minOccurs="0" />
 
 			<xs:element name="Conclusion" type="Conclusion" />
 		</xs:sequence>
@@ -267,11 +281,29 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="ValidationEAAQualification">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="ValidationProcessEvidenceRecord">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
 				<xs:sequence>
 					<xs:element name="AOV" type="AOV" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationProcessEAAPresentation">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
+				<xs:sequence>
+					<xs:element name="AOV" type="AOV" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -616,6 +648,23 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="QTSA" />
 			<xs:enumeration value="TSA" />
+			<xs:enumeration value="N/A" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="EAAQualification" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="QEAA" />
+			<xs:enumeration value="EAA" />
+			<xs:enumeration value="Pub-EAA" />
+			<xs:enumeration value="Unknown" />
+
+			<xs:enumeration value="Indeterminate QEAA" />
+			<xs:enumeration value="Indeterminate EAA" />
+			<xs:enumeration value="Indeterminate Pub-EAA" />
+			<xs:enumeration value="Indeterminate Unknown" />
+
+			<xs:enumeration value="Not EAA" />
 			<xs:enumeration value="N/A" />
 		</xs:restriction>
 	</xs:simpleType>

@@ -25,6 +25,7 @@ import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.EvidenceRecordWrapper;
 import eu.europa.esig.dss.diagnostic.RelatedRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.RevocationWrapper;
@@ -34,6 +35,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestampedObject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustService;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustServiceProvider;
+import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -45,6 +47,8 @@ import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.simplereport.jaxb.XmlCertificate;
 import eu.europa.esig.dss.simplereport.jaxb.XmlCertificateChain;
 import eu.europa.esig.dss.simplereport.jaxb.XmlDetails;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAALevel;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
 import eu.europa.esig.dss.simplereport.jaxb.XmlMessage;
@@ -154,9 +158,23 @@ public class SimpleReportBuilder {
 			addContainerType(simpleReport);
 		}
 
+		Set<String> attachedSignatureIds = new HashSet<>();
 		Set<String> attachedTimestampIds = new HashSet<>();
 		Set<String> attachedEvidenceRecordIds = new HashSet<>();
+		if (Utils.isCollectionNotEmpty(diagnosticData.getEAAPresentations())) {
+			for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+				attachedSignatureIds.addAll(eaaPresentation.getEAAPresentationSignatureIds());
+				if (eaaPresentation.getKeyBindingSignature() != null) {
+					attachedSignatureIds.add(eaaPresentation.getKeyBindingSignatureId());
+				}
+				simpleReport.getSignatureOrTimestampOrEvidenceRecord().add(getEAAPresentation(eaaPresentation));
+			}
+		}
+
 		for (SignatureWrapper signature : diagnosticData.getSignatures()) {
+			if (attachedSignatureIds.contains(signature.getId())) {
+				continue;
+			}
 			attachedTimestampIds.addAll(signature.getTimestampIdsList());
 			attachedEvidenceRecordIds.addAll(signature.getEvidenceRecordIdsList());
 			attachedTimestampIds.addAll(signature.getEvidenceRecordTimestampIds());
@@ -731,6 +749,55 @@ public class SimpleReportBuilder {
 		}
 
 		return timestampList;
+	}
+
+	private XmlEAAPresentation getEAAPresentation(EAAPresentationWrapper eaaPresentation) {
+		XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+
+		String eaaPresentationId = eaaPresentation.getId();
+		xmlEAAPresentation.setId(eaaPresentationId);
+		xmlEAAPresentation.setFilename(eaaPresentation.getFilename());
+
+		Indication indication = detailedReport.getFinalIndication(eaaPresentationId);
+		xmlEAAPresentation.setIndication(indication);
+		finalIndications.add(indication);
+
+		SubIndication subIndication = detailedReport.getFinalSubIndication(eaaPresentationId);
+		if (subIndication != null) {
+			xmlEAAPresentation.setSubIndication(subIndication);
+			finalSubIndications.add(subIndication);
+		}
+
+		EAAQualification eaaQualification = detailedReport.getEAAQualification(eaaPresentationId);
+		if (eaaQualification != null) {
+			XmlEAALevel xmlEAALevel = new XmlEAALevel();
+			xmlEAALevel.setValue(eaaQualification);
+			xmlEAALevel.setDescription(eaaQualification.getLabel());
+			xmlEAAPresentation.setEAALevel(xmlEAALevel);
+		}
+
+		XmlDetails validationDetails = getAdESValidationDetails(eaaPresentationId);
+		if (isNotEmpty(validationDetails)) {
+			xmlEAAPresentation.setAdESValidationDetails(validationDetails);
+		}
+
+		XmlDetails qualificationDetails = getQualificationDetails(eaaPresentationId);
+		if (isNotEmpty(qualificationDetails)) {
+			xmlEAAPresentation.setQualificationDetails(qualificationDetails);
+		}
+
+		List<SignatureWrapper> signatures = eaaPresentation.getEAAPresentationSignatures();
+		if (Utils.isCollectionNotEmpty(signatures)) {
+			for (SignatureWrapper signature : signatures) {
+				xmlEAAPresentation.getEAAPresentationSignature().add(getSignature(signature, false));
+			}
+		}
+		SignatureWrapper keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+		if (keyBindingSignature != null) {
+			xmlEAAPresentation.setKeyBindingSignature(getSignature(keyBindingSignature, false));
+		}
+
+		return xmlEAAPresentation;
 	}
 
 	private Date getMinExtensionPeriod(AbstractTokenProxy token, List<TimestampWrapper> timestampList) {

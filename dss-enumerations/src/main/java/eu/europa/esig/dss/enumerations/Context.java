@@ -31,6 +31,9 @@ public enum Context {
 	/** The processing token is a counter signature */
 	COUNTER_SIGNATURE,
 
+	/** The processing token is a key binding signature */
+	KEY_BINDING_SIGNATURE,
+
 	/** The processing token is a timestamp */
 	TIMESTAMP,
 
@@ -41,6 +44,9 @@ public enum Context {
 	REVOCATION,
 
 	/** The processing token is a certificate */
-	CERTIFICATE
+	CERTIFICATE,
+
+	/** The processing token is an electronic attestation of attributes */
+	ELECTRONIC_ATTESTATION_OF_ATTRIBUTES
 
 }

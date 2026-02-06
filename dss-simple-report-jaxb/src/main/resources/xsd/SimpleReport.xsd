@@ -21,6 +21,7 @@
 				<xs:element name="Signature" type="Signature" />
 				<xs:element name="Timestamp" type="Timestamp" />
 				<xs:element name="EvidenceRecord" type="EvidenceRecord" />
+				<xs:element name="EAAPresentation" type="EAAPresentation" />
 			</xs:choice>
 			
 			<xs:element name="Semantic" type="Semantic" minOccurs="0" maxOccurs="unbounded" />
@@ -163,6 +164,18 @@
 				</xs:sequence>
 				<xs:attribute name="Embedded" type="xs:boolean" use="optional" />
 				<xs:attribute name="ParentId" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EAAPresentation">
+		<xs:complexContent>
+			<xs:extension base="Token">
+				<xs:sequence>
+					<xs:element name="EAALevel" type="EAALevel" minOccurs="0" />
+					<xs:element name="EAAPresentationSignature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -342,6 +355,31 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="QTSA" />
 			<xs:enumeration value="TSA" />
+			<xs:enumeration value="N/A" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="EAALevel">
+		<xs:simpleContent>
+			<xs:extension base="EAAQualification">
+				<xs:attribute name="description" type="xs:string" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="EAAQualification" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="QEAA" />
+			<xs:enumeration value="EAA" />
+			<xs:enumeration value="Pub-EAA" />
+			<xs:enumeration value="Unknown" />
+
+			<xs:enumeration value="Indeterminate QEAA" />
+			<xs:enumeration value="Indeterminate EAA" />
+			<xs:enumeration value="Indeterminate Pub-EAA" />
+			<xs:enumeration value="Indeterminate Unknown" />
+
+			<xs:enumeration value="Not EAA" />
 			<xs:enumeration value="N/A" />
 		</xs:restriction>
 	</xs:simpleType>

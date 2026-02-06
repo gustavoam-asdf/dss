@@ -1,10 +1,13 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
+import eu.europa.esig.dss.enumerations.ValidationLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
+import eu.europa.esig.dss.validation.executor.DocumentProcessExecutor;
+import eu.europa.esig.dss.validation.executor.eaa.EAAPresentationProcessExecutor;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 import java.util.Collections;
@@ -59,10 +62,22 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
+    public DocumentProcessExecutor getDefaultProcessExecutor() {
+        return new EAAPresentationProcessExecutor();
+    }
+
+    @Override
     public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new EAAPresentationDiagnosticDataBuilder()
                 .foundEAAPresentations(Collections.singletonList(getEAAPresentation()))
                 .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());
+    }
+
+    @Override
+    public void setValidationLevel(ValidationLevel validationLevel) {
+        // TODO : assess ?
+        throw new UnsupportedOperationException("#setValidationLevel method is not supported within the EAAPresentationValidator class! " +
+                "The validation always corresponds to the BASIC_SIGNATURES level.");
     }
 
     /**
@@ -74,7 +89,7 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
 
     @Override
     public List<DSSDocument> getOriginalDocuments(AdvancedSignature advancedSignature) {
-        throw new UnsupportedOperationException("getOriginalDocuments(AdvancedSignature) is " +
+        throw new UnsupportedOperationException("#getOriginalDocuments(AdvancedSignature) is " +
                 "not supported for EAAPresentationValidator!");
     }
 

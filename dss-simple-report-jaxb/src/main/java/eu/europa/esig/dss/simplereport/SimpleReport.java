@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.simplereport;
 
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
@@ -28,6 +29,7 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampQualification;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.simplereport.jaxb.XmlCertificateChain;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
 import eu.europa.esig.dss.simplereport.jaxb.XmlMessage;
@@ -171,6 +173,24 @@ public class SimpleReport {
 	}
 
 	/**
+	 * This method retrieves the EAA Presentation ids
+	 *
+	 * @return the {@code List} of EAA Presentation id(s) contained in the simpleReport
+	 */
+	public List<String> getEAAPresentationIdList() {
+		final List<String> eaaIdList = new ArrayList<>();
+		List<XmlToken> tokens = wrapped.getSignatureOrTimestampOrEvidenceRecord();
+		if (tokens != null) {
+			for (XmlToken token : tokens) {
+				if (token instanceof XmlEAAPresentation) {
+					eaaIdList.add(token.getId());
+				}
+			}
+		}
+		return eaaIdList;
+	}
+
+	/**
 	 * This method returns the first signature id.
 	 *
 	 * @return the first signature id
@@ -205,6 +225,19 @@ public class SimpleReport {
 		final List<String> evidenceRecordIdList = getEvidenceRecordIdList();
 		if (!evidenceRecordIdList.isEmpty()) {
 			return evidenceRecordIdList.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns the first EAA Presentation id.
+	 *
+	 * @return the first evidence record id
+	 */
+	public String getFirstEAAPresentationId() {
+		final List<String> eaaPresentationIdList = getEAAPresentationIdList();
+		if (!eaaPresentationIdList.isEmpty()) {
+			return eaaPresentationIdList.get(0);
 		}
 		return null;
 	}
@@ -532,6 +565,21 @@ public class SimpleReport {
 	}
 
 	/**
+	 * This method returns the EAA's qualification
+	 *
+	 * @param eaaPresentationId
+	 *                    the EAA presentation id
+	 * @return {@link EAAQualification} for a given EAA
+	 */
+	public EAAQualification getEAAQualification(final String eaaPresentationId) {
+		XmlEAAPresentation xmlEAAPresentation = getEAAPresentationById(eaaPresentationId);
+		if (xmlEAAPresentation != null && xmlEAAPresentation.getEAALevel() != null) {
+			return xmlEAAPresentation.getEAALevel().getValue();
+		}
+		return null;
+	}
+
+	/**
 	 * This method returns a wrapper for the given token id
 	 * 
 	 * @param tokenId
@@ -567,6 +615,11 @@ public class SimpleReport {
 					if (timestampById != null) {
 						return timestampById;
 					}
+				} else if (token instanceof XmlEAAPresentation) {
+					XmlToken signatureById = getEAAPresentationSignatureById((XmlEAAPresentation) token, tokenId);
+					if (signatureById != null) {
+						return signatureById;
+					}
 				}
 			}
 		}
@@ -601,6 +654,18 @@ public class SimpleReport {
 		XmlTimestamps timestamps = evidenceRecord.getTimestamps();
 		if (timestamps != null && timestamps.getTimestamp() != null) {
 			return getEmbeddedTokenById(timestamps.getTimestamp(), tokenId);
+		}
+		return null;
+	}
+
+	private XmlToken getEAAPresentationSignatureById(XmlEAAPresentation eaaPresentation, String tokenId) {
+		List<XmlSignature> signatures = eaaPresentation.getEAAPresentationSignature();
+		if (signatures != null && !signatures.isEmpty()) {
+			return getEmbeddedTokenById(signatures, tokenId);
+		}
+		XmlSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+		if (keyBindingSignature != null) {
+			return getEmbeddedTokenById(Collections.singletonList(keyBindingSignature), tokenId);
 		}
 		return null;
 	}
@@ -646,6 +711,21 @@ public class SimpleReport {
 		XmlToken token = getTokenById(evidenceRecordId);
 		if (token instanceof XmlEvidenceRecord) {
 			return (XmlEvidenceRecord) token;
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns a wrapper for the given EAA Presentation
+	 *
+	 * @param eaaPresentationId
+	 *            the EAA Presentation id
+	 * @return the wrapper for the given EAA Presentation id
+	 */
+	public XmlEAAPresentation getEAAPresentationById(String eaaPresentationId) {
+		XmlToken token = getTokenById(eaaPresentationId);
+		if (token instanceof XmlEAAPresentation) {
+			return (XmlEAAPresentation) token;
 		}
 		return null;
 	}
@@ -708,6 +788,38 @@ public class SimpleReport {
 			return xmlEvidenceRecord.getTimestamps().getTimestamp();
 		}
 		return Collections.emptyList();
+	}
+
+	/**
+	 * This method returns a list of signatures used to create the EAA presentation with the given Id
+	 * NOTE: This method does not return key binding signature. To extract the latest, please use
+	 *       {@code #getEAAPresentationKeyBindingSignature} method
+	 *
+	 * @param eaaPresentationId
+	 *            the evidence record id
+	 * @return list if signature wrappers
+	 */
+	public List<XmlSignature> getEAAPresentationSignatures(String eaaPresentationId) {
+		XmlEAAPresentation eaaPresentation = getEAAPresentationById(eaaPresentationId);
+		if (eaaPresentation != null && eaaPresentation.getEAAPresentationSignature() != null) {
+			return eaaPresentation.getEAAPresentationSignature();
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method returns a key binding signature for the EAA presentation, when present
+	 *
+	 * @param eaaPresentationId
+	 *            the evidence record id
+	 * @return {@link XmlSignature}
+	 */
+	public XmlSignature getEAAPresentationKeyBindingSignature(String eaaPresentationId) {
+		XmlEAAPresentation eaaPresentation = getEAAPresentationById(eaaPresentationId);
+		if (eaaPresentation != null) {
+			return eaaPresentation.getKeyBindingSignature();
+		}
+		return null;
 	}
 
 	/**

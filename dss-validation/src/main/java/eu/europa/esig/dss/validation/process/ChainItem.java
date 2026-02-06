@@ -432,7 +432,7 @@ public abstract class ChainItem<T extends XmlConstraintsConclusion> {
 	 * @return TRUE if the conclusion has a PASSED indication, FALSE otherwise
 	 */
 	protected boolean isValidConclusion(XmlConclusion conclusion) {
-		return conclusion != null && Indication.PASSED.equals(conclusion.getIndication());
+		return conclusion != null && (Indication.PASSED.equals(conclusion.getIndication()) || Indication.TOTAL_PASSED.equals(conclusion.getIndication()));
 	}
 
 	/**

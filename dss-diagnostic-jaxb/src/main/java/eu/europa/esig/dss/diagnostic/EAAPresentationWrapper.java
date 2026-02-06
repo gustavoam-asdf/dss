@@ -6,7 +6,9 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Provides a user-friendly interface for information extraction from a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation} JAXB object
@@ -69,6 +71,19 @@ public class EAAPresentationWrapper {
     }
 
     /**
+     * Gets a list of identifiers of signatures used to create the EAA
+     *
+     * @return a list of {@link String}s
+     */
+    public List<String> getEAAPresentationSignatureIds() {
+        List<SignatureWrapper> eaaPresentationSignatures = getEAAPresentationSignatures();
+        if (eaaPresentationSignatures != null && !eaaPresentationSignatures.isEmpty()) {
+            return eaaPresentationSignatures.stream().map(SignatureWrapper::getId).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    /**
      * Gets a key binding signature, when present
      *
      * @return {@link SignatureWrapper}
@@ -76,6 +91,31 @@ public class EAAPresentationWrapper {
     public SignatureWrapper getKeyBindingSignature() {
         if (eaaPresentation.getKeyBindingSignature() != null) {
             return new SignatureWrapper(eaaPresentation.getKeyBindingSignature().getSignature());
+        }
+        return null;
+    }
+
+    /**
+     * Gets unique identifier of the key binding signature, when present
+     *
+     * @return {@link String}
+     */
+    public String getKeyBindingSignatureId() {
+        SignatureWrapper keyBindingSignature = getKeyBindingSignature();
+        if (keyBindingSignature != null) {
+            return keyBindingSignature.getId();
+        }
+        return null;
+    }
+
+    /**
+     * Gets category URN provided in the EAA payload
+     *
+     * @return {@link String}
+     */
+    public String getEAACategory() {
+        if (eaaPresentation.getEAAPayload() != null) {
+            return eaaPresentation.getEAAPayload().getCategory();
         }
         return null;
     }

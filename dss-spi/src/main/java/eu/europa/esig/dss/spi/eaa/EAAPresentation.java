@@ -49,6 +49,13 @@ public interface EAAPresentation extends IdentifierBasedObject {
     AdvancedSignature getKeyBindingSignature();
 
     /**
+     * Gets payload of the Electronic Attestation of Attributes
+     *
+     * @return {@link EAAPayload}
+     */
+    EAAPayload getPayload();
+
+    /**
      * This method returns the DSS unique id. It allows to unambiguously identify each token.
      *
      * @return {@link String} unique Id

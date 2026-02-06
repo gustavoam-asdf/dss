@@ -1,0 +1,61 @@
+package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
+import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
+import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SubIndication;
+import eu.europa.esig.dss.i18n.I18nProvider;
+import eu.europa.esig.dss.i18n.MessageTag;
+import eu.europa.esig.dss.model.policy.LevelRule;
+import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.process.ChainItem;
+
+import java.util.List;
+
+public class QEAACheck extends ChainItem<XmlValidationEAAQualification> {
+
+    /**
+     * List of TrustServices declaring EAA/Q status for the certificate
+     */
+    private final List<TrustServiceWrapper> trustServicesAtTime;
+
+    /**
+     * Default constructor
+     *
+     * @param i18nProvider {@link I18nProvider}
+     * @param result {@link XmlValidationEAAQualification}
+     * @param trustServicesAtTime list of {@link TrustServiceWrapper}s
+     * @param constraint {@link LevelRule}
+     */
+    public QEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualification result,
+                     List<TrustServiceWrapper> trustServicesAtTime, LevelRule constraint) {
+        super(i18nProvider, result, constraint);
+        this.trustServicesAtTime = trustServicesAtTime;
+    }
+
+    @Override
+    protected boolean process() {
+        return Utils.isCollectionNotEmpty(trustServicesAtTime);
+    }
+
+    @Override
+    protected MessageTag getMessageTag() {
+        return MessageTag.QUAL_HAS_QEAA;
+    }
+
+    @Override
+    protected MessageTag getErrorMessageTag() {
+        return MessageTag.QUAL_HAS_QEAA_ANS;
+    }
+
+    @Override
+    protected Indication getFailedIndicationForConclusion() {
+        return Indication.FAILED;
+    }
+
+    @Override
+    protected SubIndication getFailedSubIndicationForConclusion() {
+        return null;
+    }
+
+}

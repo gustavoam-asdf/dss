@@ -22,21 +22,16 @@ package eu.europa.esig.dss.validation.process.qualification.certificate.qwac.sub
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationQWACProcess;
-import eu.europa.esig.dss.enumerations.Indication;
-import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
-import eu.europa.esig.dss.validation.process.ChainItem;
+import eu.europa.esig.dss.validation.process.qualification.signature.checks.SignatureValidationResultCheck;
 
 /**
  * Verifies the basic validation result of a JADES signature on the TLS Certificate Binding
  *
  */
-public class TLSCertificateBindingSignatureValidationResultCheck extends ChainItem<XmlValidationQWACProcess> {
-
-    /** Basic Validation conclusion of the TLS Certificate Binding signature */
-    private final XmlConclusion bindingSignatureBasicValidationConclusion;
+public class TLSCertificateBindingSignatureValidationResultCheck extends SignatureValidationResultCheck<XmlValidationQWACProcess> {
 
     /**
      * Default constructor
@@ -49,13 +44,7 @@ public class TLSCertificateBindingSignatureValidationResultCheck extends ChainIt
     public TLSCertificateBindingSignatureValidationResultCheck(
             final I18nProvider i18nProvider, final XmlValidationQWACProcess result,
             final XmlConclusion bindingSignatureBasicValidationConclusion, final LevelRule constraint) {
-        super(i18nProvider, result, constraint);
-        this.bindingSignatureBasicValidationConclusion = bindingSignatureBasicValidationConclusion;
-    }
-
-    @Override
-    protected boolean process() {
-        return isValidConclusion(bindingSignatureBasicValidationConclusion);
+        super(i18nProvider, result, bindingSignatureBasicValidationConclusion, constraint);
     }
 
     @Override
@@ -66,16 +55,6 @@ public class TLSCertificateBindingSignatureValidationResultCheck extends ChainIt
     @Override
     protected MessageTag getErrorMessageTag() {
         return MessageTag.TLS_CERT_BINDING_SIG_VALID_ANS;
-    }
-
-    @Override
-    protected Indication getFailedIndicationForConclusion() {
-        return Indication.FAILED;
-    }
-
-    @Override
-    protected SubIndication getFailedSubIndicationForConclusion() {
-        return null;
     }
 
 }

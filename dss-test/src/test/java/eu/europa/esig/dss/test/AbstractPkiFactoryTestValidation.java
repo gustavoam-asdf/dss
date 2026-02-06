@@ -1837,7 +1837,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		assertNotNull(simpleReport.getValidationTime());
 	}
 
-	private boolean createdWithTrustAnchor(XmlCertificateChain xmlCertificateChain) {
+	protected boolean createdWithTrustAnchor(XmlCertificateChain xmlCertificateChain) {
 		if (xmlCertificateChain != null && Utils.isCollectionNotEmpty(xmlCertificateChain.getCertificate())) {
 			eu.europa.esig.dss.simplereport.jaxb.XmlCertificate xmlCertificate = xmlCertificateChain.getCertificate().get(0);
 			return xmlCertificate.isTrusted();
@@ -1845,14 +1845,14 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		return false;
 	}
 
-	private boolean timestampedWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlTimestamp> xmlTimestampList) {
+	protected boolean timestampedWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlTimestamp> xmlTimestampList) {
 		if (Utils.isCollectionNotEmpty(xmlTimestampList)) {
 			return xmlTimestampList.stream().anyMatch(t -> createdWithTrustAnchor(t.getCertificateChain()));
 		}
 		return false;
 	}
 
-	private boolean preservedByERWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord> xmlEvidenceRecordList) {
+	protected boolean preservedByERWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord> xmlEvidenceRecordList) {
 		if (Utils.isCollectionNotEmpty(xmlEvidenceRecordList)) {
 			return xmlEvidenceRecordList.stream().anyMatch(er -> timestampedWithTrustAnchor(er.getTimestamps().getTimestamp()));
 		}

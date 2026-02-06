@@ -1655,9 +1655,16 @@
 							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
 						</xs:complexType>
 					</xs:element>
+					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EAAPayload">
+		<xs:sequence>
+			<xs:element name="Category" type="xs:string" minOccurs="0" />
+		</xs:sequence>
 	</xs:complexType>
 
 	<xs:complexType name="DigestMatchers">

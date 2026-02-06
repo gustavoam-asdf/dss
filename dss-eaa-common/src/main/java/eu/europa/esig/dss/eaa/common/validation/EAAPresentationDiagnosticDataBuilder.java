@@ -2,11 +2,13 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
+import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
@@ -88,6 +90,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (eaaPresentation.getKeyBindingSignature() != null) {
             xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaaPresentation.getKeyBindingSignature()));
         }
+        xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaaPresentation.getPayload()));
         return xmlEAAPresentation;
     }
 
@@ -115,6 +118,14 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     private List<XmlDigestMatcher> buildXmlDigestMatchers(List<DisclosureValidation> disclosureValidations) {
         // TODO : to be implemented
         return Collections.emptyList();
+    }
+
+    private XmlEAAPayload getXmlEAAPayload(EAAPayload eaaPayload) {
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        if (Utils.isStringNotEmpty(eaaPayload.getCategory())) {
+            xmlEAAPayload.setCategory(eaaPayload.getCategory());
+        }
+        return xmlEAAPayload;
     }
 
     @Override

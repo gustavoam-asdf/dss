@@ -4,6 +4,7 @@ import eu.europa.esig.dss.eaa.common.validation.identifier.EAAPresentationIdenti
 import eu.europa.esig.dss.model.EAADisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
@@ -24,6 +25,9 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
 
     /** Key binding signature (optional) */
     private AdvancedSignature keyBindingSignature;
+
+    /** Payload of the EAA */
+    private EAAPayload payload;
 
     /** The name of the EAA document */
     private String filename;
@@ -79,6 +83,21 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
     public AdvancedSignature getKeyBindingSignature() {
         return keyBindingSignature;
     }
+
+    @Override
+    public EAAPayload getPayload() {
+        if (payload == null) {
+            payload = buildPayload();
+        }
+        return payload;
+    }
+
+    /**
+     * Builds the EAA payload object for values accessing
+     *
+     * @return {@link EAAPayload}
+     */
+    protected abstract EAAPayload buildPayload();
 
     @Override
     public String getId() {

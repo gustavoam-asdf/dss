@@ -11,6 +11,7 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
 import java.io.ByteArrayOutputStream;
 
@@ -73,6 +74,13 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
             fail(e);
             return null;
         }
+    }
+
+    @Override
+    protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
+        SignedDocumentValidator validator = super.getValidator(signedDocument);
+        validator.setCertificateVerifier(getCompleteCertificateVerifier());
+        return validator;
     }
 
     @Override

@@ -2,9 +2,12 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentation;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.model.EAADisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
+import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +43,16 @@ public class SDJWTPresentation extends DefaultEAAPresentation {
     protected List<DisclosureValidation> validateDisclosures() {
         // TODO : to be implemented
         return Collections.emptyList();
+    }
+
+    @Override
+    protected EAAPayload buildPayload() {
+        List<AdvancedSignature> signatures = getSignatures();
+        if (Utils.isCollectionEmpty(signatures)) {
+            throw new IllegalStateException("SD-JWT VC signatures cannot be empty!");
+        }
+        JAdESSignature signature = (JAdESSignature) signatures.get(0); // payload is the same for EAA signatures
+        return new SDJWTPayload(signature.getJws().getUnverifiedPayload());
     }
 
     /**

@@ -25,6 +25,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlQWACProcess;
@@ -35,6 +36,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateQualificat
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
 import eu.europa.esig.dss.enumerations.CertificateUsage;
@@ -331,6 +333,10 @@ public class DetailedReportMessageCollector {
 		if (evidenceRecordById != null) {
 			return collectEvidenceRecordValidation(type, evidenceRecordById);
 		}
+		XmlEAAPresentation eaaPresentationById = detailedReport.getXmlEAAPresentationById(tokenId);
+		if (eaaPresentationById != null) {
+			return collectEAAPresentationValidation(type, eaaPresentationById);
+		}
 		XmlTLAnalysis tlAnalysisById = detailedReport.getTLAnalysisById(tokenId);
 		if (tlAnalysisById != null) {
 			return collectTLAnalysisValidation(type, tlAnalysisById);
@@ -357,6 +363,10 @@ public class DetailedReportMessageCollector {
 		XmlTimestamp timestampById = detailedReport.getXmlTimestampById(tokenId);
 		if (timestampById != null) {
 			return collectTimestampQualification(type, timestampById);
+		}
+		XmlEAAPresentation eaaPresentationById = detailedReport.getXmlEAAPresentationById(tokenId);
+		if (eaaPresentationById != null) {
+			return collectEAAQualification(type, eaaPresentationById);
 		}
 		List<XmlValidationCertificateQualification> certificateById = getCertificateQualificationProcess(tokenId);
 		if (certificateById != null) {
@@ -401,6 +411,14 @@ public class DetailedReportMessageCollector {
 		return result;
 	}
 
+	private List<Message> collectEAAPresentationValidation(MessageType type, XmlEAAPresentation xmlEAAPresentation) {
+		List<Message> result = new ArrayList<>();
+
+		XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
+		addMessages(result, getMessages(type, validationProcessEAAPresentation));
+		return result;
+	}
+
 	private List<Message> collectTLAnalysisValidation(MessageType type, XmlTLAnalysis tlAnalysisById) {
 		List<Message> result = new ArrayList<>();
 		addMessages(result, getMessages(type, tlAnalysisById.getConclusion()));
@@ -428,6 +446,12 @@ public class DetailedReportMessageCollector {
 	private List<Message> collectTimestampQualification(MessageType type, XmlTimestamp xmlTimestamp) {
 		List<Message> result = new ArrayList<>();
 		addMessages(result, getMessages(type, xmlTimestamp.getValidationTimestampQualification()));
+		return result;
+	}
+
+	private List<Message> collectEAAQualification(MessageType type, XmlEAAPresentation xmlEAAPresentation) {
+		List<Message> result = new ArrayList<>();
+		addMessages(result, getMessages(type, xmlEAAPresentation.getValidationEAAQualification()));
 		return result;
 	}
 

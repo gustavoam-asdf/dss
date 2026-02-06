@@ -109,14 +109,32 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 	public XmlDetailedReport build() {
 		XmlDetailedReport detailedReport = init();
 
-		List<XmlTLAnalysis> tlAnalysis = detailedReport.getTLAnalysis();
-
 		Map<String, XmlBasicBuildingBlocks> bbbs = executeAllBasicBuildingBlocks();
 		detailedReport.getBasicBuildingBlocks().addAll(bbbs.values());
 
 		// Init POE
 		final POEExtraction poe = new POEExtraction();
 		poe.init(diagnosticData, currentTime);
+
+		executeValidation(detailedReport, bbbs, poe);
+		
+		if (includeSemantics) {
+			collectIndications(detailedReport);
+			addSemantics(detailedReport);
+		}
+
+		return detailedReport;
+	}
+
+	/**
+	 * Performs validation for the given tokens
+	 *
+	 * @param detailedReport {@link XmlDetailedReport}
+	 * @param bbbs map of {@link XmlBasicBuildingBlocks}
+	 * @param poe {@link POEExtraction}
+	 */
+	protected void executeValidation(XmlDetailedReport detailedReport, Map<String, XmlBasicBuildingBlocks> bbbs, POEExtraction poe) {
+		List<XmlTLAnalysis> tlAnalysis = detailedReport.getTLAnalysis();
 
 		Set<String> attachedTimestamps = new HashSet<>();
 		Set<String> attachedEvidenceRecords = new HashSet<>();
@@ -179,7 +197,7 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				}
 
 			}
-			
+
 			signatureAnalysis.setConclusion(getFinalConclusion(validation));
 
 			detailedReport.getSignatureOrTimestampOrEvidenceRecord().add(signatureAnalysis);
@@ -202,13 +220,6 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				detailedReport.getSignatureOrTimestampOrEvidenceRecord().add(timestampValidations.get(timestamp.getId()));
 			}
 		}
-		
-		if (includeSemantics) {
-			collectIndications(detailedReport);
-			addSemantics(detailedReport);
-		}
-
-		return detailedReport;
 	}
 
 	private XmlValidationProcessBasicSignature executeBasicValidation(XmlSignature signatureAnalysis, SignatureWrapper signature,
