@@ -4,8 +4,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForWallet;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlOID;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlQcStatements;
 import eu.europa.esig.dss.enumerations.CertificateExtensionEnum;
 import eu.europa.esig.dss.enumerations.Level;
@@ -26,9 +26,9 @@ class CertificateForWalletCheckTest extends AbstractTestCheck {
         XmlQcStatements xmlQcStatements = new XmlQcStatements();
         xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
 
-        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
-        xmlCertForWallet.setPresent(true);
-        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.2");
+        xmlQcStatements.getQcTypes().add(xmlOID);
 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
@@ -51,9 +51,9 @@ class CertificateForWalletCheckTest extends AbstractTestCheck {
         XmlQcStatements xmlQcStatements = new XmlQcStatements();
         xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
 
-        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
-        xmlCertForWallet.setPresent(false);
-        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.1");
+        xmlQcStatements.getQcTypes().add(xmlOID);
 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);

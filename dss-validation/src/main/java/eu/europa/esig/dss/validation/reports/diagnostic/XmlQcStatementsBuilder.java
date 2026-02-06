@@ -97,8 +97,6 @@ public class XmlQcStatementsBuilder {
         if (qcStatements.getQcIdentMethod() != null) {
             result.setQcIdentMethod(getXmlOid(qcStatements.getQcIdentMethod()));
         }
-        result.setCertForPID(buildXmlCertForPID(qcStatements.isCertForPID()));
-        result.setCertForWallet(buildXmlCertForWallet(qcStatements.isCertForWallet()));
         if (qcStatements.getQcPSB() != null) {
             result.setQcPSB(buildXmlQcPSB(qcStatements.getQcPSB()));
         }
@@ -354,16 +352,6 @@ public class XmlQcStatementsBuilder {
             xmlQcIdentMethod.setDescription(xmlQcStatements.getQcIdentMethod().getDescription());
             xmlQcIdentMethod.setValue(xmlQcStatements.getQcIdentMethod().getValue());
             copy.setQcIdentMethod(xmlQcIdentMethod);
-        }
-        if (xmlQcStatements.getCertForPID() != null) {
-            XmlCertForPID xmlCertForPID = new XmlCertForPID();
-            xmlCertForPID.setPresent(xmlQcStatements.getCertForPID().isPresent());
-            copy.setCertForPID(xmlCertForPID);
-        }
-        if (xmlQcStatements.getCertForWallet() != null) {
-            XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
-            xmlCertForWallet.setPresent(xmlQcStatements.getCertForWallet().isPresent());
-            copy.setCertForWallet(xmlCertForWallet);
         }
         if (xmlQcStatements.getQcPSB() != null) {
             XmlQcPSB xmlQcPSB = new XmlQcPSB();

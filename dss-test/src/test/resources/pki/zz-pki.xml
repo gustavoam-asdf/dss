@@ -407,4 +407,115 @@
         <ca/>
     </certificate>
 
+    <!-- Wal -->
+    <certificate>
+        <serialNumber>100116</serialNumber>
+        <subject>Cert for PID</subject>
+        <organization>Test Qualified Trust Service Provider 1 from ZZ</organization>
+        <country>ZZ</country>
+        <issuer serialNumber="100110">Test-QTSP-1-RootCA-from-ZZ</issuer>
+        <notBefore month="-11"/>
+        <notAfter month="11"/>
+        <keyAlgo encryption="RSA" length="2048"/>
+        <digestAlgo>SHA256</digestAlgo>
+        <keyUsages>
+            <keyUsage>digitalSignature</keyUsage>
+            <keyUsage>nonRepudiation</keyUsage>
+        </keyUsages>
+        <!--        <extendedKeyUsages>-->
+        <!--            <extendedKeyUsage>0.4.0.194115.0.1.0</extendedKeyUsage> &lt;!&ndash; id-kp-tls-binding &ndash;&gt;-->
+        <!--        </extendedKeyUsages>-->
+        <!--        <certificatePolicies>-->
+        <!--            <certificatePolicy>0.4.0.194112.1.6</certificatePolicy> &lt;!&ndash; qncp-web-gen &ndash;&gt;-->
+        <!--        </certificatePolicies>-->
+        <subjectAlternativeNames>
+            <generalName type="2">nowina.lu</generalName>
+            <generalName type="2">*.nowina.lu</generalName>
+        </subjectAlternativeNames>
+        <qcStatementIds>
+            <qcStatement>0.4.0.1862.1.1</qcStatement> <!-- QcCompliance -->
+            <qcStatement>0.4.0.1862.1.4</qcStatement> <!-- QcCompliance -->
+        </qcStatementIds>
+        <qcTypes>
+            <qcType>0.4.0.194126.1.1</qcType>
+        </qcTypes>
+        <crl>Test-Qualified-CA1-from-ZZ</crl>
+        <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
+        <caIssuers>Test-Qualified-CA1-from-ZZ</caIssuers>
+    </certificate>
+
+    <!-- Wal -->
+    <certificate>
+        <serialNumber>100117</serialNumber>
+        <subject>Cert for Wallet</subject>
+        <organization>Test Qualified Trust Service Provider 1 from ZZ</organization>
+        <country>ZZ</country>
+        <issuer serialNumber="100110">Test-QTSP-1-RootCA-from-ZZ</issuer>
+        <notBefore month="-11"/>
+        <notAfter month="11"/>
+        <keyAlgo encryption="RSA" length="2048"/>
+        <digestAlgo>SHA256</digestAlgo>
+        <keyUsages>
+            <keyUsage>digitalSignature</keyUsage>
+            <keyUsage>nonRepudiation</keyUsage>
+        </keyUsages>
+        <!--        <extendedKeyUsages>-->
+        <!--            <extendedKeyUsage>0.4.0.194115.0.1.0</extendedKeyUsage> &lt;!&ndash; id-kp-tls-binding &ndash;&gt;-->
+        <!--        </extendedKeyUsages>-->
+        <!--        <certificatePolicies>-->
+        <!--            <certificatePolicy>0.4.0.194112.1.6</certificatePolicy> &lt;!&ndash; qncp-web-gen &ndash;&gt;-->
+        <!--        </certificatePolicies>-->
+        <subjectAlternativeNames>
+            <generalName type="2">nowina.lu</generalName>
+            <generalName type="2">*.nowina.lu</generalName>
+        </subjectAlternativeNames>
+        <qcStatementIds>
+            <qcStatement>0.4.0.1862.1.1</qcStatement> <!-- QcCompliance -->
+            <qcStatement>0.4.0.1862.1.4</qcStatement> <!-- QcCompliance -->
+        </qcStatementIds>
+        <qcTypes>
+            <qcType>0.4.0.194126.1.2</qcType>
+        </qcTypes>
+        <crl>Test-Qualified-CA1-from-ZZ</crl>
+        <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
+        <caIssuers>Test-Qualified-CA1-from-ZZ</caIssuers>
+    </certificate>
+
+    <!-- PSB -->
+    <certificate>
+        <serialNumber>100118</serialNumber>
+        <subject>Cert for PUBEAA</subject>
+        <organization>Test Qualified Trust Service Provider 1 from ZZ</organization>
+        <country>ZZ</country>
+        <issuer serialNumber="100110">Test-QTSP-1-RootCA-from-ZZ</issuer>
+        <notBefore month="-11"/>
+        <notAfter month="11"/>
+        <keyAlgo encryption="RSA" length="2048"/>
+        <digestAlgo>SHA256</digestAlgo>
+        <keyUsages>
+            <keyUsage>digitalSignature</keyUsage>
+            <keyUsage>nonRepudiation</keyUsage>
+        </keyUsages>
+<!--        <extendedKeyUsages>-->
+<!--            <extendedKeyUsage>0.4.0.194115.0.1.0</extendedKeyUsage> &lt;!&ndash; id-kp-tls-binding &ndash;&gt;-->
+<!--        </extendedKeyUsages>-->
+<!--        <certificatePolicies>-->
+<!--            <certificatePolicy>0.4.0.194112.1.6</certificatePolicy> &lt;!&ndash; qncp-web-gen &ndash;&gt;-->
+<!--        </certificatePolicies>-->
+        <subjectAlternativeNames>
+            <generalName type="2">nowina.lu</generalName>
+            <generalName type="2">*.nowina.lu</generalName>
+        </subjectAlternativeNames>
+        <qcStatementIds>
+            <qcStatement>0.4.0.1862.1.1</qcStatement> <!-- QcCompliance -->
+            <qcStatement>0.4.0.1862.1.4</qcStatement> <!-- QcCompliance -->
+        </qcStatementIds>
+        <qcTypes>
+            <qcType>0.4.0.1862.1.6.1</qcType>
+        </qcTypes>
+        <crl>Test-Qualified-CA1-from-ZZ</crl>
+        <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
+        <caIssuers>Test-Qualified-CA1-from-ZZ</caIssuers>
+    </certificate>
+
 </pki>

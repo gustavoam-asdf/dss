@@ -133,10 +133,6 @@ public class QcStatementUtils {
                     result.setQcQSCDLegislationCountryCodes(getQcLegislationCountryCodes(statementInfo));
                 } else if (isQcIdentMethod(oid)) {
                     result.setQcIdentMethod(getQcIdentMethod(statementInfo));
-                } else if (isCertForPID(oid)) {
-                    result.setCertForPID(true);
-                } else if (isCertForWal(oid)) {
-                    result.setCertForWallet(true);
                 } else if (isCertForPSB(oid)) {
                     result.setQcPSB(getQcPSB(statementInfo));
                 } else {
@@ -256,26 +252,6 @@ public class QcStatementUtils {
      */
     public static boolean isQcQSCDlegislation(String oid) {
         return OID.id_etsi_qcs_QcQSCDlegislation.getId().equals(oid);
-    }
-
-    /**
-     * This method verifies of the given OID is a certificate for Personal Identification Data (PID) issuance
-     *
-     * @param oid {@link String} to check
-     * @return TRUE if OID is a Cert for PID, FALSE otherwise
-     */
-    public static boolean isCertForPID(String oid) {
-        return OID.id_etsi_qct_pid.getId().equals(oid);
-    }
-
-    /**
-     * This method verifies of the given OID is for Wallet provider certificate
-     *
-     * @param oid {@link String} to check
-     * @return TRUE if OID is a Cert for Wallet, FALSE otherwise
-     */
-    public static boolean isCertForWal(String oid) {
-        return OID.id_etsi_qct_wal.getId().equals(oid);
     }
 
     /**
@@ -590,10 +566,6 @@ public class QcStatementUtils {
             return Utils.isCollectionNotEmpty(qcStatements.getQcQSCDLegislationCountryCodes());
         } else if (isQcIdentMethod(qcStatementOid)) {
             return qcStatements.getQcIdentMethod() != null;
-        } else if (isCertForPID(qcStatementOid)) {
-            return qcStatements.isCertForPID();
-        } else if (isCertForWal(qcStatementOid)) {
-            return qcStatements.isCertForWallet();
         } else if (isCertForPSB(qcStatementOid)) {
             return qcStatements.getQcPSB() != null;
         } else {

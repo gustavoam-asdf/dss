@@ -171,12 +171,12 @@ public class OID {
 	public static final ASN1ObjectIdentifier id_etsi_qct_wal = new ASN1ObjectIdentifier("0.4.0.194126.1.2");
 
 	/**
-	 *  -- PSB certificate mandatory data
-	 *  esi4-qcStatement-10 QC-STATEMENT ::= { SYNTAX QcPSB IDENTIFIED
-	 *  BY id-etsi-qcs-QcPSB }
+	 * -- PSB certificate mandatory data
+	 * id-etsi-qcs-QcPSB   OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 3 }
+	 *   esi4-qcStatement-10 QC-STATEMENT ::= { SYNTAX QcPSB IDENTIFIED
+	 *   BY id-etsi-qcs-QcPSB }
 	 */
-	// TODO : verify identifier
-	public static final ASN1ObjectIdentifier id_etsi_qcs_QcPSB = new ASN1ObjectIdentifier("0.4.0.1862.1.10");
+	public static final ASN1ObjectIdentifier id_etsi_qcs_QcPSB = new ASN1ObjectIdentifier("0.4.0.194126.1.3");
 
 	/**
 	 * EN 319 412-1 "5.2.2 Validity Assured - Short Term"

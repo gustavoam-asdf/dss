@@ -43,7 +43,21 @@ public enum QCTypeEnum implements QCType {
 	 * id-etsi-qct-web OBJECT IDENTIFIER ::= { id-etsi-qcs-QcType 3 }
 	 * -- Certificate for website authentication as defined in Regulation (EU) No 910/2014
 	 */
-	QCT_WEB("qc-type-web", "0.4.0.1862.1.6.3");
+	QCT_WEB("qc-type-web", "0.4.0.1862.1.6.3"),
+
+	// TS 119 412-6 QcTypes
+
+	/**
+	 * id-etsi-qct-pid OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 1 }
+	 * -- Certificate for PID provider sign/seal certificate
+	 */
+	QCT_PID("qc-type-pid", "0.4.0.194126.1.1"),
+
+	/**
+	 * id-etsi-qct-wal OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 2 }
+	 * -- Certificate for Wallet provider sign/seal certificate
+	 */
+	QCT_WAL("qc-type-wal", "0.4.0.194126.1.2");
 
 	/** The QCType description */
 	private final String description;
