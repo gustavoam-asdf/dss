@@ -220,7 +220,7 @@
                 </xs:annotation>
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="CountryName" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="countryName" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                             <xs:annotation>
                                 <xs:documentation>Two-letter country code identifier.</xs:documentation>
                             </xs:annotation>
@@ -235,7 +235,7 @@
                 </xs:annotation>
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="CountryName" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                        <xs:element name="countryName" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                             <xs:annotation>
                                 <xs:documentation>Two-letter country code identifier.</xs:documentation>
                             </xs:annotation>
@@ -250,17 +250,17 @@
                 </xs:annotation>
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="CountryName" type="xs:string" minOccurs="0">
+                        <xs:element name="countryName" type="xs:string" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>Two-letter country code identifier.</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="AuthSourceIdentification" type="xs:string" minOccurs="0">
+                        <xs:element name="authSourceIdentification" type="xs:string" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>This field is for the unique identification of authentic source.</xs:documentation>
                             </xs:annotation>
                         </xs:element>
-                        <xs:element name="LegislationIdentification" type="xs:string" minOccurs="0">
+                        <xs:element name="legislationIdentification" type="xs:string" minOccurs="0">
                             <xs:annotation>
                                 <xs:documentation>This field contains the identification for the law under which the PSBEAA is established responsible for the authentic source.</xs:documentation>
                             </xs:annotation>
