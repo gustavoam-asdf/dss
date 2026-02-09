@@ -735,8 +735,6 @@
 					<xs:element name="PSD2QcInfo" type="PSD2QcInfo" minOccurs="0" />
 					<xs:element name="QcQSCDlegislation" type="QcQSCDlegislation" minOccurs="0" />
 					<xs:element name="QcIdentMethod" type="OID" minOccurs="0" />
-					<xs:element name="CertForPID" type="CertForPID" minOccurs="0" />
-					<xs:element name="CertForWallet" type="CertForWallet" minOccurs="0" />
 					<xs:element name="QcPSB" type="QcPSB" minOccurs="0" />
 					<xs:element name="OtherOIDs" type="OtherOIDs" minOccurs="0" />
 					<xs:element name="MRACertificateMapping" type="MRACertificateMapping" minOccurs="0" />

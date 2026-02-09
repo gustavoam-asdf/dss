@@ -21,8 +21,6 @@
 package eu.europa.esig.dss.validation.executor.process;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForPID;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCertForWallet;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
@@ -866,9 +864,9 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPIDPC_ANS)));
 
-        XmlCertForPID xmlCertForPID = new XmlCertForPID();
-        xmlCertForPID.setPresent(true);
-        xmlQcStatements.setCertForPID(xmlCertForPID);
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.1");
+        xmlQcStatements.getQcTypes().add(xmlOID);
 
         reports = executor.execute();
         simpleReport = reports.getSimpleReport();
@@ -907,9 +905,9 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
                 i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCWPC_ANS)));
 
-        XmlCertForWallet xmlCertForWallet = new XmlCertForWallet();
-        xmlCertForWallet.setPresent(true);
-        xmlQcStatements.setCertForWallet(xmlCertForWallet);
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.2");
+        xmlQcStatements.getQcTypes().add(xmlOID);
 
         reports = executor.execute();
         simpleReport = reports.getSimpleReport();

@@ -3,10 +3,12 @@ package eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
@@ -34,7 +36,7 @@ public class CertificateForWalletCheck extends ChainItem<XmlSubXCV> {
 
     @Override
     protected boolean process() {
-        return certificate.isCertForWallet();
+        return Utils.isCollectionNotEmpty(certificate.getQcTypes()) && certificate.getQcTypes().contains(QCTypeEnum.QCT_WAL);
     }
 
     @Override
