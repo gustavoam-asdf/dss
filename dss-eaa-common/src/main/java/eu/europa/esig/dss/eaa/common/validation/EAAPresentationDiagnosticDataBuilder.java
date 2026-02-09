@@ -112,6 +112,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             throw new IllegalStateException(String.format("XmlSignature for key binding shall be built at this moment! " +
                     "Not found signature with id '%s'.", signature.getId()));
         }
+        xmlKeyBindingSignature.setSignature(xmlSignature);
         return xmlKeyBindingSignature;
     }
 
