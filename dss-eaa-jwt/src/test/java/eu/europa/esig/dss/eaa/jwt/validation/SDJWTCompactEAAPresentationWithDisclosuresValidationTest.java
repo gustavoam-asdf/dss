@@ -18,19 +18,36 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
+class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
 
     private static DSSDocument originalDocument;
+    private static DSSDocument disclosuresDocument;
 
     static {
         String payload = "{\n" +
+                "  \"_sd\": [\n" +
+                "    \"CrQe7S5kqBAHt-nMYXgc6bdt2SH5aTY1sU_M-PgkjPI\",\n" +
+                "    \"JzYjH4svliH0R3PyEMfeZu6Jt69u5qehZo7F7EPYlSE\",\n" +
+                "    \"PorFbpKuVu6xymJagvkFsFXAbRoc2JGlAUA2BA4o7cI\",\n" +
+                "    \"TGf4oLbgwd5JQaHyKVQZU9UdGE0w5rtDsrZzfUaomLo\",\n" +
+                "    \"XQ_3kPKt1XyX7KANkqVR6yZ2Va5NrPIvPYbyMvRKBMM\",\n" +
+                "    \"XzFrzwscM6Gn6CJDc6vVK8BkMnfG8vOSKfpPIZdAfdE\",\n" +
+                "    \"gbOsI4Edq2x2Kw-w5wPEzakob9hV1cRD0ATN3oQL9JM\",\n" +
+                "    \"jsu9yVulwQQlhFlM_3JlzMaSFzglhQG0DpfayQwLUK4\"\n" +
+                "  ],\n" +
                 "  \"iss\": \"https://issuer.example.com\",\n" +
                 "  \"iat\": 1683000000,\n" +
                 "  \"exp\": 1883000000,\n" +
                 "  \"sub\": \"user_42\",\n" +
                 "  \"nationalities\": [\n" +
-                "    \"US\"\n" +
+                "    {\n" +
+                "      \"...\": \"pFndjkZ_VCzmyTa6UjlZo3dh-ko8aIKQc9DlGzhaVYo\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"...\": \"7Cf6JkPudry3lcbwHgeZ8khAv1U1OSlerP0VkBJrWZ0\"\n" +
+                "    }\n" +
                 "  ],\n" +
+                "  \"_sd_alg\": \"sha-256\",\n" +
                 "  \"cnf\": {\n" +
                 "    \"jwk\": {\n" +
                 "      \"kty\": \"EC\",\n" +
@@ -38,18 +55,24 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
                 "      \"x\": \"TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc\",\n" +
                 "      \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"\n" +
                 "    }\n" +
-                "  },\n" +
-                "  \"family_name\": \"Doe\",\n" +
-                "  \"address\": {\n" +
-                "    \"street_address\": \"123 Main St\",\n" +
-                "    \"locality\": \"Anytown\",\n" +
-                "    \"region\": \"Anystate\",\n" +
-                "    \"country\": \"US\"\n" +
-                "  },\n" +
-                "  \"given_name\": \"John\"\n" +
+                "  }\n" +
                 "}";
         originalDocument = new InMemoryDocument(payload.getBytes());
         originalDocument.setMimeType(MimeTypeEnum.JSON);
+
+        String disclosures = "~WyIyR0xDNDJzS1F2ZUNmR2ZyeU5STjl3IiwgI" +
+                "mdpdmVuX25hbWUiLCAiSm9obiJd~WyJlbHVWNU9nM2dTTklJOEVZbnN4QV9BIiwgImZh" +
+                "bWlseV9uYW1lIiwgIkRvZSJd~WyI2SWo3dE0tYTVpVlBHYm9TNXRtdlZBIiwgImVtYWl" +
+                "sIiwgImpvaG5kb2VAZXhhbXBsZS5jb20iXQ~WyJlSThaV205UW5LUHBOUGVOZW5IZGhR" +
+                "IiwgInBob25lX251bWJlciIsICIrMS0yMDItNTU1LTAxMDEiXQ~WyJRZ19PNjR6cUF4Z" +
+                "TQxMmExMDhpcm9BIiwgInBob25lX251bWJlcl92ZXJpZmllZCIsIHRydWVd~WyJBSngt" +
+                "MDk1VlBycFR0TjRRTU9xUk9BIiwgImFkZHJlc3MiLCB7InN0cmVldF9hZGRyZXNzIjog" +
+                "IjEyMyBNYWluIFN0IiwgImxvY2FsaXR5IjogIkFueXRvd24iLCAicmVnaW9uIjogIkFu" +
+                "eXN0YXRlIiwgImNvdW50cnkiOiAiVVMifV0~WyJQYzMzSk0yTGNoY1VfbEhnZ3ZfdWZR" +
+                "IiwgImJpcnRoZGF0ZSIsICIxOTQwLTAxLTAxIl0~WyJHMDJOU3JRZmpGWFE3SW8wOXN5" +
+                "YWpBIiwgInVwZGF0ZWRfYXQiLCAxNTcwMDAwMDAwXQ~WyJsa2x4RjVqTVlsR1RQVW92T" +
+                "U5JdkNBIiwgIlVTIl0~WyJuUHVvUW5rUkZxM0JJZUFtN0FuWEZBIiwgIkRFIl0~";
+        disclosuresDocument = new InMemoryDocument(disclosures.getBytes());
     }
 
     @Override
@@ -69,8 +92,8 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Utils.write(DSSUtils.toByteArray(signedDocument), baos);
-            baos.write('~');
-            return new InMemoryDocument(baos.toByteArray(), "simple-sd-jwt.jwt");
+            Utils.write(DSSUtils.toByteArray(disclosuresDocument), baos);
+            return new InMemoryDocument(baos.toByteArray(), "sd-jwt.jwt");
 
         } catch (Exception e) {
             fail(e);
@@ -83,11 +106,6 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
         return validator;
-    }
-
-    @Override
-    protected boolean disclosuresPresent() {
-        return false;
     }
 
     @Override

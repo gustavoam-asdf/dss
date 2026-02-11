@@ -53,7 +53,12 @@
 			</xsd:element>
 			<xsd:element name="EvidenceRecord" type="EvidenceRecordConstraints" minOccurs="0">
 				<xsd:annotation>
-					<xsd:documentation>Constraints on the timestamps</xsd:documentation>
+					<xsd:documentation>Constraints on the evidence records</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="EAAPresentation" type="EAAPresentationConstraints" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Constraints on the EAA presentations</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
@@ -514,7 +519,6 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-
 	<xsd:complexType name="EvidenceRecordConstraints">
 		<xsd:annotation>
 			<xsd:documentation>Group of constraints on the evidence record</xsd:documentation>
@@ -565,6 +569,63 @@
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Group of cryptographic checks to operate on the certificate</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="EAAPresentationConstraints">
+		<xsd:annotation>
+			<xsd:documentation>Group of constraints for the EAA Presentation validation process</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="LevelConstraint">
+				<xsd:sequence>
+					<xsd:element name="EAASignatureUnicity" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if the EAA Presentation has been created with a single signature (not considering key binding signature)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAASignatureValid" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if the signature used to sign the EAA Payload is valid (i.e. results to a TOTAL-PASSED validation status)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DisclosurePresent" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA Presentation contains attached disclosures</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DisclosureFound" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA Presentation contains a selectively disclosable claim hash for the provided disclosure</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DisclosureIntact" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the hash value of a selectively disclosable claim is intact</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="DisclosureListExhaustive" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether for all selectively disclosable claim hashes defined within an EAA Presentation a matching disclosure attached to the EAA Presentation was found</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="KeyBindingSignaturePresent" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the key binding signature is present within the EAA Presentation token</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="KeyBindingSignatureValid" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the key binding signature is valid (i.e. results to a TOTAL-PASSED validation status)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Group of cryptographic checks to operate on the disclosure hash algorithm(s)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

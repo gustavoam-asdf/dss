@@ -50,12 +50,13 @@ public class SignatureValidationResultCheck<T extends XmlConstraintsConclusion> 
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.FAILED;
+        Indication indication = signatureBasicValidationConclusion.getIndication();
+        return Indication.TOTAL_FAILED == indication ? Indication.FAILED : indication;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return null;
+        return signatureBasicValidationConclusion.getSubIndication();
     }
 
 }

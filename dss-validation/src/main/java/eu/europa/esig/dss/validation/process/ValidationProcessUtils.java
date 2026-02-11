@@ -386,19 +386,21 @@ public class ValidationProcessUtils {
 	 */
 	public static MessageTag getCryptoPosition(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.ACCM_POS_SIG_SIG;
-		case TIMESTAMP:
-			return MessageTag.ACCM_POS_TST_SIG;
-		case REVOCATION:
-			return MessageTag.ACCM_POS_REVOC_SIG;
-		case CERTIFICATE:
-			return MessageTag.ACCM_POS_CERT_CHAIN;
-		case EVIDENCE_RECORD:
-			return MessageTag.ACCM_POS_EV_RECORD;
-		default:
-			throw new IllegalArgumentException("Unsupported context " + context);
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+				return MessageTag.ACCM_POS_SIG_SIG;
+			case TIMESTAMP:
+				return MessageTag.ACCM_POS_TST_SIG;
+			case REVOCATION:
+				return MessageTag.ACCM_POS_REVOC_SIG;
+			case CERTIFICATE:
+				return MessageTag.ACCM_POS_CERT_CHAIN;
+			case EVIDENCE_RECORD:
+				return MessageTag.ACCM_POS_EV_RECORD;
+			case EAA_PRESENTATION:
+				return MessageTag.ACCM_POS_EAA;
+			default:
+				throw new IllegalArgumentException("Unsupported context " + context);
 		}
 	}
 
@@ -469,6 +471,12 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_ER_TST_SEQ;
 			case EVIDENCE_RECORD_MASTER_SIGNATURE:
 				return MessageTag.ACCM_POS_ER_MST_SIG;
+			case EAA_DISCLOSURE:
+				return MessageTag.ACCM_POS_EAA_SD;
+			case EAA_NESTED_DISCLOSURE:
+				return MessageTag.ACCM_POS_EAA_NSD;
+			case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
+				return MessageTag.ACCM_POS_EAA_OSDC;
 			default:
 				throw new IllegalArgumentException(String.format(
 						"The provided DigestMatcherType '%s' is not supported!", digestMatcher.getType()));
@@ -513,6 +521,12 @@ public class ValidationProcessUtils {
 					return MessageTag.ACCM_POS_ER_ADO_PL;
 				case EVIDENCE_RECORD_ORPHAN_REFERENCE:
 					return MessageTag.ACCM_POS_ER_OR_PL;
+				case EAA_DISCLOSURE:
+					return MessageTag.ACCM_POS_EAA_SD_PL;
+				case EAA_NESTED_DISCLOSURE:
+					return MessageTag.ACCM_POS_EAA_NSD_PL;
+				case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
+					return MessageTag.ACCM_POS_EAA_OSDC_PL;
 				default:
 					throw new IllegalArgumentException(String.format(
 							"The provided DigestMatcherType '%s' is not supported for multiple digest matchers!", digestMatcherType));

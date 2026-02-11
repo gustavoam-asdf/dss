@@ -289,6 +289,13 @@ public interface ValidationPolicy {
 	CryptographicSuite getEvidenceRecordCryptographicConstraint();
 
 	/**
+	 * This method returns cryptographic constraints for validation of EAA Presentation
+	 *
+	 * @return {@link CryptographicSuite}
+	 */
+	CryptographicSuite getEAAPresentationCryptographicConstraint();
+
+	/**
 	 * Returns certificate CA constraint
 	 *
 	 * @param context {@link Context}
@@ -1667,6 +1674,62 @@ public interface ValidationPolicy {
 	 *                                 in the constraint file, null otherwise.
 	 */
 	LevelRule getPDFACompliantConstraint();
+
+	/**
+	 * Returns EAASignatureUnicity constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAASignatureUnicity element is present
+	 */
+	LevelRule getEAAPresentationEAASignatureUnicityConstraint();
+
+	/**
+	 * Returns EAASignatureValid constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAASignatureValid element is present
+	 */
+	LevelRule getEAAPresentationEAASignatureValidConstraint();
+
+	/**
+	 * Returns DisclosurePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosurePresent element is present
+	 */
+	LevelRule getEAAPresentationDisclosurePresentConstraint();
+
+	/**
+	 * Returns DisclosureFound constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureFound element is present
+	 */
+	LevelRule getEAAPresentationDisclosureFoundConstraint();
+
+	/**
+	 * Returns DisclosureIntact constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureIntact element is present
+	 */
+	LevelRule getEAAPresentationDisclosureIntactConstraint();
+
+	/**
+	 * Returns DisclosureListExhaustive constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureListExhaustive element is present
+	 */
+	LevelRule getEAAPresentationDisclosureListExhaustiveConstraint();
+
+	/**
+	 * Returns KeyBindingSignaturePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if KeyBindingSignaturePresent element is present
+	 */
+	LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint();
+
+	/**
+	 * Returns KeyBindingSignatureValid constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if KeyBindingSignatureValid element is present
+	 */
+	LevelRule getEAAPresentationKeyBindingSignatureValidConstraint();
 
 	/* Article 32 */
 

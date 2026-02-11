@@ -388,7 +388,7 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 			ValidationPolicyLoader validationPolicyLoader;
 			if (policyDocument == null) {
 				LOG.debug("No provided validation policy : use the default policy");
-				validationPolicyLoader = ValidationPolicyLoader.fromDefaultValidationPolicy();
+				validationPolicyLoader = fromDefaultValidationPolicyLoader();
 			} else {
 				validationPolicyLoader = ValidationPolicyLoader.fromValidationPolicy(policyDocument);
 			}
@@ -401,6 +401,15 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 		} catch (Exception e) {
 			throw new IllegalInputException("Unable to load the policy", e);
 		}
+	}
+
+	/**
+	 * Gets a default validation policy loader for a signature validation
+	 *
+	 * @return {@link ValidationPolicyLoader}
+	 */
+	protected ValidationPolicyLoader fromDefaultValidationPolicyLoader() {
+		return ValidationPolicyLoader.fromDefaultValidationPolicy();
 	}
 
 	@Override

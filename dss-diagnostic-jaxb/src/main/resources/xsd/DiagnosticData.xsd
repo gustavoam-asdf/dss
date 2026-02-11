@@ -1119,6 +1119,7 @@
 					<xs:element name="DataFound" type="xs:boolean" />
 					<xs:element name="DataIntact" type="xs:boolean" />
 					<xs:element name="DataObjectReferences" type="ObjectReferences" minOccurs="0" />
+					<xs:element name="Claim" type="Claim" minOccurs="0" /> <!-- EAA specific -->
 				</xs:sequence>
 				<xs:attribute name="type" type="DigestMatcherType" use="required" />
 				<xs:attribute name="id" type="xs:string" use="optional"/>
@@ -1127,6 +1128,14 @@
 				<xs:attribute name="duplicated" type="xs:boolean" use="optional" default="false" />
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="Claim">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	
 	<xs:simpleType name="EndorsementType" final="restriction">
@@ -1169,6 +1178,11 @@
 			<xs:enumeration value="EVIDENCE_RECORD_ARCHIVE_TIME_STAMP" />
 			<xs:enumeration value="EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE" />
 			<xs:enumeration value="EVIDENCE_RECORD_MASTER_SIGNATURE" />
+
+			<!-- EAA Presentation -->
+			<xs:enumeration value="EAA_DISCLOSURE" />
+			<xs:enumeration value="EAA_NESTED_DISCLOSURE" />
+			<xs:enumeration value="EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM" />
 		</xs:restriction>
 	</xs:simpleType>
 	

@@ -89,12 +89,12 @@ public enum DigestMatcherType {
 	EVIDENCE_RECORD_MASTER_SIGNATURE,
 
 	/** Disclosure attached to a presentation of EAA */
-	EAA_PROVIDED_DISCLOSURE,
+	EAA_DISCLOSURE,
 
 	/** Disclosure nested to provided disclosure to a presentation of EAA */
 	EAA_NESTED_DISCLOSURE,
 
 	/** Incorporated SD claim for which no matching provided disclosure has been found */
-	ORPHAN_EAA_SELECTIVELY_DISCLOSURE_CLAIM
+	EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM
 
 }

@@ -248,6 +248,15 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
         return cryptographicSuite;
     }
 
+    @Override
+    public CryptographicSuite getEAAPresentationCryptographicConstraint() {
+        CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EAA_PRESENTATION, null);
+        if (cryptographicSuite == null) {
+            cryptographicSuite = validationPolicy.getEAAPresentationCryptographicConstraint();
+        }
+        return cryptographicSuite;
+    }
+
     private CryptographicSuite getCryptographicSuite(Context context, SubContext subContext) {
         if (Utils.isMapNotEmpty(cryptographicSuitesMap)) {
             // check for Context + SubContext
@@ -1029,6 +1038,46 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getPDFACompliantConstraint() {
         return validationPolicy.getPDFACompliantConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAASignatureUnicityConstraint() {
+        return validationPolicy.getEAAPresentationEAASignatureUnicityConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAASignatureValidConstraint() {
+        return validationPolicy.getEAAPresentationEAASignatureValidConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationDisclosurePresentConstraint() {
+        return validationPolicy.getEAAPresentationDisclosurePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationDisclosureFoundConstraint() {
+        return validationPolicy.getEAAPresentationDisclosureFoundConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationDisclosureIntactConstraint() {
+        return validationPolicy.getEAAPresentationDisclosureIntactConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationDisclosureListExhaustiveConstraint() {
+        return validationPolicy.getEAAPresentationDisclosureListExhaustiveConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint() {
+        return validationPolicy.getEAAPresentationKeyBindingSignaturePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationKeyBindingSignatureValidConstraint() {
+        return validationPolicy.getEAAPresentationKeyBindingSignatureValidConstraint();
     }
 
     @Override

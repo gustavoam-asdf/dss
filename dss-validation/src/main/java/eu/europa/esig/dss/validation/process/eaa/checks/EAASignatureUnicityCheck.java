@@ -1,6 +1,6 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -14,7 +14,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * Verifies whether the EAA has been created with a single signature
  *
  */
-public class EAASignaturePresentCheck extends ChainItem<XmlValidationEAAQualification> {
+public class EAASignatureUnicityCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
 
     /** EAA Presentation to check */
     private final EAAPresentationWrapper eaaPresentation;
@@ -23,11 +23,11 @@ public class EAASignaturePresentCheck extends ChainItem<XmlValidationEAAQualific
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationEAAQualification}
+     * @param result {@link XmlValidationProcessEAAPresentation}
      * @param eaaPresentation {@link EAAPresentationWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAASignaturePresentCheck(I18nProvider i18nProvider, XmlValidationEAAQualification result,
+    public EAASignatureUnicityCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
                                     EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaaPresentation = eaaPresentation;
@@ -56,7 +56,7 @@ public class EAASignaturePresentCheck extends ChainItem<XmlValidationEAAQualific
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return null;
+        return SubIndication.FORMAT_FAILURE;
     }
 
 }

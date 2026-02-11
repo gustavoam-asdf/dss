@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt;
 
+import eu.europa.esig.dss.eaa.jwt.validation.SDJWTDisclosure;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JWSCompactSerializationParser;
@@ -7,8 +8,8 @@ import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.EAADisclosure;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.slf4j.Logger;
@@ -143,7 +144,7 @@ public class SDJWTCompactSerializationParser {
             }
             sdJwt.setKeyBindingSignature(keyBinding);
 
-            List<EAADisclosure> disclosures = getDisclosures(parts, keyBinding != null);
+            List<Disclosure> disclosures = getDisclosures(parts, keyBinding != null);
             sdJwt.setDisclosures(disclosures);
 
             return sdJwt;
@@ -171,57 +172,30 @@ public class SDJWTCompactSerializationParser {
         return getJWSJsonSerializationObject(jwsDocument);
     }
 
-    private List<EAADisclosure> getDisclosures(String[] parts, boolean keyBindingPresent) {
+    private List<Disclosure> getDisclosures(String[] parts, boolean keyBindingPresent) {
         int disclosuresAmount = parts.length - 1 - (keyBindingPresent ? 1 :0);
         if (disclosuresAmount == 0) {
             return Collections.emptyList();
         }
 
-        final List<EAADisclosure> disclosures = new ArrayList<>();
+        final List<Disclosure> disclosures = new ArrayList<>();
 
         // NOTE: skip the JWS signature
         for (int i = 1; i < disclosuresAmount + 1; i++) {
             String disclosureB64Url = parts[i];
+            try {
+                final SDJWTDisclosure disclosure = new SDJWTDisclosure(disclosureB64Url);
+                disclosures.add(disclosure);
 
-            Object disclosureObject = DSSJsonUtils.parseB64UrlEncoded(disclosureB64Url);
-            if (!(disclosureObject instanceof List<?>)) {
-                throw new IllegalInputException("Invalid disclosure format! An object of a JSON Array type is expected.");
-            }
-            List<?> disclosureList = (List<?>) disclosureObject;
-            if (disclosureList.size() != 2 && disclosureList.size() != 3) {
-                throw new IllegalInputException("Invalid disclosure format! An array of 2 or 3 elements is expected.");
-            }
-
-            final EAADisclosure disclosure = new EAADisclosure();
-
-            Object saltObject = disclosureList.get(0);
-            if (!(saltObject instanceof String)) {
-                throw new IllegalInputException("Invalid disclosure format! The first element of the array (salt) shall be of String type!");
-            }
-            String saltB64Url = (String) saltObject;
-            if (!DSSJsonUtils.isBase64UrlEncoded(saltB64Url)) {
-                throw new IllegalInputException("Invalid disclosure format! The first element of the array (salt) shall be base64url encoded!");
-            }
-            byte[] saltValue = DSSJsonUtils.fromBase64Url(saltB64Url);
-            disclosure.setSalt(saltValue);
-
-            Object claimNameValue;
-            if (disclosureList.size() == 2) {
-                // array or recursive disclosure
-                claimNameValue = disclosureList.get(1);
-            } else {
-                Object claimNameObject = disclosureList.get(1);
-                if (!(claimNameObject instanceof String)) {
-                    throw new IllegalInputException("Invalid disclosure format! The second element of the array (claim name) shall be of String type!");
+            } catch (Exception e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.warn("An error occurred on selective disclosure '{}' processing. Reason : {}.",
+                            disclosureB64Url, e.getMessage(), e);
+                } else {
+                    LOG.warn("An error occurred on selective disclosure processing. Reason : {}. " +
+                            "More details are in debug mode.", e.getMessage(), e);
                 }
-                String claimName = (String) claimNameObject;
-                disclosure.setClaimName(claimName);
-
-                claimNameValue = disclosureList.get(2);
             }
-            disclosure.setClaimValue(claimNameValue);
-
-            disclosures.add(disclosure);
         }
 
         return disclosures;

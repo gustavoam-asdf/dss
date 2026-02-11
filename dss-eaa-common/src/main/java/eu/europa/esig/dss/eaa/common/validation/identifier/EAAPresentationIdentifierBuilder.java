@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.common.validation.identifier;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentation;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.EAADisclosure;
+import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
@@ -44,9 +44,11 @@ public class EAAPresentationIdentifierBuilder {
                 baos.write(signature.getId().getBytes());
             }
             if (Utils.isCollectionNotEmpty(eaaPresentation.getDisclosures())) {
-                for (EAADisclosure disclosure : eaaPresentation.getDisclosures()) {
+                for (Disclosure disclosure : eaaPresentation.getDisclosures()) {
                     baos.write(disclosure.getSalt());
-                    baos.write(disclosure.getClaimName().getBytes());
+                    if (disclosure.getClaimName() != null) {
+                        baos.write(disclosure.getClaimName().getBytes());
+                    }
                     // claim value is not used to avoid unnecessary information disclosure
                 }
             }

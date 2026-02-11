@@ -25,7 +25,6 @@ import eu.europa.esig.dss.validation.process.qualification.eaa.checks.EAACategor
 import eu.europa.esig.dss.validation.process.qualification.eaa.checks.EAACategoryForQEAACheck;
 import eu.europa.esig.dss.validation.process.qualification.eaa.checks.EAAIssuerQcPSBPresentCheck;
 import eu.europa.esig.dss.validation.process.qualification.eaa.checks.EAAQualifiedSignatureOrSealCheck;
-import eu.europa.esig.dss.validation.process.qualification.eaa.checks.EAASignaturePresentCheck;
 import eu.europa.esig.dss.validation.process.qualification.eaa.checks.QEAACheck;
 import eu.europa.esig.dss.validation.process.qualification.signature.checks.AcceptableListOfTrustedListsCheck;
 import eu.europa.esig.dss.validation.process.qualification.signature.checks.AcceptableTrustedListCheck;
@@ -109,8 +108,6 @@ public class EAAQualificationBlock extends Chain<XmlValidationEAAQualification> 
             item = item.setNextItem(categoryForPubEAA());
 
         }
-
-        item = item.setNextItem(signaturePresent());
 
         SignatureQualification signatureQualification = SignatureQualification.NA;
 
@@ -255,10 +252,6 @@ public class EAAQualificationBlock extends Chain<XmlValidationEAAQualification> 
 
         determineFinalQualification(claimedQualification, signatureQualification);
 
-    }
-
-    private ChainItem<XmlValidationEAAQualification> signaturePresent() {
-        return new EAASignaturePresentCheck(i18nProvider, result, eaaPresentation, getFailLevelRule());
     }
 
     private ChainItem<XmlValidationEAAQualification> categoryPresent() {

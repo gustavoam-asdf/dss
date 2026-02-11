@@ -18,19 +18,21 @@ import java.io.ByteArrayOutputStream;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
+class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
 
     private static DSSDocument originalDocument;
+    private static DSSDocument disclosuresDocument;
 
     static {
         String payload = "{\n" +
+                "  \"_sd\": [\n" +
+                "    \"5G1srw3RG5W4pVTwSsYxeOWosRBbzd18ZoWKkC-hBL4\",\n" +
+                "  ],\n" +
                 "  \"iss\": \"https://issuer.example.com\",\n" +
                 "  \"iat\": 1683000000,\n" +
                 "  \"exp\": 1883000000,\n" +
                 "  \"sub\": \"user_42\",\n" +
-                "  \"nationalities\": [\n" +
-                "    \"US\"\n" +
-                "  ],\n" +
+                "  \"_sd_alg\": \"sha-256\",\n" +
                 "  \"cnf\": {\n" +
                 "    \"jwk\": {\n" +
                 "      \"kty\": \"EC\",\n" +
@@ -38,18 +40,19 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
                 "      \"x\": \"TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc\",\n" +
                 "      \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"\n" +
                 "    }\n" +
-                "  },\n" +
-                "  \"family_name\": \"Doe\",\n" +
-                "  \"address\": {\n" +
-                "    \"street_address\": \"123 Main St\",\n" +
-                "    \"locality\": \"Anytown\",\n" +
-                "    \"region\": \"Anystate\",\n" +
-                "    \"country\": \"US\"\n" +
-                "  },\n" +
-                "  \"given_name\": \"John\"\n" +
+                "  }\n" +
                 "}";
         originalDocument = new InMemoryDocument(payload.getBytes());
         originalDocument.setMimeType(MimeTypeEnum.JSON);
+
+        String disclosures = "~WyIxNl9tQWQwR2l3YVpva1UyNl8waTBoIiwiREUiXQ~WyI0ZHJmZVR" +
+                "0U1VLM2FZXy1QRjEyZ2NYIiwibmF0aW9uYWxpdGllcyIsCiAgICBbCiAgICAgICAgeyAiL" +
+                "i4uIjogIlBtbmxyUmpoTGN3Zjh6VERkSzE1SFZHd0h0UFlqZGR2RDM2MldqQkx3cm8iIH0" +
+                "sCiAgICAgICAgeyAiLi4uIjogInI4MjNIRk42QmFfbHBTQU5ZdFhxcUNCQUgtVHNRbEl6Z" +
+                "k9LMGxSQUZMQ00iIH0sCiAgICAgICAgeyAiLi4uIjogIm5QNUdZandoRm02RVNsQWVDNE5" +
+                "DYUlsaVc0dHowaFRyVWVvSkIzbGI1VEEiIH0KICAgIF0KXQ~WyJmbjlmTjByRC1mRnMy" +
+                "bjMwM1pJLTBjIiwiRlIiXQ~WyJZSUtlc3FPa1hYTnpNUXRzWF8tX2x3IiwiVUsiXQ~";
+        disclosuresDocument = new InMemoryDocument(disclosures.getBytes());
     }
 
     @Override
@@ -69,8 +72,8 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             Utils.write(DSSUtils.toByteArray(signedDocument), baos);
-            baos.write('~');
-            return new InMemoryDocument(baos.toByteArray(), "simple-sd-jwt.jwt");
+            Utils.write(DSSUtils.toByteArray(disclosuresDocument), baos);
+            return new InMemoryDocument(baos.toByteArray(), "sd-jwt.jwt");
 
         } catch (Exception e) {
             fail(e);
@@ -83,11 +86,6 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
         return validator;
-    }
-
-    @Override
-    protected boolean disclosuresPresent() {
-        return false;
     }
 
     @Override

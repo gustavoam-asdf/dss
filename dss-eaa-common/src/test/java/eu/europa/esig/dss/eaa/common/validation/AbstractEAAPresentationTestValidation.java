@@ -4,6 +4,8 @@ import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -74,6 +76,26 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
         assertEquals(getEAAPresentationType(), eaaPresentation.getType());
+
+        verifyEAAPresentationDigestMatchers(diagnosticData);
+    }
+
+    protected void verifyEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
+        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+            for (XmlDigestMatcher digestMatcher : eaaPresentation.getDigestMatchers()) {
+                if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
+                    assertFalse(digestMatcher.isDataFound());
+                    assertFalse(digestMatcher.isDataIntact());
+                } else {
+                    assertTrue(DigestMatcherType.EAA_DISCLOSURE == digestMatcher.getType() || DigestMatcherType.EAA_NESTED_DISCLOSURE == digestMatcher.getType());
+                    assertTrue(digestMatcher.isDataFound());
+                    assertTrue(digestMatcher.isDataIntact());
+                    assertNotNull(digestMatcher.getClaim());
+                    assertNotNull(digestMatcher.getClaim().getName());
+                    assertNotNull(digestMatcher.getClaim().getValue());
+                }
+            }
+        }
     }
 
     protected int expectedSignaturesCount() {
@@ -82,6 +104,10 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected boolean disclosuresPresent() {
         return true;
+    }
+
+    protected boolean orphanSelectivelyDisclosableClaimsPresent() {
+        return false;
     }
 
     protected boolean keyBindingPresent() {

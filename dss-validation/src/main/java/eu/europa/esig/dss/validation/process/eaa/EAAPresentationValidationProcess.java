@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.validation.process.eaa;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -8,8 +9,10 @@ import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.Context;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
+import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.Chain;
@@ -18,6 +21,12 @@ import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.bbb.aov.AlgorithmObsolescenceValidation;
 import eu.europa.esig.dss.validation.process.bbb.aov.EAAPresentationAlgorithmObsolescenceValidation;
 import eu.europa.esig.dss.validation.process.bbb.aov.checks.AlgorithmObsolescenceValidationCheck;
+import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataExistenceCheck;
+import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataIntactCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustiveCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignaturePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignatureValidationResultCheck;
 import eu.europa.esig.dss.validation.process.qualification.signature.checks.SignatureValidationResultCheck;
 
@@ -86,22 +95,15 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
     @Override
     protected void initChain() {
 
-        ChainItem<XmlValidationProcessEAAPresentation> item = null;
-
         // Algorithm Obsolescence Validation to be included
-        XmlAOV xmlAOV = null; // TODO : include signatures validation ?
+        XmlAOV xmlAOV = null;
 
         // 1. Verify electronic signatures
 
+        ChainItem<XmlValidationProcessEAAPresentation> item = firstItem = signatureUnicity();
+
         for (SignatureWrapper signatureWrapper : eaaPresentation.getEAAPresentationSignatures()) {
-
-            ChainItem<XmlValidationProcessEAAPresentation> signatureValidationConclusive = signatureValidationConclusive(signatureWrapper);
-            if (item == null) {
-                firstItem = item = signatureValidationConclusive;
-            } else {
-                item = item.setNextItem(signatureValidationConclusive);
-            }
-
+            item = item.setNextItem(signatureValidationConclusive(signatureWrapper));
         }
 
         if (item == null) {
@@ -114,14 +116,27 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
 
         if (Utils.isCollectionNotEmpty(digestMatchers)) {
 
+            item = item.setNextItem(disclosurePresent());
+
             for (XmlDigestMatcher digestMatcher : digestMatchers) {
-                // TODO : add digest matchers checks
+
+                if (DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM != digestMatcher.getType()) {
+
+                    ChainItem<XmlValidationProcessEAAPresentation> referenceDataFound = referenceDataFound(digestMatcher);
+
+                    item = item.setNextItem(referenceDataFound);
+
+                    if (digestMatcher.isDataFound()) {
+                        item = item.setNextItem(referenceDataIntact(digestMatcher));
+                    }
+
+                }
+
             }
 
-        }
+            item = item.setNextItem(disclosureListExhaustive());
 
-        // 2b. Validate cryptographic constraints of DigestMatchers
-        if (Utils.isCollectionNotEmpty(digestMatchers)) {
+            // 2b. Validate cryptographic constraints of DigestMatchers
             AlgorithmObsolescenceValidation<?> algorithmObsolescenceValidation =
                     new EAAPresentationAlgorithmObsolescenceValidation(i18nProvider, eaaPresentation, currentTime, policy);
             XmlAOV erAOV = algorithmObsolescenceValidation.execute();
@@ -129,9 +144,13 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
             item = item.setNextItem(algorithmsObsolescenceValidation(erAOV, currentTime));
 
             xmlAOV = erAOV;
+
         }
 
         // 3. Verify Key Binding signature
+
+        item = item.setNextItem(keyBindingSignaturePresent());
+
         if (eaaPresentation.getKeyBindingSignature() != null) {
             item = item.setNextItem(keyBindingSignatureValidationConclusive(eaaPresentation.getKeyBindingSignature()));
         }
@@ -144,20 +163,59 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
 
     }
 
+    private ChainItem<XmlValidationProcessEAAPresentation> signatureUnicity() {
+        LevelRule constraint = policy.getEAAPresentationEAASignatureUnicityConstraint();
+        return new EAASignatureUnicityCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
     private ChainItem<XmlValidationProcessEAAPresentation> signatureValidationConclusive(SignatureWrapper signatureWrapper) {
+        LevelRule constraint = policy.getEAAPresentationEAASignatureValidConstraint();
+        return new SignatureValidationResultCheck<>(i18nProvider, result, getSignatureBasicProcessConclusion(signatureWrapper), constraint);
+    }
+
+    private XmlConclusion getSignatureBasicProcessConclusion(SignatureWrapper signatureWrapper) {
         XmlSignature xmlSignature = xmlSignatures.get(signatureWrapper.getId());
-        return new SignatureValidationResultCheck<>(i18nProvider, result,
-                xmlSignature.getValidationProcessBasicSignature().getConclusion(), getFailLevelRule());
+        if (xmlSignature == null) {
+            throw new IllegalStateException(String.format("Invalid state! No basic signature validation process " +
+                    "found for the signature with Id '%s'!", signatureWrapper.getId()));
+        }
+        return xmlSignature.getValidationProcessBasicSignature().getConclusion();
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> disclosurePresent() {
+        LevelRule constraint = policy.getEAAPresentationDisclosurePresentConstraint();
+        return new DisclosurePresentCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> referenceDataFound(XmlDigestMatcher digestMatcher) {
+        LevelRule constraint = policy.getEAAPresentationDisclosureFoundConstraint();
+        return new ReferenceDataExistenceCheck<>(i18nProvider, result, digestMatcher, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> referenceDataIntact(XmlDigestMatcher digestMatcher) {
+        LevelRule constraint = policy.getEAAPresentationDisclosureIntactConstraint();
+        return new ReferenceDataIntactCheck<>(i18nProvider, result, digestMatcher, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> disclosureListExhaustive() {
+        LevelRule constraint = policy.getEAAPresentationDisclosureListExhaustiveConstraint();
+        return new DisclosureListExhaustiveCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> keyBindingSignaturePresent() {
+        LevelRule constraint = policy.getEAAPresentationKeyBindingSignaturePresentConstraint();
+        return new KeyBindingSignaturePresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> keyBindingSignatureValidationConclusive(SignatureWrapper signatureWrapper) {
+        LevelRule constraint = policy.getEAAPresentationKeyBindingSignatureValidConstraint();
         XmlSignature xmlSignature = xmlSignatures.get(signatureWrapper.getId());
         return new KeyBindingSignatureValidationResultCheck(i18nProvider, result,
-                xmlSignature.getValidationProcessBasicSignature().getConclusion(), getFailLevelRule());
+                xmlSignature.getValidationProcessBasicSignature().getConclusion(), constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> algorithmsObsolescenceValidation(XmlAOV aovResult, Date lowestPOETime) {
-        MessageTag position = ValidationProcessUtils.getCryptoPosition(Context.ELECTRONIC_ATTESTATION_OF_ATTRIBUTES);
+        MessageTag position = ValidationProcessUtils.getCryptoPosition(Context.EAA_PRESENTATION);
         return new AlgorithmObsolescenceValidationCheck<>(i18nProvider, result, aovResult, lowestPOETime, position, eaaPresentation.getId());
     }
 

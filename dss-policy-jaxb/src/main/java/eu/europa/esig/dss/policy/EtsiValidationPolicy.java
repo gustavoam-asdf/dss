@@ -37,6 +37,7 @@ import eu.europa.esig.dss.policy.jaxb.CertificateValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.policy.jaxb.ContainerConstraints;
 import eu.europa.esig.dss.policy.jaxb.CryptographicConstraint;
+import eu.europa.esig.dss.policy.jaxb.EAAPresentationConstraints;
 import eu.europa.esig.dss.policy.jaxb.EIDAS;
 import eu.europa.esig.dss.policy.jaxb.EvidenceRecordConstraints;
 import eu.europa.esig.dss.policy.jaxb.IntValueConstraint;
@@ -1612,6 +1613,17 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return toCryptographicSuite(evidenceRecordCryptographic);
 	}
 
+	@Override
+	public CryptographicSuite getEAAPresentationCryptographicConstraint() {
+		CryptographicConstraint eaaPresentationCryptographic = new CryptographicConstraint();
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null && eaaPresentationConstraints.getCryptographic() != null) {
+			eaaPresentationCryptographic = eaaPresentationConstraints.getCryptographic();
+		}
+		initializeCryptographicSuite(eaaPresentationCryptographic, getCryptographic());
+		return toCryptographicSuite(eaaPresentationCryptographic);
+	}
+
 	private CertificateConstraints getSigningCertificateByContext(Context context) {
 		return getCertificateConstraints(context, SubContext.SIGNING_CERT);
 	}
@@ -1824,6 +1836,78 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelRule getEAAPresentationEAASignatureUnicityConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getEAASignatureUnicity());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationEAASignatureValidConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getEAASignatureValid());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationDisclosurePresentConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getDisclosurePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationDisclosureFoundConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getDisclosureFound());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationDisclosureIntactConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getDisclosureIntact());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationDisclosureListExhaustiveConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getDisclosureListExhaustive());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getKeyBindingSignaturePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAPresentationKeyBindingSignatureValidConstraint() {
+		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+		if (eaaPresentationConstraints != null) {
+			return toLevelRule(eaaPresentationConstraints.getKeyBindingSignatureValid());
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isEIDASConstraintPresent() {
 		return getEIDASConstraints() != null;
 	}
@@ -1971,6 +2055,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	 */
 	public EvidenceRecordConstraints getEvidenceRecordConstraints() {
 		return policy.getEvidenceRecord();
+	}
+
+	/**
+	 * Returns the constraint used for EAA Presentation validation
+	 *
+	 * @return {@code EAAPresentationConstraints}
+	 */
+	public EAAPresentationConstraints getEAAPresentationConstraints() {
+		return policy.getEAAPresentation();
 	}
 
 	/**

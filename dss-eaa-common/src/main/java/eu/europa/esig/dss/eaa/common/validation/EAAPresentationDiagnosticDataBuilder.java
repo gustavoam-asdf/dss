@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
@@ -7,6 +8,8 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
@@ -117,8 +120,45 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private List<XmlDigestMatcher> buildXmlDigestMatchers(List<DisclosureValidation> disclosureValidations) {
-        // TODO : to be implemented
-        return Collections.emptyList();
+        if (Utils.isCollectionEmpty(disclosureValidations)) {
+            return Collections.emptyList();
+        }
+        final List<XmlDigestMatcher> result = new ArrayList<>();
+        for (DisclosureValidation validation : disclosureValidations) {
+            buildXmlDigestMatcherRecursively(validation, result);
+        }
+        return result;
+    }
+
+    private void buildXmlDigestMatcherRecursively(DisclosureValidation disclosureValidation, List<XmlDigestMatcher> digestMatchersList) {
+        XmlDigestMatcher ref = new XmlDigestMatcher();
+        ref.setType(disclosureValidation.getType());
+        if (disclosureValidation.getName() != null || disclosureValidation.getValue() != null) {
+            XmlClaim xmlClaim = new XmlClaim();
+            xmlClaim.setName(disclosureValidation.getName());
+            if (disclosureValidation.getValue() != null) {
+                xmlClaim.setValue(disclosureValidation.getValue().toString());
+            }
+            ref.setClaim(xmlClaim);
+        }
+        Digest digest = disclosureValidation.getDigest();
+        if (digest != null) {
+            ref.setDigestValue(digest.getValue());
+            ref.setDigestMethod(digest.getAlgorithm());
+        }
+        ref.setDataFound(disclosureValidation.isFound());
+        ref.setDataIntact(disclosureValidation.isIntact());
+
+        digestMatchersList.add(ref);
+
+        if (Utils.isCollectionNotEmpty(disclosureValidation.getDependentValidations())) {
+            for (ReferenceValidation refValidation : disclosureValidation.getDependentValidations()) {
+                if (!(refValidation instanceof DisclosureValidation)) {
+                    throw new IllegalStateException("DisclosureValidation's dependent validations shall be of DisclosureValidation type!");
+                }
+                buildXmlDigestMatcherRecursively((DisclosureValidation) refValidation, digestMatchersList);
+            }
+        }
     }
 
     private XmlEAAPayload getXmlEAAPayload(EAAPayload eaaPayload) {

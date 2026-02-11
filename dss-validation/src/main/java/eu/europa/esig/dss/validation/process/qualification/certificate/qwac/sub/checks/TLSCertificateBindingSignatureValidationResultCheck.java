@@ -22,6 +22,8 @@ package eu.europa.esig.dss.validation.process.qualification.certificate.qwac.sub
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationQWACProcess;
+import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
@@ -55,6 +57,16 @@ public class TLSCertificateBindingSignatureValidationResultCheck extends Signatu
     @Override
     protected MessageTag getErrorMessageTag() {
         return MessageTag.TLS_CERT_BINDING_SIG_VALID_ANS;
+    }
+
+    @Override
+    protected Indication getFailedIndicationForConclusion() {
+        return Indication.FAILED;
+    }
+
+    @Override
+    protected SubIndication getFailedSubIndicationForConclusion() {
+        return null;
     }
 
 }

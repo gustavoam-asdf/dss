@@ -1,43 +1,26 @@
 package eu.europa.esig.dss.model.eaa;
 
-import eu.europa.esig.dss.enumerations.DigestMatcherType;
-import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.ReferenceValidation;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a validation result of a selectable disclosure provided
  * with presentation of Electronic Attestation of Attributes
  *
  */
-public class DisclosureValidation implements Serializable {
+public class DisclosureValidation extends ReferenceValidation {
 
     private static final long serialVersionUID = -191049727174569696L;
 
-    /** Type of the selectively disclosable claim */
-    private DigestMatcherType type;
-
-    /** Defines whether the corr */
-    private boolean found;
-
-    /** The pointed reference is intact */
-    private boolean intact;
-
-    /** The digest value embedded in reference element */
-    private Digest digest;
-
-    /** Salt value of provided disclosures */
-    private byte[] salt;
+    /** Disclosure object, when applicable */
+    private Disclosure disclosure;
 
     /** Name of the disclosure */
     private String name;
 
     /** Value of the disclosure */
-    private Object value;
-
-    /** Nested disclosures, when applicable */
-    private List<DisclosureValidation> nestedDisclosures;
+    private ClaimValue value;
 
     /**
      * Default constructor
@@ -47,93 +30,21 @@ public class DisclosureValidation implements Serializable {
     }
 
     /**
-     * Gets type of the selectively disclosable claim
-     *
-     * @return {@link DigestMatcherType}
+     * Constructor with a provided disclosure
      */
-    public DigestMatcherType getType() {
-        return type;
+    public DisclosureValidation(Disclosure disclosure) {
+        this.disclosure = disclosure;
+        this.name = disclosure.getClaimName();
+        this.value = disclosure.getClaimValue();
     }
 
     /**
-     * Sets type of the selectively disclosable claim
+     * Gets disclosure when applicable
      *
-     * @param type {@link DigestMatcherType}
+     * @return {@link Disclosure}
      */
-    public void setType(DigestMatcherType type) {
-        this.type = type;
-    }
-
-    /**
-     * Gets whether the matching hash or disclosure has been found
-     *
-     * @return TRUE if a match was found, FALSE otherwise
-     */
-    public boolean isFound() {
-        return found;
-    }
-
-    /**
-     * Sets whether the matching hash or disclosure has been found
-     *
-     * @param found whether the matching hash or disclosure has been found
-     */
-    public void setFound(boolean found) {
-        this.found = found;
-    }
-
-    /**
-     * Gets whether the matching disclosure is intact
-     *
-     * @return TRUE if the matching disclosure matches the hash value, FALSE otherwise
-     */
-    public boolean isIntact() {
-        return intact;
-    }
-
-    /**
-     * Sets whether the matching disclosure is intact
-     *
-     * @param intact whether the matching disclosure is intact
-     */
-    public void setIntact(boolean intact) {
-        this.intact = intact;
-    }
-
-    /**
-     * Gets the selectively disclosable claim digest
-     *
-     * @return {@link Digest}
-     */
-    public Digest getDigest() {
-        return digest;
-    }
-
-    /**
-     * Sets the selectively disclosable claim digest
-     *
-     * @param digest {@link Digest}
-     */
-    public void setDigest(Digest digest) {
-        this.digest = digest;
-    }
-
-    /**
-     * Gets the salt incorporated within the provided disclosure, when applicable
-     *
-     * @return byte array representing salt value
-     */
-    public byte[] getSalt() {
-        return salt;
-    }
-
-    /**
-     * Sets the salt incorporated within the provided disclosure, when applicable
-     *
-     * @param salt byte array representing salt value
-     */
-    public void setSalt(byte[] salt) {
-        this.salt = salt;
+    public Disclosure getDisclosure() {
+        return disclosure;
     }
 
     /**
@@ -155,39 +66,40 @@ public class DisclosureValidation implements Serializable {
     }
 
     /**
-     * Gets the provided disclosure value
+     * Gets the provided disclosure claim value
      *
-     * @return {@link Object}
+     * @return {@link ClaimValue}
      */
-    public Object getValue() {
+    public ClaimValue getValue() {
         return value;
     }
 
     /**
-     * Sets the provided disclosure value
+     * Sets the provided disclosure claim value
      *
-     * @param value {@link Object}
+     * @param value {@link ClaimValue}
      */
-    public void setValue(Object value) {
+    public void setValue(ClaimValue value) {
         this.value = value;
     }
 
-    /**
-     * Gets a list of nested disclosures' validations
-     *
-     * @return a list of {@link DisclosureValidation}s
-     */
-    public List<DisclosureValidation> getNestedDisclosures() {
-        return nestedDisclosures;
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DisclosureValidation that = (DisclosureValidation) object;
+        return Objects.equals(disclosure, that.disclosure)
+                && Objects.equals(name, that.name)
+                && Objects.equals(value, that.value);
     }
 
-    /**
-     * Sets a list of nested disclosures' validations
-     *
-     * @param nestedDisclosures a list of {@link DisclosureValidation}s
-     */
-    public void setNestedDisclosures(List<DisclosureValidation> nestedDisclosures) {
-        this.nestedDisclosures = nestedDisclosures;
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(disclosure);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(value);
+        return result;
     }
 
 }

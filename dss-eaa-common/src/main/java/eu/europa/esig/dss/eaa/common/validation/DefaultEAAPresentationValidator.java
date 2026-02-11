@@ -8,6 +8,7 @@ import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
 import eu.europa.esig.dss.validation.executor.DocumentProcessExecutor;
 import eu.europa.esig.dss.validation.executor.eaa.EAAPresentationProcessExecutor;
+import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 import java.util.Collections;
@@ -23,6 +24,9 @@ import java.util.ServiceLoader;
  *
  */
 public abstract class DefaultEAAPresentationValidator extends SignedDocumentValidator implements EAAPresentationValidator {
+
+    /** The path for default EAA Presentation policy */
+    private static final String EAA_PRESENTATION_POLICY_LOCATION = "/policy/eaa-constraint.xml";
 
     /**
      * Empty constructor
@@ -64,6 +68,12 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     @Override
     public DocumentProcessExecutor getDefaultProcessExecutor() {
         return new EAAPresentationProcessExecutor();
+    }
+
+    @Override
+    protected ValidationPolicyLoader fromDefaultValidationPolicyLoader() {
+        return ValidationPolicyLoader.fromValidationPolicy(
+                DefaultEAAPresentationValidator.class.getResourceAsStream(EAA_PRESENTATION_POLICY_LOCATION));
     }
 
     @Override

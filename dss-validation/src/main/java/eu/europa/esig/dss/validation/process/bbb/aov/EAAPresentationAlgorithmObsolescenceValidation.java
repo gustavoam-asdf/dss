@@ -26,7 +26,7 @@ public class EAAPresentationAlgorithmObsolescenceValidation extends DigestAlgori
      */
     public EAAPresentationAlgorithmObsolescenceValidation(I18nProvider i18nProvider, EAAPresentationWrapper token,
                                                           Date validationDate, ValidationPolicy validationPolicy) {
-        super(i18nProvider, token, Context.ELECTRONIC_ATTESTATION_OF_ATTRIBUTES, validationDate, validationPolicy);
+        super(i18nProvider, token, Context.EAA_PRESENTATION, validationDate, validationPolicy);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class EAAPresentationAlgorithmObsolescenceValidation extends DigestAlgori
 
     @Override
     protected CryptographicSuite getCryptographicSuite() {
-        return validationPolicy.getEvidenceRecordCryptographicConstraint();
+        return validationPolicy.getEAAPresentationCryptographicConstraint();
     }
 
 }
