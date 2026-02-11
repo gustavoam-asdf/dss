@@ -836,24 +836,6 @@ public interface ValidationPolicy {
 	MultiValuesRule getCertificateQcIdentificationMethodConstraint(Context context, SubContext subContext);
 
 	/**
-	 * Indicates the verification method used for PID provider sign/seal certificate
-	 *
-	 * @param context {@link Context}
-	 * @param subContext {@link SubContext}
-	 * @return {@code MultiValuesRule} the verification method used PID provider sign/seal certificate
-	 */
-	LevelRule getCertificateForPIDConstraint(Context context, SubContext subContext);
-
-	/**
-	 * Indicates the verification method used for Wallet provider sign/seal certificate
-	 *
-	 * @param context {@link Context}
-	 * @param subContext {@link SubContext}
-	 * @return {@code MultiValuesRule} the verification method used Wallet provider sign/seal certificate
-	 */
-	LevelRule getCertificateForWalletConstraint(Context context, SubContext subContext);
-
-	/**
 	 * Indicates the verification method used for country of legislation of the QcPSB QcStatement
 	 *
 	 * @param context {@link Context}

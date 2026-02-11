@@ -1106,16 +1106,6 @@
 					<xsd:documentation>Checks the identification method used for the certificate issuance, according to eIDAS Article 24</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="CertForPID" type="LevelConstraint" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>Checks if the certificate is for PID provider sign/seal certificate</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="CertForWallet" type="LevelConstraint" minOccurs="0">
-				<xsd:annotation>
-					<xsd:documentation>Checks if the certificate is for Wallet provider sign/seal certificate</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
 			<xsd:element name="QcPSBCountryOfLegislation" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the certificate's QcPSB legislation country is in the list of acceptable values. The values are represented by two-letter ISO 3166 alpha-2 country codes or 'EU'.</xsd:documentation>

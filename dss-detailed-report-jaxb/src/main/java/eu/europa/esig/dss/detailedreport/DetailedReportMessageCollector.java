@@ -559,9 +559,6 @@ public class DetailedReportMessageCollector {
 		if (qwacProcess != null) {
 			return getMessages(type, qwacProcess);
 		} else {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("The QWAC validation is not performed!");
-			}
 			return Collections.emptyList();
 		}
 	}

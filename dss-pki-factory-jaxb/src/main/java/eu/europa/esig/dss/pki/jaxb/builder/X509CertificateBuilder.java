@@ -28,6 +28,7 @@ import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pki.jaxb.XmlGeneralName;
+import eu.europa.esig.dss.pki.jaxb.XmlQcPSB;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.OID;
@@ -39,6 +40,7 @@ import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERPrintableString;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AccessDescription;
@@ -148,6 +150,9 @@ public class X509CertificateBuilder {
 
     /** List of QcQSCDlegislations */
     private List<String> qcQSCDlegislations;
+
+    /** Defined a certificate for Pub-EAA */
+    private XmlQcPSB qcPSB;
 
     /** Whether the ocsp-no-check extension should be present */
     private boolean ocspNoCheck;
@@ -353,6 +358,17 @@ public class X509CertificateBuilder {
     }
 
     /**
+     * Sets definition for a Public Sector Body certificate
+     *
+     * @param qcPSB {@link XmlQcPSB}
+     * @return {@link X509CertificateBuilder} this
+     */
+    public X509CertificateBuilder qcPSB(XmlQcPSB qcPSB) {
+        this.qcPSB = qcPSB;
+        return this;
+    }
+
+    /**
      * Sets whether the certificate is a CA certificate
      *
      * @param ca whether the certificate is a CA certificate
@@ -462,7 +478,7 @@ public class X509CertificateBuilder {
             addSubjectAlternativeNames(certBuilder);
         }
 
-        if (qcStatements != null || qcTypes != null || qcCClegislations != null || qcQSCDlegislations != null) {
+        if (qcStatements != null || qcTypes != null || qcCClegislations != null || qcQSCDlegislations != null || qcPSB != null) {
             addQCStatementIds(certBuilder);
         }
 
@@ -548,7 +564,7 @@ public class X509CertificateBuilder {
 
     private void addQCStatementIds(X509v3CertificateBuilder certBuilder) throws CertIOException {
         if (Utils.isCollectionNotEmpty(qcStatements) || Utils.isCollectionNotEmpty(qcTypes)
-                || Utils.isCollectionNotEmpty(qcCClegislations) || Utils.isCollectionNotEmpty(qcQSCDlegislations)) {
+                || Utils.isCollectionNotEmpty(qcCClegislations) || Utils.isCollectionNotEmpty(qcQSCDlegislations) || qcPSB != null) {
             certBuilder.addExtension(Extension.qCStatements, false, getQCStatementsIds());
         }
     }
@@ -595,6 +611,17 @@ public class X509CertificateBuilder {
 
             QCStatement qcQSCDlegislation = new QCStatement(OID.id_etsi_qcs_QcQSCDlegislation, new DERSequence(qscdlegislationVector));
             vector.add(qcQSCDlegislation);
+        }
+
+        // QC PSB
+        if (qcPSB != null) {
+            ASN1EncodableVector qcPSBVector = new ASN1EncodableVector();
+            qcPSBVector.add(new DERPrintableString(qcPSB.getCountryName()));
+            qcPSBVector.add(new DERUTF8String(qcPSB.getAuthSourceIdentification()));
+            qcPSBVector.add(new DERUTF8String(qcPSB.getLegislationIdentification()));
+
+            QCStatement qcPSBQcStatement = new QCStatement(OID.id_etsi_qcs_QcPSB, new DERSequence(qcPSBVector));
+            vector.add(qcPSBQcStatement);
         }
 
         return new DERSequence(vector);

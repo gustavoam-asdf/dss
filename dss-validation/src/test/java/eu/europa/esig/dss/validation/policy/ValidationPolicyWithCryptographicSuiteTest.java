@@ -302,8 +302,6 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertNull(policy.getCertificatePS2DQcCompetentAuthorityIdConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificateQcQSCDLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificateQcIdentificationMethodConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
-        assertNull(policy.getCertificateForPIDConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
-        assertNull(policy.getCertificateForWalletConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificateQcPSBCountryOfLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificateQcPSBAuthSourceIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificateQcPSBLegislationIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
@@ -353,8 +351,6 @@ class ValidationPolicyWithCryptographicSuiteTest {
         certificateConstraints.setQcSSCD(level);
         certificateConstraints.setIssuedToNaturalPerson(level);
         certificateConstraints.setIssuedToLegalPerson(level);
-        certificateConstraints.setCertForPID(level);
-        certificateConstraints.setCertForWallet(level);
 
         CertificateValuesConstraint certificateLevel = new CertificateValuesConstraint();
         certificateLevel.setLevel(Level.FAIL);
@@ -460,8 +456,6 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertEquals(Level.FAIL, policy.getCertificateSelfSignedConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getLevel());
         assertEquals(Level.FAIL, policy.getCertificateIssuedToNaturalPersonConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getLevel());
         assertEquals(Level.FAIL, policy.getCertificateIssuedToLegalPersonConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getLevel());
-        assertEquals(Level.FAIL, policy.getCertificateForPIDConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getLevel());
-        assertEquals(Level.FAIL, policy.getCertificateForWalletConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getLevel());
 
 
         // --- Revocation constraints ---

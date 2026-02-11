@@ -1209,24 +1209,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getCertificateForPIDConstraint(Context context, SubContext subContext) {
-		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
-		if (certificateConstraints != null) {
-			return toLevelRule(certificateConstraints.getCertForPID());
-		}
-		return null;
-	}
-
-	@Override
-	public LevelRule getCertificateForWalletConstraint(Context context, SubContext subContext) {
-		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
-		if (certificateConstraints != null) {
-			return toLevelRule(certificateConstraints.getCertForWallet());
-		}
-		return null;
-	}
-
-	@Override
 	public MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext) {
 		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
 		if (certificateConstraints != null) {
