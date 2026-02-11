@@ -131,7 +131,11 @@
         <qcTypes>
             <qcType>0.4.0.1862.1.6.1</qcType>
         </qcTypes>
-        <!-- TODO : add QcPSB -->
+        <qcPSB>
+            <countryName>EU</countryName>
+            <authSourceIdentification>NTP-12345</authSourceIdentification>
+            <legislationIdentification>eIDAS</legislationIdentification>
+        </qcPSB>
         <crl>Test-CA-PubEAA</crl>
         <ocsp>Test-CA-PubEAA</ocsp>
         <caIssuers>Test-CA-PubEAA</caIssuers>

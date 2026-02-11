@@ -50,7 +50,11 @@ public class SDJWTPayload implements EAAPayload {
 
     @Override
     public String getCategory() {
-        return DSSJsonUtils.getAsString(payloadMap, SDJWTConstants.CATEGORY);
+        String category = DSSJsonUtils.getAsString(payloadMap, SDJWTConstants.CATEGORY);
+        if (Utils.isStringNotEmpty(category)) {
+            return category;
+        }
+        return null;
     }
 
     @Override
@@ -101,7 +105,7 @@ public class SDJWTPayload implements EAAPayload {
     @Override
     public DigestAlgorithm getSelectiveDisclosableClaimDigestAlgorithm() {
         String digestAlgoName = DSSJsonUtils.getAsString(payloadMap, SDJWTConstants.SD_ALG);
-        if (digestAlgoName != null) {
+        if (Utils.isStringNotEmpty(digestAlgoName)) {
             try {
                 return DigestAlgorithm.forSdJwtId(digestAlgoName);
             } catch (IllegalArgumentException e) {
