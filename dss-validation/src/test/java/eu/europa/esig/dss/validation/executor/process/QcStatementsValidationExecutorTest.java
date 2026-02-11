@@ -36,6 +36,7 @@ import eu.europa.esig.dss.enumerations.CertificateExtensionEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.enumerations.QCIdentMethodEnum;
+import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.policy.EtsiValidationPolicy;
@@ -848,9 +849,10 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
                 .getBasicSignatureConstraints().getSigningCertificate();
 
-        LevelConstraint constraint = new LevelConstraint();
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.setLevel(Level.FAIL);
-        certificateConstraints.setCertForPID(constraint);
+        constraint.getId().add(QCTypeEnum.QCT_PID.getOid());
+        certificateConstraints.setQcType(constraint);
 
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(xmlDiagnosticData);
@@ -862,7 +864,7 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
         assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
         assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
-                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCPIDPC_ANS)));
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCICQCTA_ANS)));
 
         XmlOID xmlOID = new XmlOID();
         xmlOID.setValue("0.4.0.194126.1.1");
@@ -889,9 +891,10 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         CertificateConstraints certificateConstraints = validationPolicy.getSignatureConstraints()
                 .getBasicSignatureConstraints().getSigningCertificate();
 
-        LevelConstraint constraint = new LevelConstraint();
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.setLevel(Level.FAIL);
-        certificateConstraints.setCertForWallet(constraint);
+        constraint.getId().add(QCTypeEnum.QCT_WAL.getOid());
+        certificateConstraints.setQcType(constraint);
 
         DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
         executor.setDiagnosticData(xmlDiagnosticData);
@@ -903,7 +906,7 @@ class QcStatementsValidationExecutorTest extends AbstractProcessExecutorTest {
         assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
         assertEquals(SubIndication.CHAIN_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
         assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
-                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCWPC_ANS)));
+                i18nProvider.getMessage(MessageTag.BBB_XCV_CMDCICQCTA_ANS)));
 
         XmlOID xmlOID = new XmlOID();
         xmlOID.setValue("0.4.0.194126.1.2");

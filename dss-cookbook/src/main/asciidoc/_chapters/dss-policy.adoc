@@ -1744,6 +1744,54 @@ Default: not executed
 </SigningCertificate>
 ----
 
+* `QcPSBCountryOfLegislation` - this constraint is used to check whether the value of the 'countryOfLegislation' field of certificate's QcPSB QcStatement corresponds to one of the defined values. If the certificate does not contain the QcPSB's with its 'countryOfLegislation' field having one of the defined values, the check will fail.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of QcPSBCountryOfLegislation usage (with WARN validation level)
+----
+<SigningCertificate>
+    ...
+    <QcPSBCountryOfLegislation Level="WARN">
+        <Id>EU</Id>
+    </QcPSBCountryOfLegislation>
+    ...
+</SigningCertificate>
+----
+
+* `QcPSBAuthSourceIdentification` - this constraint is used to check whether the value of the 'authSourceIdentification' field of certificate's QcPSB QcStatement corresponds to one of the defined values. If the certificate does not contain the QcPSB's with its 'authSourceIdentification' field having one of the defined values, the check will fail.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of QcPSBAuthSourceIdentification usage (with WARN validation level)
+----
+<SigningCertificate>
+    ...
+    <QcPSBAuthSourceIdentification Level="WARN">
+        <Id>ASI-12345</Id>
+    </QcPSBAuthSourceIdentification>
+    ...
+</SigningCertificate>
+----
+
+* `QcPSBLegislationIdentification` - this constraint is used to check whether the value of the 'legislationIdentification' field of certificate's QcPSB QcStatement corresponds to one of the defined values. If the certificate does not contain the QcPSB's with its 'legislationIdentification' field having one of the defined values, the check will fail.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of QcPSBLegislationIdentification usage (with WARN validation level)
+----
+<SigningCertificate>
+    ...
+    <QcPSBLegislationIdentification Level="WARN">
+        <Id>eIDAS</Id>
+    </QcPSBLegislationIdentification>
+    ...
+</SigningCertificate>
+----
+
 * `UsePseudonym` - this constraint is used to check whether the certificate's subject distinguished name contains the Pseudonym attribute. If the certificate's subject distinguished name contains Pseudonym attribute, the check will fail.
 
 Default: `INFORM`
