@@ -622,7 +622,9 @@ public class DSSJsonUtils {
 		}
 		Object etsiU = unprotected.get(JAdESHeaderParameterNames.ETSI_U);
 		if (!(etsiU instanceof List)) {
-			LOG.warn("Unable to extract 'etsiU' header : the obtained entry is not an array!");
+			if (etsiU != null) {
+				LOG.warn("Unable to extract 'etsiU' header : the obtained entry is not an array!");
+			}
 			return Collections.emptyList();
 		}
 		return (List<Object>) etsiU;

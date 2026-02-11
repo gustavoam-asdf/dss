@@ -23,7 +23,10 @@ public class SDJWTEAAPresentationValidatorFactory implements EAAPresentationVali
             return true;
         }
 
-        // TODO : add JSON serialization validator
+        SDJWTJsonSerializationEAAPresentationValidator jsonSerializationValidator = new SDJWTJsonSerializationEAAPresentationValidator();
+        if (jsonSerializationValidator.isSupported(document)) {
+            return true;
+        }
 
         return false;
     }
@@ -35,7 +38,10 @@ public class SDJWTEAAPresentationValidatorFactory implements EAAPresentationVali
             return new SDJWTCompactEAAPresentationValidator(document);
         }
 
-        // TODO : add JSON serialization validator
+        SDJWTJsonSerializationEAAPresentationValidator jsonSerializationValidator = new SDJWTJsonSerializationEAAPresentationValidator();
+        if (jsonSerializationValidator.isSupported(document)) {
+            return new SDJWTJsonSerializationEAAPresentationValidator(document);
+        }
 
         throw new IllegalArgumentException("Not supported document");
     }
