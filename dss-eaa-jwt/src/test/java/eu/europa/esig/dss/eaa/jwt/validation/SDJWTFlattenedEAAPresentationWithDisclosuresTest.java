@@ -1,5 +1,8 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -15,12 +18,17 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAPresentationTestValidation {
 
@@ -72,6 +80,34 @@ class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAP
         jws.setUnprotected(header);
 
         return new JWSJsonSerializationGenerator(jsonSerializationObject, JWSSerializationType.FLATTENED_JSON_SERIALIZATION).generate();
+    }
+
+    @Override
+    protected void checkClaims(DiagnosticData diagnosticData) {
+        super.checkClaims(diagnosticData);
+
+        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
+        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
+        assertEquals("john_doe_42", eaaPresentation.getEAASubject());
+        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+
+        assertEquals("John", eaaPresentation.getUserFirstName());
+        assertEquals("Doe", eaaPresentation.getUserLastName());
+        assertEquals(DSSJsonUtils.getDate("1940-01-01T00:00:00Z"), eaaPresentation.getUserBirthdate());
+
+        assertNull(eaaPresentation.getUserEmail());
+        assertNull(eaaPresentation.getUserEmailVerified());
+        assertNull(eaaPresentation.getUserAddressCity());
+        assertNull(eaaPresentation.getUserAddressStateOrProvince());
+        assertNull(eaaPresentation.getUserAddressCountry());
+        assertNull(eaaPresentation.getUserStreetAddress());
+        assertNull(eaaPresentation.getUserPhoneNumber());
+        assertNull(eaaPresentation.getUserPhoneNumberVerified());
+        assertFalse(Utils.isCollectionNotEmpty(eaaPresentation.getUserNationalities()));
+
+        List<XmlDisclosableClaim> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        assertEquals(4, selectivelyDisclosableClaims.size());
     }
 
     @Override

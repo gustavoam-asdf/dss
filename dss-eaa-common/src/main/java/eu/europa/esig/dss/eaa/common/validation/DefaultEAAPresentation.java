@@ -7,7 +7,7 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
-import eu.europa.esig.dss.model.eaa.SelectivelyDisclosableClaim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Abstract implementation of an EAA Presentation
@@ -40,6 +42,9 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
 
     /** Payload of the EAA */
     private EAAPayload payload;
+
+    /** Payload of the EAA with disclosures */
+    private EAAPayload payloadWithDisclosures;
 
     /** The name of the EAA document */
     private String filename;
@@ -90,7 +95,7 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
      * @return a list of {@link DisclosureValidation}s
      */
     protected List<DisclosureValidation> validateDisclosures() {
-        List<SelectivelyDisclosableClaim> sdClaims = getPayload().getSelectiveDisclosableClaims();
+        List<ClaimBinaries> sdClaims = getPayload().getSelectiveDisclosableClaims();
         if (Utils.isCollectionEmpty(sdClaims)) {
             LOG.info("The EAA Presentation does not contain selectively disclosable claims.");
         }
@@ -122,60 +127,93 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
         return validations;
     }
 
-    private List<DisclosureValidation> validateDisclosuresRecursively(List<SelectivelyDisclosableClaim> sdClaims,
-                                                                      DigestAlgorithm digestAlgorithm, List<Disclosure> disclosures, DigestMatcherType disclosureType) {
+    private List<DisclosureValidation> validateDisclosuresRecursively(List<ClaimBinaries> sdClaims,
+            DigestAlgorithm digestAlgorithm, List<Disclosure> disclosures, DigestMatcherType disclosureType) {
+        if (Utils.isCollectionEmpty(sdClaims)) {
+            return Collections.emptyList();
+        }
+
         final List<DisclosureValidation> result = new ArrayList<>();
 
-        for (SelectivelyDisclosableClaim sdClaim : sdClaims) {
-            DisclosureValidation disclosureValidation;
-            Disclosure disclosure = getDisclosureForClaim(disclosures, digestAlgorithm, sdClaim);
-            if (disclosure != null) {
-                disclosureValidation = new DisclosureValidation(disclosure);
-                disclosureValidation.setType(disclosureType);
-                disclosureValidation.setDigest(new Digest(digestAlgorithm, sdClaim.getDigestValue()));
-                disclosureValidation.setFound(true);
-                disclosureValidation.setIntact(true);
+        boolean isNested = DigestMatcherType.EAA_NESTED_DISCLOSURE == disclosureType;
+        List<ClaimBinaries> directClaims = isNested ? sdClaims : sdClaims.stream().filter(c -> c.getName() == null).collect(Collectors.toList());
+        if (Utils.isCollectionNotEmpty(directClaims)) {
+            for (ClaimBinaries sdClaim : directClaims) {
+                DisclosureValidation disclosureValidation;
+                Disclosure disclosure = getDisclosureForClaim(disclosures, digestAlgorithm, sdClaim);
+                if (disclosure != null) {
+                    disclosureValidation = new DisclosureValidation(disclosure);
+                    disclosureValidation.setType(disclosureType);
+                    disclosureValidation.setDigest(new Digest(digestAlgorithm, sdClaim.getBinariesValue()));
+                    disclosureValidation.setFound(true);
+                    disclosureValidation.setIntact(true);
 
-                if (disclosure.getClaimName() == null) {
-                    if (sdClaim.getClaimName() != null) {
-                        disclosureValidation.setName(sdClaim.getClaimName());
+                    if (disclosure.getClaimName() == null) {
+                        if (sdClaim.getName() != null) {
+                            disclosureValidation.setName(sdClaim.getName());
 
-                    } else {
-                        LOG.warn("The disclosure does not contain a claim name, when matching a " +
-                                "selectively disclosable claim hash entry. The disclosure will be invalidated.");
+                        } else {
+                            LOG.warn("The disclosure does not contain a claim name, when matching a " +
+                                    "selectively disclosable claim hash entry. The disclosure will be invalidated.");
+                            disclosureValidation.setIntact(false);
+                        }
+
+                    } else if (sdClaim.getName() != null && !sdClaim.getName().equals(disclosure.getClaimName())) {
+                        LOG.warn("The matching disclosure's claim name '{}', does not correspond to the name of " +
+                                        "the selectively disclosable claim '{}'. The disclosure will be invalidated",
+                                disclosure.getClaimName(), sdClaim.getName());
                         disclosureValidation.setIntact(false);
+
                     }
 
-                } else if (sdClaim.getClaimName() != null && !sdClaim.getClaimName().equals(disclosure.getClaimName())) {
-                    LOG.warn("The matching disclosure's claim name '{}', does not correspond to the name of " +
-                                    "the selectively disclosable claim '{}'. The disclosure will be invalidated",
-                            disclosure.getClaimName(), sdClaim.getClaimName());
-                    disclosureValidation.setIntact(false);
+                    List<ClaimBinaries> nestedSDClaims = disclosure.getNestedSelectivelyDisclosableClaims();
+                    if (Utils.isCollectionNotEmpty(nestedSDClaims)) {
+                        List<DisclosureValidation> nestedDisclosuresValidations =
+                                validateDisclosuresRecursively(nestedSDClaims, digestAlgorithm, disclosures, DigestMatcherType.EAA_NESTED_DISCLOSURE);
+                        disclosureValidation.getDependentValidations().addAll(nestedDisclosuresValidations);
+                    }
 
+                } else {
+                    disclosureValidation = new DisclosureValidation();
+                    disclosureValidation.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
+                    disclosureValidation.setDigest(new Digest(digestAlgorithm, sdClaim.getBinariesValue()));
+                    disclosureValidation.setName(sdClaim.getName()); // can be null
                 }
-
-                List<SelectivelyDisclosableClaim> nestedSDClaims = disclosure.getNestedSelectivelyDisclosableClaims();
-                if (Utils.isCollectionNotEmpty(nestedSDClaims)) {
-                    List<DisclosureValidation> nestedDisclosuresValidations =
-                            validateDisclosuresRecursively(nestedSDClaims, digestAlgorithm, disclosures, DigestMatcherType.EAA_NESTED_DISCLOSURE);
-                    disclosureValidation.getDependentValidations().addAll(nestedDisclosuresValidations);
-                }
-
-            } else {
-                disclosureValidation = new DisclosureValidation();
-                disclosureValidation.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
-                disclosureValidation.setDigest(new Digest(digestAlgorithm, sdClaim.getDigestValue()));
-                disclosureValidation.setName(sdClaim.getClaimName()); // can be null
+                result.add(disclosureValidation);
             }
-            result.add(disclosureValidation);
+        }
+
+        Map<String, List<ClaimBinaries>> claimsByHeaderName = sdClaims.stream()
+                .filter(c -> !directClaims.contains(c)).collect(Collectors.groupingBy(ClaimBinaries::getName));
+        if (!isNested && Utils.isMapNotEmpty(claimsByHeaderName)) {
+            for (Map.Entry<String, List<ClaimBinaries>> entry : claimsByHeaderName.entrySet()) {
+                String headerName = entry.getKey();
+                List<ClaimBinaries> claims = entry.getValue();
+
+                DisclosureValidation disclosureValidation = new DisclosureValidation();
+                disclosureValidation.setName(headerName);
+                disclosureValidation.setNestedClaimBinaries(claims);
+
+                List<DisclosureValidation> nestedDisclosuresValidations = validateDisclosuresRecursively(
+                        claims, digestAlgorithm, disclosures, DigestMatcherType.EAA_NESTED_DISCLOSURE);
+                if (Utils.isCollectionNotEmpty(nestedDisclosuresValidations)) {
+                    disclosureValidation.setType(disclosureType);
+                    disclosureValidation.setFound(true);
+                    disclosureValidation.setIntact(true);
+                    disclosureValidation.getDependentValidations().addAll(nestedDisclosuresValidations);
+                } else {
+                    disclosureValidation.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
+                }
+                result.add(disclosureValidation);
+            }
         }
 
         return result;
     }
 
-    private Disclosure getDisclosureForClaim(List<Disclosure> disclosures, DigestAlgorithm digestAlgorithm, SelectivelyDisclosableClaim sdClaim) {
+    private Disclosure getDisclosureForClaim(List<Disclosure> disclosures, DigestAlgorithm digestAlgorithm, ClaimBinaries sdClaim) {
         for (Disclosure disclosure : disclosures) {
-            if (Arrays.equals(sdClaim.getDigestValue(), disclosure.getDigest(digestAlgorithm).getValue())) {
+            if (Arrays.equals(sdClaim.getBinariesValue(), disclosure.getDigest(digestAlgorithm).getValue())) {
                 return disclosure;
             }
         }
@@ -219,7 +257,7 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
     @Override
     public EAAPayload getPayload() {
         if (payload == null) {
-            payload = buildPayload();
+            payload = buildPayload(Collections.emptyList());
         }
         return payload;
     }
@@ -227,9 +265,18 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
     /**
      * Builds the EAA payload object for values accessing
      *
+     * @param disclosureValidations a list of {@link DisclosureValidation}s
      * @return {@link EAAPayload}
      */
-    protected abstract EAAPayload buildPayload();
+    protected abstract EAAPayload buildPayload(List<DisclosureValidation> disclosureValidations);
+
+    @Override
+    public EAAPayload getPayloadWithDisclosures() {
+        if (payloadWithDisclosures == null) {
+            payloadWithDisclosures = buildPayload(getDisclosureValidations());
+        }
+        return payloadWithDisclosures;
+    }
 
     @Override
     public String getId() {

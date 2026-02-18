@@ -2,6 +2,8 @@ package eu.europa.esig.dss.model.eaa;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -20,14 +22,11 @@ public abstract class Disclosure implements Serializable {
     /** Salt value */
     protected byte[] salt;
 
-    /** Name of the disclosure claim */
-    protected String claimName;
-
     /** Value of the disclosure claim */
-    protected ClaimValue claimValue;
+    protected Claim claim;
 
     /** List of nested selectively disclosable claims  */
-    protected List<SelectivelyDisclosableClaim> nestedSDClaims;
+    protected List<ClaimBinaries> nestedSDClaims;
 
     /** Cached map containing computed digest values */
     private final EnumMap<DigestAlgorithm, Digest> digestMap = new EnumMap<>(DigestAlgorithm.class);
@@ -54,16 +53,16 @@ public abstract class Disclosure implements Serializable {
      * @return {@link String}
      */
     public String getClaimName() {
-        return claimName;
+        return claim != null ? claim.getName() : null;
     }
 
     /**
      * Gets the value of the disclosure claim value
      *
-     * @return {@link ClaimValue}
+     * @return {@link Claim}
      */
-    public ClaimValue getClaimValue() {
-        return claimValue;
+    public Claim getClaimValue() {
+        return claim;
     }
 
     /**
@@ -71,10 +70,10 @@ public abstract class Disclosure implements Serializable {
      * NOTE: It is possible to have nested claims within a disclosure, to create recursive disclosures.
      * Please see {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-22.html#name-recursive-disclosures">Recursive Disclosures</a>
      * for more information.
-     *
-     * @return a list of {@link SelectivelyDisclosableClaim}s
+     * <p>
+     * @return a list of {@link ClaimBinaries}s
      */
-    public List<SelectivelyDisclosableClaim> getNestedSelectivelyDisclosableClaims() {
+    public List<ClaimBinaries> getNestedSelectivelyDisclosableClaims() {
         return nestedSDClaims;
     }
 
@@ -106,17 +105,17 @@ public abstract class Disclosure implements Serializable {
 
         Disclosure that = (Disclosure) object;
         return Arrays.equals(salt, that.salt)
-                && Objects.equals(claimName, that.claimName)
-                && Objects.equals(claimValue, that.claimValue)
-                && Objects.equals(nestedSDClaims, that.nestedSDClaims);
+                && Objects.equals(claim, that.claim)
+                && Objects.equals(nestedSDClaims, that.nestedSDClaims)
+                && digestMap.equals(that.digestMap);
     }
 
     @Override
     public int hashCode() {
         int result = Arrays.hashCode(salt);
-        result = 31 * result + Objects.hashCode(claimName);
-        result = 31 * result + Objects.hashCode(claimValue);
+        result = 31 * result + Objects.hashCode(claim);
         result = 31 * result + Objects.hashCode(nestedSDClaims);
+        result = 31 * result + digestMap.hashCode();
         return result;
     }
 

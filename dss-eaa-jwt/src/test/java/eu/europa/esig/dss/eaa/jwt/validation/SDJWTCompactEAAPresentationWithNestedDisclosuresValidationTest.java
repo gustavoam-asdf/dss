@@ -1,9 +1,13 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -15,7 +19,11 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
@@ -86,6 +94,25 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
         return validator;
+    }
+
+    @Override
+    protected void checkClaims(DiagnosticData diagnosticData) {
+        super.checkClaims(diagnosticData);
+
+        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
+        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
+        assertEquals("user_42", eaaPresentation.getEAASubject());
+        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(Arrays.asList("DE", "FR", "UK"), eaaPresentation.getUserNationalities());
+
+        List<XmlDisclosableClaim> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        assertEquals(1, selectivelyDisclosableClaims.size());
+        assertEquals("nationalities", selectivelyDisclosableClaims.get(0).getName());
+        assertTrue(selectivelyDisclosableClaims.get(0).isDisclosure());
+        assertEquals(3, selectivelyDisclosableClaims.get(0).getItem().size());
+        assertTrue(selectivelyDisclosableClaims.get(0).getItem().stream().allMatch(XmlDisclosableClaim::isDisclosure));
     }
 
     @Override

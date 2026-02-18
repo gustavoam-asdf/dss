@@ -1,11 +1,11 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.eaa.jwt.SDJWTClaimValue;
-import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 
@@ -56,21 +56,19 @@ public class SDJWTDisclosure extends Disclosure {
         }
         this.salt = DSSJsonUtils.fromBase64Url(saltB64Url);
 
-        Object claimValue;
         if (disclosureList.size() == 2) {
             // array or recursive disclosure
-            claimValue = disclosureList.get(1);
+            this.claim = Claim.create(disclosureList.get(1), true);
+
         } else {
             Object claimNameObject = disclosureList.get(1);
             if (!(claimNameObject instanceof String)) {
                 throw new IllegalInputException("Invalid disclosure format! The second element of the array (claim name) shall be of String type!");
             }
-            this.claimName = (String) claimNameObject;
-
-            claimValue = disclosureList.get(2);
-            this.nestedSDClaims = SDJWTUtils.getNestedSelectivelyDisclosableClaims(this.claimName, claimValue);
+            String claimName = (String) claimNameObject;
+            this.claim = Claim.create(claimName, disclosureList.get(2), true);
+            this.nestedSDClaims = SDJWTUtils.getNestedSelectivelyDisclosableClaims(claimName, claim);
         }
-        this.claimValue = new SDJWTClaimValue(claimValue);
     }
 
     @Override

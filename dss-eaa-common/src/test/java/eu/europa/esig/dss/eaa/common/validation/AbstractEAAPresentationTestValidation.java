@@ -5,6 +5,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -24,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -77,10 +79,11 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
         assertEquals(getEAAPresentationType(), eaaPresentation.getType());
 
-        verifyEAAPresentationDigestMatchers(diagnosticData);
+        checkEAAPresentationDigestMatchers(diagnosticData);
+        checkClaims(diagnosticData);
     }
 
-    protected void verifyEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
+    protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
         for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
             for (XmlDigestMatcher digestMatcher : eaaPresentation.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
@@ -92,9 +95,44 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertTrue(digestMatcher.isDataIntact());
                     assertNotNull(digestMatcher.getClaim());
                     assertNotNull(digestMatcher.getClaim().getName());
-                    assertNotNull(digestMatcher.getClaim().getValue());
                 }
             }
+        }
+    }
+
+    protected void checkClaims(DiagnosticData diagnosticData) {
+        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+            List<XmlDisclosableClaim> eaaPayloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+            assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
+
+            boolean disclosedClaimFound = false;
+            for (XmlDisclosableClaim xmlDisclosableClaim : eaaPayloadClaims) {
+                assertNotNull(xmlDisclosableClaim.getName());
+                assertTrue(xmlDisclosableClaim.getValue() != null || xmlDisclosableClaim.getDateTime() != null ||
+                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(xmlDisclosableClaim.getValue() != null, xmlDisclosableClaim.getDateTime() != null ||
+                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(xmlDisclosableClaim.getDateTime() != null, xmlDisclosableClaim.getValue() != null ||
+                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(xmlDisclosableClaim.getNumber() != null, xmlDisclosableClaim.getValue() != null ||
+                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()), xmlDisclosableClaim.getValue() != null ||
+                        xmlDisclosableClaim.getDateTime() != null || xmlDisclosableClaim.getNumber() != null ||
+                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(xmlDisclosableClaim.isBoolean() != null, xmlDisclosableClaim.getValue() != null ||
+                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.getNumber() != null || xmlDisclosableClaim.getEncoded() != null);
+                assertNotEquals(xmlDisclosableClaim.getEncoded() != null, xmlDisclosableClaim.getValue() != null ||
+                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
+                        xmlDisclosableClaim.getNumber() != null || xmlDisclosableClaim.isBoolean() != null);
+                disclosedClaimFound |= Utils.isTrue(xmlDisclosableClaim.isDisclosure());
+            }
+            assertEquals(disclosuresPresent(), disclosedClaimFound);
+            assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getSelectivelyDisclosableClaims()));
         }
     }
 

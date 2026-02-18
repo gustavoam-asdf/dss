@@ -133,6 +133,9 @@ public class DSSJsonUtils {
 
 	/** Format date-time as specified in RFC 3339 5.6 */
 	private static final String DATE_TIME_FORMAT_RFC3339 = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+	/** Format date-time as specified in ISO 8601-1 */
+	private static final String DATE_FORMAT_ISO8601 = "yyyy-MM-dd";
 	
 	/**
 	 * Copied from org.jose4j.base64url.internal.apache.commons.codec.binary.Base64
@@ -662,6 +665,25 @@ public class DSSJsonUtils {
 		if (Utils.isStringNotEmpty(dateTimeString)) {
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_RFC3339);
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				return sdf.parse(dateTimeString);
+			} catch (ParseException e) {
+				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Parses an ISO 8601-1 date String
+	 *
+	 * @param dateTimeString {@link String} in the ISO 8601-1 format to parse
+	 * @return {@link Date}
+	 */
+	public static Date getIsoDate(String dateTimeString) {
+		if (Utils.isStringNotEmpty(dateTimeString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_ISO8601);
 				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 				return sdf.parse(dateTimeString);
 			} catch (ParseException e) {

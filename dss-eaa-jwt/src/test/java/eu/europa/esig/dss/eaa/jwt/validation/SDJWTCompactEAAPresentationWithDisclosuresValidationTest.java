@@ -1,9 +1,13 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -15,7 +19,13 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
@@ -106,6 +116,47 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
         return validator;
+    }
+
+    @Override
+    protected void checkClaims(DiagnosticData diagnosticData) {
+        super.checkClaims(diagnosticData);
+
+        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
+        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
+        assertEquals("user_42", eaaPresentation.getEAASubject());
+        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSJsonUtils.getDate("2019-10-02T07:06:40Z"), eaaPresentation.getEAAUpdatedAt());
+
+        assertEquals("John", eaaPresentation.getUserFirstName());
+        assertEquals("Doe", eaaPresentation.getUserLastName());
+        assertEquals("johndoe@example.com", eaaPresentation.getUserEmail());
+        assertNull(eaaPresentation.getUserEmailVerified());
+        assertEquals(DSSJsonUtils.getDate("1940-01-01T00:00:00Z"), eaaPresentation.getUserBirthdate());
+        assertEquals("Anytown", eaaPresentation.getUserAddressCity());
+        assertEquals("Anystate", eaaPresentation.getUserAddressStateOrProvince());
+        assertEquals("US", eaaPresentation.getUserAddressCountry());
+        assertEquals("123 Main St", eaaPresentation.getUserStreetAddress());
+        assertEquals("+1-202-555-0101", eaaPresentation.getUserPhoneNumber());
+        assertTrue(eaaPresentation.getUserPhoneNumberVerified());
+        assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getUserNationalities());
+
+        List<XmlDisclosableClaim> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        assertEquals(7, selectivelyDisclosableClaims.size());
+
+        List<XmlDisclosableClaim> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        assertNotNull(payloadClaims);
+        boolean nationalitiesClaimFound = false;
+        for (XmlDisclosableClaim disclosableClaim : payloadClaims) {
+            if ("nationalities".equals(disclosableClaim.getName())) {
+                assertNull(disclosableClaim.isDisclosure());
+                assertEquals(2, disclosableClaim.getItem().size());
+                assertTrue(disclosableClaim.getItem().stream().allMatch(XmlDisclosableClaim::isDisclosure));
+                nationalitiesClaimFound = true;
+            }
+        }
+        assertTrue(nationalitiesClaimFound);
     }
 
     @Override

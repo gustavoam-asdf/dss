@@ -155,7 +155,6 @@ class QEAATLTest extends PKIFactoryAccess {
 
         EAAQualification eaaQualification = simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId());
         assertEquals(expectedQualification, eaaQualification);
-
     }
 
     private TrustedListsCertificateSource getTrustedSource() {
