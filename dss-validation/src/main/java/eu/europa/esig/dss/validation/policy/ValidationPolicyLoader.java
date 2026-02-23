@@ -465,6 +465,7 @@ public class ValidationPolicyLoader {
             switch (context) {
                 case SIGNATURE:
                 case CERTIFICATE:
+                case KEY_BINDING_SIGNATURE: // TODO : temporary until explicit key binging signature support
                     if (subContext != null) {
                         addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getSignatureCertificatesCryptographicSuite(), context, subContext);
                     } else {
@@ -505,7 +506,11 @@ public class ValidationPolicyLoader {
                     break;
 
                 case EVIDENCE_RECORD:
-                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite(), context, subContext);
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite(), context, subContext);
+                    break;
+
+                case EAA_PRESENTATION:
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAAPresentationCryptographicSuite(), context, subContext);
                     break;
 
                 default:

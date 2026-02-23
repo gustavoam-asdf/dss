@@ -1625,6 +1625,7 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	private BasicSignatureConstraints getBasicSignatureConstraintsByContext(Context context) {
 		switch (context) {
 			case SIGNATURE:
+			case KEY_BINDING_SIGNATURE: // TODO : temporary until an explicit key binding signature support
 			case CERTIFICATE: // TODO improve
 				SignatureConstraints mainSignature = getSignatureConstraints();
 				if (mainSignature != null) {
@@ -1649,6 +1650,8 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return revocationConstraints.getBasicSignatureConstraints();
 				}
 				break;
+			case EAA_PRESENTATION:
+				return null;
 			default:
 				throw new UnsupportedOperationException(String.format("Unsupported context '%s'", context));
 		}
