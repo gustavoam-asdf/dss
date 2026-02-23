@@ -31,7 +31,7 @@ public class TrustedEntityBuilder {
     private Map<String, List<String>> electronicAddresses;
 
     /** Map of information */
-    private Map<String, String> information;
+    private Map<String, List<String>> information;
 
     /** List of trust services */
     private List<TrustedEntityService> services;
@@ -186,7 +186,7 @@ public class TrustedEntityBuilder {
      *
      * @return a map of information
      */
-    public Map<String, String> getInformation() {
+    public Map<String, List<String>> getInformation() {
         return getUnmodifiableMap(information);
     }
 
@@ -196,7 +196,7 @@ public class TrustedEntityBuilder {
      * @param information a map of information
      * @return this {@link TrustedEntityBuilder}
      */
-    public TrustedEntityBuilder setInformation(Map<String, String> information) {
+    public TrustedEntityBuilder setInformation(Map<String, List<String>> information) {
         this.information = information;
         return this;
     }
@@ -291,10 +291,7 @@ public class TrustedEntityBuilder {
             TrustedEntityServiceStatusAndInformationExtensions copyStatus = builder.setNames(getUnmodifiableMapWithLists(status.getNames()))
                     .setType(status.getType())
                     .setStatus(status.getStatus())
-                    .setConditionsForQualifiers(getUnmodifiableList(status.getConditionsForQualifiers()))
-                    .setAdditionalServiceInfoUris(getUnmodifiableList(status.getAdditionalServiceInfoUris()))
                     .setServiceSupplyPoints(getUnmodifiableList(status.getServiceSupplyPoints()))
-                    .setExpiredCertsRevocationInfo(status.getExpiredCertsRevocationInfo())
                     .setStartDate(status.getStartDate())
                     .setEndDate(status.getEndDate())
                     .build();

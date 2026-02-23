@@ -1,7 +1,6 @@
 package eu.europa.esig.dss.model.lote;
 
 import eu.europa.esig.dss.model.timedependent.BaseTimeDependent;
-import eu.europa.esig.dss.model.tsl.ConditionForQualifiers;
 
 import java.util.Date;
 import java.util.List;
@@ -31,17 +30,8 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
     /** Status */
     private final String status;
 
-    /** A list of condition for qualifiers */
-    private final List<ConditionForQualifiers> conditionsForQualifiers;
-
-    /** Additional service info urls */
-    private final List<String> additionalServiceInfoUris;
-
     /** List of service supply points */
     private final List<String> serviceSupplyPoints;
-
-    /** The expired certs revocation info date */
-    private final Date expiredCertsRevocationInfo;
 
     /**
      * Default constructor
@@ -55,10 +45,7 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
         this.names = builder.names;
         this.type = builder.type;
         this.status = builder.status;
-        this.conditionsForQualifiers = builder.conditionsForQualifiers;
-        this.additionalServiceInfoUris = builder.additionalServiceInfoUris;
         this.serviceSupplyPoints = builder.serviceSupplyPoints;
-        this.expiredCertsRevocationInfo = builder.expiredCertsRevocationInfo;
     }
 
     /**
@@ -89,39 +76,12 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
     }
 
     /**
-     * Gets a list of conditions for qualifiers
-     *
-     * @return a list of {@link ConditionForQualifiers}
-     */
-    public List<ConditionForQualifiers> getConditionsForQualifiers() {
-        return conditionsForQualifiers;
-    }
-
-    /**
-     * Gets additional service info urls
-     *
-     * @return a list of {@link String}s
-     */
-    public List<String> getAdditionalServiceInfoUris() {
-        return additionalServiceInfoUris;
-    }
-
-    /**
      * Gets service supply points
      *
      * @return a list of {@link String}s
      */
     public List<String> getServiceSupplyPoints() {
         return serviceSupplyPoints;
-    }
-
-    /**
-     * Gets the expired certs revocation info date
-     *
-     * @return {@link Date}
-     */
-    public Date getExpiredCertsRevocationInfo() {
-        return expiredCertsRevocationInfo;
     }
 
     /**
@@ -138,17 +98,8 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
         /** Status */
         private String status;
 
-        /** A list of condition for qualifiers */
-        private List<ConditionForQualifiers> conditionsForQualifiers;
-
-        /** Additional service info urls */
-        private List<String> additionalServiceInfoUris;
-
         /** List of service supply points */
         private List<String> serviceSupplyPoints;
-
-        /** The expired certs revocation info date */
-        private Date expiredCertsRevocationInfo;
 
         /** The start of validity date */
         private Date startDate;
@@ -172,10 +123,7 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
             this.names = status.getNames();
             this.type = status.getType();
             this.status = status.getStatus();
-            this.conditionsForQualifiers = status.getConditionsForQualifiers();
-            this.additionalServiceInfoUris = status.getAdditionalServiceInfoUris();
             this.serviceSupplyPoints = status.getServiceSupplyPoints();
-            this.expiredCertsRevocationInfo = status.getExpiredCertsRevocationInfo();
             this.startDate = status.getStartDate();
             this.endDate = status.getEndDate();
         }
@@ -223,28 +171,6 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
         }
 
         /**
-         * Sets conditions for qualifiers
-         *
-         * @param conditionsForQualifiers a list of {@link ConditionForQualifiers}
-         * @return this {@link ServiceStatusAndInformationExtensionsBuilder}
-         */
-        public ServiceStatusAndInformationExtensionsBuilder setConditionsForQualifiers(List<ConditionForQualifiers> conditionsForQualifiers) {
-            this.conditionsForQualifiers = conditionsForQualifiers;
-            return this;
-        }
-
-        /**
-         * Sets additional service info urls
-         *
-         * @param additionalServiceInfoUris a list of {@link String}
-         * @return this {@link ServiceStatusAndInformationExtensionsBuilder}
-         */
-        public ServiceStatusAndInformationExtensionsBuilder setAdditionalServiceInfoUris(List<String> additionalServiceInfoUris) {
-            this.additionalServiceInfoUris = additionalServiceInfoUris;
-            return this;
-        }
-
-        /**
          * Sets the service supply points
          *
          * @param serviceSupplyPoints a list of {@link String}
@@ -252,17 +178,6 @@ public class TrustedEntityServiceStatusAndInformationExtensions extends BaseTime
          */
         public ServiceStatusAndInformationExtensionsBuilder setServiceSupplyPoints(List<String> serviceSupplyPoints) {
             this.serviceSupplyPoints = serviceSupplyPoints;
-            return this;
-        }
-
-        /**
-         * Sets the expired certs revocation info date
-         *
-         * @param expiredCertsRevocationInfo {@link Date}
-         * @return this {@link ServiceStatusAndInformationExtensionsBuilder}
-         */
-        public ServiceStatusAndInformationExtensionsBuilder setExpiredCertsRevocationInfo(Date expiredCertsRevocationInfo) {
-            this.expiredCertsRevocationInfo = expiredCertsRevocationInfo;
             return this;
         }
 

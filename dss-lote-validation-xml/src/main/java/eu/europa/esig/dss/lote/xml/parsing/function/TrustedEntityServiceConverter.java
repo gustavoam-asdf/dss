@@ -5,24 +5,15 @@ import eu.europa.esig.dss.model.lote.TrustedEntityService;
 import eu.europa.esig.dss.model.lote.TrustedEntityServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.timedependent.MutableTimeDependentValues;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
-import eu.europa.esig.dss.model.tsl.ConditionForQualifiers;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.lote.jaxb.AttributedNonEmptyURIType;
 import eu.europa.esig.lote.jaxb.DigitalIdentityListType;
-import eu.europa.esig.lote.jaxb.ExtensionType;
 import eu.europa.esig.lote.jaxb.ExtensionsListType;
 import eu.europa.esig.lote.jaxb.ServiceHistoryInstanceType;
 import eu.europa.esig.lote.jaxb.ServiceSupplyPointsType;
 import eu.europa.esig.lote.jaxb.TEServiceInformationType;
 import eu.europa.esig.lote.jaxb.TrustedEntityServiceType;
-import eu.europa.esig.trustedlist.jaxb.ecc.QualificationElementType;
-import eu.europa.esig.trustedlist.jaxb.ecc.QualificationsType;
-import eu.europa.esig.trustedlist.jaxb.ecc.QualifierType;
-import eu.europa.esig.trustedlist.jaxb.ecc.QualifiersType;
-import eu.europa.esig.trustedlist.jaxb.tsl.AdditionalServiceInformationType;
-import eu.europa.esig.trustedlist.jaxb.tsl.NonEmptyMultiLangURIType;
-import jakarta.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +24,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * This class converts a JAXB {@code TrustedEntityServiceType} object into a POJO {@code TrustedEntityService}
+ *
+ */
 public class TrustedEntityServiceConverter implements Function<TrustedEntityServiceType, TrustedEntityService> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrustedEntityServiceConverter.class);
@@ -109,97 +104,8 @@ public class TrustedEntityServiceConverter implements Function<TrustedEntityServ
 
     private void parseExtensionsList(ExtensionsListType serviceInformationExtensions, TrustedEntityServiceStatusAndInformationExtensions.ServiceStatusAndInformationExtensionsBuilder statusBuilder) {
         if (serviceInformationExtensions != null) {
-            statusBuilder.setConditionsForQualifiers(extractConditionsForQualifiers(serviceInformationExtensions.getExtension()));
-            statusBuilder.setAdditionalServiceInfoUris(extractAdditionalServiceInfoUris(serviceInformationExtensions.getExtension()));
-            statusBuilder.setExpiredCertsRevocationInfo(extractExpiredCertsRevocationInfo(serviceInformationExtensions.getExtension()));
+            // TODO : not yet supported
         }
-    }
-
-    @SuppressWarnings("rawtypes")
-    private List<ConditionForQualifiers> extractConditionsForQualifiers(List<ExtensionType> extensions) {
-        List<ConditionForQualifiers> conditionsForQualifiersList = new ArrayList<>();
-        for (ExtensionType extensionType : extensions) {
-            List<Object> content = extensionType.getContent();
-            if (Utils.isCollectionNotEmpty(content)) {
-                for (Object object : content) {
-                    if (object instanceof JAXBElement) {
-                        JAXBElement jaxbElement = (JAXBElement) object;
-                        Object objectValue = jaxbElement.getValue();
-                        if (objectValue instanceof QualificationsType) {
-                            QualificationsType qualifications = (QualificationsType) jaxbElement.getValue();
-                            List<ConditionForQualifiers> conditionForQualifiers =
-                                    toConditionForQualificationsType(qualifications, extensionType.isCritical());
-                            if (Utils.isCollectionNotEmpty(conditionForQualifiers)) {
-                                conditionsForQualifiersList.addAll(conditionForQualifiers);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return conditionsForQualifiersList;
-    }
-
-    private List<ConditionForQualifiers> toConditionForQualificationsType(QualificationsType qt, boolean critical) {
-        List<ConditionForQualifiers> conditionForQualifiers = new ArrayList<>();
-        if ((qt != null) && Utils.isCollectionNotEmpty(qt.getQualificationElement())) {
-            for (QualificationElementType qualificationElement : qt.getQualificationElement()) {
-                ConditionForQualifiers condition = toConditionForQualifiers(qualificationElement, critical);
-                if (condition != null) {
-                    conditionForQualifiers.add(condition);
-                }
-            }
-        }
-        return conditionForQualifiers;
-    }
-
-    private ConditionForQualifiers toConditionForQualifiers(QualificationElementType qualificationElement, boolean critical) {
-        // TODO : not supported yet
-        return null;
-    }
-
-    @SuppressWarnings("rawtypes")
-    private List<String> extractAdditionalServiceInfoUris(List<ExtensionType> extensions) {
-        List<String> additionalServiceInfos = new ArrayList<>();
-        for (ExtensionType extensionType : extensions) {
-            List<Object> content = extensionType.getContent();
-            if (Utils.isCollectionNotEmpty(content)) {
-                for (Object object : content) {
-                    if (object instanceof JAXBElement) {
-                        JAXBElement jaxbElement = (JAXBElement) object;
-                        Object objectValue = jaxbElement.getValue();
-                        if (objectValue instanceof AdditionalServiceInformationType) {
-                            AdditionalServiceInformationType additionalServiceInfo = (AdditionalServiceInformationType) objectValue;
-                            NonEmptyMultiLangURIType uri = additionalServiceInfo.getURI();
-                            if (uri != null && Utils.isStringNotBlank(uri.getValue())) {
-                                additionalServiceInfos.add(uri.getValue());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return additionalServiceInfos;
-    }
-
-    @SuppressWarnings("rawtypes")
-    private Date extractExpiredCertsRevocationInfo(List<ExtensionType> extensions) {
-        for (ExtensionType extensionType : extensions) {
-            List<Object> content = extensionType.getContent();
-            if (Utils.isCollectionNotEmpty(content)) {
-                for (Object object : content) {
-                    if (object instanceof JAXBElement) {
-                        JAXBElement jaxbElement = (JAXBElement) object;
-                        // TODO check tag name
-                        Object objectValue = jaxbElement.getValue();
-                        if (objectValue instanceof XMLGregorianCalendar) {
-                            return convertToDate((XMLGregorianCalendar) objectValue);
-                        }
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     private Date convertToDate(XMLGregorianCalendar gregorianCalendar) {
@@ -207,17 +113,6 @@ public class TrustedEntityServiceConverter implements Function<TrustedEntityServ
             return gregorianCalendar.toGregorianCalendar().getTime();
         }
         return null;
-    }
-
-    private List<String> extractQualifiers(QualificationElementType qualificationElement) {
-        List<String> qualifiers = new ArrayList<>();
-        QualifiersType qualifiersType = qualificationElement.getQualifiers();
-        if ((qualifiersType != null) && Utils.isCollectionNotEmpty(qualifiersType.getQualifier())) {
-            for (QualifierType qualitierType : qualifiersType.getQualifier()) {
-                qualifiers.add(qualitierType.getUri());
-            }
-        }
-        return qualifiers;
     }
 
     private List<String> getServiceSupplyPoints(ServiceSupplyPointsType serviceSupplyPoints) {

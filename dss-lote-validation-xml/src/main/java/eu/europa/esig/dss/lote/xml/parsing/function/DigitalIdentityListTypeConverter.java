@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * This class converts a JAXB {@code DigitalIdentityListType} into a list of {@code CertificateToken}s
+ *
+ */
 public class DigitalIdentityListTypeConverter implements Function<DigitalIdentityListType, List<CertificateToken>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(DigitalIdentityListTypeConverter.class);

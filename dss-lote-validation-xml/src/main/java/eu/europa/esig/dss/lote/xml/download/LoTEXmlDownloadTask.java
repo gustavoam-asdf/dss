@@ -12,6 +12,10 @@ import eu.europa.esig.dss.xml.utils.XMLCanonicalizer;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * This class is used to process the result of document download process for XML LoTE processing
+ *
+ */
 public class LoTEXmlDownloadTask implements Supplier<DownloadResult> {
 
     /** Default digest algorithm used for document integrity identification */
@@ -33,7 +37,6 @@ public class LoTEXmlDownloadTask implements Supplier<DownloadResult> {
      * @param url {@link String} to download the document from
      */
     public LoTEXmlDownloadTask(DSSDocument document, String url) {
-        Objects.requireNonNull(document, "The DSSDocument is null");
         Objects.requireNonNull(url, "The url is null");
         this.document = document;
         this.url = url;

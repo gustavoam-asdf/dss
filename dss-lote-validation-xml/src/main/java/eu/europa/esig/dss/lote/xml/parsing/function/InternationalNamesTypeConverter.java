@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * This class converts a JAXB {@code InternationalNamesType} object to a Java map
+ *
+ */
 public class InternationalNamesTypeConverter implements Function<InternationalNamesType, Map<String, List<String>>> {
 
     /** The predicate to be used */

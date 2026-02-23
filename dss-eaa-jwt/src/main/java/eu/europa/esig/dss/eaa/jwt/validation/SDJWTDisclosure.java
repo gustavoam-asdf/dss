@@ -36,7 +36,7 @@ public class SDJWTDisclosure extends Disclosure {
     private void parseDisclosure(final String disclosureB64Url) {
         // TODO : create a dedicated parser/builder ?
 
-        Object disclosureObject = DSSJsonUtils.parseB64UrlEncoded(disclosureB64Url);
+        Object disclosureObject = DSSJsonUtils.parseBase64UrlEncoded(disclosureB64Url);
 
         if (!(disclosureObject instanceof List<?>)) {
             throw new IllegalInputException("Invalid disclosure format! An object of a JSON Array type is expected.");

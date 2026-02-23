@@ -34,7 +34,7 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
     private Map<String, List<String>> electronicAddresses;
 
     /** The map of information */
-    private Map<String, String> information;
+    private Map<String, List<String>> information;
 
     /** The list of trusted entity services */
     private List<S> services;
@@ -145,7 +145,7 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
      *
      * @return a map of information
      */
-    public Map<String, String> getInformation() {
+    public Map<String, List<String>> getInformation() {
         return information;
     }
 
@@ -154,7 +154,7 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
      *
      * @param information a map of information
      */
-    public void setInformation(Map<String, String> information) {
+    public void setInformation(Map<String, List<String>> information) {
         this.information = information;
     }
 

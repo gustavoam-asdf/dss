@@ -14,7 +14,18 @@ import eu.europa.esig.dss.xml.utils.DomUtils;
 
 import java.util.function.Supplier;
 
+/**
+ * This class is used to run the analysis for the TS 119 602 XML List of Trusted Entities validation
+ *
+ */
 public class LoTEXmlAnalysisExecutor implements ListAnalysisExecutor {
+
+    /**
+     * Default constructor
+     */
+    public LoTEXmlAnalysisExecutor() {
+        // empty
+    }
 
     @Override
     public boolean isSupported(DSSDocument document) {

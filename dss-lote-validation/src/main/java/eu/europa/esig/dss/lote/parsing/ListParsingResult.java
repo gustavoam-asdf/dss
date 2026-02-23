@@ -20,41 +20,16 @@
  */
 package eu.europa.esig.dss.lote.parsing;
 
-import eu.europa.esig.dss.model.lote.TrustedEntity;
-
-import java.util.List;
-
 /**
  * Parsed TL result
  */
 public class ListParsingResult extends ParsingResult {
-
-	/** List of found trust service providers */
-	private List<TrustedEntity> trustedEntities;
 
 	/**
 	 * Default constructor
 	 */
 	public ListParsingResult() {
 		super();
-	}
-
-	/**
-	 * Gets trusted entities
-	 *
-	 * @return a list of {@link TrustedEntity}s
-	 */
-	public List<TrustedEntity> getTrustedEntities() {
-		return trustedEntities;
-	}
-
-	/**
-	 * Sets trusted entities
-	 *
-	 * @param trustedEntities a list of {@link TrustedEntity}s
-	 */
-	public void setTrustedEntities(List<TrustedEntity> trustedEntities) {
-		this.trustedEntities = trustedEntities;
 	}
 
 }

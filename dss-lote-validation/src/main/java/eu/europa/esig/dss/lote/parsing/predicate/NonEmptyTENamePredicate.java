@@ -1,16 +1,20 @@
-package eu.europa.esig.dss.lote.xml.parsing.predicate;
+package eu.europa.esig.dss.lote.parsing.predicate;
 
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.function.Predicate;
 
-public class NonEmptyTEName implements Predicate<TrustedEntity>  {
+/**
+ * This predicate is used to filter out all Trusted Entity entries with null or empty names
+ *
+ */
+public class NonEmptyTENamePredicate implements Predicate<TrustedEntity>  {
 
     /**
      * Default constructor
      */
-    public NonEmptyTEName() {
+    public NonEmptyTENamePredicate() {
         // empty
     }
 

@@ -120,12 +120,6 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         // Init internal variable to the provided list of extracted Trust Services
         filteredServices = new ArrayList<>(acceptableServices);
 
-        // 1a. Filter by service type
-//        TrustedEntityServiceFilter filterBySti = TrustedEntitiesFilterFactory.createFilterByServiceTypeIdentifierUri(stiUri);
-//        filteredServices = filterBySti.filter(filteredServices);
-//
-//        ChainItem<XmlValidationCertificateUsage> item = firstItem = hasTrustedServiceOfType(filteredServices);
-
         // 1b. Filter by date
         TrustedEntityServiceFilter filterByDate = TrustedEntitiesFilterFactory.createFilterByDate(date);
         filteredServices = filterByDate.filter(filteredServices);
@@ -142,12 +136,6 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
             item = item.setNextItem(trustedServiceStatusKnown(serviceStatusUri));
         }
         // NOTE: status can be null, validate successfully in this case
-
-//        // 2b. Filter by valid status
-//        TrustedEntityServiceFilter filterByStatus = TrustedEntitiesFilterFactory.createFilterByServiceStatusUri(getValidServiceStatusUri());
-//        filteredServices = filterByStatus.filter(filteredServices);
-//
-//        item = item.setNextItem(hasTrustedServiceWithStatus(filteredServices));
 
     }
 
@@ -173,10 +161,6 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         result.setDateTime(date);
     }
 
-//    private ChainItem<XmlValidationCertificateUsage> hasTrustedServiceOfType(List<TrustedEntityServiceWrapper> trustedServices) {
-//        return new TrustedEntityServiceWithStiCheck(i18nProvider, result, trustedServices, stiUri, getFailLevelRule());
-//    }
-
     private ChainItem<XmlValidationCertificateUsage> hasTrustedServiceAtTime(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceAtTimeCheck(i18nProvider, result, trustedServices, validationTime, getFailLevelRule());
     }
@@ -188,10 +172,6 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
     private ChainItem<XmlValidationCertificateUsage> hasTrustedServicesConsistent(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceStatusConsistencyCheck(i18nProvider, result, trustedServices, getFailLevelRule());
     }
-
-//    private ChainItem<XmlValidationCertificateUsage> hasTrustedServiceWithStatus(List<TrustedEntityServiceWrapper> trustedServices) {
-//        return new TrustedEntityServiceWithValidStatusCheck(i18nProvider, result, trustedServices, getFailLevelRule());
-//    }
 
     private ChainItem<XmlValidationCertificateUsage> trustedServiceStatusKnown(String serviceStatusUri) {
         return new TrustedEntityServiceStatusKnownCheck(i18nProvider, result, serviceStatusUri, getWarnLevelRule());

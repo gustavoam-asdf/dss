@@ -29,6 +29,7 @@ import eu.europa.esig.dss.enumerations.RevocationReason;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtTime;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlMessage;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlRevocation;
@@ -744,7 +745,7 @@ public class SimpleCertificateReport {
 	 */
 	public List<CertificateUsage> getCertificateUsageAtCertificateIssuance() {
 		XmlChainItem cert = getFirstCertificate();
-		return toCertificateUsage(cert.getCertificateUsageAtIssuanceTime());
+		return toCertificateUsageList(cert.getCertificateUsageAtIssuanceTime());
 	}
 
 	/**
@@ -754,10 +755,14 @@ public class SimpleCertificateReport {
 	 */
 	public List<CertificateUsage> getCertificateUsageAtValidationTime() {
 		XmlChainItem cert = getFirstCertificate();
-		return toCertificateUsage(cert.getCertificateUsageAtValidationTime());
+		return toCertificateUsageList(cert.getCertificateUsageAtValidationTime());
 	}
 
-	private List<CertificateUsage> toCertificateUsage(List<XmlCertificateUsage> xmlCertificateUsages) {
+	private List<CertificateUsage> toCertificateUsageList(XmlCertificateUsageAtTime xmlCertificateUsageAtTime) {
+		if (xmlCertificateUsageAtTime == null) {
+			return null;
+		}
+		List<XmlCertificateUsage> xmlCertificateUsages = xmlCertificateUsageAtTime.getCertificateUsage();
 		if (xmlCertificateUsages == null || xmlCertificateUsages.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -782,14 +787,16 @@ public class SimpleCertificateReport {
 				xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
 	}
 
-	private XmlCertificateUsage getXmlCertificateUsage(List<XmlCertificateUsage> xmlCertificateUsages, CertificateUsage certificateUsage) {
-		for (XmlCertificateUsage xmlCertificateUsage : xmlCertificateUsages) {
-			if (xmlCertificateUsage != null &&
-					certificateUsage.getListType() != null && certificateUsage.getListType().getUri() != null
-					&& xmlCertificateUsage.getListType() != null && certificateUsage.getListType().getUri().equals(xmlCertificateUsage.getListType().getUri()) &&
-					certificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri() != null
-					&& xmlCertificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri().equals(xmlCertificateUsage.getServiceTypeIdentifier().getUri())) {
-				return xmlCertificateUsage;
+	private XmlCertificateUsage getXmlCertificateUsage(XmlCertificateUsageAtTime xmlCertificateUsageAtTime, CertificateUsage certificateUsage) {
+		if (xmlCertificateUsageAtTime != null && xmlCertificateUsageAtTime.getCertificateUsage() != null) {
+			for (XmlCertificateUsage xmlCertificateUsage : xmlCertificateUsageAtTime.getCertificateUsage()) {
+				if (xmlCertificateUsage != null &&
+						certificateUsage.getListType() != null && certificateUsage.getListType().getUri() != null
+						&& xmlCertificateUsage.getListType() != null && certificateUsage.getListType().getUri().equals(xmlCertificateUsage.getListType().getUri()) &&
+						certificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri() != null
+						&& xmlCertificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri().equals(xmlCertificateUsage.getServiceTypeIdentifier().getUri())) {
+					return xmlCertificateUsage;
+				}
 			}
 		}
 		return null;

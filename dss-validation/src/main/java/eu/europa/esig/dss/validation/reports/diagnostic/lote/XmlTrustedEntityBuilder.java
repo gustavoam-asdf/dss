@@ -1,31 +1,18 @@
 package eu.europa.esig.dss.validation.reports.diagnostic.lote;
 
-import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMRATrustServiceMapping;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlOriginalThirdCountryTrustServiceMapping;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlQualifier;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
-import eu.europa.esig.dss.enumerations.AdditionalServiceInformation;
-import eu.europa.esig.dss.enumerations.QCType;
-import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.model.lote.ListInfo;
 import eu.europa.esig.dss.model.lote.ListOfListsInfo;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
-import eu.europa.esig.dss.model.tsl.Condition;
-import eu.europa.esig.dss.model.tsl.ConditionForQualifiers;
-import eu.europa.esig.dss.model.tsl.ServiceEquivalence;
-import eu.europa.esig.dss.model.tsl.ServiceTypeASi;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,9 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Builds a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity} instance
+ *
+ */
 public class XmlTrustedEntityBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(XmlTrustedEntityBuilder.class);
 
     /**
      * The map of certificates identifiers and their corresponding XML representations
@@ -182,156 +171,12 @@ public class XmlTrustedEntityBuilder {
         trustService.setStartDate(serviceInfoStatus.getStartDate());
         trustService.setEndDate(serviceInfoStatus.getEndDate());
 
-        List<XmlQualifier> qualifiers = getQualifiers(serviceInfoStatus, certToken);
-        if (Utils.isCollectionNotEmpty(qualifiers)) {
-            trustService.setCapturedQualifiers(qualifiers);
-        }
-
-        List<String> additionalServiceInfoUris = serviceInfoStatus.getAdditionalServiceInfoUris();
-        if (Utils.isCollectionNotEmpty(additionalServiceInfoUris)) {
-            trustService.setAdditionalServiceInfoUris(additionalServiceInfoUris);
-        }
-
         List<String> serviceSupplyPoints = serviceInfoStatus.getServiceSupplyPoints();
         if (Utils.isCollectionNotEmpty(serviceSupplyPoints)) {
             trustService.setServiceSupplyPoints(serviceSupplyPoints);
         }
 
         return trustService;
-    }
-
-    /**
-     * Retrieves all the qualifiers for which the corresponding conditionEntry is true.
-     *
-     * @param serviceInfoStatus {@link ServiceStatusAndInformationExtensions}
-     * @param certificateToken {@link CertificateToken}
-     * @return a list of {@link XmlQualifier}
-     */
-    private List<XmlQualifier> getQualifiers(ServiceStatusAndInformationExtensions serviceInfoStatus,
-                                             CertificateToken certificateToken) {
-        LOG.trace("--> GET_QUALIFIERS()");
-        final List<XmlQualifier> list = new ArrayList<>();
-        final List<ConditionForQualifiers> conditionsForQualifiers = serviceInfoStatus.getConditionsForQualifiers();
-        if (Utils.isCollectionNotEmpty(conditionsForQualifiers)) {
-            for (ConditionForQualifiers conditionForQualifiers : conditionsForQualifiers) {
-                Condition condition = conditionForQualifiers.getCondition();
-                if (condition.check(certificateToken)) {
-                    for (String qualifier : conditionForQualifiers.getQualifiers()) {
-                        list.add(getXmlQualifier(qualifier, conditionForQualifiers.isCritical()));
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    private XmlQualifier getXmlQualifier(String value, boolean critical) {
-        final XmlQualifier xmlQualifier = new XmlQualifier();
-        xmlQualifier.setValue(value);
-        xmlQualifier.setCritical(critical);
-        return xmlQualifier;
-    }
-
-    private boolean checkServiceTypeASi(ServiceStatusAndInformationExtensions serviceInfoStatus, ServiceTypeASi serviceTypeASi) {
-        return serviceInfoStatus.getType() != null && serviceInfoStatus.getType().equals(serviceTypeASi.getType()) &&
-                (serviceTypeASi.getAsi() == null || serviceInfoStatus.getAdditionalServiceInfoUris().contains(serviceTypeASi.getAsi()));
-    }
-
-    private boolean checkCertTypeAsiEquivalence(CertificateToken certToken,
-                                                Map<ServiceTypeASi, ServiceTypeASi> typeAsiEquivalenceMap) {
-        XmlCertificate xmlCertificate = xmlCertsMap.get(certToken.getDSSIdAsString());
-        if (xmlCertificate == null) {
-            throw new IllegalStateException(String.format(
-                    "XML certificate with Id '%s' is not yet created!", certToken.getDSSIdAsString()));
-        }
-        if (Utils.isMapEmpty(typeAsiEquivalenceMap)) {
-            LOG.debug("No MRA equivalence is defined for Trust Service ASI.");
-            return false;
-        }
-
-        CertificateWrapper certificateWrapper = new CertificateWrapper(xmlCertificate);
-        boolean qcCompliance = certificateWrapper.isQcCompliance();
-        List<QCType> qcTypes = certificateWrapper.getQcTypes();
-        for (ServiceTypeASi serviceTypeASi : typeAsiEquivalenceMap.values()) {
-            if (serviceTypeASi.getAsi() == null) {
-                // no aSI -> accept all
-                return true;
-            }
-
-            if (Utils.isCollectionNotEmpty(qcTypes)) {
-                for (QCType qcType : qcTypes) {
-                    if (isQcTypeMatch(qcType, serviceTypeASi)) {
-                        return true;
-                    }
-                }
-
-            } else if (qcCompliance) {
-                // qcCompliance + no type -> foreSign
-                if (isQcTypeMatch(QCTypeEnum.QCT_ESIGN, serviceTypeASi)) {
-                    return true;
-                }
-
-            } else {
-                // no qcType -> accept all
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isQcTypeMatch(QCType qcType, ServiceTypeASi serviceTypeASi) {
-        String asi = serviceTypeASi.getAsi();
-        if (QCTypeEnum.QCT_ESIGN.equals(qcType)) {
-            return AdditionalServiceInformation.isForeSignatures(asi);
-        } else if (QCTypeEnum.QCT_ESEAL.equals(qcType)) {
-            return AdditionalServiceInformation.isForeSeals(asi);
-        } else if (QCTypeEnum.QCT_WEB.equals(qcType)) {
-            return AdditionalServiceInformation.isForWebAuth(asi);
-        }
-        return false;
-    }
-
-    private boolean checkStatusEquivalence(ServiceStatusAndInformationExtensions serviceInfoStatus,
-                                           Map<List<String>, List<String>> statusEquivalenceMap) {
-        if (Utils.isMapEmpty(statusEquivalenceMap)) {
-            LOG.debug("No MRA equivalence is defined for Trust Service status.");
-            return false;
-        }
-        for (Map.Entry<List<String>, List<String>> statusEquivalence : statusEquivalenceMap.entrySet()) {
-            if (statusEquivalence.getKey().contains(serviceInfoStatus.getStatus())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private XmlMRATrustServiceMapping getXmlMRATrustServiceMapping(ServiceStatusAndInformationExtensions serviceInfoStatus,
-                                                                   CertificateToken certToken, ServiceEquivalence serviceEquivalence) {
-        XmlMRATrustServiceMapping mraTrustServiceMapping = new XmlMRATrustServiceMapping();
-        mraTrustServiceMapping.setTrustServiceLegalIdentifier(serviceEquivalence.getLegalInfoIdentifier());
-        mraTrustServiceMapping.setEquivalenceStatusStartingTime(serviceEquivalence.getStartDate());
-        mraTrustServiceMapping.setEquivalenceStatusEndingTime(serviceEquivalence.getEndDate());
-        mraTrustServiceMapping.setOriginalThirdCountryMapping(getXmlOriginalThirdCountryTrustServiceMapping(serviceInfoStatus, certToken));
-        return mraTrustServiceMapping;
-    }
-
-    private XmlOriginalThirdCountryTrustServiceMapping getXmlOriginalThirdCountryTrustServiceMapping(
-            ServiceStatusAndInformationExtensions serviceInfoStatus, CertificateToken certToken) {
-        XmlOriginalThirdCountryTrustServiceMapping originalThirdCountryMapping = new XmlOriginalThirdCountryTrustServiceMapping();
-        originalThirdCountryMapping.setServiceType(serviceInfoStatus.getType());
-        originalThirdCountryMapping.setStatus(serviceInfoStatus.getStatus());
-
-        List<XmlQualifier> qualifiers = getQualifiers(serviceInfoStatus, certToken);
-        if (Utils.isCollectionNotEmpty(qualifiers)) {
-            originalThirdCountryMapping.setCapturedQualifiers(qualifiers);
-        }
-
-        List<String> additionalServiceInfoUris = serviceInfoStatus.getAdditionalServiceInfoUris();
-        if (Utils.isCollectionNotEmpty(additionalServiceInfoUris)) {
-            originalThirdCountryMapping.setAdditionalServiceInfoUris(additionalServiceInfoUris);
-        }
-
-        return originalThirdCountryMapping;
     }
     
 }

@@ -24,6 +24,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This class is used to convert a JAXB {@code TEType} object to a POJO {@code TrustedEntity}
+ *
+ */
 public class TrustedEntityConverter implements Function<TEType, TrustedEntity> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrustedEntityConverter.class);
@@ -131,13 +135,11 @@ public class TrustedEntityConverter implements Function<TEType, TrustedEntity> {
         return result;
     }
 
-    private Map<String, String> extractInformationURI(NonEmptyMultiLangURIListType tspInformationURI) {
-        Map<String, String> result = new HashMap<>();
-        if (tspInformationURI != null && Utils.isCollectionNotEmpty(tspInformationURI.getURI())) {
-            for (NonEmptyMultiLangURIType uriAndLang : tspInformationURI.getURI()) {
-                String lang = uriAndLang.getLang();
-                // Collect 1st / lang
-                result.computeIfAbsent(lang, k -> uriAndLang.getValue());
+    private Map<String, List<String>> extractInformationURI(NonEmptyMultiLangURIListType teInformationURI) {
+        Map<String, List<String>> result = new HashMap<>();
+        if (teInformationURI != null && Utils.isCollectionNotEmpty(teInformationURI.getURI())) {
+            for (NonEmptyMultiLangURIType uriAndLang : teInformationURI.getURI()) {
+                addEntry(result, uriAndLang.getLang(), uriAndLang.getValue());
             }
         }
         return result;

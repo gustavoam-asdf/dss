@@ -1160,6 +1160,17 @@ public class DSSJsonUtils {
 	}
 
 	/**
+	 * Gets a value from the {@code map} under the given {@code key} as {@code Number}
+	 *
+	 * @param map {@link Map} to extract the value from
+	 * @param key {@link String} key
+	 * @return {@link Number} value when found, empty string otherwise
+	 */
+	public static Number getAsNumber(Map<?, ?> map, String key) {
+		return toNumber(map.get(key), key);
+	}
+
+	/**
 	 * Method safely converts {@code Object} to {@code Number} if possible
 	 *
 	 * @param object {@link Object} to convert
@@ -1391,22 +1402,36 @@ public class DSSJsonUtils {
 	 * Parses provided base64url encoded string and returns the corresponding object.
 	 * The string shall conform to a JSON object specification, but not necessarily be a root element (i.e. a map).
 	 *
-	 * @param b64UrlEncodedString {@link String} to decode
+	 * @param base64UrlEncodedString {@link String} to decode
 	 * @return {@link Object}
 	 */
-	public static Object parseB64UrlEncoded(String b64UrlEncodedString) {
-		if (b64UrlEncodedString == null) {
+	public static Object parseBase64UrlEncoded(String base64UrlEncodedString) {
+		if (base64UrlEncodedString == null) {
 			return null;
 		}
-		if (!DSSJsonUtils.isBase64UrlEncoded(b64UrlEncodedString)) {
+		if (!DSSJsonUtils.isBase64UrlEncoded(base64UrlEncodedString)) {
 			throw new IllegalArgumentException("Base64Url encoded string is expected.");
 		}
 		try {
-			String decodedString = new String(DSSJsonUtils.fromBase64Url(b64UrlEncodedString));
+			String decodedString = new String(DSSJsonUtils.fromBase64Url(base64UrlEncodedString));
 			return new JSONParser().parse(decodedString);
 
 		} catch (Exception e) {
 			throw new DSSException(String.format("An error occurred on decoding the string. Reason : %s", e.getMessage()), e);
+		}
+	}
+
+	/**
+	 * This method parses base64url encoded string to a JSON map
+	 *
+	 * @param base64UrlEncodedString {@link String}
+	 * @return {@link Map}
+	 */
+	public static Map<String, Object> parseBase64UrlEncodedToMap(String base64UrlEncodedString) {
+		try {
+			return JsonUtil.parseJson(base64UrlEncodedString);
+		} catch (JoseException e) {
+			throw new DSSException(String.format("Unable to parse string : %s", e.getMessage()), e);
 		}
 	}
 

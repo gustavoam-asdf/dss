@@ -1,12 +1,9 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.eaa.common.EAAUtils;
-import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
+import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.utils.Utils;
-import org.jose4j.json.JsonUtil;
-import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +20,14 @@ public class SDJWTPayloadBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(SDJWTPayloadBuilder.class);
 
-    /** Payload to parse */
+    /**
+     * Payload to parse
+     */
     private final String payload;
 
-    /** List of disclosure validations */
+    /**
+     * List of disclosure validations
+     */
     private List<DisclosureValidation> disclosureValidations;
 
     /**
@@ -75,8 +76,8 @@ public class SDJWTPayloadBuilder {
 
     private static Map<String, Object> parseJsonString(String payload) {
         try {
-            return JsonUtil.parseJson(payload);
-        } catch (JoseException e) {
+            return DSSJsonUtils.parseBase64UrlEncodedToMap(payload);
+        } catch (Exception e) {
             LOG.warn("Unable to parse EAA payload : {}", e.getMessage(), e);
             return Collections.emptyMap();
         }

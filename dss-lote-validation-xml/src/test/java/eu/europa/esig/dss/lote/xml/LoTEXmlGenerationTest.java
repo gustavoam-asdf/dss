@@ -36,7 +36,7 @@ import eu.europa.esig.lote.jaxb.DigitalIdentityType;
 import eu.europa.esig.lote.jaxb.ElectronicAddressType;
 import eu.europa.esig.lote.jaxb.InternationalNamesType;
 import eu.europa.esig.lote.jaxb.ListOfTrustedEntitiesType;
-import eu.europa.esig.lote.jaxb.LoTESchemeInformationType;
+import eu.europa.esig.lote.jaxb.LoTEListAndSchemeInformationType;
 import eu.europa.esig.lote.jaxb.MultiLangNormStringType;
 import eu.europa.esig.lote.jaxb.NextUpdateType;
 import eu.europa.esig.lote.jaxb.NonEmptyMultiLangURIListType;
@@ -170,7 +170,7 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         ListOfTrustedEntitiesType lote = new ListOfTrustedEntitiesType();
         lote.setLOTETag("http://uri.etsi.org/019602/tag#");
 
-        LoTESchemeInformationType listAndSchemeInformation = new LoTESchemeInformationType();
+        LoTEListAndSchemeInformationType listAndSchemeInformation = new LoTEListAndSchemeInformationType();
         lote.setListAndSchemeInformation(listAndSchemeInformation);
 
         listAndSchemeInformation.setLoTEVersionIdentifier(BigInteger.ONE);

@@ -22,6 +22,7 @@ package eu.europa.esig.dss.lote.parsing;
 
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.lote.cache.CachedResult;
+import eu.europa.esig.dss.model.lote.TrustedEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,9 @@ public abstract class ParsingResult implements CachedResult {
 
 	/** The distribution points urls */
 	private List<String> distributionPoints;
+
+	/** List of found trust service providers */
+	private List<TrustedEntity> trustedEntities;
 
 	/** A list of error messages occurred during a structure validation */
 	protected List<String> structureValidationMessages;
@@ -186,6 +190,24 @@ public abstract class ParsingResult implements CachedResult {
 	 */
 	public void setDistributionPoints(List<String> distributionPoints) {
 		this.distributionPoints = distributionPoints;
+	}
+
+	/**
+	 * Gets trusted entities
+	 *
+	 * @return a list of {@link TrustedEntity}s
+	 */
+	public List<TrustedEntity> getTrustedEntities() {
+		return trustedEntities;
+	}
+
+	/**
+	 * Sets trusted entities
+	 *
+	 * @param trustedEntities a list of {@link TrustedEntity}s
+	 */
+	public void setTrustedEntities(List<TrustedEntity> trustedEntities) {
+		this.trustedEntities = trustedEntities;
 	}
 
 	/**

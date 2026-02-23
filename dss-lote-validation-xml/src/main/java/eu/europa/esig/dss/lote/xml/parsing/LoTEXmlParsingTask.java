@@ -3,24 +3,28 @@ package eu.europa.esig.dss.lote.xml.parsing;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.lote.parsing.ListParsingResult;
 import eu.europa.esig.dss.lote.parsing.ParsingResult;
+import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTENamePredicate;
+import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTESInformationPredicate;
+import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTrustedEntityServicePredicate;
 import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.lote.xml.parsing.function.TrustedEntityConverter;
-import eu.europa.esig.dss.lote.xml.parsing.predicate.NonEmptyTEName;
-import eu.europa.esig.dss.lote.xml.parsing.predicate.NonEmptyTESInformation;
-import eu.europa.esig.dss.lote.xml.parsing.predicate.NonEmptyTrustedEntityService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedEntityService;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.lote.jaxb.ListOfTrustedEntitiesType;
-import eu.europa.esig.lote.jaxb.LoTESchemeInformationType;
+import eu.europa.esig.lote.jaxb.LoTEListAndSchemeInformationType;
 import eu.europa.esig.lote.jaxb.NextUpdateType;
 import eu.europa.esig.lote.jaxb.NonEmptyURIListType;
 import eu.europa.esig.lote.jaxb.TrustedEntitiesListType;
 import eu.europa.esig.lote.xml.LOTEFacade;
+import eu.europa.esig.lote.xml.LOTEUtils;
+import org.w3c.dom.Document;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.dom.DOMSource;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Collections;
@@ -31,6 +35,10 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+/**
+ * This class performs reading and information extraction from an obtained XML LoTE
+ *
+ */
 public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
 
     /** Document ot parse */
@@ -59,7 +67,7 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
 
         parseSchemeInformation(result, jaxbObject.getListAndSchemeInformation());
         parseTrustedEntitiesList(result, jaxbObject.getTrustedEntitiesList());
-        // TODO : verify version conformity ?
+        verifyStructure(result);
 
         return result;
     }
@@ -91,7 +99,7 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
         return LOTEFacade.newFacade();
     }
 
-    private void parseSchemeInformation(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void parseSchemeInformation(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         commonParseSchemeInformation(result, schemeInformation);
     }
 
@@ -99,9 +107,9 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
      * Extracts the common values
      *
      * @param result {@link ListParsingResult}
-     * @param schemeInformation {@link LoTESchemeInformationType}
+     * @param schemeInformation {@link LoTEListAndSchemeInformationType}
      */
-    protected void commonParseSchemeInformation(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    protected void commonParseSchemeInformation(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         if (schemeInformation != null) {
             extractTSLType(result, schemeInformation);
             extractSequenceNumber(result, schemeInformation);
@@ -113,36 +121,36 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
         }
     }
 
-    private void extractTSLType(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractTSLType(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         String loTEType = schemeInformation.getLoTEType();
         if (Utils.isStringNotEmpty(loTEType)) {
             result.setType(ListType.fromUri(loTEType));
         }
     }
 
-    private void extractSequenceNumber(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractSequenceNumber(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         BigInteger sequenceNumber = schemeInformation.getLoTESequenceNumber();
         if (sequenceNumber != null) {
             result.setSequenceNumber(sequenceNumber.intValue());
         }
     }
 
-    private void extractTerritory(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractTerritory(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         result.setTerritory(schemeInformation.getSchemeTerritory());
     }
 
-    private void extractVersion(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractVersion(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         BigInteger versionIdentifier = schemeInformation.getLoTEVersionIdentifier();
         if (versionIdentifier != null) {
             result.setVersion(versionIdentifier.intValue());
         }
     }
 
-    private void extractIssueDate(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractIssueDate(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         result.setIssueDate(convertToDate(schemeInformation.getListIssueDateTime()));
     }
 
-    private void extractNextUpdateDate(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractNextUpdateDate(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         NextUpdateType nextUpdate = schemeInformation.getNextUpdate();
         if (nextUpdate != null) {
             result.setNextUpdateDate(convertToDate(nextUpdate.getDateTime()));
@@ -159,7 +167,7 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
         return null;
     }
 
-    private void extractDistributionPoints(ListParsingResult result, LoTESchemeInformationType schemeInformation) {
+    private void extractDistributionPoints(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         NonEmptyURIListType distributionPoints = schemeInformation.getDistributionPoints();
         if (distributionPoints != null && Utils.isCollectionNotEmpty(distributionPoints.getURI())) {
             result.setDistributionPoints(Collections.unmodifiableList(distributionPoints.getURI()));
@@ -183,7 +191,7 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
         List<TrustedEntity> filteredEntities = trustedEntities;
 
         // 1. Remove TSPs with invalid structure
-        filteredEntities = filteredEntities.stream().filter(new NonEmptyTEName()).collect(Collectors.toList());
+        filteredEntities = filteredEntities.stream().filter(new NonEmptyTENamePredicate()).collect(Collectors.toList());
 
         // 2. Filter the TSP with the predicate
         if (listSource.getTrustedEntityPredicate() != null) {
@@ -196,7 +204,7 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
             if (Utils.isCollectionNotEmpty(services)) {
                 List<TrustedEntityService> filteredServices = (List<TrustedEntityService>) services;
                 filteredServices = filteredServices.stream()
-                        .filter(new NonEmptyTESInformation()).collect(Collectors.toList());
+                        .filter(new NonEmptyTESInformationPredicate()).collect(Collectors.toList());
 
                 // 4. Filter the trust services with the predicate
                 if (listSource.getTrustedServicePredicate() != null) {
@@ -211,7 +219,20 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
         }
 
         // 5. Remove TSPs with empty trust services
-        return filteredEntities.stream().filter(new NonEmptyTrustedEntityService()).collect(Collectors.toList());
+        return filteredEntities.stream().filter(new NonEmptyTrustedEntityServicePredicate()).collect(Collectors.toList());
+    }
+
+    /**
+     * Verifies the structure conformity of the List of Trusted Entities
+     *
+     * @param result {@link ListParsingResult}
+     */
+    protected void verifyStructure(ListParsingResult result) {
+        Document domDocument = DomUtils.buildDOM(document);
+        List<String> structureValidationMessagesResult = LOTEUtils.getInstance().validateAgainstXSD(new DOMSource(domDocument));
+        if (Utils.isCollectionNotEmpty(structureValidationMessagesResult)) {
+            result.setStructureValidationMessages(structureValidationMessagesResult);
+        }
     }
 
 }

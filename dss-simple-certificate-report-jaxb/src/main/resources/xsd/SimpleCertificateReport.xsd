@@ -79,8 +79,8 @@
 			<xs:element name="qualificationDetailsAtValidation" type="Details" minOccurs="0" />
 			<xs:element name="qwacProfile" type="QWACProfile" minOccurs="0" />
 			<xs:element name="qwacDetails" type="Details" minOccurs="0" />
-			<xs:element name="certificateUsageAtIssuanceTime" type="CertificateUsageAtTime" minOccurs="0" />
-			<xs:element name="certificateUsageAtValidationTime" type="CertificateUsageAtTime" minOccurs="0" />
+			<xs:element name="certificateUsageAtIssuanceTime" type="CertificateUsageAtIssuanceTime" minOccurs="0" />
+			<xs:element name="certificateUsageAtValidationTime" type="CertificateUsageAtValidationTime" minOccurs="0" />
 			<xs:element name="enactedMRA" type="xs:boolean" minOccurs="0" />
 			<xs:element name="revocation" type="Revocation" minOccurs="0" />
 			<xs:element name="trustAnchors" type="TrustAnchors" minOccurs="0" />
@@ -248,6 +248,18 @@
 			<xs:enumeration value="UNEXPECTED_ERROR" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="CertificateUsageAtIssuanceTime">
+		<xs:complexContent>
+			<xs:extension base="CertificateUsageAtTime" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateUsageAtValidationTime">
+		<xs:complexContent>
+			<xs:extension base="CertificateUsageAtTime" />
+		</xs:complexContent>
+	</xs:complexType>
 
 	<xs:complexType name="CertificateUsageAtTime">
 		<xs:sequence>

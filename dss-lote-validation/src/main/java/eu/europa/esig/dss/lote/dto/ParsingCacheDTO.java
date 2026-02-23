@@ -23,8 +23,8 @@ package eu.europa.esig.dss.lote.dto;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.model.lote.OtherListPointer;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
+import eu.europa.esig.dss.model.lote.TrustedEntityService;
 import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
-import eu.europa.esig.dss.model.tsl.TrustService;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Date;
@@ -285,7 +285,7 @@ public class ParsingCacheDTO extends AbstractCacheDTO implements ParsingInfoReco
 		if (Utils.isCollectionNotEmpty(trustedEntities)) {
 			for (TrustedEntity tsp : trustedEntities) {
 				for (Object trustService : tsp.getServices()) {
-					certNumber += ((TrustService) trustService).getCertificates().size();
+					certNumber += ((TrustedEntityService) trustService).getCertificates().size();
 				}
 			}
 		}

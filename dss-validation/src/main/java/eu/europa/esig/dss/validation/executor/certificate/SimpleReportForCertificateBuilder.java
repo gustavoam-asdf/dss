@@ -39,6 +39,8 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtIssuanceTime;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtValidationTime;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlConnectionDetails;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlDetails;
@@ -378,13 +380,13 @@ public class SimpleReportForCertificateBuilder {
 		chainItem.setCertificateUsageAtValidationTime(getCertificateUsageAtValidationTime(certificate));
 	}
 
-	private List<XmlCertificateUsage> getCertificateUsageAtIssuanceTime(CertificateWrapper certificate) {
+	private XmlCertificateUsageAtIssuanceTime getCertificateUsageAtIssuanceTime(CertificateWrapper certificate) {
 		List<CertificateUsage> certificateUsagesAtIssuanceTime = detailedReport.getCertificateUsagesAtIssuanceTime(certificate.getId());
 		if (Utils.isCollectionEmpty(certificateUsagesAtIssuanceTime)) {
 			return null;
 		}
 
-		List<XmlCertificateUsage> result = new ArrayList<>();
+		XmlCertificateUsageAtIssuanceTime xmlCertificateUsageAtTime = new XmlCertificateUsageAtIssuanceTime();
 		for (CertificateUsage certificateUsage : certificateUsagesAtIssuanceTime) {
 			XmlCertificateUsage xmlCertificateUsage = new XmlCertificateUsage();
 			xmlCertificateUsage.setListType(certificateUsage.getListType());
@@ -393,18 +395,18 @@ public class SimpleReportForCertificateBuilder {
 			xmlCertificateUsage.setLabel(certificateUsage.getLabel());
 			xmlCertificateUsage.setDetails(getCertificateUsageDetailsAtIssuanceTime(certificate.getId(), certificateUsage));
 
-			result.add(xmlCertificateUsage);
+			xmlCertificateUsageAtTime.getCertificateUsage().add(xmlCertificateUsage);
 		}
-		return result;
+		return xmlCertificateUsageAtTime;
 	}
 
-	private List<XmlCertificateUsage> getCertificateUsageAtValidationTime(CertificateWrapper certificate) {
+	private XmlCertificateUsageAtValidationTime getCertificateUsageAtValidationTime(CertificateWrapper certificate) {
 		List<CertificateUsage> certificateUsagesAtIssuanceTime = detailedReport.getCertificateUsagesAtValidationTime(certificate.getId());
 		if (Utils.isCollectionEmpty(certificateUsagesAtIssuanceTime)) {
 			return null;
 		}
 
-		List<XmlCertificateUsage> result = new ArrayList<>();
+		XmlCertificateUsageAtValidationTime xmlCertificateUsageAtTime = new XmlCertificateUsageAtValidationTime();
 		for (CertificateUsage certificateUsage : certificateUsagesAtIssuanceTime) {
 			XmlCertificateUsage xmlCertificateUsage = new XmlCertificateUsage();
 			xmlCertificateUsage.setListType(certificateUsage.getListType());
@@ -413,9 +415,9 @@ public class SimpleReportForCertificateBuilder {
 			xmlCertificateUsage.setLabel(certificateUsage.getLabel());
 			xmlCertificateUsage.setDetails(getCertificateUsageDetailsAtValidationTime(certificate.getId(), certificateUsage));
 
-			result.add(xmlCertificateUsage);
+			xmlCertificateUsageAtTime.getCertificateUsage().add(xmlCertificateUsage);
 		}
-		return result;
+		return xmlCertificateUsageAtTime;
 	}
 
 	private XmlDetails getValidationDetails(String tokenId) {

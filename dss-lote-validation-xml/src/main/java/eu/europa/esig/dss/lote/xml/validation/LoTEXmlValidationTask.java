@@ -31,12 +31,16 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * This class is used to validate a TS 119 602 XML List of Trusted Entities
+ *
+ */
 public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
 
-    /** The path for a LOTL/TL validation policy */
-    private static final String TRUSTED_LIST_VALIDATION_POLICY_LOCATION = "/policy/tsl-constraint.xml"; // TODO : change policy ?
+    /** The path for a LoTE validation policy */
+    private static final String LoTE_VALIDATION_POLICY_LOCATION = "/policy/te-xml-constraint.xml";
 
-    /** The Trusted List document to validate */
+    /** The LoTE document to validate */
     private final DSSDocument loteDocument;
 
     /** The certificate source to use */
@@ -46,8 +50,7 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
      * Constructor used to instantiate a validator for a LoTE
      *
      * @param loteDocument      the DSSDocument with a LoTE
-     * @param signingCertificateSource a certificate source with the allowed certificates
-     *                          to sign this TL
+     * @param signingCertificateSource a certificate source with the allowed certificates to sign this LoTE
      */
     public LoTEXmlValidationTask(DSSDocument loteDocument, CertificateSource signingCertificateSource) {
         Objects.requireNonNull(loteDocument, "The document is null");
@@ -76,7 +79,7 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
         xmlDocumentValidator.setValidationContextExecutor(SkipValidationContextExecutor.INSTANCE); // Only need to validate against the trusted certificate source
         xmlDocumentValidator.setSignaturePolicyProvider(new SignaturePolicyProvider()); // ignore signature policy loading
 
-        return xmlDocumentValidator.validateDocument(getTrustedListValidationPolicy());
+        return xmlDocumentValidator.validateDocument(getValidationPolicy());
     }
 
     private ValidationResult fillResult(Reports reports) {
@@ -106,12 +109,12 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
         return commonTrustedCertificateSource;
     }
 
-    private ValidationPolicy getTrustedListValidationPolicy() {
+    private ValidationPolicy getValidationPolicy() {
         try {
             return ValidationPolicyLoader.fromValidationPolicy(
-                    LoTEXmlValidationTask.class.getResourceAsStream(TRUSTED_LIST_VALIDATION_POLICY_LOCATION)).create();
+                    LoTEXmlValidationTask.class.getResourceAsStream(LoTE_VALIDATION_POLICY_LOCATION)).create();
         } catch (Exception e) {
-            throw new DSSException("Unable to load the validation policy for trusted list", e);
+            throw new DSSException("Unable to load the validation policy for LoTE", e);
         }
     }
 

@@ -2,7 +2,6 @@ package eu.europa.esig.dss.enumerations;
 
 import eu.europa.esig.dss.enumerations.loader.LoTELoader;
 
-import java.util.Objects;
 import java.util.ServiceLoader;
 
 public interface LoTEServiceStatus extends UriBasedEnum {
@@ -21,7 +20,9 @@ public interface LoTEServiceStatus extends UriBasedEnum {
      * @return {@link LoTEServiceStatus}
      */
     static LoTEServiceStatus fromUri(String uri) {
-        Objects.requireNonNull(uri, "URI cannot be null!");
+        if (uri == null) {
+            return null;
+        }
 
         for (LoTELoader loader : loaders()) {
             LoTEServiceStatus status = loader.serviceStatusFromUri(uri);
