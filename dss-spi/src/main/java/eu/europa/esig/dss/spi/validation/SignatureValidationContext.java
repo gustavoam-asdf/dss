@@ -1550,8 +1550,8 @@ public class SignatureValidationContext implements ValidationContext {
 		Set<CertificateToken> certificateChildren = certificateChildrenMap.get(certificateToken);
 		if (Utils.isCollectionNotEmpty(certificateChildren)) {
 			for (CertificateToken certKid : certificateChildren) {
-				if (!processedCertificates.contains(certificateToken)) {
-					signatures.addAll(getSignaturesIssuedByCertificateOrItsChildren(certKid));
+				if (!processedCertificates.contains(certKid)) {
+					signatures.addAll(getSignaturesIssuedByCertificateOrItsChildren(certKid, processedCertificates));
 				}
 			}
 		}
