@@ -89,7 +89,7 @@ public interface Claim extends Serializable {
     boolean isStringValueType();
 
     /**
-     * Gets whether the claim value is of Boolean type
+     * Gets whether the claim value is of Binary type
      *
      * @return TRUE if the value is of Binary type, FALSE otherwise
      */

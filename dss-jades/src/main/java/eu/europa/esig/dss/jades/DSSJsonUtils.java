@@ -1414,10 +1414,24 @@ public class DSSJsonUtils {
 		}
 		try {
 			String decodedString = new String(DSSJsonUtils.fromBase64Url(base64UrlEncodedString));
-			return new JSONParser().parse(decodedString);
+			return parseJsonString(decodedString);
 
 		} catch (Exception e) {
 			throw new DSSException(String.format("An error occurred on decoding the string. Reason : %s", e.getMessage()), e);
+		}
+	}
+
+	/**
+	 * This method parses a plain String containing a JSON value
+	 *
+	 * @param jsonString {@link String} to parse
+	 * @return {@link Object}
+	 */
+	public static Object parseJsonString(String jsonString) {
+		try {
+			return new JSONParser().parse(jsonString);
+		} catch (Exception e) {
+			throw new DSSException(String.format("An error occurred on parsing the string. Reason : %s", e.getMessage()), e);
 		}
 	}
 

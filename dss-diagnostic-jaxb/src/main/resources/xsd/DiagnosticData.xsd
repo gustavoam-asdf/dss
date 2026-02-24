@@ -1785,15 +1785,15 @@
 
 	<xs:complexType name="DisclosableClaim">
 		<xs:sequence>
-			<xs:element name="Value" type="xs:string" minOccurs="0" />
+			<xs:element name="Text" type="xs:string" minOccurs="0" />
 			<xs:element name="Number" type="xs:integer" minOccurs="0" />
 			<xs:element name="Boolean" type="xs:boolean" minOccurs="0" />
 			<xs:element name="DateTime" type="xs:dateTime" minOccurs="0" />
 			<xs:element name="Item" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="Encoded" type="xs:base64Binary" minOccurs="0" />
+			<xs:element name="Serialized" type="xs:base64Binary" minOccurs="0" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="disclosure" type="xs:boolean" />
+		<xs:attribute name="name" type="xs:string" /> <!-- may be null -->
+		<xs:attribute name="disclosure" type="xs:boolean" default="false" />
 	</xs:complexType>
 
 	<xs:complexType name="DigestMatchers">

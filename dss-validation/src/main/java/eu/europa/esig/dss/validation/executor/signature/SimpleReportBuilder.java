@@ -24,6 +24,7 @@ import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
+import eu.europa.esig.dss.diagnostic.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.EvidenceRecordWrapper;
@@ -1013,7 +1014,7 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setMobilePhoneNumber(eaaPresentationWrapper.getUserMobilePhoneNumber());
 		xmlEAAPayload.setPseudonym(eaaPresentationWrapper.getUserPseudonym());
 
-		List<eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim> otherClaims = eaaPresentationWrapper.getOtherClaims();
+		List<ClaimWrapper> otherClaims = eaaPresentationWrapper.getOtherClaims();
 		if (Utils.isCollectionNotEmpty(otherClaims)) {
 			xmlEAAPayload.getOtherClaim().addAll(otherClaims.stream().map(this::getXmlDisclosableClaim).collect(Collectors.toList()));
 		}
@@ -1047,19 +1048,20 @@ public class SimpleReportBuilder {
 		return xmlNationalities;
 	}
 
-	private XmlDisclosableClaim getXmlDisclosableClaim(eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim ddDisclosableClaim) {
-		if (ddDisclosableClaim == null) {
+	private XmlDisclosableClaim getXmlDisclosableClaim(ClaimWrapper claimWrapper) {
+		if (claimWrapper == null) {
 			return null;
 		}
 		XmlDisclosableClaim xmlDisclosableClaim = new XmlDisclosableClaim();
-		xmlDisclosableClaim.setName(ddDisclosableClaim.getName());
-		xmlDisclosableClaim.setValue(ddDisclosableClaim.getValue());
-		xmlDisclosableClaim.setNumber(ddDisclosableClaim.getNumber());
-		xmlDisclosableClaim.setDateTime(ddDisclosableClaim.getDateTime());
-		xmlDisclosableClaim.setBoolean(ddDisclosableClaim.isBoolean());
-		xmlDisclosableClaim.setEncoded(ddDisclosableClaim.getEncoded());
-		if (Utils.isCollectionNotEmpty(ddDisclosableClaim.getItem())) {
-			for (eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim item : ddDisclosableClaim.getItem()) {
+		xmlDisclosableClaim.setName(claimWrapper.getName());
+		xmlDisclosableClaim.setDisclosure(claimWrapper.isSelectivelyDisclosable());
+		xmlDisclosableClaim.setText(claimWrapper.getText());
+		xmlDisclosableClaim.setNumber(claimWrapper.getNumber());
+		xmlDisclosableClaim.setDateTime(claimWrapper.getDateTime());
+		xmlDisclosableClaim.setBoolean(claimWrapper.getBoolean());
+		xmlDisclosableClaim.setSerialized(claimWrapper.getSerialized());
+		if (Utils.isCollectionNotEmpty(claimWrapper.getItemList())) {
+			for (ClaimWrapper item : claimWrapper.getItemList()) {
 				xmlDisclosableClaim.getItem().add(getXmlDisclosableClaim(item));
 			}
 		}

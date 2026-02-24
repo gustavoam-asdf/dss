@@ -1,8 +1,8 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -142,21 +143,120 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertTrue(eaaPresentation.getUserPhoneNumberVerified());
         assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getUserNationalities());
 
-        List<XmlDisclosableClaim> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
-        assertEquals(7, selectivelyDisclosableClaims.size());
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        assertEquals(8, selectivelyDisclosableClaims.size());
 
-        List<XmlDisclosableClaim> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
+
+        boolean issuerClaimFound = false;
+        boolean subjectClaimFound = false;
+        boolean issuedAtClaimFound = false;
+        boolean expTimeClaimFound = false;
+        boolean updTimeClaimFound = false;
+        boolean firstNameClaimFound = false;
+        boolean secondNameClaimFound = false;
+        boolean birthdayClaimFound = false;
+        boolean emailClaimFound = false;
+        boolean addressClaimFound = false;
+        boolean phoneNumberClaimFound = false;
+        boolean phoneNumberVerifiedClaimFound = false;
         boolean nationalitiesClaimFound = false;
-        for (XmlDisclosableClaim disclosableClaim : payloadClaims) {
-            if ("nationalities".equals(disclosableClaim.getName())) {
-                assertNull(disclosableClaim.isDisclosure());
-                assertEquals(2, disclosableClaim.getItem().size());
-                assertTrue(disclosableClaim.getItem().stream().allMatch(XmlDisclosableClaim::isDisclosure));
+        boolean cnfClaimFound = false;
+        for (ClaimWrapper disclosableClaim : payloadClaims) {
+            if ("iss".equals(disclosableClaim.getName())) {
+                assertEquals("https://issuer.example.com", disclosableClaim.getDisplayValue());
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                issuerClaimFound = true;
+
+            } else if ("sub".equals(disclosableClaim.getName())) {
+                assertEquals("user_42", disclosableClaim.getDisplayValue());
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                subjectClaimFound = true;
+
+            } else if ("iat".equals(disclosableClaim.getName())) {
+                assertEquals("2023-05-02T04:00:00Z", disclosableClaim.getDisplayValue());
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                issuedAtClaimFound = true;
+
+            } else if ("exp".equals(disclosableClaim.getName())) {
+                assertEquals("2029-09-01T23:33:20Z", disclosableClaim.getDisplayValue());
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                expTimeClaimFound = true;
+
+            } else if ("updated_at".equals(disclosableClaim.getName())) {
+                assertEquals("2019-10-02T07:06:40Z", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                updTimeClaimFound = true;
+
+            } else if ("given_name".equals(disclosableClaim.getName())) {
+                assertEquals("John", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                firstNameClaimFound = true;
+
+            } else if ("family_name".equals(disclosableClaim.getName())) {
+                assertEquals("Doe", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                secondNameClaimFound = true;
+
+            } else if ("email".equals(disclosableClaim.getName())) {
+                assertEquals("johndoe@example.com", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                emailClaimFound = true;
+
+            } else if ("birthdate".equals(disclosableClaim.getName())) {
+                assertEquals("1940-01-01T00:00:00Z", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                birthdayClaimFound = true;
+
+            } else if ("address".equals(disclosableClaim.getName())) {
+                assertEquals(DSSJsonUtils.parseJsonString("{\"street_address\": \"123 Main St\", \"locality\": \"Anytown\", " +
+                        "\"region\": \"Anystate\", \"country\": \"US\"}"), DSSJsonUtils.parseJsonString(disclosableClaim.getDisplayValue()));
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                addressClaimFound = true;
+
+            } else if ("phone_number".equals(disclosableClaim.getName())) {
+                assertEquals("+1-202-555-0101", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                phoneNumberClaimFound = true;
+
+            } else if ("phone_number_verified".equals(disclosableClaim.getName())) {
+                assertEquals("true", disclosableClaim.getDisplayValue());
+                assertTrue(disclosableClaim.isSelectivelyDisclosable());
+                phoneNumberVerifiedClaimFound = true;
+
+            } else if ("nationalities".equals(disclosableClaim.getName())) {
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                assertEquals(2, disclosableClaim.getItemList().size());
+                assertTrue(disclosableClaim.getItemList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
+                assertEquals("[\"US\", \"DE\"]", disclosableClaim.getDisplayValue());
                 nationalitiesClaimFound = true;
+                
+            } else if ("cnf".equals(disclosableClaim.getName())) {
+                assertEquals(DSSJsonUtils.parseJsonString("{\"jwk\": {\"kty\": \"EC\", \"crv\": \"P-256\", \"x\": " +
+                        "\"TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc\", \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"}}"),
+                        DSSJsonUtils.parseJsonString(disclosableClaim.getDisplayValue()));
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                cnfClaimFound = true;
+
+            } else {
+                fail(String.format("Not processed claim with name '%s'", disclosableClaim.getName()));
             }
         }
+        assertTrue(issuerClaimFound);
+        assertTrue(subjectClaimFound);
+        assertTrue(issuedAtClaimFound);
+        assertTrue(expTimeClaimFound);
+        assertTrue(updTimeClaimFound);
+        assertTrue(firstNameClaimFound);
+        assertTrue(secondNameClaimFound);
+        assertTrue(birthdayClaimFound);
+        assertTrue(emailClaimFound);
+        assertTrue(addressClaimFound);
+        assertTrue(phoneNumberClaimFound);
+        assertTrue(phoneNumberVerifiedClaimFound);
         assertTrue(nationalitiesClaimFound);
+        assertTrue(cnfClaimFound);
     }
 
     @Override

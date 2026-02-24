@@ -17,7 +17,7 @@ public class SDJWTClaimAddress extends ClaimMap implements ClaimAddress {
      * @param value {@link ClaimMap}
      */
     public SDJWTClaimAddress(ClaimMap value) {
-        super(value.getName(), value.getMapValue());
+        super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable());
     }
 
     @Override

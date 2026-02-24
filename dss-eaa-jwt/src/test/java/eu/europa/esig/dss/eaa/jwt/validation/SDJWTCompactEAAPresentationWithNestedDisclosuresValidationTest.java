@@ -1,8 +1,8 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -107,12 +107,12 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
         assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
         assertEquals(Arrays.asList("DE", "FR", "UK"), eaaPresentation.getUserNationalities());
 
-        List<XmlDisclosableClaim> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
         assertEquals(1, selectivelyDisclosableClaims.size());
         assertEquals("nationalities", selectivelyDisclosableClaims.get(0).getName());
-        assertTrue(selectivelyDisclosableClaims.get(0).isDisclosure());
-        assertEquals(3, selectivelyDisclosableClaims.get(0).getItem().size());
-        assertTrue(selectivelyDisclosableClaims.get(0).getItem().stream().allMatch(XmlDisclosableClaim::isDisclosure));
+        assertTrue(selectivelyDisclosableClaims.get(0).isSelectivelyDisclosable());
+        assertEquals(3, selectivelyDisclosableClaims.get(0).getItemList().size());
+        assertTrue(selectivelyDisclosableClaims.get(0).getItemList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
     }
 
     @Override

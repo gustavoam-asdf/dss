@@ -2,10 +2,10 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.diagnostic.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -22,6 +22,7 @@ import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -102,34 +103,84 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected void checkClaims(DiagnosticData diagnosticData) {
         for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-            List<XmlDisclosableClaim> eaaPayloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+            List<ClaimWrapper> eaaPayloadClaims = eaaPresentation.getAllEAAPayloadClaims();
             assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
 
             boolean disclosedClaimFound = false;
-            for (XmlDisclosableClaim xmlDisclosableClaim : eaaPayloadClaims) {
-                assertNotNull(xmlDisclosableClaim.getName());
-                assertTrue(xmlDisclosableClaim.getValue() != null || xmlDisclosableClaim.getDateTime() != null ||
-                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(xmlDisclosableClaim.getValue() != null, xmlDisclosableClaim.getDateTime() != null ||
-                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(xmlDisclosableClaim.getDateTime() != null, xmlDisclosableClaim.getValue() != null ||
-                        xmlDisclosableClaim.getNumber() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(xmlDisclosableClaim.getNumber() != null, xmlDisclosableClaim.getValue() != null ||
-                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()), xmlDisclosableClaim.getValue() != null ||
-                        xmlDisclosableClaim.getDateTime() != null || xmlDisclosableClaim.getNumber() != null ||
-                        xmlDisclosableClaim.isBoolean() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(xmlDisclosableClaim.isBoolean() != null, xmlDisclosableClaim.getValue() != null ||
-                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.getNumber() != null || xmlDisclosableClaim.getEncoded() != null);
-                assertNotEquals(xmlDisclosableClaim.getEncoded() != null, xmlDisclosableClaim.getValue() != null ||
-                        xmlDisclosableClaim.getDateTime() != null || Utils.isCollectionNotEmpty(xmlDisclosableClaim.getItem()) ||
-                        xmlDisclosableClaim.getNumber() != null || xmlDisclosableClaim.isBoolean() != null);
-                disclosedClaimFound |= Utils.isTrue(xmlDisclosableClaim.isDisclosure());
+            for (ClaimWrapper claimWrapper : eaaPayloadClaims) {
+                assertNotNull(claimWrapper.getName());
+
+                assertTrue(claimWrapper.getText() != null || claimWrapper.getDateTime() != null ||
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(claimWrapper.getText() != null, claimWrapper.getDateTime() != null ||
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(claimWrapper.getDateTime() != null, claimWrapper.getText() != null ||
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(claimWrapper.getNumber() != null, claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(Utils.isCollectionNotEmpty(claimWrapper.getItemList()), claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || claimWrapper.getNumber() != null ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(claimWrapper.getBoolean() != null, claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getNumber() != null || claimWrapper.getSerialized() != null);
+                assertNotEquals(claimWrapper.getSerialized() != null, claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null);
+
+                assertTrue(claimWrapper.isText() || claimWrapper.isDateTime() ||
+                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isText(), claimWrapper.isDateTime() ||
+                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isDateTime(), claimWrapper.isText() ||
+                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isNumber(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isItemList(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isNumber() ||
+                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isBoolean(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
+                        claimWrapper.isNumber() || claimWrapper.isSerialized());
+                assertNotEquals(claimWrapper.isSerialized(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
+                        claimWrapper.isNumber() || claimWrapper.isBoolean());
+                
+                disclosedClaimFound |= Utils.isTrue(claimWrapper.isSelectivelyDisclosable());
+
+                ClaimWrapper claimByHeaderName = eaaPresentation.getClaimByHeaderName(claimWrapper.getName());
+                assertNotNull(claimByHeaderName);
+                assertEquals(claimByHeaderName.getName(), claimWrapper.getName());
+                assertEquals(claimByHeaderName.getText(), claimWrapper.getText());
+                assertEquals(claimByHeaderName.getNumber(), claimWrapper.getNumber());
+                assertEquals(claimByHeaderName.getBoolean(), claimWrapper.getBoolean());
+                if (claimWrapper.getDateTime() != null) {
+                    assertNotNull(claimByHeaderName.getDateTime());
+                    assertEquals(0, claimWrapper.getDateTime().compareTo(claimByHeaderName.getDateTime()));
+                } else {
+                    assertNull(claimByHeaderName.getDateTime());
+                }
+                if (claimWrapper.getItemList() != null) {
+                    assertEquals(claimWrapper.getItemList().size(), claimByHeaderName.getItemList().size());
+                } else {
+                    assertNull(claimByHeaderName.getItemList());
+                }
+                if (claimWrapper.getSerialized() != null) {
+                    assertNotNull(claimByHeaderName.getSerialized());
+                    assertArrayEquals(claimWrapper.getSerialized(), claimByHeaderName.getSerialized());
+                } else {
+                    assertNull(claimByHeaderName.getSerialized());
+                }
+
+                assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
             }
             assertEquals(disclosuresPresent(), disclosedClaimFound);
             assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getSelectivelyDisclosableClaims()));

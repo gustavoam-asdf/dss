@@ -241,7 +241,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claim != null) {
             appendGenericInfo(xmlDisclosableClaim, claim);
             if (claim.isStringValueType()) {
-                xmlDisclosableClaim.setValue(claim.getStringValue());
+                xmlDisclosableClaim.setText(claim.getStringValue());
             } else if (claim.isNumberValueType()) {
                 xmlDisclosableClaim.setNumber(BigInteger.valueOf(claim.getNumberValue().longValue()));
             } else if (claim.isDateValueType()) {
@@ -249,14 +249,14 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             } else if (claim.isBooleanValueType()) {
                 xmlDisclosableClaim.setBoolean(claim.getBooleanValue());
             } else if (claim.isBinaryValueType()) {
-                xmlDisclosableClaim.setEncoded(claim.getBinariesValue());
+                xmlDisclosableClaim.setSerialized(claim.getBinariesValue());
             } else if (claim.isArrayValueType()) {
                 for (Claim claimItem : claim.getListValue()) {
                     xmlDisclosableClaim.getItem().add(getXmlDisclosableClaim(claimItem, new XmlDisclosableClaim()));
                 }
             } else {
                 // e.g. map
-                xmlDisclosableClaim.setEncoded(claim.getValueAsString().getBytes());
+                xmlDisclosableClaim.setSerialized(claim.getValueAsString().getBytes());
             }
             if (supportedClaims != null) {
                 supportedClaims.add(xmlDisclosableClaim);
