@@ -1,8 +1,11 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +72,9 @@ public class SDJWTPayloadBuilder {
         for (Map.Entry<String, Object> payloadEntry : map.entrySet()) {
             String claimName = payloadEntry.getKey();
             Claim claim = Claim.create(claimName, payloadEntry.getValue());
+            if (claim.isStringValueType() && claimName.endsWith(SDJWTConstants.INTEGRITY_SUFFIX)) {
+                claim = new SDJWTClaimIntegrity((ClaimString) claim);
+            }
             claimMap.put(claimName, claim);
         }
         return claimMap;

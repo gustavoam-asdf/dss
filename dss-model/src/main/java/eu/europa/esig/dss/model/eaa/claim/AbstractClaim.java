@@ -136,6 +136,11 @@ public abstract class AbstractClaim implements Claim {
     }
 
     @Override
+    public boolean isSubresourceIntegrityType() {
+        return false;
+    }
+
+    @Override
     public boolean isNullValueType() {
         return false;
     }

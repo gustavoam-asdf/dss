@@ -7,6 +7,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
@@ -105,18 +106,11 @@ public interface EAAPayload extends Serializable {
     ClaimString getMetadataType();
 
     /**
-     * Gets the Digest Algorithm used to compute EAA's Metadata integrity digest, when present
-     *
-     * @return {@link DigestAlgorithm}
-     */
-    DigestAlgorithm getMetadataDigestAlgorithm();
-
-    /**
-     * Gets the EAA's Metadata integrity digest value, when present
+     * Gets the EAA's Metadata integrity claim, when present
      *
      * @return {@link ClaimBinaries}
      */
-    ClaimBinaries getMetadataDigestValue();
+    ClaimIntegrity getMetadataIntegrity();
 
     /**
      * Gets the EAA's Status value, when present

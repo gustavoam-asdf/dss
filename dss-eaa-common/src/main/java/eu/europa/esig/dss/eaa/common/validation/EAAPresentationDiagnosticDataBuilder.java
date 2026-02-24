@@ -3,12 +3,12 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValueClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
@@ -19,6 +19,7 @@ import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
@@ -226,7 +227,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private XmlDisclosableClaim getXmlDisclosableClaim(Claim claim) {
-        return getXmlDisclosableClaim(claim, new XmlDisclosableClaim(), null);
+        return getXmlDisclosableClaim(claim, (List<XmlDisclosableClaim>) null);
     }
 
     private XmlDisclosableClaim getXmlDisclosableClaim(Claim claim, List<XmlDisclosableClaim> supportedClaims) {
@@ -270,15 +271,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         ClaimString metadata = eaaPayload.getMetadataType();
         if (metadata != null) {
             XmlMetadataTypeClaim xmlMetadataType = getXmlDisclosableClaim(metadata, new XmlMetadataTypeClaim(), supportedClaims);
-            if (eaaPayload.getMetadataDigestAlgorithm() != null || eaaPayload.getMetadataDigestValue() != null) {
-                XmlDigestAlgoAndValueClaim xmlDigestAlgoAndValueClaim = getXmlDisclosableClaim(eaaPayload.getMetadataDigestValue(), new XmlDigestAlgoAndValueClaim(), supportedClaims);
-                if (eaaPayload.getMetadataDigestAlgorithm() != null) {
-                    xmlDigestAlgoAndValueClaim.setDigestMethod(eaaPayload.getMetadataDigestAlgorithm());
-                }
-                if (eaaPayload.getMetadataDigestValue() != null) {
-                    xmlDigestAlgoAndValueClaim.setDigestValue(eaaPayload.getMetadataDigestValue().getBinariesValue());
-                }
-                xmlMetadataType.setDigestAlgoAndValue(xmlDigestAlgoAndValueClaim);
+            if (eaaPayload.getMetadataIntegrity() != null) {
+                xmlMetadataType.setIntegrity(getXmlIntegrityClaim(eaaPayload.getMetadataIntegrity(), supportedClaims));
             }
             return xmlMetadataType;
         }
@@ -340,6 +334,20 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             xmlPlaceOfBirthClaim.setCity(getXmlDisclosableClaim(claimPlaceOfBirth.getCity()));
         }
         return xmlPlaceOfBirthClaim;
+    }
+
+    private XmlIntegrityClaim getXmlIntegrityClaim(ClaimIntegrity claimIntegrity, List<XmlDisclosableClaim> supportedClaims) {
+        if (claimIntegrity == null) {
+            return null;
+        }
+        XmlIntegrityClaim xmlIntegrityClaim = getXmlDisclosableClaim(claimIntegrity, new XmlIntegrityClaim(), supportedClaims);
+        if (claimIntegrity.getDigestAlgorithm() != null) {
+            xmlIntegrityClaim.setDigestMethod(claimIntegrity.getDigestAlgorithm());
+        }
+        if (claimIntegrity.getDigestValue() != null) {
+            xmlIntegrityClaim.setDigestValue(claimIntegrity.getDigestValue());
+        }
+        return xmlIntegrityClaim;
     }
 
     private List<XmlDisclosableClaim> getOtherClaims(EAAPayload eaaPayload, List<XmlDisclosableClaim> supportedClaims) {

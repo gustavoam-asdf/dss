@@ -243,8 +243,8 @@ public class EAAPresentationWrapper {
      */
     public DigestAlgorithm getEAAMetadataIntegrityDigestAlgorithm() {
         if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getMetadataType() != null
-                && eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue() != null) {
-            return eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue().getDigestMethod();
+                && eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
+            return eaaPresentation.getEAAPayload().getMetadataType().getIntegrity().getDigestMethod();
         }
         return null;
     }
@@ -256,8 +256,8 @@ public class EAAPresentationWrapper {
      */
     public byte[] getEAAMetadataIntegrityBytes() {
         if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getMetadataType() != null
-                && eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue() != null) {
-            return eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue().getDigestValue();
+                && eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
+            return eaaPresentation.getEAAPayload().getMetadataType().getIntegrity().getDigestValue();
         }
         return null;
     }
@@ -843,8 +843,8 @@ public class EAAPresentationWrapper {
                 }
                 if (eaaPresentation.getEAAPayload().getMetadataType() != null) {
                     claimList.add(getClaim(eaaPresentation.getEAAPayload().getMetadataType()));
-                    if (eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue() != null) {
-                        claimList.add(getClaim(eaaPresentation.getEAAPayload().getMetadataType().getDigestAlgoAndValue()));
+                    if (eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
+                        claimList.add(getClaim(eaaPresentation.getEAAPayload().getMetadataType().getIntegrity()));
                     }
                 }
                 if (eaaPresentation.getEAAPayload().getStatus() != null) {

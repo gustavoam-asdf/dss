@@ -138,6 +138,13 @@ public interface Claim extends Serializable {
     boolean isNullValueType();
 
     /**
+     * Gets whether the claim provides an integrity validation material for the other claim, implementation specific
+     *
+     * @return TRUE if the claim provides an integrity validation material for the other claim, FALSE otherwise
+     */
+    boolean isSubresourceIntegrityType();
+
+    /**
      * Gets whether the value of the claim is null or empty
      *
      * @return TRUE whether the value of the claim is null or empty, FALSE otherwise

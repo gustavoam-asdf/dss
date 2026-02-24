@@ -163,7 +163,7 @@
 				printMethod="eu.europa.esig.dss.jaxb.parsers.DigestAlgorithmParser.print" />
 		</jaxb:bindings>
 
-	  <jaxb:bindings node="//xs:complexType[@name='DigestAlgoAndValueClaim']//xs:element[@name='DigestMethod']">
+	  <jaxb:bindings node="//xs:complexType[@name='IntegrityClaim']//xs:element[@name='DigestMethod']">
 		  <jaxb:javaType name="eu.europa.esig.dss.enumerations.DigestAlgorithm"
 						 parseMethod="eu.europa.esig.dss.jaxb.parsers.DigestAlgorithmParser.parse"
 						 printMethod="eu.europa.esig.dss.jaxb.parsers.DigestAlgorithmParser.print" />

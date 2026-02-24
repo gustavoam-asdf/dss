@@ -11,6 +11,8 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
  */
 public class SDJWTClaimAddress extends ClaimMap implements ClaimAddress {
 
+    private static final long serialVersionUID = 4589801086719909382L;
+
     /**
      * Constructor to initialize SDJWTClaimAddress from a ClaimMap
      *

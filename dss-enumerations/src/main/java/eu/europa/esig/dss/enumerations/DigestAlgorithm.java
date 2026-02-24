@@ -42,13 +42,13 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	SHA224("SHA224", "SHA-224", "2.16.840.1.101.3.4.2.4", "http://www.w3.org/2001/04/xmldsig-more#sha224", "S224", 28),
 
 	/** SHA-256 */
-	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", "sha-256", 32),
+	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", "sha-256", "sha256", 32),
 
 	/** SHA-384 */
-	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", null, "sha-384", 48),
+	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", null, "sha-384", "sha384", 48),
 
 	/** SHA-512 */
-	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", "sha-512", 64),
+	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", "sha-512", "sha512", 64),
 
 	// see https://tools.ietf.org/html/rfc6931
 	/** SHA3-224 */
@@ -110,11 +110,14 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	/** URI of the algorithm for a JAdES (JWS) signatures */
 	private final String jadesId;
 
+	/** URI of the algorithm for JAdES HTTPHeaders (see RFC 5843, sigD HTTP_HEADER)  */
+	private final String httpHeaderId;
+
 	/** Identifier of the algorithm present within an SD-JWT token */
 	private final String sdJwtId;
 
-	/** URI of the algorithm for JAdES HTTPHeaders (see RFC 5843, sigD HTTP_HEADER)  */
-	private final String httpHeaderId;
+	/** Identifier of the algorithm present within the subresource integrity claim */
+	private final String srIntegrityId;
 
 	/** Salt length for MGF usage */
 	private final int saltLength;
@@ -135,6 +138,8 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		private static final Map<String, DigestAlgorithm> HTTP_HEADER_ALGORITHMS = registerJwsHttpHeaderAlgorithms();
 		/** A map between SD-JWT token ids and algorithms */
 		private static final Map<String, DigestAlgorithm> SD_JWT_ALGORITHMS = registerSDJWTAlgorithms();
+		/** A map between SubResource integrity ids and algorithms */
+		private static final Map<String, DigestAlgorithm> SR_INTEGRITY_ALGORITHMS = registerSubResourceIntegrityAlgorithms();
 
 		private static Map<String, DigestAlgorithm> registerOIDAlgorithms() {
 			final Map<String, DigestAlgorithm> map = new HashMap<>();
@@ -188,6 +193,14 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 			final Map<String, DigestAlgorithm> map = new HashMap<>();
 			for (final DigestAlgorithm digestAlgorithm : values()) {
 				map.put(digestAlgorithm.sdJwtId, digestAlgorithm);
+			}
+			return map;
+		}
+
+		private static Map<String, DigestAlgorithm> registerSubResourceIntegrityAlgorithms() {
+			final Map<String, DigestAlgorithm> map = new HashMap<>();
+			for (final DigestAlgorithm digestAlgorithm : values()) {
+				map.put(digestAlgorithm.srIntegrityId, digestAlgorithm);
 			}
 			return map;
 		}
@@ -345,6 +358,24 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	}
 
 	/**
+	 * Returns the digest algorithm associated to a subresource integrity definition as defined in
+	 * {@link <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata">W3C Subresource Integrity</a>}.
+	 * NOTE: the standard does not explicitly specify the supported hash algorithms.
+	 *
+	 * @param srIntegrityId the algorithm name according to W3C "Subresource Integrity"
+	 * @return the digest algorithm linked to the given name
+	 * @throws IllegalArgumentException if the name doesn't match any digest
+	 *                                  algorithm
+	 */
+	public static DigestAlgorithm forSrIntegrityId(final String srIntegrityId) {
+		final DigestAlgorithm algorithm = Registry.SR_INTEGRITY_ALGORITHMS.get(srIntegrityId);
+		if (algorithm == null) {
+			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, srIntegrityId));
+		}
+		return algorithm;
+	}
+
+	/**
 	 * Constructor with OID and XML URI
 	 *
 	 * @param name {@link String} algorithm name
@@ -429,6 +460,25 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
 					final String jadesId, final String httpHeaderId, final String sdJwtId, final int saltLength) {
+		this(name, javaName, oid, xmlId, jadesId, httpHeaderId, sdJwtId, null, saltLength);
+	}
+
+	/**
+	 * Constructor with OID, XML URI and JAdES URIs with MGF support
+	 *
+	 * @param name {@link String} algorithm name
+	 * @param javaName {@link String} algorithm Java name
+	 * @param oid {@link String} algorithm OID
+	 * @param xmlId {@link String} algorithm XML URI
+	 * @param jadesId {@link String} algorithm JAdES URI
+	 * @param httpHeaderId {@link String} algorithm JAdES HTTPHeader URI
+	 * @param sdJwtId {@link String} algorithm name for SD-JWT token
+	 * @param srIntegrityId {@link String} subresource integrity Id
+	 * @param saltLength {@link String} salt length for MGF
+	 */
+	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
+					final String jadesId, final String httpHeaderId, final String sdJwtId, final String srIntegrityId,
+					final int saltLength) {
 		this.name = name;
 		this.javaName = javaName;
 		this.oid = oid;
@@ -436,6 +486,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		this.jadesId = jadesId;
 		this.httpHeaderId = httpHeaderId;
 		this.sdJwtId = sdJwtId;
+		this.srIntegrityId = srIntegrityId;
 		this.saltLength = saltLength;
 	}
 
@@ -479,7 +530,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 
 	/**
 	 * Get the algorithm id used in JAdES Signatures.
-	 * 
+	 * <p>
 	 * TS 119-182 Annex E (normative): Digest algorithms identifiers for JAdES
 	 * signatures
 	 * 
@@ -496,6 +547,30 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	public String getHttpHeaderAlgo() {
 		return httpHeaderId;
+	}
+
+	/**
+	 * Get the algorithm id used for claims integrity definition within SD-JWT.
+	 * <p>
+	 * The allowed values are available at
+	 * {@link <a href="IANA Named Information">https://www.iana.org/assignments/named-information/named-information.xhtml</a>}
+	 *
+	 * @return the algorithm SD-JWT claim hash identifier
+	 */
+	public String getSDJWTId() {
+		return sdJwtId;
+	}
+
+	/**
+	 * Get the algorithm id used for subresource integrity calculation.
+	 * <p>
+	 * The allowed values are available at
+	 * {@link <a href="W3C Subresource Integrity">https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata</a>}
+	 *
+	 * @return the algorithm subresource integrity claim id
+	 */
+	public String getSubresourceIntegrityId() {
+		return srIntegrityId;
 	}
 
 	/**

@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimPlaceOfBirth;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -14,6 +15,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
@@ -117,12 +119,7 @@ public class SDJWTPayload implements EAAPayload {
     public DigestAlgorithm getSelectiveDisclosableClaimDigestAlgorithm() {
         String digestAlgoName = DSSJsonUtils.getAsString(payloadMap, SDJWTConstants._SD_ALG);
         if (Utils.isStringNotEmpty(digestAlgoName)) {
-            try {
-                return DigestAlgorithm.forSdJwtId(digestAlgoName);
-            } catch (IllegalArgumentException e) {
-                LOG.warn("The value '{}' of '{}' is not supported!", digestAlgoName, SDJWTConstants._SD_ALG);
-                return null;
-            }
+            return SDJWTUtils.getDigestAlgorithmForSdJwtId(digestAlgoName);
         }
         /*
          * 4.2.3. Hashing Disclosures (draft-ietf-oauth-selective-disclosure-jwt-22)
@@ -185,37 +182,10 @@ public class SDJWTPayload implements EAAPayload {
     }
 
     @Override
-    public DigestAlgorithm getMetadataDigestAlgorithm() {
-        ClaimString vctIntegrity = getValueAsString(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY);
-        if (vctIntegrity != null) {
-            String vctIntegrityString = vctIntegrity.getStringValue();
-            if (vctIntegrityString != null) {
-                String[] parts = vctIntegrityString.split("-");
-                if (parts.length > 1) {
-                    return SDJWTUtils.getDigestAlgorithmForSdJwtId(parts[0]);
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public ClaimBinaries getMetadataDigestValue() {
-        ClaimString vctIntegrity = getValueAsString(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY);
-        if (vctIntegrity != null) {
-            String vctIntegrityString = vctIntegrity.getStringValue();
-            if (vctIntegrityString != null) {
-                String[] parts = vctIntegrityString.split("-");
-                if (parts.length > 1) {
-                    String digestValueB64Url = parts[1];
-                    if (DSSJsonUtils.isBase64UrlEncoded(digestValueB64Url)) {
-                        byte[] bytes = DSSJsonUtils.fromBase64Url(digestValueB64Url);
-                        return (ClaimBinaries) Claim.create(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, bytes);
-                    } else {
-                        LOG.warn("The vct#integrity bytes are not base64url encoded!");
-                    }
-                }
-            }
+    public ClaimIntegrity getMetadataIntegrity() {
+        ClaimString metadataIntegrity = getValueAsString(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY);
+        if (metadataIntegrity != null) {
+            return new SDJWTClaimIntegrity(metadataIntegrity);
         }
         return null;
     }

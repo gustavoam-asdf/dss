@@ -71,7 +71,22 @@ public final class SDJWTUtils {
         try {
             return DigestAlgorithm.forSdJwtId(sdJwtId);
         } catch (IllegalArgumentException e) {
-            LOG.warn("Unable to find a corresponding DigestAlgortihm for value '{}'!", sdJwtId);
+            LOG.warn("Unable to find a corresponding DigestAlgortihm for SD-JWT claim for value '{}'!", sdJwtId);
+            return null;
+        }
+    }
+
+    /**
+     * Gets a DigestAlgorithm value for the given {@code srIntegrityId} in a secure way (no exception)
+     *
+     * @param srIntegrityId {@link String} to get a corresponding digest algorithm for
+     * @return {@link DigestAlgorithm}
+     */
+    public static DigestAlgorithm getDigestAlgorithmForIntegrityClaimId(String srIntegrityId) {
+        try {
+            return DigestAlgorithm.forSrIntegrityId(srIntegrityId);
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Unable to find a corresponding DigestAlgortihm for integrity claim for value '{}'!", srIntegrityId);
             return null;
         }
     }

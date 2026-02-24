@@ -59,6 +59,9 @@ public class SDJWTConstants {
 
     // draft-ietf-oauth-sd-jwt-vc-13
 
+    /** The integrity of a claim document or value */
+    public static final String INTEGRITY_SUFFIX = "#integrity";
+
     /** The type of the Verifiable Credential */
     public static final String VERIFIABLE_CREDENTIALS_TYPE = "vct";
 

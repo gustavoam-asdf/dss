@@ -1728,13 +1728,13 @@
 		<xs:complexContent>
 			<xs:extension base="DisclosableClaim">
 				<xs:sequence>
-					<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValueClaim" minOccurs="0" />
+					<xs:element name="Integrity" type="IntegrityClaim" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="DigestAlgoAndValueClaim">
+	<xs:complexType name="IntegrityClaim">
 		<xs:complexContent>
 			<xs:extension base="DisclosableClaim">
 				<xs:sequence>
