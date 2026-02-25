@@ -4,6 +4,7 @@ import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JWSCompactSerializationParser;
 import eu.europa.esig.dss.jades.validation.JWS;
+import eu.europa.esig.dss.lote.json.parsing.function.JsonOtherLoTEPointerConverter;
 import eu.europa.esig.dss.lote.json.parsing.function.JsonTrustedEntityConverter;
 import eu.europa.esig.dss.lote.parsing.ListParsingResult;
 import eu.europa.esig.dss.lote.parsing.ParsingResult;
@@ -101,16 +102,6 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
     }
 
     private void parseListAndSchemeInformation(ListParsingResult result, Map<?, ?> listAndSchemeInformation) {
-        commonParseSchemeInformation(result, listAndSchemeInformation);
-    }
-
-    /**
-     * Extracts the common values
-     *
-     * @param result {@link ListParsingResult}
-     * @param listAndSchemeInformation {@link Map}
-     */
-    protected void commonParseSchemeInformation(ListParsingResult result, Map<?, ?> listAndSchemeInformation) {
         if (listAndSchemeInformation != null) {
             extractTSLType(result, listAndSchemeInformation);
             extractSequenceNumber(result, listAndSchemeInformation);
@@ -119,6 +110,7 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
             extractIssueDate(result, listAndSchemeInformation);
             extractNextUpdateDate(result, listAndSchemeInformation);
             extractDistributionPoints(result, listAndSchemeInformation);
+            extractOtherLoTEPointers(result, listAndSchemeInformation);
         }
     }
 
@@ -177,6 +169,17 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
             result.setDistributionPoints(Collections.unmodifiableList(distributionPoints));
         } else {
             result.setDistributionPoints(Collections.emptyList());
+        }
+    }
+
+    private void extractOtherLoTEPointers(ListParsingResult result, Map<?, ?> listAndSchemeInformation) {
+        List<?> pointersToOtherLoTE = DSSJsonUtils.getAsList(listAndSchemeInformation, JsonLoTEHeaderParameterNames.POINTERS_TO_OTHER_LOTE);
+        if (Utils.isCollectionNotEmpty(pointersToOtherLoTE)) {
+            JsonOtherLoTEPointerConverter converter = new JsonOtherLoTEPointerConverter();
+            if (listSource.getOtherListPointerPredicate() != null) {
+                result.setOtherListPointers(pointersToOtherLoTE.stream().map(DSSJsonUtils::toMap).filter(Utils::isMapNotEmpty)
+                        .map(converter).filter(listSource.getOtherListPointerPredicate()).collect(Collectors.toList()));
+            }
         }
     }
 

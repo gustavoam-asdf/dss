@@ -49,7 +49,7 @@ public class OtherLoTEPointerConverter implements Function<OtherLoTEPointerType,
     public OtherListPointer apply(OtherLoTEPointerType original) {
         return new OtherListPointer.OtherListPointerBuilder()
                 .setSdiCertificates(getCertificates(original.getServiceDigitalIdentities()))
-                .setTslLocation(original.getLoTELocation())
+                .setLocationUrl(original.getLoTELocation())
                 .setSchemeTerritory(getSchemeTerritory(original.getAdditionalInformation()))
                 .setTslType(getType(original.getAdditionalInformation()))
                 .setMimeType(getMimeType(original.getAdditionalInformation()))
@@ -70,7 +70,7 @@ public class OtherLoTEPointerConverter implements Function<OtherLoTEPointerType,
         return certificates;
     }
 
-    private String getSchemeTerritory(eu.europa.esig.lote.jaxb.AdditionalInformationType additionalInformation) {
+    private String getSchemeTerritory(AdditionalInformationType additionalInformation) {
         return getOtherInformationValue(additionalInformation, String.class, SCHEME_TERRITORY);
     }
 

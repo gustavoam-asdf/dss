@@ -2,12 +2,20 @@ package eu.europa.esig.dss.lote.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.enumerations.CertificateUsage;
 import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JsonObject;
 import eu.europa.esig.dss.jades.signature.JAdESService;
@@ -43,13 +51,20 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class LoTEJsonGenerationTest extends PKIFactoryAccess {
+class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
 
     private static final String PKI_NAME = "pid-providers";
 
+    private static final String LOLOTE_LOCATION_URL = "https://test.test/lolote";
     private static final String LOTE_LOCATION_URL = "https://test.test/lote-pid";
+
+    // TODO : change to real ones
+    private static final String EU_LIST_OF_LISTS_TYPE = "http://uri.etsi.org/19602/LoTEType/EUlistofthelists";
+    private static final String EU_LIST_OF_LISTS_STATUS_DETERMINATION_APPROACH = "http://uri.etsi.org/19602/ListOfLists/StatusDetn/EU";
+    private static final String EU_LIST_OF_LISTS_SCHEME_TYPE_COMMUNITY_RULES = "http://uri.etsi.org/19602/ListOfLists/schemerules/EU";
 
     private static final String PID_PROVIDERS_LIST_TYPE = "http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList";
     private static final String PID_SERVICE_TYPE_IDENTIFIER = "http://uri.etsi.org/19602/SvcType/PID/Issuance";
@@ -63,10 +78,10 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
     private static final String PID_CERTIFICATE = "Test-PID";
     private CertificateToken pidCertificate;
 
+    private static final String LOLOTE_SIGNER_CERTIFICATE = "LoLoTE-Signer";
     private static final String LOTE_SIGNER_CERTIFICATE = "LoTE-Signer";
-    private CertificateToken loteSignerCertificate;
 
-    private String signer = LOTE_SIGNER_CERTIFICATE;
+    private String signer;
 
     @BeforeEach
     public void init() {
@@ -79,12 +94,12 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
         onlineFileLoader.setDataLoader(new MockDataLoader(urlMap));
         onlineFileLoader.setFileCacheDirectory(cacheDirectory);
 
-        loteSignerCertificate = getCertificate(LOTE_SIGNER_CERTIFICATE);
         pidCertificate = getCertificate(PID_CERTIFICATE);
     }
 
     @Test
     void test() {
+        DSSDocument loloTE = createLoLoTE();
         DSSDocument loTE = createLoTE();
 
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
@@ -92,14 +107,17 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
         LoTEValidationJob validationJob = new LoTEValidationJob();
         validationJob.setTrustedListCertificateSource(trustedEntitiesCertificateSource);
 
+        urlMap.put(LOLOTE_LOCATION_URL, loloTE);
         urlMap.put(LOTE_LOCATION_URL, loTE);
         validationJob.setOnlineDataLoader(onlineFileLoader);
 
         ListSource listSource = new ListSource();
-        listSource.setUrl(LOTE_LOCATION_URL);
+        listSource.setUrl(LOLOTE_LOCATION_URL);
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
-        trustedCertificateSource.addCertificate(loteSignerCertificate);
+        trustedCertificateSource.addCertificate(getCertificate(LOLOTE_SIGNER_CERTIFICATE));
         listSource.setCertificateSource(trustedCertificateSource);
+        listSource.setOtherListPointerPredicate(otherListPointer ->
+                PID_PROVIDERS_LIST_TYPE.equals(otherListPointer.getType()));
         validationJob.setListSources(listSource);
 
         validationJob.onlineRefresh();
@@ -135,9 +153,150 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
         assertEquals(0, simpleReport.getCertificateUsageWarningsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
         assertEquals(0, simpleReport.getCertificateUsageInfoAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
 
+        DiagnosticData diagnosticData = reports.getDiagnosticData();
+        List<XmlListOfTrustedEntities> listsOfTrustedEntities = diagnosticData.getListsOfTrustedEntities();
+        assertEquals(2, listsOfTrustedEntities.size());
+
+        boolean loloteFound = false;
+        boolean loteFound = false;
+        for (XmlListOfTrustedEntities xmlListOfTrustedEntities : listsOfTrustedEntities) {
+            if (xmlListOfTrustedEntities.getParent() != null) {
+                loteFound = true;
+            } else {
+                loloteFound = true;
+            }
+        }
+        assertTrue(loloteFound);
+        assertTrue(loteFound);
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlCertificate xmlCertificate = detailedReport.getXmlCertificateById(pidCertificate.getDSSIdAsString());
+        XmlCertificateUsageProcess certificateUsageProcess = xmlCertificate.getCertificateUsageProcess();
+
+        boolean loloteCheckFound = false;
+        boolean loteCheckFound = false;
+        for (XmlConstraint constraint : certificateUsageProcess.getConstraint()) {
+            if (MessageTag.CERT_USAGE_LOLOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {
+                loloteCheckFound = true;
+            } else if (MessageTag.CERT_USAGE_LOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {
+                loteCheckFound = true;
+            }
+            assertEquals(XmlStatus.OK, constraint.getStatus());
+        }
+        assertTrue(loloteCheckFound);
+        assertTrue(loteCheckFound);
+    }
+
+    private DSSDocument createLoLoTE() {
+        signer = LOLOTE_SIGNER_CERTIFICATE;
+
+        JsonObject root = new JsonObject();
+
+        JsonObject lote = new JsonObject();
+        root.put("LoTE", lote);
+
+        JsonObject listAndSchemeInformation = new JsonObject();
+        lote.put("ListAndSchemeInformation", listAndSchemeInformation);
+
+        listAndSchemeInformation.put("LoTEVersionIdentifier", 1);
+        listAndSchemeInformation.put("LoTESequenceNumber", 1);
+        listAndSchemeInformation.put("LoTEType", EU_LIST_OF_LISTS_TYPE);
+
+        List<JsonObject> schemeOperatorName = new ArrayList<>();
+        schemeOperatorName.add(getMultiLangString("fr", "Agence Nationale de la Confiance Numérique"));
+        schemeOperatorName.add(getMultiLangString("en", "National Agency for Digital Trust"));
+        listAndSchemeInformation.put("SchemeOperatorName", schemeOperatorName);
+
+        JsonObject schemeOperatorAddress = new JsonObject();
+        listAndSchemeInformation.put("SchemeOperatorAddress", schemeOperatorAddress);
+
+        List<JsonObject> schemeOperatorPostalAddress = new ArrayList<>();
+        schemeOperatorPostalAddress.add(getPostalAddress("fr", "12 Boulevard Sécurité", "Paris", "Île-de-France","75015", "ZZ"));
+        schemeOperatorPostalAddress.add(getPostalAddress("en", "12 Security Boulevard", "Paris", "Ile-de-France","75015", "ZZ"));
+        schemeOperatorAddress.put("SchemeOperatorPostalAddress", schemeOperatorPostalAddress);
+
+        List<JsonObject> schemeOperatorElectronicAddress = new ArrayList<>();
+        schemeOperatorElectronicAddress.add(getNonEmptyMultiLangURI("en", "mailto@schemeoperator.com"));
+        schemeOperatorAddress.put("SchemeOperatorElectronicAddress", schemeOperatorElectronicAddress);
+
+        List<JsonObject> schemeName = new ArrayList<>();
+        schemeName.add(getMultiLangString("fr", "Liste de confiance zz"));
+        schemeName.add(getMultiLangString("en", "ZZ Trusted List"));
+        listAndSchemeInformation.put("SchemeName", schemeName);
+
+        List<JsonObject> schemeInformationURI = new ArrayList<>();
+        schemeInformationURI.add(getNonEmptyMultiLangURI("en", "https://example.org/scheme-info"));
+        listAndSchemeInformation.put("SchemeInformationURI", schemeInformationURI);
+
+        listAndSchemeInformation.put("StatusDeterminationApproach", EU_LIST_OF_LISTS_STATUS_DETERMINATION_APPROACH);
+
+        List<JsonObject> schemeTypeCommunityRules = new ArrayList<>();
+        schemeTypeCommunityRules.add(getNonEmptyMultiLangURI("en", EU_LIST_OF_LISTS_SCHEME_TYPE_COMMUNITY_RULES));
+        listAndSchemeInformation.put("SchemeTypeCommunityRules", schemeTypeCommunityRules);
+
+        listAndSchemeInformation.put("SchemeTerritory", "EU");
+
+        List<JsonObject> policyOrLegalNotice = new ArrayList<>();
+        JsonObject policyOrLegalNoticeEntry = new JsonObject();
+        policyOrLegalNoticeEntry.put("LoTEPolicy", getNonEmptyMultiLangURI("en", "http://trust.tech.ec.europa.eu/lists/eudiw/legal-notice#EN"));
+        policyOrLegalNotice.add(policyOrLegalNoticeEntry);
+        listAndSchemeInformation.put("PolicyOrLegalNotice", policyOrLegalNotice);
+
+        Calendar calendar = Calendar.getInstance();
+        listAndSchemeInformation.put("ListIssueDateTime", DSSUtils.formatDateToRFC(calendar.getTime()));
+
+        calendar.add(Calendar.MONTH, 6);
+        listAndSchemeInformation.put("NextUpdate", DSSUtils.formatDateToRFC(calendar.getTime()));
+
+        List<JsonObject> pointersToOtherLOTE = new ArrayList<>();
+        listAndSchemeInformation.put("PointersToOtherLoTE", pointersToOtherLOTE);
+
+        JsonObject selfLoTEPointer = new JsonObject();
+        selfLoTEPointer.put("LoTELocation", LOLOTE_LOCATION_URL);
+
+        List<JsonObject> serviceDigitalIdentities = new ArrayList<>();
+        serviceDigitalIdentities.add(getServiceDigitalIdentity(getCertificate(LOLOTE_SIGNER_CERTIFICATE)));
+        selfLoTEPointer.put("ServiceDigitalIdentities", serviceDigitalIdentities);
+
+        List<JsonObject> loteQualifiers = new ArrayList<>();
+        loteQualifiers.add(getLoTEQualifier("LoTEType", EU_LIST_OF_LISTS_TYPE));
+        loteQualifiers.add(getLoTEQualifier("SchemeTerritory", "EU"));
+        selfLoTEPointer.put("LoTEQualifiers", loteQualifiers);
+
+        pointersToOtherLOTE.add(selfLoTEPointer);
+
+        JsonObject otherLoTEPointer = new JsonObject();
+        otherLoTEPointer.put("LoTELocation", LOTE_LOCATION_URL);
+
+        serviceDigitalIdentities = new ArrayList<>();
+        serviceDigitalIdentities.add(getServiceDigitalIdentity(getCertificate(LOTE_SIGNER_CERTIFICATE)));
+        otherLoTEPointer.put("ServiceDigitalIdentities", serviceDigitalIdentities);
+
+        loteQualifiers = new ArrayList<>();
+        loteQualifiers.add(getLoTEQualifier("LoTEType", PID_PROVIDERS_LIST_TYPE));
+        loteQualifiers.add(getLoTEQualifier("SchemeTerritory", "EU"));
+        otherLoTEPointer.put("LoTEQualifiers", loteQualifiers);
+
+        pointersToOtherLOTE.add(otherLoTEPointer);
+
+        DSSDocument loteToSign = toDSSDocument(root);
+
+        JAdESService service = new JAdESService(getOfflineCertificateVerifier());
+        JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
+        signatureParameters.setSigningCertificate(getSigningCert());
+        signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
+        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+        signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+
+        ToBeSigned dataToSign = service.getDataToSign(loteToSign, signatureParameters);
+        SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
+        DSSDocument signedLoTE = service.signDocument(loteToSign, signatureParameters, signatureValue);
+        return signedLoTE;
     }
 
     private DSSDocument createLoTE() {
+        signer = LOTE_SIGNER_CERTIFICATE;
+
         JsonObject root = new JsonObject();
 
         JsonObject lote = new JsonObject();
@@ -244,15 +403,8 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
             serviceName.add(getMultiLangString("en", DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, sdiCertificate.getSubject())));
             serviceInformation.put("ServiceName", serviceName);
 
-            JsonObject serviceDigitalIdentity = new JsonObject();
+            JsonObject serviceDigitalIdentity = getServiceDigitalIdentity(sdiCertificate);
             serviceInformation.put("ServiceDigitalIdentity", serviceDigitalIdentity);
-
-            List<JsonObject> x509Certificates = new ArrayList<>();
-            serviceDigitalIdentity.put("X509Certificates", x509Certificates);
-
-            JsonObject x509Certificate = new JsonObject();
-            x509Certificate.put("val", Utils.toBase64(sdiCertificate.getEncoded()));
-            x509Certificates.add(x509Certificate);
 
             serviceInformation.put("ServiceTypeIdentifier", PID_SERVICE_TYPE_IDENTIFIER);
 
@@ -272,6 +424,27 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
         DSSDocument signedLoTE = service.signDocument(loteToSign, signatureParameters, signatureValue);
         return signedLoTE;
+    }
+
+    private JsonObject getServiceDigitalIdentity(CertificateToken... certificates) {
+        JsonObject serviceDigitalIdentity = new JsonObject();
+
+        List<JsonObject> x509Certificates = new ArrayList<>();
+        serviceDigitalIdentity.put("X509Certificates", x509Certificates);
+
+        for (CertificateToken certificateToken : certificates) {
+            JsonObject x509Certificate = new JsonObject();
+            x509Certificate.put("val", Utils.toBase64(certificateToken.getEncoded()));
+            x509Certificates.add(x509Certificate);
+        }
+
+        return serviceDigitalIdentity;
+    }
+
+    private JsonObject getLoTEQualifier(String headerName, Object value) {
+        JsonObject loteQualifier = new JsonObject();
+        loteQualifier.put(headerName, value);
+        return loteQualifier;
     }
 
     private JsonObject getMultiLangString(String lang, String value) {

@@ -178,22 +178,22 @@ public class OtherListPointer implements Serializable {
         }
 
         /**
-         * Gets the TSL location URL
+         * Gets the List location URL
          *
-         * @return tslLocation {@link String}
+         * @return locationUrl {@link String}
          */
         public String getLocationUrl() {
             return locationUrl;
         }
 
         /**
-         * Sets the TSL location URL
+         * Sets the List location URL
          *
-         * @param tslLocation {@link String}
+         * @param locationUrl {@link String}
          * @return {@link OtherListPointerBuilder}
          */
-        public OtherListPointerBuilder setTslLocation(String tslLocation) {
-            this.locationUrl = tslLocation;
+        public OtherListPointerBuilder setLocationUrl(String locationUrl) {
+            this.locationUrl = locationUrl;
             return this;
         }
 
