@@ -2,6 +2,9 @@ package eu.europa.esig.dss.diagnostic;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 
+/**
+ * This class provides a wrapper for a Trusted Entity Service
+ */
 public class TrustedEntityServiceWrapper extends TrustedSourceServiceWrapper {
 
     /** Corresponding Trusted Source List */

@@ -752,6 +752,7 @@ public class CertificateWrapper extends AbstractTokenProxy {
 					for (XmlTrustedEntityService trustedService : trustedEntityServices) {
 						TrustedEntityServiceWrapper wrapper = new TrustedEntityServiceWrapper();
 						wrapper.setTrustedSourceList(te.getLoTE());
+						wrapper.setListOfTrustedSourceList(te.getLoLoTE());
 						wrapper.setEntityNames(entityNames);
 						wrapper.setTradeNames(tradeNames);
 						wrapper.setServiceDigitalIdentifier(new CertificateWrapper(trustedService.getServiceDigitalIdentifier()));

@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.lote.source;
 
 import eu.europa.esig.dss.lote.cache.CacheKey;
+import eu.europa.esig.dss.model.lote.OtherListPointer;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedEntityService;
@@ -63,6 +64,11 @@ public class ListSource {
 	 * Defines whether an SDI can be considered as a trust anchor during the given period of time
 	 */
 	private Predicate<ServiceStatusAndInformationExtensions> trustAnchorValidityPredicate;
+
+	/**
+	 * Allows specifying pointers to other lists to be extracted during the parsing process
+	 */
+	private Predicate<OtherListPointer> otherListPointerPredicate;
 	
 	/**
 	 * The cached CacheKey value (the key is computed from url parameter)
@@ -170,6 +176,25 @@ public class ListSource {
 	 */
 	public void setTrustAnchorValidityPredicate(Predicate<ServiceStatusAndInformationExtensions> trustAnchorValidityPredicate) {
 		this.trustAnchorValidityPredicate = trustAnchorValidityPredicate;
+	}
+
+	/**
+	 * Gets a predicate to filter {@code OtherListPointer} in order to extract pointers to other Lists
+	 *
+	 * @return other lists pointer predicate
+	 */
+	public Predicate<OtherListPointer> getOtherListPointerPredicate() {
+		return otherListPointerPredicate;
+	}
+
+	/**
+	 * Sets a predicate allowing to filter {@code OtherListPointer} in order to extract pointers to other Lists,
+	 * to be used for further processing (for instance, pointers to other LoTEs from a LoLoTE).
+	 *
+	 * @param otherListPointerPredicate other lists pointer predicate
+	 */
+	public void setOtherListPointerPredicate(Predicate<OtherListPointer> otherListPointerPredicate) {
+		this.otherListPointerPredicate = otherListPointerPredicate;
 	}
 
 	/**

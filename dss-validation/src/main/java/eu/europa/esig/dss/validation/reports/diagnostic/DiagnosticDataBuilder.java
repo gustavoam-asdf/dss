@@ -46,6 +46,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlInhibitAnyPolicy;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIssuerEntityKey;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIssuerSerial;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyUsages;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlNameConstraints;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlNoRevAvail;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOID;
@@ -63,7 +64,6 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlStructuralValidation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSubjectAlternativeNames;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSubjectKeyIdentifier;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustServiceProvider;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrusted;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
@@ -199,7 +199,7 @@ public abstract class DiagnosticDataBuilder {
 	protected Map<String, XmlTrustedList> xmlTrustedListsMap = new HashMap<>();
 
 	/** The cached map of trusted sources */
-	protected Map<String, XmlTrustSourceList> xmlTrustSourceMap = new HashMap<>();
+	protected Map<String, XmlListOfTrustedEntities> xmlTrustSourceMap = new HashMap<>();
 
 	/** The cached map of orphan certificates */
 	protected Map<String, XmlOrphanCertificateToken> xmlOrphanCertificateTokensMap = new HashMap<>();
@@ -342,8 +342,8 @@ public abstract class DiagnosticDataBuilder {
 		linkCertificatesAndRevocations(usedCertificates);
 
 		if (isUseLoTEs()) {
-			Collection<XmlTrustSourceList> lotes = buildXmlLoTEs(allCertificateSources);
-			diagnosticData.getListOfTrustedEntities().addAll(lotes);
+			Collection<XmlListOfTrustedEntities> lotes = buildXmlLoTEs(allCertificateSources);
+			diagnosticData.getListsOfTrustedEntities().addAll(lotes);
 			linkCertificatesAndTrustedEntities(usedCertificates);
 		}
 		if (isUseTrustedLists()) {
@@ -687,10 +687,10 @@ public abstract class DiagnosticDataBuilder {
 		return result;
 	}
 
-	private Collection<XmlTrustSourceList> buildXmlLoTEs(ListCertificateSource trustedCertificateSources) {
-		List<XmlTrustSourceList> trustSourceLists = new ArrayList<>();
+	private Collection<XmlListOfTrustedEntities> buildXmlLoTEs(ListCertificateSource trustedCertificateSources) {
+		List<XmlListOfTrustedEntities> trustSourceLists = new ArrayList<>();
 
-		Map<Identifier, XmlTrustSourceList> mapLists = new HashMap<>();
+		Map<Identifier, XmlListOfTrustedEntities> mapLists = new HashMap<>();
 
 		for (CertificateSource certificateSource : trustedCertificateSources.getSources()) {
 			if (certificateSource instanceof TrustedEntitiesCertificateSource) {
@@ -710,15 +710,15 @@ public abstract class DiagnosticDataBuilder {
 		return trustSourceLists;
 	}
 
-	private Map<Identifier, XmlTrustSourceList> getLoTEMap(TrustedEntitiesCertificateSource teCertSource,
+	private Map<Identifier, XmlListOfTrustedEntities> getLoTEMap(TrustedEntitiesCertificateSource teCertSource,
 													   LoTEValidationJobSummary summary) {
-		Map<Identifier, XmlTrustSourceList> mapTrustedLists = new HashMap<>();
-		Set<Identifier> tlIdentifiers = getLOTEIdentifiers(teCertSource);
-		for (Identifier tlId : tlIdentifiers) {
-			if (!mapTrustedLists.containsKey(tlId)) {
-				ListInfo listInfoById = summary.getListInfoById(tlId);
+		Map<Identifier, XmlListOfTrustedEntities> mapTrustedLists = new HashMap<>();
+		Set<Identifier> loteIdentifiers = getLOTEIdentifiers(teCertSource);
+		for (Identifier loteId : loteIdentifiers) {
+			if (!mapTrustedLists.containsKey(loteId)) {
+				ListInfo listInfoById = summary.getListInfoById(loteId);
 				if (listInfoById != null) {
-					mapTrustedLists.put(tlId, getXmlTrustSourceList(listInfoById));
+					mapTrustedLists.put(loteId, getXmlTrustSourceList(listInfoById));
 				}
 			}
 		}
@@ -733,17 +733,23 @@ public abstract class DiagnosticDataBuilder {
 				ListInfo listInfo = trustedProperties.getListInfo();
 				if (listInfo != null) {
 					loteIdentifiers.add(listInfo.getDSSId());
+					if (listInfo.getParent() != null) {
+						loteIdentifiers.add(listInfo.getParent().getDSSId());
+					}
 				}
 			}
 		}
 		return loteIdentifiers;
 	}
 
-	private XmlTrustSourceList getXmlTrustSourceList(ListInfo loteInfo) {
+	private XmlListOfTrustedEntities getXmlTrustSourceList(ListInfo loteInfo) {
 		String id = loteInfo.getDSSIdAsString();
-		XmlTrustSourceList result = xmlTrustSourceMap.computeIfAbsent(id, v -> new XmlTrustSourceList());
+		XmlListOfTrustedEntities result = xmlTrustSourceMap.computeIfAbsent(id, v -> new XmlListOfTrustedEntities());
 		result.setId(identifierProvider.getIdAsString(loteInfo));
 		result.setUrl(loteInfo.getUrl());
+		if (loteInfo.getParent() != null) {
+			result.setParent(getXmlTrustSourceList(loteInfo.getParent()));
+		}
 		eu.europa.esig.dss.model.lote.record.ParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getType() != null) {

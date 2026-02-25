@@ -26,9 +26,10 @@ import eu.europa.esig.dss.lote.cache.ParsingCache;
 import eu.europa.esig.dss.lote.cache.ValidationCache;
 
 /**
- * Forces an update of a TL validation
+ * Forces an update of the analysis process
+ *
  */
-public class TLChangesCacheAccess {
+public class ChangeCacheAccess {
 
 	/** Global download Cache */
 	private final DownloadCache downloadCache;
@@ -46,8 +47,8 @@ public class TLChangesCacheAccess {
 	 * @param parsingCache {@link ParsingCache}
 	 * @param validationCache {@link ValidationCache}
 	 */
-	public TLChangesCacheAccess(final DownloadCache downloadCache, final ParsingCache parsingCache,
-								final ValidationCache validationCache) {
+	public ChangeCacheAccess(final DownloadCache downloadCache, final ParsingCache parsingCache,
+							 final ValidationCache validationCache) {
 		this.downloadCache = downloadCache;
 		this.parsingCache = parsingCache;
 		this.validationCache = validationCache;

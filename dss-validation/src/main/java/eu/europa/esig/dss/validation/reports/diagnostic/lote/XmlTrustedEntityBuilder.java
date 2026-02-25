@@ -2,11 +2,11 @@ package eu.europa.esig.dss.validation.reports.diagnostic.lote;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
 import eu.europa.esig.dss.model.lote.ListInfo;
-import eu.europa.esig.dss.model.lote.ListOfListsInfo;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
@@ -34,7 +34,7 @@ public class XmlTrustedEntityBuilder {
     /**
      * The map of Trust Sources
      */
-    private final Map<String, XmlTrustSourceList> xmlTrustSourceListsMap;
+    private final Map<String, XmlListOfTrustedEntities> xmlTrustSourceListsMap;
 
     /**
      * Default constructor
@@ -43,7 +43,7 @@ public class XmlTrustedEntityBuilder {
      * @param xmlTrustSourceListsMap a map of trust source list identifiers and corresponding XML representations
      */
     public XmlTrustedEntityBuilder(final Map<String, XmlCertificate> xmlCertsMap,
-                                  final Map<String, XmlTrustSourceList> xmlTrustSourceListsMap) {
+                                  final Map<String, XmlListOfTrustedEntities> xmlTrustSourceListsMap) {
         this.xmlCertsMap = xmlCertsMap;
         this.xmlTrustSourceListsMap = xmlTrustSourceListsMap;
     }
@@ -95,16 +95,6 @@ public class XmlTrustedEntityBuilder {
         TrustedProperties trustProperties = trustServices.iterator().next();
 
         final XmlTrustedEntity result = new XmlTrustedEntity();
-
-        ListOfListsInfo listOfListsInfo = trustProperties.getListOfListsInfo();
-        if (listOfListsInfo != null) {
-            XmlTrustSourceList xmlList = xmlTrustSourceListsMap.get(listOfListsInfo.getDSSIdAsString());
-            if (xmlList == null) {
-                throw new IllegalStateException(String.format("LoLoTE with Id '%s' has not been found! " +
-                        "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listOfListsInfo.getDSSIdAsString()));
-            }
-            result.setLoLoTE(xmlList);
-        }
         ListInfo listInfo = trustProperties.getListInfo();
         if (listInfo != null) {
             XmlTrustSourceList xmlList = xmlTrustSourceListsMap.get(listInfo.getDSSIdAsString());
@@ -113,6 +103,18 @@ public class XmlTrustedEntityBuilder {
                         "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listInfo.getDSSIdAsString()));
             }
             result.setLoTE(xmlList);
+
+            if (listInfo.getParent() != null) {
+                ListInfo listOfListsInfo = listInfo.getParent();
+                if (listOfListsInfo != null) {
+                    XmlTrustSourceList xmllistOfLists = xmlTrustSourceListsMap.get(listOfListsInfo.getDSSIdAsString());
+                    if (xmllistOfLists == null) {
+                        throw new IllegalStateException(String.format("LoLoTE with Id '%s' has not been found! " +
+                                "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listOfListsInfo.getDSSIdAsString()));
+                    }
+                    result.setLoLoTE(xmllistOfLists);
+                }
+            }
         }
 
         TrustedEntity tsp = trustProperties.getTrustedEntity();

@@ -360,7 +360,8 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	/**
 	 * Returns the digest algorithm associated to a subresource integrity definition as defined in
 	 * {@link <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata">W3C Subresource Integrity</a>}.
-	 * NOTE: the standard does not explicitly specify the supported hash algorithms.
+	 * The algorithm identifiers are defined in
+	 * {@link <a href="https://www.w3.org/TR/CSP2/#source-list-valid-hashes">W3C Content Security Policy Level 2</a>}.
 	 *
 	 * @param srIntegrityId the algorithm name according to W3C "Subresource Integrity"
 	 * @return the digest algorithm linked to the given name

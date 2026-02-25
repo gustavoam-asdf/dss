@@ -8,6 +8,7 @@ import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
 import eu.europa.esig.dss.model.lote.record.ValidationInfoRecord;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,7 +23,7 @@ public class LoTEInfo implements ListInfo, IdentifierBasedObject, Serializable {
     private final String url;
 
     /** The parent LoLoTE/LoTE referencing the current List of Trusted Entities */
-    private final LoTEInfo parent;
+    private final ListInfo parent;
 
     /** The download result record */
     private final DownloadInfoRecord downloadCacheInfo;
@@ -35,6 +36,11 @@ public class LoTEInfo implements ListInfo, IdentifierBasedObject, Serializable {
 
     /** OtherListPointer element extracted from the pointing LoLoTE/LoTE */
     private final OtherListPointer otherListPointer;
+
+    /**
+     * List of summary for Lists found inside the current LoTE
+     */
+    private List<ListInfo> otherLoTEInfos;
 
     /** Cached Identifier instance */
     private Identifier identifier;
@@ -59,10 +65,10 @@ public class LoTEInfo implements ListInfo, IdentifierBasedObject, Serializable {
      * @param parsingCacheInfo {@link ParsingInfoRecord} a parsing cache result
      * @param validationCacheInfo {@link ValidationInfoRecord} a validation cache result
      * @param url {@link String} address used to extract the entry
-     * @param parent {@link LoTEInfo} referencing the current Trusted List
+     * @param parent {@link ListInfo} referencing the current Trusted List
      */
     public LoTEInfo(final DownloadInfoRecord downloadCacheInfo, final ParsingInfoRecord parsingCacheInfo,
-                    final ValidationInfoRecord validationCacheInfo, final String url, final LoTEInfo parent) {
+                    final ValidationInfoRecord validationCacheInfo, final String url, final ListInfo parent) {
         this(downloadCacheInfo, parsingCacheInfo, validationCacheInfo, url, parent, null);
     }
 
@@ -73,11 +79,11 @@ public class LoTEInfo implements ListInfo, IdentifierBasedObject, Serializable {
      * @param parsingCacheInfo {@link ParsingInfoRecord} a parsing cache result
      * @param validationCacheInfo {@link ValidationInfoRecord} a validation cache result
      * @param url {@link String} address used to extract the entry
-     * @param parent {@link LoTEInfo} referencing the current Trusted List
+     * @param parent {@link ListInfo} referencing the current Trusted List
      * @param otherListPointer {@link OtherListPointer} element from the pointing TL/LOTL
      */
     public LoTEInfo(final DownloadInfoRecord downloadCacheInfo, final ParsingInfoRecord parsingCacheInfo,
-                    final ValidationInfoRecord validationCacheInfo, final String url, final LoTEInfo parent,
+                    final ValidationInfoRecord validationCacheInfo, final String url, final ListInfo parent,
                     final OtherListPointer otherListPointer) {
         Objects.requireNonNull(url, "URL String shall be provided!");
 
@@ -126,17 +132,31 @@ public class LoTEInfo implements ListInfo, IdentifierBasedObject, Serializable {
     }
 
     /**
-     * Returns the {@code LoTEInfo} referencing the current Trusted List
+     * Returns the {@code ListInfo} referencing the current Trusted List
      *
-     * @return {@link LoTEInfo}
+     * @return {@link ListInfo}
      */
-    public LoTEInfo getParent() {
+    public ListInfo getParent() {
         return parent;
     }
 
     @Override
-    public OtherListPointer getOtherListPointer() {
+    public OtherListPointer getListPointer() {
         return otherListPointer;
+    }
+
+    @Override
+    public List<ListInfo> getOtherListsInfos() {
+        return otherLoTEInfos;
+    }
+
+    /**
+     * Sets a list of {@code ListInfo}s summary for LoTE found in the LoLoTE
+     *
+     * @param otherLoTEInfos list of {@link ListInfo}s
+     */
+    public void setOtherLoTEInfos(List<ListInfo> otherLoTEInfos) {
+        this.otherLoTEInfos = otherLoTEInfos;
     }
 
     /**

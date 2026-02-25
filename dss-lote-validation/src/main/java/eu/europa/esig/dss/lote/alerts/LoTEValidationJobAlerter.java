@@ -2,7 +2,6 @@ package eu.europa.esig.dss.lote.alerts;
 
 import eu.europa.esig.dss.alert.Alert;
 import eu.europa.esig.dss.model.lote.ListInfo;
-import eu.europa.esig.dss.model.lote.LoTEInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ public class LoTEValidationJobAlerter {
     public void detectChanges(final LoTEValidationJobSummary jobSummary) {
         // other TLs
         if (Utils.isCollectionNotEmpty(alerts)) {
-            for (LoTEInfo loteInfo : jobSummary.getOtherListInfos()) {
+            for (ListInfo loteInfo : jobSummary.getListInfos()) {
                 for (Alert<ListInfo> alert : alerts) {
                     execute(alert, loteInfo);
                 }

@@ -7,6 +7,7 @@ import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTENamePredicate;
 import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTESInformationPredicate;
 import eu.europa.esig.dss.lote.parsing.predicate.NonEmptyTrustedEntityServicePredicate;
 import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.xml.parsing.function.OtherLoTEPointerConverter;
 import eu.europa.esig.dss.lote.xml.parsing.function.TrustedEntityConverter;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -18,6 +19,8 @@ import eu.europa.esig.lote.jaxb.ListOfTrustedEntitiesType;
 import eu.europa.esig.lote.jaxb.LoTEListAndSchemeInformationType;
 import eu.europa.esig.lote.jaxb.NextUpdateType;
 import eu.europa.esig.lote.jaxb.NonEmptyURIListType;
+import eu.europa.esig.lote.jaxb.OtherLoTEPointerType;
+import eu.europa.esig.lote.jaxb.OtherLoTEPointersType;
 import eu.europa.esig.lote.jaxb.TrustedEntitiesListType;
 import eu.europa.esig.lote.xml.LOTEFacade;
 import eu.europa.esig.lote.xml.LOTEUtils;
@@ -100,16 +103,6 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
     }
 
     private void parseSchemeInformation(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
-        commonParseSchemeInformation(result, schemeInformation);
-    }
-
-    /**
-     * Extracts the common values
-     *
-     * @param result {@link ListParsingResult}
-     * @param schemeInformation {@link LoTEListAndSchemeInformationType}
-     */
-    protected void commonParseSchemeInformation(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
         if (schemeInformation != null) {
             extractTSLType(result, schemeInformation);
             extractSequenceNumber(result, schemeInformation);
@@ -118,6 +111,8 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
             extractIssueDate(result, schemeInformation);
             extractNextUpdateDate(result, schemeInformation);
             extractDistributionPoints(result, schemeInformation);
+            extractOtherLoTEPointers(result, schemeInformation);
+            // TODO : add pivots info extraction, pending the 119 602 standard update
         }
     }
 
@@ -173,6 +168,18 @@ public class LoTEXmlParsingTask implements Supplier<ParsingResult> {
             result.setDistributionPoints(Collections.unmodifiableList(distributionPoints.getURI()));
         } else {
             result.setDistributionPoints(Collections.emptyList());
+        }
+    }
+
+    private void extractOtherLoTEPointers(ListParsingResult result, LoTEListAndSchemeInformationType schemeInformation) {
+        OtherLoTEPointersType pointersToOtherLoTE = schemeInformation.getPointersToOtherLoTE();
+        if (pointersToOtherLoTE != null && Utils.isCollectionNotEmpty(pointersToOtherLoTE.getOtherLoTEPointer())) {
+            List<OtherLoTEPointerType> otherLoTEPointers = pointersToOtherLoTE.getOtherLoTEPointer();
+            OtherLoTEPointerConverter converter = new OtherLoTEPointerConverter();
+            // TODO : add pointer to current LoTE extraction (pending 119 602 standard update)
+            if (listSource.getOtherListPointerPredicate() != null) {
+                result.setOtherListPointers(otherLoTEPointers.stream().map(converter).filter(listSource.getOtherListPointerPredicate()).collect(Collectors.toList()));
+            }
         }
     }
 

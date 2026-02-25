@@ -19,6 +19,24 @@
         <ca/>
     </certificate>
 
+    <!-- LoLoTE Signer -->
+    <certificate>
+        <serialNumber>20</serialNumber>
+        <subject>LoLoTE-Signer</subject>
+        <organization>EU Digital Ministry</organization>
+        <country>EU</country>
+        <issuer serialNumber="20">LoLoTE-Signer</issuer>
+        <notBefore year="-10"/>
+        <notAfter year="10"/>
+        <keyAlgo encryption="RSA" length="4096"/>
+        <digestAlgo>SHA256</digestAlgo>
+        <keyUsages>
+            <keyUsage>digitalSignature</keyUsage>
+            <keyUsage>nonRepudiation</keyUsage>
+        </keyUsages>
+        <ca/>
+    </certificate>
+
     <!-- National RootCA certificate-->
     <certificate>
         <serialNumber>100000</serialNumber>

@@ -107,7 +107,7 @@ class LoTEJsonGenerationTest extends PKIFactoryAccess {
 
         LoTEValidationJobSummary summary = validationJob.getSummary();
         assertEquals(1, trustedEntitiesCertificateSource.getNumberOfCertificates());
-        assertEquals(Indication.TOTAL_PASSED, summary.getOtherListInfos().get(0).getValidationCacheInfo().getIndication());
+        assertEquals(Indication.TOTAL_PASSED, summary.getListInfos().get(0).getValidationCacheInfo().getIndication());
 
         assertEquals(1, trustedEntitiesCertificateSource.getCertificates().size());
 

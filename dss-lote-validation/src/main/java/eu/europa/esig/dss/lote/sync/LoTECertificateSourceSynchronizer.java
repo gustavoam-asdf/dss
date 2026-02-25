@@ -5,8 +5,6 @@ import eu.europa.esig.dss.lote.cache.access.SynchronizerCacheAccess;
 import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.lote.summary.LoTEValidationJobSummaryBuilder;
 import eu.europa.esig.dss.model.lote.ListInfo;
-import eu.europa.esig.dss.model.lote.LoLoTEInfo;
-import eu.europa.esig.dss.model.lote.LoTEInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
@@ -15,7 +13,6 @@ import eu.europa.esig.dss.model.lote.TrustedProperties;
 import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.model.tsl.CertificateTrustTime;
-import eu.europa.esig.dss.model.tsl.PivotInfo;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.lote.TrustedEntitiesCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
@@ -92,14 +89,14 @@ public class LoTECertificateSourceSynchronizer {
     }
 
     private boolean isCertificateSyncNeeded(LoTEValidationJobSummary summary) {
-        return isTLParsingDesyncOrError(summary.getOtherListInfos());
+        return isTLParsingDesyncOrError(summary.getListInfos());
     }
 
-    private boolean isTLParsingDesyncOrError(List<LoTEInfo> loteInfos) {
+    private boolean isTLParsingDesyncOrError(List<ListInfo> loteInfos) {
         return loteInfos.stream().anyMatch(this::isTLParsingDesyncOrError);
     }
 
-    private boolean isTLParsingDesyncOrError(LoTEInfo loteInfo) {
+    private boolean isTLParsingDesyncOrError(ListInfo loteInfo) {
         ParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
         return parsingCacheInfo == null || parsingCacheInfo.isDesynchronized() || parsingCacheInfo.isError();
     }
@@ -107,23 +104,16 @@ public class LoTECertificateSourceSynchronizer {
     private void synchronizeCertificates(LoTEValidationJobSummary summary) {
         final Map<CertificateToken, List<TrustedProperties>> trustPropertiesByCerts = new WeakHashMap<>();
         final Map<CertificateToken, List<CertificateTrustTime>> trustTimeByCerts = new WeakHashMap<>();
-        for (LoLoTEInfo loloteInfo : summary.getListOfListsInfos()) {
-            if (synchronizationStrategy.canBeSynchronized(loloteInfo)) {
-                addCertificatesFromTLs(trustPropertiesByCerts, trustTimeByCerts, loloteInfo.getListsInfos(), loloteInfo);
-            } else {
-                LOG.warn("Certificate synchronization is skipped for LOTL '{}' and its TLs", loloteInfo.getUrl());
-            }
-        }
-        addCertificatesFromTLs(trustPropertiesByCerts, trustTimeByCerts, summary.getOtherListInfos(), null);
+        addCertificatesFromTLs(trustPropertiesByCerts, trustTimeByCerts, summary.getListInfos());
         certificateSource.setTrustedPropertiesByCertificates(trustPropertiesByCerts);
         certificateSource.setTrustedTimeByCertificates(trustTimeByCerts);
     }
 
     private void addCertificatesFromTLs(final Map<CertificateToken, List<TrustedProperties>> trustPropertiesByCerts,
                                         final Map<CertificateToken, List<CertificateTrustTime>> trustTimeByCerts,
-                                        final List<LoTEInfo> loteInfos, final LoLoTEInfo relatedLoLoTE) {
+                                        final List<ListInfo> loteInfos) {
 
-        for (final LoTEInfo loteInfo : loteInfos) {
+        for (final ListInfo loteInfo : loteInfos) {
             if (synchronizationStrategy.canBeSynchronized(loteInfo)) {
                 ParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
                 if (parsingCacheInfo == null || !parsingCacheInfo.isResultExist()) {
@@ -132,7 +122,7 @@ public class LoTECertificateSourceSynchronizer {
                     final List<TrustedEntity> trustedEntities = parsingCacheInfo.getTrustedEntities();
                     if (Utils.isCollectionNotEmpty(trustedEntities)) {
                         final Predicate<ServiceStatusAndInformationExtensions> trustAnchorValidityPredicate =
-                                getTrustAnchorValidityPredicate(loteInfo, relatedLoLoTE);
+                                getTrustAnchorValidityPredicate(loteInfo);
                         for (TrustedEntity original : trustedEntities) {
                             TrustedEntity detached = getDetached(original);
                             for (Object service : original.getServices()) {
@@ -140,7 +130,7 @@ public class LoTECertificateSourceSynchronizer {
                                 TimeDependentValues<ServiceStatusAndInformationExtensions> statusAndInformationExtensions =
                                         trustedEntityService.getStatusAndInformationExtensions();
                                 TrustedProperties trustProperties = getTrustedProperties(
-                                        relatedLoLoTE, loteInfo, detached, statusAndInformationExtensions);
+                                        loteInfo, detached, statusAndInformationExtensions);
                                 List<CertificateTrustTime> certificateTrustTimes = getCertificateTrustTimes(statusAndInformationExtensions, trustAnchorValidityPredicate);
                                 for (CertificateToken certificate : trustedEntityService.getCertificates()) {
                                     addCertificate(trustPropertiesByCerts, trustTimeByCerts, certificate, trustProperties, certificateTrustTimes);
@@ -177,18 +167,8 @@ public class LoTECertificateSourceSynchronizer {
     }
 
     private void syncCache(LoTEValidationJobSummary summary) {
-        for (LoLoTEInfo loloteInfo : summary.getListOfListsInfos()) {
-            syncListInfosCache(loloteInfo.getListsInfos());
-            //syncPivotsCache(loloteInfo.getPivotInfos());
-            cacheAccess.sync(new CacheKey(loloteInfo.getUrl()));
-        }
-        syncListInfosCache(summary.getOtherListInfos());
-    }
-
-    private void syncPivotsCache(List<PivotInfo> pivotInfos) {
-        for (PivotInfo pivotInfo : pivotInfos) {
-            cacheAccess.sync(new CacheKey(pivotInfo.getUrl()));
-        }
+        syncListInfosCache(summary.getListInfos());
+        // TODO : pivots sync ?
     }
 
     private void syncListInfosCache(List<? extends ListInfo> tlInfos) {
@@ -197,12 +177,9 @@ public class LoTECertificateSourceSynchronizer {
         }
     }
 
-    private TrustedProperties getTrustedProperties(LoLoTEInfo relatedLoLoTE, LoTEInfo loteInfo, TrustedEntity detached,
+    private TrustedProperties getTrustedProperties(ListInfo listInfo, TrustedEntity detached,
                                                  TimeDependentValues<ServiceStatusAndInformationExtensions> statusAndInformationExtensions) {
-        if (relatedLoLoTE == null) {
-            return new TrustedProperties(loteInfo, detached, statusAndInformationExtensions);
-        }
-        return new TrustedProperties(relatedLoLoTE, loteInfo, detached, statusAndInformationExtensions);
+        return new TrustedProperties(listInfo, detached, statusAndInformationExtensions);
     }
 
     private List<CertificateTrustTime> getCertificateTrustTimes(
@@ -225,17 +202,17 @@ public class LoTECertificateSourceSynchronizer {
         return result;
     }
 
-    private Predicate<ServiceStatusAndInformationExtensions> getTrustAnchorValidityPredicate(LoTEInfo loteInfo, LoLoTEInfo loloteInfo) {
-        ListSource listSource = getRelatedListSource(loteInfo, loloteInfo);
+    private Predicate<ServiceStatusAndInformationExtensions> getTrustAnchorValidityPredicate(ListInfo loteInfo) {
+        ListSource listSource = getRelatedListSource(loteInfo);
         if (listSource != null) {
             return listSource.getTrustAnchorValidityPredicate();
         }
         return null;
     }
 
-    private ListSource getRelatedListSource(LoTEInfo tlInfo, LoLoTEInfo relatedLOTLInfo) {
+    private ListSource getRelatedListSource(ListInfo loteInfo) {
         for (ListSource listSource : listSources) {
-            if (listSource.getUrl().equals(tlInfo.getUrl())) {
+            if (listSource.getUrl().equals(loteInfo.getUrl())) {
                 return listSource;
             }
         }

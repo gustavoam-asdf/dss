@@ -22,6 +22,7 @@ package eu.europa.esig.dss.lote.parsing;
 
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.lote.cache.CachedResult;
+import eu.europa.esig.dss.model.lote.OtherListPointer;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 
 import java.util.Date;
@@ -55,6 +56,12 @@ public abstract class ParsingResult implements CachedResult {
 
 	/** List of found trust service providers */
 	private List<TrustedEntity> trustedEntities;
+
+	/** List of self pointers to the current list */
+	private List<OtherListPointer> currentListPointers;
+
+	/** List of List pointers */
+	private List<OtherListPointer> otherListPointers;
 
 	/** A list of error messages occurred during a structure validation */
 	protected List<String> structureValidationMessages;
@@ -208,6 +215,42 @@ public abstract class ParsingResult implements CachedResult {
 	 */
 	public void setTrustedEntities(List<TrustedEntity> trustedEntities) {
 		this.trustedEntities = trustedEntities;
+	}
+
+	/**
+	 * Gets List of self pointer to the current list (i.e. used within the pivot processing)
+	 *
+	 * @return a list of {@link OtherListPointer}s
+	 */
+	public List<OtherListPointer> getCurrentListPointers() {
+		return currentListPointers;
+	}
+
+	/**
+	 * Sets List of self pointer to the current list
+	 *
+	 * @param currentListPointers a list of {@link OtherListPointer}s
+	 */
+	public void setCurrentListPointers(List<OtherListPointer> currentListPointers) {
+		this.currentListPointers = currentListPointers;
+	}
+
+	/**
+	 * Gets List to other TSL pointers
+	 *
+	 * @return a list of {@link OtherListPointer}s
+	 */
+	public List<OtherListPointer> getOtherListPointers() {
+		return otherListPointers;
+	}
+
+	/**
+	 * Sets List to other pointers
+	 *
+	 * @param otherListPointers a list of {@link OtherListPointer}s
+	 */
+	public void setOtherListPointers(List<OtherListPointer> otherListPointers) {
+		this.otherListPointers = otherListPointers;
 	}
 
 	/**

@@ -24,23 +24,17 @@ import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.lote.cache.state.CachedEntry;
 import eu.europa.esig.dss.lote.dto.ParsingCacheDTO;
 import eu.europa.esig.dss.lote.parsing.ParsingResult;
-import eu.europa.esig.dss.lote.parsing.ListOfListsParsingResult;
-import eu.europa.esig.dss.lote.parsing.ListParsingResult;
 import eu.europa.esig.dss.model.lote.OtherListPointer;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Builds {@code ParsingCacheDTO}
+ *
  */
 public class ParsingCacheDTOBuilder extends AbstractCacheDTOBuilder<ParsingResult> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ParsingCacheDTOBuilder.class);
 
 	/**
 	 * Default constructor
@@ -63,20 +57,11 @@ public class ParsingCacheDTOBuilder extends AbstractCacheDTOBuilder<ParsingResul
 			parsingCacheDTO.setNextUpdateDate(getNextUpdateDate());
 			parsingCacheDTO.setDistributionPoints(getDistributionPoints());
 			parsingCacheDTO.setStructureValidationMessages(getStructureValidationMessages());
-			if (isLOTL()) {
-				parsingCacheDTO.setListOfListsOtherPointers(getListOfListsOtherPointers());
-				parsingCacheDTO.setListOtherPointers(getListOtherPointers());
-				parsingCacheDTO.setPivotUrls(getPivotUrls());
-				parsingCacheDTO.setSigningCertificateAnnouncementUrl(getSigningCertificateAnnouncementUrl());
-			} else {
-				parsingCacheDTO.setTrustedEntities(getTrustedEntities());
-			}
+			parsingCacheDTO.setCurrentListPointers(getCurrentListPointers());
+			parsingCacheDTO.setOtherListPointers(getOtherListPointers());
+			parsingCacheDTO.setTrustedEntities(getTrustedEntities());
 		}
 		return parsingCacheDTO;
-	}
-	
-	private boolean isLOTL() {
-		return getResult() instanceof ListOfListsParsingResult;
 	}
 
 	private ListType getType() {
@@ -113,47 +98,17 @@ public class ParsingCacheDTOBuilder extends AbstractCacheDTOBuilder<ParsingResul
 	
 	private List<TrustedEntity> getTrustedEntities() {
 		ParsingResult result = getResult();
-		if (result instanceof ListParsingResult) {
-			return ((ListParsingResult) getResult()).getTrustedEntities();
-		}
-		LOG.debug("Cannot extract trustServiceProviders for the entry. The parsed file is not a TL. Return empty list.");
-		return Collections.emptyList();
+		return result.getTrustedEntities();
 	}
 	
-	private List<OtherListPointer> getListOfListsOtherPointers() {
+	private List<OtherListPointer> getCurrentListPointers() {
 		ParsingResult result = getResult();
-		if (result instanceof ListOfListsParsingResult) {
-			return ((ListOfListsParsingResult) getResult()).getListOfListsPointers();
-		}
-		LOG.debug("Cannot extract LOTL other Pointers for the entry. The parsed file is not a LOTL. Return empty list.");
-		return Collections.emptyList();
+		return result.getCurrentListPointers();
 	}
 	
-	private List<OtherListPointer> getListOtherPointers() {
+	private List<OtherListPointer> getOtherListPointers() {
 		ParsingResult result = getResult();
-		if (result instanceof ListOfListsParsingResult) {
-			return ((ListOfListsParsingResult) getResult()).getListPointers();
-		}
-		LOG.debug("Cannot extract TL other Pointers for the entry. The parsed file is not a LOTL. Return empty list.");
-		return Collections.emptyList();
-	}
-	
-	private List<String> getPivotUrls() {
-		ParsingResult result = getResult();
-		if (result instanceof ListOfListsParsingResult) {
-			return ((ListOfListsParsingResult) getResult()).getPivotURLs();
-		}
-		LOG.debug("Cannot extract Pivot URLs for the entry. The parsed file is not a LOTL. Return empty list.");
-		return Collections.emptyList();
-	}
-	
-	private String getSigningCertificateAnnouncementUrl() {
-		ParsingResult result = getResult();
-		if (result instanceof ListOfListsParsingResult) {
-			return ((ListOfListsParsingResult) getResult()).getSigningCertificateAnnouncementURL();
-		}
-		LOG.debug("Cannot extract Signing Certificate Announcement URL for the entry. The parsed file is not a LOTL. Return null.");
-		return null;
+		return result.getOtherListPointers();
 	}
 
 }

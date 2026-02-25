@@ -2,6 +2,7 @@ package eu.europa.esig.dss.lote.json.validation;
 
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
@@ -113,7 +114,7 @@ class PIDProviderTest {
         assertTrue(Utils.isCollectionNotEmpty(xmlTrustedEntityService.getServiceNames()));
         assertFalse(Utils.isCollectionNotEmpty(xmlTrustedEntityService.getServiceSupplyPoints()));
 
-        List<XmlTrustSourceList> lotes = diagnosticData.getListsOfTrustedEntities();
+        List<XmlListOfTrustedEntities> lotes = diagnosticData.getListsOfTrustedEntities();
         assertEquals(1, lotes.size());
 
         XmlTrustSourceList pidProviderList = lotes.get(0);

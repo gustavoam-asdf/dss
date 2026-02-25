@@ -26,6 +26,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEncapsulationType;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlManifestFile;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOrphanCertificateToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOrphanRevocationToken;
@@ -35,7 +36,6 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignerData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignerRole;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestamp;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
@@ -1458,11 +1458,11 @@ public class DiagnosticData {
 	 *
 	 * @return the JAXB model of the used lists of trusted entities
 	 */
-	public List<XmlTrustSourceList> getListsOfTrustedEntities() {
-		List<XmlTrustSourceList> result = new ArrayList<>();
-		List<XmlTrustSourceList> trustSourceLists = wrapped.getListOfTrustedEntities();
-		for (XmlTrustSourceList xmlTrustedSource : trustSourceLists) {
-			result.add(xmlTrustedSource);
+	public List<XmlListOfTrustedEntities> getListsOfTrustedEntities() {
+		List<XmlListOfTrustedEntities> result = new ArrayList<>();
+		List<XmlListOfTrustedEntities> listsOfTrustedEntities = wrapped.getListsOfTrustedEntities();
+		for (XmlListOfTrustedEntities lote : listsOfTrustedEntities) {
+			result.add(lote);
 		}
 		return result;
 	}

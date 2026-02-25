@@ -92,7 +92,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
 
             Set<XmlTrustSourceList> acceptableLoLoTEs = new HashSet<>();
             for (XmlTrustSourceList listOfLists : listsOfLists) {
-                XmlTLAnalysis loloteAnalysis = getTlAnalysis(listOfLists);
+                XmlTLAnalysis loloteAnalysis = getLoTEAnalysis(listOfLists);
                 if (loloteAnalysis != null) {
                     AcceptableLoLoTECheck<XmlCertificateUsageProcess> acceptableLOTL = isAcceptableLoLoTE(loloteAnalysis);
                     item = item.setNextItem(acceptableLOTL);
@@ -109,7 +109,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
 
             if (Utils.isCollectionNotEmpty(lotes)) {
                 for (XmlTrustSourceList lote : lotes) {
-                    XmlTLAnalysis currentTL = getTlAnalysis(lote);
+                    XmlTLAnalysis currentTL = getLoTEAnalysis(lote);
                     if (currentTL != null) {
 
                         AcceptableLoTECheck<XmlCertificateUsageProcess> acceptableTL = isAcceptableLoTE(currentTL);
@@ -179,7 +179,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
         return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, validationTime, signingCertificate, listTypeUri, stiUri, acceptableServices);
     }
 
-    private XmlTLAnalysis getTlAnalysis(XmlTrustSourceList listSource) {
+    private XmlTLAnalysis getLoTEAnalysis(XmlTrustSourceList listSource) {
         if (Utils.isCollectionNotEmpty(tlAnalysis)) {
             for (XmlTLAnalysis xmlTLAnalysis : tlAnalysis) {
                 if (Utils.areStringsEqual(listSource.getUrl(), xmlTLAnalysis.getURL())) {

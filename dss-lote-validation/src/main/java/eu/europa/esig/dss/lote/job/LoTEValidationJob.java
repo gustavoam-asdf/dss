@@ -7,6 +7,8 @@ import eu.europa.esig.dss.lote.cache.CacheCleaner;
 import eu.europa.esig.dss.lote.cache.CacheKey;
 import eu.europa.esig.dss.lote.cache.access.CacheAccessByKey;
 import eu.europa.esig.dss.lote.cache.access.CacheAccessFactory;
+import eu.europa.esig.dss.lote.cache.access.ReadOnlyCacheAccess;
+import eu.europa.esig.dss.lote.dto.ParsingCacheDTO;
 import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.lote.summary.LoTEValidationJobSummaryBuilder;
 import eu.europa.esig.dss.lote.sync.AcceptAllStrategy;
@@ -24,8 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -244,10 +248,17 @@ public class LoTEValidationJob {
             currentListSources.addAll(Arrays.asList(listSources));
         }
 
-        // TODO : execute List of Lists
-
-        // And then, execute all LoTEs (manual configs + LoTEs from LOLoTEs)
+        // Execute LoTE analyses
         executeListSourcesAnalysis(currentListSources, dssFileLoader);
+
+        // extract referenced pointers, if any
+        Collection<ListSource> otherListSources = extractOtherListSources(currentListSources);
+        currentListSources.addAll(otherListSources);
+
+        // TODO : add recursive processing ?
+        if (Utils.isCollectionNotEmpty(otherListSources)) {
+            executeListSourcesAnalysis(otherListSources, dssFileLoader);
+        }
 
         // alerts()
         if (Utils.isCollectionNotEmpty(listOfListsAlerts) || Utils.isCollectionNotEmpty(listAlerts)) {
@@ -272,7 +283,7 @@ public class LoTEValidationJob {
         }
     }
 
-    private void executeListSourcesAnalysis(List<ListSource> listSources, DSSFileLoader dssFileLoader) {
+    private void executeListSourcesAnalysis(Collection<ListSource> listSources, DSSFileLoader dssFileLoader) {
         int nbLoTESources = listSources.size();
         if (nbLoTESources == 0) {
             LOG.info("No LoTE to be analyzed");
@@ -282,6 +293,8 @@ public class LoTEValidationJob {
         checkNoDuplicateUrls(listSources);
 
         LOG.info("Running analysis for {} LoTESource(s)", nbLoTESources);
+
+        Map<CacheKey, ParsingCacheDTO> oldParsingValues = extractParsingCache(listSources);
 
         CountDownLatch latch = new CountDownLatch(nbLoTESources);
         for (ListSource listSource : listSources) {
@@ -296,6 +309,22 @@ public class LoTEValidationJob {
             LOG.error("Interruption in the LoTEAnalysis process", e);
             Thread.currentThread().interrupt();
         }
+
+        Map<CacheKey, ParsingCacheDTO> newParsingValues = extractParsingCache(listSources);
+
+        // Analyze introduced changes for Lists + adapt cache (EXPIRED)
+        final ListChangeApplier listChangeApplier = new ListChangeApplier(cacheAccessFactory.getChangeCacheAccess(), oldParsingValues, newParsingValues);
+        listChangeApplier.analyzeAndApply();
+    }
+
+    private Collection<ListSource> extractOtherListSources(List<ListSource> listSources) {
+        ListSourceBuilder tlSourceBuilder = new ListSourceBuilder(listSources, extractParsingCache(listSources));
+        return tlSourceBuilder.build();
+    }
+
+    private Map<CacheKey, ParsingCacheDTO> extractParsingCache(Collection<ListSource> listSources) {
+        final ReadOnlyCacheAccess readOnlyCacheAccess = cacheAccessFactory.getReadOnlyCacheAccess();
+        return listSources.stream().collect(Collectors.toMap(ListSource::getCacheKey, s -> readOnlyCacheAccess.getParsingCacheDTO(s.getCacheKey())));
     }
 
     private void synchronizeLoTECertificateSource() {
@@ -329,9 +358,9 @@ public class LoTEValidationJob {
      * Duplicate urls mean cache conflict.
      *
      * @param sources
-     *                a list of ListSource
+     *                a list of {@link ListSource}s
      */
-    private void checkNoDuplicateUrls(List<? extends ListSource> sources) {
+    private void checkNoDuplicateUrls(Collection<? extends ListSource> sources) {
         List<String> allUrls = sources.stream().map(ListSource::getUrl).collect(Collectors.toList());
         Set<String> uniqueUrls = new HashSet<>(allUrls);
         if (allUrls.size() > uniqueUrls.size()) {

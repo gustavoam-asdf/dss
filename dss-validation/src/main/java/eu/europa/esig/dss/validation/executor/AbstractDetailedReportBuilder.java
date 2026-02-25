@@ -25,7 +25,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -118,10 +118,10 @@ public abstract class AbstractDetailedReportBuilder {
 		return result;
 	}
 
-	private List<XmlTLAnalysis> validateLoTE(ValidationPolicy policy, Date currentTime, List<XmlTrustSourceList> trustedLists) {
+	private List<XmlTLAnalysis> validateLoTE(ValidationPolicy policy, Date currentTime, List<XmlListOfTrustedEntities> trustedLists) {
 		List<XmlTLAnalysis> result = new ArrayList<>();
 		if (Utils.isCollectionNotEmpty(trustedLists)) {
-			for (XmlTrustSourceList xmlTrustedList : trustedLists) {
+			for (XmlListOfTrustedEntities xmlTrustedList : trustedLists) {
 				LoTEValidationBlock loteValidation = new LoTEValidationBlock(i18nProvider, xmlTrustedList, currentTime, policy);
 				result.add(loteValidation.execute());
 			}

@@ -7,7 +7,7 @@ import eu.europa.esig.dss.lote.json.MockDataLoader;
 import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.lote.LoTEInfo;
+import eu.europa.esig.dss.model.lote.ListInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -79,10 +79,9 @@ class JsonLoTEValidationJobTest {
         loteValidationJob.offlineRefresh();
 
         LoTEValidationJobSummary summary = loteValidationJob.getSummary();
-        assertEquals(0, summary.getListOfListsInfos().size());
-        assertEquals(1, summary.getOtherListInfos().size());
+        assertEquals(1, summary.getListInfos().size());
 
-        LoTEInfo loteInfo = summary.getOtherListInfos().get(0);
+        ListInfo loteInfo = summary.getListInfos().get(0);
         assertTrue(loteInfo.getDownloadCacheInfo().isResultExist());
         assertFalse(loteInfo.getDownloadCacheInfo().isError());
         assertTrue(loteInfo.getParsingCacheInfo().isResultExist());

@@ -61,11 +61,11 @@ public class ParsingCacheDTO extends AbstractCacheDTO implements ParsingInfoReco
 	/** List of found trusted entities */
 	private List<TrustedEntity> trustedEntities;
 
-	/** List of Lists of Lists other pointers */
-	private List<OtherListPointer> listOfListsOtherPointers;
+	/** Self pointer to teh current list */
+	private List<OtherListPointer> currentListPointers;
 
-	/** List of List other pointers */
-	private List<OtherListPointer> listOtherPointers;
+	/** Pointers to other lists */
+	private List<OtherListPointer> otherListPointers;
 
 	/** List of pivot URLs */
 	private List<String> pivotUrls;
@@ -205,31 +205,31 @@ public class ParsingCacheDTO extends AbstractCacheDTO implements ParsingInfoReco
 	}
 
 	@Override
-	public List<OtherListPointer> getListOfListsOtherPointers() {
-		return listOfListsOtherPointers;
+	public List<OtherListPointer> getCurrentListPointers() {
+		return currentListPointers;
 	}
 
 	/**
 	 * Sets List of Lists other pointers
 	 *
-	 * @param listOfListsOtherPointers a list of {@link OtherListPointer}s
+	 * @param currentListPointers a list of {@link OtherListPointer}s
 	 */
-	public void setListOfListsOtherPointers(List<OtherListPointer> listOfListsOtherPointers) {
-		this.listOfListsOtherPointers = listOfListsOtherPointers;
+	public void setCurrentListPointers(List<OtherListPointer> currentListPointers) {
+		this.currentListPointers = currentListPointers;
 	}
 
 	@Override
-	public List<OtherListPointer> getListOtherPointers() {
-		return listOtherPointers;
+	public List<OtherListPointer> getOtherListPointers() {
+		return otherListPointers;
 	}
 
 	/**
 	 * Sets Lists other pointers
 	 *
-	 * @param listOtherPointers a list of {@link OtherListPointer}s
+	 * @param otherListPointers a list of {@link OtherListPointer}s
 	 */
-	public void setListOtherPointers(List<OtherListPointer> listOtherPointers) {
-		this.listOtherPointers = listOtherPointers;
+	public void setOtherListPointers(List<OtherListPointer> otherListPointers) {
+		this.otherListPointers = otherListPointers;
 	}
 
 	@Override

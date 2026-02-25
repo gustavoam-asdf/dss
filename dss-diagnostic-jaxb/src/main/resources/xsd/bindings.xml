@@ -374,6 +374,11 @@
 		    <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList" />
 	    </jaxb:property>
     </jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='ListOfTrustedEntities']//xs:attribute[@name='parent']">
+		<jaxb:property>
+			<jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities" />
+		</jaxb:property>
+	</jaxb:bindings>
 
     <jaxb:bindings node="//xs:complexType[@name='TrustedEntityService']//xs:attribute[@name='ServiceDigitalIdentifier']">
         <jaxb:property>

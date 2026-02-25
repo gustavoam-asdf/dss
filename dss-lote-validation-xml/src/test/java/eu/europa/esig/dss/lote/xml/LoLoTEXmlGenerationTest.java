@@ -1,10 +1,18 @@
 package eu.europa.esig.dss.lote.xml;
 
+import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.enumerations.CertificateUsage;
 import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
 import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -30,7 +38,9 @@ import eu.europa.esig.dss.xades.reference.DSSReference;
 import eu.europa.esig.dss.xades.reference.DSSTransform;
 import eu.europa.esig.dss.xades.reference.EnvelopedSignatureTransform;
 import eu.europa.esig.dss.xades.signature.XAdESService;
+import eu.europa.esig.lote.jaxb.AdditionalInformationType;
 import eu.europa.esig.lote.jaxb.AddressType;
+import eu.europa.esig.lote.jaxb.AnyType;
 import eu.europa.esig.lote.jaxb.DigitalIdentityListType;
 import eu.europa.esig.lote.jaxb.DigitalIdentityType;
 import eu.europa.esig.lote.jaxb.ElectronicAddressType;
@@ -41,9 +51,12 @@ import eu.europa.esig.lote.jaxb.MultiLangNormStringType;
 import eu.europa.esig.lote.jaxb.NextUpdateType;
 import eu.europa.esig.lote.jaxb.NonEmptyMultiLangURIListType;
 import eu.europa.esig.lote.jaxb.NonEmptyMultiLangURIType;
+import eu.europa.esig.lote.jaxb.OtherLoTEPointerType;
+import eu.europa.esig.lote.jaxb.OtherLoTEPointersType;
 import eu.europa.esig.lote.jaxb.PolicyOrLegalnoticeType;
 import eu.europa.esig.lote.jaxb.PostalAddressListType;
 import eu.europa.esig.lote.jaxb.PostalAddressType;
+import eu.europa.esig.lote.jaxb.ServiceDigitalIdentityListType;
 import eu.europa.esig.lote.jaxb.TEServiceInformationType;
 import eu.europa.esig.lote.jaxb.TEType;
 import eu.europa.esig.lote.jaxb.TrustedEntitiesListType;
@@ -51,6 +64,8 @@ import eu.europa.esig.lote.jaxb.TrustedEntityInformationType;
 import eu.europa.esig.lote.jaxb.TrustedEntityServiceType;
 import eu.europa.esig.lote.jaxb.TrustedEntityServicesListType;
 import eu.europa.esig.lote.xml.LOTEFacade;
+import eu.europa.esig.lote.xml.definition.LOTENamespace;
+import jakarta.xml.bind.JAXBElement;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,6 +74,7 @@ import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.math.BigInteger;
@@ -74,12 +90,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class LoTEXmlGenerationTest extends PKIFactoryAccess {
+class LoLoTEXmlGenerationTest extends PKIFactoryAccess {
 
     private static final String PKI_NAME = "pub-eaa-providers";
 
+    private static final String LOLOTE_LOCATION_URL = "https://test.test/lolote";
     private static final String LOTE_LOCATION_URL = "https://test.test/lote";
 
     private static final String PUB_EAA_SERVICE_TYPE_IDENTIFIER = "http://uri.etsi.org/19602/SvcType/PubEAA/Issuance";
@@ -92,10 +110,10 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
     private static final String PUB_EAA_CERTIFICATE = "Test-Pub-EAA";
     private CertificateToken pubEaaCertificate;
 
+    private static final String LOLOTE_SIGNER_CERTIFICATE = "LoLoTE-Signer";
     private static final String LOTE_SIGNER_CERTIFICATE = "LoTE-Signer";
-    private CertificateToken loteSignerCertificate;
 
-    private String signer = LOTE_SIGNER_CERTIFICATE;
+    private String signer;
 
     @BeforeEach
     public void init() {
@@ -108,12 +126,12 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         onlineFileLoader.setDataLoader(new MockDataLoader(urlMap));
         onlineFileLoader.setFileCacheDirectory(cacheDirectory);
 
-        loteSignerCertificate = getCertificate(LOTE_SIGNER_CERTIFICATE);
         pubEaaCertificate = getCertificate(PUB_EAA_CERTIFICATE);
     }
 
     @Test
     void test() throws Exception {
+        DSSDocument loloTE = createLoLoTE();
         DSSDocument loTE = createLoTE();
 
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
@@ -121,15 +139,18 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         LoTEValidationJob validationJob = new LoTEValidationJob();
         validationJob.setTrustedListCertificateSource(trustedEntitiesCertificateSource);
 
+        urlMap.put(LOLOTE_LOCATION_URL, loloTE);
         urlMap.put(LOTE_LOCATION_URL, loTE);
         validationJob.setOnlineDataLoader(onlineFileLoader);
 
-        ListSource listSource = new ListSource();
-        listSource.setUrl(LOTE_LOCATION_URL);
+        ListSource loloteSource = new ListSource();
+        loloteSource.setUrl(LOLOTE_LOCATION_URL);
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
-        trustedCertificateSource.addCertificate(loteSignerCertificate);
-        listSource.setCertificateSource(trustedCertificateSource);
-        validationJob.setListSources(listSource);
+        trustedCertificateSource.addCertificate(getCertificate(LOLOTE_SIGNER_CERTIFICATE));
+        loloteSource.setCertificateSource(trustedCertificateSource);
+        loloteSource.setOtherListPointerPredicate(otherListPointer ->
+                "http://uri.etsi.org/19602/LoTEType/EUPubEAAProvidersList".equals(otherListPointer.getType()));
+        validationJob.setListSources(loloteSource);
 
         validationJob.onlineRefresh();
 
@@ -164,6 +185,172 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         assertEquals(0, simpleReport.getCertificateUsageWarningsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
         assertEquals(0, simpleReport.getCertificateUsageInfoAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
 
+        DiagnosticData diagnosticData = reports.getDiagnosticData();
+        List<XmlListOfTrustedEntities> listsOfTrustedEntities = diagnosticData.getListsOfTrustedEntities();
+        assertEquals(2, listsOfTrustedEntities.size());
+
+        boolean loloteFound = false;
+        boolean loteFound = false;
+        for (XmlListOfTrustedEntities xmlListOfTrustedEntities : listsOfTrustedEntities) {
+            if (xmlListOfTrustedEntities.getParent() != null) {
+                loteFound = true;
+            } else {
+                loloteFound = true;
+            }
+        }
+        assertTrue(loloteFound);
+        assertTrue(loteFound);
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlCertificate xmlCertificate = detailedReport.getXmlCertificateById(pubEaaCertificate.getDSSIdAsString());
+        XmlCertificateUsageProcess certificateUsageProcess = xmlCertificate.getCertificateUsageProcess();
+
+        boolean loloteCheckFound = false;
+        boolean loteCheckFound = false;
+        for (XmlConstraint constraint : certificateUsageProcess.getConstraint()) {
+            if (MessageTag.CERT_USAGE_LOLOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {
+                loloteCheckFound = true;
+            } else if (MessageTag.CERT_USAGE_LOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {
+                loteCheckFound = true;
+            }
+            assertEquals(XmlStatus.OK, constraint.getStatus());
+        }
+        assertTrue(loloteCheckFound);
+        assertTrue(loteCheckFound);
+    }
+
+    private DSSDocument createLoLoTE() {
+        ListOfTrustedEntitiesType lote = new ListOfTrustedEntitiesType();
+        lote.setLOTETag("http://uri.etsi.org/019602/tag#");
+
+        LoTEListAndSchemeInformationType listAndSchemeInformation = new LoTEListAndSchemeInformationType();
+        lote.setListAndSchemeInformation(listAndSchemeInformation);
+
+        listAndSchemeInformation.setLoTEVersionIdentifier(BigInteger.ONE);
+        listAndSchemeInformation.setLoTESequenceNumber(BigInteger.ONE);
+        listAndSchemeInformation.setLoTEType("http://uri.etsi.org/19602/LoTEType/EUlistofthelists");
+
+        listAndSchemeInformation.setSchemeOperatorName(getNamesType(
+                getLangString("fr", "Agence Nationale de la Confiance Numérique"),
+                getLangString("en", "National Agency for Digital Trust")
+        ));
+
+        listAndSchemeInformation.setSchemeOperatorAddress(getAddressType(Arrays.asList(
+                getPostalAddress("fr", "12 Boulevard Sécurité", "Paris", "Île-de-France","75015", "ZZ"),
+                getPostalAddress("en", "12 Security Boulevard", "Paris", "Ile-de-France","75015", "ZZ")
+        ), getElectronicAddress(getLangURI("en", "mailto@schemeoperator.com"))));
+
+        listAndSchemeInformation.setSchemeName(getNamesType(
+                getLangString("fr", "Liste de confiance zz"),
+                getLangString("en", "ZZ Trusted List")
+        ));
+
+        listAndSchemeInformation.setSchemeInformationURI(getLangUriList(getLangURI("en", "https://example.org/scheme-info")));
+        listAndSchemeInformation.setStatusDeterminationApproach("http://uri.etsi.org/19602/ListOfLists/StatusDetn/EU");
+        listAndSchemeInformation.setSchemeTypeCommunityRules(getLangUriList(getLangURI("en", "http://uri.etsi.org/19602/ListOfLists/schemerules/EU")));
+        listAndSchemeInformation.setSchemeTerritory("EU");
+
+        listAndSchemeInformation.setHistoricalInformationPeriod(BigInteger.valueOf(65535));
+
+        PolicyOrLegalnoticeType policyOrLegalnoticeType = new PolicyOrLegalnoticeType();
+        policyOrLegalnoticeType.getLoTEPolicy().add(getLangURI("en", "http://trust.tech.ec.europa.eu/lists/eudiw/legal-notice#EN"));
+        listAndSchemeInformation.setPolicyOrLegalNotice(policyOrLegalnoticeType);
+
+        listAndSchemeInformation.setListIssueDateTime(toXMLGregorianCalendar(new Date()));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, 6);
+
+        NextUpdateType nextUpdateType = new NextUpdateType();
+        nextUpdateType.setDateTime(toXMLGregorianCalendar(calendar.getTime()));
+        listAndSchemeInformation.setNextUpdate(nextUpdateType);
+
+        OtherLoTEPointersType otherLoTEPointersType = new OtherLoTEPointersType();
+
+        OtherLoTEPointerType loloteSelfPointer = new OtherLoTEPointerType();
+
+        ServiceDigitalIdentityListType serviceDigitalIdentities = new ServiceDigitalIdentityListType();
+        DigitalIdentityListType digitalIdentityListType = getDigitalIdentitiesListType(getCertificate(LOLOTE_SIGNER_CERTIFICATE));
+        serviceDigitalIdentities.getServiceDigitalIdentity().add(digitalIdentityListType);
+        loloteSelfPointer.setServiceDigitalIdentities(serviceDigitalIdentities);
+
+        loloteSelfPointer.setLoTELocation(LOLOTE_LOCATION_URL);
+
+        AdditionalInformationType additionalInformationType = new AdditionalInformationType();
+        AnyType otherInfoLoTEType = new AnyType();
+        otherInfoLoTEType.getContent().add(new JAXBElement<>(new QName(LOTENamespace.NS.getUri(), "LoTEType"),
+                String.class, "http://uri.etsi.org/19602/LoTEType/EUlistofthelists"));
+        additionalInformationType.getTextualInformationOrOtherInformation().add(otherInfoLoTEType);
+        AnyType otherInfoSchemeTerritory = new AnyType();
+        otherInfoSchemeTerritory.getContent().add(new JAXBElement<>(new QName(LOTENamespace.NS.getUri(), "SchemeTerritory"),
+                String.class, "EU"));
+        additionalInformationType.getTextualInformationOrOtherInformation().add(otherInfoSchemeTerritory);
+        loloteSelfPointer.setAdditionalInformation(additionalInformationType);
+
+        otherLoTEPointersType.getOtherLoTEPointer().add(loloteSelfPointer);
+
+        OtherLoTEPointerType lotePointer = new OtherLoTEPointerType();
+
+        serviceDigitalIdentities = new ServiceDigitalIdentityListType();
+        digitalIdentityListType = getDigitalIdentitiesListType(getCertificate(LOTE_SIGNER_CERTIFICATE));
+        serviceDigitalIdentities.getServiceDigitalIdentity().add(digitalIdentityListType);
+        lotePointer.setServiceDigitalIdentities(serviceDigitalIdentities);
+
+        lotePointer.setLoTELocation(LOTE_LOCATION_URL);
+
+        additionalInformationType = new AdditionalInformationType();
+        otherInfoLoTEType = new AnyType();
+        otherInfoLoTEType.getContent().add(new JAXBElement<>(new QName(LOTENamespace.NS.getUri(), "LoTEType"),
+                String.class, "http://uri.etsi.org/19602/LoTEType/EUPubEAAProvidersList"));
+        additionalInformationType.getTextualInformationOrOtherInformation().add(otherInfoLoTEType);
+        otherInfoSchemeTerritory = new AnyType();
+        otherInfoSchemeTerritory.getContent().add(new JAXBElement<>(new QName(LOTENamespace.NS.getUri(), "SchemeTerritory"),
+                String.class, "EU"));
+        additionalInformationType.getTextualInformationOrOtherInformation().add(otherInfoSchemeTerritory);
+        lotePointer.setAdditionalInformation(additionalInformationType);
+
+        otherLoTEPointersType.getOtherLoTEPointer().add(lotePointer);
+
+        listAndSchemeInformation.setPointersToOtherLoTE(otherLoTEPointersType);
+
+        signer = LOLOTE_SIGNER_CERTIFICATE;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            LOTEFacade.newFacade().marshall(lote, baos);
+
+            DSSDocument loteToSign = new InMemoryDocument(baos.toByteArray(), "LoTE.xml");
+
+            XAdESService service = new XAdESService(getOfflineCertificateVerifier());
+            XAdESSignatureParameters signatureParameters = new XAdESSignatureParameters();
+            signatureParameters.setSigningCertificate(getSigningCert());
+            signatureParameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
+            signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPED);
+
+            DSSReference dssReference = new DSSReference();
+            dssReference.setId("ref-id");
+            dssReference.setUri("");
+            dssReference.setContents(loteToSign);
+            dssReference.setDigestMethodAlgorithm(signatureParameters.getDigestAlgorithm());
+
+            final List<DSSTransform> transforms = new ArrayList<>();
+
+            EnvelopedSignatureTransform signatureTransform = new EnvelopedSignatureTransform();
+            transforms.add(signatureTransform);
+
+            CanonicalizationTransform dssTransform = new CanonicalizationTransform(CanonicalizationMethod.EXCLUSIVE);
+            transforms.add(dssTransform);
+
+            dssReference.setTransforms(transforms);
+            signatureParameters.setReferences(Collections.singletonList(dssReference));
+
+            ToBeSigned dataToSign = service.getDataToSign(loteToSign, signatureParameters);
+            SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
+            DSSDocument signedLoLoTE = service.signDocument(loteToSign, signatureParameters, signatureValue);
+            return signedLoLoTE;
+
+        } catch (Exception e) {
+            fail(e);
+            return null;
+        }
     }
 
     private DSSDocument createLoTE() {
@@ -243,10 +430,7 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
 
             serviceInformation.setServiceName(getNamesType(getLangString("en", DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.O, sdiCertificate.getSubject()))));
 
-            DigitalIdentityListType digitalIdentities = new DigitalIdentityListType();
-            DigitalIdentityType digitalIdentityType = new DigitalIdentityType();
-            digitalIdentityType.setX509Certificate(sdiCertificate.getEncoded());
-            digitalIdentities.getDigitalId().add(digitalIdentityType);
+            DigitalIdentityListType digitalIdentities = getDigitalIdentitiesListType(sdiCertificate);
             serviceInformation.setServiceDigitalIdentity(digitalIdentities);
 
             serviceInformation.setServiceTypeIdentifier(PUB_EAA_SERVICE_TYPE_IDENTIFIER);
@@ -256,6 +440,7 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
             trustedEntityServicesListType.getTrustedEntityService().add(trustedEntityService);
         }
 
+        signer = LOTE_SIGNER_CERTIFICATE;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             LOTEFacade.newFacade().marshall(lote, baos);
 
@@ -293,6 +478,16 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
             fail(e);
             return null;
         }
+    }
+
+    private DigitalIdentityListType getDigitalIdentitiesListType(CertificateToken... certificateTokens) {
+        DigitalIdentityListType digitalIdentities = new DigitalIdentityListType();
+        for (CertificateToken certificateToken : certificateTokens) {
+            DigitalIdentityType digitalIdentityType = new DigitalIdentityType();
+            digitalIdentityType.setX509Certificate(certificateToken.getEncoded());
+            digitalIdentities.getDigitalId().add(digitalIdentityType);
+        }
+        return digitalIdentities;
     }
 
     private AddressType getAddressType(Collection<PostalAddressType> postalAddresses, ElectronicAddressType electronicAddress) {

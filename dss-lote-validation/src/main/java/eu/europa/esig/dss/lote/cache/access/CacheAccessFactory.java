@@ -59,12 +59,12 @@ public final class CacheAccessFactory {
 	}
 
 	/**
-	 * Loads a class for TL updates
+	 * Loads a class for analysis update
 	 *
-	 * @return {@link TLChangesCacheAccess}
+	 * @return {@link ChangeCacheAccess}
 	 */
-	public TLChangesCacheAccess getTLChangesCacheAccess() {
-		return new TLChangesCacheAccess(downloadCache, parsingCache, validationCache);
+	public ChangeCacheAccess getChangeCacheAccess() {
+		return new ChangeCacheAccess(downloadCache, parsingCache, validationCache);
 	}
 
 	/**

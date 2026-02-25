@@ -93,14 +93,14 @@ public interface ParsingInfoRecord extends InfoRecord {
 	 *
 	 * @return a list of {@link OtherListPointer}s
 	 */
-	List<OtherListPointer> getListOfListsOtherPointers();
+	List<OtherListPointer> getCurrentListPointers();
 
 	/**
 	 * Gets LIsts other TSL pointers
 	 *
 	 * @return a list of {@link OtherListPointer}s
 	 */
-	List<OtherListPointer> getListOtherPointers();
+	List<OtherListPointer> getOtherListPointers();
 
 	/**
 	 * Gets pivot URLs

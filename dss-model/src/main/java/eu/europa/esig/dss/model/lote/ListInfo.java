@@ -6,6 +6,8 @@ import eu.europa.esig.dss.model.lote.record.DownloadInfoRecord;
 import eu.europa.esig.dss.model.lote.record.ParsingInfoRecord;
 import eu.europa.esig.dss.model.lote.record.ValidationInfoRecord;
 
+import java.util.List;
+
 /**
  * Represents information extracted on a List processing (e.g. Trusted List or List of Trusted Entities)
  *
@@ -52,7 +54,14 @@ public interface ListInfo extends IdentifierBasedObject {
      *
      * @return {@link OtherListPointer}
      */
-    OtherListPointer getOtherListPointer();
+    OtherListPointer getListPointer();
+
+    /**
+     * Returns a list of {@code ListInfo}s summary for Lists found in the List of Lists
+     *
+     * @return list of {@link ListInfo}s
+     */
+    List<ListInfo> getOtherListsInfos();
 
     /**
      * Returns the unique identifier
