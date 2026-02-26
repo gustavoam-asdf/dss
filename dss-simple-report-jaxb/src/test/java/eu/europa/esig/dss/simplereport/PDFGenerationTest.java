@@ -96,6 +96,11 @@ class PDFGenerationTest {
 	}
 
 	@Test
+	void generateQEAASimpleReport() throws Exception {
+		createAndValidate("sr-qeaa.xml");
+	}
+
+	@Test
 	void generateSemantics() throws Exception {
 		createAndValidate("sr-semantics.xml");
 	}

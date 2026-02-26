@@ -1248,6 +1248,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="TRUSTED_STORE" />
 			<xs:enumeration value="TRUSTED_LIST" />
+			<xs:enumeration value="TRUSTED_ENTITIES" />
 			<xs:enumeration value="SIGNATURE" />
 			<xs:enumeration value="OCSP_RESPONSE" />
 			<xs:enumeration value="OTHER" />
@@ -1793,7 +1794,7 @@
 			<xs:element name="Serialized" type="xs:base64Binary" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" /> <!-- may be null -->
-		<xs:attribute name="disclosure" type="xs:boolean" default="false" />
+		<xs:attribute name="disclosure" type="xs:boolean" />
 	</xs:complexType>
 
 	<xs:complexType name="DigestMatchers">

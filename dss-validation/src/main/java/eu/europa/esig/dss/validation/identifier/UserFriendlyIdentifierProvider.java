@@ -27,6 +27,7 @@ import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.model.identifier.IdentifierBasedObject;
 import eu.europa.esig.dss.model.identifier.MultipleDigestIdentifier;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
+import eu.europa.esig.dss.model.lote.ListInfo;
 import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
 import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
@@ -136,6 +137,12 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
 
     /** The prefix to be used for a pivot identifier creation */
     private String pivotPrefix = "PIVOT";
+
+    /** The prefix to be used for a List of Lists of Trusted Entities identifier creation */
+    private String lolotePrefix = "LOLOTE";
+
+    /** The prefix to be used for a List of Trusted Entities identifier creation */
+    private String lotePrefix = "LOTE";
 
     /** The date format to be used for a token identifier creation */
     private String dateFormat = "yyyyMMdd-HHmm";
@@ -304,9 +311,6 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
         } else if (object instanceof SignatureScope) {
             return getIdAsStringForSignatureScope((SignatureScope) object);
 
-        } else if (object instanceof TLInfo) {
-            return getIdAsStringForTL((TLInfo) object);
-
         } else if (object instanceof CertificateRef) {
             return getIdAsStringForCertRef((CertificateRef) object);
 
@@ -318,6 +322,12 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
 
         } else if (object instanceof EvidenceRecord) {
             return getIdAsStringForEvidenceRecordIdentifier((EvidenceRecord) object);
+
+        } else if (object instanceof TLInfo) {
+            return getIdAsStringForTL((TLInfo) object);
+
+        } else if (object instanceof ListInfo) {
+            return getIdAsStringForLoTE((ListInfo) object);
 
         }
         LOG.warn("The class '{}' is not supported! Return the original identifier for the object.", object.getClass());
@@ -404,6 +414,28 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
             }
         }
         return generateId(stringBuilder, tlInfo.getDSSIdAsString());
+    }
+
+    /**
+     * Gets a {@code String} identifier for a given {@code ListInfo}
+     *
+     * @param listInfo {@link ListInfo} to get String id for
+     * @return {@link String}
+     */
+    protected String getIdAsStringForLoTE(ListInfo listInfo) {
+        StringBuilder stringBuilder = new StringBuilder(getLoTEPrefix(listInfo));
+        eu.europa.esig.dss.model.lote.record.ParsingInfoRecord parsingCacheInfo = listInfo.getParsingCacheInfo();
+        if (parsingCacheInfo != null) {
+            if (Utils.isStringNotBlank(parsingCacheInfo.getTerritory())) {
+                stringBuilder.append(STRING_DELIMITER);
+                stringBuilder.append(getUserFriendlyString(parsingCacheInfo.getTerritory()));
+            }
+            if (parsingCacheInfo.getIssueDate() != null) {
+                stringBuilder.append(STRING_DELIMITER);
+                stringBuilder.append(DSSUtils.formatDateWithCustomFormat(parsingCacheInfo.getIssueDate(), dateFormat));
+            }
+        }
+        return generateId(stringBuilder, listInfo.getDSSIdAsString());
     }
 
     /**
@@ -573,6 +605,15 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
             return lotlPrefix;
         } else {
             return tlPrefix;
+        }
+    }
+
+    private String getLoTEPrefix(ListInfo listInfo) {
+        if (Utils.isCollectionNotEmpty(listInfo.getOtherListsInfos()) &&
+                Utils.isCollectionEmpty(listInfo.getParsingCacheInfo().getTrustedEntities())) {
+            return lolotePrefix;
+        } else {
+            return lotePrefix;
         }
     }
 

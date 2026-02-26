@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.diagnostic;
+package eu.europa.esig.dss.diagnostic.claim;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.jaxb.parsers.DateParser;
@@ -55,7 +55,7 @@ public class ClaimWrapper {
      * @return whether the claim's value has been obtained from a disclosure
      */
     public boolean isSelectivelyDisclosable() {
-        return wrapped.isDisclosure();
+        return wrapped.isDisclosure() != null && wrapped.isDisclosure();
     }
 
     /**
@@ -179,6 +179,15 @@ public class ClaimWrapper {
     }
 
     /**
+     * Gets the wrapped JAXB disclosable claim object
+     *
+     * @return {@link XmlDisclosableClaim}
+     */
+    protected XmlDisclosableClaim getWrapped() {
+        return wrapped;
+    }
+
+    /**
      * Converts the claim's value to its corresponding string representation
      *
      * @return {@link String}
@@ -202,22 +211,14 @@ public class ClaimWrapper {
 
     private String toDisplayValue(List<ClaimWrapper> items) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
         Iterator<ClaimWrapper> it = items.iterator();
         while (it.hasNext()) {
             ClaimWrapper claimValue = it.next();
-            if (claimValue.isText()) {
-                sb.append("\"");
-            }
             sb.append(claimValue.getDisplayValue());
-            if (claimValue.isText()) {
-                sb.append("\"");
-            }
             if (it.hasNext()) {
                 sb.append(", ");
             }
         }
-        sb.append("]");
         return sb.toString();
     }
 

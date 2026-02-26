@@ -109,6 +109,11 @@ class PDFGenerationTest {
 	void qwac2DetailedReport() throws Exception {
 		createAndValidate("dr-2qwac.xml");
 	}
+
+	@Test
+	void pidDetailedReport() throws Exception {
+		createAndValidate("dr-pid.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		DetailedReportFacade facade = DetailedReportFacade.newFacade();

@@ -5,6 +5,7 @@ import eu.europa.esig.dss.lote.source.ListSource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.concurrent.CountDownLatch;
 
@@ -30,6 +31,10 @@ public class ListAnalysis extends AbstractRunnableAnalysis {
             if (executor.isSupported(document)) {
                 return executor;
             }
+        }
+        Iterator<ListAnalysisExecutor> iterator = serviceLoaders.iterator();
+        if (iterator.hasNext()) {
+            return iterator.next();
         }
         throw new UnsupportedOperationException("Please ensure that at least one of dss-lote-validation-xml or " +
                 "dss-lote-validation-json modules is added within the dependencies list.");

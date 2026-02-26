@@ -68,6 +68,11 @@ class SimpleReportFacadeTest {
 	void sunsetTest() throws Exception {
 		createAndValidate("sr-sunset.xml");
 	}
+
+	@Test
+	void qeaaTest() throws Exception {
+		createAndValidate("sr-qeaa.xml");
+	}
 	
 	@Test
 	void generateSemantics() throws Exception {

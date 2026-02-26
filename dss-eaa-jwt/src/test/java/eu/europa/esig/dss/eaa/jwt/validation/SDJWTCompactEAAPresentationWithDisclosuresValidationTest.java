@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.diagnostic.ClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -229,7 +229,7 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
                 assertFalse(disclosableClaim.isSelectivelyDisclosable());
                 assertEquals(2, disclosableClaim.getItemList().size());
                 assertTrue(disclosableClaim.getItemList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
-                assertEquals("[\"US\", \"DE\"]", disclosableClaim.getDisplayValue());
+                assertEquals("US, DE", disclosableClaim.getDisplayValue());
                 nationalitiesClaimFound = true;
                 
             } else if ("cnf".equals(disclosableClaim.getName())) {

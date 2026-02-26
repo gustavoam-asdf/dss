@@ -172,7 +172,7 @@
 			<xs:element name="countryCode" type="xs:string" />
 			<xs:element name="tslType" type="xs:string" minOccurs="0" />
 			<xs:element name="trustServiceProvider" type="xs:string" />
-			<xs:element name="trustServiceProviderRegistrationId" type="xs:string" />
+			<xs:element name="trustServiceProviderRegistrationId" type="xs:string" minOccurs="0" />
 			<xs:element name="trustServiceName" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
@@ -263,7 +263,7 @@
 
 	<xs:complexType name="CertificateUsageAtTime">
 		<xs:sequence>
-			<xs:element name="CertificateUsage" type="CertificateUsage" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="certificateUsage" type="CertificateUsage" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 

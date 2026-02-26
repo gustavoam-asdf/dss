@@ -443,12 +443,12 @@
 
 			<li>
 				<xsl:attribute name="class">mb-1</xsl:attribute>
-				<xsl:apply-templates select="dss:CertificateUsage"/>
+				<xsl:apply-templates select="dss:certificateUsage"/>
 			</li>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="dss:CertificateUsage">
+	<xsl:template match="dss:certificateUsage">
 		<span>
 			<xsl:attribute name="class">
 				<xsl:choose>

@@ -18,6 +18,7 @@
 		<xsl:apply-templates select="dss:Signature"/>
 		<xsl:apply-templates select="dss:Timestamp"/>
 		<xsl:apply-templates select="dss:EvidenceRecord"/>
+		<xsl:apply-templates select="dss:EAAPresentation"/>
 	    
 	    <xsl:call-template name="documentInformation"/>
     </xsl:template>
@@ -45,7 +46,8 @@
     	</div>
     </xsl:template>
 
-    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord">
+    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAAPresentation
+    |dss:EAAPresentationSignature|dss:KeyBindingSignature">
 		<xsl:param name="cardStyle" select="'primary'" />
 		<xsl:param name="parentId" />
 
@@ -106,6 +108,15 @@
 					<xsl:if test="$nodeName = 'EvidenceRecord'">
 						Evidence Record
 					</xsl:if>
+					<xsl:if test="$nodeName = 'EAAPresentation'">
+						EAA Presentation
+					</xsl:if>
+					<xsl:if test="$nodeName = 'EAAPresentationSignature'">
+						EAA Signature
+					</xsl:if>
+					<xsl:if test="$nodeName = 'KeyBindingSignature'">
+						Key Binding Signature
+					</xsl:if>
 					<xsl:value-of select="@Id" />
 				</span>
 				<i>
@@ -143,6 +154,12 @@
 								Evidence record filename:
 							</dt>
 						</xsl:if>
+						<xsl:if test="$nodeName = 'EAAPresentation'">
+							<dt>
+								<xsl:attribute name="class">col-sm-3</xsl:attribute>
+								EAA Presentation filename:
+							</dt>
+						</xsl:if>
 			            <dd>
 			            	<xsl:attribute name="class">col-sm-9</xsl:attribute>
 			            
@@ -151,7 +168,7 @@
 			        </dl>
 				</xsl:if>
 				
-				<xsl:if test="dss:SignatureLevel | dss:TimestampLevel">
+				<xsl:if test="dss:SignatureLevel | dss:TimestampLevel | dss:EAALevel">
 					<dl>
 			    		<xsl:attribute name="class">row mb-0</xsl:attribute>
 			            <dt>
@@ -167,6 +184,9 @@
 							<xsl:if test="dss:TimestampLevel">
 								<xsl:value-of select="dss:TimestampLevel" />
 							</xsl:if>
+							<xsl:if test="dss:EAALevel">
+								<xsl:value-of select="dss:EAALevel" />
+							</xsl:if>
 							<i>
 				    			<xsl:attribute name="class">fa fa-info-circle text-info ml-2</xsl:attribute>
 								<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
@@ -177,6 +197,9 @@
 								</xsl:if>
 								<xsl:if test="dss:TimestampLevel">
 									<xsl:attribute name="title"><xsl:value-of select="dss:TimestampLevel/@description" /></xsl:attribute>
+								</xsl:if>
+								<xsl:if test="dss:EAALevel">
+									<xsl:attribute name="title"><xsl:value-of select="dss:EAALevel/@description" /></xsl:attribute>
 								</xsl:if>
 				    		</i>
 				    		
@@ -410,7 +433,7 @@
 				</xsl:if>
 
 				<!-- Ignore embedded timestamps -->
-				<xsl:if test="not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)">
+				<xsl:if test="not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0) or not($nodeName = 'EAAPresentation')">
 					<dl>
 						<xsl:attribute name="class">row mb-0</xsl:attribute>
 						<dt>
@@ -466,6 +489,7 @@
 				<xsl:apply-templates select="dss:SignatureScope" />
 				<xsl:apply-templates select="dss:TimestampScope" />
 				<xsl:apply-templates select="dss:EvidenceRecordScope" />
+				<xsl:apply-templates select="dss:EAAPayload" />
 
 				<xsl:if test="dss:Timestamps">
 					<div>
@@ -509,6 +533,15 @@
 					</div>
 				</xsl:if>
 
+				<xsl:if test="dss:EAAPresentationSignature|dss:KeyBindingSignature">
+					<div>
+						<xsl:attribute name="class">card mt-3</xsl:attribute>
+						<xsl:apply-templates select="dss:EAAPresentationSignature|dss:KeyBindingSignature">
+							<xsl:with-param name="parentId" select="$idToken"/>
+						</xsl:apply-templates>
+					</div>
+				</xsl:if>
+
     		</div>
     	</div>
     </xsl:template>
@@ -531,6 +564,87 @@
 				<xsl:attribute name="class">col-sm-9</xsl:attribute>
 
 				<xsl:value-of select="@name"/> (<xsl:value-of select="@scope"/>)<br />
+				<xsl:value-of select="."/>
+			</dd>
+		</dl>
+	</xsl:template>
+
+	<xsl:template match="dss:EAAPayload">
+		<xsl:apply-templates />
+	</xsl:template>
+
+	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:ExpirationTime|dss:NotBefore|dss:IssuedAt
+			|dss:UpdatedAt|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:Nonce|FullName|dss:FirstName
+			|dss:LastName|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl
+			|dss:Email|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:Timezone|dss:Locale|dss:AddressPostalAddress
+			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
+			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirthCountry
+			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName
+			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:OtherClaim">
+		<xsl:variable name="header">
+			<xsl:choose>
+				<xsl:when test="name() = 'Identifier'">Identifier</xsl:when>
+				<xsl:when test="name() = 'Issuer'">Issuer</xsl:when>
+				<xsl:when test="name() = 'Subject'">Subject</xsl:when>
+				<xsl:when test="name() = 'Audience'">Audience</xsl:when>
+				<xsl:when test="name() = 'ExpirationTime'">Expiration time</xsl:when>
+				<xsl:when test="name() = 'NotBefore'">NotBefore time</xsl:when>
+				<xsl:when test="name() = 'IssuedAt'">Issuance time</xsl:when>
+				<xsl:when test="name() = 'UpdatedAt'">Update time</xsl:when>
+				<xsl:when test="name() = 'Category'">Category</xsl:when>
+				<xsl:when test="name() = 'MetadataType'">Metadata type</xsl:when>
+				<xsl:when test="name() = 'StatusIndex'">Status index</xsl:when>
+				<xsl:when test="name() = 'StatusUri'">Status URI</xsl:when>
+				<xsl:when test="name() = 'Nonce'">Nonce</xsl:when>
+
+				<xsl:when test="name() = 'FullName'">Full name</xsl:when>
+				<xsl:when test="name() = 'FirstName'">Firstname</xsl:when>
+				<xsl:when test="name() = 'LastName'">Lastname</xsl:when>
+				<xsl:when test="name() = 'MiddleName'">Middle name</xsl:when>
+				<xsl:when test="name() = 'Nickname'">Nickname</xsl:when>
+				<xsl:when test="name() = 'ShortName'">Short name</xsl:when>
+				<xsl:when test="name() = 'ProfileUrl'">Profile URL</xsl:when>
+				<xsl:when test="name() = 'PictureUrl'">Picture URL</xsl:when>
+				<xsl:when test="name() = 'WebsiteUrl'">Website URL</xsl:when>
+				<xsl:when test="name() = 'Email'">Email</xsl:when>
+				<xsl:when test="name() = 'EmailVerified'">Email verified</xsl:when>
+				<xsl:when test="name() = 'Gender'">Gender</xsl:when>
+				<xsl:when test="name() = 'Birthdate'">Birthdate</xsl:when>
+				<xsl:when test="name() = 'Timezone'">Timezone</xsl:when>
+				<xsl:when test="name() = 'Locale'">Locale</xsl:when>
+				<xsl:when test="name() = 'AddressPostalAddress'">Postal address</xsl:when>
+				<xsl:when test="name() = 'AddressCity'">City</xsl:when>
+				<xsl:when test="name() = 'AddressStateOrProvince'">State or province</xsl:when>
+				<xsl:when test="name() = 'AddressPostalCode'">Postal Code</xsl:when>
+				<xsl:when test="name() = 'AddressCountryName'">Country</xsl:when>
+				<xsl:when test="name() = 'AddressStreetAddress'">Street address</xsl:when>
+				<xsl:when test="name() = 'PhoneNumber'">Phone number</xsl:when>
+				<xsl:when test="name() = 'PhoneNumberVerified'">Phone number verified</xsl:when>
+				<xsl:when test="name() = 'PlaceOfBirthCountry'">Country of birth</xsl:when>
+				<xsl:when test="name() = 'PlaceOfBirthRegion'">Region of birth</xsl:when>
+				<xsl:when test="name() = 'PlaceOfBirthCity'">City of birth</xsl:when>
+				<xsl:when test="name() = 'Nationalities'">Nationalities</xsl:when>
+				<xsl:when test="name() = 'BirthLastName'">Birth lastname</xsl:when>
+				<xsl:when test="name() = 'BirthFirstName'">Birth firstname</xsl:when>
+				<xsl:when test="name() = 'BirthMiddleName'">Birth middle name</xsl:when>
+				<xsl:when test="name() = 'Salutation'">Salutation</xsl:when>
+				<xsl:when test="name() = 'Title'">Title</xsl:when>
+				<xsl:when test="name() = 'MobilePhoneNumber'">Mobile phone number</xsl:when>
+				<xsl:when test="name() = 'Pseudonym'">Pseudonym</xsl:when>
+
+				<xsl:when test="name() = 'OtherClaim'"><xsl:value-of select="@name"/></xsl:when>
+			</xsl:choose>
+		</xsl:variable>
+
+		<dl>
+			<xsl:attribute name="class">row mb-0</xsl:attribute>
+			<dt>
+				<xsl:attribute name="class">col-sm-3</xsl:attribute>
+				<xsl:value-of select="$header" /><xsl:if test="@disclosure = 'true'"> (disclosure)</xsl:if>:
+			</dt>
+			<dd>
+				<xsl:attribute name="class">col-sm-9</xsl:attribute>
+
 				<xsl:value-of select="."/>
 			</dd>
 		</dl>

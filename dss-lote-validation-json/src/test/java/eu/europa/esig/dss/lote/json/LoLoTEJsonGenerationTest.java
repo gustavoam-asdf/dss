@@ -216,7 +216,7 @@ class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
         schemeOperatorAddress.put("SchemeOperatorPostalAddress", schemeOperatorPostalAddress);
 
         List<JsonObject> schemeOperatorElectronicAddress = new ArrayList<>();
-        schemeOperatorElectronicAddress.add(getNonEmptyMultiLangURI("en", "mailto@schemeoperator.com"));
+        schemeOperatorElectronicAddress.add(getNonEmptyMultiLangURI("en", "mailto:mailto@schemeoperator.com"));
         schemeOperatorAddress.put("SchemeOperatorElectronicAddress", schemeOperatorElectronicAddress);
 
         List<JsonObject> schemeName = new ArrayList<>();
@@ -323,7 +323,7 @@ class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
         schemeOperatorAddress.put("SchemeOperatorPostalAddress", schemeOperatorPostalAddress);
 
         List<JsonObject> schemeOperatorElectronicAddress = new ArrayList<>();
-        schemeOperatorElectronicAddress.add(getNonEmptyMultiLangURI("en", "mailto@schemeoperator.com"));
+        schemeOperatorElectronicAddress.add(getNonEmptyMultiLangURI("en", "mailto:mailto@schemeoperator.com"));
         schemeOperatorAddress.put("SchemeOperatorElectronicAddress", schemeOperatorElectronicAddress);
 
         List<JsonObject> schemeName = new ArrayList<>();

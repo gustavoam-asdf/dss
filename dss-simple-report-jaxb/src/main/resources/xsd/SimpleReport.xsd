@@ -388,86 +388,68 @@
 	<xs:complexType name="EAAPayload">
 		<xs:sequence>
 			<!-- technical claims -->
-			<xs:element name="Identifier" type="xs:string" minOccurs="0" />
-			<xs:element name="Issuer" type="xs:string" minOccurs="0" />
-			<xs:element name="Subject" type="xs:string" minOccurs="0" />
-			<xs:element name="Audience" type="xs:string" minOccurs="0" />
-			<xs:element name="ExpirationTime" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="NotBefore" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="UpdatedAt" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="Category" type="xs:string" minOccurs="0" />
-			<xs:element name="MetadataType" type="MetadataType" minOccurs="0" />
-			<xs:element name="StatusIndex" type="xs:integer" minOccurs="0" />
-			<xs:element name="StatusUri" type="xs:string" minOccurs="0" />
-			<xs:element name="Nonce" type="xs:string" minOccurs="0" />
+			<xs:element name="Identifier" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Issuer" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Subject" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Audience" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ExpirationTime" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="NotBefore" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="IssuedAt" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="UpdatedAt" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Category" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="MetadataType" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="StatusIndex" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="StatusUri" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Nonce" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- user info -->
-			<xs:element name="FullName" type="xs:string" minOccurs="0" />
-			<xs:element name="FirstName" type="xs:string" minOccurs="0" />
-			<xs:element name="LastName" type="xs:string" minOccurs="0" />
-			<xs:element name="MiddleName" type="xs:string" minOccurs="0" />
-			<xs:element name="Nickname" type="xs:string" minOccurs="0" />
-			<xs:element name="ShortName" type="xs:string" minOccurs="0" />
-			<xs:element name="ProfileUrl" type="xs:string" minOccurs="0" />
-			<xs:element name="PictureUrl" type="xs:string" minOccurs="0" />
-			<xs:element name="WebsiteUrl" type="xs:string" minOccurs="0" />
-			<xs:element name="Email" type="xs:string" minOccurs="0" />
-			<xs:element name="EmailVerified" type="xs:boolean" minOccurs="0" />
-			<xs:element name="Gender" type="xs:string" minOccurs="0" />
-			<xs:element name="Birthdate" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="Timezone" type="xs:string" minOccurs="0" />
-			<xs:element name="Locale" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressPostalAddress" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressCity" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressStateOrProvince" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressPostalCode" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressCountryName" type="xs:string" minOccurs="0" />
-			<xs:element name="AddressStreetAddress" type="xs:string" minOccurs="0" />
-			<xs:element name="PhoneNumber" type="xs:string" minOccurs="0" />
-			<xs:element name="PhoneNumberVerified" type="xs:boolean" minOccurs="0" />
-			<xs:element name="PlaceOfBirthCountry" type="xs:string" minOccurs="0" />
-			<xs:element name="PlaceOfBirthRegion" type="xs:string" minOccurs="0" />
-			<xs:element name="PlaceOfBirthCity" type="xs:string" minOccurs="0" />
-			<xs:element name="Nationalities" type="Nationalities" minOccurs="0" />
-			<xs:element name="BirthLastName" type="xs:string" minOccurs="0" />
-			<xs:element name="BirthFirstName" type="xs:string" minOccurs="0" />
-			<xs:element name="BirthMiddleName" type="xs:string" minOccurs="0" />
-			<xs:element name="Salutation" type="xs:string" minOccurs="0" />
-			<xs:element name="Title" type="xs:string" minOccurs="0" />
-			<xs:element name="MobilePhoneNumber" type="xs:string" minOccurs="0" />
-			<xs:element name="Pseudonym" type="xs:string" minOccurs="0" />
+			<xs:element name="FullName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="FirstName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="LastName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="MiddleName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Nickname" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ShortName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ProfileUrl" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PictureUrl" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="WebsiteUrl" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Email" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="EmailVerified" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Gender" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Birthdate" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Timezone" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Locale" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressPostalAddress" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressCity" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressStateOrProvince" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressPostalCode" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressCountryName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AddressStreetAddress" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PhoneNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PhoneNumberVerified" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PlaceOfBirthCountry" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PlaceOfBirthRegion" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PlaceOfBirthCity" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Nationalities" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthLastName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthFirstName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthMiddleName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Salutation" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Title" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="MobilePhoneNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Pseudonym" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="MetadataType">
-		<xs:sequence>
-			<xs:element name="DigestMethod" type="xs:string" minOccurs="0" />
-			<xs:element name="DigestValue" type="xs:base64Binary" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="uri" type="xs:string" />
-	</xs:complexType>
-
-	<xs:complexType name="Nationalities">
-		<xs:sequence>
-			<xs:element name="Nationality" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
-		</xs:sequence>
-	</xs:complexType>
-
 	<xs:complexType name="DisclosableClaim">
-		<xs:sequence>
-			<xs:element name="Text" type="xs:string" minOccurs="0" />
-			<xs:element name="Number" type="xs:integer" minOccurs="0" />
-			<xs:element name="Boolean" type="xs:boolean" minOccurs="0" />
-			<xs:element name="DateTime" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="Item" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="Serialized" type="xs:base64Binary" minOccurs="0" />
-		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" />
-		<xs:attribute name="disclosure" type="xs:boolean" default="false" />
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="disclosure" type="xs:boolean" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	
 	<xs:complexType name="Semantic">

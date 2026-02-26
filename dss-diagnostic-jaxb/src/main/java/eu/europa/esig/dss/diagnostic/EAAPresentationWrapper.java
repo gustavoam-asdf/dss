@@ -1,7 +1,11 @@
 package eu.europa.esig.dss.diagnostic;
 
+import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.IntegrityClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -117,15 +121,21 @@ public class EAAPresentationWrapper {
     }
 
     /**
+     * Gets access to the EAA payload, containing complete claims data
+     * 
+     * @return {@link EAAPayloadProxy}
+     */
+    public EAAPayloadProxy getEAAPayload() {
+        return new EAAPayloadProxy(eaaPresentation.getEAAPayload());
+    }
+
+    /**
      * Gets EAA Presentation identifier provided in the EAA payload
      *
      * @return {@link String}
      */
     public String getEAAIdentifier() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getIdentifier());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAAIdentifier());
     }
 
     /**
@@ -134,10 +144,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAAIssuer() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getIssuer());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAAIssuer());
     }
 
     /**
@@ -146,10 +153,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAASubject() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getSubject());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAASubject());
     }
 
     /**
@@ -158,10 +162,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAAAudience() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAudience());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAAAudience());
     }
 
     /**
@@ -170,10 +171,7 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getEAAExpirationTime() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimDateValue(eaaPresentation.getEAAPayload().getExpirationTime());
-        }
-        return null;
+        return getPayloadClaimDateValue(getEAAPayload().getEAAExpirationTime());
     }
 
     /**
@@ -182,10 +180,7 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getEAANotBefore() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimDateValue(eaaPresentation.getEAAPayload().getNotBefore());
-        }
-        return null;
+        return getPayloadClaimDateValue(getEAAPayload().getEAANotBefore());
     }
 
     /**
@@ -194,10 +189,7 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getEAAIssuedAt() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimDateValue(eaaPresentation.getEAAPayload().getIssuedAt());
-        }
-        return null;
+        return getPayloadClaimDateValue(getEAAPayload().getEAAIssuedAt());
     }
 
     /**
@@ -206,10 +198,7 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getEAAUpdatedAt() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimDateValue(eaaPresentation.getEAAPayload().getUpdatedAt());
-        }
-        return null;
+        return getPayloadClaimDateValue(getEAAPayload().getEAAUpdatedAt());
     }
 
     /**
@@ -218,10 +207,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAACategory() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getCategory());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAACategory());
     }
 
     /**
@@ -230,10 +216,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAAMetadataUri() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getMetadataType() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getMetadataType());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAAMetadataType());
     }
 
     /**
@@ -242,9 +225,9 @@ public class EAAPresentationWrapper {
      * @return {@link DigestAlgorithm}
      */
     public DigestAlgorithm getEAAMetadataIntegrityDigestAlgorithm() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getMetadataType() != null
-                && eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
-            return eaaPresentation.getEAAPayload().getMetadataType().getIntegrity().getDigestMethod();
+        IntegrityClaimWrapper eaaMetadataIntegrity = getEAAPayload().getEAAMetadataIntegrity();
+        if (eaaMetadataIntegrity != null) {
+            return eaaMetadataIntegrity.getDigestAlgorithm();
         }
         return null;
     }
@@ -255,9 +238,9 @@ public class EAAPresentationWrapper {
      * @return byte array representing the EAA Presentation's metadata hash
      */
     public byte[] getEAAMetadataIntegrityBytes() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getMetadataType() != null
-                && eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
-            return eaaPresentation.getEAAPayload().getMetadataType().getIntegrity().getDigestValue();
+        IntegrityClaimWrapper eaaMetadataIntegrity = getEAAPayload().getEAAMetadataIntegrity();
+        if (eaaMetadataIntegrity != null) {
+            return eaaMetadataIntegrity.getDigestValue();
         }
         return null;
     }
@@ -268,8 +251,9 @@ public class EAAPresentationWrapper {
      * @return {@link BigInteger}
      */
     public BigInteger getEAAStatusIndex() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getStatus() != null) {
-            return getPayloadClaimNumberValue(eaaPresentation.getEAAPayload().getStatus().getIndex());
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            return getPayloadClaimNumberValue(eaaStatus.getIndex());
         }
         return null;
     }
@@ -280,8 +264,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAAStatusUri() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getStatus() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getStatus().getUri());
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            return getPayloadClaimTextValue(eaaStatus.getUri());
         }
         return null;
     }
@@ -292,10 +277,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAANonce() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getNonce());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getEAANonce());
     }
 
     /**
@@ -304,10 +286,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserFullName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getFullName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserFullName());
     }
 
     /**
@@ -316,10 +295,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserFirstName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getFirstName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserFirstName());
     }
 
     /**
@@ -328,10 +304,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserLastName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getLastName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserLastName());
     }
 
     /**
@@ -340,10 +313,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserMiddleName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getMiddleName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserMiddleName());
     }
 
     /**
@@ -352,10 +322,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserNickname() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getNickname());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserNickname());
     }
 
     /**
@@ -364,10 +331,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserShortName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getShortName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserShortName());
     }
 
     /**
@@ -376,10 +340,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserProfileUrl() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getProfileUrl());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserProfileUrl());
     }
 
     /**
@@ -388,10 +349,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPictureUrl() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPictureUrl());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserPictureUrl());
     }
 
     /**
@@ -400,10 +358,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserWebsiteUrl() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getWebsiteUrl());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserWebsiteUrl());
     }
 
     /**
@@ -412,10 +367,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserEmail() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getEmail());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserEmail());
     }
 
     /**
@@ -424,10 +376,7 @@ public class EAAPresentationWrapper {
      * @return {@link Boolean}
      */
     public Boolean getUserEmailVerified() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimBooleanValue(eaaPresentation.getEAAPayload().getEmailVerified());
-        }
-        return null;
+        return getPayloadClaimBooleanValue(getEAAPayload().getUserEmailVerified());
     }
 
     /**
@@ -436,10 +385,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserGender() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getGender());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserGender());
     }
 
     /**
@@ -448,10 +394,7 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getUserBirthdate() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimDateValue(eaaPresentation.getEAAPayload().getBirthdate());
-        }
-        return null;
+        return getPayloadClaimDateValue(getEAAPayload().getUserBirthdate());
     }
 
     /**
@@ -460,10 +403,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserTimezone() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getTimezone());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserTimezone());
     }
 
     /**
@@ -472,10 +412,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserLocale() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getLocale());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserLocale());
     }
 
     /**
@@ -484,8 +421,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPostalAddress() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getPostalAddress());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getPostalAddress());
         }
         return null;
     }
@@ -496,8 +434,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserAddressCity() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getCity());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getCity());
         }
         return null;
     }
@@ -508,8 +447,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserAddressStateOrProvince() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getStateOrProvince());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getStateOrProvince());
         }
         return null;
     }
@@ -520,8 +460,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserAddressPostalCode() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getPostalCode());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getPostalCode());
         }
         return null;
     }
@@ -533,8 +474,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserAddressCountry() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getCountryName());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getCountry());
         }
         return null;
     }
@@ -545,8 +487,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserStreetAddress() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getAddress() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getAddress().getStreetAddress());
+        AddressClaimWrapper userAddress = getEAAPayload().getUserAddress();
+        if (userAddress != null) {
+            return getPayloadClaimTextValue(userAddress.getStreetAddress());
         }
         return null;
     }
@@ -557,10 +500,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPhoneNumber() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPhoneNumber());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserPhoneNumber());
     }
 
     /**
@@ -569,10 +509,7 @@ public class EAAPresentationWrapper {
      * @return {@link Boolean}
      */
     public Boolean getUserPhoneNumberVerified() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimBooleanValue(eaaPresentation.getEAAPayload().getPhoneNumberVerified());
-        }
-        return null;
+        return getPayloadClaimBooleanValue(getEAAPayload().getUserPhoneNumberVerified());
     }
 
     /**
@@ -581,8 +518,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPlaceOfBirthCountry() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getPlaceOfBirth() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPlaceOfBirth().getCountry());
+        PlaceOfBirthClaimWrapper userPlaceOfBirth = getEAAPayload().getUserPlaceOfBirth();
+        if (userPlaceOfBirth != null) {
+            return getPayloadClaimTextValue(userPlaceOfBirth.getCountry());
         }
         return null;
     }
@@ -593,8 +531,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPlaceOfBirthRegion() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getPlaceOfBirth() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPlaceOfBirth().getRegion());
+        PlaceOfBirthClaimWrapper userPlaceOfBirth = getEAAPayload().getUserPlaceOfBirth();
+        if (userPlaceOfBirth != null) {
+            return getPayloadClaimTextValue(userPlaceOfBirth.getRegion());
         }
         return null;
     }
@@ -605,8 +544,9 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPlaceOfBirthCity() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getPlaceOfBirth() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPlaceOfBirth().getCity());
+        PlaceOfBirthClaimWrapper userPlaceOfBirth = getEAAPayload().getUserPlaceOfBirth();
+        if (userPlaceOfBirth != null) {
+            return getPayloadClaimTextValue(userPlaceOfBirth.getCity());
         }
         return null;
     }
@@ -618,10 +558,7 @@ public class EAAPresentationWrapper {
      * @return a list of {@link String}s
      */
     public List<String> getUserNationalities() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimArrayAsStringsValue(eaaPresentation.getEAAPayload().getNationalities());
-        }
-        return Collections.emptyList();
+        return getPayloadClaimArrayAsStringsValue(getEAAPayload().getUserNationalities());
     }
 
     /**
@@ -630,10 +567,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserBirthLastName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getBirthLastName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserBirthLastName());
     }
 
     /**
@@ -642,10 +576,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserBirthFirstName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getBirthFirstName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserBirthFirstName());
     }
 
     /**
@@ -654,10 +585,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserBirthMiddleName() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getBirthMiddleName());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserBirthMiddleName());
     }
 
     /**
@@ -666,10 +594,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserSalutation() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getSalutation());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserSalutation());
     }
 
     /**
@@ -678,10 +603,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserTitle() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getTitle());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserTitle());
     }
 
     /**
@@ -690,10 +612,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserMobilePhoneNumber() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getMobilePhoneNumber());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserMobilePhoneNumber());
     }
 
     /**
@@ -702,10 +621,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getUserPseudonym() {
-        if (eaaPresentation.getEAAPayload() != null) {
-            return getPayloadClaimTextValue(eaaPresentation.getEAAPayload().getPseudonym());
-        }
-        return null;
+        return getPayloadClaimTextValue(getEAAPayload().getUserPseudonym());
     }
 
     /**
@@ -715,10 +631,7 @@ public class EAAPresentationWrapper {
      * @return a lust of {@link ClaimWrapper}s
      */
     public List<ClaimWrapper> getOtherClaims() {
-        if (eaaPresentation.getEAAPayload() != null && eaaPresentation.getEAAPayload().getOtherClaim() != null) {
-            return eaaPresentation.getEAAPayload().getOtherClaim().stream().map(ClaimWrapper::new).collect(Collectors.toList());
-        }
-        return null;
+        return getEAAPayload().getOtherClaims();
     }
 
     /**
@@ -761,46 +674,39 @@ public class EAAPresentationWrapper {
         return result;
     }
 
-    private ClaimWrapper getClaim(XmlDisclosableClaim xmlDisclosableClaim) {
-        if (xmlDisclosableClaim == null) {
-            return null;
-        }
-        return new ClaimWrapper(xmlDisclosableClaim);
-    }
-
-    private String getPayloadClaimTextValue(XmlDisclosableClaim xmlDisclosableClaim) {
+    private String getPayloadClaimTextValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }
         return xmlDisclosableClaim.getText();
     }
 
-    private BigInteger getPayloadClaimNumberValue(XmlDisclosableClaim xmlDisclosableClaim) {
+    private BigInteger getPayloadClaimNumberValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }
         return xmlDisclosableClaim.getNumber();
     }
 
-    private Date getPayloadClaimDateValue(XmlDisclosableClaim xmlDisclosableClaim) {
+    private Date getPayloadClaimDateValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }
         return xmlDisclosableClaim.getDateTime();
     }
 
-    private Boolean getPayloadClaimBooleanValue(XmlDisclosableClaim xmlDisclosableClaim) {
+    private Boolean getPayloadClaimBooleanValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }
         return xmlDisclosableClaim.isBoolean();
     }
 
-    private List<String> getPayloadClaimArrayAsStringsValue(XmlDisclosableClaim xmlDisclosableClaim) {
+    private List<String> getPayloadClaimArrayAsStringsValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }
-        return xmlDisclosableClaim.getItem().stream().map(XmlDisclosableClaim::getText)
+        return xmlDisclosableClaim.getItemList().stream().map(ClaimWrapper::getText)
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
@@ -810,139 +716,7 @@ public class EAAPresentationWrapper {
      * @return a list of {@link ClaimWrapper}s
      */
     public List<ClaimWrapper> getAllEAAPayloadClaims() {
-        if (claimList == null) {
-            claimList = new ArrayList<>();
-
-            if (eaaPresentation.getEAAPayload() != null) {
-                if (eaaPresentation.getEAAPayload().getIdentifier() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getIdentifier()));
-                }
-                if (eaaPresentation.getEAAPayload().getIssuer() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getIssuer()));
-                }
-                if (eaaPresentation.getEAAPayload().getSubject() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getSubject()));
-                }
-                if (eaaPresentation.getEAAPayload().getAudience() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getAudience()));
-                }
-                if (eaaPresentation.getEAAPayload().getExpirationTime() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getExpirationTime()));
-                }
-                if (eaaPresentation.getEAAPayload().getNotBefore() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getNotBefore()));
-                }
-                if (eaaPresentation.getEAAPayload().getIssuedAt() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getIssuedAt()));
-                }
-                if (eaaPresentation.getEAAPayload().getUpdatedAt() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getUpdatedAt()));
-                }
-                if (eaaPresentation.getEAAPayload().getCategory() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getCategory()));
-                }
-                if (eaaPresentation.getEAAPayload().getMetadataType() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getMetadataType()));
-                    if (eaaPresentation.getEAAPayload().getMetadataType().getIntegrity() != null) {
-                        claimList.add(getClaim(eaaPresentation.getEAAPayload().getMetadataType().getIntegrity()));
-                    }
-                }
-                if (eaaPresentation.getEAAPayload().getStatus() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getStatus()));
-                }
-                if (eaaPresentation.getEAAPayload().getNonce() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getNonce()));
-                }
-                if (eaaPresentation.getEAAPayload().getFullName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getFullName()));
-                }
-                if (eaaPresentation.getEAAPayload().getFirstName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getFirstName()));
-                }
-                if (eaaPresentation.getEAAPayload().getLastName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getLastName()));
-                }
-                if (eaaPresentation.getEAAPayload().getMiddleName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getMiddleName()));
-                }
-                if (eaaPresentation.getEAAPayload().getNickname() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getNickname()));
-                }
-                if (eaaPresentation.getEAAPayload().getShortName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getShortName()));
-                }
-                if (eaaPresentation.getEAAPayload().getProfileUrl() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getProfileUrl()));
-                }
-                if (eaaPresentation.getEAAPayload().getPictureUrl() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getPictureUrl()));
-                }
-                if (eaaPresentation.getEAAPayload().getWebsiteUrl() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getWebsiteUrl()));
-                }
-                if (eaaPresentation.getEAAPayload().getEmail() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getEmail()));
-                }
-                if (eaaPresentation.getEAAPayload().getEmailVerified() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getEmailVerified()));
-                }
-                if (eaaPresentation.getEAAPayload().getGender() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getGender()));
-                }
-                if (eaaPresentation.getEAAPayload().getBirthdate() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getBirthdate()));
-                }
-                if (eaaPresentation.getEAAPayload().getTimezone() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getTimezone()));
-                }
-                if (eaaPresentation.getEAAPayload().getLocale() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getLocale()));
-                }
-                if (eaaPresentation.getEAAPayload().getAddress() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getAddress()));
-                }
-                if (eaaPresentation.getEAAPayload().getPhoneNumber() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getPhoneNumber()));
-                }
-                if (eaaPresentation.getEAAPayload().getPhoneNumberVerified() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getPhoneNumberVerified()));
-                }
-                if (eaaPresentation.getEAAPayload().getPlaceOfBirth() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getPlaceOfBirth()));
-                }
-                if (eaaPresentation.getEAAPayload().getNationalities() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getNationalities()));
-                }
-                if (eaaPresentation.getEAAPayload().getBirthLastName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getBirthLastName()));
-                }
-                if (eaaPresentation.getEAAPayload().getBirthFirstName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getBirthFirstName()));
-                }
-                if (eaaPresentation.getEAAPayload().getBirthMiddleName() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getBirthMiddleName()));
-                }
-                if (eaaPresentation.getEAAPayload().getSalutation() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getSalutation()));
-                }
-                if (eaaPresentation.getEAAPayload().getTitle() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getTitle()));
-                }
-                if (eaaPresentation.getEAAPayload().getMobilePhoneNumber() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getMobilePhoneNumber()));
-                }
-                if (eaaPresentation.getEAAPayload().getPseudonym() != null) {
-                    claimList.add(getClaim(eaaPresentation.getEAAPayload().getPseudonym()));
-                }
-                if (eaaPresentation.getEAAPayload().getOtherClaim() != null && !eaaPresentation.getEAAPayload().getOtherClaim().isEmpty()) {
-                    List<ClaimWrapper> claimWrappers = eaaPresentation.getEAAPayload().getOtherClaim().stream()
-                            .map(this::getClaim).collect(Collectors.toList());
-                    claimList.addAll(claimWrappers);
-                }
-            }
-
-        }
-        return claimList;
+        return getEAAPayload().getAllEAAPayloadClaims();
     }
 
     /**
