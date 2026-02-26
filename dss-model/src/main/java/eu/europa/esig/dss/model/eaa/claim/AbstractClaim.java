@@ -18,6 +18,9 @@ public abstract class AbstractClaim implements Claim {
     /** Whether the claim is selectively disclosable */
     private boolean selectivelyDisclosable;
 
+    /** Parent claim, containing the current claim in its body */
+    private Claim parent;
+
     /**
      * Default constructor
      */
@@ -46,6 +49,20 @@ public abstract class AbstractClaim implements Claim {
         this.selectivelyDisclosable = selectivelyDisclosable;
     }
 
+    /**
+     * Constructor with claim name and selectively disclosable status and parent claim provided
+     *
+     * @param name {@link String}
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    protected AbstractClaim(String name, boolean selectivelyDisclosable, Claim parent) {
+        this.name = name;
+        this.selectivelyDisclosable = selectivelyDisclosable;
+        this.parent = parent;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -63,6 +80,11 @@ public abstract class AbstractClaim implements Claim {
     @Override
     public boolean isSelectivelyDisclosable() {
         return selectivelyDisclosable;
+    }
+
+    @Override
+    public Claim getParent() {
+        return parent;
     }
 
     @Override

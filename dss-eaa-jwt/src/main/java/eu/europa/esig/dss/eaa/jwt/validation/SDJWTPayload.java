@@ -26,7 +26,6 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,54 +71,15 @@ public class SDJWTPayload implements EAAPayload {
 
     @Override
     public List<ClaimBinaries> getSelectiveDisclosableClaims() {
-        final List<ClaimBinaries> result = new ArrayList<>();
-
-        // 1. Extract _sd header hashes
-        Claim _sdClaim = payloadMap.get(SDJWTConstants._SD);
-        if (_sdClaim != null) {
-            List<Claim> sdClaimArray = _sdClaim.getListValue();
-            if (Utils.isCollectionNotEmpty(sdClaimArray)) {
-                for (Claim sdHashValue : sdClaimArray) {
-                    if (!sdHashValue.isStringValueType()) {
-                        LOG.warn("Value of the '{}' shall be represented by a String!", SDJWTConstants._SD);
-                        continue;
-                    }
-                    String sdHash = sdHashValue.getStringValue();
-                    if (!DSSJsonUtils.isBase64UrlEncoded(sdHash)) {
-                        LOG.warn("Value of the '{}' shall be base64url encoded!", SDJWTConstants._SD);
-                        continue;
-                    }
-                    result.add(new ClaimBinaries(DSSJsonUtils.fromBase64Url(sdHash)));
-                }
-            }
-        }
-        // 2. Look for selectively disclosable array items
-        for (Map.Entry<String, Claim> entry : payloadMap.entrySet()) {
-            String headerName = entry.getKey();
-            /*
-             * 4.2.1. Disclosures for Object Properties (draft-ietf-oauth-selective-disclosure-jwt-22)
-             *
-             * 2. The claim name, or key, as it would be used in a regular JWT payload.
-             * It MUST be a string and MUST NOT be _sd, ..., or a claim name existing in
-             * the object as a permanently disclosed claim.
-             */
-            if (SDJWTConstants._SD.equals(headerName) || SDJWTConstants.HASH.equals(headerName)) {
-                continue;
-            }
-
-            // Currently only selectively disclosable array entries are supported.
-            // It is not very clear if other options are possible too.
-            result.addAll(SDJWTUtils.getNestedSelectivelyDisclosableClaims(headerName, entry.getValue()));
-        }
-
-        return result;
+        Claim payloadAsClaim = Claim.create(payloadMap);
+        return SDJWTUtils.getNestedSelectivelyDisclosableClaims(payloadAsClaim);
     }
 
     @Override
     public DigestAlgorithm getSelectiveDisclosableClaimDigestAlgorithm() {
-        String digestAlgoName = DSSJsonUtils.getAsString(payloadMap, SDJWTConstants._SD_ALG);
-        if (Utils.isStringNotEmpty(digestAlgoName)) {
-            return SDJWTUtils.getDigestAlgorithmForSdJwtId(digestAlgoName);
+        ClaimString digestAlgoName = getValueAsString(SDJWTConstants._SD_ALG);
+        if (digestAlgoName != null) {
+            return SDJWTUtils.getDigestAlgorithmForSdJwtId(digestAlgoName.getStringValue());
         }
         /*
          * 4.2.3. Hashing Disclosures (draft-ietf-oauth-selective-disclosure-jwt-22)
@@ -352,6 +312,15 @@ public class SDJWTPayload implements EAAPayload {
         Map<String, Claim> result = new HashMap<>(payloadMap);
         result.remove(SDJWTConstants._SD);
         result.remove(SDJWTConstants._SD_ALG);
+        for (String key : payloadMap.keySet()) {
+            Claim claim = payloadMap.get(key);
+            if (claim.isMapValueType()) {
+                Map<String, Claim> claimMap = claim.getMapValue();
+                if (Utils.mapSize(claimMap) == 1 && claimMap.get(SDJWTConstants._SD) != null) {
+                    result.remove(key);
+                }
+            }
+        }
         if (Utils.isCollectionNotEmpty(disclosureValidations)) {
             for (DisclosureValidation disclosureValidation : disclosureValidations) {
                 if (disclosureValidation.getClaimName() != null) {

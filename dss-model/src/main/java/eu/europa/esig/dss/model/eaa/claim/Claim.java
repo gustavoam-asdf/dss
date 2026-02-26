@@ -26,6 +26,13 @@ public interface Claim extends Serializable {
     boolean isSelectivelyDisclosable();
 
     /**
+     * Gets parent claim, when applicable (e.g. for claims nested within a map or an array)
+     *
+     * @return {@link Claim}
+     */
+    Claim getParent();
+
+    /**
      * Gets the value as list.
      * If the value is null or not of a list type, returns null
      *

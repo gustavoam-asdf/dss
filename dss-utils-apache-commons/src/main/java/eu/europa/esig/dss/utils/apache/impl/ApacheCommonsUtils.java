@@ -213,6 +213,12 @@ public class ApacheCommonsUtils implements IUtils {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
+	public int collectionSize(Collection collection) {
+		return CollectionUtils.size(collection);
+	}
+
+	@Override
 	public boolean isMapEmpty(Map<?,?> map) {
 		return MapUtils.isEmpty(map);
 	}
@@ -223,9 +229,8 @@ public class ApacheCommonsUtils implements IUtils {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public int collectionSize(Collection collection) {
-		return CollectionUtils.size(collection);
+	public int mapSize(Map<?, ?> map) {
+		return MapUtils.size(map);
 	}
 
 	@Override
