@@ -666,9 +666,24 @@ public class EAAPresentationWrapper {
         List<ClaimWrapper> eaaPayloadClaims = getAllEAAPayloadClaims();
         if (eaaPresentation != null && !eaaPayloadClaims.isEmpty()) {
             for (ClaimWrapper claim : eaaPayloadClaims) {
-                if (claim.isSelectivelyDisclosable()) {
-                    result.add(claim);
-                }
+                result.addAll(getSelectivelyDisclosableClaimsRecursively(claim));
+            }
+        }
+        return result;
+    }
+
+    public List<ClaimWrapper> getSelectivelyDisclosableClaimsRecursively(ClaimWrapper claimWrapper) {
+        List<ClaimWrapper> result = new ArrayList<>();
+        if (claimWrapper.isSelectivelyDisclosable()) {
+            result.add(claimWrapper);
+        }
+        if (claimWrapper.isList()) {
+            for (ClaimWrapper listItem : claimWrapper.getList()) {
+                result.addAll(getSelectivelyDisclosableClaimsRecursively(listItem));
+            }
+        } else if (claimWrapper.isMap()) {
+            for (ClaimWrapper entryItem : claimWrapper.getMap().values()) {
+                result.addAll(getSelectivelyDisclosableClaimsRecursively(entryItem));
             }
         }
         return result;

@@ -207,4 +207,10 @@ public class SDJWTConstants {
     /** SD-JWT payload "category" header */
     public static final String CATEGORY = "category";
 
+    // W3C Verifiable Credentials Data Model v2.0
+
+    /** SD-JWT payload "credentialSubject" header */
+    public static final String CREDENTIAL_SUBJECT = "credentialSubject";
+
+
 }

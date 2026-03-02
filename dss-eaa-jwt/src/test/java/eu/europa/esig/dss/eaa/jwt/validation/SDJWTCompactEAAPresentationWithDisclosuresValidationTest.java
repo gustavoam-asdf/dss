@@ -144,7 +144,7 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getUserNationalities());
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
-        assertEquals(8, selectivelyDisclosableClaims.size());
+        assertEquals(10, selectivelyDisclosableClaims.size());
 
         List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);

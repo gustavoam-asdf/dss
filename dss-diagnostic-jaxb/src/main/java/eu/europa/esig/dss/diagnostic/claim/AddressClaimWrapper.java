@@ -19,6 +19,16 @@ public class AddressClaimWrapper extends ClaimWrapper {
     }
 
     /**
+     * Constructor with a parent provided
+     *
+     * @param wrapped {@link XmlClaim}
+     * @param parent {@link ClaimWrapper}
+     */
+    public AddressClaimWrapper(final XmlAddressClaim wrapped, final ClaimWrapper parent) {
+        super(wrapped, parent);
+    }
+
+    /**
      * Gets the user's full postal or mailing address, formatted, when present
      *
      * @return {@link ClaimWrapper}
@@ -26,7 +36,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getPostalAddress() {
         XmlClaim postalAddress = getWrapped().getPostalAddress();
         if (postalAddress != null) {
-            return new ClaimWrapper(postalAddress);
+            return new ClaimWrapper(postalAddress, this);
         }
         return null;
     }
@@ -41,7 +51,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getStreetAddress() {
         XmlClaim streetAddress = getWrapped().getStreetAddress();
         if (streetAddress != null) {
-            return new ClaimWrapper(streetAddress);
+            return new ClaimWrapper(streetAddress, this);
         }
         return null;
     }
@@ -54,7 +64,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getCity() {
         XmlClaim city = getWrapped().getCity();
         if (city != null) {
-            return new ClaimWrapper(city);
+            return new ClaimWrapper(city, this);
         }
         return null;
     }
@@ -67,7 +77,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getStateOrProvince() {
         XmlClaim streetAddress = getWrapped().getStateOrProvince();
         if (streetAddress != null) {
-            return new ClaimWrapper(streetAddress);
+            return new ClaimWrapper(streetAddress, this);
         }
         return null;
     }
@@ -80,7 +90,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getPostalCode() {
         XmlClaim streetAddress = getWrapped().getPostalCode();
         if (streetAddress != null) {
-            return new ClaimWrapper(streetAddress);
+            return new ClaimWrapper(streetAddress, this);
         }
         return null;
     }
@@ -93,13 +103,13 @@ public class AddressClaimWrapper extends ClaimWrapper {
     public ClaimWrapper getCountry() {
         XmlClaim streetAddress = getWrapped().getCountryName();
         if (streetAddress != null) {
-            return new ClaimWrapper(streetAddress);
+            return new ClaimWrapper(streetAddress, this);
         }
         return null;
     }
 
     @Override
-    protected XmlAddressClaim getWrapped() {
+    public XmlAddressClaim getWrapped() {
         return (XmlAddressClaim) super.getWrapped();
     }
     

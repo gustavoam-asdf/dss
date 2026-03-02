@@ -2,13 +2,16 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimCredentialSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimPlaceOfBirth;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
+import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
@@ -18,7 +21,10 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This class implements a user-friendly access to the EAA payload elements of the SD-JWT token
@@ -251,6 +257,25 @@ public class SDJWTPayload extends ClaimMap implements EAAPayload {
     @Override
     public ClaimString getPseudonym() {
         return getAsString(SDJWTConstants.USER_PSEUDONYM);
+    }
+
+    @Override
+    public List<ClaimCredentialSubject> getCredentialSubjects() {
+        ClaimMap claimCredentialSubjectAsMap = getAsMap(SDJWTConstants.CREDENTIAL_SUBJECT);
+        if (claimCredentialSubjectAsMap != null) {
+            return Collections.singletonList(new SDJWTClaimCredentialSubject(claimCredentialSubjectAsMap));
+        }
+        ClaimArray claimCredentialSubjectAsArray = getAsArray(SDJWTConstants.CREDENTIAL_SUBJECT);
+        if (claimCredentialSubjectAsArray != null) {
+            List<ClaimCredentialSubject> result = new ArrayList<>();
+            for (Claim credentialSubject : claimCredentialSubjectAsArray.getListValue()) {
+                if (credentialSubject.isMapValueType()) {
+                    result.add(new SDJWTClaimCredentialSubject((ClaimMap) credentialSubject));
+                }
+            }
+            return result;
+        }
+        return Collections.emptyList();
     }
 
     /**

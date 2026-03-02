@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 
 /**
@@ -23,7 +24,11 @@ public class StatusClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getIndex() {
-        return new ClaimWrapper(getWrapped().getIndex());
+        XmlClaim index = getWrapped().getIndex();
+        if (index != null) {
+            return new ClaimWrapper(index, this);
+        }
+        return null;
     }
 
     /**
@@ -32,11 +37,15 @@ public class StatusClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getUri() {
-        return new ClaimWrapper(getWrapped().getUri());
+        XmlClaim index = getWrapped().getUri();
+        if (index != null) {
+            return new ClaimWrapper(index, this);
+        }
+        return null;
     }
 
     @Override
-    protected XmlStatusClaim getWrapped() {
+    public XmlStatusClaim getWrapped() {
         return (XmlStatusClaim) super.getWrapped();
     }
 

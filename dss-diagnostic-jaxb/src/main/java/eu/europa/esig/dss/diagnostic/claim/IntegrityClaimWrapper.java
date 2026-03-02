@@ -20,6 +20,16 @@ public class IntegrityClaimWrapper extends ClaimWrapper {
     }
 
     /**
+     * Constructor with a parent claim provided
+     *
+     * @param wrapped {@link XmlClaim}
+     * @param parent {@link ClaimWrapper}
+     */
+    public IntegrityClaimWrapper(final XmlIntegrityClaim wrapped, final ClaimWrapper parent) {
+        super(wrapped, parent);
+    }
+
+    /**
      * Gets the digest algorithm used for the claim hash computation
      *
      * @return {@link DigestAlgorithm}
@@ -38,7 +48,7 @@ public class IntegrityClaimWrapper extends ClaimWrapper {
     }
 
     @Override
-    protected XmlIntegrityClaim getWrapped() {
+    public XmlIntegrityClaim getWrapped() {
         return (XmlIntegrityClaim) super.getWrapped();
     }
 

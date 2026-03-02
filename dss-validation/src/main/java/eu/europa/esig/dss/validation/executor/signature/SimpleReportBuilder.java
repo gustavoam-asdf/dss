@@ -24,16 +24,16 @@ import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.EAAPayloadProxy;
-import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
-import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAPayloadProxy;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.EvidenceRecordWrapper;
 import eu.europa.esig.dss.diagnostic.RelatedRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.RevocationWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
@@ -1043,13 +1043,33 @@ public class SimpleReportBuilder {
 			return null;
 		}
 		XmlDisclosableClaim xmlDisclosableClaim = new XmlDisclosableClaim();
-		xmlDisclosableClaim.setName(claimWrapper.getName());
+		xmlDisclosableClaim.setName(getNamePath(claimWrapper));
 		Boolean isDisclosure = selectivelyDisclosable != null ? selectivelyDisclosable : claimWrapper.isSelectivelyDisclosable();
 		if (Utils.isTrue(isDisclosure)) {
 			xmlDisclosableClaim.setDisclosure(isDisclosure);
 		}
 		xmlDisclosableClaim.setValue(claimWrapper.getDisplayValue());
 		return xmlDisclosableClaim;
+	}
+
+	private String getNamePath(ClaimWrapper claimWrapper) {
+		ClaimWrapper parent = claimWrapper.getParent();
+		if (parent == null) {
+			return claimWrapper.getName();
+		}
+		final StringBuilder sb = new StringBuilder(claimWrapper.getName());
+		while (parent != null) {
+			if (parent.isList()) {
+				int position = parent.getWrapped().getEntry().indexOf(claimWrapper.getWrapped());
+				sb.insert(0, position + "/");
+			}
+			String parentName = parent.getName();
+			if (parentName != null) {
+				sb.insert(0, parentName + "/");
+			}
+			parent = parent.getParent();
+		}
+		return sb.toString();
 	}
 
 }

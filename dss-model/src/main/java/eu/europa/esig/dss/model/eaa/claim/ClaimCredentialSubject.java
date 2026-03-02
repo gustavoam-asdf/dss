@@ -1,113 +1,10 @@
-package eu.europa.esig.dss.spi.eaa;
-
-import eu.europa.esig.dss.model.eaa.claim.Claim;
-import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
-import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
-import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
-import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
-import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
-import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
-import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
-import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
-import eu.europa.esig.dss.model.eaa.claim.ClaimString;
-
-import java.util.List;
+package eu.europa.esig.dss.model.eaa.claim;
 
 /**
- * Provides an interface for accessing the content of the EAA payload
+ * Represents a "4.8 Credential Subject" claim defined in W3C Verifiable Credentials Data Model v2.0.
+ *
  */
-public interface EAAPayload extends Claim {
-
-    /**
-     * Gets the EAA's unique identifier, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getIdentifier();
-
-    /**
-     * Gets the EAA's issuer, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getIssuer();
-
-    /**
-     * Gets the EAA's subject, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getSubject();
-
-    /**
-     * Gets the list of recipients the EAA is intended for, when present
-     *
-     * @return {@link ClaimArray}
-     */
-    ClaimArray getAudience();
-
-    /**
-     * Gets the expiration time of the EAA, after which the EAA is not accepted for processing, when present
-     *
-     * @return {@link ClaimDate}
-     */
-    ClaimDate getExpirationTime();
-
-    /**
-     * Gets the time before which the EAA is not accepted for processing, when present
-     *
-     * @return {@link ClaimDate}
-     */
-    ClaimDate getNotBeforeTime();
-
-    /**
-     * Gets the time at which the EAA was issued, when present
-     *
-     * @return {@link ClaimDate}
-     */
-    ClaimDate getIssuedAtTime();
-
-    /**
-     * Gets the time at which the information present within the EAA was the last time updated, when present
-     *
-     * @return {@link ClaimDate}
-     */
-    ClaimDate getUpdatedAtTime();
-
-    /**
-     * Gets the EAA category URN, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getCategory();
-
-    /**
-     * Gets the EAA's Metadata type, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getMetadataType();
-
-    /**
-     * Gets the EAA's Metadata integrity claim, when present
-     *
-     * @return {@link Claim}
-     */
-    ClaimIntegrity getMetadataIntegrity();
-
-    /**
-     * Gets the EAA's Status value, when present
-     *
-     * @return {@link ClaimStatus}
-     */
-    ClaimStatus getStatus();
-
-    /**
-     * Gets the EAA's nonce value, used to associate the Client's session Id with the EAA, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getNonce();
+public interface ClaimCredentialSubject extends Claim {
 
     /**
      * Gets the user's full name information, when present
@@ -297,12 +194,5 @@ public interface EAAPayload extends Claim {
      * @return {@link ClaimString}
      */
     ClaimString getPseudonym();
-
-    /**
-     * Returns a list of "4.8 Credential Subject" claims defined in W3C Verifiable Credentials Data Model v2.0.
-     *
-     * @return a list of {@link ClaimCredentialSubject}s
-     */
-    List<ClaimCredentialSubject> getCredentialSubjects();
 
 }

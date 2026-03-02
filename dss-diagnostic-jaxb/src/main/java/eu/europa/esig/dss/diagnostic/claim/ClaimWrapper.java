@@ -31,14 +31,28 @@ public class ClaimWrapper {
     /** Wrapped disclosable claim */
     private final XmlClaim wrapped;
 
+    /** Parent claim */
+    private final ClaimWrapper parent;
+
     /**
      * Default constructor
      *
      * @param wrapped {@link XmlClaim}
      */
     public ClaimWrapper(final XmlClaim wrapped) {
+        this(wrapped, null);
+    }
+
+    /**
+     * Constructor with a parent claim provided
+     *
+     * @param wrapped {@link XmlClaim}
+     * @param parent {@link XmlClaim}
+     */
+    public ClaimWrapper(final XmlClaim wrapped, final ClaimWrapper parent) {
         Objects.requireNonNull(wrapped, "XmlClaim cannot be null!");
         this.wrapped = wrapped;
+        this.parent = parent;
     }
 
     /**
@@ -145,7 +159,7 @@ public class ClaimWrapper {
         if (!isList()) {
             return null;
         }
-        return wrapped.getItem().stream().map(ClaimWrapper::new).collect(Collectors.toList());
+        return wrapped.getItem().stream().map(c -> new ClaimWrapper(c, this)).collect(Collectors.toList());
     }
 
     /**
@@ -167,7 +181,7 @@ public class ClaimWrapper {
         if (!isMap()) {
             return null;
         }
-        return wrapped.getEntry().stream().collect(Collectors.toMap(XmlClaim::getName, ClaimWrapper::new));
+        return wrapped.getEntry().stream().collect(Collectors.toMap(XmlClaim::getName, c ->  new ClaimWrapper(c, this)));
     }
 
     /**
@@ -184,8 +198,17 @@ public class ClaimWrapper {
      *
      * @return {@link XmlClaim}
      */
-    protected XmlClaim getWrapped() {
+    public XmlClaim getWrapped() {
         return wrapped;
+    }
+
+    /**
+     * Gets parent claim, when present
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getParent() {
+        return parent;
     }
 
     /**

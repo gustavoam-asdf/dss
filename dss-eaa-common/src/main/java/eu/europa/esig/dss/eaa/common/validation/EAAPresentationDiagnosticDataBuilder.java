@@ -2,6 +2,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
@@ -19,6 +20,7 @@ import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
+import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -37,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Builds DiagnosticData for a presentation of Electronic Attestation of Attributes validation
@@ -220,6 +223,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setTitle(getXmlClaim(eaaPayload.getTitle(), supportedClaims));
         xmlEAAPayload.setMobilePhoneNumber(getXmlClaim(eaaPayload.getMobilePhoneNumber(), supportedClaims));
         xmlEAAPayload.setPseudonym(getXmlClaim(eaaPayload.getPseudonym(), supportedClaims));
+        xmlEAAPayload.getCredentialSubject().addAll(getXmlCredentialSubjectList(eaaPayload.getCredentialSubjects(), supportedClaims));
 
         xmlEAAPayload.getOtherClaim().addAll(getOtherClaims(eaaPayload, supportedClaims));
 
@@ -353,14 +357,59 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlIntegrityClaim;
     }
 
-    private List<XmlClaim> getOtherClaims(EAAPayload eaaPayload, List<XmlClaim> supportedClaims) {
-        if (eaaPayload.isMapValueType() && !eaaPayload.isNullOrEmpty()) {
+    private List<XmlCredentialSubject> getXmlCredentialSubjectList(List<ClaimCredentialSubject> credentialSubjects, List<XmlClaim> supportedClaims) {
+        if (Utils.isCollectionEmpty(credentialSubjects)) {
+            return Collections.emptyList();
+        }
+        return credentialSubjects.stream().map(s -> getXmlCredentialSubject(s, supportedClaims)).collect(Collectors.toList());
+    }
+
+    private XmlCredentialSubject getXmlCredentialSubject(ClaimCredentialSubject credentialSubject, List<XmlClaim> supportedClaims) {
+        XmlCredentialSubject xmlCredentialSubject = new XmlCredentialSubject();
+        appendGenericInfo(xmlCredentialSubject, credentialSubject);
+        xmlCredentialSubject.setFullName(getXmlClaim(credentialSubject.getFullName(), supportedClaims));
+        xmlCredentialSubject.setFirstName(getXmlClaim(credentialSubject.getFirstName(), supportedClaims));
+        xmlCredentialSubject.setLastName(getXmlClaim(credentialSubject.getLastName(), supportedClaims));
+        xmlCredentialSubject.setMiddleName(getXmlClaim(credentialSubject.getMiddleName(), supportedClaims));
+        xmlCredentialSubject.setNickname(getXmlClaim(credentialSubject.getNickname(), supportedClaims));
+        xmlCredentialSubject.setShortName(getXmlClaim(credentialSubject.getShortName(), supportedClaims));
+        xmlCredentialSubject.setProfileUrl(getXmlClaim(credentialSubject.getProfileUrl(), supportedClaims));
+        xmlCredentialSubject.setPictureUrl(getXmlClaim(credentialSubject.getPictureUrl(), supportedClaims));
+        xmlCredentialSubject.setWebsiteUrl(getXmlClaim(credentialSubject.getWebsiteUrl(), supportedClaims));
+        xmlCredentialSubject.setEmail(getXmlClaim(credentialSubject.getEmail(), supportedClaims));
+        xmlCredentialSubject.setEmailVerified(getXmlClaim(credentialSubject.getEmailVerified(), supportedClaims));
+        xmlCredentialSubject.setGender(getXmlClaim(credentialSubject.getGender(), supportedClaims));
+        xmlCredentialSubject.setBirthdate(getXmlClaim(credentialSubject.getBirthdate(), supportedClaims));
+        xmlCredentialSubject.setTimezone(getXmlClaim(credentialSubject.getTimezone(), supportedClaims));
+        xmlCredentialSubject.setLocale(getXmlClaim(credentialSubject.getLocale(), supportedClaims));
+        xmlCredentialSubject.setAddress(getXmlAddressClaim(credentialSubject.getAddress(), supportedClaims));
+        xmlCredentialSubject.setPhoneNumber(getXmlClaim(credentialSubject.getPhoneNumber(), supportedClaims));
+        xmlCredentialSubject.setPhoneNumberVerified(getXmlClaim(credentialSubject.getPhoneNumberVerified(), supportedClaims));
+        xmlCredentialSubject.setPlaceOfBirth(getXmlPlaceOfBirthClaim(credentialSubject.getPlaceOfBirth(), supportedClaims));
+        xmlCredentialSubject.setNationalities(getXmlClaim(credentialSubject.getNationalities(), supportedClaims));
+        xmlCredentialSubject.setBirthLastName(getXmlClaim(credentialSubject.getBirthLastName(), supportedClaims));
+        xmlCredentialSubject.setBirthFirstName(getXmlClaim(credentialSubject.getBirthFirstName(), supportedClaims));
+        xmlCredentialSubject.setBirthMiddleName(getXmlClaim(credentialSubject.getBirthMiddleName(), supportedClaims));
+        xmlCredentialSubject.setSalutation(getXmlClaim(credentialSubject.getSalutation(), supportedClaims));
+        xmlCredentialSubject.setTitle(getXmlClaim(credentialSubject.getTitle(), supportedClaims));
+        xmlCredentialSubject.setMobilePhoneNumber(getXmlClaim(credentialSubject.getMobilePhoneNumber(), supportedClaims));
+        xmlCredentialSubject.setPseudonym(getXmlClaim(credentialSubject.getPseudonym(), supportedClaims));
+
+        xmlCredentialSubject.getOtherClaim().addAll(getOtherClaims(credentialSubject, supportedClaims));
+        if (supportedClaims != null) {
+            supportedClaims.add(xmlCredentialSubject);
+        }
+        return xmlCredentialSubject;
+    }
+
+    private List<XmlClaim> getOtherClaims(Claim claim, List<XmlClaim> supportedClaims) {
+        if (claim.isMapValueType() && !claim.isNullOrEmpty()) {
             final List<XmlClaim> otherClaims = new ArrayList<>();
             Collection<String> processedHeaderNames = getHeaderNames(supportedClaims);
-            Map<String, Claim> claimMap = eaaPayload.getMapValue();
-            for (String headerName : claimMap.keySet()) {
+            Map<String, Claim> mapValue = claim.getMapValue();
+            for (String headerName : mapValue.keySet()) {
                 if (!processedHeaderNames.contains(headerName)) {
-                    Claim claimValue = claimMap.get(headerName);
+                    Claim claimValue = mapValue.get(headerName);
                     if (claimValue != null) {
                         XmlClaim otherClaim = getXmlClaim(claimValue);
                         otherClaims.add(otherClaim);
