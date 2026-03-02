@@ -59,11 +59,6 @@ public class ClaimNumber extends AbstractClaim {
     }
 
     @Override
-    protected Number getValue() {
-        return value;
-    }
-
-    @Override
     public Number getNumberValue() {
         return value;
     }

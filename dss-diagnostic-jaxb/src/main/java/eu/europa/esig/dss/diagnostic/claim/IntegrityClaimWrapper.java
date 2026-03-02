@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 
@@ -13,7 +13,7 @@ public class IntegrityClaimWrapper extends ClaimWrapper {
     /**
      * Default constructor
      *
-     * @param wrapped {@link XmlDisclosableClaim}
+     * @param wrapped {@link XmlClaim}
      */
     public IntegrityClaimWrapper(final XmlIntegrityClaim wrapped) {
         super(wrapped);

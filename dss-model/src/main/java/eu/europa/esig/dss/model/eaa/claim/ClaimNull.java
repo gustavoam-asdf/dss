@@ -48,11 +48,6 @@ public class ClaimNull extends AbstractClaim {
     }
 
     @Override
-    protected Object getValue() {
-        return null;
-    }
-
-    @Override
     public String getValueAsString() {
         return "null";
     }

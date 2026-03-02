@@ -65,11 +65,6 @@ public class ClaimMap extends AbstractClaim {
     }
 
     @Override
-    protected Map<?, ?> getValue() {
-        return value;
-    }
-
-    @Override
     public Map<String, Claim> getMapValue() {
         if (value == null || value.isEmpty()) {
             return Collections.emptyMap();

@@ -111,8 +111,8 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
         assertEquals(1, selectivelyDisclosableClaims.size());
         assertEquals("nationalities", selectivelyDisclosableClaims.get(0).getName());
         assertTrue(selectivelyDisclosableClaims.get(0).isSelectivelyDisclosable());
-        assertEquals(3, selectivelyDisclosableClaims.get(0).getItemList().size());
-        assertTrue(selectivelyDisclosableClaims.get(0).getItemList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
+        assertEquals(3, selectivelyDisclosableClaims.get(0).getList().size());
+        assertTrue(selectivelyDisclosableClaims.get(0).getList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
     }
 
     @Override

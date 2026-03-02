@@ -227,8 +227,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
 
             } else if ("nationalities".equals(disclosableClaim.getName())) {
                 assertFalse(disclosableClaim.isSelectivelyDisclosable());
-                assertEquals(2, disclosableClaim.getItemList().size());
-                assertTrue(disclosableClaim.getItemList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
+                assertEquals(2, disclosableClaim.getList().size());
+                assertTrue(disclosableClaim.getList().stream().allMatch(ClaimWrapper::isSelectivelyDisclosable));
                 assertEquals("US, DE", disclosableClaim.getDisplayValue());
                 nationalitiesClaimFound = true;
                 

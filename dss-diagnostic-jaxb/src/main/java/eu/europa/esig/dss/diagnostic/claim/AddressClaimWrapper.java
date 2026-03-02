@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 
 /**
  * Wraps an {@code XmlAddressClaim}
@@ -12,7 +12,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
     /**
      * Default constructor
      *
-     * @param wrapped {@link XmlDisclosableClaim}
+     * @param wrapped {@link XmlClaim}
      */
     public AddressClaimWrapper(final XmlAddressClaim wrapped) {
         super(wrapped);
@@ -24,7 +24,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPostalAddress() {
-        XmlDisclosableClaim postalAddress = getWrapped().getPostalAddress();
+        XmlClaim postalAddress = getWrapped().getPostalAddress();
         if (postalAddress != null) {
             return new ClaimWrapper(postalAddress);
         }
@@ -39,7 +39,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getStreetAddress() {
-        XmlDisclosableClaim streetAddress = getWrapped().getStreetAddress();
+        XmlClaim streetAddress = getWrapped().getStreetAddress();
         if (streetAddress != null) {
             return new ClaimWrapper(streetAddress);
         }
@@ -52,7 +52,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getCity() {
-        XmlDisclosableClaim city = getWrapped().getCity();
+        XmlClaim city = getWrapped().getCity();
         if (city != null) {
             return new ClaimWrapper(city);
         }
@@ -65,7 +65,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getStateOrProvince() {
-        XmlDisclosableClaim streetAddress = getWrapped().getStateOrProvince();
+        XmlClaim streetAddress = getWrapped().getStateOrProvince();
         if (streetAddress != null) {
             return new ClaimWrapper(streetAddress);
         }
@@ -78,7 +78,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPostalCode() {
-        XmlDisclosableClaim streetAddress = getWrapped().getPostalCode();
+        XmlClaim streetAddress = getWrapped().getPostalCode();
         if (streetAddress != null) {
             return new ClaimWrapper(streetAddress);
         }
@@ -91,7 +91,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getCountry() {
-        XmlDisclosableClaim streetAddress = getWrapped().getCountryName();
+        XmlClaim streetAddress = getWrapped().getCountryName();
         if (streetAddress != null) {
             return new ClaimWrapper(streetAddress);
         }

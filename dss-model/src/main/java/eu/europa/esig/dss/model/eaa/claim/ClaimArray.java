@@ -63,11 +63,6 @@ public class ClaimArray extends AbstractClaim {
     }
 
     @Override
-    protected List<?> getValue() {
-        return value;
-    }
-
-    @Override
     public List<Claim> getListValue() {
         if (value == null || value.isEmpty()) {
             return Collections.emptyList();

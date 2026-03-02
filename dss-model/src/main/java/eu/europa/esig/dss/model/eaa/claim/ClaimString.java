@@ -59,10 +59,6 @@ public class ClaimString extends AbstractClaim {
         this.value = value;
     }
 
-    @Override
-    protected String getValue() {
-        return value;
-    }
 
     @Override
     public String getStringValue() {

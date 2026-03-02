@@ -706,7 +706,7 @@ public class EAAPresentationWrapper {
         if (xmlDisclosableClaim == null) {
             return null;
         }
-        return xmlDisclosableClaim.getItemList().stream().map(ClaimWrapper::getText)
+        return xmlDisclosableClaim.getList().stream().map(ClaimWrapper::getText)
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 

@@ -68,11 +68,6 @@ public class ClaimDate extends AbstractClaim {
     }
 
     @Override
-    protected Date getValue() {
-        return value;
-    }
-
-    @Override
     public Date getDateValue() {
         return value;
     }

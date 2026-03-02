@@ -78,13 +78,6 @@ public abstract class AbstractClaim implements Claim {
         return selectivelyDisclosable;
     }
 
-    /**
-     * Gets the original value of the claim
-     *
-     * @return {@link Object}
-     */
-    protected abstract Object getValue();
-
     @Override
     public Claim getParent() {
         return parent;

@@ -137,10 +137,10 @@ public class ReferenceDataExistenceCheck<T extends XmlConstraintsConclusion> ext
 			return digestMatcher.getId();
 		} else if (Utils.isStringNotBlank(digestMatcher.getUri())) {
 			return digestMatcher.getUri();
-		} else if (digestMatcher.getClaim() != null && digestMatcher.getClaim().getName() != null) {
-			String claimName = digestMatcher.getClaim().getName();
-			if (DigestMatcherType.EAA_NESTED_DISCLOSURE == digestMatcher.getType() && digestMatcher.getClaim().getValue() != null) {
-				claimName += String.format(" '%s'", digestMatcher.getClaim().getValue());
+		} else if (digestMatcher.getDisclosableClaim() != null && digestMatcher.getDisclosableClaim().getName() != null) {
+			String claimName = digestMatcher.getDisclosableClaim().getName();
+			if (DigestMatcherType.EAA_NESTED_DISCLOSURE == digestMatcher.getType() && digestMatcher.getDisclosableClaim().getValue() != null) {
+				claimName += String.format(" '%s'", digestMatcher.getDisclosableClaim().getValue());
 			}
 			return claimName;
 		} else {

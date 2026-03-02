@@ -59,11 +59,6 @@ public class ClaimBoolean extends AbstractClaim {
     }
 
     @Override
-    protected Boolean getValue() {
-        return value;
-    }
-
-    @Override
     public Boolean getBooleanValue() {
         return value;
     }

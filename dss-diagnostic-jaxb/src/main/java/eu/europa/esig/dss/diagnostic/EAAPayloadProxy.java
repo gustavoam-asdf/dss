@@ -6,7 +6,7 @@ import eu.europa.esig.dss.diagnostic.claim.IntegrityClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
@@ -731,7 +731,7 @@ public class EAAPayloadProxy {
         return claimList;
     }
 
-    private ClaimWrapper getClaim(XmlDisclosableClaim xmlDisclosableClaim) {
+    private ClaimWrapper getClaim(XmlClaim xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
         }

@@ -1,17 +1,18 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.jaxb.parsers.DateParser;
 
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * This class represents a user-friendly wrapper of a generic {@code XmlDisclosableClaim} object,
+ * This class represents a user-friendly wrapper of a generic {@code XmlClaim} object,
  * containing an information about a single claim extracted from an EAA Payload.
  * <p>
  * The wrapper may return only one of the following values:
@@ -28,15 +29,15 @@ import java.util.stream.Collectors;
 public class ClaimWrapper {
 
     /** Wrapped disclosable claim */
-    private final XmlDisclosableClaim wrapped;
+    private final XmlClaim wrapped;
 
     /**
      * Default constructor
      *
-     * @param wrapped {@link XmlDisclosableClaim}
+     * @param wrapped {@link XmlClaim}
      */
-    public ClaimWrapper(final XmlDisclosableClaim wrapped) {
-        Objects.requireNonNull(wrapped, "XmlDisclosableClaim cannot be null!");
+    public ClaimWrapper(final XmlClaim wrapped) {
+        Objects.requireNonNull(wrapped, "XmlClaim cannot be null!");
         this.wrapped = wrapped;
     }
 
@@ -140,8 +141,8 @@ public class ClaimWrapper {
      *
      * @return {@link List}
      */
-    public List<ClaimWrapper> getItemList() {
-        if (!isItemList()) {
+    public List<ClaimWrapper> getList() {
+        if (!isList()) {
             return null;
         }
         return wrapped.getItem().stream().map(ClaimWrapper::new).collect(Collectors.toList());
@@ -152,39 +153,53 @@ public class ClaimWrapper {
      *
      * @return TRUE if the value is of list type, FALSE otherwise
      */
-    public boolean isItemList() {
+    public boolean isList() {
         return wrapped.getItem() != null && !wrapped.getItem().isEmpty();
     }
 
     /**
-     * Gets the value as serialized binaries.
-     * If the value is null or not of binaries type, returns null.
-     * NOTE: This applies for objects encoded as a map or all other objects types
-     * which are not supported directly by the implementation.
+     * Gets the value as map.
+     * If the value is null or not of a list type, returns null
      *
-     * @return byte array
+     * @return {@link List}
      */
-    public byte[] getSerialized() {
-        return wrapped.getSerialized();
+    public Map<String, ClaimWrapper> getMap() {
+        if (!isMap()) {
+            return null;
+        }
+        return wrapped.getEntry().stream().collect(Collectors.toMap(XmlClaim::getName, ClaimWrapper::new));
     }
 
     /**
-     * Gets whether the claim value is provided as serialized bytes.
-     * This applies when the claim is of a map type or other, not directly supported type.
+     * Gets whether the claim value is of a map type.
      *
-     * @return TRUE if the value is serialized bytes, FALSE otherwise
+     * @return TRUE if the value is of map type, FALSE otherwise
      */
-    public boolean isSerialized() {
-        return wrapped.getSerialized() != null;
+    public boolean isMap() {
+        return wrapped.getEntry() != null && !wrapped.getEntry().isEmpty();
     }
 
     /**
      * Gets the wrapped JAXB disclosable claim object
      *
-     * @return {@link XmlDisclosableClaim}
+     * @return {@link XmlClaim}
      */
-    protected XmlDisclosableClaim getWrapped() {
+    protected XmlClaim getWrapped() {
         return wrapped;
+    }
+
+    /**
+     * Checks whether the claim is null or empty
+     *
+     * @return TRUE if the claim is empty, FALSE otherwise
+     */
+    public boolean isEmpty() {
+        return isText()
+                || isNumber()
+                || isBoolean()
+                || isDateTime()
+                || isList()
+                || isMap();
     }
 
     /**
@@ -201,16 +216,16 @@ public class ClaimWrapper {
             return getBoolean().toString();
         } else if (isDateTime()) {
             return new DateParser().toString(getDateTime());
-        } else if (isItemList()) {
-            return toDisplayValue(getItemList());
-        } else if (isSerialized()) {
-            return new String(getSerialized());
+        } else if (isList()) {
+            return toDisplayValue(getList());
+        } else if (isMap()) {
+            return toDisplayValue(getMap());
         }
         return ""; // empty string
     }
 
     private String toDisplayValue(List<ClaimWrapper> items) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         Iterator<ClaimWrapper> it = items.iterator();
         while (it.hasNext()) {
             ClaimWrapper claimValue = it.next();
@@ -220,6 +235,113 @@ public class ClaimWrapper {
             }
         }
         return sb.toString();
+    }
+
+    private String toDisplayValue(Map<String, ClaimWrapper> entryMap) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        Iterator<Map.Entry<String, ClaimWrapper>> it = entryMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, ClaimWrapper> entry = it.next();
+            sb.append("\"");
+            sb.append(entry.getKey());
+            sb.append("\": ");
+            embedValueWithEnvelope(sb, entry.getValue());;
+            if (it.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    private void embedValueWithEnvelope(StringBuilder sb, ClaimWrapper claim) {
+        if (claim.isText() || claim.isDateTime()) {
+            sb.append("\"");
+        } else if (claim.isList()) {
+            sb.append("[");
+        }
+        sb.append(claim.getDisplayValue());
+
+        if (claim.isText() || claim.isDateTime()) {
+            sb.append("\"");
+        } else if (claim.isList()) {
+            sb.append("]");
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ClaimWrapper)) {
+            return false;
+        }
+
+        ClaimWrapper other = (ClaimWrapper) o;
+
+        // Compare basic attributes
+        if (!Objects.equals(getName(), other.getName())) {
+            return false;
+        }
+
+        if (isSelectivelyDisclosable() != other.isSelectivelyDisclosable()) {
+            return false;
+        }
+
+        // Compare value types and contents
+        if (isText() && other.isText()) {
+            return Objects.equals(getText(), other.getText());
+        }
+
+        if (isNumber() && other.isNumber()) {
+            return Objects.equals(getNumber(), other.getNumber());
+        }
+
+        if (isBoolean() && other.isBoolean()) {
+            return Objects.equals(getBoolean(), other.getBoolean());
+        }
+
+        if (isDateTime() && other.isDateTime()) {
+            return Objects.equals(getDateTime(), other.getDateTime());
+        }
+
+        if (isList() && other.isList()) {
+            return Objects.equals(getList(), other.getList());
+        }
+
+        if (isMap() && other.isMap()) {
+            return Objects.equals(getMap(), other.getMap());
+        }
+
+        // If types differ or both have no value
+        return isEmpty() && other.isEmpty();
+    }
+
+    @Override
+    public int hashCode() {
+        Object value = null;
+
+        if (isText()) {
+            value = getText();
+        } else if (isNumber()) {
+            value = getNumber();
+        } else if (isBoolean()) {
+            value = getBoolean();
+        } else if (isDateTime()) {
+            value = getDateTime();
+        } else if (isList()) {
+            value = getList();
+        } else if (isMap()) {
+            value = getMap();
+        }
+
+        return Objects.hash(
+                getName(),
+                isSelectivelyDisclosable(),
+                value
+        );
     }
 
 }

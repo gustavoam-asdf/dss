@@ -1119,7 +1119,7 @@
 					<xs:element name="DataFound" type="xs:boolean" />
 					<xs:element name="DataIntact" type="xs:boolean" />
 					<xs:element name="DataObjectReferences" type="ObjectReferences" minOccurs="0" />
-					<xs:element name="Claim" type="Claim" minOccurs="0" /> <!-- EAA specific -->
+					<xs:element name="DisclosableClaim" type="DisclosableClaim" minOccurs="0" /> <!-- EAA specific -->
 				</xs:sequence>
 				<xs:attribute name="type" type="DigestMatcherType" use="required" />
 				<xs:attribute name="id" type="xs:string" use="optional"/>
@@ -1130,7 +1130,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="Claim">
+	<xs:complexType name="DisclosableClaim">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="name" type="xs:string" use="optional" />
@@ -1677,57 +1677,57 @@
 	<xs:complexType name="EAAPayload">
 		<xs:sequence>
 			<!-- technical claims -->
-			<xs:element name="Identifier" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Issuer" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Subject" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Audience" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ExpirationTime" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="NotBefore" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="IssuedAt" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="UpdatedAt" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Category" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Identifier" type="Claim" minOccurs="0" />
+			<xs:element name="Issuer" type="Claim" minOccurs="0" />
+			<xs:element name="Subject" type="Claim" minOccurs="0" />
+			<xs:element name="Audience" type="Claim" minOccurs="0" />
+			<xs:element name="ExpirationTime" type="Claim" minOccurs="0" />
+			<xs:element name="NotBefore" type="Claim" minOccurs="0" />
+			<xs:element name="IssuedAt" type="Claim" minOccurs="0" />
+			<xs:element name="UpdatedAt" type="Claim" minOccurs="0" />
+			<xs:element name="Category" type="Claim" minOccurs="0" />
 			<xs:element name="MetadataType" type="MetadataTypeClaim" minOccurs="0" />
 			<xs:element name="Status" type="StatusClaim" minOccurs="0" />
-			<xs:element name="Nonce" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Nonce" type="Claim" minOccurs="0" />
 
 			<!-- user info -->
-			<xs:element name="FullName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="FirstName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="LastName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="MiddleName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Nickname" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ShortName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ProfileUrl" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="PictureUrl" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="WebsiteUrl" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Email" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="EmailVerified" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Gender" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Birthdate" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Timezone" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Locale" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="FullName" type="Claim" minOccurs="0" />
+			<xs:element name="FirstName" type="Claim" minOccurs="0" />
+			<xs:element name="LastName" type="Claim" minOccurs="0" />
+			<xs:element name="MiddleName" type="Claim" minOccurs="0" />
+			<xs:element name="Nickname" type="Claim" minOccurs="0" />
+			<xs:element name="ShortName" type="Claim" minOccurs="0" />
+			<xs:element name="ProfileUrl" type="Claim" minOccurs="0" />
+			<xs:element name="PictureUrl" type="Claim" minOccurs="0" />
+			<xs:element name="WebsiteUrl" type="Claim" minOccurs="0" />
+			<xs:element name="Email" type="Claim" minOccurs="0" />
+			<xs:element name="EmailVerified" type="Claim" minOccurs="0" />
+			<xs:element name="Gender" type="Claim" minOccurs="0" />
+			<xs:element name="Birthdate" type="Claim" minOccurs="0" />
+			<xs:element name="Timezone" type="Claim" minOccurs="0" />
+			<xs:element name="Locale" type="Claim" minOccurs="0" />
 			<xs:element name="Address" type="AddressClaim" minOccurs="0" />
-			<xs:element name="PhoneNumber" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="PhoneNumberVerified" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
+			<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
 			<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
-			<xs:element name="Nationalities" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BirthLastName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BirthFirstName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BirthMiddleName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Salutation" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Title" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="MobilePhoneNumber" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="Pseudonym" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Nationalities" type="Claim" minOccurs="0" />
+			<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthMiddleName" type="Claim" minOccurs="0" />
+			<xs:element name="Salutation" type="Claim" minOccurs="0" />
+			<xs:element name="Title" type="Claim" minOccurs="0" />
+			<xs:element name="MobilePhoneNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Pseudonym" type="Claim" minOccurs="0" />
 
 			<!-- other claims -->
-			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
 	<!-- Verifiable Credential Type -->
 	<xs:complexType name="MetadataTypeClaim">
 		<xs:complexContent>
-			<xs:extension base="DisclosableClaim">
+			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="Integrity" type="IntegrityClaim" minOccurs="0" />
 				</xs:sequence>
@@ -1737,7 +1737,7 @@
 
 	<xs:complexType name="IntegrityClaim">
 		<xs:complexContent>
-			<xs:extension base="DisclosableClaim">
+			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="DigestMethod" type="xs:string" minOccurs="0" />
 					<xs:element name="DigestValue" type="xs:base64Binary" minOccurs="0"/>
@@ -1748,10 +1748,10 @@
 
 	<xs:complexType name="StatusClaim">
 		<xs:complexContent>
-			<xs:extension base="DisclosableClaim">
+			<xs:extension base="Claim">
 				<xs:sequence>
-					<xs:element name="Index" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="Uri" type="DisclosableClaim" minOccurs="0" />
+					<xs:element name="Index" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1759,14 +1759,14 @@
 
 	<xs:complexType name="AddressClaim">
 		<xs:complexContent>
-			<xs:extension base="DisclosableClaim">
+			<xs:extension base="Claim">
 				<xs:sequence>
-					<xs:element name="PostalAddress" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="City" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="StateOrProvince" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="PostalCode" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="CountryName" type="DisclosableClaim" minOccurs="0" />
-					<xs:element name="StreetAddress" type="DisclosableClaim" minOccurs="0" />
+					<xs:element name="PostalAddress" type="Claim" minOccurs="0" />
+					<xs:element name="City" type="Claim" minOccurs="0" />
+					<xs:element name="StateOrProvince" type="Claim" minOccurs="0" />
+					<xs:element name="PostalCode" type="Claim" minOccurs="0" />
+					<xs:element name="CountryName" type="Claim" minOccurs="0" />
+					<xs:element name="StreetAddress" type="Claim" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1774,24 +1774,24 @@
 
 	<xs:complexType name="PlaceOfBirthClaim">
 		<xs:complexContent>
-			<xs:extension base="DisclosableClaim">
+			<xs:extension base="Claim">
 				<xs:sequence>
-					<xs:element name="Country" type="DisclosableClaim" minOccurs="0"/>
-					<xs:element name="Region" type="DisclosableClaim" minOccurs="0"/>
-					<xs:element name="City" type="DisclosableClaim" minOccurs="0"/>
+					<xs:element name="Country" type="Claim" minOccurs="0"/>
+					<xs:element name="Region" type="Claim" minOccurs="0"/>
+					<xs:element name="City" type="Claim" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="DisclosableClaim">
+	<xs:complexType name="Claim">
 		<xs:sequence>
 			<xs:element name="Text" type="xs:string" minOccurs="0" />
 			<xs:element name="Number" type="xs:integer" minOccurs="0" />
 			<xs:element name="Boolean" type="xs:boolean" minOccurs="0" />
 			<xs:element name="DateTime" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="Item" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="Serialized" type="xs:base64Binary" minOccurs="0" />
+			<xs:element name="Item" type="Claim" minOccurs="0" maxOccurs="unbounded" /> <!-- Represents a value of an array item -->
+			<xs:element name="Entry" type="Claim" minOccurs="0" maxOccurs="unbounded" /> <!-- Represents a value of a map entry -->
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" /> <!-- may be null -->
 		<xs:attribute name="disclosure" type="xs:boolean" />

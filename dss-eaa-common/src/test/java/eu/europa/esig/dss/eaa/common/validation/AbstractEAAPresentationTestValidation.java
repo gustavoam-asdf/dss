@@ -2,9 +2,9 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
@@ -22,7 +22,6 @@ import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -94,7 +93,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertTrue(DigestMatcherType.EAA_DISCLOSURE == digestMatcher.getType() || DigestMatcherType.EAA_NESTED_DISCLOSURE == digestMatcher.getType());
                     assertTrue(digestMatcher.isDataFound());
                     assertTrue(digestMatcher.isDataIntact());
-                    assertNotNull(digestMatcher.getClaim());
+                    assertNotNull(digestMatcher.getDisclosableClaim());
                 }
             }
         }
@@ -110,47 +109,47 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 assertNotNull(claimWrapper.getName());
 
                 assertTrue(claimWrapper.getText() != null || claimWrapper.getDateTime() != null ||
-                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
-                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
                 assertNotEquals(claimWrapper.getText() != null, claimWrapper.getDateTime() != null ||
-                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
-                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
                 assertNotEquals(claimWrapper.getDateTime() != null, claimWrapper.getText() != null ||
-                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
-                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                        claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
                 assertNotEquals(claimWrapper.getNumber() != null, claimWrapper.getText() != null ||
-                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
-                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
-                assertNotEquals(Utils.isCollectionNotEmpty(claimWrapper.getItemList()), claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                        claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
+                assertNotEquals(Utils.isCollectionNotEmpty(claimWrapper.getList()), claimWrapper.getText() != null ||
                         claimWrapper.getDateTime() != null || claimWrapper.getNumber() != null ||
-                        claimWrapper.getBoolean() != null || claimWrapper.getSerialized() != null);
+                        claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
                 assertNotEquals(claimWrapper.getBoolean() != null, claimWrapper.getText() != null ||
-                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
-                        claimWrapper.getNumber() != null || claimWrapper.getSerialized() != null);
-                assertNotEquals(claimWrapper.getSerialized() != null, claimWrapper.getText() != null ||
-                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getItemList()) ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                        claimWrapper.getNumber() != null || claimWrapper.getMap() != null);
+                assertNotEquals(claimWrapper.getMap() != null, claimWrapper.getText() != null ||
+                        claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
                         claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null);
 
                 assertTrue(claimWrapper.isText() || claimWrapper.isDateTime() ||
-                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
-                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                        claimWrapper.isNumber() || claimWrapper.isList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isMap());
                 assertNotEquals(claimWrapper.isText(), claimWrapper.isDateTime() ||
-                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
-                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                        claimWrapper.isNumber() || claimWrapper.isList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isMap());
                 assertNotEquals(claimWrapper.isDateTime(), claimWrapper.isText() ||
-                        claimWrapper.isNumber() || claimWrapper.isItemList() ||
-                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                        claimWrapper.isNumber() || claimWrapper.isList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isMap());
                 assertNotEquals(claimWrapper.isNumber(), claimWrapper.isText() ||
-                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
-                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
-                assertNotEquals(claimWrapper.isItemList(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isList() ||
+                        claimWrapper.isBoolean() || claimWrapper.isMap());
+                assertNotEquals(claimWrapper.isList(), claimWrapper.isText() ||
                         claimWrapper.isDateTime() || claimWrapper.isNumber() ||
-                        claimWrapper.isBoolean() || claimWrapper.isSerialized());
+                        claimWrapper.isBoolean() || claimWrapper.isMap());
                 assertNotEquals(claimWrapper.isBoolean(), claimWrapper.isText() ||
-                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
-                        claimWrapper.isNumber() || claimWrapper.isSerialized());
-                assertNotEquals(claimWrapper.isSerialized(), claimWrapper.isText() ||
-                        claimWrapper.isDateTime() || claimWrapper.isItemList() ||
+                        claimWrapper.isDateTime() || claimWrapper.isList() ||
+                        claimWrapper.isNumber() || claimWrapper.isMap());
+                assertNotEquals(claimWrapper.isMap(), claimWrapper.isText() ||
+                        claimWrapper.isDateTime() || claimWrapper.isList() ||
                         claimWrapper.isNumber() || claimWrapper.isBoolean());
                 
                 disclosedClaimFound |= Utils.isTrue(claimWrapper.isSelectivelyDisclosable());
@@ -167,16 +166,16 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 } else {
                     assertNull(claimByHeaderName.getDateTime());
                 }
-                if (claimWrapper.getItemList() != null) {
-                    assertEquals(claimWrapper.getItemList().size(), claimByHeaderName.getItemList().size());
+                if (claimWrapper.getList() != null) {
+                    assertEquals(claimWrapper.getList().size(), claimByHeaderName.getList().size());
                 } else {
-                    assertNull(claimByHeaderName.getItemList());
+                    assertNull(claimByHeaderName.getList());
                 }
-                if (claimWrapper.getSerialized() != null) {
-                    assertNotNull(claimByHeaderName.getSerialized());
-                    assertArrayEquals(claimWrapper.getSerialized(), claimByHeaderName.getSerialized());
+                if (claimWrapper.getMap() != null) {
+                    assertNotNull(claimByHeaderName.getMap());
+                    assertEquals(claimWrapper.getMap(), claimByHeaderName.getMap());
                 } else {
-                    assertNull(claimByHeaderName.getSerialized());
+                    assertNull(claimByHeaderName.getMap());
                 }
 
                 assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
