@@ -10,6 +10,8 @@ import eu.europa.esig.dss.validation.executor.DocumentProcessExecutor;
 import eu.europa.esig.dss.validation.executor.eaa.EAAPresentationProcessExecutor;
 import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +26,8 @@ import java.util.ServiceLoader;
  *
  */
 public abstract class DefaultEAAPresentationValidator extends SignedDocumentValidator implements EAAPresentationValidator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultEAAPresentationValidator.class);
 
     /** The path for default EAA Presentation policy */
     private static final String EAA_PRESENTATION_POLICY_LOCATION = "/policy/eaa-constraint.xml";
@@ -85,8 +89,7 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
 
     @Override
     public void setValidationLevel(ValidationLevel validationLevel) {
-        // TODO : assess ?
-        throw new UnsupportedOperationException("#setValidationLevel method is not supported within the EAAPresentationValidator class! " +
+        LOG.info("#setValidationLevel method is not supported within the EAAPresentationValidator class! " +
                 "The validation always corresponds to the BASIC_SIGNATURES level.");
     }
 

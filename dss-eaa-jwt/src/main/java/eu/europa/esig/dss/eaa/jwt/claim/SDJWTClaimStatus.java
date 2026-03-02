@@ -20,7 +20,7 @@ public class SDJWTClaimStatus extends ClaimMap implements ClaimStatus {
      * @param value {@link ClaimMap}
      */
     public SDJWTClaimStatus(ClaimMap value) {
-        super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable());
+        super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable(), value.getParent());
     }
 
     @Override

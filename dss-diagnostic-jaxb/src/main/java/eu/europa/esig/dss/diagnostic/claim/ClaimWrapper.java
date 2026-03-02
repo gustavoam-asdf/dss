@@ -206,7 +206,7 @@ public class ClaimWrapper {
         } else if (isSerialized()) {
             return new String(getSerialized());
         }
-        throw new UnsupportedOperationException("Claim of unsupported type!");
+        return ""; // empty string
     }
 
     private String toDisplayValue(List<ClaimWrapper> items) {

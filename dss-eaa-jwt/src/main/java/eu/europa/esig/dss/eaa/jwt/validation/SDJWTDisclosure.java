@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.Digest;
@@ -29,13 +28,12 @@ public class SDJWTDisclosure extends Disclosure {
      *                         representing the original provided value of the disclosure
      */
     public SDJWTDisclosure(final String disclosureB64Url) {
+        super(getDisclosureArray(disclosureB64Url));
         this.disclosureB64Url = disclosureB64Url;
-        parseDisclosure(disclosureB64Url);
+        parseDisclosure();
     }
-    
-    private void parseDisclosure(final String disclosureB64Url) {
-        // TODO : create a dedicated parser/builder ?
 
+    private static List<?> getDisclosureArray(final String disclosureB64Url) {
         Object disclosureObject = DSSJsonUtils.parseBase64UrlEncoded(disclosureB64Url);
 
         if (!(disclosureObject instanceof List<?>)) {
@@ -45,8 +43,11 @@ public class SDJWTDisclosure extends Disclosure {
         if (disclosureList.size() != 2 && disclosureList.size() != 3) {
             throw new IllegalInputException("Invalid disclosure format! An array of 2 or 3 elements is expected.");
         }
-
-        Object saltObject = disclosureList.get(0);
+        return disclosureList;
+    }
+    
+    private void parseDisclosure() {
+        Object saltObject = value.get(0);
         if (!(saltObject instanceof String)) {
             throw new IllegalInputException("Invalid disclosure format! The first element of the array (salt) shall be of String type!");
         }
@@ -56,19 +57,21 @@ public class SDJWTDisclosure extends Disclosure {
         }
         this.salt = DSSJsonUtils.fromBase64Url(saltB64Url);
 
-        if (disclosureList.size() == 2) {
+        String claimName = null;
+        Object claimValue;
+        if (value.size() == 2) {
             // array or recursive disclosure
-            this.claim = Claim.create(disclosureList.get(1), true);
+            claimValue = value.get(1);
 
         } else {
-            Object claimNameObject = disclosureList.get(1);
+            Object claimNameObject = value.get(1);
             if (!(claimNameObject instanceof String)) {
                 throw new IllegalInputException("Invalid disclosure format! The second element of the array (claim name) shall be of String type!");
             }
-            String claimName = (String) claimNameObject;
-            this.claim = Claim.create(claimName, disclosureList.get(2), true);
-            this.nestedSDClaims = SDJWTUtils.getNestedSelectivelyDisclosableClaims(claimName, claim);
+            claimName = (String) claimNameObject;
+            claimValue = value.get(2);
         }
+        this.claim = Claim.create(claimName, this, claimValue, true);
     }
 
     @Override

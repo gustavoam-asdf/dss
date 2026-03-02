@@ -95,7 +95,6 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertTrue(digestMatcher.isDataFound());
                     assertTrue(digestMatcher.isDataIntact());
                     assertNotNull(digestMatcher.getClaim());
-                    assertNotNull(digestMatcher.getClaim().getName());
                 }
             }
         }

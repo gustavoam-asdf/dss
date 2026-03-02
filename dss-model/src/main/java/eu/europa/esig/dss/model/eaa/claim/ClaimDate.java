@@ -50,8 +50,26 @@ public class ClaimDate extends AbstractClaim {
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
     public ClaimDate(final String name, final Date value, final boolean selectivelyDisclosable) {
-        super(name, selectivelyDisclosable);
+        this(name, value, selectivelyDisclosable, null);
+    }
+
+    /**
+     * Constructor with claim name and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String} claim header name
+     * @param value {@link Date} value of the claim
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimDate(final String name, final Date value, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, selectivelyDisclosable, parent);
         this.value = value;
+    }
+
+    @Override
+    protected Date getValue() {
+        return value;
     }
 
     @Override
@@ -77,17 +95,20 @@ public class ClaimDate extends AbstractClaim {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-        ClaimDate that = (ClaimDate) object;
-        return Objects.equals(value, that.value);
+        ClaimDate claimDate = (ClaimDate) o;
+        return Objects.equals(value, claimDate.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(value);
+        return result;
     }
 
 }

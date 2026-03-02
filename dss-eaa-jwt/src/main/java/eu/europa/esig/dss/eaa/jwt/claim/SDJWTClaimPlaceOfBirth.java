@@ -20,7 +20,7 @@ public class SDJWTClaimPlaceOfBirth extends ClaimMap implements ClaimPlaceOfBirt
      * @param value {@link ClaimMap}
      */
     public SDJWTClaimPlaceOfBirth(ClaimMap value) {
-        super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable());
+        super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable(), value.getParent());
     }
 
     @Override

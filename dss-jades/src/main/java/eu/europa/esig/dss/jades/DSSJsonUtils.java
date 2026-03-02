@@ -1436,14 +1436,14 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * This method parses base64url encoded string to a JSON map
+	 * This method parses JSON string to a JSON map
 	 *
-	 * @param base64UrlEncodedString {@link String}
+	 * @param jsonString {@link String}
 	 * @return {@link Map}
 	 */
-	public static Map<String, Object> parseBase64UrlEncodedToMap(String base64UrlEncodedString) {
+	public static Map<String, Object> parseJsonStringToMap(String jsonString) {
 		try {
-			return JsonUtil.parseJson(base64UrlEncodedString);
+			return JsonUtil.parseJson(jsonString);
 		} catch (JoseException e) {
 			throw new DSSException(String.format("Unable to parse string : %s", e.getMessage()), e);
 		}

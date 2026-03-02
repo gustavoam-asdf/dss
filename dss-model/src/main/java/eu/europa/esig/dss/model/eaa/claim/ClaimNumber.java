@@ -41,8 +41,26 @@ public class ClaimNumber extends AbstractClaim {
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
     public ClaimNumber(final String name, final Number value, final boolean selectivelyDisclosable) {
-        super(name, selectivelyDisclosable);
+        this(name, value, selectivelyDisclosable, null);
+    }
+
+    /**
+     * Constructor with claim name and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String} claim header name
+     * @param value {@link String} value of the claim
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimNumber(final String name, final Number value, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, selectivelyDisclosable, parent);
         this.value = value;
+    }
+
+    @Override
+    protected Number getValue() {
+        return value;
     }
 
     @Override
@@ -69,17 +87,20 @@ public class ClaimNumber extends AbstractClaim {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-        ClaimNumber that = (ClaimNumber) object;
+        ClaimNumber that = (ClaimNumber) o;
         return Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(value);
+        return result;
     }
 
 }

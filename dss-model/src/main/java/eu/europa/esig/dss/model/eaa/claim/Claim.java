@@ -173,63 +173,67 @@ public interface Claim extends Serializable {
      * @return {@link Claim}
      */
     static Claim create(Object value) {
-        return create(value, false);
+        return create(null, null, value);
     }
 
     /**
      * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
-     * This method can be used for definition of claims used within provided disclosures.
-     *
-     * @param value {@link Object} containing the value of the object
-     * @param selectivelyDisclosable whether the claim is selectively disclosable
-     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
-     * @return {@link Claim}
-     */
-    static Claim create(Object value, boolean selectivelyDisclosable) {
-        return create(null, value, selectivelyDisclosable);
-    }
-
-    /**
-     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
-     * This method can be used for non selectively disclosable claims, provided directly within EAA Payload.
+     * This method allows providing of the claim parent, to be used within the claim's metadata.
+     * When a value is of Claim type, the existing selectively discussable tag value is used,
+     * otherwise it is set to false.
      *
      * @param claimName {@link String} representing the header name of the claim
+     * @param parent {@link Claim} parent of the claim
      * @param value {@link Object} containing the value of the object
      * @return {@link Claim}
      */
-    static Claim create(String claimName, Object value) {
-        return create(claimName, value, false);
-    }
-
-    /**
-     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
-     * This method can be used for definition of claims used within provided disclosures.
-     *
-     * @param claimName {@link String} representing the header name of the claim
-     * @param value {@link Object} containing the value of the object
-     * @param selectivelyDisclosable whether the claim is selectively disclosable
-     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
-     * @return {@link Claim}
-     */
-    static Claim create(String claimName, Object value, boolean selectivelyDisclosable) {
+    static Claim create(String claimName, Claim parent, Object value) {
+        boolean selectivelyDisclosable = false;
         if (value instanceof Claim) {
-            return (Claim) value;
-        }else if (value instanceof String) {
-            return new ClaimString(claimName, (String) value, selectivelyDisclosable);
+            selectivelyDisclosable = ((Claim) value).isSelectivelyDisclosable();
+        }
+        return create(claimName, parent, value, selectivelyDisclosable);
+    }
+
+    /**
+     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
+     * This method can be used for definition of claims used within provided disclosures.
+     * This method allows providing of the claim parent, to be used within the claim's metadata.
+     *
+     * @param claimName {@link String} representing the header name of the claim
+     * @param parent {@link Claim} parent of the claim
+     * @param value {@link Object} containing the value of the object
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @return {@link Claim}
+     */
+    static Claim create(String claimName, Claim parent, Object value, boolean selectivelyDisclosable) {
+        if (value instanceof ClaimString) {
+            return new ClaimString(claimName, ((ClaimString) value).getStringValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimNumber) {
+            return new ClaimNumber(claimName, ((ClaimNumber) value).getNumberValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimBoolean) {
+            return new ClaimBoolean(claimName, ((ClaimBoolean) value).getBooleanValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimDate) {
+            return new ClaimDate(claimName, ((ClaimDate) value).getDateValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimMap) {
+            return new ClaimMap(claimName, ((ClaimMap) value).getMapValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimArray) {
+            return new ClaimArray(claimName, ((ClaimArray) value).getListValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof String) {
+            return new ClaimString(claimName, (String) value, selectivelyDisclosable, parent);
         } else if (value instanceof Number) {
-            return new ClaimNumber(claimName, (Number) value, selectivelyDisclosable);
+            return new ClaimNumber(claimName, (Number) value, selectivelyDisclosable, parent);
         } else if (value instanceof Boolean) {
-            return new ClaimBoolean(claimName, (Boolean) value, selectivelyDisclosable);
-        } else if (value instanceof byte[]) {
-            return new ClaimBinaries(claimName, (byte[]) value, selectivelyDisclosable);
+            return new ClaimBoolean(claimName, (Boolean) value, selectivelyDisclosable, parent);
         } else if (value instanceof Date) {
-            return new ClaimDate(claimName, (Date) value, selectivelyDisclosable);
+            return new ClaimDate(claimName, (Date) value, selectivelyDisclosable, parent);
         } else if (value instanceof Map) {
-            return new ClaimMap(claimName, (Map<?,?>) value, selectivelyDisclosable);
+            return new ClaimMap(claimName, (Map<?,?>) value, selectivelyDisclosable, parent);
         } else if (value instanceof List) {
-            return new ClaimArray(claimName, (List<?>) value, selectivelyDisclosable);
+            return new ClaimArray(claimName, (List<?>) value, selectivelyDisclosable, parent);
         } else if (value == null) {
-            return new ClaimNull(claimName, selectivelyDisclosable);
+            return new ClaimNull(claimName, selectivelyDisclosable, parent);
         } else {
             throw new IllegalArgumentException(String.format("The claim value of type '%s' is not supported!", value.getClass().getSimpleName()));
         }

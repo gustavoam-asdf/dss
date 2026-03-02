@@ -45,8 +45,26 @@ public class ClaimArray extends AbstractClaim {
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
     public ClaimArray(final String name, final List<?> value, final boolean selectivelyDisclosable) {
-        super(name, selectivelyDisclosable);
+        this(name, value, selectivelyDisclosable, null);
+    }
+
+    /**
+     * Constructor with claim name and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String} claim header name
+     * @param value a list of {@link Claim}s representing the original array value
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimArray(final String name, final List<?> value, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, selectivelyDisclosable, parent);
         this.value = value;
+    }
+
+    @Override
+    protected List<?> getValue() {
+        return value;
     }
 
     @Override
@@ -54,7 +72,7 @@ public class ClaimArray extends AbstractClaim {
         if (value == null || value.isEmpty()) {
             return Collections.emptyList();
         }
-        return value.stream().map(Claim::create).collect(Collectors.toList());
+        return value.stream().map(v -> Claim.create(null, this, v)).collect(Collectors.toList());
     }
 
     @Override
@@ -90,17 +108,20 @@ public class ClaimArray extends AbstractClaim {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
-        ClaimArray that = (ClaimArray) object;
+        ClaimArray that = (ClaimArray) o;
         return Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(value);
+        return result;
     }
 
 }

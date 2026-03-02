@@ -3,9 +3,8 @@ package eu.europa.esig.dss.model.eaa;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
-import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
+import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.Objects;
  * Generic implementation of an EAA Disclosure
  *
  */
-public abstract class Disclosure implements Serializable {
+public abstract class Disclosure extends ClaimArray {
 
     private static final long serialVersionUID = -6025755119813037143L;
 
@@ -26,7 +25,7 @@ public abstract class Disclosure implements Serializable {
     protected Claim claim;
 
     /** List of nested selectively disclosable claims  */
-    protected List<ClaimBinaries> nestedSDClaims;
+    protected List<Claim> nestedSDClaims;
 
     /** Cached map containing computed digest values */
     private final EnumMap<DigestAlgorithm, Digest> digestMap = new EnumMap<>(DigestAlgorithm.class);
@@ -34,8 +33,8 @@ public abstract class Disclosure implements Serializable {
     /**
      * Default constructor
      */
-    protected Disclosure() {
-        // empty
+    protected Disclosure(final List<?> value) {
+        super(value);
     }
 
     /**
@@ -52,7 +51,8 @@ public abstract class Disclosure implements Serializable {
      *
      * @return {@link String}
      */
-    public String getClaimName() {
+    @Override
+    public String getName() {
         return claim != null ? claim.getName() : null;
     }
 
@@ -63,18 +63,6 @@ public abstract class Disclosure implements Serializable {
      */
     public Claim getClaimValue() {
         return claim;
-    }
-
-    /**
-     * Gets the nested selectively disclosable claims, when applicable.
-     * NOTE: It is possible to have nested claims within a disclosure, to create recursive disclosures.
-     * Please see {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-22.html#name-recursive-disclosures">Recursive Disclosures</a>
-     * for more information.
-     * <p>
-     * @return a list of {@link ClaimBinaries}s
-     */
-    public List<ClaimBinaries> getNestedSelectivelyDisclosableClaims() {
-        return nestedSDClaims;
     }
 
     /**

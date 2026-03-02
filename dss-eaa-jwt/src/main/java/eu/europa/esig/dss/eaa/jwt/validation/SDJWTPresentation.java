@@ -1,11 +1,10 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentation;
+import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.model.eaa.Disclosure;
-import eu.europa.esig.dss.model.eaa.DisclosureValidation;
-import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -39,15 +38,13 @@ public class SDJWTPresentation extends DefaultEAAPresentation {
     }
 
     @Override
-    protected EAAPayload buildPayload(List<DisclosureValidation> disclosureValidations) {
+    protected EAAPayloadVerifier initEAAPayloadVerifier() {
         List<AdvancedSignature> signatures = getSignatures();
         if (Utils.isCollectionEmpty(signatures)) {
             throw new IllegalStateException("SD-JWT VC signatures cannot be empty!");
         }
         JAdESSignature signature = (JAdESSignature) signatures.get(0); // payload is the same for EAA signatures
-        return new SDJWTPayloadBuilder(signature.getJws().getUnverifiedPayload())
-                .setDisclosureValidations(disclosureValidations)
-                .build();
+        return new SDJWTPayloadVerifier(signature.getJws().getUnverifiedPayload());
     }
 
     /**

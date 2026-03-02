@@ -56,13 +56,6 @@ public interface EAAPresentation extends IdentifierBasedObject {
     EAAPayload getPayload();
 
     /**
-     * Gets a payload of the Electronic Attestation of Attributes combined with validated disclosures, if any
-     *
-     * @return {@link EAAPayload}
-     */
-    EAAPayload getPayloadWithDisclosures();
-
-    /**
      * This method returns the DSS unique id. It allows to unambiguously identify each token.
      *
      * @return {@link String} unique Id

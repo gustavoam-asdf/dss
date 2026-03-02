@@ -41,8 +41,26 @@ public class ClaimBoolean extends AbstractClaim {
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
     public ClaimBoolean(final String name, final Boolean value, final boolean selectivelyDisclosable) {
-        super(name, selectivelyDisclosable);
+        this(name, value, selectivelyDisclosable, null);
+    }
+
+    /**
+     * Constructor with claim name and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String} claim header name
+     * @param value {@link Boolean} value of the claim
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimBoolean(final String name, final Boolean value, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, selectivelyDisclosable, parent);
         this.value = value;
+    }
+
+    @Override
+    protected Boolean getValue() {
+        return value;
     }
 
     @Override

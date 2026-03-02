@@ -25,7 +25,7 @@ public class SDJWTClaimIntegrity extends ClaimString implements ClaimIntegrity {
      * @param value {@link ClaimString}
      */
     public SDJWTClaimIntegrity(ClaimString value) {
-        super(value.getName(), value.getStringValue(), value.isSelectivelyDisclosable());
+        super(value.getName(), value.getStringValue(), value.isSelectivelyDisclosable(), value.getParent());
     }
 
     @Override

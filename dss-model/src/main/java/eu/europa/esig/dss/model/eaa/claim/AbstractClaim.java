@@ -1,8 +1,11 @@
 package eu.europa.esig.dss.model.eaa.claim;
 
+import eu.europa.esig.dss.model.identifier.Identifier;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Abstract implementation of a disclosable claim, contains common information for the (selectively) disclosable claims
@@ -20,6 +23,9 @@ public abstract class AbstractClaim implements Claim {
 
     /** Parent claim, containing the current claim in its body */
     private Claim parent;
+
+    /** Cached identifier instance */
+    private Identifier identifier;
 
     /**
      * Default constructor
@@ -45,8 +51,7 @@ public abstract class AbstractClaim implements Claim {
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
     protected AbstractClaim(String name, boolean selectivelyDisclosable) {
-        this.name = name;
-        this.selectivelyDisclosable = selectivelyDisclosable;
+        this(name, selectivelyDisclosable, null);
     }
 
     /**
@@ -68,19 +73,17 @@ public abstract class AbstractClaim implements Claim {
         return name;
     }
 
-    /**
-     * Sets the claim name
-     *
-     * @param name {@link String}
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public boolean isSelectivelyDisclosable() {
         return selectivelyDisclosable;
     }
+
+    /**
+     * Gets the original value of the claim
+     *
+     * @return {@link Object}
+     */
+    protected abstract Object getValue();
 
     @Override
     public Claim getParent() {
@@ -165,6 +168,25 @@ public abstract class AbstractClaim implements Claim {
     @Override
     public boolean isNullValueType() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractClaim that = (AbstractClaim) o;
+        return selectivelyDisclosable == that.selectivelyDisclosable
+                && Objects.equals(name, that.name)
+                && Objects.equals(parent, that.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(name);
+        result = 31 * result + Boolean.hashCode(selectivelyDisclosable);
+        result = 31 * result + Objects.hashCode(parent);
+        return result;
     }
 
     @Override

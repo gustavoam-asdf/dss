@@ -46,8 +46,8 @@ public class EAAPresentationIdentifierBuilder {
             if (Utils.isCollectionNotEmpty(eaaPresentation.getDisclosures())) {
                 for (Disclosure disclosure : eaaPresentation.getDisclosures()) {
                     baos.write(disclosure.getSalt());
-                    if (disclosure.getClaimName() != null) {
-                        baos.write(disclosure.getClaimName().getBytes());
+                    if (disclosure.getName() != null) {
+                        baos.write(disclosure.getName().getBytes());
                     }
                     // claim value is not used to avoid unnecessary information disclosure
                 }

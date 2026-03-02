@@ -109,7 +109,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (eaaPresentation.getKeyBindingSignature() != null) {
             xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaaPresentation.getKeyBindingSignature()));
         }
-        xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaaPresentation.getPayloadWithDisclosures()));
+        xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaaPresentation.getPayload()));
         return xmlEAAPresentation;
     }
 
@@ -351,10 +351,10 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private List<XmlDisclosableClaim> getOtherClaims(EAAPayload eaaPayload, List<XmlDisclosableClaim> supportedClaims) {
-        Map<String, Claim> claimMap = eaaPayload.getClaimMap();
-        if (Utils.isMapNotEmpty(claimMap)) {
+        if (eaaPayload.isMapValueType() && !eaaPayload.isNullOrEmpty()) {
             final List<XmlDisclosableClaim> otherClaims = new ArrayList<>();
             Collection<String> processedHeaderNames = getHeaderNames(supportedClaims);
+            Map<String, Claim> claimMap = eaaPayload.getMapValue();
             for (String headerName : claimMap.keySet()) {
                 if (!processedHeaderNames.contains(headerName)) {
                     Claim claimValue = claimMap.get(headerName);

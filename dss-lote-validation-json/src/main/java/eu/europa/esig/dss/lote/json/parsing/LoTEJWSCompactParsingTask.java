@@ -86,7 +86,7 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
      */
     protected Map<?, ?> getJsonLoTEPayload(String payloadString) {
         try  {
-            Map<String, Object> jsonMap = DSSJsonUtils.parseBase64UrlEncodedToMap(payloadString);
+            Map<String, Object> jsonMap = DSSJsonUtils.parseJsonStringToMap(payloadString);
             Map<?, ?> lote = DSSJsonUtils.getAsMap(jsonMap, JsonLoTEHeaderParameterNames.LOTE);
             Objects.requireNonNull(lote, "Json LoTE shall have the header 'LoTE' as the root!");
             return lote;

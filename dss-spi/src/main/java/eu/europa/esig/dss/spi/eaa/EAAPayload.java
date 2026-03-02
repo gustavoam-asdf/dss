@@ -1,10 +1,8 @@
 package eu.europa.esig.dss.spi.eaa;
 
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
-import eu.europa.esig.dss.model.eaa.claim.ClaimBinaries;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
@@ -12,28 +10,10 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Provides an interface for accessing the content of the EAA payload
  */
-public interface EAAPayload extends Serializable {
-
-    /**
-     * Gets a list of selectively disclosable claims provided within the EAA payload
-     *
-     * @return a list of {@link ClaimBinaries}s
-     */
-    List<ClaimBinaries> getSelectiveDisclosableClaims();
-
-    /**
-     * Gets a DigestAlgorithm defined within an EAA payload used to create hashes for the selective disclosures
-     *
-     * @return {@link DigestAlgorithm}
-     */
-    DigestAlgorithm getSelectiveDisclosableClaimDigestAlgorithm();
+public interface EAAPayload extends Claim {
 
     /**
      * Gets the EAA's unique identifier, when present
@@ -108,7 +88,7 @@ public interface EAAPayload extends Serializable {
     /**
      * Gets the EAA's Metadata integrity claim, when present
      *
-     * @return {@link ClaimBinaries}
+     * @return {@link Claim}
      */
     ClaimIntegrity getMetadataIntegrity();
 
@@ -314,13 +294,5 @@ public interface EAAPayload extends Serializable {
      * @return {@link ClaimString}
      */
     ClaimString getPseudonym();
-
-    /**
-     * Gets a map of all used header names and claims present within the EAA payload.
-     * NOTE: the map contains only clear clames and not selective disclosure digests.
-     *
-     * @return a map between header names and claim values
-     */
-    Map<String, Claim> getClaimMap();
 
 }

@@ -1,7 +1,5 @@
 package eu.europa.esig.dss.model.eaa.claim;
 
-import java.util.Objects;
-
 /**
  * Represents a Null encoded (selectively) disclosable claim
  *
@@ -37,6 +35,23 @@ public class ClaimNull extends AbstractClaim {
         super(name, selectivelyDisclosable);
     }
 
+    /**
+     * Constructor with claim name and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String}
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimNull(final String name, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, selectivelyDisclosable, parent);
+    }
+
+    @Override
+    protected Object getValue() {
+        return null;
+    }
+
     @Override
     public String getValueAsString() {
         return "null";
@@ -50,17 +65,6 @@ public class ClaimNull extends AbstractClaim {
     @Override
     public boolean isNullOrEmpty() {
         return true;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        return object != null && getClass() == object.getClass();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getClass());
     }
 
 }
