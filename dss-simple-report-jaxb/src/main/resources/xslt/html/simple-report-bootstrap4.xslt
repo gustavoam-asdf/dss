@@ -47,7 +47,7 @@
     </xsl:template>
 
     <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAAPresentation
-    |dss:EAAPresentationSignature|dss:KeyBindingSignature">
+    		|dss:EAAPresentationSignature|dss:KeyBindingSignature">
 		<xsl:param name="cardStyle" select="'primary'" />
 		<xsl:param name="parentId" />
 
@@ -433,7 +433,7 @@
 				</xsl:if>
 
 				<!-- Ignore embedded timestamps -->
-				<xsl:if test="not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0) or not($nodeName = 'EAAPresentation')">
+				<xsl:if test="((not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)) and not($nodeName = 'EAAPresentation'))">
 					<dl>
 						<xsl:attribute name="class">row mb-0</xsl:attribute>
 						<dt>
@@ -535,7 +535,7 @@
 
 				<xsl:if test="dss:EAAPresentationSignature|dss:KeyBindingSignature">
 					<div>
-						<xsl:attribute name="class">card mt-3</xsl:attribute>
+						<xsl:attribute name="class">mt-3</xsl:attribute>
 						<xsl:apply-templates select="dss:EAAPresentationSignature|dss:KeyBindingSignature">
 							<xsl:with-param name="parentId" select="$idToken"/>
 						</xsl:apply-templates>

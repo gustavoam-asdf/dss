@@ -77,6 +77,7 @@
 					<xsl:apply-templates select="dss:Signature"/>
 					<xsl:apply-templates select="dss:Timestamp"/>
 					<xsl:apply-templates select="dss:EvidenceRecord"/>
+					<xsl:apply-templates select="dss:EAAPresentation"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='SIGNATURE']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='COUNTER_SIGNATURE']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='TIMESTAMP']"/>
@@ -211,7 +212,7 @@
 
     </xsl:template>
     
-    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:Certificate">
+    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:Certificate|dss:EAAPresentation">
 	    
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
@@ -281,7 +282,7 @@
     
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessBasicTimestamp|dss:ValidationProcessLongTermData
 			|dss:ValidationProcessArchivalData|dss:ValidationProcessArchivalDataTimestamp|dss:ValidationProcessEvidenceRecord
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess|dss:ValidationProcessEAAPresentation">
 
 		<xsl:variable name="poeStringValue">
 			<xsl:choose>
@@ -365,7 +366,8 @@
     	
     </xsl:template>
 
-    <xsl:template match="dss:ValidationSignatureQualification|dss:ValidationTimestampQualification|dss:ValidationTimestampQualificationAtTime">
+    <xsl:template match="dss:ValidationSignatureQualification|dss:ValidationTimestampQualification|dss:ValidationTimestampQualificationAtTime
+			|dss:ValidationEAAQualification">
 
     	<fo:table table-layout="fixed">
 			<xsl:attribute name="keep-with-next">always</xsl:attribute>
@@ -413,6 +415,9 @@
 					    		<xsl:when test="@TimestampQualification">
 					       			<xsl:value-of select="@TimestampQualification"/>
 					       		</xsl:when>
+								<xsl:when test="@EAAQualification">
+									<xsl:value-of select="@EAAQualification"/>
+								</xsl:when>
 				       		</xsl:choose>
 			       		</fo:block>
 					</fo:table-cell>

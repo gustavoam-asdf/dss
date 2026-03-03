@@ -61,8 +61,8 @@
             <ExpirationTime name="exp">2029-09-01T23:33:20Z</ExpirationTime>
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
             <Category name="category">urn:etsi:esi:eaa:eu:qualified</Category>
-            <FirstName name="given_name">John</FirstName>
-            <LastName name="family_name">Doe</LastName>
+            <FirstName name="given_name" disclosure="true">John</FirstName>
+            <LastName name="family_name" disclosure="true">Doe</LastName>
             <AddressCity name="locality">Anytown</AddressCity>
             <AddressStateOrProvince name="region">Anystate</AddressStateOrProvince>
             <AddressCountryName name="country">US</AddressCountryName>

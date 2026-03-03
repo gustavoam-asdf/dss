@@ -88,7 +88,6 @@ class SimpleReportFacadeTest {
 
 		String htmlReport = facade.generateHtmlReport(simpleReport);
 		assertNotNull(htmlReport);
-		System.out.println(htmlReport);
 
 		assertNotNull(facade.generateHtmlReport(simpleReportString));
 	}
