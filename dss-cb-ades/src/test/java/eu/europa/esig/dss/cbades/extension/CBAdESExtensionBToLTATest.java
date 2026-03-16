@@ -1,0 +1,17 @@
+package eu.europa.esig.dss.cbades.extension;
+
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+
+class CBAdESExtensionBToLTATest extends AbstractCBAdESTestExtension {
+
+    @Override
+    protected SignatureLevel getOriginalSignatureLevel() {
+        return SignatureLevel.CB_AdES_BASELINE_B;
+    }
+
+    @Override
+    protected SignatureLevel getFinalSignatureLevel() {
+        return SignatureLevel.CB_AdES_BASELINE_LTA;
+    }
+
+}

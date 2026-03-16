@@ -240,6 +240,7 @@ public class GoogleGuavaUtils implements IUtils {
 		if (array == null) {
 			return null;
 		}
+		length = Math.min(array.length, length);
 		return Arrays.copyOfRange(array, start, length);
 	}
 

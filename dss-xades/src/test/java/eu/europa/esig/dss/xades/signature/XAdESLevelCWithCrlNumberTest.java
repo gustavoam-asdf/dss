@@ -120,8 +120,8 @@ class XAdESLevelCWithCrlNumberTest extends XAdESLevelCTest {
 
 				assertNotNull(crlRef.getIssuer());
 				assertNotNull(crlRef.getIssueTime());
-				assertNotNull(crlRef.getNumber());
-				assertEquals("1235", crlRef.getNumber().toString());
+				assertNotNull(crlRef.getCRLNumber());
+				assertEquals("1235", crlRef.getCRLNumber().toString());
 
 				assertNull(crlRef.getProductionTime());
 				assertNull(crlRef.getResponderIdKey());
@@ -143,7 +143,7 @@ class XAdESLevelCWithCrlNumberTest extends XAdESLevelCTest {
 
 				assertNull(crlRef.getIssuer());
 				assertNull(crlRef.getIssueTime());
-				assertNull(crlRef.getNumber());
+				assertNull(crlRef.getCRLNumber());
 
 				++ocspRefCounter;
 			}

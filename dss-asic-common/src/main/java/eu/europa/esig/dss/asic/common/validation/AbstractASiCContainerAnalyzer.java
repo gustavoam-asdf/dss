@@ -36,6 +36,7 @@ import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.analyzer.DefaultDocumentAnalyzer;
+import eu.europa.esig.dss.spi.validation.analyzer.DocumentAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.evidencerecord.EvidenceRecordAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.evidencerecord.EvidenceRecordAnalyzerFactory;
 import eu.europa.esig.dss.spi.validation.analyzer.timestamp.TimestampAnalyzer;
@@ -180,8 +181,8 @@ public abstract class AbstractASiCContainerAnalyzer extends DefaultDocumentAnaly
 	@Override
 	protected List<AdvancedSignature> buildSignatures() {
 		final List<AdvancedSignature> signatureList = new ArrayList<>();
-		for (eu.europa.esig.dss.spi.validation.analyzer.DocumentAnalyzer validator : getSignatureAnalyzers()) {
-			signatureList.addAll(validator.getSignatures());
+		for (DocumentAnalyzer analyzer : getSignatureAnalyzers()) {
+			signatureList.addAll(analyzer.getSignatures());
 		}
 		
 		return signatureList;
@@ -192,7 +193,7 @@ public abstract class AbstractASiCContainerAnalyzer extends DefaultDocumentAnaly
 	 *
 	 * @return a list of {@link DocumentValidator}s
 	 */
-	protected abstract List<eu.europa.esig.dss.spi.validation.analyzer.DocumentAnalyzer> getSignatureAnalyzers();
+	protected abstract List<DocumentAnalyzer> getSignatureAnalyzers();
 
 	/**
 	 * Returns a container type

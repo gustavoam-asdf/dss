@@ -950,6 +950,11 @@
 			<xs:enumeration value="JAdES-BASELINE-T" />
 			<xs:enumeration value="JAdES-BASELINE-LT" />
 			<xs:enumeration value="JAdES-BASELINE-LTA" />
+			<xs:enumeration value="CBOR-NOT-ETSI" />
+			<xs:enumeration value="CB-AdES-BASELINE-B" />
+			<xs:enumeration value="CB-AdES-BASELINE-T" />
+			<xs:enumeration value="CB-AdES-BASELINE-LT" />
+			<xs:enumeration value="CB-AdES-BASELINE-LTA" />
 			<xs:enumeration value="UNKNOWN" />
 		</xs:restriction>
 	</xs:simpleType>
@@ -977,6 +982,7 @@
 		<xs:sequence>
 			<xs:element name="Message" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
+		<xs:attribute name="type" type="xs:string" />
 		<xs:attribute name="valid" type="xs:boolean" use="required" />
 	</xs:complexType>
 
@@ -1165,9 +1171,12 @@
 			<xs:enumeration value="CONTENT_DIGEST" />
 			
 			<!-- JAdES -->
-			<xs:enumeration value="JWS_SIGNING_INPUT_DIGEST" />
+			<xs:enumeration value="JWS_SIGNING_INPUT" />
 			<xs:enumeration value="SIG_D_ENTRY" />
 			<xs:enumeration value="COUNTER_SIGNED_SIGNATURE_VALUE" />
+
+			<!-- CB-AdES -->
+			<xs:enumeration value="COSE_SIG_STRUCTURE" />
 			
 			<!-- TIMESTAMP -->
 			<xs:enumeration value="MESSAGE_IMPRINT" />
@@ -1354,6 +1363,7 @@
 			<xs:enumeration value="CAdES_V3" />
 			<xs:enumeration value="CAdES_DETACHED" />
 			<xs:enumeration value="JAdES" />
+			<xs:enumeration value="CB_AdES" />
 			<xs:enumeration value="PAdES" />
 
 			<!-- Evidence record time-stamps -->
@@ -1509,11 +1519,12 @@
 		<xs:sequence>
 			<xs:element name="Origin" type="RevocationRefOriginType" maxOccurs="unbounded" />
 			<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" />
-			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" /> <!-- OCSP -->
+			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" />
 			<xs:element name="ResponderId" type="SignerInfo" minOccurs="0" /> <!-- OCSP -->
 			<xs:element name="Issuer" type="xs:string" minOccurs="0" /> <!-- CRL -->
 			<xs:element name="IssueTime" type="xs:dateTime" minOccurs="0" /> <!-- CRL -->
-			<xs:element name="Number" type="xs:integer" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="CRLNumber" type="xs:integer" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="Uri" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 	

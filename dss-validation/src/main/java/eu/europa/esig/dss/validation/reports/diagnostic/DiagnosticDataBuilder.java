@@ -916,9 +916,11 @@ public abstract class DiagnosticDataBuilder {
 				xmlRevocationRef.setIssueTime(crlRef.getCrlIssueTime());
 			}
 			if (crlRef.getCrlNumber() != null) {
-				xmlRevocationRef.setNumber(crlRef.getCrlNumber());
+				xmlRevocationRef.setCRLNumber(crlRef.getCrlNumber());
 			}
 		}
+		xmlRevocationRef.setCRLNumber(crlRef.getCrlNumber());
+		xmlRevocationRef.setUri(crlRef.getCrlUri());
 		return xmlRevocationRef;
 	}
 
@@ -940,6 +942,7 @@ public abstract class DiagnosticDataBuilder {
 		if (responderId != null) {
 			xmlRevocationRef.setResponderId(getXmlSignerInfo(responderId));
 		}
+		xmlRevocationRef.setUri(ocspRef.getUri());
 		return xmlRevocationRef;
 	}
 

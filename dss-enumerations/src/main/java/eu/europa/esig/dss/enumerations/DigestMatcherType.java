@@ -62,10 +62,25 @@ public enum DigestMatcherType {
 	 * JAdES Digest on result of concatenation 
 	 * ASCII(BASE64URL(UTF8(JWSProtected Header)) || '.' || BASE64URL(JWS Payload)) 
 	 */
-	JWS_SIGNING_INPUT_DIGEST,
+	JWS_SIGNING_INPUT,
 	
-	/** JAdES Detached entry */
+	/** JAdES or CB-AdES Detached entry */
 	SIG_D_ENTRY,
+
+	/**
+	 * COSE Digest on result of serialization of Sig_structure array:
+	 * <p>
+	 * {@code 
+	 * 	Sig_structure = [
+	 *     context : "Signature" / "Signature1",
+	 *     body_protected : empty_or_serialized_map,
+	 *     ? sign_protected : empty_or_serialized_map,
+	 *     external_aad : bstr,
+	 *     payload : bstr
+	 *  ]
+	 * }
+	 */
+	COSE_SIG_STRUCTURE,
 
 	/** Defines the signature value of a master signature signed by a counter signature */
 	COUNTER_SIGNED_SIGNATURE_VALUE,

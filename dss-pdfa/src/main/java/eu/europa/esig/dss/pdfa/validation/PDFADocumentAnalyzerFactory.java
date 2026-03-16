@@ -39,8 +39,8 @@ public class PDFADocumentAnalyzerFactory implements DocumentAnalyzerFactory {
 
     @Override
     public boolean isSupported(DSSDocument document) {
-        PDFADocumentAnalyzer validator = new PDFADocumentAnalyzer();
-        return validator.isSupported(document);
+        PDFADocumentAnalyzer analyzer = new PDFADocumentAnalyzer();
+        return analyzer.isSupported(document);
     }
 
     @Override

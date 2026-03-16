@@ -148,7 +148,7 @@ public abstract class AbstractJAdESCounterSignatureTest extends AbstractCounterS
 			boolean jwsSignatureInputFound = false;
 			boolean counterSignedSignatureValueFound = false;
 			for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType())) {
+				if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType())) {
 					jwsSignatureInputFound = true;
 				} else if (DigestMatcherType.COUNTER_SIGNED_SIGNATURE_VALUE.equals(digestMatcher.getType())) {
 					counterSignedSignatureValueFound = true;
@@ -165,7 +165,7 @@ public abstract class AbstractJAdESCounterSignatureTest extends AbstractCounterS
 	protected void checkMessageDigestAlgorithm(DiagnosticData diagnosticData) {
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			for (XmlDigestMatcher digestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType()) ||
+				if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType()) ||
 						DigestMatcherType.SIG_D_ENTRY.equals(digestMatcher.getType())) {
 					assertNotNull(digestMatcher.getDigestMethod());
 					assertNotNull(digestMatcher.getDigestValue());

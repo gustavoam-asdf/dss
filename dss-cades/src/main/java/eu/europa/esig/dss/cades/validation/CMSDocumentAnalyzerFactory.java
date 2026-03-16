@@ -38,8 +38,8 @@ public class CMSDocumentAnalyzerFactory implements DocumentAnalyzerFactory {
 
 	@Override
 	public boolean isSupported(DSSDocument document) {
-		CMSDocumentAnalyzer validator = new CMSDocumentAnalyzer();
-		return validator.isSupported(document);
+		CMSDocumentAnalyzer analyzer = new CMSDocumentAnalyzer();
+		return analyzer.isSupported(document);
 	}
 
 	@Override

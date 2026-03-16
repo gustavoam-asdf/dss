@@ -19,6 +19,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 
 import java.util.ArrayList;
@@ -312,8 +313,8 @@ public class SDJWTPayload extends ClaimMap implements EAAPayload {
         }
         ClaimNumber claimNumber = getAsNumber(headerName);
         if (claimNumber != null) {
-            long timeValueInMilliseconds = DSSJsonUtils.getTimeValueInMilliseconds(claimNumber.getNumberValue().longValue());
-            Date date = DSSJsonUtils.getDate(timeValueInMilliseconds);
+            long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(claimNumber.getNumberValue().longValue());
+            Date date = DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
             return new ClaimDate(headerName, date, claimNumber.isSelectivelyDisclosable());
         }
         return null;

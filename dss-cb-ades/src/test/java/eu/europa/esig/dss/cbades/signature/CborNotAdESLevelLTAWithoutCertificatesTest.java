@@ -1,0 +1,102 @@
+package eu.europa.esig.dss.cbades.signature;
+
+import eu.europa.esig.dss.alert.ExceptionOnStatusAlert;
+import eu.europa.esig.dss.alert.SilentOnStatusAlert;
+import eu.europa.esig.dss.alert.exception.AlertException;
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.enumerations.SignaturePackaging;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.signature.DocumentSignatureService;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class CborNotAdESLevelLTAWithoutCertificatesTest extends AbstractCBAdESTestSignature {
+
+    private CertificateVerifier certificateVerifier;
+    private DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> service;
+    private CBAdESSignatureParameters signatureParameters;
+    private DSSDocument documentToSign;
+
+    @BeforeEach
+    void init() throws Exception {
+        documentToSign = new InMemoryDocument("Hello world!".getBytes(), "HelloWorld");
+
+        signatureParameters = new CBAdESSignatureParameters();
+        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+        signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LTA);
+        signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+        signatureParameters.setGenerateTBSWithoutCertificate(true);
+
+        certificateVerifier = getCompleteCertificateVerifier();
+        service = new CBAdESService(certificateVerifier);
+        service.setTspSource(getGoodTsa());
+    }
+
+    @Test
+    @Override
+    public void signAndVerify() {
+        certificateVerifier.setAugmentationAlertOnSignatureWithoutCertificates(new ExceptionOnStatusAlert());
+
+        Exception exception = assertThrows(AlertException.class, super::signAndVerify);
+        assertTrue(exception.getMessage().contains("Error on signature augmentation to LT-level."));
+        assertTrue(exception.getMessage().contains("The signature does not contain certificates."));
+
+        certificateVerifier.setAugmentationAlertOnSignatureWithoutCertificates(new SilentOnStatusAlert());
+        super.signAndVerify();
+    }
+
+    @Override
+    protected CertificateSource getSigningCertificateSource() {
+        CommonCertificateSource signingCertificateSource = new CommonCertificateSource();
+        signingCertificateSource.addCertificate(getSigningCert());
+        return signingCertificateSource;
+    }
+
+    @Override
+    protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
+        // skip
+    }
+
+    @Override
+    protected void checkSignatureLevel(DiagnosticData diagnosticData) {
+        assertEquals(SignatureLevel.CBOR_NOT_ETSI, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
+    }
+
+    @Override
+    protected void checkStructureValidation(DiagnosticData diagnosticData) {
+        // skip
+    }
+
+    @Override
+    protected DocumentSignatureService<CBAdESSignatureParameters, CBAdESTimestampParameters> getService() {
+        return service;
+    }
+
+    @Override
+    protected CBAdESSignatureParameters getSignatureParameters() {
+        return signatureParameters;
+    }
+
+    @Override
+    protected DSSDocument getDocumentToSign() {
+        return documentToSign;
+    }
+
+    @Override
+    protected String getSigningAlias() {
+        return GOOD_USER;
+    }
+
+}

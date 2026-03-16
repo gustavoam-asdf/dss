@@ -47,6 +47,7 @@ import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.DLSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -76,7 +77,6 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
-import org.bouncycastle.crypto.signers.StandardDSAEncoding;
 import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.BigIntegers;
@@ -1043,8 +1043,10 @@ public final class DSSASN1Utils {
 	public static byte[] toPlainDSASignatureValue(byte[] asn1SignatureValue) {
 		try {
 			BigInteger order = getOrderFromSignatureValue(asn1SignatureValue);
-			final BigInteger[] values = StandardDSAEncoding.INSTANCE.decode(order, asn1SignatureValue);
-			return PlainDSAEncoding.INSTANCE.encode(order, values[0], values[1]);
+			ASN1Sequence seq = (ASN1Sequence) ASN1Sequence.fromByteArray(asn1SignatureValue);
+			ASN1Integer r = (ASN1Integer) seq.getObjectAt(0);
+			ASN1Integer s = (ASN1Integer) seq.getObjectAt(1);
+			return PlainDSAEncoding.INSTANCE.encode(order, r.getValue(), s.getValue());
 
 		} catch (Exception e) {
 			throw new DSSException("Unable to convert to plain : " + e.getMessage(), e);
@@ -1062,9 +1064,11 @@ public final class DSSASN1Utils {
 	 */
 	public static byte[] toStandardDSASignatureValue(byte[] signatureValue) {
 		try {
-			BigInteger order = getOrderFromSignatureValue(signatureValue);
-			final BigInteger[] values = PlainDSAEncoding.INSTANCE.decode(order, signatureValue);
-			return StandardDSAEncoding.INSTANCE.encode(order, values[0], values[1]);
+			int signatureValuePartLength = signatureValue.length / 2;
+			BigInteger r = new BigInteger(1, Utils.subarray(signatureValue, 0, signatureValuePartLength));
+			BigInteger s = new BigInteger(1, Utils.subarray(signatureValue, signatureValuePartLength, signatureValuePartLength * 2));
+			DERSequence seq = new DERSequence(new ASN1Integer[]{ new ASN1Integer(r), new ASN1Integer(s) });
+			return seq.getEncoded();
 
 		} catch (Exception e) {
 			throw new DSSException("Unable to convert to standard DSA : " + e.getMessage(), e);

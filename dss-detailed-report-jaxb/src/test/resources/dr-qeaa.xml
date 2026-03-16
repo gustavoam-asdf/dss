@@ -513,12 +513,12 @@
             <Constraint>
                 <Name Key="BBB_CV_IRDOF">Has the reference data object been found?</Name>
                 <Status>OK</Status>
-                <AdditionalInfo>Reference : JWS_SIGNING_INPUT_DIGEST</AdditionalInfo>
+                <AdditionalInfo>Reference : JWS_SIGNING_INPUT</AdditionalInfo>
             </Constraint>
             <Constraint>
                 <Name Key="BBB_CV_IRDOI">Is the reference data object intact?</Name>
                 <Status>OK</Status>
-                <AdditionalInfo>Reference : JWS_SIGNING_INPUT_DIGEST</AdditionalInfo>
+                <AdditionalInfo>Reference : JWS_SIGNING_INPUT</AdditionalInfo>
             </Constraint>
             <Constraint>
                 <Name Key="BBB_CV_ISI">Is the signature intact?</Name>

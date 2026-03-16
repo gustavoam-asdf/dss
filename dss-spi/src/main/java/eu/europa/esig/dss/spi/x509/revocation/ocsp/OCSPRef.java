@@ -46,6 +46,9 @@ public class OCSPRef extends RevocationRef<OCSP> {
     /** The OCSP Responder Id */
     private ResponderId responderId;
 
+    /** URI reference to the OCSP (a hint) */
+    private String uri;
+
     /**
      * The default constructor for OCSPRef.
      *
@@ -86,6 +89,24 @@ public class OCSPRef extends RevocationRef<OCSP> {
      */
     public ResponderId getResponderId() {
         return responderId;
+    }
+
+    /**
+     * Gets the URI reference to the OCSP (a hint)
+     *
+     * @return {@link String}
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * Sets the URI reference to the OCSP (a hint)
+     *
+     * @param uri {@link String}
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     @Override

@@ -182,7 +182,7 @@ public abstract class AbstractJAdESTestSignature
 
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			for (XmlDigestMatcher xmlDigestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST == xmlDigestMatcher.getType() && SigDMechanism.OBJECT_ID_BY_URI == getSignatureParameters().getSigDMechanism()) {
+				if (DigestMatcherType.JWS_SIGNING_INPUT == xmlDigestMatcher.getType() && SigDMechanism.OBJECT_ID_BY_URI == getSignatureParameters().getSigDMechanism()) {
 					assertTrue(Utils.isCollectionNotEmpty(xmlDigestMatcher.getDataObjectReferences()));
 				} else {
 					assertFalse(Utils.isCollectionNotEmpty(xmlDigestMatcher.getDataObjectReferences()));
@@ -283,7 +283,7 @@ public abstract class AbstractJAdESTestSignature
 	
 	@Override
 	protected void checkSignatureType(DiagnosticData diagnosticData) {
-		super.checkMimeType(diagnosticData);
+		super.checkSignatureType(diagnosticData);
 
 		SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
 		if (getSignatureParameters().isIncludeSignatureType()) {

@@ -210,8 +210,8 @@ public class ASiCEWithXAdESContainerMerger extends AbstractASiCWithXAdESContaine
         final List<String> result = new ArrayList<>();
         for (ASiCContent asicContent : asicContents) {
             for (DSSDocument signatureDocument : asicContent.getSignatureDocuments()) {
-                XMLDocumentAnalyzer documentValidator = new XMLDocumentAnalyzer(signatureDocument);
-                for (AdvancedSignature signature : documentValidator.getSignatures()) {
+                XMLDocumentAnalyzer documentAnalyzer = new XMLDocumentAnalyzer(signatureDocument);
+                for (AdvancedSignature signature : documentAnalyzer.getSignatures()) {
                     result.addAll(getCoveredDocumentNames((XAdESSignature) signature));
                 }
             }

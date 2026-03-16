@@ -49,6 +49,7 @@ public final class JWSConverter {
 	/** The name for a signature containing JSON components in their corresponding base64url encoded form */
 	private static final String BASE64URL_ETSIU_DOCUMENT_NAME = "etsiU-base64url-incorporation.json";
 
+	/** List of timestamp headers covering other 'etsiU' headers */
 	private static List<String> timestampHeaderNames;
 
 	static {
@@ -56,6 +57,9 @@ public final class JWSConverter {
 				JAdESHeaderParameterNames.SIG_R_TST);
 	}
 
+	/**
+	 * Utility class
+	 */
 	private JWSConverter() {
 		// empty
 	}

@@ -334,6 +334,13 @@ public abstract class AbstractUtilsTest {
 		byte[] array = new byte[] { 1, 2, 3, 4, 5 };
 		assertArrayEquals(array, Utils.subarray(array, 0, array.length));
 		assertArrayEquals(new byte[] { 1, 2, 3 }, Utils.subarray(array, 0, 3));
+		assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, Utils.subarray(array, 0, 5));
+		assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, Utils.subarray(array, 0, 10));
+		assertArrayEquals(new byte[] { 2, 3 }, Utils.subarray(array, 1, 3));
+		assertArrayEquals(new byte[] { 2, 3, 4 }, Utils.subarray(array, 1, 4));
+		assertArrayEquals(new byte[] { 2, 3, 4, 5 }, Utils.subarray(array, 1, 5));
+		assertArrayEquals(new byte[] {}, Utils.subarray(array, 5, 5));
+		assertArrayEquals(new byte[] {}, Utils.subarray(array, 5, 10));
 		assertArrayEquals(new byte[] {}, Utils.subarray(array, 0, 0));
 		assertArrayEquals(null, Utils.subarray(null, 0, 0));
 	}

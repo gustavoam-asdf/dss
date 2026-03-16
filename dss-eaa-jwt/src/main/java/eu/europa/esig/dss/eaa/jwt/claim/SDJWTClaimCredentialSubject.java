@@ -19,6 +19,8 @@ import java.util.Date;
  */
 public class SDJWTClaimCredentialSubject extends ClaimMap implements ClaimCredentialSubject {
 
+    private static final long serialVersionUID = -4959653550379591495L;
+
     /**
      * Default constructor
      *

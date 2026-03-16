@@ -34,7 +34,6 @@ import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SpDocSpecification;
 import eu.europa.esig.dss.model.TimestampBinary;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -50,7 +49,6 @@ import org.jose4j.json.JsonUtil;
 import org.jose4j.json.internal.json_simple.JSONArray;
 import org.jose4j.json.internal.json_simple.JSONValue;
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.jwt.NumericDate;
 import org.jose4j.jwx.CompactSerializer;
 import org.jose4j.lang.JoseException;
 import org.jose4j.lang.StringUtil;
@@ -169,7 +167,7 @@ public class DSSJsonUtils {
 	
 	static {
 		protectedCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
 				IAT, EXP,
@@ -186,7 +184,7 @@ public class DSSJsonUtils {
 				PBES2_SALT_INPUT, PBES2_ITERATION_COUNT, ENCRYPTION_METHOD, ZIP ).collect(Collectors.toSet());
 
 		requiredCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_D,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD ).collect(Collectors.toSet());
@@ -399,37 +397,18 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * Creates an 'oid' LinkedJSONObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' LinkedJSONObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param objectIdentifier {@link ObjectIdentifier} to create an 'oid' from
 	 * @return 'oid' {@link JsonObject}
 	 */
 	public static JsonObject getOidObject(ObjectIdentifier objectIdentifier) {
-		return getOidObject(getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
+		return getOidObject(DSSUtils.getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
 				objectIdentifier.getDocumentationReferences());
 	}
 
 	/**
-	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
-	 * Returns NULL if non of them is present
-	 *
-	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
-	 * @return {@link String} URI
-	 */
-	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
-		/*
-		 * TS 119 182-1 : 5.4.1 The oId data type
-		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
-		 */
-		String uri = objectIdentifier.getUri();
-		if (uri == null && objectIdentifier.getOid() != null) {
-			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
-		}
-		return uri;
-	}
-
-	/**
-	 * Creates an 'oid' JsonObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' JsonObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param uri {@link String} URI defining the object. The property is REQUIRED.
 	 * @param desc {@link String} the object description. The property is OPTIONAL.
@@ -453,7 +432,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstContainer' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstContainer' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinaries a list of {@link TimestampBinary}s to incorporate
 	 * @param canonicalizationMethodUri a canonicalization method (OPTIONAL, e.g. shall not be present for content timestamps)
@@ -480,7 +459,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstToken' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstToken' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinary {@link TimestampBinary}s to incorporate
 	 * @return 'tstToken' {@link JsonObject}
@@ -490,7 +469,7 @@ public class DSSJsonUtils {
 		
 		Map<String, Object> tstTokenParams = new HashMap<>();
 		// only RFC 3161 TimestampTokens are supported
-		// 'type', 'encoding' and 'specRef' params are not need to be defined (see EN 119-182 ch. 5.4.3.3)
+		// 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119-182 ch. 5.4.3.3)
 		tstTokenParams.put(JAdESHeaderParameterNames.VAL, Utils.toBase64(timestampBinary.getBytes()));
 		
 		return new JsonObject(tstTokenParams);
@@ -535,16 +514,10 @@ public class DSSJsonUtils {
 			throw new IllegalArgumentException("Unable to build a message-digest. Reason : the detached content is not provided!");
 		}
 
-		byte[] octets = null;
-		if (documents.size() == 1) {
-			octets = getDocumentOctets(documents.get(0), isBase64UrlEncoded);
+		byte[] octets;
+		for (DSSDocument document : documents) {
+			octets = getDocumentOctets(document, isBase64UrlEncoded);
 			digestCalculator.update(octets);
-
-		} else {
-			for (DSSDocument document : documents) {
-				octets = getDocumentOctets(document, isBase64UrlEncoded);
-				digestCalculator.update(octets);
-			}
 		}
 	}
 
@@ -694,29 +667,6 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * Parses a IETF RFC 7519 dateTime NumericDate
-	 *
-	 * @param dateTimeNumber {@link Number} in the RFC 7519 NumericDate format to parse
-	 * @return {@link Date}
-	 */
-	public static Date getDate(Number dateTimeNumber) {
-		/*
-		 * A JSON numeric value representing the number of seconds from
-		 * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
-		 * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,
-		 * 2013 Edition [POSIX.1] definition "Seconds Since the Epoch", in
-		 * which each day is accounted for by exactly 86400 seconds, other
-		 * than that non-integer values can be represented.  See RFC 3339
-		 * [RFC3339] for details regarding date/times in general and UTC in
-		 * particular.
-		 */
-		if (dateTimeNumber != null) {
-			return new Date(dateTimeNumber.longValue());
-		}
-		return null;
-	}
-
-	/**
 	 * Parses the 'kid' header value as in IETF RFC 5035
 	 * 
 	 * @param value {@link String} IssuerSerial to parse
@@ -732,18 +682,6 @@ public class DSSJsonUtils {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Generates the 'kid' value as in IETF RFC 5035
-	 * 
-	 * @param signingCertificate {@link CertificateToken} representing the singing
-	 *                           certificate
-	 * @return {@link String} 'kid' header value
-	 */
-	public static String generateKid(CertificateToken signingCertificate) {
-		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
-		return Utils.toBase64(DSSASN1Utils.getDEREncoded(issuerSerial));
 	}
 	
 	/**
@@ -775,8 +713,8 @@ public class DSSJsonUtils {
 			
 			JWSDocumentAnalyzerFactory factory = new JWSDocumentAnalyzerFactory();
 			if (factory.isSupported(cSigDocument)) {
-				DocumentAnalyzer validator = factory.create(cSigDocument);
-				List<AdvancedSignature> signatures = validator.getSignatures();
+				DocumentAnalyzer analyzer = factory.create(cSigDocument);
+				List<AdvancedSignature> signatures = analyzer.getSignatures();
 
 				/*
 				 * 5.3.2 The cSig (counter signature) JSON object
@@ -1376,26 +1314,6 @@ public class DSSJsonUtils {
 			return DSSJsonUtils.MIME_TYPE_APPLICATION_PREFIX + mimeType;
 		}
 		return mimeType;
-	}
-
-	/**
-	 * This method cleans millis from the given time
-	 *
-	 * @param timeInMillis time with millis
-	 * @return time without millis
-	 */
-	public static long getTimeValueInSeconds(long timeInMillis) {
-		return NumericDate.fromMilliseconds(timeInMillis).getValue();
-	}
-
-	/**
-	 * This method adds millis to the given time in seconds
-	 *
-	 * @param timeWithoutMillis time without millis
-	 * @return time with millis
-	 */
-	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
-		return NumericDate.fromSeconds(timeWithoutMillis).getValueInMillis();
 	}
 
 	/**

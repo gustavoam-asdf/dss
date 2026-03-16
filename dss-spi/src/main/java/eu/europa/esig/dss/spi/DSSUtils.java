@@ -22,6 +22,7 @@ package eu.europa.esig.dss.spi;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.ObjectIdentifierQualifier;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -37,6 +38,7 @@ import eu.europa.esig.dss.spi.security.DSSCertificateTokenSecurityFactory;
 import eu.europa.esig.dss.spi.security.DSSP7CCertificatesSecurityFactory;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataParser;
@@ -1049,6 +1051,25 @@ public final class DSSUtils {
 	public static String toUrnOid(String oid) {
 		return OID_NAMESPACE_PREFIX + oid;
 	}
+
+	/**
+	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
+	 * Returns NULL if non of them is present
+	 *
+	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
+	 * @return {@link String} URI
+	 */
+	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
+		/*
+		 * TS 119 182-1 : 5.4.1 The oId data type
+		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
+		 */
+		String uri = objectIdentifier.getUri();
+		if (uri == null && objectIdentifier.getOid() != null) {
+			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
+		}
+		return uri;
+	}
 	
 	/**
 	 * Normalizes and retrieves a {@code String} identifier (to be used for non-XAdES processing).
@@ -1292,6 +1313,71 @@ public final class DSSUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Generates the 'kid' value as in IETF RFC 5035
+	 *
+	 * @param signingCertificate {@link CertificateToken} representing the singing
+	 *                           certificate
+	 * @return byte array 'kid' header value
+	 */
+	public static byte[] generateKid(CertificateToken signingCertificate) {
+		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
+		return DSSASN1Utils.getDEREncoded(issuerSerial);
+	}
+
+	/**
+	 * This method cleans millis from the given time
+	 *
+	 * @param timeInMillis time with millis
+	 * @return time without millis
+	 */
+	public static long getTimeValueInSeconds(long timeInMillis) {
+		return timeInMillis / 1000L;
+	}
+
+	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
+		return timeWithoutMillis * 1000L;
+	}
+
+	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(double timeWithoutMillis) {
+		return (long) (timeWithoutMillis * 1000);
+	}
+
+	/**
+	 * Creates a Date based from milliseconds (starting from 1970-01-01T00:00Z)
+	 *
+	 * @param dateTimeNumber {@link Number} milliseconds
+	 * @return {@link Date}
+	 */
+	public static Date getDateFromMilliseconds(Number dateTimeNumber) {
+		/*
+		 * A JSON numeric value representing the number of seconds from
+		 * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
+		 * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,
+		 * 2013 Edition [POSIX.1] definition "Seconds Since the Epoch", in
+		 * which each day is accounted for by exactly 86400 seconds, other
+		 * than that non-integer values can be represented.  See RFC 3339
+		 * [RFC3339] for details regarding date/times in general and UTC in
+		 * particular.
+		 */
+		if (dateTimeNumber != null) {
+			return new Date(dateTimeNumber.longValue());
+		}
+		return null;
 	}
 
 	/**

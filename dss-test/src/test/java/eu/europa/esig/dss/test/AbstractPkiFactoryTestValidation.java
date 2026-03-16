@@ -700,6 +700,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case CAdES_X:
 			case JAdES_BASELINE_T:
 			case PAdES_BASELINE_T:
+			case CB_AdES_BASELINE_T:
 				return true;
 			default:
 				return isBaselineLT(signatureLevel);
@@ -716,6 +717,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case CAdES_XL:
 			case JAdES_BASELINE_LT:
 			case PAdES_BASELINE_LT:
+			case CB_AdES_BASELINE_LT:
 				return true;
 			default:
 				return isBaselineLTA(signatureLevel) || isLevelERS(signatureLevel);
@@ -731,6 +733,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case JAdES_BASELINE_LTA:
 			case PAdES_BASELINE_LTA:
 			case PAdES_LTV:
+			case CB_AdES_BASELINE_LTA:
 				return true;
 			default:
 				return false;

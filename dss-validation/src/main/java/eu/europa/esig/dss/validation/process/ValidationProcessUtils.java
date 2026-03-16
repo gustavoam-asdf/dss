@@ -455,8 +455,10 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_MES_DIG;
 			case CONTENT_DIGEST:
 				return MessageTag.ACCM_POS_CON_DIG;
-			case JWS_SIGNING_INPUT_DIGEST:
+			case JWS_SIGNING_INPUT:
 				return MessageTag.ACCM_POS_JWS;
+			case COSE_SIG_STRUCTURE:
+				return MessageTag.ACCM_POS_COSE;
 			case SIG_D_ENTRY:
 				return MessageTag.ACCM_POS_SIG_D_ENT;
 			case MESSAGE_IMPRINT:

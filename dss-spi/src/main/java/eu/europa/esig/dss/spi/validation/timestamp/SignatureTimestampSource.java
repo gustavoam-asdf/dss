@@ -533,7 +533,7 @@ public abstract class SignatureTimestampSource<AS extends AdvancedSignature, SA 
                 continue;
 
             } else {
-                LOG.warn("The unsigned attribute with a name [{}] is not supported in TimestampSource processing", unsignedAttribute);
+                LOG.warn("Unsupported attribute encountered during TimestampSource processing. Entry is skipped.");
                 continue;
             }
 
@@ -1053,7 +1053,7 @@ public abstract class SignatureTimestampSource<AS extends AdvancedSignature, SA 
     }
 
     /**
-     * Returns a list of {@link TimestampedReference}s encapsulated to the "validation-data" {@code unsignedAttribute}
+     * Returns a list of {@link TimestampedReference}s encapsulated to the "any-validation-data" {@code unsignedAttribute}
      *
      * @param unsignedAttribute {@link SA} to get timestamped references from
      * @return list of {@link TimestampedReference}s

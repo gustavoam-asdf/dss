@@ -159,7 +159,8 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		item = item.setNextItem(contentHints());
 		
 		// message-digest for CAdES/PAdES and SignedProperties for XAdES are present
-		if (!SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+		SignatureForm signatureForm = token.getSignatureFormat().getSignatureForm();
+		if (!SignatureForm.JAdES.equals(signatureForm) && !SignatureForm.CBAdES.equals(signatureForm)) {
 			item = item.setNextItem(messageDigestOrSignedProperties());
 		}
 

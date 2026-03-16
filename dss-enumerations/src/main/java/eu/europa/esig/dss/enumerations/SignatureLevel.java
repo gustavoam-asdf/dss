@@ -23,6 +23,7 @@ package eu.europa.esig.dss.enumerations;
 import java.util.Objects;
 
 import static eu.europa.esig.dss.enumerations.SignatureForm.CAdES;
+import static eu.europa.esig.dss.enumerations.SignatureForm.CBAdES;
 import static eu.europa.esig.dss.enumerations.SignatureForm.JAdES;
 import static eu.europa.esig.dss.enumerations.SignatureForm.PAdES;
 import static eu.europa.esig.dss.enumerations.SignatureForm.PKCS7;
@@ -60,8 +61,10 @@ public enum SignatureLevel {
 	PDF_NOT_ETSI(PAdES, NOT_ETSI), PKCS7_B(PKCS7, NOT_ETSI), PKCS7_T(PKCS7, NOT_ETSI), PKCS7_LT(PKCS7, NOT_ETSI), PKCS7_LTA(PKCS7, NOT_ETSI),
 	PAdES_BES(PAdES, EXTENDED_BES), PAdES_EPES(PAdES, EXTENDED_EPES), PAdES_LTV(PAdES, EXTENDED_LTV),
 	PAdES_BASELINE_B(PAdES, BASELINE_B), PAdES_BASELINE_T(PAdES, BASELINE_T), PAdES_BASELINE_LT(PAdES, BASELINE_LT), PAdES_BASELINE_LTA(PAdES, BASELINE_LTA),
-	
+
 	JSON_NOT_ETSI(JAdES, NOT_ETSI), JAdES_BASELINE_B(JAdES, BASELINE_B), JAdES_BASELINE_T(JAdES, BASELINE_T), JAdES_BASELINE_LT(JAdES, BASELINE_LT), JAdES_BASELINE_LTA(JAdES, BASELINE_LTA),
+
+	CBOR_NOT_ETSI(CBAdES, NOT_ETSI), CB_AdES_BASELINE_B(CBAdES, BASELINE_B), CB_AdES_BASELINE_T(CBAdES, BASELINE_T), CB_AdES_BASELINE_LT(CBAdES, BASELINE_LT), CB_AdES_BASELINE_LTA(CBAdES, BASELINE_LTA),
 	
 	UNKNOWN(null, NOT_ETSI);
 
