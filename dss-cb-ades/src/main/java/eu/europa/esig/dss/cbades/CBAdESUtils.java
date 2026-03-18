@@ -81,12 +81,12 @@ public class CBAdESUtils {
         Objects.requireNonNull(uri, "uri must be defined!");
 
         CBORMap oidParams = new CBORMap();
-        oidParams.put(COSEConstants.OID_ID, uri);
+        oidParams.put(COSEHeaderParameters.OID_ID.cbor(), uri);
         if (Utils.isStringNotEmpty(desc)) {
-            oidParams.put(COSEConstants.OID_DESC, desc);
+            oidParams.put(COSEHeaderParameters.OID_DESC.cbor(), desc);
         }
         if (Utils.isArrayNotEmpty(docRefs)) {
-            oidParams.put(COSEConstants.OID_DOC_REFS, new CBORArray(docRefs));
+            oidParams.put(COSEHeaderParameters.OID_DOC_REFS.cbor(), new CBORArray(docRefs));
         }
 
         return oidParams;
@@ -110,7 +110,7 @@ public class CBAdESUtils {
             CBORMap tstToken = getTstToken(timestampBinary);
             tstTokens.add(tstToken);
         }
-        tstContainerParams.put(COSEConstants.TST_CONTAINER_TST_TOKENS, tstTokens);
+        tstContainerParams.put(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor(), tstTokens);
 
         return tstContainerParams;
     }
@@ -127,7 +127,7 @@ public class CBAdESUtils {
         CBORMap tstToken = new CBORMap();
         // only RFC 3161 TimestampTokens are supported
         // 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119 152-1 ch. 5.4.3.3)
-        tstToken.put(COSEConstants.TST_TOKEN_VAL, timestampBinary.getBytes());
+        tstToken.put(COSEHeaderParameters.TST_TOKEN_VAL.cbor(), timestampBinary.getBytes());
 
         return tstToken;
     }
@@ -187,19 +187,19 @@ public class CBAdESUtils {
      * @return {@link CertificateRef} of the value has been parsed successfully, FALSE otherwise
      */
     public static CertificateRef fromCertId(CBORMap certId) {
-        CBORArray x5t = certId.getAsArray(COSEConstants.CERT_ID_X5T);
+        CBORArray x5t = certId.getAsArray(COSEHeaderParameters.CERT_ID_X5T.cbor());
         Digest digest = extractX5TDigest(x5t);
         if (digest != null) {
             final CertificateRef certificateRef = new CertificateRef();
             certificateRef.setCertDigest(digest);
 
-            byte[] kid = certId.getAsBinaries(COSEConstants.CERT_ID_KID);
+            byte[] kid = certId.getAsBinaries(COSEHeaderParameters.CERT_ID_KID.cbor());
             if (kid != null) {
                 IssuerSerial kidIssuerSerial = CBORUtils.getIssuerSerial(kid);
                 certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(kidIssuerSerial));
             }
 
-            String x5u = certId.getAsString(COSEConstants.CERT_ID_X5U);
+            String x5u = certId.getAsString(COSEHeaderParameters.CERT_ID_X5U.cbor());
             if (x5u != null) {
                 certificateRef.setX509Url(x5u);
             }
@@ -246,9 +246,9 @@ public class CBAdESUtils {
      */
     public static byte[] extractDerEncodedPkiObject(CBORMap pkiOb) {
         if (pkiOb != null) {
-            String encoding = pkiOb.getAsString(COSEConstants.PKI_OB_ENCODING);
+            String encoding = pkiOb.getAsString(COSEHeaderParameters.PKI_OB_ENCODING.cbor());
             if (Utils.isStringEmpty(encoding) || Utils.areStringsEqual(PKIEncoding.DER.getUri(), encoding)) {
-                return pkiOb.getAsBinaries(COSEConstants.PKI_OB_VAL);
+                return pkiOb.getAsBinaries(COSEHeaderParameters.PKI_OB_VAL.cbor());
             } else {
                 LOG.warn("Unsupported encoding header value : '{}'", encoding);
             }
@@ -264,11 +264,11 @@ public class CBAdESUtils {
      */
     public static CRLRef createCRLRef(CBORMap crlRefMap) {
         try {
-            CBORArray digAlgVal = crlRefMap.getAsArray(COSEConstants.CRL_REF_DIG_ALG_VAL);
+            CBORArray digAlgVal = crlRefMap.getAsArray(COSEHeaderParameters.CRL_REF_DIG_ALG_VAL.cbor());
             if (digAlgVal != null) {
                 Digest digest = getDigestAlgAndVal(digAlgVal);
                 if (digest != null) {
-                    CBORMap crlId = crlRefMap.getAsMap(COSEConstants.CRL_REF_CRL_ID);
+                    CBORMap crlId = crlRefMap.getAsMap(COSEHeaderParameters.CRL_REF_CRL_ID.cbor());
                     if (crlId != null) {
                         X500Principal issuer = getCRLIdIssuer(crlId);
                         Date crlIdIssueTime = getCRLIdIssueTime(crlId);
@@ -289,7 +289,7 @@ public class CBAdESUtils {
     }
 
     private static X500Principal getCRLIdIssuer(CBORMap crlId) {
-        byte[] crlIdIssuer = crlId.getAsBinaries(COSEConstants.CRL_ID_ISSUER);
+        byte[] crlIdIssuer = crlId.getAsBinaries(COSEHeaderParameters.CRL_ID_ISSUER.cbor());
         if (Utils.isArrayNotEmpty(crlIdIssuer)) {
             try {
                 return DSSASN1Utils.toX500Principal(X500Name.getInstance(crlIdIssuer));
@@ -301,7 +301,7 @@ public class CBAdESUtils {
     }
 
     private static Date getCRLIdIssueTime(CBORMap crlId) {
-        String crlIdIssueTime = crlId.getAsString(COSEConstants.CRL_ID_ISSUE_TIME);
+        String crlIdIssueTime = crlId.getAsString(COSEHeaderParameters.CRL_ID_ISSUE_TIME.cbor());
         if (crlIdIssueTime != null) {
             return getDate(crlIdIssueTime);
         }
@@ -328,7 +328,7 @@ public class CBAdESUtils {
     }
 
     private static BigInteger getCRLIdNumber(CBORMap crlId) {
-        Long crlIdNumber = crlId.getAsLong(COSEConstants.CRL_ID_NUMBER);
+        Long crlIdNumber = crlId.getAsLong(COSEHeaderParameters.CRL_ID_NUMBER.cbor());
         if (crlIdNumber != null) {
             return BigInteger.valueOf(crlIdNumber);
         }
@@ -336,7 +336,7 @@ public class CBAdESUtils {
     }
 
     private static String getCRLIdUri(CBORMap crlId) {
-        return crlId.getAsString(COSEConstants.CRL_ID_URI);
+        return crlId.getAsString(COSEHeaderParameters.CRL_ID_URI.cbor());
     }
 
     /**
@@ -351,7 +351,7 @@ public class CBAdESUtils {
             ResponderId responderId;
             Date producedAt;
 
-            CBORArray digAlgVal = ocspRefMap.getAsArray(COSEConstants.OCSP_REF_DIG_ALG_VAL);
+            CBORArray digAlgVal = ocspRefMap.getAsArray(COSEHeaderParameters.OCSP_REF_DIG_ALG_VAL.cbor());
             if (digAlgVal != null) {
                 digest = getDigestAlgAndVal(digAlgVal);
             } else {
@@ -359,7 +359,7 @@ public class CBAdESUtils {
                 return null;
             }
 
-            CBORMap ocspId = ocspRefMap.getAsMap(COSEConstants.OCSP_REF_OCSP_ID);
+            CBORMap ocspId = ocspRefMap.getAsMap(COSEHeaderParameters.OCSP_REF_OCSP_ID.cbor());
             if (ocspId != null) {
                 responderId = getResponderId(ocspId);
                 producedAt = getProducedAt(ocspId);
@@ -381,17 +381,17 @@ public class CBAdESUtils {
     }
 
     private static ResponderId getResponderId(CBORMap ocspId) {
-        CBORMap responderIdMap = ocspId.getAsMap(COSEConstants.OCSP_ID_RESPONDER_ID_CHOICE);
+        CBORMap responderIdMap = ocspId.getAsMap(COSEHeaderParameters.OCSP_ID_RESPONDER_ID_CHOICE.cbor());
         if (responderIdMap != null && !responderIdMap.isEmpty()) {
             X500Principal subjectX500Principal = null;
             byte[] ski = null;
 
-            byte[] responderIdByName = ocspId.getAsBinaries(COSEConstants.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_NAME);
+            byte[] responderIdByName = ocspId.getAsBinaries(COSEHeaderParameters.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_NAME.cbor());
             if (Utils.isArrayNotEmpty(responderIdByName)) {
                 subjectX500Principal = DSSASN1Utils.toX500Principal(X500Name.getInstance(responderIdByName));
             }
 
-            byte[] responderIdByKey = ocspId.getAsBinaries(COSEConstants.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_KEY);
+            byte[] responderIdByKey = ocspId.getAsBinaries(COSEHeaderParameters.RESPONDER_ID_CHOICE_RESPONDER_ID_BY_KEY.cbor());
             if (Utils.isArrayNotEmpty(responderIdByKey)) {
                 ski = responderIdByKey;
             }
@@ -406,7 +406,7 @@ public class CBAdESUtils {
     }
 
     private static Date getProducedAt(CBORMap ocspId) {
-        String ocspIdProducedAt = ocspId.getAsString(COSEConstants.OCSP_ID_PRODUCED_AT);
+        String ocspIdProducedAt = ocspId.getAsString(COSEHeaderParameters.OCSP_ID_PRODUCED_AT.cbor());
         if (ocspIdProducedAt != null) {
             return getDate(ocspIdProducedAt);
         } else {
@@ -416,7 +416,7 @@ public class CBAdESUtils {
     }
 
     private static String getOCSPIdUri(CBORMap ocspId) {
-        return ocspId.getAsString(COSEConstants.OCSP_ID_URI);
+        return ocspId.getAsString(COSEHeaderParameters.OCSP_ID_URI.cbor());
     }
 
     /**
@@ -440,12 +440,12 @@ public class CBAdESUtils {
      * Builds counter signatures from a CBORObject value with the given {@code headerKey}
      *
      * @param signature {@link CBAdESSignature} master signature
-     * @param headerKey {@link Long} key of the header embedding the counter signature
+     * @param headerKey {@link CBORObject} key of the header embedding the counter signature
      * @param headerValue {@link CBORObject} the header value encapsulating the counter signature
      * @param bodyStructure TRUE if the counter signature has been extracted from the body structure (for COSE_SIGN), FALSE otherwise
      * @return a list of {@link CBAdESSignature}s
      */
-    public static List<CBAdESSignature> buildCounterSignatures(CBAdESSignature signature, Long headerKey,
+    public static List<CBAdESSignature> buildCounterSignatures(CBAdESSignature signature, CBORObject headerKey,
                                                                CBORObject headerValue, boolean bodyStructure) {
         COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(headerKey);
         // is known

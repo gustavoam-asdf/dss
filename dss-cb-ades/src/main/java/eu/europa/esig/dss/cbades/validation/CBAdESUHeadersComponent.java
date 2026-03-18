@@ -19,11 +19,11 @@ public class CBAdESUHeadersComponent extends CBAdESAttribute {
      * Default constructor
      *
      * @param component  {@link CBORObject} original representation of the component
-     * @param headerId   {@link Long} header id
+     * @param headerId   {@link CBORObject} header id
      * @param value      {@link CBORObject} value
      * @param identifier {@link CBAdESAttributeIdentifier}
      */
-    CBAdESUHeadersComponent(CBORObject component, Long headerId, CBORObject value, CBAdESAttributeIdentifier identifier) {
+    CBAdESUHeadersComponent(CBORObject component, CBORObject headerId, CBORObject value, CBAdESAttributeIdentifier identifier) {
         super(headerId, value);
         this.component = component;
         this.identifier = identifier;
@@ -40,7 +40,7 @@ public class CBAdESUHeadersComponent extends CBAdESAttribute {
         CBORMap cborMap = CBORUtils.parseUHeadersEntry(component);
         if (cborMap != null && !cborMap.isEmpty()) {
             // one entry is expected
-            Long key = cborMap.getKeys().iterator().next();
+            CBORObject key = cborMap.getKeys().iterator().next();
             CBORObject value = cborMap.getHeader(key);
             CBAdESAttributeIdentifier identifier = CBAdESAttributeIdentifier.build(key, value, order);
             return new CBAdESUHeadersComponent(component, key, value, identifier);
@@ -51,12 +51,12 @@ public class CBAdESUHeadersComponent extends CBAdESAttribute {
     /**
      * Builds the {@code EtsiUComponent} from the given parameters
      *
-     * @param headerKey {@link Long} name of the 'uHeaders' array component
+     * @param headerKey {@link CBORObject} name of the 'uHeaders' array component
      * @param value {@link CBORObject} represents the value of the component
      * @param identifier {@link CBAdESAttributeIdentifier}
      * @return {@link CBAdESUHeadersComponent}
      */
-    public static CBAdESUHeadersComponent build(Long headerKey, CBORObject value, CBAdESAttributeIdentifier identifier) {
+    public static CBAdESUHeadersComponent build(CBORObject headerKey, CBORObject value, CBAdESAttributeIdentifier identifier) {
         CBORObject component = createUHeadersComponent(headerKey, value);
         return new CBAdESUHeadersComponent(component, headerKey, value, identifier);
     }
@@ -64,11 +64,11 @@ public class CBAdESUHeadersComponent extends CBAdESAttribute {
     /**
      * Returns an 'uHeaders' component in the defined representation
      *
-     * @param key              {@link Long} header name
+     * @param key              {@link CBORObject} header name
      * @param value            {@link CBORObject} object
      * @return {@link CBORObject} 'uHeaders' component
      */
-    private static CBORObject createUHeadersComponent(Long key, CBORObject value) {
+    private static CBORObject createUHeadersComponent(CBORObject key, CBORObject value) {
         CBORMap cborMap = new CBORMap();
         cborMap.put(key, value);
         return cborMap.getByteString();

@@ -8,6 +8,8 @@ import co.nstant.in.cbor.model.SimpleValue;
 import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -123,6 +125,42 @@ public abstract class AbstractCBORObject<D extends DataItem> implements CBORObje
     @Override
     public boolean isArray() {
         return MajorType.ARRAY == dataItem.getMajorType();
+    }
+
+
+    @Override
+    public Long getValueAsLong() {
+        return null;
+    }
+
+    @Override
+    public Double getValueAsDouble() {
+        return null;
+    }
+
+    @Override
+    public String getValueAsString() {
+        return null;
+    }
+
+    @Override
+    public Boolean getValueAsBoolean() {
+        return null;
+    }
+
+    @Override
+    public byte[] getValueAsBytes() {
+        return null;
+    }
+
+    @Override
+    public Map<CBORObject, CBORObject> toValueAsMap() {
+        return null;
+    }
+
+    @Override
+    public List<CBORObject> getValueAsList() {
+        return null;
     }
 
     @Override

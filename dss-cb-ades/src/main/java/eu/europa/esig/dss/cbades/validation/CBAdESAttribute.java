@@ -14,7 +14,7 @@ public class CBAdESAttribute implements SignatureAttribute {
     private static final long serialVersionUID = 4718268120160172246L;
 
     /** Id of the header */
-    protected Long headerId;
+    protected CBORObject headerId;
 
     /** The header's value */
     protected CBORObject value;
@@ -25,10 +25,10 @@ public class CBAdESAttribute implements SignatureAttribute {
     /**
      * Default constructor
      *
-     * @param headerId {@link Long} header id
+     * @param headerId {@link CBORObject} header id
      * @param value {@link CBORObject} value
      */
-    public CBAdESAttribute(Long headerId, CBORObject value) {
+    public CBAdESAttribute(CBORObject headerId, CBORObject value) {
         this.headerId = headerId;
         this.value = value;
     }
@@ -36,9 +36,9 @@ public class CBAdESAttribute implements SignatureAttribute {
     /**
      * Gets the header's id
      *
-     * @return {@link Long}
+     * @return {@link CBORObject}
      */
-    public Long getHeaderId() {
+    public CBORObject getHeaderId() {
         return headerId;
     }
 

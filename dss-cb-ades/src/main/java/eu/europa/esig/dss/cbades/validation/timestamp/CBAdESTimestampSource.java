@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.validation.timestamp;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -78,7 +78,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isContentTimestamp(CBAdESAttribute signedAttribute) {
-        return COSEConstants.ADO_TST == signedAttribute.getHeaderId();
+        return COSEHeaderParameters.ADO_TST.cbor().equals(signedAttribute.getHeaderId());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isSignatureTimestamp(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.SIG_TST == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.SIG_TST.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
@@ -123,12 +123,12 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isRefsOnlyTimestamp(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.RFS_TST == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.RFS_TST.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
     protected boolean isSigAndRefsTimestamp(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.SIG_R_TST == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.SIG_R_TST.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
@@ -157,7 +157,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isArchiveTimestamp(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.ARC_TST == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.ARC_TST.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
@@ -168,25 +168,25 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isAnyValidationData(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.VAL_DATA == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.VAL_DATA.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
     protected boolean isValidationDataReferences(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.REFS == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.REFS.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
     protected boolean isCounterSignature(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.COUNTER_SIGNATURE == unsignedAttribute.getHeaderId() ||
-                COSEConstants.COUNTER_SIGNATURE0 == unsignedAttribute.getHeaderId() ||
-                COSEConstants.COUNTER_SIGNATURE_V2 == unsignedAttribute.getHeaderId() ||
-                COSEConstants.COUNTER_SIGNATURE0_V2 == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.COUNTER_SIGNATURE.cbor().equals(unsignedAttribute.getHeaderId()) ||
+                COSEHeaderParameters.COUNTER_SIGNATURE0.cbor().equals(unsignedAttribute.getHeaderId()) ||
+                COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor().equals(unsignedAttribute.getHeaderId()) ||
+                COSEHeaderParameters.COUNTER_SIGNATURE0_V2.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
     protected boolean isSignaturePolicyStore(CBAdESAttribute unsignedAttribute) {
-        return COSEConstants.SIG_PST == unsignedAttribute.getHeaderId();
+        return COSEHeaderParameters.SIG_PST.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
@@ -216,7 +216,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
                                                         TimestampType timestampType, List<TimestampedReference> references) {
         final List<TimestampToken> result = new LinkedList<>();
         if (tstContainer != null && tstContainer.isMap()) {
-            CBORArray tstTokens = ((CBORMap) tstContainer).getAsArray(COSEConstants.TST_CONTAINER_TST_TOKENS);
+            CBORArray tstTokens = ((CBORMap) tstContainer).getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
             if (tstTokens != null && !tstTokens.isEmpty()) {
                 for (int i = 0; i < tstTokens.getSize(); i++) {
                     CBORMap tstToken = tstTokens.getAsMap(i);
@@ -240,7 +240,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
     private TimestampToken toTimestampToken(CBORMap tstToken, CBAdESAttribute signatureAttribute, Integer orderWithinAttribute,
                                             TimestampType timestampType, List<TimestampedReference> references) {
         if (tstToken != null) {
-            String encoding = tstToken.getAsString(COSEConstants.TST_TOKEN_ENCODING);
+            String encoding = tstToken.getAsString(COSEHeaderParameters.TST_TOKEN_ENCODING.cbor());
             if (Utils.isStringNotEmpty(encoding)) {
                 /*
                  * The tstToken's encoding member shall be an URI value and shall identify the encoding used for
@@ -251,7 +251,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
                 return null;
             }
 
-            byte[] tstTokenVal = tstToken.getAsBinaries(COSEConstants.TST_TOKEN_VAL);
+            byte[] tstTokenVal = tstToken.getAsBinaries(COSEHeaderParameters.TST_TOKEN_VAL.cbor());
             if (tstTokenVal != null) {
                 try {
                     final SignatureTimestampIdentifierBuilder identifierBuilder = new SignatureTimestampIdentifierBuilder(tstTokenVal)
@@ -287,10 +287,10 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         CBORObject valData = unsignedAttribute.getValue();
         if (valData.isMap()) {
             CBORMap valDataMap = (CBORMap) valData;
-            CBORArray xVals = valDataMap.getAsArray(COSEConstants.VAL_DATA_X_VALS);
+            CBORArray xVals = valDataMap.getAsArray(COSEHeaderParameters.VAL_DATA_X_VALS.cbor());
             if (xVals != null && !xVals.isEmpty()) {
                 List<Identifier> certificateIdentifiers = new ArrayList<>();
-                for (CBORObject encapsulatedCert : xVals.getItems()) {
+                for (CBORObject encapsulatedCert : xVals.getValueAsList()) {
                     CertificateToken certificateToken = toCertificateToken(encapsulatedCert);
                     if (certificateToken != null) {
                         certificateIdentifiers.add(certificateToken.getDSSId());
@@ -309,7 +309,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         if (encapsulatedCert.isMap()) {
             CBORMap x509OrOther = (CBORMap) encapsulatedCert;
 
-            CBORMap pkiOb = x509OrOther.getAsMap(COSEConstants.X509_OR_OTHER_X509_CERT);
+            CBORMap pkiOb = x509OrOther.getAsMap(COSEHeaderParameters.X509_OR_OTHER_X509_CERT.cbor());
             byte[] val = CBAdESUtils.extractDerEncodedPkiObject(pkiOb);
             if (Utils.isArrayNotEmpty(val)) {
                 try {
@@ -320,7 +320,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
                 }
             }
 
-            CBORMap otherCert = x509OrOther.getAsMap(COSEConstants.X509_OR_OTHER_OTHER_CERT);
+            CBORMap otherCert = x509OrOther.getAsMap(COSEHeaderParameters.X509_OR_OTHER_OTHER_CERT.cbor());
             if (otherCert != null) {
                 LOG.warn("The header 'otherCert' is not supported! The entry is skipped.");
             }
@@ -336,12 +336,12 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         CBORObject valData = unsignedAttribute.getValue();
         if (valData.isMap()) {
             CBORMap valDataMap = (CBORMap) valData;
-            CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+            CBORMap rVals = valDataMap.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
             if (rVals != null && !rVals.isEmpty()) {
-                CBORArray crlVals = rVals.getAsArray(COSEConstants.R_VALS_CRL_VALS);
+                CBORArray crlVals = rVals.getAsArray(COSEHeaderParameters.R_VALS_CRL_VALS.cbor());
                 if (crlVals != null && !crlVals.isEmpty()) {
                     List<CRLBinary> crlIdentifiers = new ArrayList<>();
-                    for (CBORObject pkiOb : crlVals.getItems()) {
+                    for (CBORObject pkiOb : crlVals.getValueAsList()) {
                         if (pkiOb.isMap()) {
                             CRLBinary crlBinary = toCRLBinary(pkiOb);
                             if (crlBinary != null) {
@@ -389,13 +389,13 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         CBORObject valData = unsignedAttribute.getValue();
         if (valData.isMap()) {
             CBORMap valDataMap = (CBORMap) valData;
-            CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+            CBORMap rVals = valDataMap.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
             if (rVals != null && !rVals.isEmpty()) {
                 List<OCSPResponseBinary> ocspIdentifiers = new ArrayList<>();
 
-                CBORArray ocspVals = rVals.getAsArray(COSEConstants.R_VALS_OCSP_VALS);
+                CBORArray ocspVals = rVals.getAsArray(COSEHeaderParameters.R_VALS_OCSP_VALS.cbor());
                 if (ocspVals != null && !ocspVals.isEmpty()) {
-                    for (CBORObject pkiOb : ocspVals.getItems()) {
+                    for (CBORObject pkiOb : ocspVals.getValueAsList()) {
                         if (pkiOb.isMap()) {
                             OCSPResponseBinary ocspResponseBinary = toOCSPResponseBinary(pkiOb);
                             if (ocspResponseBinary != null) {
@@ -444,10 +444,10 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         if (refs.isMap()) {
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORArray xRefs = refsMap.getAsArray(COSEConstants.REFS_X_REFS);
+                CBORArray xRefs = refsMap.getAsArray(COSEHeaderParameters.REFS_X_REFS.cbor());
                 if (xRefs != null && !xRefs.isEmpty()) {
                     List<CertificateRef> certificateRefs = new ArrayList<>();
-                    for (CBORObject item : xRefs.getItems()) {
+                    for (CBORObject item : xRefs.getValueAsList()) {
                         if (item.isMap()) {
                             CBORMap certId = (CBORMap) item;
                             CertificateRef certificateRef = CBAdESUtils.fromCertId(certId);
@@ -474,12 +474,12 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         if (refs.isMap()) {
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORMap rRefs = refsMap.getAsMap(COSEConstants.REFS_R_REFS);
+                CBORMap rRefs = refsMap.getAsMap(COSEHeaderParameters.REFS_R_REFS.cbor());
                 if (rRefs != null && !rRefs.isEmpty()) {
-                    CBORArray crlRefs = rRefs.getAsArray(COSEConstants.R_REFS_CRL_REF);
+                    CBORArray crlRefs = rRefs.getAsArray(COSEHeaderParameters.R_REFS_CRL_REF.cbor());
                     if (crlRefs != null) {
                         List<CRLRef> result = new ArrayList<>();
-                        for (CBORObject item : crlRefs.getItems()) {
+                        for (CBORObject item : crlRefs.getValueAsList()) {
                             if (item.isMap()) {
                                 CBORMap crlRefMap = (CBORMap) item;
                                 CRLRef crlRef = CBAdESUtils.createCRLRef(crlRefMap);
@@ -507,12 +507,12 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
         if (refs.isMap()) {
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORMap rRefs = refsMap.getAsMap(COSEConstants.REFS_R_REFS);
+                CBORMap rRefs = refsMap.getAsMap(COSEHeaderParameters.REFS_R_REFS.cbor());
                 if (rRefs != null && !rRefs.isEmpty()) {
-                    CBORArray ocspRefs = rRefs.getAsArray(COSEConstants.R_REFS_OCSP_REF);
+                    CBORArray ocspRefs = rRefs.getAsArray(COSEHeaderParameters.R_REFS_OCSP_REF.cbor());
                     if (ocspRefs != null) {
                         List<OCSPRef> result = new ArrayList<>();
-                        for (CBORObject item : ocspRefs.getItems()) {
+                        for (CBORObject item : ocspRefs.getValueAsList()) {
                             if (item.isMap()) {
                                 CBORMap ocspRefMap = (CBORMap) item;
                                 OCSPRef ocspRef = CBAdESUtils.createOCSPRef(ocspRefMap);

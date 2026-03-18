@@ -2,7 +2,7 @@ package eu.europa.esig.dss.cbades.validation.timestamp;
 
 import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
@@ -188,7 +188,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
     }
 
     private void writePayloadValue(DSSMessageDigestCalculator digestCalculator) {
-        digestCalculator.update(getPayload().getBytes());
+        digestCalculator.update(getPayload().getValueAsBytes());
     }
 
     private CBORByteString getPayload() {
@@ -297,7 +297,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              */
             CBAdESUHeaders uHeaders = signature.getUHeaders();
             List<CBAdESUHeadersComponent> uHeadersToBeCovered = getUHeadersToBeCovered(uHeaders,
-                    COSEConstants.SIG_TST, COSEConstants.REFS);
+                    COSEHeaderParameters.SIG_TST.cbor(), COSEHeaderParameters.REFS.cbor());
             if (Utils.isCollectionNotEmpty(uHeadersToBeCovered)) {
                 for (CBAdESUHeadersComponent uHeaderComponent : uHeadersToBeCovered) {
                     digestCalculator.update(getUHeadersComponentValue(uHeaderComponent));
@@ -394,7 +394,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              */
             CBAdESUHeaders uHeaders = signature.getUHeaders();
             List<CBAdESUHeadersComponent> uHeadersToBeCovered = getUHeadersToBeCovered(uHeaders,
-                    COSEConstants.SIG_TST, COSEConstants.REFS);
+                    COSEHeaderParameters.SIG_TST.cbor(), COSEHeaderParameters.REFS.cbor());
             if (Utils.isCollectionNotEmpty(uHeadersToBeCovered)) {
                 for (CBAdESUHeadersComponent uHeaderComponent : uHeadersToBeCovered) {
                     digestCalculator.update(getUHeadersComponentValue(uHeaderComponent));
@@ -611,20 +611,20 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
         return DSSMessageDigest.createEmptyDigest();
     }
 
-    private List<CBAdESUHeadersComponent> getUHeadersToBeCovered(CBAdESUHeaders uHeaders, Long... allowedTypes) {
+    private List<CBAdESUHeadersComponent> getUHeadersToBeCovered(CBAdESUHeaders uHeaders, CBORObject... allowedTypes) {
         if (uHeaders != null && uHeaders.isExist()) {
             return uHeaders.getAttributes().stream().filter(h -> isAllowedTypeEntry(h, allowedTypes)).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    private boolean isAllowedTypeEntry(CBAdESUHeadersComponent uHeaderComponent, Long... allowedTypes) {
+    private boolean isAllowedTypeEntry(CBAdESUHeadersComponent uHeaderComponent, CBORObject... allowedTypes) {
         return Arrays.asList(allowedTypes).contains(uHeaderComponent.getHeaderId());
     }
 
     private byte[] getUHeadersComponentValue(CBAdESUHeadersComponent uHeaderComponent) {
         CBORObject component = uHeaderComponent.getComponent();
-        return ((CBORByteString) component).getBytes();
+        return ((CBORByteString) component).getValueAsBytes();
     }
     
 }

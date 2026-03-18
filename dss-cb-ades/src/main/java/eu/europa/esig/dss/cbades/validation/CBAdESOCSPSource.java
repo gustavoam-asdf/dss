@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -48,11 +48,11 @@ public class CBAdESOCSPSource extends OfflineOCSPSource {
     }
 
     private void extractValidationData(CBAdESAttribute attribute) {
-        if (COSEConstants.VAL_DATA == attribute.getHeaderId()) {
+        if (COSEHeaderParameters.VAL_DATA.cbor().equals(attribute.getHeaderId())) {
             CBORObject valData = attribute.getValue();
             if (valData.isMap()) {
                 CBORMap valDataMap = (CBORMap) valData;
-                CBORMap rVals = valDataMap.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+                CBORMap rVals = valDataMap.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
                 if (rVals != null && !rVals.isEmpty()) {
                     extractRevocationValues(rVals, RevocationOrigin.ANY_VALIDATION_DATA);
                 }
@@ -63,9 +63,9 @@ public class CBAdESOCSPSource extends OfflineOCSPSource {
     }
 
     private void extractRevocationValues(CBORMap rVals, RevocationOrigin origin) {
-        CBORArray ocspVals = rVals.getAsArray(COSEConstants.R_VALS_OCSP_VALS);
+        CBORArray ocspVals = rVals.getAsArray(COSEHeaderParameters.R_VALS_OCSP_VALS.cbor());
         if (ocspVals != null && !ocspVals.isEmpty()) {
-            for (CBORObject pkiOb : ocspVals.getItems()) {
+            for (CBORObject pkiOb : ocspVals.getValueAsList()) {
                 if (pkiOb.isMap()) {
                     extractOCSP((CBORMap) pkiOb, origin);
                 } else {
@@ -88,11 +88,11 @@ public class CBAdESOCSPSource extends OfflineOCSPSource {
     }
 
     private void extractCompleteRevocationRefs(CBAdESAttribute attribute) {
-        if (COSEConstants.REFS == attribute.getHeaderId()) {
+        if (COSEHeaderParameters.REFS.cbor().equals(attribute.getHeaderId())) {
             CBORObject refs = attribute.getValue();
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORMap rRefs = refsMap.getAsMap(COSEConstants.REFS_R_REFS);
+                CBORMap rRefs = refsMap.getAsMap(COSEHeaderParameters.REFS_R_REFS.cbor());
                 if (rRefs != null && !rRefs.isEmpty()) {
                     extractRevocationRefs(rRefs, RevocationRefOrigin.COMPLETE_REVOCATION_REFS);
                 }
@@ -103,9 +103,9 @@ public class CBAdESOCSPSource extends OfflineOCSPSource {
     }
 
     private void extractRevocationRefs(CBORMap rRefs, RevocationRefOrigin origin) {
-        CBORArray ocspRefs = rRefs.getAsArray(COSEConstants.R_REFS_OCSP_REF);
+        CBORArray ocspRefs = rRefs.getAsArray(COSEHeaderParameters.R_REFS_OCSP_REF.cbor());
         if (ocspRefs != null) {
-            for (CBORObject ocspRefObject : ocspRefs.getItems()) {
+            for (CBORObject ocspRefObject : ocspRefs.getValueAsList()) {
                 if (ocspRefObject.isMap()) {
                     CBORMap ocspRefMap = (CBORMap) ocspRefObject;
                     OCSPRef ocspRef = CBAdESUtils.createOCSPRef(ocspRefMap);

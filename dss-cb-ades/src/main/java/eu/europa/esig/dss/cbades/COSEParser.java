@@ -156,7 +156,7 @@ public class COSEParser extends AbstractCOSEParser {
     }
 
     private COSESign parseCOSESign(CBORArray cborArray) {
-        List<CBORObject> dataItems = cborArray.getItems();
+        List<CBORObject> dataItems = cborArray.getValueAsList();
         if (Utils.collectionSize(dataItems) != 4) {
             throw new IllegalInputException("COSE_Sign array must have 4 entries!");
         }
@@ -201,7 +201,7 @@ public class COSEParser extends AbstractCOSEParser {
             throw new IllegalInputException("COSE_Sign.signatures array is empty!");
         }
         final List<COSESignature> signatures = new ArrayList<>();
-        for (CBORObject cborObject : signaturesArray.getItems()) {
+        for (CBORObject cborObject : signaturesArray.getValueAsList()) {
             signatures.add(parseSignature(cborObject));
         }
         return signatures;
@@ -212,7 +212,7 @@ public class COSEParser extends AbstractCOSEParser {
             throw new IllegalInputException("COSE_Sign.signatures COSE_Signature entry must be an array!");
         }
         CBORArray cborArray = (CBORArray) coseSignatureItem;
-        List<CBORObject> arrayItems = cborArray.getItems();
+        List<CBORObject> arrayItems = cborArray.getValueAsList();
         if (Utils.collectionSize(arrayItems) != 3) {
             throw new IllegalInputException("COSE_Sign.signatures COSE_Signature array must have 3 entries!");
         }
@@ -236,7 +236,7 @@ public class COSEParser extends AbstractCOSEParser {
     }
 
     private COSESign1 parseCOSESign1(CBORArray cborArray) {
-        List<CBORObject> arrayItems = cborArray.getItems();
+        List<CBORObject> arrayItems = cborArray.getValueAsList();
         if (Utils.collectionSize(arrayItems) != 4) {
             throw new IllegalInputException("COSE_Sign1 array must have 4 entries!");
         }
@@ -267,7 +267,7 @@ public class COSEParser extends AbstractCOSEParser {
     }
 
     private void assertValidCOSEStructure(CBORArray cborArray) {
-        List<CBORObject> arrayItems = cborArray.getItems();
+        List<CBORObject> arrayItems = cborArray.getValueAsList();
         if (Utils.collectionSize(arrayItems) != 4) {
             throw new IllegalInputException("COSE structure array must have 4 entries!");
         }
@@ -286,7 +286,7 @@ public class COSEParser extends AbstractCOSEParser {
     }
 
     private boolean isCOSESign(CBORArray cborArray) {
-        List<CBORObject> arrayItems = cborArray.getItems();
+        List<CBORObject> arrayItems = cborArray.getValueAsList();
         CBORObject signaturesItem = arrayItems.get(3);
         if (signaturesItem.isArray()) {
             // COSE_Sign

@@ -33,7 +33,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
     @Override
     protected CBORByteString getPayload(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject payloadObject = cose.getItems().get(2);
+        CBORObject payloadObject = cose.getValueAsList().get(2);
         assertTrue(payloadObject.isByteString());
 
         return (CBORByteString) payloadObject;
@@ -41,7 +41,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
 
     protected CBORByteString getBodyProtectedHeader(byte[] byteArray) {
         CBORArray cose = getCose(byteArray);
-        CBORObject protectedHeader = cose.getItems().get(0);
+        CBORObject protectedHeader = cose.getValueAsList().get(0);
         assertTrue(protectedHeader.isByteString());
 
         return (CBORByteString) protectedHeader;
@@ -51,7 +51,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
     protected CBORByteString getProtectedHeader(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
         CBORArray coseSignature = getCoseSignature(cose);
-        CBORObject protectedHeader = coseSignature.getItems().get(0);
+        CBORObject protectedHeader = coseSignature.getValueAsList().get(0);
         assertTrue(protectedHeader.isByteString());
 
         return (CBORByteString) protectedHeader;
@@ -61,7 +61,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
     protected CBORByteString getSignatureValue(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
         CBORArray coseSignature = getCoseSignature(cose);
-        CBORObject signature = coseSignature.getItems().get(2);
+        CBORObject signature = coseSignature.getValueAsList().get(2);
         assertTrue(signature.isByteString());
 
         return (CBORByteString) signature;
@@ -69,7 +69,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
 
     protected CBORMap getBodyUnprotectedHeader(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject unprotectedHeader = cose.getItems().get(1);
+        CBORObject unprotectedHeader = cose.getValueAsList().get(1);
         assertTrue(unprotectedHeader.isMap());
 
         return (CBORMap) unprotectedHeader;
@@ -79,7 +79,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
     protected CBORMap getUnprotectedHeader(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
         CBORArray coseSignature = getCoseSignature(cose);
-        CBORObject unprotectedHeader = coseSignature.getItems().get(1);
+        CBORObject unprotectedHeader = coseSignature.getValueAsList().get(1);
         assertTrue(unprotectedHeader.isMap());
 
         return (CBORMap) unprotectedHeader;
@@ -94,7 +94,7 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
     }
 
     private CBORArray getCoseSignature(CBORArray cose) {
-        CBORObject signatures = cose.getItems().get(3);
+        CBORObject signatures = cose.getValueAsList().get(3);
         assertTrue(signatures.isArray());
 
         CBORArray signaturesArray = (CBORArray) signatures;
@@ -108,9 +108,9 @@ public abstract class AbstractCBAdESCoseSignRequirementsCheck extends AbstractCB
 
     protected void checkBodyProtectedHeader(CBORByteString bodyProtectedHeader) {
         assertNotNull(bodyProtectedHeader);
-        assertTrue(Utils.isArrayNotEmpty(bodyProtectedHeader.getBytes()));
+        assertTrue(Utils.isArrayNotEmpty(bodyProtectedHeader.getValueAsBytes()));
 
-        CBORObject protectedHeaderObject = CBORUtils.parseCbor(bodyProtectedHeader.getBytes());
+        CBORObject protectedHeaderObject = CBORUtils.parseCbor(bodyProtectedHeader.getValueAsBytes());
         assertTrue(protectedHeaderObject.isMap());
 
         CBORMap protectedHeaderMap = (CBORMap) protectedHeaderObject;

@@ -3,6 +3,7 @@ package eu.europa.esig.dss.cbades.validation;
 import eu.europa.esig.dss.cbades.CBAdESSignatureIntegrityValidator;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
@@ -199,9 +200,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public Date getSigningTime() {
-        CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEConstants.CWT_CLAIMS);
+        CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.CWT_CLAIMS.cbor());
         if (cwtClaims != null && !cwtClaims.isEmpty()) {
-            CBORObject iatHeader = cwtClaims.getHeader(COSEConstants.CWT_CLAIMS_IAT);
+            CBORObject iatHeader = cwtClaims.getHeader(COSEHeaderParameters.CWT_CLAIMS_IAT.cbor());
             if (iatHeader != null) {
                 long timeValueInMilliseconds;
                 if (iatHeader.isUnsignedInteger() || iatHeader.isNegativeInteger()) {
@@ -237,9 +238,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
          * name>/<subtype-name>", where <type-name> and <subtype-name> are
          * defined in Section 4.2 of [RFC6838].
          */
-        String value = cose.getProtectedHeaderValueAsString(COSEConstants.CONTENT_TYPE);
+        String value = cose.getProtectedHeaderValueAsString(COSEHeaderParameters.CONTENT_TYPE.cbor());
         if (Utils.isStringEmpty(value)) {
-            Long valueAsLong = cose.getProtectedHeaderValueAsLong(COSEConstants.CONTENT_TYPE);
+            Long valueAsLong = cose.getProtectedHeaderValueAsLong(COSEHeaderParameters.CONTENT_TYPE.cbor());
             if (valueAsLong != null) {
                 // TODO : add support of 'content type' of uint type
                 LOG.warn("'content type' protected header of UnsignedInteger type is not supported by implementation");
@@ -257,15 +258,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public SignatureProductionPlace getSignatureProductionPlace() {
-        CBORMap sigPl = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_PL);
+        CBORMap sigPl = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_PL.cbor());
         if (sigPl != null && !sigPl.isEmpty()) {
             SignatureProductionPlace result = new SignatureProductionPlace();
-            result.setCountryName(sigPl.getAsString(COSEConstants.SIG_PL_ADDRESS_COUNTRY));
-            result.setCity(sigPl.getAsString(COSEConstants.SIG_PL_ADDRESS_LOCALITY));
-            result.setStateOrProvince(sigPl.getAsString(COSEConstants.SIG_PL_ADDRESS_REGION));
-            result.setPostOfficeBoxNumber(sigPl.getAsString(COSEConstants.SIG_PL_POST_OFFICE_BOX_NUMBER));
-            result.setPostalCode(sigPl.getAsString(COSEConstants.SIG_PL_POSTAL_CODE));
-            result.setStreetAddress(sigPl.getAsString(COSEConstants.SIG_PL_STREET_ADDRESS));
+            result.setCountryName(sigPl.getAsString(COSEHeaderParameters.SIG_PL_ADDRESS_COUNTRY.cbor()));
+            result.setCity(sigPl.getAsString(COSEHeaderParameters.SIG_PL_ADDRESS_LOCALITY.cbor()));
+            result.setStateOrProvince(sigPl.getAsString(COSEHeaderParameters.SIG_PL_ADDRESS_REGION.cbor()));
+            result.setPostOfficeBoxNumber(sigPl.getAsString(COSEHeaderParameters.SIG_PL_POST_OFFICE_BOX_NUMBER.cbor()));
+            result.setPostalCode(sigPl.getAsString(COSEHeaderParameters.SIG_PL_POSTAL_CODE.cbor()));
+            result.setStreetAddress(sigPl.getAsString(COSEHeaderParameters.SIG_PL_STREET_ADDRESS.cbor()));
             return result;
         }
         return null;
@@ -274,9 +275,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public List<CommitmentTypeIndication> getCommitmentTypeIndications() {
         List<CommitmentTypeIndication> result = new ArrayList<>();
-        CBORArray srCms = cose.getProtectedHeaderValueAsArray(COSEConstants.SR_CMS);
+        CBORArray srCms = cose.getProtectedHeaderValueAsArray(COSEHeaderParameters.SR_CMS.cbor());
         if (srCms != null && !srCms.isEmpty()) {
-            for (CBORObject srCm : srCms.getItems()) {
+            for (CBORObject srCm : srCms.getValueAsList()) {
                 if (!srCm.isMap()) {
                     LOG.warn("Item of 'srCms' protected header shall be a type of CBOR Map! Found object of class : {}",
                             srCm.getClass().getSimpleName());
@@ -284,15 +285,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 }
                 CBORMap srCmMap = (CBORMap) srCm;
                 if (!srCmMap.isEmpty()) {
-                    CBORMap commId = srCmMap.getAsMap(COSEConstants.SR_CM_COMM_ID);
+                    CBORMap commId = srCmMap.getAsMap(COSEHeaderParameters.SR_CM_COMM_ID.cbor());
                     if (commId != null && !commId.isEmpty()) {
-                        String oid = commId.getAsString(COSEConstants.OID_ID);
+                        String oid = commId.getAsString(COSEHeaderParameters.OID_ID.cbor());
                         oid = DSSUtils.getObjectIdentifierValue(oid);
                         if (Utils.isStringNotBlank(oid)) {
                             CommitmentTypeIndication commitmentTypeIndication = new CommitmentTypeIndication(oid);
-                            String desc = commId.getAsString(COSEConstants.OID_DESC);
+                            String desc = commId.getAsString(COSEHeaderParameters.OID_DESC.cbor());
                             commitmentTypeIndication.setDescription(desc);
-                            CBORArray docRefs = commId.getAsArray(COSEConstants.OID_DOC_REFS);
+                            CBORArray docRefs = commId.getAsArray(COSEHeaderParameters.OID_DOC_REFS.cbor());
                             if (docRefs != null && !docRefs.isEmpty()) {
                                 commitmentTypeIndication.setDocumentReferences(docRefs.toListOfStrings());
                             }
@@ -313,9 +314,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         List<SignerRole> result = new ArrayList<>();
         CBORMap srAts = getSignerAttributes();
         if (srAts != null && !srAts.isEmpty()) {
-            CBORArray certifiedAttrs = srAts.getAsArray(COSEConstants.SR_ATS_CERTIFIED_ATTRS);
+            CBORArray certifiedAttrs = srAts.getAsArray(COSEHeaderParameters.SR_ATS_CERTIFIED_ATTRS.cbor());
             if (certifiedAttrs != null && !certifiedAttrs.isEmpty()) {
-                for (CBORObject certifiedItem : certifiedAttrs.getItems()) {
+                for (CBORObject certifiedItem : certifiedAttrs.getValueAsList()) {
                     String certifiedVal = getCertifiedVal(certifiedItem);
                     if (Utils.isStringNotEmpty(certifiedVal)) {
                         result.add(new SignerRole(certifiedVal, EndorsementType.CERTIFIED));
@@ -333,9 +334,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         }
 
         CBORMap certifiedItemMap = (CBORMap) certifiedItem;
-        CBORMap x509AttrCert = certifiedItemMap.getAsMap(COSEConstants.CERTIFIED_ATTR_X509_ATTR_CERT);
+        CBORMap x509AttrCert = certifiedItemMap.getAsMap(COSEHeaderParameters.CERTIFIED_ATTR_X509_ATTR_CERT.cbor());
         if (x509AttrCert != null && !x509AttrCert.isEmpty()) {
-            byte[] pkiObVal = x509AttrCert.getAsBinaries(COSEConstants.PKI_OB_VAL);
+            byte[] pkiObVal = x509AttrCert.getAsBinaries(COSEHeaderParameters.PKI_OB_VAL.cbor());
             if (pkiObVal != null) {
                 // TODO : support other encodings ?
                 // DER encoding by default -> return b64
@@ -343,7 +344,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             }
         }
 
-        CBORMap otherAttrCert = certifiedItemMap.getAsMap(COSEConstants.CERTIFIED_ATTR_OTHER_ATTR_CERT);
+        CBORMap otherAttrCert = certifiedItemMap.getAsMap(COSEHeaderParameters.CERTIFIED_ATTR_OTHER_ATTR_CERT.cbor());
         if (otherAttrCert != null && !otherAttrCert.isEmpty()) {
             LOG.warn("Unsupported 'otherAttrCert' type found.");
             return null;
@@ -357,7 +358,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     public List<SignerRole> getClaimedSignerRoles() {
         CBORMap srAts = getSignerAttributes();
         if (srAts != null && !srAts.isEmpty()) {
-            CBORArray claimed = srAts.getAsArray(COSEConstants.SR_ATS_CLAIMED);
+            CBORArray claimed = srAts.getAsArray(COSEHeaderParameters.SR_ATS_CLAIMED.cbor());
             if (claimed != null && !claimed.isEmpty()) {
                 return getSignerRoles(claimed, EndorsementType.CLAIMED);
             }
@@ -369,7 +370,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     public List<SignerRole> getSignedAssertions() {
         CBORMap srAts = getSignerAttributes();
         if (srAts != null && !srAts.isEmpty()) {
-            CBORArray signedAssertions = srAts.getAsArray(COSEConstants.SR_ATS_SIGNED_ASSERTIONS);
+            CBORArray signedAssertions = srAts.getAsArray(COSEHeaderParameters.SR_ATS_SIGNED_ASSERTIONS.cbor());
             if (signedAssertions != null && !signedAssertions.isEmpty()) {
                 return getSignerRoles(signedAssertions, EndorsementType.SIGNED);
             }
@@ -387,7 +388,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
              * 	qVals : [+any]	;Array with the claimed attributes or signed assertions
              * ]
              */
-            for (CBORObject notCertifiedItem : attrArrays.getItems()) {
+            for (CBORObject notCertifiedItem : attrArrays.getValueAsList()) {
                 try {
                     if (!notCertifiedItem.isArray()) {
                         LOG.warn("'NotCertifiedItem' item of 'AttrArrays' CBOR array shall be of CBOR Array type.");
@@ -396,12 +397,12 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                     CBORArray notCertifiedItemArray = (CBORArray) notCertifiedItem;
                     CBORArray qVals = notCertifiedItemArray.getAsArray(COSEConstants.NOT_CERTIFIED_ITEM_QVALS);
                     if (qVals != null) {
-                        for (CBORObject val : qVals.getItems()) {
+                        for (CBORObject val : qVals.getValueAsList()) {
                             if (val.isUnicodeString()) {
                                 result.add(new SignerRole(((CBORSimpleObject) val).getValueAsString(), category));
                             } else if (val.isByteString()) {
                                 LOG.debug("Item of 'qVals' array is of ByteString type found. Return base64-encoded value.");
-                                result.add(new SignerRole(Utils.toBase64(((CBORByteString) val).getBytes()), category));
+                                result.add(new SignerRole(Utils.toBase64(((CBORByteString) val).getValueAsBytes()), category));
                             } else if (val.isNegativeInteger() || val.isUnsignedInteger()) {
                                 LOG.debug("Item of 'qVals' array is of NegativeInteger or UnsignedInteger type found. " +
                                         "Convert to String value.");
@@ -430,22 +431,22 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private CBORMap getSignerAttributes() {
-        return cose.getProtectedHeaderValueAsMap(COSEConstants.SR_ATS);
+        return cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SR_ATS.cbor());
     }
 
     @Override
     protected SignaturePolicy buildSignaturePolicy() {
-        CBORMap sigPId = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_PID);
+        CBORMap sigPId = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_PID.cbor());
         if (sigPId != null && !sigPId.isEmpty()) {
-            CBORMap sigPOid = sigPId.getAsMap(COSEConstants.SIG_P_ID_ID);
+            CBORMap sigPOid = sigPId.getAsMap(COSEHeaderParameters.SIG_P_ID_ID.cbor());
             if (sigPOid != null && !sigPOid.isEmpty()) {
-                String oid = sigPOid.getAsString(COSEConstants.OID_ID);
+                String oid = sigPOid.getAsString(COSEHeaderParameters.OID_ID.cbor());
                 oid = DSSUtils.getObjectIdentifierValue(oid);
                 if (Utils.isStringNotBlank(oid)) {
                     signaturePolicy = new SignaturePolicy(oid);
-                    String desc = sigPOid.getAsString(COSEConstants.OID_DESC);
+                    String desc = sigPOid.getAsString(COSEHeaderParameters.OID_DESC.cbor());
                     signaturePolicy.setDescription(desc);
-                    CBORArray docRefs = sigPOid.getAsArray(COSEConstants.OID_DOC_REFS);
+                    CBORArray docRefs = sigPOid.getAsArray(COSEHeaderParameters.OID_DOC_REFS.cbor());
                     if (docRefs != null && !docRefs.isEmpty()) {
                         signaturePolicy.setDocumentationReferences(docRefs.toListOfStrings());
                     }
@@ -456,15 +457,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                     return null;
                 }
 
-                CBORArray digAlgVal = sigPId.getAsArray(COSEConstants.SIG_P_ID_DIG_ALG_VAL);
+                CBORArray digAlgVal = sigPId.getAsArray(COSEHeaderParameters.SIG_P_ID_DIG_ALG_VAL.cbor());
                 signaturePolicy.setDigest(CBAdESUtils.getDigestAlgAndVal(digAlgVal));
 
-                Boolean digPSp = sigPId.getAsBoolean(COSEConstants.SIG_P_ID_DIG_P_SP);
+                Boolean digPSp = sigPId.getAsBoolean(COSEHeaderParameters.SIG_P_ID_DIG_P_SP.cbor());
                 if (digPSp != null) {
                     signaturePolicy.setHashAsInTechnicalSpecification(digPSp);
                 }
 
-                CBORArray qualifiers = sigPId.getAsArray(COSEConstants.SIG_P_ID_SIG_P_QUALS);
+                CBORArray qualifiers = sigPId.getAsArray(COSEHeaderParameters.SIG_P_ID_SIG_P_QUALS.cbor());
                 if (qualifiers != null && !qualifiers.isEmpty()) {
                     signaturePolicy.setUri(getSPUri(qualifiers));
                     signaturePolicy.setUserNotice(getSPUserNotice(qualifiers));
@@ -478,14 +479,14 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     private String getSPUri(CBORArray qualifiers) {
         String spUri = null;
-        for (CBORObject qualifier : qualifiers.getItems()) {
+        for (CBORObject qualifier : qualifiers.getValueAsList()) {
             if (!qualifier.isMap()) {
                 LOG.warn("Item of 'sigPQuals' array shall be of type CBOR Map.");
                 continue;
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
             if (!qualifierMap.isEmpty()) {
-                String spUriStr = qualifierMap.getAsString(COSEConstants.SIG_P_QUAL_SP_URI);
+                String spUriStr = qualifierMap.getAsString(COSEHeaderParameters.SIG_P_QUAL_SP_URI.cbor());
                 if (Utils.isStringNotEmpty(spUriStr)) {
                     if (spUri == null) {
                         spUri = spUriStr;
@@ -500,13 +501,13 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     private UserNotice getSPUserNotice(CBORArray qualifiers) {
         UserNotice userNotice = null;
-        for (CBORObject qualifier : qualifiers.getItems()) {
+        for (CBORObject qualifier : qualifiers.getValueAsList()) {
             if (!qualifier.isMap()) {
                 // warn is logged before
                 continue;
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
-            CBORMap spUserNotice = qualifierMap.getAsMap(COSEConstants.SIG_P_QUAL_SP_USER_NOTICE);
+            CBORMap spUserNotice = qualifierMap.getAsMap(COSEHeaderParameters.SIG_P_QUAL_SP_USER_NOTICE.cbor());
             if (spUserNotice != null && !spUserNotice.isEmpty()) {
                 if (userNotice != null) {
                     LOG.warn("Multiple 'spUserNotice' qualifiers found. Only one entry is supported by the current implementation");
@@ -516,20 +517,20 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
                 try {
                     userNotice = new UserNotice();
 
-                    CBORMap noticeRef = spUserNotice.getAsMap(COSEConstants.SP_USER_NOTICE_NOTICE_REF);
+                    CBORMap noticeRef = spUserNotice.getAsMap(COSEHeaderParameters.SP_USER_NOTICE_NOTICE_REF.cbor());
                     if (noticeRef != null && !noticeRef.isEmpty()) {
-                        final String organization = noticeRef.getAsString(COSEConstants.NOTICE_REF_ORG);
+                        final String organization = noticeRef.getAsString(COSEHeaderParameters.NOTICE_REF_ORG.cbor());
                         if (Utils.isStringNotBlank(organization)) {
                             userNotice.setOrganization(organization);
                         }
 
-                        final CBORArray noticeNumbers = noticeRef.getAsArray(COSEConstants.NOTICE_REF_NOTICE_NUMBERS);
+                        final CBORArray noticeNumbers = noticeRef.getAsArray(COSEHeaderParameters.NOTICE_REF_NOTICE_NUMBERS.cbor());
                         if (noticeNumbers != null && !noticeNumbers.isEmpty()) {
                             userNotice.setNoticeNumbers(noticeNumbers.toListOfLongs().stream()
                                     .mapToInt(Number::intValue).toArray());
                         }
                     }
-                    final String explTest = spUserNotice.getAsString(COSEConstants.SP_USER_NOTICE_EXPL_TEXT);
+                    final String explTest = spUserNotice.getAsString(COSEHeaderParameters.SP_USER_NOTICE_EXPL_TEXT.cbor());
                     if (Utils.isStringNotBlank(explTest)) {
                         userNotice.setExplicitText(explTest);
                     }
@@ -549,27 +550,27 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     private SpDocSpecification getSPDSpec(CBORArray qualifiers) {
         SpDocSpecification spDocSpecification = null;
-        for (CBORObject qualifier : qualifiers.getItems()) {
+        for (CBORObject qualifier : qualifiers.getValueAsList()) {
             if (!qualifier.isMap()) {
                 // warn is logged before
                 continue;
             }
             CBORMap qualifierMap = (CBORMap) qualifier;
-            CBORMap spDSpec = qualifierMap.getAsMap(COSEConstants.SIG_P_QUAL_SP_D_SPEC);
+            CBORMap spDSpec = qualifierMap.getAsMap(COSEHeaderParameters.SIG_P_QUAL_SP_D_SPEC.cbor());
             if (spDSpec != null && !spDSpec.isEmpty()) {
                 if (spDocSpecification != null) {
                     LOG.warn("Multiple 'spDSpec' qualifiers found. Only one entry is supported by the current implementation");
                     continue;
                 }
 
-                String oid = spDSpec.getAsString(COSEConstants.OID_ID);
+                String oid = spDSpec.getAsString(COSEHeaderParameters.OID_ID.cbor());
                 oid = DSSUtils.getObjectIdentifierValue(oid);
                 if (Utils.isStringNotBlank(oid)) {
                     spDocSpecification = new SpDocSpecification();
                     spDocSpecification.setId(oid);
-                    String desc = spDSpec.getAsString(COSEConstants.OID_DESC);
+                    String desc = spDSpec.getAsString(COSEHeaderParameters.OID_DESC.cbor());
                     spDocSpecification.setDescription(desc);
-                    CBORArray docRefs = spDSpec.getAsArray(COSEConstants.OID_DOC_REFS);
+                    CBORArray docRefs = spDSpec.getAsArray(COSEHeaderParameters.OID_DOC_REFS.cbor());
                     if (docRefs != null && !docRefs.isEmpty()) {
                         spDocSpecification.setDocumentationReferences(docRefs.toListOfStrings().toArray(new String[] {}));
                     }
@@ -599,9 +600,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
      * @return {@link SigDMechanism}
      */
     public SigDMechanism getSigDMechanism() {
-        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_D.cbor());
         if (sigD != null && !sigD.isEmpty()) {
-            String mechanismUri = sigD.getAsString(COSEConstants.SIG_D_MID);
+            String mechanismUri = sigD.getAsString(COSEHeaderParameters.SIG_D_MID.cbor());
             if (Utils.isStringNotEmpty(mechanismUri)) {
                 SigDMechanism sigDMechanism = SigDMechanism.forCBAdESUri(mechanismUri);
                 if (sigDMechanism == null) {
@@ -811,9 +812,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private List<String> getSignedDataUriList() {
-        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_D.cbor());
         if (sigD != null && !sigD.isEmpty()) {
-            CBORArray pars = sigD.getAsArray(COSEConstants.SIG_D_PARS);
+            CBORArray pars = sigD.getAsArray(COSEHeaderParameters.SIG_D_PARS.cbor());
             if (pars != null && !pars.isEmpty()) {
                 return pars.toListOfStrings();
             } else {
@@ -824,9 +825,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private List<byte[]> getSignedDataHashList() {
-        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_D.cbor());
         if (sigD != null && !sigD.isEmpty()) {
-            CBORArray hashV = sigD.getAsArray(COSEConstants.SIG_D_HASH_V);
+            CBORArray hashV = sigD.getAsArray(COSEHeaderParameters.SIG_D_HASH_V.cbor());
             if (hashV != null && !hashV.isEmpty()) {
                 return hashV.toListOfBinaries();
             } else {
@@ -837,9 +838,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private List<String> getSignedDataContentTypeList() {
-        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_D.cbor());
         if (sigD != null && !sigD.isEmpty()) {
-            CBORArray ctys = sigD.getAsArray(COSEConstants.SIG_D_CTYS);
+            CBORArray ctys = sigD.getAsArray(COSEHeaderParameters.SIG_D_CTYS.cbor());
             if (ctys != null && !ctys.isEmpty()) {
                 return ctys.toListOfStrings();
             } else {
@@ -974,9 +975,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     }
 
     private DigestAlgorithm getDigestAlgorithmForDetachedContent() {
-        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = cose.getProtectedHeaderValueAsMap(COSEHeaderParameters.SIG_D.cbor());
         if (sigD != null && !sigD.isEmpty()) {
-            Long hashM = sigD.getAsLong(COSEConstants.SIG_D_HASH_M);
+            Long hashM = sigD.getAsLong(COSEHeaderParameters.SIG_D_HASH_M.cbor());
             if (hashM != null) {
                 DigestAlgorithm digestAlgorithm = CBORUtils.getDigestAlgorithmForCoseId(hashM);
                 if (digestAlgorithm != null) {
@@ -1120,7 +1121,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         COSEUnprotectedHeader bodyUnprotectedHeader = cose.getBodyUnprotectedHeader();
         COSEUnprotectedHeader signerUnprotectedHeader = cose.getSignerUnprotectedHeader();
         for (COSESignatureContext coseContext : COSESignatureContext.values()) {
-            Long headerKey = coseContext.getCounterSignatureHeaderKey();
+            CBORObject headerKey = coseContext.getCounterSignatureHeaderKey();
             if (headerKey != null) {
                 CBORObject headerValue = null;
                 boolean bodyStructure = false;

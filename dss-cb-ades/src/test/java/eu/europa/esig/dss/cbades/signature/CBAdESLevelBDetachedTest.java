@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
@@ -72,34 +72,34 @@ class CBAdESLevelBDetachedTest extends AbstractCBAdESTestSignature {
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        String cty = protectedHeader.getAsString(COSEConstants.CONTENT_TYPE);
+        String cty = protectedHeader.getAsString(COSEHeaderParameters.CONTENT_TYPE.cbor());
         assertNull(cty);
 
-        CBORMap sigD = protectedHeader.getAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = protectedHeader.getAsMap(COSEHeaderParameters.SIG_D.cbor());
         assertNotNull(sigD);
 
-        String mId = sigD.getAsString(COSEConstants.SIG_D_MID);
+        String mId = sigD.getAsString(COSEHeaderParameters.SIG_D_MID.cbor());
         assertNotNull(mId);
         assertEquals(SigDMechanism.OBJECT_ID_BY_URI_HASH.getCBAdESUri(), mId);
 
-        Long hashM = sigD.getAsLong(COSEConstants.SIG_D_HASH_M);
+        Long hashM = sigD.getAsLong(COSEHeaderParameters.SIG_D_HASH_M.cbor());
         assertNotNull(hashM);
         DigestAlgorithm digestAlgorithm = DigestAlgorithm.forCOSE(hashM);
         assertNotNull(digestAlgorithm);
 
-        CBORArray pars = sigD.getAsArray(COSEConstants.SIG_D_PARS);
+        CBORArray pars = sigD.getAsArray(COSEHeaderParameters.SIG_D_PARS.cbor());
         assertNotNull(pars);
         assertFalse(pars.isEmpty());
         assertEquals(1, pars.getSize());
         assertEquals(documentToSign.getName(), pars.getAsString(0));
 
-        CBORArray hashV = sigD.getAsArray(COSEConstants.SIG_D_HASH_V);
+        CBORArray hashV = sigD.getAsArray(COSEHeaderParameters.SIG_D_HASH_V.cbor());
         assertNotNull(hashV);
         assertFalse(hashV.isEmpty());
         assertEquals(1, hashV.getSize());
         assertArrayEquals(documentToSign.getDigestValue(digestAlgorithm), hashV.getAsBinaries(0));
 
-        CBORArray ctys = sigD.getAsArray(COSEConstants.SIG_D_CTYS);
+        CBORArray ctys = sigD.getAsArray(COSEHeaderParameters.SIG_D_CTYS.cbor());
         assertNotNull(ctys);
         assertFalse(ctys.isEmpty());
         assertEquals(1, ctys.getSize());

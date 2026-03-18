@@ -1,9 +1,9 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -160,7 +160,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
             coseCounterSignature = (COSECounterSignature) counterSignature.getCoseSignature().getSignerSignature();
         }
 
-        uHeaders.addComponent(COSEConstants.COUNTER_SIGNATURE_V2, coseCounterSignature.toCBORObject());
+        uHeaders.addComponent(COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor(), coseCounterSignature.toCBORObject());
 
         CBAdESSignature upperSignature = updateMasterSignatureRecursively(masterSignature);
         COSEStructure coseSignStructure = upperSignature.getCoseSignature().getCoseSignStructure();
@@ -169,7 +169,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     }
 
     private CBAdESSignature getCounterSignatureToExtend(COSECounterSignature coseCounterSignature) {
-        CBAdESSignature counterSignature = CBAdESUtils.buildCounterSignatures(masterSignature, COSEConstants.COUNTER_SIGNATURE_V2,
+        CBAdESSignature counterSignature = CBAdESUtils.buildCounterSignatures(masterSignature, COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor(),
                 coseCounterSignature.toCBORObject(), false).iterator().next();
         counterSignature.initBaselineRequirementsChecker(certificateVerifier);
         return counterSignature;

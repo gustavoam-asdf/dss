@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
@@ -75,10 +76,10 @@ class CBAdESLevelBCertificateChainOneCertTest extends AbstractCBAdESTestSignatur
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        CBORArray x5t = protectedHeader.getAsArray(COSEConstants.X5T);
+        CBORArray x5t = protectedHeader.getAsArray(COSEHeaderParameters.X5T.cbor());
         assertNull(x5t);
 
-        CBORArray x5ts = protectedHeader.getAsArray(COSEConstants.X5TS);
+        CBORArray x5ts = protectedHeader.getAsArray(COSEHeaderParameters.X5TS.cbor());
         assertNotNull(x5ts);
         assertEquals(1, x5ts.getSize());
 
@@ -94,10 +95,10 @@ class CBAdESLevelBCertificateChainOneCertTest extends AbstractCBAdESTestSignatur
         assertNotNull(hashValue);
         assertArrayEquals(DSSUtils.digest(digestAlgorithm, getSignatureParameters().getSigningCertificate().getEncoded()), hashValue);
 
-        CBORArray x5chainArray = protectedHeader.getAsArray(COSEConstants.X5CHAIN);
+        CBORArray x5chainArray = protectedHeader.getAsArray(COSEHeaderParameters.X5CHAIN.cbor());
         assertNull(x5chainArray);
 
-        byte[] x5ChainBinaries = protectedHeader.getAsBinaries(COSEConstants.X5CHAIN);
+        byte[] x5ChainBinaries = protectedHeader.getAsBinaries(COSEHeaderParameters.X5CHAIN.cbor());
         assertNotNull(x5ChainBinaries);
         assertArrayEquals(getSigningCert().getEncoded(), x5ChainBinaries);
     }

@@ -2,6 +2,9 @@ package eu.europa.esig.dss.cbades.cbor;
 
 import co.nstant.in.cbor.model.DataItem;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * This interface represents a wrapper for CBOR objects
  *
@@ -99,5 +102,54 @@ public interface CBORObject {
      * @return TRUE if the current CBOR object is of Array type, FALSE otherwise
      */
     boolean isArray();
+
+    /**
+     * Returns a {@code Long} value of the object, if supported
+     *
+     * @return {@link Long}
+     */
+    Long getValueAsLong();
+
+    /**
+     * Returns a {@code Double} value of the object, if supported
+     *
+     * @return {@link Double}
+     */
+    Double getValueAsDouble();
+
+    /**
+     * Returns a {@code String} value of the object, if supported
+     *
+     * @return {@link String}
+     */
+    String getValueAsString();
+
+    /**
+     * Returns a {@code Boolean} value of the object, if supported
+     *
+     * @return {@link Boolean}
+     */
+    Boolean getValueAsBoolean();
+
+    /**
+     * Returns a byte array value
+     *
+     * @return byte array
+     */
+    byte[] getValueAsBytes();
+
+    /**
+     * Returns a current object value as a map
+     *
+     * @return a map
+     */
+    Map<CBORObject, CBORObject> toValueAsMap();
+
+    /**
+     * Returns a list of embedded {@code CBORObject}s
+     *
+     * @return a list of {@link CBORObject}s
+     */
+    List<CBORObject> getValueAsList();
 
 }

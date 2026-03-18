@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -69,7 +69,7 @@ class CBAdESLevelLTACoseSign1CounterSignatureTest extends AbstractCBAdESCounterS
         CBORObject protectedHeader = coseSign1.getItem(0);
         assertTrue(protectedHeader.isByteString());
 
-        CBORObject parsedProtectedHeader = CBORUtils.parseCbor(((CBORByteString) protectedHeader).getBytes());
+        CBORObject parsedProtectedHeader = CBORUtils.parseCbor(protectedHeader.getValueAsBytes());
         assertNotNull(parsedProtectedHeader);
         assertTrue(parsedProtectedHeader.isMap());
         assertFalse(((CBORMap) parsedProtectedHeader).isEmpty());
@@ -81,7 +81,7 @@ class CBAdESLevelLTACoseSign1CounterSignatureTest extends AbstractCBAdESCounterS
         assertFalse(unprotectedHeaderMap.isEmpty());
         assertEquals(1, unprotectedHeaderMap.getSize());
 
-        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEConstants.U_HEADERS);
+        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
         assertNotNull(uHeaders);
         assertTrue(uHeaders.isArray());
 
@@ -93,11 +93,11 @@ class CBAdESLevelLTACoseSign1CounterSignatureTest extends AbstractCBAdESCounterS
         int arcTstCounter = 0;
         int counterSigCounter = 0;
 
-        for (CBORObject uHeadersComponent : uHeadersArray.getItems()) {
+        for (CBORObject uHeadersComponent : uHeadersArray.getValueAsList()) {
             assertTrue(uHeadersComponent.isByteString()); // cbor btsr encoded
             CBORByteString uHeaderBtsr = (CBORByteString) uHeadersComponent;
 
-            CBORObject uHeaderObject = CBORUtils.parseCbor(uHeaderBtsr.getBytes());
+            CBORObject uHeaderObject = CBORUtils.parseCbor(uHeaderBtsr.getValueAsBytes());
             assertNotNull(uHeaderObject);
             assertTrue(uHeaderObject.isMap());
 
@@ -105,27 +105,27 @@ class CBAdESLevelLTACoseSign1CounterSignatureTest extends AbstractCBAdESCounterS
             assertFalse(uHeaderObjectMap.isEmpty());
             assertEquals(1, uHeaderObjectMap.getSize());
 
-            CBORObject sigTst  = uHeaderObjectMap.getHeader(COSEConstants.SIG_TST);
+            CBORObject sigTst  = uHeaderObjectMap.getHeader(COSEHeaderParameters.SIG_TST.cbor());
             if (sigTst != null) {
                 ++sigTstCounter;
 
                 CBORMap tstContainer = (CBORMap) sigTst;
-                CBORArray tstTokens = tstContainer.getAsArray(COSEConstants.TST_CONTAINER_TST_TOKENS);
+                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
                 assertEquals(1, tstTokens.getSize());
             }
-            CBORObject valData  = uHeaderObjectMap.getHeader(COSEConstants.VAL_DATA);
+            CBORObject valData  = uHeaderObjectMap.getHeader(COSEHeaderParameters.VAL_DATA.cbor());
             if (valData != null) {
                 ++valDataCounter;
             }
-            CBORObject arcTst  = uHeaderObjectMap.getHeader(COSEConstants.ARC_TST);
+            CBORObject arcTst  = uHeaderObjectMap.getHeader(COSEHeaderParameters.ARC_TST.cbor());
             if (arcTst != null) {
                 ++arcTstCounter;
 
                 CBORMap tstContainer = (CBORMap) arcTst;
-                CBORArray tstTokens = tstContainer.getAsArray(COSEConstants.TST_CONTAINER_TST_TOKENS);
+                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
                 assertEquals(1, tstTokens.getSize());
             }
-            CBORObject counterSig  = uHeaderObjectMap.getHeader(COSEConstants.COUNTER_SIGNATURE_V2);
+            CBORObject counterSig  = uHeaderObjectMap.getHeader(COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor());
             if (counterSig != null) {
                 ++counterSigCounter;
 

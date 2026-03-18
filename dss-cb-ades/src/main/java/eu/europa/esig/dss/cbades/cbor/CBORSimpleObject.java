@@ -24,11 +24,7 @@ public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
         super(dataItem);
     }
 
-    /**
-     * Returns a {@code Long} value of the object, if supported
-     *
-     * @return {@link Long}
-     */
+    @Override
     public Long getValueAsLong() {
         if (isUnsignedInteger()) {
             return ((UnsignedInteger) toDataItem()).getValue().longValue();
@@ -38,11 +34,7 @@ public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
         return null;
     }
 
-    /**
-     * Returns a {@code Double} value of the object, if supported
-     *
-     * @return {@link Double}
-     */
+    @Override
     public Double getValueAsDouble() {
         if (isDoublePrecisionFloat()) {
             return ((DoublePrecisionFloat) toDataItem()).getValue();
@@ -52,11 +44,7 @@ public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
         return null;
     }
 
-    /**
-     * Returns a {@code String} value of the object, if supported
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getValueAsString() {
         if (isUnicodeString()) {
             return ((UnicodeString) toDataItem()).getString();
@@ -64,11 +52,7 @@ public class CBORSimpleObject extends AbstractCBORObject<DataItem> {
         return null;
     }
 
-    /**
-     * Returns a {@code Boolean} value of the object, if supported
-     *
-     * @return {@link Boolean}
-     */
+    @Override
     public Boolean getValueAsBoolean() {
         if (isBoolean()) {
             SimpleValueType simpleValueType = ((SimpleValue) toDataItem()).getSimpleValueType();

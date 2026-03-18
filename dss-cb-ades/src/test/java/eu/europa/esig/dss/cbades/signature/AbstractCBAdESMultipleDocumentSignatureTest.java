@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
@@ -163,28 +163,28 @@ public abstract class AbstractCBAdESMultipleDocumentSignatureTest extends
                 fail(String.format("Unsupported context '%s'!", cose.getContext()));
             }
 
-            Set<Long> keySet = protectedHeader.getKeys();
+            Set<CBORObject> keySet = protectedHeader.getKeys();
             assertTrue(Utils.isCollectionNotEmpty(keySet));
-            for (Long signedPropertyKey : keySet) {
+            for (CBORObject signedPropertyKey : keySet) {
                 assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyKey));
             }
 
-            CBORObject crit = protectedHeader.getHeader(COSEConstants.CRIT);
+            CBORObject crit = protectedHeader.getHeader(COSEHeaderParameters.CRIT.cbor());
             if (crit != null) {
                 assertTrue(crit.isArray());
                 assertInstanceOf(CBORArray.class, crit);
 
                 CBORArray critArray = (CBORArray) crit;
                 assertFalse(critArray.isEmpty());
-                for (CBORObject critItem : critArray.getItems()) {
+                for (CBORObject critItem : critArray.getValueAsList()) {
                     assertTrue(critItem.isUnsignedInteger() || critItem.isNegativeInteger());
                     assertInstanceOf(CBORSimpleObject.class, critItem);
 
-                    Long labelId = ((CBORSimpleObject) critItem).getValueAsLong();
+                    Long labelId = critItem.getValueAsLong();
                     assertNotNull(labelId);
 
-                    assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(labelId));
-                    assertTrue(CBORUtils.isRequiredCriticalHeader(labelId));
+                    assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(critItem));
+                    assertTrue(CBORUtils.isRequiredCriticalHeader(critItem));
                 }
             }
         }

@@ -14,7 +14,7 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
     @Override
     protected CBORByteString getPayload(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject payloadObject = cose.getItems().get(2);
+        CBORObject payloadObject = cose.getValueAsList().get(2);
         assertTrue(payloadObject.isByteString());
 
         return (CBORByteString) payloadObject;
@@ -23,7 +23,7 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
     @Override
     protected CBORByteString getProtectedHeader(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject protectedHeader = cose.getItems().get(0);
+        CBORObject protectedHeader = cose.getValueAsList().get(0);
         assertTrue(protectedHeader.isByteString());
 
         return (CBORByteString) protectedHeader;
@@ -32,7 +32,7 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
     @Override
     protected CBORByteString getSignatureValue(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject signature = cose.getItems().get(3);
+        CBORObject signature = cose.getValueAsList().get(3);
         assertTrue(signature.isByteString());
 
         return (CBORByteString) signature;
@@ -41,7 +41,7 @@ public abstract class AbstractCBAdESCoseSign1RequirementsCheck extends AbstractC
     @Override
     protected CBORMap getUnprotectedHeader(byte[] byteArray) throws Exception {
         CBORArray cose = getCose(byteArray);
-        CBORObject unprotectedHeader = cose.getItems().get(1);
+        CBORObject unprotectedHeader = cose.getValueAsList().get(1);
         assertTrue(unprotectedHeader.isMap());
 
         return (CBORMap) unprotectedHeader;

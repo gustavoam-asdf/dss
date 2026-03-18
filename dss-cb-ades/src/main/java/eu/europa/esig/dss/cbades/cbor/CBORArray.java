@@ -56,7 +56,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
 
     private static Array toArray(final List<?> list) {
         Array array = new Array(list.size());
-        list.forEach(l -> array.add(CBORUtils.toDataItem(l)));
+        list.forEach(l -> array.add(CBORObjectFactory.toDataItem(l)));
         return array;
     }
 
@@ -72,7 +72,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
     private static <T> Array toArray(final T[] inputArray) {
         Array array = new Array(inputArray.length);
         for (Object object : inputArray) {
-            array.add(CBORUtils.toDataItem(object));
+            array.add(CBORObjectFactory.toDataItem(object));
         }
         return array;
     }
@@ -84,7 +84,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
      * @param object {@link Object} to add
      */
     public void add(Object object) {
-        toDataItem().add(CBORUtils.toDataItem(object));
+        toDataItem().add(CBORObjectFactory.toDataItem(object));
     }
 
     /**
@@ -100,7 +100,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
         while (it.hasNext()) {
             it.next();
             if (index == i) {
-                it.set(CBORUtils.toDataItem(object));
+                it.set(CBORObjectFactory.toDataItem(object));
                 break;
             }
             ++i;
@@ -116,13 +116,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
         return Utils.isCollectionEmpty(toDataItem().getDataItems());
     }
 
-    /**
-     * Returns a list of embedded {@code CBORObject}s
-     *
-     * @return a list of {@link CBORObject}s
-     */
-    public List<CBORObject> getItems() {
-        return toDataItem().getDataItems().stream().map(CBORUtils::toCBORObject).collect(Collectors.toList());
+    @Override
+    public List<CBORObject> getValueAsList() {
+        return toDataItem().getDataItems().stream().map(CBORObjectFactory::toCBORObject).collect(Collectors.toList());
     }
 
     /**
@@ -134,7 +130,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
     public Long getAsLong(int index) {
         CBORObject item = getItem(index);
         if (item.isNegativeInteger() || item.isUnsignedInteger()) {
-            return ((CBORSimpleObject) item).getValueAsLong();
+            return item.getValueAsLong();
         }
         return null;
     }
@@ -150,10 +146,10 @@ public class CBORArray extends AbstractCBORObject<Array> {
     public Long getAsLongOrString(int index) {
         CBORObject item = getItem(index);
         if (item.isNegativeInteger() || item.isUnsignedInteger()) {
-            return ((CBORSimpleObject) item).getValueAsLong();
+            return item.getValueAsLong();
         }
         if (item.isUnicodeString()) {
-            String itemAsString = ((CBORSimpleObject) item).getValueAsString();
+            String itemAsString = item.getValueAsString();
             try {
                 return Long.parseLong(itemAsString);
             } catch (NumberFormatException e) {
@@ -172,7 +168,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
     public String getAsString(int index) {
         CBORObject item = getItem(index);
         if (item.isUnicodeString()) {
-            return ((CBORSimpleObject) item).getValueAsString();
+            return item.getValueAsString();
         }
         return null;
     }
@@ -186,7 +182,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
     public byte[] getAsBinaries(int index) {
         CBORObject item = getItem(index);
         if (item.isByteString()) {
-            return ((CBORByteString) item).getBytes();
+            return item.getValueAsBytes();
         }
         return null;
     }
@@ -226,7 +222,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
      * @return {@link CBORArray}
      */
     public CBORObject getItem(int index) {
-        return CBORUtils.toCBORObject(toDataItem().getDataItems().get(index));
+        return CBORObjectFactory.toCBORObject(toDataItem().getDataItems().get(index));
     }
 
     /**
@@ -236,9 +232,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public List<String> toListOfStrings() {
         final List<String> result = new ArrayList<>();
-        for (CBORObject cborObject : getItems()) {
+        for (CBORObject cborObject : getValueAsList()) {
             if (cborObject.isUnicodeString()) {
-                result.add(((CBORSimpleObject) cborObject).getValueAsString());
+                result.add(cborObject.getValueAsString());
             } else {
                 LOG.debug("The entry '{}' is not of UnicodeString type. The entry is skipped.", cborObject);
             }
@@ -253,9 +249,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public List<Long> toListOfLongs() {
         final List<Long> result = new ArrayList<>();
-        for (CBORObject cborObject : getItems()) {
+        for (CBORObject cborObject : getValueAsList()) {
             if (cborObject.isNegativeInteger() || cborObject.isUnsignedInteger()) {
-                result.add(((CBORSimpleObject) cborObject).getValueAsLong());
+                result.add(cborObject.getValueAsLong());
             } else {
                 LOG.debug("The entry '{}' is not of NegativeInteger nor UnsignedInteger type. The entry is skipped.", cborObject);
             }
@@ -270,9 +266,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public List<byte[]> toListOfBinaries() {
         final List<byte[]> result = new ArrayList<>();
-        for (CBORObject cborObject : getItems()) {
+        for (CBORObject cborObject : getValueAsList()) {
             if (cborObject.isByteString()) {
-                result.add(((CBORByteString) cborObject).getBytes());
+                result.add(cborObject.getValueAsBytes());
             } else {
                 LOG.debug("The entry '{}' is not of RByteString type. The entry is skipped.", cborObject);
             }

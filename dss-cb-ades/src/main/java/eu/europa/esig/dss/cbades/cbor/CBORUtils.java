@@ -3,14 +3,8 @@ package eu.europa.esig.dss.cbades.cbor;
 import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborEncoder;
 import co.nstant.in.cbor.CborException;
-import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
-import co.nstant.in.cbor.model.NegativeInteger;
-import co.nstant.in.cbor.model.SimpleValue;
-import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.Tag;
-import co.nstant.in.cbor.model.UnicodeString;
-import co.nstant.in.cbor.model.UnsignedInteger;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -28,25 +22,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static eu.europa.esig.dss.cbades.COSEConstants.ADO_TST;
-import static eu.europa.esig.dss.cbades.COSEConstants.ALG;
-import static eu.europa.esig.dss.cbades.COSEConstants.CONTENT_TYPE;
-import static eu.europa.esig.dss.cbades.COSEConstants.COUNTER_SIGNATURE;
-import static eu.europa.esig.dss.cbades.COSEConstants.CRIT;
-import static eu.europa.esig.dss.cbades.COSEConstants.CWT_CLAIMS;
-import static eu.europa.esig.dss.cbades.COSEConstants.IV;
-import static eu.europa.esig.dss.cbades.COSEConstants.KID;
-import static eu.europa.esig.dss.cbades.COSEConstants.PARTIAL_IV;
-import static eu.europa.esig.dss.cbades.COSEConstants.SIG_D;
-import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PID;
-import static eu.europa.esig.dss.cbades.COSEConstants.SIG_PL;
-import static eu.europa.esig.dss.cbades.COSEConstants.SR_ATS;
-import static eu.europa.esig.dss.cbades.COSEConstants.SR_CMS;
-import static eu.europa.esig.dss.cbades.COSEConstants.X5BAG;
-import static eu.europa.esig.dss.cbades.COSEConstants.X5CHAIN;
-import static eu.europa.esig.dss.cbades.COSEConstants.X5T;
-import static eu.europa.esig.dss.cbades.COSEConstants.X5TS;
-import static eu.europa.esig.dss.cbades.COSEConstants.X5U;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.ADO_TST;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.ALG;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CONTENT_TYPE;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.COUNTER_SIGNATURE;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CRIT;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CWT_CLAIMS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.IV;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.KID;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.PARTIAL_IV;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_D;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_PID;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_PL;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SR_ATS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SR_CMS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5BAG;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5CHAIN;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5T;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5TS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5U;
 
 /**
  * Contains common util methods for working with CBOR content
@@ -65,32 +59,32 @@ public final class CBORUtils {
     /**
      * Contains protected header names that are supported and can be present in the critical ('crit') attribute
      */
-    private static final Set<Long> supportedCriticalHeaders;
+    private static final Set<CBORObject> supportedCriticalHeaders;
 
     /**
      * Contains protected header names that are required to be present in the critical ('crit') attribute, when used
      */
-    private static final Set<Long> requiredCriticalHeaders;
+    private static final Set<CBORObject> requiredCriticalHeaders;
 
     static {
         EMPTY_BYTE_STRING = new CBORByteString();
 
         supportedCriticalHeaders = Stream.of(
                 /* RFC 9052 */
-                ALG, CRIT, CONTENT_TYPE, KID, IV, PARTIAL_IV,
+                ALG.cbor(), CRIT.cbor(), CONTENT_TYPE.cbor(), KID.cbor(), IV.cbor(), PARTIAL_IV.cbor(),
                 /* RFC 9360 */
-                X5BAG, X5CHAIN, X5T, X5U,
+                X5BAG.cbor(), X5CHAIN.cbor(), X5T.cbor(), X5U.cbor(),
                 /* RFC 8152 */
-                COUNTER_SIGNATURE,
+                COUNTER_SIGNATURE.cbor(),
                 /* RFC 9597 */
-                CWT_CLAIMS,
+                CWT_CLAIMS.cbor(),
                 /* CB-AdES TS 119 152-1 headers */
-                X5TS, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D
+                X5TS.cbor(), SR_CMS.cbor(), SIG_PL.cbor(), SR_ATS.cbor(), ADO_TST.cbor(), SIG_PID.cbor(), SIG_D.cbor()
         ).collect(Collectors.toSet());
 
         requiredCriticalHeaders = Stream.of(
                 /* CB-AdES TS 119 152-1 headers */
-                SIG_D
+                SIG_D.cbor()
         ).collect(Collectors.toSet());
     }
 
@@ -112,76 +106,6 @@ public final class CBORUtils {
             return null;
         }
         return new Tag(longValue);
-    }
-
-    /**
-     * Instantiates a new CBOR object from the given {@code DataItem}
-     *
-     * @param dataItem {@link DataItem}
-     * @return {@link CBORObject}
-     */
-    public static CBORObject toCBORObject(DataItem dataItem) {
-        if (dataItem == null) {
-            return null;
-        }
-        switch (dataItem.getMajorType()) {
-            case MAP:
-                return new CBORMap((co.nstant.in.cbor.model.Map) dataItem);
-            case ARRAY:
-                return new CBORArray((co.nstant.in.cbor.model.Array) dataItem);
-            case BYTE_STRING:
-                return new CBORByteString((co.nstant.in.cbor.model.ByteString) dataItem);
-            case TAG:
-                return new CBORTag((co.nstant.in.cbor.model.Tag) dataItem);
-            case SPECIAL:
-                if (dataItem instanceof SimpleValue) {
-                    SimpleValue simpleValue = (SimpleValue) dataItem;
-                    if (SimpleValueType.NULL == simpleValue.getSimpleValueType()) {
-                        return new CBORNull(simpleValue);
-                    }
-                }
-            default:
-                return new CBORSimpleObject(dataItem);
-        }
-    }
-
-    /**
-     * This method coverts the given object to a DataItem instance, corresponding to the object's format
-     *
-     * @param object to be converted
-     */
-    public static DataItem toDataItem(Object object) {
-        if (object == null) {
-            return null;
-        }
-        if (object instanceof DataItem) {
-            return (DataItem) object;
-
-        } else if (object instanceof CBORObject) {
-            CBORObject cborObject = (CBORObject) object;
-            return cborObject.toDataItem();
-
-        } else if (object instanceof Long) {
-            long longNumber = (Long) object;
-            return longNumber > 0 ? new UnsignedInteger(longNumber) : new NegativeInteger(longNumber);
-
-        } else if (object instanceof String) {
-            String str = (String) object;
-            return new UnicodeString(str);
-
-        } else if (object instanceof byte[]) {
-            byte[] byteArray = (byte[]) object;
-            return new ByteString(byteArray);
-
-        } else if (object instanceof Boolean) {
-            boolean value = (boolean) object;
-            SimpleValueType simpleValueType = value ? SimpleValueType.TRUE : SimpleValueType.FALSE;
-            return new SimpleValue(simpleValueType);
-
-        } else {
-            throw new UnsupportedOperationException(
-                    String.format("The object of class '%s' is not yet supported!", object.getClass().getName()));
-        }
     }
 
     /**
@@ -223,7 +147,7 @@ public final class CBORUtils {
 
     private static CBORObject toCBORObject(List<DataItem> dataItems) {
         if (Utils.collectionSize(dataItems) == 1) {
-            return toCBORObject(dataItems.iterator().next());
+            return CBORObjectFactory.toCBORObject(dataItems.iterator().next());
         } else {
             return new CBORArray(dataItems);
         }
@@ -307,17 +231,17 @@ public final class CBORUtils {
      *
      * @return a set of supported protected critical header identifiers
      */
-    public static Set<Long> getSupportedProtectedCriticalHeaders() {
+    public static Set<CBORObject> getSupportedProtectedCriticalHeaders() {
         return supportedCriticalHeaders;
     }
 
     /**
      * Checks if the given {@code headerId} is required to be incorporated within 'crit' header, when used
      *
-     * @param headerId {@link String} header name to check
+     * @param headerId {@link CBORObject} header key to check
      * @return TRUE if the header is required within 'crit' header when used, FALSE otherwise
      */
-    public static boolean isRequiredCriticalHeader(Long headerId) {
+    public static boolean isRequiredCriticalHeader(CBORObject headerId) {
         return requiredCriticalHeaders.contains(headerId);
     }
 
@@ -339,7 +263,7 @@ public final class CBORUtils {
      */
     public static boolean areAllCborBtsrComponents(CBORArray uHeaders) {
         if (uHeaders != null && !uHeaders.isEmpty()) {
-            for (CBORObject component : uHeaders.getItems()) {
+            for (CBORObject component : uHeaders.getValueAsList()) {
                 if (!isCborByteStringWrappedFormat(component)) {
                     return false;
                 }
@@ -358,7 +282,7 @@ public final class CBORUtils {
     public static CBORMap parseUHeadersEntry(CBORObject uHeadersEntry) {
         if (uHeadersEntry.isByteString()) {
             LOG.trace("CBOR Byte String encoded 'uHeader' component found. Parse to CBORMap.");
-            byte[] componentSerialized = ((CBORByteString) uHeadersEntry).getBytes();
+            byte[] componentSerialized = ((CBORByteString) uHeadersEntry).getValueAsBytes();
             try {
                 uHeadersEntry = CBORUtils.parseCbor(componentSerialized);
             } catch (Exception e) {

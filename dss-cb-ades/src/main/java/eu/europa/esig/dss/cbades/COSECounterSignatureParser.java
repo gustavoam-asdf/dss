@@ -208,7 +208,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
     }
 
     private boolean entriesCBORArrays(CBORArray cborArray) {
-        return cborArray.getItems().stream().allMatch(CBORObject::isArray);
+        return cborArray.getValueAsList().stream().allMatch(CBORObject::isArray);
     }
 
     private COSECounterSignatureArray parseCOSECounterSignatureArray(CBORArray cborArray) {
@@ -217,7 +217,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
         coseCounterSignatureArray.setContext(context);
         coseCounterSignatureArray.setMasterSignature(masterSignature);
         List<COSECounterSignature> signatures = new ArrayList<>();
-        for (CBORObject arrayEntry : cborArray.getItems()) {
+        for (CBORObject arrayEntry : cborArray.getValueAsList()) {
             COSECounterSignature coseCounterSignature = parseCOSECounterSignature(arrayEntry);
             signatures.add(coseCounterSignature);
         }
@@ -230,7 +230,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
             throw new IllegalInputException("COSE_Countersignature must be of CBORArray type!");
         }
         CBORArray cborArray = (CBORArray) cborObject;
-        final List<CBORObject> dataItems = cborArray.getItems();
+        final List<CBORObject> dataItems = cborArray.getValueAsList();
         if (Utils.collectionSize(dataItems) != 3) {
             throw new IllegalInputException("COSE_Countersignature array must have 3 entries!");
         }

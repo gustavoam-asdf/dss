@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
@@ -71,13 +71,13 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
                         validationDataContainer.getAllValidationDataForSignatureForInclusion(signature);
                 if (!validationDataForInclusion.isEmpty()) {
                     CBORObject valData = getValData(validationDataForInclusion);
-                    uHeaders.addComponent(COSEConstants.VAL_DATA, valData);
+                    uHeaders.addComponent(COSEHeaderParameters.VAL_DATA.cbor(), valData);
                 }
             }
 
             TimestampBinary timestampBinary = getArchiveTimestamp(cbadesSignature, params);
             CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timestampBinary));
-            uHeaders.addComponent(COSEConstants.ARC_TST, tstContainer);
+            uHeaders.addComponent(COSEHeaderParameters.ARC_TST.cbor(), tstContainer);
         }
     }
 
@@ -88,7 +88,7 @@ public class CBAdESLevelBaselineLTA extends CBAdESLevelBaselineLT {
      * @param uHeaders {@link CBAdESUHeaders}
      */
     private void removeLastValidationData(CBAdESSignature cbadesSignature, CBAdESUHeaders uHeaders) {
-        uHeaders.removeLastComponent(COSEConstants.VAL_DATA);
+        uHeaders.removeLastComponent(COSEHeaderParameters.VAL_DATA.cbor());
         cbadesSignature.resetCertificateSource();
         cbadesSignature.resetRevocationSources();
     }

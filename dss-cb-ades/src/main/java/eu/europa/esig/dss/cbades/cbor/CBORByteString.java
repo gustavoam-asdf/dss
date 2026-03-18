@@ -33,12 +33,8 @@ public class CBORByteString extends AbstractCBORObject<ByteString> {
         super(byteString);
     }
 
-    /**
-     * Returns a byte array value
-     *
-     * @return byte array
-     */
-    public byte[] getBytes() {
+    @Override
+    public byte[] getValueAsBytes() {
         return toDataItem().getBytes();
     }
 

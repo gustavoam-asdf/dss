@@ -2,11 +2,12 @@ package eu.europa.esig.dss.cbades.signature;
 
 import co.nstant.in.cbor.model.DataItem;
 import eu.europa.esig.dss.alert.SilentOnStatusAlert;
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.AbstractCBAdESTestValidation;
 import eu.europa.esig.dss.detailedreport.DetailedReport;
@@ -105,17 +106,17 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
 
         ListIterator<DataItem> it = getUHeadersIterator(coseSign1);
         DataItem uHeaderDataItem = it.previous();
-        CBORObject uHeaderComponent = CBORUtils.toCBORObject(uHeaderDataItem);
+        CBORObject uHeaderComponent = CBORObjectFactory.toCBORObject(uHeaderDataItem);
         assertTrue(uHeaderComponent.isByteString());
         CBORByteString cborByteString = (CBORByteString) uHeaderComponent;
-        assertTrue(Utils.isArrayNotEmpty(cborByteString.getBytes()));
+        assertTrue(Utils.isArrayNotEmpty(cborByteString.getValueAsBytes()));
 
-        CBORObject parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getBytes());
+        CBORObject parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getValueAsBytes());
         assertNotNull(parsedUHeaderItem);
         assertTrue(parsedUHeaderItem.isMap());
 
         CBORMap uHeaderItemMap = (CBORMap) parsedUHeaderItem;
-        assertTrue(uHeaderItemMap.containsKey(COSEConstants.ARC_TST));
+        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameters.ARC_TST.cbor()));
         it.remove();
 
         byte[] sigWithRemovedLastArcTst = CBORUtils.serializeCborObject(cborObject);
@@ -127,21 +128,21 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
 
         it = getUHeadersIterator(coseSign1);
         uHeaderDataItem = it.previous();
-        uHeaderComponent = CBORUtils.toCBORObject(uHeaderDataItem);
+        uHeaderComponent = CBORObjectFactory.toCBORObject(uHeaderDataItem);
         assertTrue(uHeaderComponent.isByteString());
         cborByteString = (CBORByteString) uHeaderComponent;
-        assertTrue(Utils.isArrayNotEmpty(cborByteString.getBytes()));
+        assertTrue(Utils.isArrayNotEmpty(cborByteString.getValueAsBytes()));
 
-        parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getBytes());
+        parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getValueAsBytes());
         assertNotNull(parsedUHeaderItem);
         assertTrue(parsedUHeaderItem.isMap());
         uHeaderItemMap = (CBORMap) parsedUHeaderItem;
-        assertTrue(uHeaderItemMap.containsKey(COSEConstants.VAL_DATA));
+        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameters.VAL_DATA.cbor()));
 
-        CBORMap valData = uHeaderItemMap.getAsMap(COSEConstants.VAL_DATA);
+        CBORMap valData = uHeaderItemMap.getAsMap(COSEHeaderParameters.VAL_DATA.cbor());
         assertNotNull(valData);
-        assertNotNull(valData.getHeader(COSEConstants.VAL_DATA_X_VALS));
-        assertNull(valData.getHeader(COSEConstants.VAL_DATA_R_VALS));
+        assertNotNull(valData.getHeader(COSEHeaderParameters.VAL_DATA_X_VALS.cbor()));
+        assertNull(valData.getHeader(COSEHeaderParameters.VAL_DATA_R_VALS.cbor()));
 
         return new InMemoryDocument(sigWithRemovedLastArcTst);
     }
@@ -154,7 +155,7 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
         assertFalse(unprotectedHeaderMap.isEmpty());
         assertEquals(1, unprotectedHeaderMap.getSize());
 
-        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEConstants.U_HEADERS);
+        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
         assertNotNull(uHeaders);
         assertTrue(uHeaders.isArray());
 
@@ -182,28 +183,28 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
 
         while (it.hasPrevious()) {
             DataItem uHeaderDataItem = it.previous();
-            CBORObject uHeaderItem = CBORUtils.toCBORObject(uHeaderDataItem);
+            CBORObject uHeaderItem = CBORObjectFactory.toCBORObject(uHeaderDataItem);
             assertTrue(uHeaderItem.isByteString());
             CBORByteString cborByteString = (CBORByteString) uHeaderItem;
-            assertTrue(Utils.isArrayNotEmpty(cborByteString.getBytes()));
+            assertTrue(Utils.isArrayNotEmpty(cborByteString.getValueAsBytes()));
 
-            CBORObject parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getBytes());
+            CBORObject parsedUHeaderItem = CBORUtils.parseCbor(cborByteString.getValueAsBytes());
             assertNotNull(parsedUHeaderItem);
             assertTrue(parsedUHeaderItem.isMap());
 
             CBORMap cborMap = (CBORMap) parsedUHeaderItem;
-            if (cborMap.containsKey(COSEConstants.ARC_TST)) {
+            if (cborMap.containsKey(COSEHeaderParameters.ARC_TST.cbor())) {
                 ++arcTstCounter;
 
-            } else if (cborMap.containsKey(COSEConstants.VAL_DATA)) {
-                CBORMap valData = cborMap.getAsMap(COSEConstants.VAL_DATA);
+            } else if (cborMap.containsKey(COSEHeaderParameters.VAL_DATA.cbor())) {
+                CBORMap valData = cborMap.getAsMap(COSEHeaderParameters.VAL_DATA.cbor());
                 assertNotNull(valData);
 
-                CBORArray xVals = valData.getAsArray(COSEConstants.VAL_DATA_X_VALS);
+                CBORArray xVals = valData.getAsArray(COSEHeaderParameters.VAL_DATA_X_VALS.cbor());
                 assertNotNull(xVals);
                 assertFalse(xVals.isEmpty());
 
-                CBORMap rVals = valData.getAsMap(COSEConstants.VAL_DATA_R_VALS);
+                CBORMap rVals = valData.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
                 assertNotNull(rVals);
                 assertFalse(rVals.isEmpty());
 

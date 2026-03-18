@@ -84,7 +84,7 @@ public class CBAdESBuilder {
         if (coseSign.getPayload().isByteString()) {
             // enveloping signature
             CBORByteString payload = (CBORByteString) coseSign.getPayload();
-            return Collections.singletonList(new InMemoryDocument(payload.getBytes()));
+            return Collections.singletonList(new InMemoryDocument(payload.getValueAsBytes()));
 
         } else if (Utils.isCollectionNotEmpty(parameters.getDetachedContents())) {
             // detached signature

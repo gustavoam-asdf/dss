@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
@@ -72,7 +72,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     public CBORArray getCBORArray() {
         COSEUnprotectedHeader unprotectedHeader = getUnprotectedHeader();
         if (unprotectedHeader != null && !unprotectedHeader.isEmpty()) {
-            return unprotectedHeader.getAsArray(COSEConstants.U_HEADERS);
+            return unprotectedHeader.getAsArray(COSEHeaderParameters.U_HEADERS.cbor());
         }
         return null;
     }
@@ -80,16 +80,16 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     /**
      * Adds a new entry to the 'uHeaders' array
      *
-     * @param headerKey        {@link Long} representing the name of the 'uHeaders' entry
+     * @param headerKey        {@link CBORObject} representing the name of the 'uHeaders' entry
      * @param value            {@link CBORObject} represents a value of the 'uHeaders' entry
      */
-    public void addComponent(Long headerKey, CBORObject value) {
+    public void addComponent(CBORObject headerKey, CBORObject value) {
         CBORArray uHeaders = getUHeadersToEdit();
         CBORObject etsiEntry = getComponent(headerKey, value);
         uHeaders.add(etsiEntry);
     }
 
-    private CBORObject getComponent(Long headerKey, CBORObject value) {
+    private CBORObject getComponent(CBORObject headerKey, CBORObject value) {
         CBORMap cborMap = new CBORMap();
         cborMap.put(headerKey, value);
         return cborMap.getByteString();
@@ -101,7 +101,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
      * @param headerId {@link Long} representing an 'uHeaders' entry identifier
      * @return a list of {@link CBAdESUHeadersComponent}
      */
-    public List<CBAdESUHeadersComponent> getUnsignedPropertiesWithHeaderId(Long headerId) {
+    public List<CBAdESUHeadersComponent> getUnsignedPropertiesWithHeaderId(CBORObject headerId) {
         List<CBAdESUHeadersComponent> componentsWithHeaderName = new ArrayList<>();
         for (CBAdESUHeadersComponent attribute : getAttributes()) {
             if (headerId.equals(attribute.getHeaderId())) {
@@ -119,7 +119,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
             assignUnprotectedHeader(unprotectedHeader);
         }
 
-        CBORObject uHeaders = unprotectedHeader.getHeader(COSEConstants.U_HEADERS);
+        CBORObject uHeaders = unprotectedHeader.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
         if (uHeaders != null) {
             if (!uHeaders.isArray()) {
                 throw new IllegalInputException("'uHeaders' header parameter shall be of type CBORArray!");
@@ -128,7 +128,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
 
         } else {
             uHeaders = new CBORArray(1);
-            unprotectedHeader.put(COSEConstants.U_HEADERS, uHeaders);
+            unprotectedHeader.put(COSEHeaderParameters.U_HEADERS.cbor(), uHeaders);
         }
         return (CBORArray) uHeaders;
     }
@@ -195,7 +195,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
      *
      * @param headerId {@link Long} identifier of the 'uHeaders' entry to remove
      */
-    public void removeComponent(Long headerId) {
+    public void removeComponent(CBORObject headerId) {
         CBORArray uHeaders = getUHeadersToEdit();
         if (!uHeaders.isEmpty()) {
             ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
@@ -210,7 +210,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
      *
      * @param headerId {@link Long} identifier of the 'uHeaders' entry to remove
      */
-    public void removeLastComponent(Long headerId) {
+    public void removeLastComponent(CBORObject headerId) {
         CBORArray uHeaders = getUHeadersToEdit();
         if (!uHeaders.isEmpty()) {
             ListIterator<CBORObject> iterator = getBackwardIterator(uHeaders);
@@ -219,14 +219,14 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     }
 
     private ListIterator<CBORObject> getBackwardIterator(CBORArray uHeaders) {
-        return uHeaders.getItems().listIterator(uHeaders.getSize());
+        return uHeaders.getValueAsList().listIterator(uHeaders.getSize());
     }
 
-    private void removeLastIfMatches(CBORArray uHeaders, ListIterator<CBORObject> iterator, Long headerId) {
+    private void removeLastIfMatches(CBORArray uHeaders, ListIterator<CBORObject> iterator, CBORObject headerId) {
         CBORObject originalObject = iterator.previous();
         CBORObject objectMapRepresentation = null;
         if (originalObject.isByteString()) {
-            objectMapRepresentation = CBORUtils.parseCbor(((CBORByteString) originalObject).getBytes());
+            objectMapRepresentation = CBORUtils.parseCbor(((CBORByteString) originalObject).getValueAsBytes());
         } else if (originalObject.isMap()) {
             objectMapRepresentation = originalObject;
         }

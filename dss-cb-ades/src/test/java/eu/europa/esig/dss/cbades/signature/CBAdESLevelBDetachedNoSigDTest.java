@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
@@ -71,10 +71,10 @@ class CBAdESLevelBDetachedNoSigDTest extends AbstractCBAdESTestSignature {
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        String cty = protectedHeader.getAsString(COSEConstants.CONTENT_TYPE);
+        String cty = protectedHeader.getAsString(COSEHeaderParameters.CONTENT_TYPE.cbor());
         assertNull(cty);
 
-        CBORMap sigD = protectedHeader.getAsMap(COSEConstants.SIG_D);
+        CBORMap sigD = protectedHeader.getAsMap(COSEHeaderParameters.SIG_D.cbor());
         assertNull(sigD);
     }
 

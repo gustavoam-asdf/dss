@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.requirements;
 
-import eu.europa.esig.dss.cbades.COSEConstants;
+import eu.europa.esig.dss.cbades.COSEHeaderParameters;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
@@ -21,13 +21,13 @@ class CBAdESBaselineTCoseSign1Test extends AbstractCBAdESCoseSign1RequirementsCh
 
     @Override
     protected void checkValidationData(CBORMap unprotectedHeaderMap) {
-        CBORObject valData = getUHeadersElement(unprotectedHeaderMap, COSEConstants.VAL_DATA);
+        CBORObject valData = getUHeadersElement(unprotectedHeaderMap, COSEHeaderParameters.VAL_DATA.cbor());
         assertNull(valData);
     }
 
     @Override
     protected void checkArchiveTimestamp(CBORMap unprotectedHeaderMap) {
-        CBORObject arcTst = getUHeadersElement(unprotectedHeaderMap, COSEConstants.ARC_TST);
+        CBORObject arcTst = getUHeadersElement(unprotectedHeaderMap, COSEHeaderParameters.ARC_TST.cbor());
         assertNull(arcTst);
     }
 
