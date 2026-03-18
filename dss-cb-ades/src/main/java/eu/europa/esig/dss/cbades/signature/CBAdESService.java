@@ -5,6 +5,8 @@ import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -156,6 +158,17 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
         assertContentTimestampCreationPossible(toSignDocuments);
 
         byte[] messageImprint = CBAdESUtils.concatenateDSSDocuments(toSignDocuments);
+        /*
+         * 1) If the sigD header parameter, as specified in clause 5.2.8 of the present document,
+         * is absent then the message imprint computation input shall be:
+         * - The CBOR byte string of the payload field, if the payload field is present.
+         * - The bytes of the detached COSE Payload, encapsulated in a CBOR byte string,
+         *   if the COSE Payload is detached (the payload field is absent).
+         */
+        if (SignaturePackaging.DETACHED != parameters.getSignaturePackaging() || SigDMechanism.NO_SIG_D == parameters.getSigDMechanism()) {
+            CBORByteString cborByteString = new CBORByteString(messageImprint);
+            messageImprint = CBORUtils.serializeCborObject(cborByteString);
+        }
 
         DigestAlgorithm digestAlgorithm = parameters.getContentTimestampParameters().getDigestAlgorithm();
         TimestampBinary timeStampResponse = tspSource.getTimeStampResponse(digestAlgorithm,

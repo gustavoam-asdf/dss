@@ -429,7 +429,7 @@ public class CBORSignature {
      */
     public byte[] getPayloadBytes() {
         if (payload != null && payload.isByteString()) {
-            return ((CBORByteString) payload).getValueAsBytes();
+            return payload.getValueAsBytes();
         }
         return null;
     }
