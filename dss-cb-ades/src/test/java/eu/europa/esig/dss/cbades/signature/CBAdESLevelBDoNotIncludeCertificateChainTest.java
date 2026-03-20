@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
@@ -75,10 +75,10 @@ class CBAdESLevelBDoNotIncludeCertificateChainTest extends AbstractCBAdESTestSig
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        CBORArray x5t = protectedHeader.getAsArray(COSEHeaderParameters.X5T.cbor());
+        CBORArray x5t = protectedHeader.getAsArray(COSEHeaderParameter.X5T.cbor());
         assertNull(x5t);
 
-        CBORArray x5ts = protectedHeader.getAsArray(COSEHeaderParameters.X5TS.cbor());
+        CBORArray x5ts = protectedHeader.getAsArray(COSEHeaderParameter.X5TS.cbor());
         assertNotNull(x5ts);
         assertEquals(2, x5ts.getSize());
 
@@ -97,7 +97,7 @@ class CBAdESLevelBDoNotIncludeCertificateChainTest extends AbstractCBAdESTestSig
             assertNotNull(hashValue);
         }
 
-        CBORArray x5chain = protectedHeader.getAsArray(COSEHeaderParameters.X5CHAIN.cbor());
+        CBORArray x5chain = protectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor());
         assertNull(x5chain);
     }
 

@@ -1,16 +1,25 @@
 package eu.europa.esig.dss.eaa.jwt;
 
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimArray;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
+import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimNull;
+import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains utility methods for processing SD-JWT tokens
  *
  */
 public final class SDJWTUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SDJWTUtils.class);
 
     /**
      * Singleton
@@ -20,32 +29,76 @@ public final class SDJWTUtils {
     }
 
     /**
-     * Gets a DigestAlgorithm value for the given {@code sdJwtId} in a secure way (no exception)
+     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
+     * This method can be used for non selectively disclosable claims, provided directly within EAA Payload.
      *
-     * @param sdJwtId {@link String} to get a corresponding digest algorithm for
-     * @return {@link DigestAlgorithm}
+     * @param value {@link Object} containing the value of the object
+     * @return {@link Claim}
      */
-    public static DigestAlgorithm getDigestAlgorithmForSdJwtId(String sdJwtId) {
-        try {
-            return DigestAlgorithm.forSdJwtId(sdJwtId);
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Unable to find a corresponding DigestAlgortihm for SD-JWT claim for value '{}'!", sdJwtId);
-            return null;
-        }
+    public static Claim createClaim(Object value) {
+        return createClaim(null, null, value);
     }
 
     /**
-     * Gets a DigestAlgorithm value for the given {@code srIntegrityId} in a secure way (no exception)
+     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
+     * This method allows providing of the claim parent, to be used within the claim's metadata.
+     * When a value is of Claim type, the existing selectively discussable tag value is used,
+     * otherwise it is set to false.
      *
-     * @param srIntegrityId {@link String} to get a corresponding digest algorithm for
-     * @return {@link DigestAlgorithm}
+     * @param claimName {@link String} representing the header name of the claim
+     * @param parent {@link Claim} parent of the claim
+     * @param value {@link Object} containing the value of the object
+     * @return {@link Claim}
      */
-    public static DigestAlgorithm getDigestAlgorithmForIntegrityClaimId(String srIntegrityId) {
-        try {
-            return DigestAlgorithm.forSrIntegrityId(srIntegrityId);
-        } catch (IllegalArgumentException e) {
-            LOG.warn("Unable to find a corresponding DigestAlgortihm for integrity claim for value '{}'!", srIntegrityId);
-            return null;
+    public static Claim createClaim(String claimName, Claim parent, Object value) {
+        boolean selectivelyDisclosable = false;
+        if (value instanceof Claim) {
+            selectivelyDisclosable = ((Claim) value).isSelectivelyDisclosable();
+        }
+        return createClaim(claimName, parent, value, selectivelyDisclosable);
+    }
+
+    /**
+     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
+     * This method can be used for definition of claims used within provided disclosures.
+     * This method allows providing of the claim parent, to be used within the claim's metadata.
+     *
+     * @param claimName {@link String} representing the header name of the claim
+     * @param parent {@link Claim} parent of the claim
+     * @param value {@link Object} containing the value of the object
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @return {@link Claim}
+     */
+    public static Claim createClaim(String claimName, Claim parent, Object value, boolean selectivelyDisclosable) {
+        if (value instanceof ClaimString) {
+            return new ClaimString(claimName, ((ClaimString) value).getStringValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimNumber) {
+            return new ClaimNumber(claimName, ((ClaimNumber) value).getNumberValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimBoolean) {
+            return new ClaimBoolean(claimName, ((ClaimBoolean) value).getBooleanValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimDate) {
+            return new ClaimDate(claimName, ((ClaimDate) value).getDateValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimMap) {
+            return new SDJWTClaimMap(claimName, ((ClaimMap) value).getMapValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimArray) {
+            return new SDJWTClaimArray(claimName, ((ClaimArray) value).getListValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof String) {
+            return new ClaimString(claimName, (String) value, selectivelyDisclosable, parent);
+        } else if (value instanceof Number) {
+            return new ClaimNumber(claimName, (Number) value, selectivelyDisclosable, parent);
+        } else if (value instanceof Boolean) {
+            return new ClaimBoolean(claimName, (Boolean) value, selectivelyDisclosable, parent);
+        } else if (value instanceof Date) {
+            return new ClaimDate(claimName, (Date) value, selectivelyDisclosable, parent);
+        } else if (value instanceof Map) {
+            return new SDJWTClaimMap(claimName, (Map<?,?>) value, selectivelyDisclosable, parent);
+        } else if (value instanceof List) {
+            return new SDJWTClaimArray(claimName, (List<?>) value, selectivelyDisclosable, parent);
+        } else if (value == null) {
+            return new ClaimNull(claimName, selectivelyDisclosable, parent);
+        } else {
+            throw new IllegalArgumentException(String.format("The claim value of type '%s' is not supported!", value.getClass().getSimpleName()));
         }
     }
 

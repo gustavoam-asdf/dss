@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
@@ -178,7 +178,7 @@ public abstract class AbstractCBAdESCounterSignatureTest extends AbstractCounter
                 assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyKey));
             }
 
-            CBORObject crit = protectedHeader.getHeader(COSEHeaderParameters.CRIT.cbor());
+            CBORObject crit = protectedHeader.getHeader(COSEHeaderParameter.CRIT.cbor());
             if (crit != null) {
                 assertTrue(crit.isArray());
                 assertInstanceOf(CBORArray.class, crit);

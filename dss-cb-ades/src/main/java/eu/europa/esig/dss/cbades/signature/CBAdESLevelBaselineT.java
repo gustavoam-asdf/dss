@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
@@ -145,7 +145,7 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
             CBORMap tstContainer = CBAdESUtils.getTstContainer(Collections.singletonList(timeStampResponse));
 
             CBAdESUHeaders uHeaders = cbadesSignature.getUHeaders();
-            uHeaders.addComponent(COSEHeaderParameters.SIG_TST.cbor(), tstContainer);
+            uHeaders.addComponent(COSEHeaderParameter.SIG_TST.cbor(), tstContainer);
         }
     }
 

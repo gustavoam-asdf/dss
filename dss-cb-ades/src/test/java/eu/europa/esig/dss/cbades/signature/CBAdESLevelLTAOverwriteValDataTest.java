@@ -2,7 +2,7 @@ package eu.europa.esig.dss.cbades.signature;
 
 import co.nstant.in.cbor.model.DataItem;
 import eu.europa.esig.dss.alert.SilentOnStatusAlert;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -116,7 +116,7 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
         assertTrue(parsedUHeaderItem.isMap());
 
         CBORMap uHeaderItemMap = (CBORMap) parsedUHeaderItem;
-        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameters.ARC_TST.cbor()));
+        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameter.ARC_TST.cbor()));
         it.remove();
 
         byte[] sigWithRemovedLastArcTst = CBORUtils.serializeCborObject(cborObject);
@@ -137,12 +137,12 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
         assertNotNull(parsedUHeaderItem);
         assertTrue(parsedUHeaderItem.isMap());
         uHeaderItemMap = (CBORMap) parsedUHeaderItem;
-        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameters.VAL_DATA.cbor()));
+        assertTrue(uHeaderItemMap.containsKey(COSEHeaderParameter.VAL_DATA.cbor()));
 
-        CBORMap valData = uHeaderItemMap.getAsMap(COSEHeaderParameters.VAL_DATA.cbor());
+        CBORMap valData = uHeaderItemMap.getAsMap(COSEHeaderParameter.VAL_DATA.cbor());
         assertNotNull(valData);
-        assertNotNull(valData.getHeader(COSEHeaderParameters.VAL_DATA_X_VALS.cbor()));
-        assertNull(valData.getHeader(COSEHeaderParameters.VAL_DATA_R_VALS.cbor()));
+        assertNotNull(valData.getHeader(COSEHeaderParameter.VAL_DATA_X_VALS.cbor()));
+        assertNull(valData.getHeader(COSEHeaderParameter.VAL_DATA_R_VALS.cbor()));
 
         return new InMemoryDocument(sigWithRemovedLastArcTst);
     }
@@ -155,7 +155,7 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
         assertFalse(unprotectedHeaderMap.isEmpty());
         assertEquals(1, unprotectedHeaderMap.getSize());
 
-        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
+        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameter.U_HEADERS.cbor());
         assertNotNull(uHeaders);
         assertTrue(uHeaders.isArray());
 
@@ -193,18 +193,18 @@ public class CBAdESLevelLTAOverwriteValDataTest extends AbstractCBAdESTestValida
             assertTrue(parsedUHeaderItem.isMap());
 
             CBORMap cborMap = (CBORMap) parsedUHeaderItem;
-            if (cborMap.containsKey(COSEHeaderParameters.ARC_TST.cbor())) {
+            if (cborMap.containsKey(COSEHeaderParameter.ARC_TST.cbor())) {
                 ++arcTstCounter;
 
-            } else if (cborMap.containsKey(COSEHeaderParameters.VAL_DATA.cbor())) {
-                CBORMap valData = cborMap.getAsMap(COSEHeaderParameters.VAL_DATA.cbor());
+            } else if (cborMap.containsKey(COSEHeaderParameter.VAL_DATA.cbor())) {
+                CBORMap valData = cborMap.getAsMap(COSEHeaderParameter.VAL_DATA.cbor());
                 assertNotNull(valData);
 
-                CBORArray xVals = valData.getAsArray(COSEHeaderParameters.VAL_DATA_X_VALS.cbor());
+                CBORArray xVals = valData.getAsArray(COSEHeaderParameter.VAL_DATA_X_VALS.cbor());
                 assertNotNull(xVals);
                 assertFalse(xVals.isEmpty());
 
-                CBORMap rVals = valData.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
+                CBORMap rVals = valData.getAsMap(COSEHeaderParameter.VAL_DATA_R_VALS.cbor());
                 assertNotNull(rVals);
                 assertFalse(rVals.isEmpty());
 

@@ -143,7 +143,7 @@ public interface CBORObject {
      *
      * @return a map
      */
-    Map<CBORObject, CBORObject> toValueAsMap();
+    Map<CBORObject, CBORObject> getValueAsMap();
 
     /**
      * Returns a list of embedded {@code CBORObject}s

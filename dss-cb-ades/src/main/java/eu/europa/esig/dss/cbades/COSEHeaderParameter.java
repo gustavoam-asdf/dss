@@ -7,7 +7,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
  * Contains a list of COSE and CB-AdES header parameter definitions
  *
  */
-public enum COSEHeaderParameters {
+public enum COSEHeaderParameter {
 
     /* RFC 9052 Header parameters */
 
@@ -332,7 +332,7 @@ public enum COSEHeaderParameters {
      * 
      * @param longKey long key value
      */
-    COSEHeaderParameters(final Long longKey) {
+    COSEHeaderParameter(final Long longKey) {
         this.cborKey = CBORObjectFactory.toCBORObject(longKey);
     }
 

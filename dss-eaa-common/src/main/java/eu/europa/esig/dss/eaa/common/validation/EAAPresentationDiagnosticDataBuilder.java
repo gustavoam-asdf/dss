@@ -253,8 +253,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 xmlClaim.setDateTime(claim.getDateValue());
             } else if (claim.isBooleanValueType()) {
                 xmlClaim.setBoolean(claim.getBooleanValue());
-//            } else if (claim.isBinaryValueType()) {
-                // TODO : implement ?
+            } else if (claim.isBinaryValueType()) {
+                xmlClaim.setBinary(claim.getBinaryValue());
             } else if (claim.isArrayValueType()) {
                 for (Claim claimItem : claim.getListValue()) {
                     xmlClaim.getItem().add(getXmlClaim(claimItem, new XmlClaim()));

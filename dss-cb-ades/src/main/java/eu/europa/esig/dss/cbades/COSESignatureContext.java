@@ -20,16 +20,16 @@ public enum COSESignatureContext {
     COSE_SIGNATURE(null, null, null),
 
     /** For full counter-signatures */
-    COSE_COUNTER_SIGNATURE("CounterSignature", "COSE_Countersignature", 19L, true, false, COSEHeaderParameters.COUNTER_SIGNATURE.cbor()),
+    COSE_COUNTER_SIGNATURE("CounterSignature", "COSE_Countersignature", 19L, true, false, COSEHeaderParameter.COUNTER_SIGNATURE.cbor()),
 
     /** For abbreviated counter-signatures0 */
-    COSE_COUNTER_SIGNATURE0("CounterSignature0", "COSE_Countersignature0", null, true, false, COSEHeaderParameters.COUNTER_SIGNATURE0.cbor()),
+    COSE_COUNTER_SIGNATURE0("CounterSignature0", "COSE_Countersignature0", null, true, false, COSEHeaderParameter.COUNTER_SIGNATURE0.cbor()),
 
     /** For full counter-signatures with other_fields present */
-    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", "COSE_Countersignature_V2", 19L, true, true, COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor()),
+    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", "COSE_Countersignature_V2", 19L, true, true, COSEHeaderParameter.COUNTER_SIGNATURE_V2.cbor()),
 
     /** For abbreviated counter-signatures0 with other_fields present */
-    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", "COSE_Countersignature0_V2", null, true, true, COSEHeaderParameters.COUNTER_SIGNATURE0_V2.cbor());
+    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", "COSE_Countersignature0_V2", null, true, true, COSEHeaderParameter.COUNTER_SIGNATURE0_V2.cbor());
 
     /** The context label used as a part of a DTBS computation */
     private final String context;

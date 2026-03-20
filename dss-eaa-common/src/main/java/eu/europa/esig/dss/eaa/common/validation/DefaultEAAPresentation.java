@@ -8,8 +8,6 @@ import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -18,8 +16,6 @@ import java.util.List;
  *
  */
 public abstract class DefaultEAAPresentation implements EAAPresentation {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultEAAPresentation.class);
 
     /** Cached signature objects used to create the EAA */
     private List<AdvancedSignature> signatures;

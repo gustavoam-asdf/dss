@@ -13,7 +13,6 @@ import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnostic
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
@@ -65,8 +64,8 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
-    public EAAPresentation getEAAPresentation() {
-        return getDocumentAnalyzer().getEAAPresentation();
+    public List<EAAPresentation> getEAAPresentations() {
+        return getDocumentAnalyzer().getEAAPresentations();
     }
 
     @Override
@@ -83,7 +82,7 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     @Override
     public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new EAAPresentationDiagnosticDataBuilder()
-                .foundEAAPresentations(Collections.singletonList(getEAAPresentation()))
+                .foundEAAPresentations(getEAAPresentations())
                 .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());
     }
 

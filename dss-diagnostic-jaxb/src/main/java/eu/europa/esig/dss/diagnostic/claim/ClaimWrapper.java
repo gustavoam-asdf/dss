@@ -4,6 +4,8 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.jaxb.parsers.DateParser;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -131,6 +133,25 @@ public class ClaimWrapper {
     }
 
     /**
+     * Gets the binary value.
+     * If the value is null or not of a binary type, returns null
+     *
+     * @return byte array
+     */
+    public byte[] getBinary() {
+        return wrapped.getBinary();
+    }
+
+    /**
+     * Gets whether the claim value is of Binary type
+     *
+     * @return TRUE if the value is of Binary type, FALSE otherwise
+     */
+    public boolean isBinary() {
+        return wrapped.getBinary() != null;
+    }
+
+    /**
      * Gets the value as date.
      * If the value is null or not of a date type, returns null
      *
@@ -237,6 +258,8 @@ public class ClaimWrapper {
             return getNumber().toString();
         } else if (isBoolean()) {
             return getBoolean().toString();
+        } else if (isBinary()) {
+            return Base64.getEncoder().encodeToString(getBinary());
         } else if (isDateTime()) {
             return new DateParser().toString(getDateTime());
         } else if (isList()) {
@@ -326,6 +349,10 @@ public class ClaimWrapper {
             return Objects.equals(getBoolean(), other.getBoolean());
         }
 
+        if (isBinary() && other.isBinary()) {
+            return Arrays.equals(getBinary(), other.getBinary());
+        }
+
         if (isDateTime() && other.isDateTime()) {
             return Objects.equals(getDateTime(), other.getDateTime());
         }
@@ -352,6 +379,8 @@ public class ClaimWrapper {
             value = getNumber();
         } else if (isBoolean()) {
             value = getBoolean();
+        } else if (isBinary()) {
+            value = Arrays.hashCode(getBinary());
         } else if (isDateTime()) {
             value = getDateTime();
         } else if (isList()) {

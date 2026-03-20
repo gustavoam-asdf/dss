@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -92,7 +92,7 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
      * @param uHeaders {@link CBAdESUHeaders}
      */
     private void removeValidationData(CBAdESSignature cbadesSignature, CBAdESUHeaders uHeaders) {
-        uHeaders.removeComponent(COSEHeaderParameters.VAL_DATA.cbor());
+        uHeaders.removeComponent(COSEHeaderParameter.VAL_DATA.cbor());
         cbadesSignature.resetCertificateSource();
         cbadesSignature.resetRevocationSources();
     }
@@ -100,7 +100,7 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
     private void incorporateValidationData(CBAdESUHeaders uHeaders, final ValidationData validationDataForInclusion) {
         if (!validationDataForInclusion.isEmpty()) {
             CBORObject valData = getValData(validationDataForInclusion);
-            uHeaders.addComponent(COSEHeaderParameters.VAL_DATA.cbor(), valData);
+            uHeaders.addComponent(COSEHeaderParameter.VAL_DATA.cbor(), valData);
         }
     }
 
@@ -118,11 +118,11 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
         CBORMap valData = new CBORMap();
         if (Utils.isCollectionNotEmpty(certificateTokens)) {
             CBORObject xVals = getXVals(certificateTokens);
-            valData.put(COSEHeaderParameters.VAL_DATA_X_VALS.cbor(), xVals);
+            valData.put(COSEHeaderParameter.VAL_DATA_X_VALS.cbor(), xVals);
         }
         if (Utils.isCollectionNotEmpty(crlTokens) || Utils.isCollectionNotEmpty(ocspTokens)) {
             CBORObject rVals = getRVals(crlTokens, ocspTokens);
-            valData.put(COSEHeaderParameters.VAL_DATA_R_VALS.cbor(), rVals);
+            valData.put(COSEHeaderParameter.VAL_DATA_R_VALS.cbor(), rVals);
         }
         return valData;
     }
@@ -143,14 +143,14 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
 
     private CBORObject getX509CertObject(CertificateToken certificateToken) {
         CBORMap x509OrOther = new CBORMap();
-        x509OrOther.put(COSEHeaderParameters.X509_OR_OTHER_X509_CERT.cbor(), getPkiOb(certificateToken));
+        x509OrOther.put(COSEHeaderParameter.X509_OR_OTHER_X509_CERT.cbor(), getPkiOb(certificateToken));
 
         return x509OrOther;
     }
 
     private CBORObject getPkiOb(Token token) {
         CBORMap pkiOb = new CBORMap();
-        pkiOb.put(COSEHeaderParameters.PKI_OB_VAL.cbor(), new CBORByteString(token.getEncoded()));
+        pkiOb.put(COSEHeaderParameter.PKI_OB_VAL.cbor(), new CBORByteString(token.getEncoded()));
         return pkiOb;
     }
 
@@ -164,10 +164,10 @@ public class CBAdESLevelBaselineLT extends CBAdESLevelBaselineT {
     protected CBORObject getRVals(Set<CRLToken> crlsToAdd, Set<OCSPToken> ocspsToAdd) {
         CBORMap rVals = new CBORMap();
         if (Utils.isCollectionNotEmpty(crlsToAdd)) {
-            rVals.put(COSEHeaderParameters.R_VALS_CRL_VALS.cbor(), getCrlVals(crlsToAdd));
+            rVals.put(COSEHeaderParameter.R_VALS_CRL_VALS.cbor(), getCrlVals(crlsToAdd));
         }
         if (Utils.isCollectionNotEmpty(ocspsToAdd)) {
-            rVals.put(COSEHeaderParameters.R_VALS_OCSP_VALS.cbor(), getOcspVals(ocspsToAdd));
+            rVals.put(COSEHeaderParameter.R_VALS_OCSP_VALS.cbor(), getOcspVals(ocspsToAdd));
         }
         return rVals;
     }

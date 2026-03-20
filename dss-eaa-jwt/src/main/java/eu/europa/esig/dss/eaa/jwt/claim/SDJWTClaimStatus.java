@@ -10,7 +10,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
  * SD-JWT VC token representation of a "status" header. See draft-ietf-oauth-status-list-13.
  *
  */
-public class SDJWTClaimStatus extends ClaimMap implements ClaimStatus {
+public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
 
     private static final long serialVersionUID = 2273453140105479397L;
 

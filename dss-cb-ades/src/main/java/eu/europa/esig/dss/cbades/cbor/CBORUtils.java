@@ -22,25 +22,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.ADO_TST;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.ALG;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CONTENT_TYPE;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.COUNTER_SIGNATURE;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CRIT;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.CWT_CLAIMS;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.IV;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.KID;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.PARTIAL_IV;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_D;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_PID;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SIG_PL;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SR_ATS;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.SR_CMS;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5BAG;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5CHAIN;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5T;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5TS;
-import static eu.europa.esig.dss.cbades.COSEHeaderParameters.X5U;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.ADO_TST;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.ALG;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.CONTENT_TYPE;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.COUNTER_SIGNATURE;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.CRIT;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.CWT_CLAIMS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.IV;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.KID;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.PARTIAL_IV;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.SIG_D;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.SIG_PID;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.SIG_PL;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.SR_ATS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.SR_CMS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.X5BAG;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.X5CHAIN;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.X5T;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.X5TS;
+import static eu.europa.esig.dss.cbades.COSEHeaderParameter.X5U;
 
 /**
  * Contains common util methods for working with CBOR content

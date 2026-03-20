@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
@@ -72,7 +72,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
     public CBORArray getCBORArray() {
         COSEUnprotectedHeader unprotectedHeader = getUnprotectedHeader();
         if (unprotectedHeader != null && !unprotectedHeader.isEmpty()) {
-            return unprotectedHeader.getAsArray(COSEHeaderParameters.U_HEADERS.cbor());
+            return unprotectedHeader.getAsArray(COSEHeaderParameter.U_HEADERS.cbor());
         }
         return null;
     }
@@ -119,7 +119,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
             assignUnprotectedHeader(unprotectedHeader);
         }
 
-        CBORObject uHeaders = unprotectedHeader.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
+        CBORObject uHeaders = unprotectedHeader.getHeader(COSEHeaderParameter.U_HEADERS.cbor());
         if (uHeaders != null) {
             if (!uHeaders.isArray()) {
                 throw new IllegalInputException("'uHeaders' header parameter shall be of type CBORArray!");
@@ -128,7 +128,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
 
         } else {
             uHeaders = new CBORArray(1);
-            unprotectedHeader.put(COSEHeaderParameters.U_HEADERS.cbor(), uHeaders);
+            unprotectedHeader.put(COSEHeaderParameter.U_HEADERS.cbor(), uHeaders);
         }
         return (CBORArray) uHeaders;
     }

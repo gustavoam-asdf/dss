@@ -54,16 +54,16 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
             if (Utils.collectionSize(dataItems) == 0) {
                 return new co.nstant.in.cbor.model.Map();
             } else if (Utils.collectionSize(dataItems) > 1) {
-                throw new IllegalInputException("Protected header root shall consist of one data object!");
+                throw new IllegalInputException("CBOR byte string root shall consist of one data object!");
             }
             DataItem dataItem = dataItems.iterator().next();
             if (MajorType.MAP != dataItem.getMajorType()) {
-                throw new IllegalInputException("Protected header shall be of Map type!");
+                throw new IllegalInputException("CBOR byte string's content shall be of Map type!");
             }
             return (co.nstant.in.cbor.model.Map) dataItem;
 
         } catch (CborException e) {
-            throw new IllegalInputException(String.format("Unable to parse protected header: %s", e.getMessage()), e);
+            throw new IllegalInputException(String.format("Unable to parse byte string a Map: %s", e.getMessage()), e);
         }
     }
 
@@ -104,7 +104,7 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
     }
 
     @Override
-    public Map<CBORObject, CBORObject> toValueAsMap() {
+    public Map<CBORObject, CBORObject> getValueAsMap() {
         final Map<CBORObject, CBORObject> result = new HashMap<>();
         for (CBORObject key : getKeys()) {
             CBORObject value = getHeader(key);

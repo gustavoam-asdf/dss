@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Represents a Map encoded (selectively) disclosable claim
  *
  */
-public class ClaimMap extends AbstractClaim {
+public abstract class ClaimMap extends AbstractClaim {
 
     private static final long serialVersionUID = 3493467581292504831L;
 
@@ -24,30 +24,8 @@ public class ClaimMap extends AbstractClaim {
      *
      * @param value value of the claim
      */
-    public ClaimMap(final Map<?,?> value) {
-        this(null, value);
-    }
-
-    /**
-     * Constructor with claim name provided
-     *
-     * @param name {@link String} claim header name
-     * @param value value of the claim
-     */
-    public ClaimMap(final String name, final Map<?,?> value) {
-        this(name, value, false);
-    }
-
-    /**
-     * Constructor with claim name and selectively disclosable status provided
-     *
-     * @param name {@link String} claim header name
-     * @param value value of the claim
-     * @param selectivelyDisclosable whether the claim is selectively disclosable
-     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
-     */
-    public ClaimMap(final String name, final Map<?,?> value, final boolean selectivelyDisclosable) {
-        this(name, value, selectivelyDisclosable, null);
+    protected ClaimMap(final Map<?,?> value) {
+        this(null, value, false, null);
     }
 
     /**
@@ -71,8 +49,8 @@ public class ClaimMap extends AbstractClaim {
         }
         final Map<String, Claim> result = new HashMap<>();
         for (Map.Entry<?, ?> entry : value.entrySet()) {
-            String headerName = (String) entry.getKey();
-            Claim claim = get(headerName);
+            String headerName = getKeyAsString(entry.getKey());
+            Claim claim = createClaim(headerName, value.get(entry.getKey()));
             result.put(headerName, claim);
         }
         return result;
@@ -84,7 +62,7 @@ public class ClaimMap extends AbstractClaim {
      * @return a set of {@link String} keys
      */
     public Set<String> getKeys() {
-        return value.keySet().stream().map(k -> (String) k).collect(Collectors.toSet());
+        return value.keySet().stream().map(this::getKeyAsString).collect(Collectors.toSet());
     }
 
     /**
@@ -94,12 +72,25 @@ public class ClaimMap extends AbstractClaim {
      * @return {@link Claim}
      */
     public Claim get(String headerName) {
-        Object value = this.value.get(headerName);
-        if (value != null) {
-            return Claim.create(headerName, this, value);
-        }
-        return null;
+        return getMapValue().get(headerName);
     }
+
+    /**
+     * This method returns a map key as a String
+     *
+     * @param key object
+     * @return {@link String}
+     */
+    protected abstract String getKeyAsString(Object key);
+
+    /**
+     * Creates a claim for the map entry
+     *
+     * @param name {@link String} header key
+     * @param value object
+     * @return {@link Claim}
+     */
+    protected abstract Claim createClaim(String name, Object value);
 
     /**
      * Gets the claim value if a map from the current map using the {@code headerName} as a key

@@ -38,19 +38,19 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	// see http://www.w3.org/TR/2013/NOTE-xmlsec-algorithms-20130411/
 	// @formatter:off
 	/** SHA-1 */
-	SHA1("SHA1", "SHA-1", "1.3.14.3.2.26", "http://www.w3.org/2000/09/xmldsig#sha1", null, "SHA", null, null, -14L, 20),
+	SHA1("SHA1", "SHA-1", "1.3.14.3.2.26", "http://www.w3.org/2000/09/xmldsig#sha1", null, "SHA", null, null, -14L, null, 20),
 
 	/** SHA-224 */
 	SHA224("SHA224", "SHA-224", "2.16.840.1.101.3.4.2.4", "http://www.w3.org/2001/04/xmldsig-more#sha224", "S224", 28),
 
 	/** SHA-256 */
-	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", "sha-256", "sha256", -16L, 32),
+	SHA256("SHA256", "SHA-256", "2.16.840.1.101.3.4.2.1", "http://www.w3.org/2001/04/xmlenc#sha256", "S256", "SHA-256", "sha-256", "sha256", -16L, "SHA-256", 32),
 
 	/** SHA-384 */
-	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", null, "sha-384", "sha384", -43L, 48),
+	SHA384("SHA384", "SHA-384", "2.16.840.1.101.3.4.2.2", "http://www.w3.org/2001/04/xmldsig-more#sha384", "S384", null, "sha-384", "sha384", -43L, "SHA-384", 48),
 
 	/** SHA-512 */
-	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", "sha-512", "sha512", -44L, 64),
+	SHA512("SHA512", "SHA-512", "2.16.840.1.101.3.4.2.3", "http://www.w3.org/2001/04/xmlenc#sha512", "S512", "SHA-512", "sha-512", "sha512", -44L, "SHA-512", 64),
 
 	// see https://tools.ietf.org/html/rfc6931
 	/** SHA3-224 */
@@ -124,6 +124,9 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	/** Identifier of the algorithm for a CB-AdES (COSE) signatures */
 	private final Long coseId;
 
+	/** Identifier of the algorithm for a MobileSecurityObject (MSO) used for mdoc signed items integrity preservation */
+	private final String msoId;
+
 	/** Salt length for MGF usage */
 	private final int saltLength;
 
@@ -139,14 +142,16 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		private static final Map<String, DigestAlgorithm> XML_ALGORITHMS = registerXMLAlgorithms();
 		/** A map between JAdES URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> JADES_ALGORITHMS = registerJAdESAlgorithms();
-		/** A map between COSE IDs and algorithms */
-		private static final Map<Long, DigestAlgorithm> COSE_ALGORITHMS = registerCOSEAlgorithms();
 		/** A map between JAdES HTTPHeader URLs and algorithms */
 		private static final Map<String, DigestAlgorithm> HTTP_HEADER_ALGORITHMS = registerJwsHttpHeaderAlgorithms();
 		/** A map between SD-JWT token ids and algorithms */
 		private static final Map<String, DigestAlgorithm> SD_JWT_ALGORITHMS = registerSDJWTAlgorithms();
 		/** A map between SubResource integrity ids and algorithms */
 		private static final Map<String, DigestAlgorithm> SR_INTEGRITY_ALGORITHMS = registerSubResourceIntegrityAlgorithms();
+		/** A map between COSE IDs and algorithms */
+		private static final Map<Long, DigestAlgorithm> COSE_ALGORITHMS = registerCOSEAlgorithms();
+		/** A map between MSO IDs and algorithms */
+		private static final Map<String, DigestAlgorithm> MSO_ALGORITHMS = registerMSOAlgorithms();
 
 		private static Map<String, DigestAlgorithm> registerOIDAlgorithms() {
 			final Map<String, DigestAlgorithm> map = new HashMap<>();
@@ -216,6 +221,14 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 			final Map<Long, DigestAlgorithm> map = new HashMap<>();
 			for (final DigestAlgorithm digestAlgorithm : values()) {
 				map.put(digestAlgorithm.coseId, digestAlgorithm);
+			}
+			return map;
+		}
+
+		private static Map<String, DigestAlgorithm> registerMSOAlgorithms() {
+			final Map<String, DigestAlgorithm> map = new HashMap<>();
+			for (final DigestAlgorithm digestAlgorithm : values()) {
+				map.put(digestAlgorithm.msoId, digestAlgorithm);
 			}
 			return map;
 		}
@@ -340,22 +353,6 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	}
 
 	/**
-     * Returns the digest algorithm associated with the given identifier, according to
-	 * {@link <a href="https://www.iana.org/assignments/cose/cose.xhtml">IANA CBOR Object Signing and Encryption (COSE)</a>}
-     *
-     * @param algoId {@link Long} COSE algorithm identifier
-     * @return the digest algorithm linked to the given identifier
-     * @throws IllegalArgumentException if the name doesn't match any digest  algorithm
-     */
-	public static DigestAlgorithm forCOSE(final Long algoId) {
-		final DigestAlgorithm algorithm = Registry.COSE_ALGORITHMS.get(algoId);
-		if (algorithm == null) {
-			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, algoId));
-		}
-		return algorithm;
-	}
-
-	/**
 	 * Returns the digest algorithm associated to the given JWS Http Header Hash
 	 * Algorithm. See RFC 5843.
 	 *
@@ -409,6 +406,38 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	}
 
 	/**
+	 * Returns the digest algorithm associated with the given identifier, according to
+	 * {@link <a href="https://www.iana.org/assignments/cose/cose.xhtml">IANA CBOR Object Signing and Encryption (COSE)</a>}
+	 *
+	 * @param algoId {@link Long} COSE algorithm identifier
+	 * @return the digest algorithm linked to the given identifier
+	 * @throws IllegalArgumentException if the name doesn't match any digest  algorithm
+	 */
+	public static DigestAlgorithm forCOSE(final Long algoId) {
+		final DigestAlgorithm algorithm = Registry.COSE_ALGORITHMS.get(algoId);
+		if (algorithm == null) {
+			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, algoId));
+		}
+		return algorithm;
+	}
+
+	/**
+	 * Returns the digest algorithm associated with the given identifier, according to
+	 * ISO 18013-5 "9.1.2.5 Message digest function"
+	 *
+	 * @param algoId {@link Long} MSO digest algorithm identifier
+	 * @return the digest algorithm linked to the given identifier
+	 * @throws IllegalArgumentException if the name doesn't match any digest  algorithm
+	 */
+	public static DigestAlgorithm forMSO(final String algoId) {
+		final DigestAlgorithm algorithm = Registry.MSO_ALGORITHMS.get(algoId);
+		if (algorithm == null) {
+			throw new IllegalArgumentException(String.format(UNSUPPORTED_ALGORITHM_MESSAGE, algoId));
+		}
+		return algorithm;
+	}
+
+	/**
 	 * Constructor with OID and XML URI
 	 *
 	 * @param name {@link String} algorithm name
@@ -430,7 +459,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 * @param coseId {@link Long} algorithm COSE Id
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId, final Long coseId) {
-		this(name, javaName, oid, xmlId, null, null, null, null, coseId, 0);
+		this(name, javaName, oid, xmlId, null, null, null, null, coseId, null, 0);
 	}
 
 	/**
@@ -490,7 +519,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
 					final String jadesId, final String httpHeaderId, final String sdJwtId, final int saltLength) {
-		this(name, javaName, oid, xmlId, jadesId, httpHeaderId, sdJwtId, null, null, saltLength);
+		this(name, javaName, oid, xmlId, jadesId, httpHeaderId, sdJwtId, null, null, null, saltLength);
 	}
 
 	/**
@@ -505,11 +534,12 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 * @param sdJwtId {@link String} algorithm name for SD-JWT token
 	 * @param srIntegrityId {@link String} subresource integrity Id
 	 * @param coseId {@link Long} algorithm COSE Id
+	 * @param msoId {@link String} MobileSecurityObject algorithm identifier
 	 * @param saltLength {@link String} salt length for MGF
 	 */
 	DigestAlgorithm(final String name, final String javaName, final String oid, final String xmlId,
 					final String jadesId, final String httpHeaderId, final String sdJwtId, final String srIntegrityId,
-					final Long coseId, final int saltLength) {
+					final Long coseId, final String msoId, final int saltLength) {
 		this.name = name;
 		this.javaName = javaName;
 		this.oid = oid;
@@ -519,6 +549,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 		this.sdJwtId = sdJwtId;
 		this.srIntegrityId = srIntegrityId;
 		this.coseId = coseId;
+		this.msoId = msoId;
 		this.saltLength = saltLength;
 	}
 

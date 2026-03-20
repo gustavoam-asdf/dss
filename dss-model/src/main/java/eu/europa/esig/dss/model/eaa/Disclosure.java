@@ -3,18 +3,17 @@ package eu.europa.esig.dss.model.eaa;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
-import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * Generic implementation of an EAA Disclosure
  *
  */
-public abstract class Disclosure extends ClaimArray {
+public abstract class Disclosure implements Serializable {
 
     private static final long serialVersionUID = -6025755119813037143L;
 
@@ -24,17 +23,14 @@ public abstract class Disclosure extends ClaimArray {
     /** Value of the disclosure claim */
     protected Claim claim;
 
-    /** List of nested selectively disclosable claims  */
-    protected List<Claim> nestedSDClaims;
-
     /** Cached map containing computed digest values */
     private final EnumMap<DigestAlgorithm, Digest> digestMap = new EnumMap<>(DigestAlgorithm.class);
 
     /**
      * Default constructor
      */
-    protected Disclosure(final List<?> value) {
-        super(value);
+    protected Disclosure() {
+        // empty
     }
 
     /**
@@ -51,7 +47,6 @@ public abstract class Disclosure extends ClaimArray {
      *
      * @return {@link String}
      */
-    @Override
     public String getName() {
         return claim != null ? claim.getName() : null;
     }
@@ -93,17 +88,13 @@ public abstract class Disclosure extends ClaimArray {
 
         Disclosure that = (Disclosure) object;
         return Arrays.equals(salt, that.salt)
-                && Objects.equals(claim, that.claim)
-                && Objects.equals(nestedSDClaims, that.nestedSDClaims)
-                && digestMap.equals(that.digestMap);
+                && Objects.equals(claim, that.claim);
     }
 
     @Override
     public int hashCode() {
         int result = Arrays.hashCode(salt);
         result = 31 * result + Objects.hashCode(claim);
-        result = 31 * result + Objects.hashCode(nestedSDClaims);
-        result = 31 * result + digestMap.hashCode();
         return result;
     }
 

@@ -10,43 +10,12 @@ import java.util.stream.Collectors;
  * Represents an Array encoded (selectively) disclosable claim
  *
  */
-public class ClaimArray extends AbstractClaim {
+public abstract class ClaimArray extends AbstractClaim {
 
     private static final long serialVersionUID = -7818132616539798304L;
 
     /** The content of the array */
     protected final List<?> value;
-
-    /**
-     * Disclosable claim array
-     *
-     * @param value a list of {@link Claim}s representing the original array value
-     */
-    public ClaimArray(final List<?> value) {
-        this(null, value);
-    }
-
-    /**
-     * Constructor with claim name provided
-     *
-     * @param name {@link String} claim header name
-     * @param value a list of {@link Claim}s representing the original array value
-     */
-    public ClaimArray(final String name, final List<?> value) {
-        this(name, value, false);
-    }
-
-    /**
-     * Constructor with claim name and selectively disclosable status provided
-     *
-     * @param name {@link String} claim header name
-     * @param value a list of {@link Claim}s representing the original array value
-     * @param selectivelyDisclosable whether the claim is selectively disclosable
-     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
-     */
-    public ClaimArray(final String name, final List<?> value, final boolean selectivelyDisclosable) {
-        this(name, value, selectivelyDisclosable, null);
-    }
 
     /**
      * Constructor with claim name and selectively disclosable status and a parent claim provided
@@ -67,8 +36,16 @@ public class ClaimArray extends AbstractClaim {
         if (value == null || value.isEmpty()) {
             return Collections.emptyList();
         }
-        return value.stream().map(v -> Claim.create(null, this, v)).collect(Collectors.toList());
+        return value.stream().map(this::createClaim).collect(Collectors.toList());
     }
+
+    /**
+     * Creates a claim for an array item
+     *
+     * @param value object representing an array item
+     * @return {@link Claim}
+     */
+    protected abstract Claim createClaim(Object value);
 
     @Override
     public boolean isArrayValueType() {

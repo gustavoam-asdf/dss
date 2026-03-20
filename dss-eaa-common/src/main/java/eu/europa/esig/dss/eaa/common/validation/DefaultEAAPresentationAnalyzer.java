@@ -18,8 +18,8 @@ import java.util.Objects;
  */
 public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnalyzer implements EAAPresentationAnalyzer {
 
-    /** Cached instance of presentation of Electronic Attestation of Attributes */
-    private EAAPresentation eaaPresentation;
+    /** Cached list of presentations of Electronic Attestation of Attributes */
+    private List<EAAPresentation> eaaPresentations;
 
     /**
      * Empty constructor
@@ -50,28 +50,31 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     }
 
     @Override
-    public EAAPresentation getEAAPresentation() {
-        if (eaaPresentation == null) {
-            eaaPresentation = buildEAAPresentation();
+    public List<EAAPresentation> getEAAPresentations() {
+        if (eaaPresentations == null) {
+            eaaPresentations = buildEAAPresentations();
             // TODO : scopes ?
         }
-        return eaaPresentation;
+        return eaaPresentations;
     }
 
     /**
-     * Builds a presentation of Electronic Attestation of Attributes object
+     * Builds a list of presentation of Electronic Attestation of Attributes objects
      *
-     * @return {@link EAAPresentation}
+     * @return a list of {@link EAAPresentation}s
      */
-    protected abstract EAAPresentation buildEAAPresentation();
+    protected abstract List<EAAPresentation> buildEAAPresentations();
 
     @Override
     protected List<AdvancedSignature> getAllSignatures() {
-        EAAPresentation presentation = getEAAPresentation();
+        List<EAAPresentation> presentations = getEAAPresentations();
 
-        final List<AdvancedSignature> result = new ArrayList<>(presentation.getSignatures());
-        if (presentation.getKeyBindingSignature() != null) {
-            result.add(presentation.getKeyBindingSignature());
+        final List<AdvancedSignature> result = new ArrayList<>();
+        for (EAAPresentation presentation : presentations) {
+            result.addAll(presentation.getSignatures());
+            if (presentation.getKeyBindingSignature() != null) {
+                result.add(presentation.getKeyBindingSignature());
+            }
         }
         return result;
     }

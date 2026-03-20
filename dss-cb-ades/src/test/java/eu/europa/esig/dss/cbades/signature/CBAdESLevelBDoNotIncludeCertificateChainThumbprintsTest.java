@@ -1,12 +1,11 @@
 package eu.europa.esig.dss.cbades.signature;
 
 import eu.europa.esig.dss.cbades.COSEConstants;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
-import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -79,7 +78,7 @@ class CBAdESLevelBDoNotIncludeCertificateChainThumbprintsTest extends AbstractCB
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        CBORArray x5t = protectedHeader.getAsArray(COSEHeaderParameters.X5T.cbor());
+        CBORArray x5t = protectedHeader.getAsArray(COSEHeaderParameter.X5T.cbor());
         assertNotNull(x5t);
 
         Long algId = x5t.getAsLongOrString(COSEConstants.COSE_CERT_HASH_ALG);
@@ -91,10 +90,10 @@ class CBAdESLevelBDoNotIncludeCertificateChainThumbprintsTest extends AbstractCB
         assertNotNull(hashValue);
         assertArrayEquals(DSSUtils.digest(digestAlgorithm, getSignatureParameters().getSigningCertificate().getEncoded()), hashValue);
 
-        CBORArray x5ts = protectedHeader.getAsArray(COSEHeaderParameters.X5TS.cbor());
+        CBORArray x5ts = protectedHeader.getAsArray(COSEHeaderParameter.X5TS.cbor());
         assertNull(x5ts);
 
-        CBORArray x5chain = protectedHeader.getAsArray(COSEHeaderParameters.X5CHAIN.cbor());
+        CBORArray x5chain = protectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor());
         assertNotNull(x5chain);
         assertEquals(2, x5chain.getSize());
 

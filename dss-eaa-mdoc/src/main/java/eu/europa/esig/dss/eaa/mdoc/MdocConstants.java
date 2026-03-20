@@ -1,0 +1,56 @@
+package eu.europa.esig.dss.eaa.mdoc;
+
+/**
+ * Contains a list of common constants used for reading and processing an mdoc content
+ *
+ */
+public class MdocConstants {
+
+    // mdoc MobileSecurityObject parameters
+
+    /** List of individual data elements for a key usage */
+    public static final String DATA_ELEMENTS = "dataElements";
+
+    /** The public part of the key pair used for mdoc authentication */
+    public static final String DEVICE_KEY = "deviceKey";
+
+    /** The mdoc authentication public key and information related to this key */
+    public static final String DEVICE_KEY_INFO = "deviceKeyInfo";
+
+    /** Message digest algorithm used */
+    public static final String DIGEST_ALGORITHM = "digestAlgorithm";
+
+    /** docType as used in Documents */
+    public static final String DOC_TYPE = "docType";
+
+    /** The timestamp at which the issuing authority infrastructure expects to re-sign the MSO (tdate) */
+    public static final String EXPECTED_UPDATE = "expectedUpdate";
+
+    /** Authorized scope of key usage */
+    public static final String KEY_AUTHORIZATIONS = "keyAuthorizations";
+
+    /** Extra info about the key */
+    public static final String KEY_INFO = "keyInfo";
+
+    /** List of authorized namespaces for a key usage */
+    public static final String NAMESPACES = "nameSpaces";
+
+    /** The timestamp at which the MSO signature was created (tdate) */
+    public static final String SIGNED = "signed";
+
+    /** Information related to the validity of the MSO and its signature */
+    public static final String VALIDITY_INFO = "validityInfo";
+
+    /** The timestamp before which the MSO is not yet valid (tdate) */
+    public static final String VALID_FROM = "validFrom";
+
+    /** The timestamp after which the MSO is no longer valid (tdate) */
+    public static final String VALID_UNTIL = "validUntil";
+
+    /** Digests of all data elements per namespace */
+    public static final String VALUE_DIGEST = "valueDigests";
+
+    /** Version of the MobileSecurityObject */
+    public static final String VERSION = "version";
+
+}

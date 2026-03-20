@@ -59,12 +59,12 @@ public class CBAdESSignedProperties implements SignatureProperties<CBAdESAttribu
         final List<CBAdESAttribute> attributes = new ArrayList<>();
 
         if (bodyProtectedHeader != null) {
-            for (Map.Entry<CBORObject, CBORObject> entry : bodyProtectedHeader.toValueAsMap().entrySet()) {
+            for (Map.Entry<CBORObject, CBORObject> entry : bodyProtectedHeader.getValueAsMap().entrySet()) {
                 attributes.add(new CBAdESAttribute(entry.getKey(), entry.getValue()));
             }
         }
         if (signerProtectedHeader != null) {
-            for (Map.Entry<CBORObject, CBORObject> entry : signerProtectedHeader.toValueAsMap().entrySet()) {
+            for (Map.Entry<CBORObject, CBORObject> entry : signerProtectedHeader.getValueAsMap().entrySet()) {
                 if (bodyProtectedHeader != null && bodyProtectedHeader.containsKey(entry.getKey())) {
                     if (bodyProtectedHeader.getHeader(entry.getKey()).equals(entry.getValue())) {
                         LOG.warn("The header with key '{}' is present in both body and signer protected header!",

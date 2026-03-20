@@ -1,7 +1,5 @@
 package eu.europa.esig.dss.model.eaa.claim;
 
-import eu.europa.esig.dss.model.identifier.Identifier;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +21,6 @@ public abstract class AbstractClaim implements Claim {
 
     /** Parent claim, containing the current claim in its body */
     private Claim parent;
-
-    /** Cached identifier instance */
-    private Identifier identifier;
 
     /**
      * Default constructor
@@ -109,7 +104,7 @@ public abstract class AbstractClaim implements Claim {
     }
 
     @Override
-    public byte[] getBinariesValue() {
+    public byte[] getBinaryValue() {
         return null;
     }
 

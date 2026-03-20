@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.eaa.jwt.SDJWTSerializationObject;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
+import eu.europa.esig.dss.eaa.jwt.SDJWTSerializationObject;
 import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.jades.validation.JWS;
@@ -10,6 +10,7 @@ import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,13 +51,14 @@ public abstract class AbstractSDJWTEAAPresentationAnalyzer extends DefaultEAAPre
     protected abstract SDJWTSerializationObject buildSDJWTSerializationObject();
 
     @Override
-    protected EAAPresentation buildEAAPresentation() {
-        return SDJWTPresentation.initBuilder()
+    protected List<EAAPresentation> buildEAAPresentations() {
+        SDJWTEAAPresentation sdJwtEaa = SDJWTEAAPresentation.initBuilder()
                 .setSignatures(getSignatures(sdJWTSerializationObject))
                 .setDisclosures(sdJWTSerializationObject.getDisclosures())
                 .setKeyBindingSignature(getKeyBindingSignature(sdJWTSerializationObject))
                 .setFilename(document.getName())
                 .build();
+        return Collections.singletonList(sdJwtEaa); // only one EAA is possible
     }
 
     /**

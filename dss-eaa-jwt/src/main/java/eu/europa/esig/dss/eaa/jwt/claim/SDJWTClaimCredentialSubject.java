@@ -17,7 +17,7 @@ import java.util.Date;
  * SD-JWT implementation of a "4.8 Credential Subject" claim defined in W3C Verifiable Credentials Data Model v2.0.
  *
  */
-public class SDJWTClaimCredentialSubject extends ClaimMap implements ClaimCredentialSubject {
+public class SDJWTClaimCredentialSubject extends SDJWTClaimMap implements ClaimCredentialSubject {
 
     private static final long serialVersionUID = -4959653550379591495L;
 

@@ -41,11 +41,4 @@ public abstract class AbstractSDJWTEAAPresentationTestValidation extends Abstrac
         }
     }
 
-    @Override
-    protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
-        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-            assertNotNull(signatureWrapper.getJWSSerializationType());
-        }
-    }
-
 }

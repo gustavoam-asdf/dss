@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.eaa.jwt.claim;
 
-import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
@@ -32,7 +31,12 @@ public class SDJWTClaimIntegrity extends ClaimString implements ClaimIntegrity {
     public DigestAlgorithm getDigestAlgorithm() {
         String[] parts = getStringValue().split("-");
         if (parts.length > 1) {
-            return SDJWTUtils.getDigestAlgorithmForIntegrityClaimId(parts[0]);
+            String srIntegrityId = parts[0];
+            try {
+                return DigestAlgorithm.forSrIntegrityId(srIntegrityId);
+            } catch (IllegalArgumentException e) {
+                LOG.warn("Unable to find a corresponding DigestAlgorithm for integrity claim for value '{}'!", srIntegrityId);
+            }
         }
         return null;
     }

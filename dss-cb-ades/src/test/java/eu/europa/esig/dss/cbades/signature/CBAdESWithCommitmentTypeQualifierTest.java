@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
@@ -78,7 +78,7 @@ class CBAdESWithCommitmentTypeQualifierTest extends AbstractCBAdESTestSignature 
 
         CBAdESSignature signature = (CBAdESSignature) signatures.get(0);
         COSEProtectedHeader protectedHeader = signature.getCoseSignature().getSignerProtectedHeader();
-        CBORObject commitmentType = protectedHeader.getHeader(COSEHeaderParameters.SR_CMS.cbor());
+        CBORObject commitmentType = protectedHeader.getHeader(COSEHeaderParameter.SR_CMS.cbor());
         assertNotNull(commitmentType);
         assertTrue(commitmentType.isArray());
 
@@ -90,12 +90,12 @@ class CBAdESWithCommitmentTypeQualifierTest extends AbstractCBAdESTestSignature 
 
         CBORMap commitmentTypeMap = (CBORMap) commType;
 
-        CBORObject identifier = commitmentTypeMap.getHeader(COSEHeaderParameters.SR_CM_COMM_ID.cbor());
+        CBORObject identifier = commitmentTypeMap.getHeader(COSEHeaderParameter.SR_CM_COMM_ID.cbor());
         assertNotNull(identifier);
         assertTrue(identifier.isMap());
-        assertEquals("urn:oid:" + CommitmentTypeEnum.ProofOfApproval.getOid(), ((CBORMap) identifier).getAsString(COSEHeaderParameters.OID_ID.cbor()));
+        assertEquals("urn:oid:" + CommitmentTypeEnum.ProofOfApproval.getOid(), ((CBORMap) identifier).getAsString(COSEHeaderParameter.OID_ID.cbor()));
 
-        CBORObject qualifiers = commitmentTypeMap.getHeader(COSEHeaderParameters.SR_CM_COMM_QUALS.cbor());
+        CBORObject qualifiers = commitmentTypeMap.getHeader(COSEHeaderParameter.SR_CM_COMM_QUALS.cbor());
         assertNotNull(qualifiers);
         assertTrue(qualifiers.isArray());
 

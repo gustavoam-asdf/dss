@@ -1,17 +1,31 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
+import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract implementation of EAA Payload Verifier
  *
  */
 public abstract class EAAPayloadVerifier {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EAAPayloadVerifier.class);
 
     /**
      * List of disclosures attached to the EAA Presentation
@@ -21,7 +35,7 @@ public abstract class EAAPayloadVerifier {
     /**
      * Extracted Digest Algorithm value to be used on hash of disclosures computation
      */
-    protected DigestAlgorithm sdDigestAlgorithm;
+    protected DigestAlgorithm digestAlgorithm;
 
     /**
      * Computed list of disclosure validations
@@ -84,5 +98,191 @@ public abstract class EAAPayloadVerifier {
      * NOTE: The process can be executed only once
      */
     public abstract void verify();
+
+    /**
+     * This method looks recursively for protected hashes of selectively disclosable values and embeds them if needed.
+     * This method also updates the {@code disclosureValidations} list.
+     *
+     * @param originalClaim {@link Claim} to process
+     * @return resulting {@link Claim} build on the {@code originalClaim}
+     */
+    protected Claim buildClaimWithDisclosures(Claim originalClaim) {
+        // re-build to ensure original is not modified
+        if (originalClaim.isMapValueType()) {
+            return buildClaimMap((ClaimMap) originalClaim);
+        } else if (originalClaim.isArrayValueType()) {
+            return buildClaimArray((ClaimArray) originalClaim);
+        }
+        // in other cases, keep the original
+        return originalClaim;
+    }
+
+    private Claim buildClaimMap(ClaimMap originalClaimMap) {
+        final Map<String, Claim> result = new HashMap<>(); // TODO : LinkedHashMap ?
+        for (Map.Entry<String, Claim> entry : originalClaimMap.getMapValue().entrySet()) {
+            String headerName = entry.getKey();
+            Claim claimValue = entry.getValue();
+            if (isSignedDisclosuresHeader(headerName)) {
+                List<Claim> claims = buildSelectivelyDisclosableClaimsFromClaim(claimValue);
+                for (Claim claim : claims) {
+                    claim = buildClaimWithDisclosures(claim);
+                    if (claim != null) {
+                        if (claim.getName() != null) {
+                            result.put(claim.getName(), claim);
+                        } else {
+                            LOG.warn("No claim name is present for the disclosure when matching an '{}' value!", headerName);
+                        }
+                    }
+                }
+
+            } else if (isToSkipHeader(headerName)) {
+                // skip _sd_alg values
+                continue;
+
+            } else {
+                claimValue = buildClaimWithDisclosures(claimValue);
+                if (claimValue != null) {
+                    result.put(headerName, claimValue);
+                }
+            }
+
+        }
+        return createClaim(originalClaimMap.getName(), originalClaimMap.getParent(), result, originalClaimMap.isSelectivelyDisclosable());
+    }
+
+    /**
+     * Returns whether the {@code headerName} corresponds to a header containing hashes of signed data items
+     *
+     * @param headerName {@link String} to check
+     * @return TRUE if the header name corresponds to a header name containing hashes of signed data items,
+     *         FALSE otherwise
+     */
+    protected abstract boolean isSignedDisclosuresHeader(String headerName);
+
+    /**
+     * Returns whether the header is to be skipped from the final payload map (used for technical headers).
+     * NOTE: a header containing hashes of signed data items does not need to be handled in this method.
+     *
+     * @param headerName {@link String} to check
+     * @return TRUE if the header with the given name is to be skipped, FALSE otherwise
+     */
+    protected abstract boolean isToSkipHeader(String headerName);
+
+    /**
+     * Creates a new claim using the provided information
+     *
+     * @param claimName {@link String} name of the corresponding header key used to incorporate the claim
+     * @param parentClaim {@link Claim} parent of the claim to be created
+     * @param claimValue value of the claim
+     * @param isSelectivelyDisclosable whether the claim was provided as a selective disclosure
+     * @return {@link Claim}
+     */
+    protected abstract Claim createClaim(String claimName, Claim parentClaim, Object claimValue, boolean isSelectivelyDisclosable);
+
+    private Claim buildClaimArray(ClaimArray originalClaimArray) {
+        final List<Claim> result = new ArrayList<>();
+        for (Claim claimItem : originalClaimArray.getListValue()) {
+            Claim hashClaim = getClaimHashItem(claimItem);
+            if (hashClaim != null) {
+                claimItem = buildSelectivelyDisclosableClaim(hashClaim, disclosures);
+            } else {
+                claimItem = buildClaimWithDisclosures(claimItem);
+            }
+            if (claimItem != null) {
+                result.add(claimItem);
+            }
+        }
+        return createClaim(originalClaimArray.getName(), originalClaimArray.getParent(), result, originalClaimArray.isSelectivelyDisclosable());
+    }
+
+    /**
+     * Gets a claim when its value corresponds to a hash of a selectively disclosable item (e.g. "..." in SD-JWT)
+     *
+     * @param claim {@link Claim} to check
+     * @return {@link Claim} hash value of the claim, when applicable. NULL otherwise.
+     */
+    protected abstract Claim getClaimHashItem(Claim claim);
+
+    /**
+     * Builds a list of hash claims from a content of a claim containing protected hashes
+     *
+     * @param claim {@link Claim} to process
+     * @return a list of {@link Claim>}s
+     */
+    protected abstract List<Claim> buildSelectivelyDisclosableClaimsFromClaim(Claim claim);
+
+    /**
+     * Builds a claim based on the provided selectively disclosable value
+     *
+     * @param hashClaim {@link Claim} representing the hash value of the item
+     * @param disclosures a list of {@link Disclosure}s to look for a matching value from
+     * @return {@link Claim} resulting in a processing of disclosable claims
+     */
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures) {
+        DisclosureValidation disclosureValidation = validateHashClaim(hashClaim, disclosures);
+        if (disclosureValidation != null) {
+            disclosureValidations.add(disclosureValidation);
+            if (disclosureValidation.isFound() && disclosureValidation.isIntact() && disclosureValidation.getDisclosure() != null) {
+                return disclosureValidation.getDisclosure().getClaimValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Performs verification of the hash claim. The method looks for a corresponding provided disclosure and
+     * returns the corresponding validation result.
+     *
+     * @param hashClaim {@link Claim} to verify
+     * @param disclosures a list of {@link Disclosure}s to look for a matching value from
+     * @return {@link DisclosureValidation}
+     */
+    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures) {
+        if (hashClaim == null) {
+            return null;
+        }
+        byte[] hashBytes = getHashBytes(hashClaim);
+        if (hashBytes == null) {
+            return null;
+        }
+
+        DisclosureValidation disclosureValidation;
+        Disclosure disclosure = getDisclosureForClaimHash(hashBytes, disclosures);
+        if (disclosure != null) {
+            disclosureValidation = new DisclosureValidation(disclosure);
+            disclosureValidation.setType(DigestMatcherType.EAA_DISCLOSURE);
+            disclosureValidation.setDigest(new Digest(digestAlgorithm, hashBytes));
+            disclosureValidation.setFound(true);
+            disclosureValidation.setIntact(true);
+
+        } else {
+            disclosureValidation = new DisclosureValidation();
+            disclosureValidation.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
+            disclosureValidation.setDigest(new Digest(digestAlgorithm, hashBytes));
+        }
+        return disclosureValidation;
+    }
+
+    /**
+     * Gets embedded hash bytes from the claim value
+     *
+     * @param hashClaim {@link Claim}
+     * @return byte array representing the resulted hash value
+     */
+    protected abstract byte[] getHashBytes(Claim hashClaim);
+
+    private Disclosure getDisclosureForClaimHash(byte[] sdHash, List<Disclosure> disclosures) {
+        if (Utils.isCollectionEmpty(disclosures)) {
+            LOG.debug("No disclosures has been provided. Unable to validate a selectively disclosable claim.");
+            return null;
+        }
+        for (Disclosure disclosure : disclosures) {
+            Digest disclosureDigest = disclosure.getDigest(digestAlgorithm);
+            if (disclosureDigest != null && !disclosureDigest.isEmpty() && Arrays.equals(sdHash, disclosureDigest.getValue())) {
+                return disclosure;
+            }
+        }
+        return null;
+    }
 
 }

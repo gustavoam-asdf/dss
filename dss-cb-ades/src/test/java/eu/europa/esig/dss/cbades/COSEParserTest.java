@@ -193,7 +193,7 @@ class COSEParserTest {
         COSEUnprotectedHeader unprotectedHeader = coseSign.getUnprotectedHeader();
         assertFalse(unprotectedHeader.isEmpty());
 
-        CBORObject countersign = unprotectedHeader.getHeader(COSEHeaderParameters.COUNTER_SIGNATURE.cbor());
+        CBORObject countersign = unprotectedHeader.getHeader(COSEHeaderParameter.COUNTER_SIGNATURE.cbor());
         assertNotNull(countersign);
 
         COSECounterSignStructure coseCounterSign = COSECounterSignatureParser.fromCBORObject(countersign)
@@ -246,7 +246,7 @@ class COSEParserTest {
         COSEUnprotectedHeader unprotectedHeader = coseSign1.getUnprotectedHeader();
         assertFalse(unprotectedHeader.isEmpty());
 
-        CBORObject countersignatureV2 = unprotectedHeader.getHeader(COSEHeaderParameters.COUNTER_SIGNATURE_V2.cbor());
+        CBORObject countersignatureV2 = unprotectedHeader.getHeader(COSEHeaderParameter.COUNTER_SIGNATURE_V2.cbor());
         assertNotNull(countersignatureV2);
 
         COSECounterSignStructure coseCounterSign = COSECounterSignatureParser.fromCBORObject(countersignatureV2)

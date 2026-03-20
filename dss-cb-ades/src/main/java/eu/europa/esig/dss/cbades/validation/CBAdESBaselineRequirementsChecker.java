@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -47,13 +47,13 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         }
 
         // alg (Cardinality == 1)
-        if (signatureProtectedHeader.getAsLong(COSEHeaderParameters.ALG.cbor()) == null &&
-                Utils.isStringEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameters.ALG.cbor()))) {
+        if (signatureProtectedHeader.getAsLong(COSEHeaderParameter.ALG.cbor()) == null &&
+                Utils.isStringEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameter.ALG.cbor()))) {
             LOG.warn("'alg' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
         // content type (Conditional presence)
-        if (signature.isCounterSignature() && Utils.isStringNotEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameters.CONTENT_TYPE.cbor()))) {
+        if (signature.isCounterSignature() && Utils.isStringNotEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameter.CONTENT_TYPE.cbor()))) {
             LOG.warn("'content type' header shall not be present for a CB-AdES-BASELINE-B counter signature!");
             return false;
         }
@@ -63,29 +63,29 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
             return false;
         }
         // iat (Cardinality == 1)
-        CBORMap cwtClaims = signatureProtectedHeader.getAsMap(COSEHeaderParameters.CWT_CLAIMS.cbor());
-        if (cwtClaims == null || cwtClaims.getAsLong(COSEHeaderParameters.CWT_CLAIMS_IAT.cbor()) == null) {
+        CBORMap cwtClaims = signatureProtectedHeader.getAsMap(COSEHeaderParameter.CWT_CLAIMS.cbor());
+        if (cwtClaims == null || cwtClaims.getAsLong(COSEHeaderParameter.CWT_CLAIMS_IAT.cbor()) == null) {
             LOG.warn("'CWT Claims enclosing the iat' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
         // x5t / x5ts / x5chain (Cardinality == 1)
         int certHeaders = 0;
-        if (signatureProtectedHeader.getAsArray(COSEHeaderParameters.X5T.cbor()) != null) ++certHeaders;
-        if (signatureProtectedHeader.getAsArray(COSEHeaderParameters.X5TS.cbor()) != null) ++certHeaders;
-        if (signatureProtectedHeader.getAsArray(COSEHeaderParameters.X5CHAIN.cbor()) != null) ++certHeaders;
-        if (signatureProtectedHeader.getAsBinaries(COSEHeaderParameters.X5CHAIN.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5T.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5TS.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsBinaries(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
         if (certHeaders == 0) {
             LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
 
         // sigPSt (Cardinality 0 or 1)
-        if (uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.SIG_PST.cbor()).size() > 1) {
+        if (uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.SIG_PST.cbor()).size() > 1) {
             LOG.warn("Only one 'sigPSt' header shall be present for CB-AdES-BASELINE-B signature (cardinality 0 or 1)!");
             return false;
         }
         // Additional requirement (b)
-        if ((signatureProtectedHeader.getAsMap(COSEHeaderParameters.SIG_PID.cbor()) == null ||
+        if ((signatureProtectedHeader.getAsMap(COSEHeaderParameter.SIG_PID.cbor()) == null ||
                 !isSignaturePolicyIdentifierHashPresent()) && signature.getSignaturePolicyStore() != null) {
             LOG.warn("'sigPSt' header shall not be incorporated " +
                     "for CB-AdES-BASELINE-B signature with not defined 'sigPId/digVal' (requirement (b))!");
@@ -99,7 +99,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         List<CBORObject> critList = new ArrayList<>();
 
         // crit (conditional presence, required only for some elements)
-        CBORArray crit = protectedHeader.getAsArray(COSEHeaderParameters.CRIT.cbor());
+        CBORArray crit = protectedHeader.getAsArray(COSEHeaderParameter.CRIT.cbor());
         if (crit != null) {
             // crit cannot be empty
             critList.addAll(crit.getValueAsList());
@@ -139,14 +139,14 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         }
         CBAdESUHeaders uHeaders = signature.getUHeaders();
         // Additional requirement (c)
-        for (CBAdESUHeadersComponent uHeaderComponent : uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.SIG_TST.cbor())) {
+        for (CBAdESUHeadersComponent uHeaderComponent : uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.SIG_TST.cbor())) {
             CBORObject sigTst = uHeaderComponent.getValue();
             if (sigTst == null) {
                 LOG.warn("'sigTst' shall be a type of CBOR Map for CB-AdES-BASELINE-T signature!");
                 return false;
             }
             CBORMap tstContainer = (CBORMap) sigTst;
-            CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
+            CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameter.TST_CONTAINER_TST_TOKENS.cbor());
             if (tstTokens.getSize() != 1) {
                 LOG.warn("'sigTst' shall contain only one electronic timestamp for CB-AdES-BASELINE-T signature (requirement (c))!");
                 return false;
@@ -168,17 +168,17 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         }
         CBAdESUHeaders uHeaders = signature.getUHeaders();
         // refs (Cardinality == 0)
-        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.REFS.cbor()).isEmpty()) {
+        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.REFS.cbor()).isEmpty()) {
             LOG.warn("'refs' header shall not be present for CB-AdES-BASELINE-LT signature (cardinality == 0)!");
             return false;
         }
         // sigRTst (Cardinality == 0)
-        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.SIG_R_TST.cbor()).isEmpty()) {
+        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.SIG_R_TST.cbor()).isEmpty()) {
             LOG.warn("'sigRTst' header shall not be present for CB-AdES-BASELINE-LT signature (cardinality == 0)!");
             return false;
         }
         // rfsTst (Cardinality == 0)
-        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.RFS_TST.cbor()).isEmpty()) {
+        if (!uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.RFS_TST.cbor()).isEmpty()) {
             LOG.warn("'rfsTst' header shall not be present for CB-AdES-BASELINE-LT signature (cardinality == 0)!");
             return false;
         }
@@ -188,10 +188,10 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
     @Override
     protected boolean containsLTLevelCertificates() {
         CBAdESUHeaders uHeaders = signature.getUHeaders();
-        List<CBAdESUHeadersComponent> valDataEntries = uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameters.VAL_DATA.cbor());
+        List<CBAdESUHeadersComponent> valDataEntries = uHeaders.getUnsignedPropertiesWithHeaderId(COSEHeaderParameter.VAL_DATA.cbor());
         for (CBAdESUHeadersComponent uHeadersComponent : valDataEntries) {
             CBORObject valData = uHeadersComponent.getValue();
-            if (valData.isMap() && ((CBORMap) valData).getAsArray(COSEHeaderParameters.VAL_DATA_X_VALS.cbor()) != null) {
+            if (valData.isMap() && ((CBORMap) valData).getAsArray(COSEHeaderParameter.VAL_DATA_X_VALS.cbor()) != null) {
                 return true;
             }
         }

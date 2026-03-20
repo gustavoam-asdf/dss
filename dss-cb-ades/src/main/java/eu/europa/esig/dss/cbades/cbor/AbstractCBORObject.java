@@ -154,7 +154,7 @@ public abstract class AbstractCBORObject<D extends DataItem> implements CBORObje
     }
 
     @Override
-    public Map<CBORObject, CBORObject> toValueAsMap() {
+    public Map<CBORObject, CBORObject> getValueAsMap() {
         return null;
     }
 

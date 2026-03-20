@@ -5,7 +5,7 @@ import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSECounterSignature0;
 import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
@@ -690,7 +690,7 @@ public class CBORSignature {
      * @return {@link Long}
      */
     protected Long getAlgorithmHeaderValue() {
-        return getProtectedHeaderValueAsLong(COSEHeaderParameters.ALG.cbor());
+        return getProtectedHeaderValueAsLong(COSEHeaderParameter.ALG.cbor());
     }
 
     /**
@@ -834,7 +834,7 @@ public class CBORSignature {
      * @return {@link CBORArray}
      */
     public CBORArray getUHeaders() {
-        return getUnprotectedHeaderValueAsArray(COSEHeaderParameters.U_HEADERS.cbor());
+        return getUnprotectedHeaderValueAsArray(COSEHeaderParameter.U_HEADERS.cbor());
     }
 
     /**

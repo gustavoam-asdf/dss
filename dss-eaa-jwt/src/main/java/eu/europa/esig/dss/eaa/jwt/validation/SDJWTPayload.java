@@ -4,6 +4,7 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimCredentialSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimMap;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimPlaceOfBirth;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
@@ -31,7 +32,7 @@ import java.util.List;
  * This class implements a user-friendly access to the EAA payload elements of the SD-JWT token
  *
  */
-public class SDJWTPayload extends ClaimMap implements EAAPayload {
+public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     private static final long serialVersionUID = -4552799683587409954L;
 

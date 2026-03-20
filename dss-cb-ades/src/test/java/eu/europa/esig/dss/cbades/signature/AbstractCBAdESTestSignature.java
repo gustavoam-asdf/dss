@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
@@ -9,7 +9,6 @@ import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
-import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
@@ -177,7 +176,7 @@ public abstract class AbstractCBAdESTestSignature
                 assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyKey));
             }
 
-            CBORObject crit = protectedHeader.getHeader(COSEHeaderParameters.CRIT.cbor());
+            CBORObject crit = protectedHeader.getHeader(COSEHeaderParameter.CRIT.cbor());
             if (crit != null) {
                 assertTrue(crit.isArray());
                 assertInstanceOf(CBORArray.class, crit);
@@ -196,7 +195,7 @@ public abstract class AbstractCBAdESTestSignature
                 }
             }
 
-            CBORArray uHeaders = unprotectedHeader.getAsArray(COSEHeaderParameters.U_HEADERS.cbor());
+            CBORArray uHeaders = unprotectedHeader.getAsArray(COSEHeaderParameter.U_HEADERS.cbor());
             if (SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel())) {
                 assertNull(uHeaders);
 

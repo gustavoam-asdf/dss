@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
@@ -74,20 +74,20 @@ class CBAdESLevelBDetachedByUryWithHttpParsTest extends AbstractCBAdESMultipleDo
     }
 
     private void assertRequirementsValid(COSEProtectedHeader protectedHeader) {
-        String cty = protectedHeader.getAsString(COSEHeaderParameters.CONTENT_TYPE.cbor());
+        String cty = protectedHeader.getAsString(COSEHeaderParameter.CONTENT_TYPE.cbor());
         assertNull(cty);
 
-        CBORMap sigD = protectedHeader.getAsMap(COSEHeaderParameters.SIG_D.cbor());
+        CBORMap sigD = protectedHeader.getAsMap(COSEHeaderParameter.SIG_D.cbor());
         assertNotNull(sigD);
 
-        String mId = sigD.getAsString(COSEHeaderParameters.SIG_D_MID.cbor());
+        String mId = sigD.getAsString(COSEHeaderParameter.SIG_D_MID.cbor());
         assertNotNull(mId);
         assertEquals(SigDMechanism.OBJECT_ID_BY_URI.getCBAdESUri(), mId);
 
-        Long hashM = sigD.getAsLong(COSEHeaderParameters.SIG_D_HASH_M.cbor());
+        Long hashM = sigD.getAsLong(COSEHeaderParameter.SIG_D_HASH_M.cbor());
         assertNull(hashM);
 
-        CBORArray pars = sigD.getAsArray(COSEHeaderParameters.SIG_D_PARS.cbor());
+        CBORArray pars = sigD.getAsArray(COSEHeaderParameter.SIG_D_PARS.cbor());
         assertNotNull(pars);
         assertFalse(pars.isEmpty());
         assertEquals(2, pars.getSize());
@@ -105,10 +105,10 @@ class CBAdESLevelBDetachedByUryWithHttpParsTest extends AbstractCBAdESMultipleDo
         assertTrue(firstDocFound);
         assertTrue(secondDocFound);
 
-        CBORArray hashV = sigD.getAsArray(COSEHeaderParameters.SIG_D_HASH_V.cbor());
+        CBORArray hashV = sigD.getAsArray(COSEHeaderParameter.SIG_D_HASH_V.cbor());
         assertNull(hashV);
 
-        CBORArray ctys = sigD.getAsArray(COSEHeaderParameters.SIG_D_CTYS.cbor());
+        CBORArray ctys = sigD.getAsArray(COSEHeaderParameter.SIG_D_CTYS.cbor());
         assertNotNull(ctys);
         assertFalse(ctys.isEmpty());
         assertEquals(2, ctys.getSize());

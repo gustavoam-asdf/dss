@@ -9,7 +9,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
  * SD-JWT VC token representation of a user address claim, defined in OpenID Connect Core 1.0 "5.1.1. Address Claim".
  *
  */
-public class SDJWTClaimAddress extends ClaimMap implements ClaimAddress {
+public class SDJWTClaimAddress extends SDJWTClaimMap implements ClaimAddress {
 
     private static final long serialVersionUID = 4589801086719909382L;
 

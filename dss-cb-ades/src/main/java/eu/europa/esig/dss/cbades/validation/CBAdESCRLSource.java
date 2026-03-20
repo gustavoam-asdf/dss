@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -48,11 +48,11 @@ public class CBAdESCRLSource extends OfflineCRLSource {
     }
 
     private void extractValidationData(CBAdESAttribute attribute) {
-        if (COSEHeaderParameters.VAL_DATA.cbor().equals(attribute.getHeaderId())) {
+        if (COSEHeaderParameter.VAL_DATA.cbor().equals(attribute.getHeaderId())) {
             CBORObject valData = attribute.getValue();
             if (valData.isMap()) {
                 CBORMap valDataMap = (CBORMap) valData;
-                CBORMap rVals = valDataMap.getAsMap(COSEHeaderParameters.VAL_DATA_R_VALS.cbor());
+                CBORMap rVals = valDataMap.getAsMap(COSEHeaderParameter.VAL_DATA_R_VALS.cbor());
                 if (rVals != null && !rVals.isEmpty()) {
                     extractRevocationValues(rVals, RevocationOrigin.ANY_VALIDATION_DATA);
                 }
@@ -63,7 +63,7 @@ public class CBAdESCRLSource extends OfflineCRLSource {
     }
 
     private void extractRevocationValues(CBORMap rVals, RevocationOrigin origin) {
-        CBORArray crlVals = rVals.getAsArray(COSEHeaderParameters.R_VALS_CRL_VALS.cbor());
+        CBORArray crlVals = rVals.getAsArray(COSEHeaderParameter.R_VALS_CRL_VALS.cbor());
         if (crlVals != null && !crlVals.isEmpty()) {
             for (CBORObject pkiOb : crlVals.getValueAsList()) {
                 if (pkiOb.isMap()) {
@@ -87,11 +87,11 @@ public class CBAdESCRLSource extends OfflineCRLSource {
     }
 
     private void extractCompleteRevocationRefs(CBAdESAttribute attribute) {
-        if (COSEHeaderParameters.REFS.cbor().equals(attribute.getHeaderId())) {
+        if (COSEHeaderParameter.REFS.cbor().equals(attribute.getHeaderId())) {
             CBORObject refs = attribute.getValue();
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORMap rRefs = refsMap.getAsMap(COSEHeaderParameters.REFS_R_REFS.cbor());
+                CBORMap rRefs = refsMap.getAsMap(COSEHeaderParameter.REFS_R_REFS.cbor());
                 if (rRefs != null && !rRefs.isEmpty()) {
                     extractRevocationRefs(rRefs, RevocationRefOrigin.COMPLETE_REVOCATION_REFS);
                 }
@@ -102,7 +102,7 @@ public class CBAdESCRLSource extends OfflineCRLSource {
     }
 
     private void extractRevocationRefs(CBORMap rRefs, RevocationRefOrigin origin) {
-        CBORArray crlRefs = rRefs.getAsArray(COSEHeaderParameters.R_REFS_CRL_REF.cbor());
+        CBORArray crlRefs = rRefs.getAsArray(COSEHeaderParameter.R_REFS_CRL_REF.cbor());
         if (crlRefs != null) {
             for (CBORObject crlRefObject : crlRefs.getValueAsList()) {
                 if (crlRefObject.isMap()) {

@@ -2,7 +2,7 @@ package eu.europa.esig.dss.cbades.validation.timestamp;
 
 import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
@@ -276,7 +276,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              */
             CBAdESUHeaders uHeaders = signature.getUHeaders();
             List<CBAdESUHeadersComponent> uHeadersToBeCovered = getUHeadersToBeCovered(uHeaders,
-                    COSEHeaderParameters.SIG_TST.cbor(), COSEHeaderParameters.REFS.cbor());
+                    COSEHeaderParameter.SIG_TST.cbor(), COSEHeaderParameter.REFS.cbor());
             if (Utils.isCollectionNotEmpty(uHeadersToBeCovered)) {
                 for (CBAdESUHeadersComponent uHeaderComponent : uHeadersToBeCovered) {
                     array.add(uHeaderComponent.getComponent());
@@ -343,7 +343,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              */
             CBAdESUHeaders uHeaders = signature.getUHeaders();
             List<CBAdESUHeadersComponent> uHeadersToBeCovered = getUHeadersToBeCovered(uHeaders,
-                    COSEHeaderParameters.SIG_TST.cbor(), COSEHeaderParameters.REFS.cbor());
+                    COSEHeaderParameter.SIG_TST.cbor(), COSEHeaderParameter.REFS.cbor());
             if (Utils.isCollectionNotEmpty(uHeadersToBeCovered)) {
                 for (CBAdESUHeadersComponent uHeaderComponent : uHeadersToBeCovered) {
                     array.add(uHeaderComponent.getComponent());

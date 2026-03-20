@@ -2,7 +2,7 @@ package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSESignatureContext;
@@ -82,7 +82,7 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
         stringBuilder.append(cbadesSignature.getCOSESignatureContext().getLabel());
 
         if (cbadesSignature.getMasterCounterSignatureComponent() != null) {
-            stringBuilder.append(COSEHeaderParameters.U_HEADERS);
+            stringBuilder.append(COSEHeaderParameter.U_HEADERS);
         }
 
         COSEStructure coseSignStructure = cbadesSignature.getCoseSignature().getCoseSignStructure();

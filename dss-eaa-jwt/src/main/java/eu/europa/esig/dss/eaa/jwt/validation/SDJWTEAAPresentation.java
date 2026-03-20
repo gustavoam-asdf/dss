@@ -14,22 +14,22 @@ import java.util.List;
  * This class represents an SD-JWT VC object, as per IETF draft-ietf-oauth-selective-disclosure-jwt-22.
  *
  */
-public class SDJWTPresentation extends DefaultEAAPresentation {
+public class SDJWTEAAPresentation extends DefaultEAAPresentation {
 
     /**
      * Default constructor
      */
-    protected SDJWTPresentation() {
+    protected SDJWTEAAPresentation() {
         // empty
     }
 
     /**
      * Instantiates a builder to create an {@code SDJWTPresentation} object
      *
-     * @return {@link SDJWTPresentationBuilder}
+     * @return {@link SDJWTEAAPresentationBuilder}
      */
-    public static SDJWTPresentationBuilder initBuilder() {
-        return new SDJWTPresentationBuilder();
+    public static SDJWTEAAPresentationBuilder initBuilder() {
+        return new SDJWTEAAPresentationBuilder();
     }
 
     @Override
@@ -51,40 +51,44 @@ public class SDJWTPresentation extends DefaultEAAPresentation {
      * This class is used to build a {@code eu.europa.esig.dss.eaa.jwt.validation.SDJWTPresentation} object
      *
      */
-    public static class SDJWTPresentationBuilder extends DefaultEAAPresentationBuilder {
+    public static class SDJWTEAAPresentationBuilder extends DefaultEAAPresentationBuilder {
 
         /**
          * Default constructor
          */
-        public SDJWTPresentationBuilder() {
+        public SDJWTEAAPresentationBuilder() {
             // empty
         }
 
         @Override
-        public SDJWTPresentationBuilder setSignatures(List<AdvancedSignature> signatures) {
-            return (SDJWTPresentationBuilder) super.setSignatures(signatures);
+        public SDJWTEAAPresentationBuilder setSignatures(List<AdvancedSignature> signatures) {
+            return (SDJWTEAAPresentationBuilder) super.setSignatures(signatures);
         }
 
         @Override
-        public SDJWTPresentationBuilder setDisclosures(List<Disclosure> disclosures) {
-            return (SDJWTPresentationBuilder) super.setDisclosures(disclosures);
+        public SDJWTEAAPresentationBuilder setDisclosures(List<Disclosure> disclosures) {
+            return (SDJWTEAAPresentationBuilder) super.setDisclosures(disclosures);
         }
 
         @Override
-        public SDJWTPresentationBuilder setKeyBindingSignature(AdvancedSignature keyBindingSignature) {
-            return (SDJWTPresentationBuilder) super.setKeyBindingSignature(keyBindingSignature);
+        public SDJWTEAAPresentationBuilder setKeyBindingSignature(AdvancedSignature keyBindingSignature) {
+            return (SDJWTEAAPresentationBuilder) super.setKeyBindingSignature(keyBindingSignature);
         }
 
         @Override
-        public SDJWTPresentationBuilder setFilename(String filename) {
-            return (SDJWTPresentationBuilder) super.setFilename(filename);
+        public SDJWTEAAPresentationBuilder setFilename(String filename) {
+            return (SDJWTEAAPresentationBuilder) super.setFilename(filename);
         }
 
         @Override
         protected DefaultEAAPresentation initEAAPresentation() {
-            return new SDJWTPresentation();
+            return new SDJWTEAAPresentation();
         }
 
+        @Override
+        public SDJWTEAAPresentation build() {
+            return (SDJWTEAAPresentation) super.build();
+        }
     }
 
 }

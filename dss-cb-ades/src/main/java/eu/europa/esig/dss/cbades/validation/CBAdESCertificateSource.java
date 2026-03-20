@@ -1,9 +1,8 @@
 package eu.europa.esig.dss.cbades.validation;
 
 import eu.europa.esig.dss.cbades.CBAdESUtils;
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
-import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
@@ -109,7 +108,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
          * a binary string containing the hash value computed over the DER-
          * encoded certificate.
          */
-        CBORArray x5t = cose.getProtectedHeaderValueAsArray(COSEHeaderParameters.X5T.cbor());
+        CBORArray x5t = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5T.cbor());
         extractX5T(x5t);
     }
 
@@ -136,12 +135,12 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private String getX5uValue() {
-        return cose.getProtectedHeaderValueAsString(COSEHeaderParameters.X5U.cbor());
+        return cose.getProtectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
     }
 
     private void extractX5Bag() {
-        byte[] x5bagEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameters.X5BAG.cbor());
-        CBORArray x5bagArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameters.X5BAG.cbor());
+        byte[] x5bagEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameter.X5BAG.cbor());
+        CBORArray x5bagArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5BAG.cbor());
         if (x5bagEntry != null) {
             CertificateToken certificate = loadCertificate(x5bagEntry);
             if (certificate != null) {
@@ -164,8 +163,8 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private void extractX5Chain() {
-        byte[] x5chainEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameters.X5CHAIN.cbor());
-        CBORArray x5chainArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameters.X5CHAIN.cbor());
+        byte[] x5chainEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameter.X5CHAIN.cbor());
+        CBORArray x5chainArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5CHAIN.cbor());
         if (x5chainEntry != null) {
             CertificateToken certificate = loadCertificate(x5chainEntry);
             if (certificate != null) {
@@ -175,7 +174,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         } else if (x5chainArray != null) {
             for (CBORObject cborObject : x5chainArray.getValueAsList()) {
                 if (cborObject.isByteString()) {
-                    CertificateToken certificate = loadCertificate(((CBORByteString) cborObject).getValueAsBytes());
+                    CertificateToken certificate = loadCertificate(cborObject.getValueAsBytes());
                     if (certificate != null) {
                         addCertificate(certificate, CertificateOrigin.KEY_INFO);
                     }
@@ -200,11 +199,11 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private byte[] getKidValue() {
-        return cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameters.KID.cbor());
+        return cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameter.KID.cbor());
     }
 
     private void extractX5Ts() {
-        CBORArray x5ts = cose.getProtectedHeaderValueAsArray(COSEHeaderParameters.X5TS.cbor());
+        CBORArray x5ts = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5TS.cbor());
         if (x5ts != null && !x5ts.isEmpty()) {
             for (CBORObject item : x5ts.getValueAsList()) {
                 if (item.isArray()) {
@@ -237,11 +236,11 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private void extractValidationData(CBAdESAttribute attribute) {
-        if (COSEHeaderParameters.VAL_DATA.cbor().equals(attribute.getHeaderId())) {
+        if (COSEHeaderParameter.VAL_DATA.cbor().equals(attribute.getHeaderId())) {
             CBORObject valData = attribute.getValue();
             if (valData.isMap()) {
                 CBORMap valDataMap = (CBORMap) valData;
-                CBORArray xVals = valDataMap.getAsArray(COSEHeaderParameters.VAL_DATA_X_VALS.cbor());
+                CBORArray xVals = valDataMap.getAsArray(COSEHeaderParameter.VAL_DATA_X_VALS.cbor());
                 if (xVals != null && !xVals.isEmpty()) {
                     extractCertificateValues(xVals, CertificateOrigin.ANY_VALIDATION_DATA);
                 }
@@ -256,10 +255,10 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
             if (item.isMap()) {
                 CBORMap x509OrOther = (CBORMap) item;
 
-                CBORMap pkiOb = x509OrOther.getAsMap(COSEHeaderParameters.X509_OR_OTHER_X509_CERT.cbor());
+                CBORMap pkiOb = x509OrOther.getAsMap(COSEHeaderParameter.X509_OR_OTHER_X509_CERT.cbor());
                 extractX509Cert(pkiOb, origin);
 
-                CBORMap otherCert = x509OrOther.getAsMap(COSEHeaderParameters.X509_OR_OTHER_OTHER_CERT.cbor());
+                CBORMap otherCert = x509OrOther.getAsMap(COSEHeaderParameter.X509_OR_OTHER_OTHER_CERT.cbor());
                 if (otherCert != null) {
                     LOG.warn("The header 'otherCert' is not supported! The entry is skipped.");
                 }
@@ -278,11 +277,11 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private void extractCompleteCertificateRefs(CBAdESAttribute attribute) {
-        if (COSEHeaderParameters.REFS.cbor().equals(attribute.getHeaderId())) {
+        if (COSEHeaderParameter.REFS.cbor().equals(attribute.getHeaderId())) {
             CBORObject refs = attribute.getValue();
             if (refs.isMap()) {
                 CBORMap refsMap = (CBORMap) refs;
-                CBORArray xRefs = refsMap.getAsArray(COSEHeaderParameters.REFS_X_REFS.cbor());
+                CBORArray xRefs = refsMap.getAsArray(COSEHeaderParameter.REFS_X_REFS.cbor());
                 if (xRefs != null && !xRefs.isEmpty()) {
                     extractCertificateRefs(xRefs, CertificateRefOrigin.COMPLETE_CERTIFICATE_REFS);
                 }

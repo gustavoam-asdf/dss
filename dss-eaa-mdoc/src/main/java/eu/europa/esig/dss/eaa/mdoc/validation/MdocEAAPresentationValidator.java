@@ -1,0 +1,40 @@
+package eu.europa.esig.dss.eaa.mdoc.validation;
+
+import eu.europa.esig.dss.cbades.validation.CBAdESDiagnosticDataBuilder;
+import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
+import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
+
+/**
+ * Processes and validated Electronic Attestation of Attributes (EAAs) embedded within an mdoc document structure
+ *
+ */
+public class MdocEAAPresentationValidator extends DefaultEAAPresentationValidator {
+
+    /**
+     * Empty constructor
+     */
+    public MdocEAAPresentationValidator() {
+        super(new MdocEAAPresentationAnalyzer());
+    }
+
+    /**
+     * Default constructor
+     *
+     * @param document {@link DSSDocument} to validate
+     */
+    public MdocEAAPresentationValidator(DSSDocument document) {
+        super(new MdocEAAPresentationAnalyzer(document));
+    }
+
+    @Override
+    public MdocEAAPresentationAnalyzer getDocumentAnalyzer() {
+        return (MdocEAAPresentationAnalyzer) super.getDocumentAnalyzer();
+    }
+
+    @Override
+    protected SignedDocumentDiagnosticDataBuilder getSignatureDiagnosticDataBuilder() {
+        return new CBAdESDiagnosticDataBuilder();
+    }
+
+}

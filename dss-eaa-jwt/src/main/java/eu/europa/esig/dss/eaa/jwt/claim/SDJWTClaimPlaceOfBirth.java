@@ -10,7 +10,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
  * OpenID Connect for Identity Assurance Claims Registration 1.0 "4.1. Additional claims about end-users".
  *
  */
-public class SDJWTClaimPlaceOfBirth extends ClaimMap implements ClaimPlaceOfBirth {
+public class SDJWTClaimPlaceOfBirth extends SDJWTClaimMap implements ClaimPlaceOfBirth {
 
     private static final long serialVersionUID = 2338450733613706116L;
 

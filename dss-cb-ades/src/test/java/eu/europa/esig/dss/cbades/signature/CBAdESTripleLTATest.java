@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.signature;
 
-import eu.europa.esig.dss.cbades.COSEHeaderParameters;
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -104,7 +104,7 @@ class CBAdESTripleLTATest extends AbstractCBAdESTestValidation {
         assertFalse(unprotectedHeaderMap.isEmpty());
         assertEquals(1, unprotectedHeaderMap.getSize());
 
-        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameters.U_HEADERS.cbor());
+        CBORObject uHeaders = unprotectedHeaderMap.getHeader(COSEHeaderParameter.U_HEADERS.cbor());
         assertNotNull(uHeaders);
         assertTrue(uHeaders.isArray());
 
@@ -127,24 +127,24 @@ class CBAdESTripleLTATest extends AbstractCBAdESTestValidation {
             assertFalse(uHeaderObjectMap.isEmpty());
             assertEquals(1, uHeaderObjectMap.getSize());
 
-            CBORObject sigTst  = uHeaderObjectMap.getHeader(COSEHeaderParameters.SIG_TST.cbor());
+            CBORObject sigTst  = uHeaderObjectMap.getHeader(COSEHeaderParameter.SIG_TST.cbor());
             if (sigTst != null) {
                 ++sigTstCounter;
 
                 CBORMap tstContainer = (CBORMap) sigTst;
-                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
+                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameter.TST_CONTAINER_TST_TOKENS.cbor());
                 assertEquals(1, tstTokens.getSize());
             }
-            CBORObject valData  = uHeaderObjectMap.getHeader(COSEHeaderParameters.VAL_DATA.cbor());
+            CBORObject valData  = uHeaderObjectMap.getHeader(COSEHeaderParameter.VAL_DATA.cbor());
             if (valData != null) {
                 ++valDataCounter;
             }
-            CBORObject arcTst  = uHeaderObjectMap.getHeader(COSEHeaderParameters.ARC_TST.cbor());
+            CBORObject arcTst  = uHeaderObjectMap.getHeader(COSEHeaderParameter.ARC_TST.cbor());
             if (arcTst != null) {
                 ++arcTstCounter;
 
                 CBORMap tstContainer = (CBORMap) arcTst;
-                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameters.TST_CONTAINER_TST_TOKENS.cbor());
+                CBORArray tstTokens = tstContainer.getAsArray(COSEHeaderParameter.TST_CONTAINER_TST_TOKENS.cbor());
                 assertEquals(1, tstTokens.getSize());
             }
         }
