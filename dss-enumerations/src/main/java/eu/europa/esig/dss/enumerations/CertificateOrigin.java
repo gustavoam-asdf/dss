@@ -53,6 +53,9 @@ public enum CertificateOrigin {
 	BASIC_OCSP_RESP,
 
 	/** Certificates extracted from an Evidence Record */
-	EVIDENCE_RECORD
+	EVIDENCE_RECORD,
+
+	/** Certificates present within an unprotected header parameter (JWS or COSE) */
+	UNPROTECTED_HEADER
 
 }

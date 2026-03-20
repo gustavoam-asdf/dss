@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
@@ -84,10 +84,10 @@ class CBAdESLevelBCoseSign1CountersignatureRfc8152Test extends AbstractCBAdESTes
         boolean counterSigFound = false;
         for (SignatureWrapper signatureWrapper : signatures) {
             if (!signatureWrapper.isCounterSignature()) {
-                assertEquals(COSESignatureContext.COSE_SIGN1, COSESignatureContext.forLabel(signatureWrapper.getSignatureStructureType()));
+                assertEquals(COSESignatureType.COSE_SIGN1, signatureWrapper.getCOSESignatureType());
                 masterSigFound = true;
             } else {
-                assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE, COSESignatureContext.forLabel(signatureWrapper.getSignatureStructureType()));
+                assertEquals(COSESignatureType.COSE_COUNTER_SIGNATURE, signatureWrapper.getCOSESignatureType());
                 counterSigFound = true;
             }
         }

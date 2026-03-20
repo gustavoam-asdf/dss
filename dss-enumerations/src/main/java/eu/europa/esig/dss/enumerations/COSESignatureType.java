@@ -1,6 +1,4 @@
-package eu.europa.esig.dss.cbades;
-
-import eu.europa.esig.dss.cbades.cbor.CBORObject;
+package eu.europa.esig.dss.enumerations;
 
 import java.util.Objects;
 
@@ -8,7 +6,7 @@ import java.util.Objects;
  * Identifies the context of the signature. E.g. a COSE_Sign or COSE_Sign1 signature.
  *
  */
-public enum COSESignatureContext {
+public enum COSESignatureType {
 
     /** For signatures using the COSE_Signature structure */
     COSE_SIGN("Signature", "COSE_Sign", 98L),
@@ -20,16 +18,16 @@ public enum COSESignatureContext {
     COSE_SIGNATURE(null, null, null),
 
     /** For full counter-signatures */
-    COSE_COUNTER_SIGNATURE("CounterSignature", "COSE_Countersignature", 19L, true, false, COSEHeaderParameter.COUNTER_SIGNATURE.cbor()),
+    COSE_COUNTER_SIGNATURE("CounterSignature", "COSE_Countersignature", 19L, true, false, 7L),
 
     /** For abbreviated counter-signatures0 */
-    COSE_COUNTER_SIGNATURE0("CounterSignature0", "COSE_Countersignature0", null, true, false, COSEHeaderParameter.COUNTER_SIGNATURE0.cbor()),
+    COSE_COUNTER_SIGNATURE0("CounterSignature0", "COSE_Countersignature0", null, true, false, 9L),
 
     /** For full counter-signatures with other_fields present */
-    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", "COSE_Countersignature_V2", 19L, true, true, COSEHeaderParameter.COUNTER_SIGNATURE_V2.cbor()),
+    COSE_COUNTER_SIGNATURE_V2("CounterSignatureV2", "COSE_Countersignature_V2", 19L, true, true, 11L),
 
     /** For abbreviated counter-signatures0 with other_fields present */
-    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", "COSE_Countersignature0_V2", null, true, true, COSEHeaderParameter.COUNTER_SIGNATURE0_V2.cbor());
+    COSE_COUNTER_SIGNATURE0_V2("CounterSignature0V2", "COSE_Countersignature0_V2", null, true, true, 12L);
 
     /** The context label used as a part of a DTBS computation */
     private final String context;
@@ -47,7 +45,7 @@ public enum COSESignatureContext {
     private final boolean counterSignatureV2;
 
     /** The key used to identify the counter signature header parameter */
-    private final CBORObject counterSignatureHeaderKey;
+    private final Long counterSignatureHeaderKey;
 
     /**
      * Default constructor
@@ -56,7 +54,7 @@ public enum COSESignatureContext {
      * @param label {@link String} user-friendly label as defined in RFC
      * @param tag long value of the tag label key
      */
-    COSESignatureContext(final String context, final String label, final Long tag) {
+    COSESignatureType(final String context, final String label, final Long tag) {
         this(context, label, tag, false, false, null);
     }
 
@@ -68,10 +66,10 @@ public enum COSESignatureContext {
      * @param tag long value of the tag label key
      * @param counterSignature whether the context corresponds to the counter signature
      * @param counterSignatureV2 whether the context corresponds to the counter signature V2
-     * @param counterSignatureHeaderKey {@link CBORObject} key used to define a counter signature header parameter
+     * @param counterSignatureHeaderKey {@link Long} key used to define a counter signature header parameter
      */
-    COSESignatureContext(final String context, final String label, final Long tag, final boolean counterSignature,
-                         final boolean counterSignatureV2, final CBORObject counterSignatureHeaderKey) {
+    COSESignatureType(final String context, final String label, final Long tag, final boolean counterSignature,
+                      final boolean counterSignatureV2, final Long counterSignatureHeaderKey) {
         this.context = context;
         this.label = label;
         this.tag = tag;
@@ -105,7 +103,7 @@ public enum COSESignatureContext {
      * @return long value of the tag label key
      */
     public long getTag() {
-        Objects.requireNonNull(tag, String.format("The tag is not available for COSESignatureContext '%s'", this.name()));
+        Objects.requireNonNull(tag, String.format("The tag is not available for COSESignatureType '%s'", this.name()));
         return tag;
     }
 
@@ -130,23 +128,23 @@ public enum COSESignatureContext {
     /**
      * Gets the header key of unsigned property used to embed the counter signature in
      *
-     * @return {@link CBORObject}
+     * @return {@link Long}
      */
-    public CBORObject getCounterSignatureHeaderKey() {
+    public Long getCounterSignatureHeaderKey() {
         return counterSignatureHeaderKey;
     }
 
     /**
-     * Gets the corresponding {@code COSESignatureContext} enum for the given {@code label}, if found
+     * Gets the corresponding {@code COSESignatureType} enum for the given {@code label}, if found
      *
      * @param label {@link String}
-     * @return {@link COSESignatureContext}
+     * @return {@link COSESignatureType}
      */
-    public static COSESignatureContext forLabel(final String label) {
+    public static COSESignatureType forLabel(final String label) {
         Objects.requireNonNull(label, "Label string shall be defined!");
-        for (COSESignatureContext coseSignatureContext : values()) {
-            if (label.equals(coseSignatureContext.label)) {
-                return coseSignatureContext;
+        for (COSESignatureType coseSignatureType : values()) {
+            if (label.equals(coseSignatureType.label)) {
+                return coseSignatureType;
             }
         }
         return null;
@@ -155,15 +153,15 @@ public enum COSESignatureContext {
     /**
      * This method returns a corresponding counter signature context based on the used header identifier
      *
-     * @param headerKey {@link CBORObject} the used identifier of the header enveloping the counter signature
-     * @return {@link COSESignatureContext} when the header is known, NULL otherwise
+     * @param headerKey {@link Long} the used identifier of the header enveloping the counter signature
+     * @return {@link COSESignatureType} when the header is known, NULL otherwise
      */
-    public static COSESignatureContext getCounterSignatureContextByHeaderKey(CBORObject headerKey) {
+    public static COSESignatureType getCounterSignatureContextByHeaderKey(Long headerKey) {
         Objects.requireNonNull(headerKey, "Header key shall be defined!");
-        for (COSESignatureContext coseSignatureContext : values()) {
-            CBORObject counterSigHeaderKey = coseSignatureContext.counterSignatureHeaderKey;
+        for (COSESignatureType coseSignatureType : values()) {
+            Long counterSigHeaderKey = coseSignatureType.counterSignatureHeaderKey;
             if (counterSigHeaderKey != null && counterSigHeaderKey.equals(headerKey)) {
-                return coseSignatureContext;
+                return coseSignatureType;
             }
         }
         return null;

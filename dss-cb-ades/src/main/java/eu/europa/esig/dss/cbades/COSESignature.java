@@ -3,6 +3,7 @@ package eu.europa.esig.dss.cbades;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 
 /**
  * Represents a COSE_Signature object defined in RFC 9052 "4.1. Signing with One or More Signers"
@@ -119,8 +120,8 @@ public class COSESignature implements COSEStructure {
     }
 
     @Override
-    public COSESignatureContext getContext() {
-        return COSESignatureContext.COSE_SIGNATURE;
+    public COSESignatureType getContext() {
+        return COSESignatureType.COSE_SIGNATURE;
     }
 
 }

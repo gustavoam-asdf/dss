@@ -64,14 +64,21 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         this.uHeaders = uHeaders;
 
         // signing certificate
-        extractX5T();
+        extractProtectedHeaderX5T();
         extractX5Ts();
         extractKid();
-        extractX509Url();
+        extractProtectedHeaderX509Url();
 
         // certificate chain
-        extractX5Bag();
-        extractX5Chain();
+        extractProtectedHeaderX5Bag();
+        extractProtectedHeaderX5Chain();
+
+        // unprotected headers
+        extractUnprotectedHeaderX5T();
+        extractUnprotectedHeaderX509Url();
+
+        extractUnprotectedHeaderX5Bag();
+        extractUnprotectedHeaderX5Chain();
 
         extractUHeaders();
     }
@@ -95,7 +102,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         return findTokensFromRefs(getKeyIdentifierCertificateRefs());
     }
 
-    private void extractX5T() {
+    private void extractProtectedHeaderX5T() {
         /*
          * x5t: This header parameter identifies the end-entity X.509
          * certificate by a hash value (a thumbprint). The 'x5t' header
@@ -109,80 +116,110 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
          * encoded certificate.
          */
         CBORArray x5t = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5T.cbor());
-        extractX5T(x5t);
+        extractX5T(x5t, CertificateRefOrigin.SIGNING_CERTIFICATE);
     }
 
-    private void extractX5T(CBORArray x5t) {
+    private void extractUnprotectedHeaderX5T() {
+        CBORArray x5t = cose.getUnprotectedHeaderValueAsArray(COSEHeaderParameter.X5T.cbor());
+        extractX5T(x5t, CertificateRefOrigin.UNPROTECTED_HEADER_REFS);
+    }
+
+    private void extractX5T(CBORArray x5t, CertificateRefOrigin certificateRefOrigin) {
         Digest digest = CBAdESUtils.extractX5TDigest(x5t);
         if (digest != null) {
             CertificateRef certRef = new CertificateRef();
             certRef.setCertDigest(digest);
-            addCertificateRef(certRef, CertificateRefOrigin.SIGNING_CERTIFICATE);
+            addCertificateRef(certRef, certificateRefOrigin);
         }
     }
 
-    private void extractX509Url() {
+    private void extractProtectedHeaderX509Url() {
+        String x5u = cose.getProtectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
+        extractX509Url(x5u, CertificateRefOrigin.X509_URL);
+    }
+
+    private void extractUnprotectedHeaderX509Url() {
+        String x5u = cose.getUnprotectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
+        extractX509Url(x5u, CertificateRefOrigin.UNPROTECTED_HEADER_REFS);
+    }
+
+    private void extractX509Url(String x5u, CertificateRefOrigin certificateRefOrigin) {
         /*
          * x5u: This header parameter provides the ability to identify an X.509
          * certificate by a URI [RFC3986]. It contains a CBOR text string.
          */
-        String x5u = getX5uValue();
         if (Utils.isStringNotEmpty(x5u)) {
             CertificateRef certificateRef = new CertificateRef();
             certificateRef.setX509Url(x5u);
-            addCertificateRef(certificateRef, CertificateRefOrigin.X509_URL);
+            addCertificateRef(certificateRef, certificateRefOrigin);
         }
     }
 
-    private String getX5uValue() {
-        return cose.getProtectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
+    private void extractProtectedHeaderX5Bag() {
+        CBORObject x5bag = cose.getProtectedHeaderValue(COSEHeaderParameter.X5BAG.cbor());
+        extractX5Bag(x5bag, CertificateOrigin.KEY_INFO);
     }
 
-    private void extractX5Bag() {
-        byte[] x5bagEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameter.X5BAG.cbor());
-        CBORArray x5bagArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5BAG.cbor());
-        if (x5bagEntry != null) {
-            CertificateToken certificate = loadCertificate(x5bagEntry);
+    private void extractUnprotectedHeaderX5Bag() {
+        CBORObject x5bag = cose.getUnprotectedHeaderValue(COSEHeaderParameter.X5BAG.cbor());
+        extractX5Bag(x5bag, CertificateOrigin.UNPROTECTED_HEADER);
+    }
+
+    private void extractX5Bag(CBORObject x5bagObject, CertificateOrigin certificateOrigin) {
+        if (x5bagObject == null) {
+            // skip
+
+        } else if (x5bagObject.isByteString()) {
+            CertificateToken certificate = loadCertificate(x5bagObject.getValueAsBytes());
             if (certificate != null) {
-                addCertificate(certificate, CertificateOrigin.KEY_INFO);
+                addCertificate(certificate, certificateOrigin);
             }
 
-        } else if (x5bagArray != null) {
-            for (CBORObject cborObject : x5bagArray.getValueAsList()) {
+        } else if (x5bagObject.isArray()) {
+            for (CBORObject cborObject : x5bagObject.getValueAsList()) {
                 if (cborObject.isByteString()) {
                     CertificateToken certificate = loadCertificate(cborObject.getValueAsBytes());
                     if (certificate != null) {
-                        addCertificate(certificate, CertificateOrigin.KEY_INFO);
+                        addCertificate(certificate, certificateOrigin);
                     }
                 } else {
                     LOG.warn("The item of 'x5bag' CBOR array shall be a byte string!");
                 }
             }
-
         }
     }
 
-    private void extractX5Chain() {
-        byte[] x5chainEntry = cose.getProtectedHeaderValueAsBinaries(COSEHeaderParameter.X5CHAIN.cbor());
-        CBORArray x5chainArray = cose.getProtectedHeaderValueAsArray(COSEHeaderParameter.X5CHAIN.cbor());
-        if (x5chainEntry != null) {
-            CertificateToken certificate = loadCertificate(x5chainEntry);
+    private void extractProtectedHeaderX5Chain() {
+        CBORObject x5chain = cose.getProtectedHeaderValue(COSEHeaderParameter.X5CHAIN.cbor());
+        extractX5Chain(x5chain, CertificateOrigin.KEY_INFO);
+    }
+
+    private void extractUnprotectedHeaderX5Chain() {
+        CBORObject x5chain = cose.getUnprotectedHeaderValue(COSEHeaderParameter.X5CHAIN.cbor());
+        extractX5Chain(x5chain, CertificateOrigin.UNPROTECTED_HEADER);
+    }
+
+    private void extractX5Chain(CBORObject x5chainObject, CertificateOrigin certificateOrigin) {
+        if (x5chainObject == null) {
+            // skip
+
+        } else if (x5chainObject.isByteString()) {
+            CertificateToken certificate = loadCertificate(x5chainObject.getValueAsBytes());
             if (certificate != null) {
-                addCertificate(certificate, CertificateOrigin.KEY_INFO);
+                addCertificate(certificate, certificateOrigin);
             }
 
-        } else if (x5chainArray != null) {
-            for (CBORObject cborObject : x5chainArray.getValueAsList()) {
+        } else if (x5chainObject.isArray()) {
+            for (CBORObject cborObject : x5chainObject.getValueAsList()) {
                 if (cborObject.isByteString()) {
                     CertificateToken certificate = loadCertificate(cborObject.getValueAsBytes());
                     if (certificate != null) {
-                        addCertificate(certificate, CertificateOrigin.KEY_INFO);
+                        addCertificate(certificate, certificateOrigin);
                     }
                 } else {
                     LOG.warn("The item of 'x5chain' CBOR array shall be a byte string!");
                 }
             }
-
         }
     }
 
@@ -207,7 +244,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         if (x5ts != null && !x5ts.isEmpty()) {
             for (CBORObject item : x5ts.getValueAsList()) {
                 if (item.isArray()) {
-                    extractX5T((CBORArray) item);
+                    extractX5T((CBORArray) item, CertificateRefOrigin.SIGNING_CERTIFICATE);
                 } else {
                     LOG.warn("The entry of 'x5ts' CBOR array shall be a CBOR array!");
                 }
@@ -231,6 +268,7 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
 
         for (CBAdESAttribute attribute : uHeaders.getAttributes()) {
             extractValidationData(attribute);
+            extractUHeadersX5Chain(attribute);
             extractCompleteCertificateRefs(attribute);
         }
     }
@@ -247,6 +285,13 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
             } else {
                 LOG.warn("The value of header 'valData' shall be represented by a CBOR Map! Entry is skilled.");
             }
+        }
+    }
+
+    private void extractUHeadersX5Chain(CBAdESAttribute attribute) {
+        if (COSEHeaderParameter.X5CHAIN.cbor().equals(attribute.getHeaderId())) {
+            CBORObject x5chainObject = attribute.getValue();
+            extractX5Chain(x5chainObject, CertificateOrigin.UNPROTECTED_HEADER);
         }
     }
 
@@ -387,7 +432,10 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     }
 
     private Collection<CertificateToken> resolveByUri(CertificateSource signingCertificateSource) {
-        String x5uHeader = getX5uValue();
+        String x5uHeader = cose.getProtectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
+        if (x5uHeader == null) {
+            x5uHeader = cose.getUnprotectedHeaderValueAsString(COSEHeaderParameter.X5U.cbor());
+        }
         if (Utils.isStringNotEmpty(x5uHeader)) {
             if (signingCertificateSource instanceof X509URLCertificateSource) {
                 X509URLCertificateSource x509URLCertificateSource = (X509URLCertificateSource) signingCertificateSource;
@@ -463,10 +511,20 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     @Override
     public List<CertificateRef> getReferencesForCertificateToken(CertificateToken certificateToken) {
         final List<CertificateRef> result = super.getReferencesForCertificateToken(certificateToken);
+        for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.UNPROTECTED_HEADER_REFS)) {
+            if (doesCertificateReferenceMatch(certificateToken, certificateRef)) {
+                result.add(certificateRef);
+            }
+        }
         for (Map.Entry<String, Collection<CertificateToken>> x5uEntry : x509UrlMap.entrySet()) {
             if (x5uEntry.getValue().contains(certificateToken)) {
                 for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.X509_URL)) {
                     if (x5uEntry.getKey().equals(certificateRef.getX509Url())) {
+                        result.add(certificateRef);
+                    }
+                }
+                for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.UNPROTECTED_HEADER_REFS)) {
+                    if (certificateRef.getX509Url() != null && x5uEntry.getKey().equals(certificateRef.getX509Url())) {
                         result.add(certificateRef);
                     }
                 }

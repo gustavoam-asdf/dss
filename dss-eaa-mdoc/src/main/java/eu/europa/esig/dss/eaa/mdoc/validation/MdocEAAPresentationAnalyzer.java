@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
 import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
@@ -88,7 +88,7 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
      * @return {@link AdvancedSignature}
      */
     protected AdvancedSignature getSignature(COSESignStructure coseSignStructureObject) {
-        if (COSESignatureContext.COSE_SIGN1 != coseSignStructureObject.getContext()) {
+        if (COSESignatureType.COSE_SIGN1 != coseSignStructureObject.getContext()) {
             throw new IllegalInputException("The mdoc signature shall be represented by a 'COSE_Sign1' object!");
         }
 

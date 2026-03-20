@@ -184,6 +184,7 @@
 					<xs:element name="SignatureFormat" type="SignatureFormat" />
 					<xs:element name="JWSSerializationType" type="JWSSerializationType" minOccurs="0" /> <!-- JAdES only -->
 					<xs:element name="SignatureType" type="xs:string" minOccurs="0" /> <!-- JAdES only -->
+					<xs:element name="COSESignatureType" type="COSESignatureType" minOccurs="0" /> <!-- JAdES only -->
 		
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 					
@@ -966,6 +967,17 @@
 			<xs:enumeration value="FLATTENED_JSON_SERIALIZATION" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:simpleType name="COSESignatureType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COSE_Sign" />
+			<xs:enumeration value="COSE_Sign1" />
+			<xs:enumeration value="COSE_Countersignature" />
+			<xs:enumeration value="COSE_Countersignature0" />
+			<xs:enumeration value="COSE_Countersignature_V2" />
+			<xs:enumeration value="COSE_Countersignature0_V2" />
+		</xs:restriction>
+	</xs:simpleType>
 	
 	<xs:simpleType name="ScopeType" final="restriction">
 		<xs:restriction base="xs:string">
@@ -982,7 +994,6 @@
 		<xs:sequence>
 			<xs:element name="Message" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute name="type" type="xs:string" />
 		<xs:attribute name="valid" type="xs:boolean" use="required" />
 	</xs:complexType>
 
@@ -1280,6 +1291,7 @@
 			<xs:enumeration value="VRI_DICTIONARY" />
 			<xs:enumeration value="BASIC_OCSP_RESP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="UNPROTECTED_HEADER" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1290,6 +1302,7 @@
 			<xs:enumeration value="ATTRIBUTE_CERTIFICATE_REFS" />
 			<xs:enumeration value="KEY_IDENTIFIER" /> <!-- JWS/JAdES only -->
 			<xs:enumeration value="X509_URL" /> <!-- JWS/JAdES only -->
+			<xs:enumeration value="UNPROTECTED_HEADER_REFS" />
 		</xs:restriction>
 	</xs:simpleType>
 	

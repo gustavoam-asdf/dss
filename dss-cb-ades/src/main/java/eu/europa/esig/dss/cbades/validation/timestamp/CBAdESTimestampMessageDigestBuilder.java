@@ -4,7 +4,7 @@ import co.nstant.in.cbor.model.UnicodeString;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -403,7 +403,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              *  - The context text string corresponding to the structure of the CB-AdES signature if it is
              *    a counter signature, as specified in clause 3.3 of IETF RFC 9338 [6].
              */
-            COSESignatureContext context = cose.getContext();
+            COSESignatureType context = cose.getContext();
             array.add(new UnicodeString(cose.getContext().getContext()));
 
             /*
@@ -423,7 +423,7 @@ public class CBAdESTimestampMessageDigestBuilder implements TimestampMessageDige
              *   the signer layer, encapsulated in a CBOR byte string.
              * - Else if the protected header map is absent in the signer layer, add a zero-length CBOR byte string.
              */
-            if (COSESignatureContext.COSE_SIGN == context) {
+            if (COSESignatureType.COSE_SIGN == context) {
                 COSEProtectedHeader signerProtectedHeader = cose.getSignerProtectedHeader();
                 if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
                     array.add(signerProtectedHeader.getByteString());

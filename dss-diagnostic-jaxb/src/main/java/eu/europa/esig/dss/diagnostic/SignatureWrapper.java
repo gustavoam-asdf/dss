@@ -41,6 +41,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStructuralValidation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlUserNotice;
 import eu.europa.esig.dss.enumerations.ArchiveTimestampType;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
@@ -161,19 +162,6 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	 */
 	public boolean isStructuralValidationValid() {
 		return signature.getStructuralValidation() != null && signature.getStructuralValidation().isValid();
-	}
-
-	/**
-	 * Gets signature structure's type, when applicable (e.g. CB-AdES)
-	 *
-	 * @return {@link String}
-	 */
-	public String getSignatureStructureType() {
-		XmlStructuralValidation structuralValidation = signature.getStructuralValidation();
-		if (structuralValidation != null) {
-			return structuralValidation.getType();
-		}
-		return null;
 	}
 
 	/**
@@ -488,6 +476,15 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	 */
 	public JWSSerializationType getJWSSerializationType() {
 		return signature.getJWSSerializationType();
+	}
+
+	/**
+	 * Gets COSE signature structure's type, when applicable (CB-AdES only)
+	 *
+	 * @return {@link COSESignatureType}
+	 */
+	public COSESignatureType getCOSESignatureType() {
+		return signature.getCOSESignatureType();
 	}
 
 	/**

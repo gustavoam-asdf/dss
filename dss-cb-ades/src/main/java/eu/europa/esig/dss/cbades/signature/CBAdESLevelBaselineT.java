@@ -211,7 +211,7 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
 
     private void assertSignatureTypeSupported(AdvancedSignature targetSignature) {
         CBAdESSignature cbadesSignature = (CBAdESSignature) targetSignature;
-        switch (cbadesSignature.getCOSESignatureContext()) {
+        switch (cbadesSignature.getCOSESignatureType()) {
             case COSE_SIGN:
             case COSE_SIGN1:
             case COSE_COUNTER_SIGNATURE:
@@ -220,7 +220,7 @@ public class CBAdESLevelBaselineT extends CBAdESExtensionBuilder implements CBAd
                 break;
             default:
                 throw new IllegalArgumentException(String.format("The augmentation of a signature type '%s' is not supported!",
-                        cbadesSignature.getCOSESignatureContext().getLabel()));
+                        cbadesSignature.getCOSESignatureType().getLabel()));
         }
     }
 

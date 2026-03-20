@@ -4,6 +4,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 
 /**
  * This class represents a COSE_Sign1 structure (Tag '18')
@@ -69,8 +70,8 @@ public class COSESign1 extends COSESignature implements COSESignStructure {
     }
 
     @Override
-    public COSESignatureContext getContext() {
-        return COSESignatureContext.COSE_SIGN1;
+    public COSESignatureType getContext() {
+        return COSESignatureType.COSE_SIGN1;
     }
 
 }

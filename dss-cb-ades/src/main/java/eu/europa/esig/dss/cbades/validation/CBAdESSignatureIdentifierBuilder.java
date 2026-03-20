@@ -5,7 +5,7 @@ import eu.europa.esig.dss.cbades.COSECounterSignatureArray;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignature;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.signature.identifier.AbstractSignatureIdentifierBuilder;
@@ -54,7 +54,7 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
 
         int counter = 0;
         if (coseStructure != null) {
-            if (COSESignatureContext.COSE_SIGN == coseStructure.getContext()) {
+            if (COSESignatureType.COSE_SIGN == coseStructure.getContext()) {
                 COSESign coseSign = (COSESign) coseStructure;
                 for (COSESignature coseSignature : coseSign.getSignatures()) {
                     if (currentSigner == coseSignature) {
@@ -79,7 +79,7 @@ public class CBAdESSignatureIdentifierBuilder extends AbstractSignatureIdentifie
         CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
 
         StringBuilder stringBuilder = new StringBuilder(positionId);
-        stringBuilder.append(cbadesSignature.getCOSESignatureContext().getLabel());
+        stringBuilder.append(cbadesSignature.getCOSESignatureType().getLabel());
 
         if (cbadesSignature.getMasterCounterSignatureComponent() != null) {
             stringBuilder.append(COSEHeaderParameter.U_HEADERS);

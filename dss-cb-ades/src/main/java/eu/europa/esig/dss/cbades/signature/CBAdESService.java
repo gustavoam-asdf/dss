@@ -4,7 +4,7 @@ import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -263,7 +263,7 @@ public class CBAdESService extends AbstractSignatureService<CBAdESSignatureParam
 
     private boolean containsSignatures(COSESignStructure coseSignStructure) {
         if (coseSignStructure != null) {
-            if (COSESignatureContext.COSE_SIGN == coseSignStructure.getContext()) {
+            if (COSESignatureType.COSE_SIGN == coseSignStructure.getContext()) {
                 return Utils.isCollectionNotEmpty(((COSESign) coseSignStructure).getSignatures());
             }
             throw new IllegalInputException("Parallel signing is not supported for COSE_Sign1 RFC 9052 signatures!");

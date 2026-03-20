@@ -48,6 +48,11 @@ public enum CertificateRefOrigin {
 	/**
 	 * Used as a hint to identify the resource containing the signing certificate or certificate chain (used in JAdES)
 	 */
-	X509_URL;
+	X509_URL,
+
+	/**
+	 * Certificate reference present within an unprotected header parameter (JWS or COSE)
+	 */
+	UNPROTECTED_HEADER_REFS
 
 }

@@ -4,6 +4,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,8 +159,8 @@ public class COSESign implements COSESignStructure {
     }
 
     @Override
-    public COSESignatureContext getContext() {
-        return COSESignatureContext.COSE_SIGN;
+    public COSESignatureType getContext() {
+        return COSESignatureType.COSE_SIGN;
     }
 
 }

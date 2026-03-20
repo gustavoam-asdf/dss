@@ -11,14 +11,13 @@ import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
-import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
@@ -50,7 +49,7 @@ public class CBORSignature {
     private static final Logger LOG = LoggerFactory.getLogger(CBORSignature.class);
 
     /** Context of the signature */
-    private COSESignatureContext context;
+    private COSESignatureType context;
 
     /** Defines whether the signature container is tagged */
     private boolean tagged;
@@ -305,9 +304,9 @@ public class CBORSignature {
     /**
      * Returns context of the COSE signature
      *
-     * @return {@link COSESignatureContext}
+     * @return {@link COSESignatureType}
      */
-    public COSESignatureContext getContext() {
+    public COSESignatureType getContext() {
         return context;
     }
 
@@ -604,9 +603,9 @@ public class CBORSignature {
          */
         if (signerProtectedHeader != null && !signerProtectedHeader.isEmpty()) {
             array.add(signerProtectedHeader.getByteString());
-        } else if (COSESignatureContext.COSE_SIGN1 != context
-                && COSESignatureContext.COSE_COUNTER_SIGNATURE0 != context
-                && COSESignatureContext.COSE_COUNTER_SIGNATURE0_V2 != context) {
+        } else if (COSESignatureType.COSE_SIGN1 != context
+                && COSESignatureType.COSE_COUNTER_SIGNATURE0 != context
+                && COSESignatureType.COSE_COUNTER_SIGNATURE0_V2 != context) {
             array.add(CBORUtils.EMPTY_BYTE_STRING);
         }
 
@@ -704,7 +703,7 @@ public class CBORSignature {
     public Long getProtectedHeaderValueAsLong(CBORObject headerKey) {
         CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
         if (protectedHeaderValue != null && (protectedHeaderValue.isNegativeInteger() || protectedHeaderValue.isUnsignedInteger())) {
-            return ((CBORSimpleObject) protectedHeaderValue).getValueAsLong();
+            return protectedHeaderValue.getValueAsLong();
         }
         return null;
     }
@@ -720,7 +719,7 @@ public class CBORSignature {
     public String getProtectedHeaderValueAsString(CBORObject headerKey) {
         CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
         if (protectedHeaderValue != null && (protectedHeaderValue.isUnicodeString())) {
-            return ((CBORSimpleObject) protectedHeaderValue).getValueAsString();
+            return protectedHeaderValue.getValueAsString();
         }
         return null;
     }
@@ -736,7 +735,7 @@ public class CBORSignature {
     public byte[] getProtectedHeaderValueAsBinaries(CBORObject headerKey) {
         CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
         if (protectedHeaderValue != null && (protectedHeaderValue.isByteString())) {
-            return ((CBORByteString) protectedHeaderValue).getValueAsBytes();
+            return protectedHeaderValue.getValueAsBytes();
         }
         return null;
     }
@@ -835,6 +834,38 @@ public class CBORSignature {
      */
     public CBORArray getUHeaders() {
         return getUnprotectedHeaderValueAsArray(COSEHeaderParameter.U_HEADERS.cbor());
+    }
+
+    /**
+     * This method returns a String value extracted from unprotected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
+     *
+     * @param headerKey {@link CBORObject} identifier of the header
+     * @return {@link Long} value if header is identified, NULL otherwise
+     */
+    public String getUnprotectedHeaderValueAsString(CBORObject headerKey) {
+        CBORObject unprotectedHeaderValue = getUnprotectedHeaderValue(headerKey);
+        if (unprotectedHeaderValue != null && (unprotectedHeaderValue.isUnicodeString())) {
+            return unprotectedHeaderValue.getValueAsString();
+        }
+        return null;
+    }
+
+    /**
+     * This method returns a byte array value extracted from unprotected header of the signature
+     * The method checks the key presence in both body and signer layers and returns the found value,
+     * provided there is no conflicting information.
+     *
+     * @param headerKey {@link CBORObject} identifier of the header
+     * @return byte array value if header is identified, NULL otherwise
+     */
+    public byte[] getUnprotectedHeaderValueAsBinaries(CBORObject headerKey) {
+        CBORObject unprotectedHeaderValue = getUnprotectedHeaderValue(headerKey);
+        if (unprotectedHeaderValue != null && (unprotectedHeaderValue.isByteString())) {
+            return unprotectedHeaderValue.getValueAsBytes();
+        }
+        return null;
     }
 
     /**

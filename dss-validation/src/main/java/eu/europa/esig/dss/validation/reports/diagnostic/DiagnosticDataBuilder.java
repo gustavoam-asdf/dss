@@ -1318,6 +1318,8 @@ public abstract class DiagnosticDataBuilder {
 					signatureCertificateSource.getDSSDictionaryCertValues(), certificateSource);
 			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.VRI_DICTIONARY,
 					signatureCertificateSource.getVRIDictionaryCertValues(), certificateSource);
+			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.UNPROTECTED_HEADER,
+					signatureCertificateSource.getUnprotectedHeaderCertificates(), certificateSource);
 		}
 
 		return new ArrayList<>(relatedCertificatesMap.values());
@@ -1463,6 +1465,8 @@ public abstract class DiagnosticDataBuilder {
 					signatureCertificateSource.getDSSDictionaryCertValues(), certificateSource, signingCertificate);
 			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.VRI_DICTIONARY,
 					signatureCertificateSource.getVRIDictionaryCertValues(), certificateSource, signingCertificate);
+			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.UNPROTECTED_HEADER,
+					signatureCertificateSource.getUnprotectedHeaderCertificates(), certificateSource, signingCertificate);
 		}
 
 		return new ArrayList<>(orphanCertificatesMap.values());

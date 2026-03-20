@@ -4,7 +4,7 @@ import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSECounterSignStructure;
 import eu.europa.esig.dss.cbades.COSECounterSignature;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
@@ -80,7 +80,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
 
     private void assertSignatureTypeSupported(AdvancedSignature targetSignature) {
         CBAdESSignature cbadesSignature = (CBAdESSignature) targetSignature;
-        switch (cbadesSignature.getCOSESignatureContext()) {
+        switch (cbadesSignature.getCOSESignatureType()) {
             case COSE_SIGN:
             case COSE_SIGN1:
             case COSE_COUNTER_SIGNATURE:
@@ -89,7 +89,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
                 break;
             default:
                 throw new IllegalArgumentException(String.format("The counter signing of a signature type '%s' is not supported!",
-                        cbadesSignature.getCOSESignatureContext().getLabel()));
+                        cbadesSignature.getCOSESignatureType().getLabel()));
         }
     }
 
@@ -122,10 +122,10 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     }
 
     private void ensureDetachedPayload(CBORSignature counterSignature) {
-        if (COSESignatureContext.COSE_SIGN1 == masterSignature.getCOSESignatureContext() && masterSignature.isDetachedSignature()) {
+        if (COSESignatureType.COSE_SIGN1 == masterSignature.getCOSESignatureType() && masterSignature.isDetachedSignature()) {
             if (Utils.isCollectionEmpty(parameters.getDetachedContents())) {
                 throw new IllegalArgumentException(String.format("Detached contents shall be provided " +
-                        "on counter signing a '%s' signature.", masterSignature.getCOSESignatureContext().getLabel()));
+                        "on counter signing a '%s' signature.", masterSignature.getCOSESignatureType().getLabel()));
             }
             masterSignature.setDetachedContents(parameters.getDetachedContents());
             masterSignature.checkSignatureIntegrity(); // required to extract the payload
@@ -204,7 +204,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
     @Override
     protected COSEStructure createCOSESignStructure(SignatureValue signatureValue) {
         final COSECounterSignature coseCounterSignature = new COSECounterSignature();
-        coseCounterSignature.setContext(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2); // the only supported counter signature type
+        coseCounterSignature.setContext(COSESignatureType.COSE_COUNTER_SIGNATURE_V2); // the only supported counter signature type
         coseCounterSignature.setMasterSignature(getMasterSignatureStructure());
         coseCounterSignature.setTagged(parameters.isTagged());
         coseCounterSignature.setProtectedHeader(getProtectedHeader());
@@ -214,7 +214,7 @@ public class CBAdESCounterSignatureBuilder extends CBAdESBuilder {
 
     private COSEStructure getMasterSignatureStructure() {
         CBORSignature cose = masterSignature.getCoseSignature();
-        return COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
+        return COSESignatureType.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
     }
 
     private CBAdESLevelBaselineT getExtensionProfile(CBAdESSignatureParameters parameters) {

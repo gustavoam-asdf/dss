@@ -133,8 +133,18 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected boolean isCertificateValues(CBAdESAttribute unsignedAttribute) {
-        // not supported
-        return false;
+        // not CertificateValues, but x5chain header parameter (different semantics)
+        return isX5Chain(unsignedAttribute);
+    }
+
+    /**
+     * Checks if the unsigned attribute corresponds to a 'x5chain' unsigned header definition
+     *
+     * @param unsignedAttribute {@link CBAdESAttribute} to check
+     * @return TRUE if the unsigned attribute handles the 'x5chain' header parameter, FALSE otherwise
+     */
+    protected boolean isX5Chain(CBAdESAttribute unsignedAttribute) {
+        return COSEHeaderParameter.X5CHAIN.cbor().equals(unsignedAttribute.getHeaderId());
     }
 
     @Override
@@ -284,23 +294,48 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
 
     @Override
     protected List<Identifier> getEncapsulatedCertificateIdentifiers(CBAdESAttribute unsignedAttribute) {
-        CBORObject valData = unsignedAttribute.getValue();
-        if (valData.isMap()) {
-            CBORMap valDataMap = (CBORMap) valData;
-            CBORArray xVals = valDataMap.getAsArray(COSEHeaderParameter.VAL_DATA_X_VALS.cbor());
-            if (xVals != null && !xVals.isEmpty()) {
+        if (isAnyValidationData(unsignedAttribute)) {
+            CBORObject valData = unsignedAttribute.getValue();
+            if (valData.isMap()) {
+                CBORMap valDataMap = (CBORMap) valData;
+                CBORArray xVals = valDataMap.getAsArray(COSEHeaderParameter.VAL_DATA_X_VALS.cbor());
+                if (xVals != null && !xVals.isEmpty()) {
+                    List<Identifier> certificateIdentifiers = new ArrayList<>();
+                    for (CBORObject encapsulatedCert : xVals.getValueAsList()) {
+                        CertificateToken certificateToken = toCertificateToken(encapsulatedCert);
+                        if (certificateToken != null) {
+                            certificateIdentifiers.add(certificateToken.getDSSId());
+                        }
+                    }
+                    return certificateIdentifiers;
+                }
+
+            } else {
+                LOG.warn("The value of 'valData' uHeader must be represented by a CBOR Map! The entry is skipped.");
+            }
+
+        } else if (isX5Chain(unsignedAttribute)) {
+            CBORObject x5chainObject = unsignedAttribute.getValue();
+            if (x5chainObject.isByteString()) {
+                CertificateToken certificate = loadCertificate(x5chainObject.getValueAsBytes());
+                if (certificate != null) {
+                    return Collections.singletonList(certificate.getDSSId());
+                }
+
+            } else if (x5chainObject.isArray()) {
                 List<Identifier> certificateIdentifiers = new ArrayList<>();
-                for (CBORObject encapsulatedCert : xVals.getValueAsList()) {
-                    CertificateToken certificateToken = toCertificateToken(encapsulatedCert);
-                    if (certificateToken != null) {
-                        certificateIdentifiers.add(certificateToken.getDSSId());
+                for (CBORObject cborObject : x5chainObject.getValueAsList()) {
+                    if (cborObject.isByteString()) {
+                        CertificateToken certificate = loadCertificate(cborObject.getValueAsBytes());
+                        if (certificate != null) {
+                            certificateIdentifiers.add(certificate.getDSSId());
+                        }
+                    } else {
+                        LOG.warn("The item of 'x5chain' CBOR array shall be a byte string!");
                     }
                 }
                 return certificateIdentifiers;
             }
-
-        } else {
-            LOG.warn("The value of 'valData' uHeader must be represented by a CBOR Map! The entry is skipped.");
         }
         return Collections.emptyList();
     }
@@ -312,12 +347,7 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
             CBORMap pkiOb = x509OrOther.getAsMap(COSEHeaderParameter.X509_OR_OTHER_X509_CERT.cbor());
             byte[] val = CBAdESUtils.extractDerEncodedPkiObject(pkiOb);
             if (Utils.isArrayNotEmpty(val)) {
-                try {
-                    return DSSUtils.loadCertificate(val);
-                } catch (Exception e) {
-                    LOG.warn("Unable to decode a certificate from binaries! Reason : {}", e.getMessage(), e);
-                    return null;
-                }
+                return loadCertificate(val);
             }
 
             CBORMap otherCert = x509OrOther.getAsMap(COSEHeaderParameter.X509_OR_OTHER_OTHER_CERT.cbor());
@@ -329,6 +359,15 @@ public class CBAdESTimestampSource extends SignatureTimestampSource<CBAdESSignat
             LOG.warn("The value of 'x509OrOther' shall be represented by a CBOR Map! Entry is skilled.");
         }
         return null;
+    }
+
+    private CertificateToken loadCertificate(byte[] binaries) {
+        try {
+            return DSSUtils.loadCertificate(binaries);
+        } catch (Exception e) {
+            LOG.warn("Unable to decode a certificate from binaries! Reason : {}", e.getMessage(), e);
+            return null;
+        }
     }
 
     @Override

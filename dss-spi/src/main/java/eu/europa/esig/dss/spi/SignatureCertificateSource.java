@@ -128,6 +128,15 @@ public abstract class SignatureCertificateSource extends TokenCertificateSource 
 	}
 
 	/**
+	 * Retrieves the list of all certificates present in the unprotected header parameters (JWS, COSE)
+	 *
+	 * @return list of all certificates present in the unprotected header
+	 */
+	public List<CertificateToken> getUnprotectedHeaderCertificates() {
+		return getCertificateTokensByOrigin(CertificateOrigin.UNPROTECTED_HEADER);
+	}
+
+	/**
 	 * Retrieves the list of {@link CertificateRef}s for the signing certificate
 	 * (V1/V2)
 	 * 

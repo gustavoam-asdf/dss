@@ -8,6 +8,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -135,9 +136,9 @@ public class COSEParser extends AbstractCOSEParser {
         }
         CBORArray cborArray = (CBORArray) cborObject;
         if (cborArray.isTagged()) {
-            if (COSESignatureContext.COSE_SIGN.getTag() == cborArray.getTag().getValue()) {
+            if (COSESignatureType.COSE_SIGN.getTag() == cborArray.getTag().getValue()) {
                 return parseCOSESign(cborArray);
-            } else if (COSESignatureContext.COSE_SIGN1.getTag() == cborArray.getTag().getValue()) {
+            } else if (COSESignatureType.COSE_SIGN1.getTag() == cborArray.getTag().getValue()) {
                 return parseCOSESign1(cborArray);
             }
             throw new UnsupportedOperationException(String.format(

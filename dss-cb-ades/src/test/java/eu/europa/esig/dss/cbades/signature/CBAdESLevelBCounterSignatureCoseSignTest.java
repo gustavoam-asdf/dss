@@ -9,7 +9,7 @@ import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
@@ -102,7 +102,7 @@ public class CBAdESLevelBCounterSignatureCoseSignTest extends AbstractCBAdESCoun
         COSESignStructure coseSignStructure = coseParser.parse();
         assertNotNull(coseSignStructure);
 
-        assertEquals(COSESignatureContext.COSE_SIGN, coseSignStructure.getContext());
+        assertEquals(COSESignatureType.COSE_SIGN, coseSignStructure.getContext());
         COSESign coseSign = assertInstanceOf(COSESign.class, coseSignStructure);
 
         COSEUnprotectedHeader unprotectedHeader = coseSign.getUnprotectedHeader();
@@ -139,11 +139,11 @@ public class CBAdESLevelBCounterSignatureCoseSignTest extends AbstractCBAdESCoun
         assertTrue(counterSignatureV2Object.isArray());
 
         COSECounterSignStructure coseCounterSignStructure = COSECounterSignatureParser.fromCBORObject(counterSignatureV2Object)
-                .setContext(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2)
+                .setContext(COSESignatureType.COSE_COUNTER_SIGNATURE_V2)
                 .setMasterSignature(coseSign)
                 .parse();
         assertNotNull(coseCounterSignStructure);
-        assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2, coseCounterSignStructure.getContext());
+        assertEquals(COSESignatureType.COSE_COUNTER_SIGNATURE_V2, coseCounterSignStructure.getContext());
 
         COSECounterSignature coseCounterSignature = assertInstanceOf(COSECounterSignature.class, coseCounterSignStructure);
         assertNotNull(coseCounterSignature.getProtectedHeader());

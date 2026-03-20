@@ -8,6 +8,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -30,7 +31,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
     private static final Logger LOG = LoggerFactory.getLogger(COSECounterSignatureParser.class);
 
     /** The original context of the counter signature */
-    private COSESignatureContext context;
+    private COSESignatureType context;
 
     /** The target signature containing the extracted counter signature */
     private COSEStructure masterSignature;
@@ -73,10 +74,10 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
     /**
      * Sets the original counter signature context it has been extracted from
      *
-     * @param context {@link COSESignatureContext}
+     * @param context {@link COSESignatureType}
      * @return this {@link COSECounterSignatureParser}
      */
-    public COSECounterSignatureParser setContext(COSESignatureContext context) {
+    public COSECounterSignatureParser setContext(COSESignatureType context) {
         this.context = context;
         return this;
     }
@@ -182,7 +183,7 @@ public class COSECounterSignatureParser extends AbstractCOSEParser {
             CBORArray cborArray = (CBORArray) cborObject;
             if (cborArray.isTagged()) {
                 // COSE_Countersignature
-                if (COSESignatureContext.COSE_COUNTER_SIGNATURE.getTag() == cborArray.getTag().getValue()) {
+                if (COSESignatureType.COSE_COUNTER_SIGNATURE.getTag() == cborArray.getTag().getValue()) {
                     return parseCOSECounterSignature(cborArray);
                 } else {
                     throw new UnsupportedOperationException(String.format(

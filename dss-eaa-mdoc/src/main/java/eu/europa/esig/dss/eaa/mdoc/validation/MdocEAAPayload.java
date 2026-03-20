@@ -223,6 +223,6 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public List<ClaimCredentialSubject> getCredentialSubjects() {
-        return List.of();
+        return null;
     }
 }

@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.cbades.validation;
 
-import eu.europa.esig.dss.diagnostic.jaxb.XmlStructuralValidation;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
@@ -18,10 +18,10 @@ public class CBAdESDiagnosticDataBuilder extends SignedDocumentDiagnosticDataBui
     }
 
     @Override
-    protected XmlStructuralValidation getXmlStructuralValidation(AdvancedSignature signature) {
-        final XmlStructuralValidation xmlStructuralValidation = super.getXmlStructuralValidation(signature);
-        xmlStructuralValidation.setType(((CBAdESSignature) signature).getCOSESignatureContext().getLabel());
-        return xmlStructuralValidation;
+    public XmlSignature buildDetachedXmlSignature(AdvancedSignature signature) {
+        XmlSignature xmlSignature = super.buildDetachedXmlSignature(signature);
+        xmlSignature.setCOSESignatureType(((CBAdESSignature) signature).getCOSESignatureType());
+        return xmlSignature;
     }
 
 }

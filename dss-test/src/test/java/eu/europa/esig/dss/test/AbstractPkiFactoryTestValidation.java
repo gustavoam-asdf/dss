@@ -581,6 +581,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		checkContainerInfo(diagnosticData);
 		checkPDFAInfo(diagnosticData);
 		checkJWSSerializationType(diagnosticData);
+		checkCOSESignatureType(diagnosticData);
 
 		checkNoDuplicateSignatures(diagnosticData);
 		checkNoDuplicateCompleteCertificates(diagnosticData);
@@ -1652,11 +1653,21 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 
 	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-				if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.JAdES) {
-					assertNotNull(signatureWrapper.getJWSSerializationType());
-				} else {
-					assertNull(signatureWrapper.getJWSSerializationType());
-				}
+			if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.JAdES) {
+				assertNotNull(signatureWrapper.getJWSSerializationType());
+			} else {
+				assertNull(signatureWrapper.getJWSSerializationType());
+			}
+		}
+	}
+
+	protected void checkCOSESignatureType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.CBAdES) {
+				assertNotNull(signatureWrapper.getCOSESignatureType());
+			} else {
+				assertNull(signatureWrapper.getCOSESignatureType());
+			}
 		}
 	}
 

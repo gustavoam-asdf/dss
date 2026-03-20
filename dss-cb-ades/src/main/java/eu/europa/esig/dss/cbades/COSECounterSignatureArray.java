@@ -2,6 +2,7 @@ package eu.europa.esig.dss.cbades;
 
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Objects;
 public class COSECounterSignatureArray implements COSECounterSignStructure {
 
     /** The context of the counter signature */
-    private COSESignatureContext context;
+    private COSESignatureType context;
 
     /** Defines the encoding of the structure */
     private boolean tagged;
@@ -25,16 +26,16 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
     private List<COSECounterSignature> coseCounterSignatureList;
 
     @Override
-    public COSESignatureContext getContext() {
+    public COSESignatureType getContext() {
         return context;
     }
 
     /**
      * Sets the context of the COSE counter signature
      *
-     * @param context {@link COSESignatureContext}
+     * @param context {@link COSESignatureType}
      */
-    public void setContext(COSESignatureContext context) {
+    public void setContext(COSESignatureType context) {
         this.context = context;
     }
 

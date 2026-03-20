@@ -4,13 +4,14 @@ import eu.europa.esig.dss.cbades.CBAdESSignatureIntegrityValidator;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.scope.CBAdESSignatureScopeFinder;
@@ -120,9 +121,9 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     /**
      * Gets context of the COSE signature
      *
-     * @return {@link COSESignatureContext}
+     * @return {@link COSESignatureType}
      */
-    public COSESignatureContext getCOSESignatureContext() {
+    public COSESignatureType getCOSESignatureType() {
         return cose.getContext();
     }
 
@@ -624,7 +625,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     @Override
     public SignatureDigestReference getSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
         // TODO : no definition is available -> build a signature structure based on its context
-        COSEStructure coseSignStructure = COSESignatureContext.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
+        COSEStructure coseSignStructure = COSESignatureType.COSE_SIGN1 == cose.getContext() ? cose.getCoseSignStructure() : cose.getSignerSignature();
         byte[] serializedBytes = coseSignStructure.serialize();
         byte[] digestValue = DSSUtils.digest(digestAlgorithm, serializedBytes);
         return new SignatureDigestReference(new Digest(digestAlgorithm, digestValue));
@@ -1038,7 +1039,7 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             final List<DSSDocument> originalDocuments = new ArrayList<>();
             CBAdESSignature masterSignature = (CBAdESSignature) getMasterSignature();
             originalDocuments.add(new InMemoryDocument(masterSignature.getSignatureValue()));
-            if (COSESignatureContext.COSE_SIGN1 == masterSignature.getCOSESignatureContext()) {
+            if (COSESignatureType.COSE_SIGN1 == masterSignature.getCOSESignatureType()) {
                 originalDocuments.addAll(masterSignature.getOriginalDocuments());
             }
             return originalDocuments;
@@ -1120,8 +1121,8 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
         COSEUnprotectedHeader bodyUnprotectedHeader = cose.getBodyUnprotectedHeader();
         COSEUnprotectedHeader signerUnprotectedHeader = cose.getSignerUnprotectedHeader();
-        for (COSESignatureContext coseContext : COSESignatureContext.values()) {
-            CBORObject headerKey = coseContext.getCounterSignatureHeaderKey();
+        for (COSESignatureType coseContext : COSESignatureType.values()) {
+            CBORObject headerKey = CBORObjectFactory.toCBORObject(coseContext.getCounterSignatureHeaderKey());
             if (headerKey != null) {
                 CBORObject headerValue = null;
                 boolean bodyStructure = false;

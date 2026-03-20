@@ -6,7 +6,7 @@ import eu.europa.esig.dss.cbades.COSEProtectedHeader;
 import eu.europa.esig.dss.cbades.COSESign;
 import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
@@ -122,9 +122,9 @@ public abstract class AbstractCBAdESTestSignature
 
             assertNotNull(cose.getContext());
             assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
-                    COSESignatureContext.COSE_SIGN == cose.getContext());
+                    COSESignatureType.COSE_SIGN == cose.getContext());
             assertEquals(COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType(),
-                    COSESignatureContext.COSE_SIGN1 == cose.getContext());
+                    COSESignatureType.COSE_SIGN1 == cose.getContext());
 
             assertNotNull(cose.getCoseSignStructure());
             assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
@@ -140,7 +140,7 @@ public abstract class AbstractCBAdESTestSignature
 
             COSEProtectedHeader protectedHeader = null;
             COSEUnprotectedHeader unprotectedHeader = null;
-            if (COSESignatureContext.COSE_SIGN == cose.getContext()) {
+            if (COSESignatureType.COSE_SIGN == cose.getContext()) {
                 assertNotNull(bodyProtectedHeader);
                 assertTrue(bodyProtectedHeader.isEmpty());
                 assertNotNull(signerProtectedHeader);
@@ -154,7 +154,7 @@ public abstract class AbstractCBAdESTestSignature
                 protectedHeader = signerProtectedHeader;
                 unprotectedHeader = signerUnprotectedHeader;
 
-            } else if (COSESignatureContext.COSE_SIGN1 == cose.getContext()) {
+            } else if (COSESignatureType.COSE_SIGN1 == cose.getContext()) {
                 assertNotNull(bodyProtectedHeader);
                 assertFalse(bodyProtectedHeader.isEmpty());
                 assertNull(signerProtectedHeader);
@@ -276,17 +276,14 @@ public abstract class AbstractCBAdESTestSignature
         super.checkStructureValidation(diagnosticData);
 
         for (SignatureWrapper signature : diagnosticData.getSignatures()) {
-            String signatureStructureType = signature.getSignatureStructureType();
-            assertNotNull(signatureStructureType);
-
-            COSESignatureContext coseSignatureContext = COSESignatureContext.forLabel(signatureStructureType);
-            assertNotNull(coseSignatureContext);
+            COSESignatureType coseSignatureType = signature.getCOSESignatureType();
+            assertNotNull(coseSignatureType);
             if (signature.isCounterSignature()) {
-                assertEquals(COSESignatureContext.COSE_COUNTER_SIGNATURE_V2, coseSignatureContext);
+                assertEquals(COSESignatureType.COSE_COUNTER_SIGNATURE_V2, coseSignatureType);
             } else if (COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType()) {
-                assertEquals(COSESignatureContext.COSE_SIGN, coseSignatureContext);
+                assertEquals(COSESignatureType.COSE_SIGN, coseSignatureType);
             } else if (COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType()) {
-                assertEquals(COSESignatureContext.COSE_SIGN1, coseSignatureContext);
+                assertEquals(COSESignatureType.COSE_SIGN1, coseSignatureType);
             } else {
                 fail("COSE structure type is not defined!");
             }

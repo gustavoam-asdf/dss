@@ -7,6 +7,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBAdESUHeadersComponent;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.PKIEncoding;
@@ -447,7 +448,10 @@ public class CBAdESUtils {
      */
     public static List<CBAdESSignature> buildCounterSignatures(CBAdESSignature signature, CBORObject headerKey,
                                                                CBORObject headerValue, boolean bodyStructure) {
-        COSESignatureContext counterSignatureContext = COSESignatureContext.getCounterSignatureContextByHeaderKey(headerKey);
+        if (!headerKey.isUnsignedInteger()) {
+            return Collections.emptyList(); // unknown
+        }
+        COSESignatureType counterSignatureContext = COSESignatureType.getCounterSignatureContextByHeaderKey(headerKey.getValueAsLong());
         // is known
         if (counterSignatureContext != null) {
             final List<CBAdESSignature> result = new ArrayList<>();
@@ -469,7 +473,7 @@ public class CBAdESUtils {
                     LOG.debug("A COSE counter signature found with Id : '{}'", cbadesCounterSignature.getId());
                 }
                 // only COSE_Sign1 covers master signature's payload
-                if (COSESignatureContext.COSE_SIGN1 == signature.getCOSESignatureContext() && signature.isDetachedSignature()) {
+                if (COSESignatureType.COSE_SIGN1 == signature.getCOSESignatureType() && signature.isDetachedSignature()) {
                     signature.checkSignatureIntegrity(); // ensure payload
                     coseSignature.setPayload(signature.getCoseSignature().getPayload());
                 }

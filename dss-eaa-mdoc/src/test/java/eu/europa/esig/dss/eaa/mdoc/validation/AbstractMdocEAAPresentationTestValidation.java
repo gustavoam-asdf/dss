@@ -3,6 +3,8 @@ package eu.europa.esig.dss.eaa.mdoc.validation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestValidation;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
@@ -10,6 +12,7 @@ import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
 import eu.europa.esig.validationreport.jaxb.ValidationReportType;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class AbstractMdocEAAPresentationTestValidation extends AbstractEAAPresentationTestValidation {
@@ -42,9 +45,11 @@ public abstract class AbstractMdocEAAPresentationTestValidation extends Abstract
     }
 
     @Override
-    protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
+    protected void checkCOSESignatureType(DiagnosticData diagnosticData) {
+        super.checkCOSESignatureType(diagnosticData);
+
         for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-            assertNotNull(signatureWrapper.getJWSSerializationType());
+            assertEquals(COSESignatureType.COSE_SIGN1, signatureWrapper.getCOSESignatureType());
         }
     }
 

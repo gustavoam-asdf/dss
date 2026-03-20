@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.mdoc;
 
 import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.cbades.COSESignatureContext;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
@@ -58,7 +58,7 @@ class MdocParserTest {
 
         COSESignStructure issuerAuth = issuerSigned.getIssuerAuth();
         assertNotNull(issuerAuth);
-        assertEquals(COSESignatureContext.COSE_SIGN1, issuerAuth.getContext());
+        assertEquals(COSESignatureType.COSE_SIGN1, issuerAuth.getContext());
 
         MdocDeviceSigned deviceSigned = document.getDeviceSigned();
         assertNotNull(deviceSigned);
