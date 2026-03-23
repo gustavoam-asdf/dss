@@ -123,17 +123,8 @@ public abstract class EAAPayloadVerifier {
             String headerName = entry.getKey();
             Claim claimValue = entry.getValue();
             if (isSignedDisclosuresHeader(headerName)) {
-                List<Claim> claims = buildSelectivelyDisclosableClaimsFromClaim(claimValue);
-                for (Claim claim : claims) {
-                    claim = buildClaimWithDisclosures(claim);
-                    if (claim != null) {
-                        if (claim.getName() != null) {
-                            result.put(claim.getName(), claim);
-                        } else {
-                            LOG.warn("No claim name is present for the disclosure when matching an '{}' value!", headerName);
-                        }
-                    }
-                }
+                Map<String, Claim> processedClaims = buildSelectivelyDisclosableClaimMap(claimValue);
+                result.putAll(processedClaims);
 
             } else if (isToSkipHeader(headerName)) {
                 // skip _sd_alg values
@@ -207,9 +198,9 @@ public abstract class EAAPayloadVerifier {
      * Builds a list of hash claims from a content of a claim containing protected hashes
      *
      * @param claim {@link Claim} to process
-     * @return a list of {@link Claim>}s
+     * @return a map representing the extracted disclosures as their corresponding names as keys
      */
-    protected abstract List<Claim> buildSelectivelyDisclosableClaimsFromClaim(Claim claim);
+    protected abstract Map<String, Claim> buildSelectivelyDisclosableClaimMap(Claim claim);
 
     /**
      * Builds a claim based on the provided selectively disclosable value

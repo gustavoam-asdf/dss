@@ -73,68 +73,90 @@ public final class MdocUtils {
      * @return {@link Claim}
      */
     public static Claim createClaim(String claimName, Claim parent, Object value, boolean selectivelyDisclosable) {
+        String namespace = null;
+        if (value instanceof Claim) {
+            namespace = ((Claim) value).getNamespace();
+        }
+        return createClaim(claimName, parent, value, selectivelyDisclosable, namespace);
+    }
+
+    /**
+     * This method parses the {@code value} and wraps it into a {@code ClaimValue} according to its format.
+     * This method can be used for definition of claims used within provided disclosures.
+     * This method allows providing of the claim parent, to be used within the claim's metadata.
+     * This method allows providing of the claim's namespace.
+     *
+     * @param claimName {@link String} representing the header name of the claim
+     * @param parent {@link Claim} parent of the claim
+     * @param value {@link Object} containing the value of the object
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param namespace {@link String} representing the original namespace
+     * @return {@link Claim}
+     */
+    public static Claim createClaim(String claimName, Claim parent, Object value, boolean selectivelyDisclosable, String namespace) {
         if (value instanceof ClaimString) {
-            return new ClaimString(claimName, ((ClaimString) value).getStringValue(), selectivelyDisclosable, parent);
+            return new ClaimString(claimName, namespace, ((ClaimString) value).getStringValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimNumber) {
-            return new ClaimNumber(claimName, ((ClaimNumber) value).getNumberValue(), selectivelyDisclosable, parent);
+            return new ClaimNumber(claimName, namespace, ((ClaimNumber) value).getNumberValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimBoolean) {
-            return new ClaimBoolean(claimName, ((ClaimBoolean) value).getBooleanValue(), selectivelyDisclosable, parent);
+            return new ClaimBoolean(claimName, namespace, ((ClaimBoolean) value).getBooleanValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimByteString) {
-            return new ClaimByteString(claimName, ((ClaimByteString) value).getBinaryValue(), selectivelyDisclosable, parent);
+            return new ClaimByteString(claimName, namespace, ((ClaimByteString) value).getBinaryValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimDate) {
-            return new ClaimDate(claimName, ((ClaimDate) value).getDateValue(), selectivelyDisclosable, parent);
+            return new ClaimDate(claimName, namespace, ((ClaimDate) value).getDateValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimMap) {
-            return new MdocClaimMap(claimName, ((ClaimMap) value).getMapValue(), selectivelyDisclosable, parent);
+            return new MdocClaimMap(claimName, namespace, ((ClaimMap) value).getMapValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof ClaimArray) {
-            return new MdocClaimArray(claimName, ((ClaimArray) value).getListValue(), selectivelyDisclosable, parent);
+            return new MdocClaimArray(claimName, namespace, ((ClaimArray) value).getListValue(), selectivelyDisclosable, parent);
 
         } else if (value instanceof CBORObject) {
             CBORObject cborObject = (CBORObject) value;
             if (cborObject.isArray()) {
-                return new MdocClaimArray(claimName, cborObject.getValueAsList(), selectivelyDisclosable, parent);
+                return new MdocClaimArray(claimName, namespace, cborObject.getValueAsList(), selectivelyDisclosable, parent);
             } else if (cborObject.isBoolean()) {
-                return new ClaimBoolean(claimName, cborObject.getValueAsBoolean(), selectivelyDisclosable, parent);
+                return new ClaimBoolean(claimName, namespace, cborObject.getValueAsBoolean(), selectivelyDisclosable, parent);
             } else if (cborObject.isByteString()) {
-                return new ClaimByteString(claimName, cborObject.getValueAsBytes(), selectivelyDisclosable, parent);
+                return new ClaimByteString(claimName, namespace, cborObject.getValueAsBytes(), selectivelyDisclosable, parent);
             } else if (cborObject.isFloatingPointNumber()) {
-                return new ClaimNumber(claimName, cborObject.getValueAsDouble(), selectivelyDisclosable, parent);
+                return new ClaimNumber(claimName, namespace, cborObject.getValueAsDouble(), selectivelyDisclosable, parent);
             } else if (cborObject.isNegativeInteger() || cborObject.isUnsignedInteger()) {
-                return new ClaimNumber(claimName, cborObject.getValueAsLong(), selectivelyDisclosable, parent);
+                return new ClaimNumber(claimName, namespace, cborObject.getValueAsLong(), selectivelyDisclosable, parent);
             } else if (cborObject.isMap()) {
-                return new MdocClaimMap(claimName, cborObject.getValueAsMap(), selectivelyDisclosable, parent);
+                return new MdocClaimMap(claimName, namespace, cborObject.getValueAsMap(), selectivelyDisclosable, parent);
             } else if (cborObject.isNull()) {
                 return new ClaimNull(claimName, selectivelyDisclosable, parent);
             } else if (cborObject.isUnicodeString()) {
-                return new ClaimString(claimName, cborObject.getValueAsString(), selectivelyDisclosable, parent);
+                return new ClaimString(claimName, namespace, cborObject.getValueAsString(), selectivelyDisclosable, parent);
             }
             throw new IllegalArgumentException(String.format("The claim value of type '%s' is not supported!", value.getClass().getSimpleName()));
 
         } else if (value instanceof String) {
-            return new ClaimString(claimName, (String) value, selectivelyDisclosable, parent);
+            return new ClaimString(claimName, namespace, (String) value, selectivelyDisclosable, parent);
 
         } else if (value instanceof Number) {
-            return new ClaimNumber(claimName, (Number) value, selectivelyDisclosable, parent);
+            return new ClaimNumber(claimName, namespace, (Number) value, selectivelyDisclosable, parent);
 
         } else if (value instanceof Boolean) {
-            return new ClaimBoolean(claimName, (Boolean) value, selectivelyDisclosable, parent);
+            return new ClaimBoolean(claimName, namespace, (Boolean) value, selectivelyDisclosable, parent);
 
         } else if (value instanceof Date) {
-            return new ClaimDate(claimName, (Date) value, selectivelyDisclosable, parent);
+            return new ClaimDate(claimName, namespace, (Date) value, selectivelyDisclosable, parent);
 
         } else if (value instanceof Map) {
-            return new MdocClaimMap(claimName, (Map<?,?>) value, selectivelyDisclosable, parent);
+            return new MdocClaimMap(claimName, namespace, (Map<?,?>) value, selectivelyDisclosable, parent);
 
         } else if (value instanceof List) {
-            return new MdocClaimArray(claimName, (List<?>) value, selectivelyDisclosable, parent);
+            return new MdocClaimArray(claimName, namespace, (List<?>) value, selectivelyDisclosable, parent);
 
         } else if (value == null) {
-            return new ClaimNull(claimName, selectivelyDisclosable, parent);
+            return new ClaimNull(claimName, namespace, selectivelyDisclosable, parent);
 
         } else {
             throw new IllegalArgumentException(String.format("The claim value of type '%s' is not supported!", value.getClass().getSimpleName()));

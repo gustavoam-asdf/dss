@@ -6,6 +6,7 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -98,23 +100,36 @@ public class SDJWTPayloadVerifier extends EAAPayloadVerifier {
     }
 
     @Override
-    protected List<Claim> buildSelectivelyDisclosableClaimsFromClaim(Claim _sdClaim) {
+    protected Map<String, Claim> buildSelectivelyDisclosableClaimMap(Claim _sdClaim) {
         if (!_sdClaim.isArrayValueType()) {
             LOG.warn("_sd header shall be of type of JSON array!");
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
 
-        final List<Claim> result = new ArrayList<>();
+        final Map<String, Claim> result = new HashMap<>();
 
         List<Claim> sdClaims = _sdClaim.getListValue();
         for (Claim sdClaim : sdClaims) {
             Claim claim = buildSelectivelyDisclosableClaim(sdClaim, disclosures);
             if (claim != null) {
-                result.add(claim);
+                if (claim.getName() != null) {
+                    result.put(claim.getName(), claim);
+                } else {
+                    LOG.warn("No claim name is present for the disclosure when matching a '{}' value!", _sdClaim.getName());
+                }
             }
         }
 
         return result;
+    }
+
+    @Override
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures) {
+        Claim claim = super.buildSelectivelyDisclosableClaim(hashClaim, disclosures);
+        if (claim != null) {
+            return buildClaimWithDisclosures(claim); // process recursively
+        }
+        return null;
     }
 
     @Override

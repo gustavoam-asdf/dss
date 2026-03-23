@@ -79,7 +79,8 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(expectedSignaturesCount(), eaaPresentation.getEAAPresentationSignatures().size());
         assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
-        assertEquals(getEAAPresentationType(), eaaPresentation.getType());
+        assertEquals(getEAAPresentationType(), eaaPresentation.getEAAType());
+        assertEquals(EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), eaaPresentation.getDocumentType() != null);
 
         checkEAAPresentationDigestMatchers(diagnosticData);
         checkClaims(diagnosticData);
@@ -87,6 +88,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
         for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+            boolean namespaceFound = false;
             for (XmlDigestMatcher digestMatcher : eaaPresentation.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
                     assertFalse(digestMatcher.isDataFound());
@@ -96,8 +98,10 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertTrue(digestMatcher.isDataFound());
                     assertTrue(digestMatcher.isDataIntact());
                     assertNotNull(digestMatcher.getDisclosableClaim());
+                    namespaceFound |= digestMatcher.getDisclosableClaim().getNamespace() != null;
                 }
             }
+            assertEquals(disclosuresPresent() && EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), namespaceFound);
         }
     }
 
@@ -107,6 +111,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
             assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
 
             boolean disclosedClaimFound = false;
+            boolean namespaceFound = false;
             for (ClaimWrapper claimWrapper : eaaPayloadClaims) {
                 assertNotNull(claimWrapper.getName());
 
@@ -165,6 +170,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 ClaimWrapper claimByHeaderName = eaaPresentation.getClaimByHeaderName(claimWrapper.getName());
                 assertNotNull(claimByHeaderName);
                 assertEquals(claimByHeaderName.getName(), claimWrapper.getName());
+                assertEquals(claimByHeaderName.getNamespace(), claimWrapper.getNamespace());
                 assertEquals(claimByHeaderName.getText(), claimWrapper.getText());
                 assertEquals(claimByHeaderName.getNumber(), claimWrapper.getNumber());
                 assertEquals(claimByHeaderName.getBoolean(), claimWrapper.getBoolean());
@@ -188,9 +194,13 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 }
 
                 assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
+
+                namespaceFound |= claimWrapper.getNamespace() != null;
             }
             assertEquals(disclosuresPresent(), disclosedClaimFound);
             assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getSelectivelyDisclosableClaims()));
+            assertEquals(disclosuresPresent() && EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(),
+                    namespaceFound);
         }
     }
 

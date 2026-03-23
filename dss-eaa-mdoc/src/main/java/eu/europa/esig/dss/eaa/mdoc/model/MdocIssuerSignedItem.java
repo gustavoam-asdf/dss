@@ -85,7 +85,7 @@ public class MdocIssuerSignedItem extends Disclosure {
     private Claim getClaim(CBORMap issuerSignedItemMap) {
         String elementIdentifier = getElementIdentifier(issuerSignedItemMap);
         CBORObject elementValue = getElementValue(issuerSignedItemMap);
-        return MdocUtils.createClaim(elementIdentifier, null, elementValue, true);
+        return MdocUtils.createClaim(elementIdentifier, null, elementValue, true, namespace);
     }
 
     private String getElementIdentifier(CBORMap issuerSignedItemMap) {

@@ -59,6 +59,16 @@ public class EAAPresentationWrapper {
     }
 
     /**
+     * Gets claimed document type.
+     * NOTE: used in mdoc and the returned value corresponds to a string incorporated within a 'docType' element
+     *
+     * @return {@link String}
+     */
+    public String getDocumentType() {
+        return eaaPresentation.getDocumentType();
+    }
+
+    /**
      * Gets a list of digest matchers representing the associated hashes and disclosures validation
      *
      * @return a list of {@link XmlDigestMatcher}
@@ -739,8 +749,8 @@ public class EAAPresentationWrapper {
      *
      * @return {@link EAAPresentationType}
      */
-    public EAAPresentationType getType() {
-        return eaaPresentation.getType();
+    public EAAPresentationType getEAAType() {
+        return eaaPresentation.getEAAType();
     }
 
 }

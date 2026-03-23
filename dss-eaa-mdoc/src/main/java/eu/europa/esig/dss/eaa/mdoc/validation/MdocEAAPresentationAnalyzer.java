@@ -74,6 +74,7 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
                     .setDisclosures(getSignedItems(mdocDocument.getIssuerSigned().getNamespaces()))
                     .setKeyBindingSignature(getKeyBindingSignature(mdocDocument.getDeviceSigned()))
                     .setFilename(document.getName())
+                    .setDocumentType(mdocDocument.getDocType())
                     .build();
             result.add(mdocEaa);
         }

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,13 +114,13 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
     }
 
     @Override
-    protected List<Claim> buildSelectivelyDisclosableClaimsFromClaim(Claim valueDigestsClaim) {
+    protected Map<String, Claim> buildSelectivelyDisclosableClaimMap(Claim valueDigestsClaim) {
         if (!valueDigestsClaim.isMapValueType()) {
             LOG.warn("valueDigests header shall be of a CBOR Map type!");
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
 
-        final List<Claim> result = new ArrayList<>();
+        final Map<String, Claim> result = new HashMap<>();
 
         Map<String, Claim> valueDigestsMap = valueDigestsClaim.getMapValue();
         for (Map.Entry<String, Claim> valueDigestsEntry : valueDigestsMap.entrySet()) {
@@ -141,7 +142,11 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
                 List<Disclosure> disclosureCandidates = getDisclosureByNamespaceAndId(namespace, Long.parseLong(digestId));
                 Claim claim = buildSelectivelyDisclosableClaim(digest, disclosureCandidates);
                 if (claim != null) {
-                    result.add(claim);
+                    if (claim.getName() != null) {
+                        result.put(claim.getName(), claim);
+                    } else {
+                        LOG.warn("No claim name is present for a matching disclosure!");
+                    }
                 }
             }
 
@@ -175,6 +180,10 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
     protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures) {
         DisclosureValidation disclosureValidation = super.validateHashClaim(hashClaim, disclosures);
         disclosureValidation.setId(hashClaim.getName());
+        // TODO : find a better way to provide namespace ?
+        if (disclosureValidation.getDisclosure() != null) {
+            disclosureValidation.setNamespace(((MdocIssuerSignedItem) disclosureValidation.getDisclosure()).getNamespace());
+        }
         return disclosureValidation;
     }
 

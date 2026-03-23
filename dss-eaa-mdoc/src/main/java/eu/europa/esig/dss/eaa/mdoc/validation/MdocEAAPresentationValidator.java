@@ -37,4 +37,11 @@ public class MdocEAAPresentationValidator extends DefaultEAAPresentationValidato
         return new CBAdESDiagnosticDataBuilder();
     }
 
+    @Override
+    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+        return new MdocPresentationDiagnosticDataBuilder()
+                .foundEAAPresentations(getEAAPresentations())
+                .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());
+    }
+
 }

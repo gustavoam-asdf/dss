@@ -47,6 +47,18 @@ public class ClaimNull extends AbstractClaim {
         super(name, selectivelyDisclosable, parent);
     }
 
+    /**
+     * Constructor with claim name, namespace and selectively disclosable status and a parent claim provided
+     *
+     * @param name {@link String}
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
+     * @param parent {@link Claim} representing the parent claim, when applicable
+     */
+    public ClaimNull(final String name, final String namespace, final boolean selectivelyDisclosable, final Claim parent) {
+        super(name, namespace, selectivelyDisclosable, parent);
+    }
+
     @Override
     public String getValueAsString() {
         return "null";

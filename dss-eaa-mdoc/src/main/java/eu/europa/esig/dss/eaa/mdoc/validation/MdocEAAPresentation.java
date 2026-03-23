@@ -10,7 +10,14 @@ import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
 
+/**
+ * Represents an EAA presentation embedded within an mdoc response
+ *
+ */
 public class MdocEAAPresentation extends DefaultEAAPresentation {
+
+    /** Type of the mdoc, represented in a form of a namespace */
+    private String documentType;
 
     /**
      * Default constructor
@@ -26,6 +33,24 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
      */
     public static MdocEAAPresentationBuilder initBuilder() {
         return new MdocEAAPresentationBuilder();
+    }
+
+    /**
+     * Gets mdoc document type
+     *
+     * @return {@link String}
+     */
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    /**
+     * Sets the document type
+     *
+     * @param documentType {@link String}
+     */
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
     @Override
@@ -48,6 +73,9 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
      *
      */
     public static class MdocEAAPresentationBuilder extends DefaultEAAPresentationBuilder {
+
+        /** Type of the mdoc, represented in a form of a namespace */
+        private String documentType;
 
         /**
          * Default constructor
@@ -76,6 +104,17 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
             return (MdocEAAPresentationBuilder) super.setFilename(filename);
         }
 
+        /**
+         * Sets the mdoc docType
+         *
+         * @param documentType {@link String}
+         * @return {@link MdocEAAPresentationBuilder}
+         */
+        public MdocEAAPresentationBuilder setDocumentType(String documentType) {
+            this.documentType = documentType;
+            return this;
+        }
+
         @Override
         protected DefaultEAAPresentation initEAAPresentation() {
             return new MdocEAAPresentation();
@@ -83,7 +122,9 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
 
         @Override
         public MdocEAAPresentation build() {
-            return (MdocEAAPresentation) super.build();
+            MdocEAAPresentation mdocEAAPresentation = (MdocEAAPresentation) super.build();
+            mdocEAAPresentation.setDocumentType(documentType);
+            return mdocEAAPresentation;
         }
 
     }

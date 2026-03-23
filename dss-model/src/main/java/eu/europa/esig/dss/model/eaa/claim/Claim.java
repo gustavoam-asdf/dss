@@ -26,6 +26,13 @@ public interface Claim extends Serializable {
     boolean isSelectivelyDisclosable();
 
     /**
+     * Gets the origin namespace of the claim (NOTE: used in mdoc)
+     *
+     * @return {@link String}
+     */
+    String getNamespace();
+
+    /**
      * Gets parent claim, when applicable (e.g. for claims nested within a map or an array)
      *
      * @return {@link Claim}

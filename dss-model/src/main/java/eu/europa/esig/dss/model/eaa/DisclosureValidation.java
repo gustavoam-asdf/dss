@@ -23,6 +23,9 @@ public class DisclosureValidation extends ReferenceValidation {
     /** Value of the disclosure */
     private Claim value;
 
+    /** Original namespace of the disclosure */
+    private String namespace;
+
     /**
      * Default constructor
      */
@@ -59,15 +62,6 @@ public class DisclosureValidation extends ReferenceValidation {
     }
 
     /**
-     * Sets the provided disclosure name
-     *
-     * @param name {@link String}
-     */
-    public void setClaimName(String name) {
-        this.name = name;
-    }
-
-    /**
      * Gets the original provided disclosure claim value
      *
      * @return {@link Claim}
@@ -77,12 +71,21 @@ public class DisclosureValidation extends ReferenceValidation {
     }
 
     /**
-     * Sets the provided disclosure claim value
+     * Gets disclosure's namespace
      *
-     * @param value {@link Claim}
+     * @return {@link String}
      */
-    public void setValue(Claim value) {
-        this.value = value;
+    public String getNamespace() {
+        return namespace;
+    }
+
+    /**
+     * Sets disclosure's namespace
+     *
+     * @param namespace {@link String}
+     */
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     @Override

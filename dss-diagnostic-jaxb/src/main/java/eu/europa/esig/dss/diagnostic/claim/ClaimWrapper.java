@@ -67,6 +67,15 @@ public class ClaimWrapper {
     }
 
     /**
+     * Gets the claim's namespace (used for mdoc)
+     *
+     * @return {@link String)
+     */
+    public String getNamespace() {
+        return wrapped.getNamespace();
+    }
+
+    /**
      * Gets whether the claim was made selectively disclosable and its value has been obtained from a provided disclosure
      *
      * @return whether the claim's value has been obtained from a disclosure

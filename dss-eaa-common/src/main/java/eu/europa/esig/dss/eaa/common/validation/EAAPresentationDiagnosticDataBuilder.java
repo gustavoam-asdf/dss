@@ -100,11 +100,17 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return builtEAAPresentations;
     }
 
-    private XmlEAAPresentation buildDetachedXmlEAAPresentation(EAAPresentation eaaPresentation) {
+    /**
+     * Builds an {@code XmlEAAPresentation} instance
+     *
+     * @param eaaPresentation {@link EAAPresentation}
+     * @return {@link XmlEAAPresentation}
+     */
+    protected XmlEAAPresentation buildDetachedXmlEAAPresentation(EAAPresentation eaaPresentation) {
         final XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
         xmlEAAPresentation.setId(eaaPresentation.getId());
         xmlEAAPresentation.setDocumentName(eaaPresentation.getFilename());
-        xmlEAAPresentation.setType(eaaPresentation.getEAAPresentationType());
+        xmlEAAPresentation.setEAAType(eaaPresentation.getEAAPresentationType());
         for (AdvancedSignature signature : eaaPresentation.getSignatures()) {
             xmlEAAPresentation.getEAAPresentationSignature().add(getXmlEAAPresentationSignature(signature));
         }
@@ -155,6 +161,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (disclosureValidation.getClaimName() != null || disclosureValidation.getValue() != null) {
             XmlDisclosableClaim xmlClaim = new XmlDisclosableClaim();
             xmlClaim.setName(disclosureValidation.getClaimName());
+            xmlClaim.setNamespace(disclosureValidation.getNamespace());
             if (disclosureValidation.getValue() != null) {
                 xmlClaim.setValue(disclosureValidation.getValue().getValueAsString());
             }
@@ -440,6 +447,9 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claim != null) {
             if (claim.getName() != null) {
                 xmlClaim.setName(claim.getName());
+            }
+            if (claim.getNamespace() != null) {
+                xmlClaim.setNamespace(claim.getNamespace());
             }
             if (claim.isSelectivelyDisclosable()) {
                 xmlClaim.setDisclosure(claim.isSelectivelyDisclosable());

@@ -1151,6 +1151,7 @@
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="name" type="xs:string" use="optional" />
+				<xs:attribute name="namespace" type="xs:string" use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -1679,7 +1680,8 @@
 			<xs:extension base="AbstractToken">
 				<xs:sequence>
 					<xs:element name="DocumentName" type="xs:string" minOccurs="0" />
-					<xs:element name="Type" type="EAAPresentationType" />
+					<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
+					<xs:element name="EAAType" type="EAAPresentationType" />
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 					<xs:element name="DigestMatchers" type="DigestMatchers" minOccurs="0" />
 					<xs:element name="EAAPresentationSignature" maxOccurs="unbounded">
@@ -1860,6 +1862,7 @@
 			<xs:element name="Entry" type="Claim" minOccurs="0" maxOccurs="unbounded" /> <!-- Represents a value of a map entry -->
 		</xs:sequence>
 		<xs:attribute name="name" type="xs:string" /> <!-- may be null -->
+		<xs:attribute name="namespace" type="xs:string" /> <!-- may be null -->
 		<xs:attribute name="disclosure" type="xs:boolean" />
 	</xs:complexType>
 
