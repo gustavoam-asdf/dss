@@ -34,8 +34,10 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.DeviceKeyClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTimestampedObject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustService;
@@ -77,6 +79,7 @@ import eu.europa.esig.dss.validation.process.vpfswatsp.POEExtraction;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -985,22 +988,36 @@ public class SimpleReportBuilder {
 			xmlEAAPayload.setStatusUri(getXmlDisclosableClaim(eaaStatus.getUri(), eaaStatus.isSelectivelyDisclosable()));
 		}
 		xmlEAAPayload.setNonce(getXmlDisclosableClaim(eaaPayloadProxy.getEAANonce()));
-		xmlEAAPayload.setFullName(getXmlDisclosableClaim(eaaPayloadProxy.getUserFullName()));
-		xmlEAAPayload.setFirstName(getXmlDisclosableClaim(eaaPayloadProxy.getUserFirstName()));
-		xmlEAAPayload.setLastName(getXmlDisclosableClaim(eaaPayloadProxy.getUserLastName()));
-		xmlEAAPayload.setMiddleName(getXmlDisclosableClaim(eaaPayloadProxy.getUserMiddleName()));
-		xmlEAAPayload.setNickname(getXmlDisclosableClaim(eaaPayloadProxy.getUserNickname()));
-		xmlEAAPayload.setShortName(getXmlDisclosableClaim(eaaPayloadProxy.getUserShortName()));
-		xmlEAAPayload.setProfileUrl(getXmlDisclosableClaim(eaaPayloadProxy.getUserProfileUrl()));
-		xmlEAAPayload.setPictureUrl(getXmlDisclosableClaim(eaaPayloadProxy.getUserPictureUrl()));
-		xmlEAAPayload.setWebsiteUrl(getXmlDisclosableClaim(eaaPayloadProxy.getUserWebsiteUrl()));
-		xmlEAAPayload.setEmail(getXmlDisclosableClaim(eaaPayloadProxy.getUserEmail()));
-		xmlEAAPayload.setEmailVerified(getXmlDisclosableClaim(eaaPayloadProxy.getUserEmailVerified()));
-		xmlEAAPayload.setGender(getXmlDisclosableClaim(eaaPayloadProxy.getUserGender()));
-		xmlEAAPayload.setBirthdate(getXmlDisclosableClaim(eaaPayloadProxy.getUserBirthdate()));
-		xmlEAAPayload.setTimezone(getXmlDisclosableClaim(eaaPayloadProxy.getUserTimezone()));
-		xmlEAAPayload.setLocale(getXmlDisclosableClaim(eaaPayloadProxy.getUserLocale()));
-		AddressClaimWrapper userAddress = eaaPayloadProxy.getUserAddress();
+		DeviceKeyClaimWrapper eaaDeviceKey = eaaPayloadProxy.getEAADeviceKey();
+		if (eaaDeviceKey != null && eaaDeviceKey.getPublicKey() != null) {
+			xmlEAAPayload.setDeviceKey(getXmlDisclosableClaim(eaaDeviceKey.getName(), eaaDeviceKey.isSelectivelyDisclosable(), Utils.toBase64(eaaDeviceKey.getPublicKey())));
+		}
+		xmlEAAPayload.setVersion(getXmlDisclosableClaim(eaaPayloadProxy.getEAAVersion()));
+		xmlEAAPayload.setDocType(getXmlDisclosableClaim(eaaPayloadProxy.getEAADocType()));
+		ValidityInfoClaimWrapper eaaValidityInfo = eaaPayloadProxy.getEAAValidityInfo();
+		if (eaaValidityInfo != null) {
+			xmlEAAPayload.setSignatureCreatedAt(getXmlDisclosableClaim(eaaValidityInfo.getSigned(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setSignatureNotBefore(getXmlDisclosableClaim(eaaValidityInfo.getValidFrom(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setSignatureExpirationTime(getXmlDisclosableClaim(eaaValidityInfo.getValidUntil(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setSignatureNextUpdate(getXmlDisclosableClaim(eaaValidityInfo.getExpectedUpdate(), eaaValidityInfo.isSelectivelyDisclosable()));
+		}
+
+		xmlEAAPayload.setFullName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFullName()));
+		xmlEAAPayload.setFirstName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFirstName()));
+		xmlEAAPayload.setLastName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderLastName()));
+		xmlEAAPayload.setMiddleName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderMiddleName()));
+		xmlEAAPayload.setNickname(getXmlDisclosableClaim(eaaPayloadProxy.getHolderNickname()));
+		xmlEAAPayload.setShortName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderShortName()));
+		xmlEAAPayload.setProfileUrl(getXmlDisclosableClaim(eaaPayloadProxy.getHolderProfileUrl()));
+		xmlEAAPayload.setPictureUrl(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPictureUrl()));
+		xmlEAAPayload.setWebsiteUrl(getXmlDisclosableClaim(eaaPayloadProxy.getHolderWebsiteUrl()));
+		xmlEAAPayload.setEmail(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEmail()));
+		xmlEAAPayload.setEmailVerified(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEmailVerified()));
+		xmlEAAPayload.setGender(getXmlDisclosableClaim(eaaPayloadProxy.getHolderGender()));
+		xmlEAAPayload.setBirthdate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthdate()));
+		xmlEAAPayload.setTimezone(getXmlDisclosableClaim(eaaPayloadProxy.getHolderTimezone()));
+		xmlEAAPayload.setLocale(getXmlDisclosableClaim(eaaPayloadProxy.getHolderLocale()));
+		AddressClaimWrapper userAddress = eaaPayloadProxy.getHolderAddress();
 		if (userAddress != null) {
 			xmlEAAPayload.setAddressPostalAddress(getXmlDisclosableClaim(userAddress.getPostalAddress(), userAddress.isSelectivelyDisclosable()));
 			xmlEAAPayload.setAddressCity(getXmlDisclosableClaim(userAddress.getCity(), userAddress.isSelectivelyDisclosable()));
@@ -1009,22 +1026,70 @@ public class SimpleReportBuilder {
 			xmlEAAPayload.setAddressStateOrProvince(getXmlDisclosableClaim(userAddress.getStateOrProvince(), userAddress.isSelectivelyDisclosable()));
 			xmlEAAPayload.setAddressStreetAddress(getXmlDisclosableClaim(userAddress.getStreetAddress(), userAddress.isSelectivelyDisclosable()));
 		}
-		xmlEAAPayload.setPhoneNumber(getXmlDisclosableClaim(eaaPayloadProxy.getUserPhoneNumber()));
-		xmlEAAPayload.setPhoneNumberVerified(getXmlDisclosableClaim(eaaPayloadProxy.getUserPhoneNumberVerified()));
-		PlaceOfBirthClaimWrapper userPlaceOfBirth = eaaPayloadProxy.getUserPlaceOfBirth();
+		xmlEAAPayload.setPhoneNumber(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPhoneNumber()));
+		xmlEAAPayload.setPhoneNumberVerified(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPhoneNumberVerified()));
+		PlaceOfBirthClaimWrapper userPlaceOfBirth = eaaPayloadProxy.getHolderPlaceOfBirth();
 		if (userPlaceOfBirth != null) {
 			xmlEAAPayload.setPlaceOfBirthCity(getXmlDisclosableClaim(userPlaceOfBirth.getCity(), userPlaceOfBirth.isSelectivelyDisclosable()));
 			xmlEAAPayload.setPlaceOfBirthCountry(getXmlDisclosableClaim(userPlaceOfBirth.getCountry(), userPlaceOfBirth.isSelectivelyDisclosable()));
 			xmlEAAPayload.setPlaceOfBirthRegion(getXmlDisclosableClaim(userPlaceOfBirth.getRegion(), userPlaceOfBirth.isSelectivelyDisclosable()));
 		}
-		xmlEAAPayload.setNationalities(getXmlDisclosableClaim(eaaPayloadProxy.getUserNationalities()));
-		xmlEAAPayload.setBirthLastName(getXmlDisclosableClaim(eaaPayloadProxy.getUserBirthLastName()));
-		xmlEAAPayload.setBirthFirstName(getXmlDisclosableClaim(eaaPayloadProxy.getUserBirthFirstName()));
-		xmlEAAPayload.setBirthMiddleName(getXmlDisclosableClaim(eaaPayloadProxy.getUserBirthMiddleName()));
-		xmlEAAPayload.setSalutation(getXmlDisclosableClaim(eaaPayloadProxy.getUserSalutation()));
-		xmlEAAPayload.setTitle(getXmlDisclosableClaim(eaaPayloadProxy.getUserTitle()));
-		xmlEAAPayload.setMobilePhoneNumber(getXmlDisclosableClaim(eaaPayloadProxy.getUserMobilePhoneNumber()));
-		xmlEAAPayload.setPseudonym(getXmlDisclosableClaim(eaaPayloadProxy.getUserPseudonym()));
+		xmlEAAPayload.setNationalities(getXmlDisclosableClaim(eaaPayloadProxy.getHolderNationalities()));
+		xmlEAAPayload.setBirthLastName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthLastName()));
+		xmlEAAPayload.setBirthFirstName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthFirstName()));
+		xmlEAAPayload.setBirthMiddleName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthMiddleName()));
+		xmlEAAPayload.setSalutation(getXmlDisclosableClaim(eaaPayloadProxy.getHolderSalutation()));
+		xmlEAAPayload.setTitle(getXmlDisclosableClaim(eaaPayloadProxy.getHolderTitle()));
+		xmlEAAPayload.setMobilePhoneNumber(getXmlDisclosableClaim(eaaPayloadProxy.getHolderMobilePhoneNumber()));
+		xmlEAAPayload.setPseudonym(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPseudonym()));
+
+		xmlEAAPayload.setIssuingCountry(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityCountry()));
+		xmlEAAPayload.setIssuingAuthority(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthority()));
+		xmlEAAPayload.setDocumentNumber(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentNumber()));
+		xmlEAAPayload.setPortrait(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortrait()));
+		xmlEAAPayload.setDrivingPrivileges(getXmlDisclosableClaim(eaaPayloadProxy.getHolderDrivingPrivileges()));
+		xmlEAAPayload.setUNDistinguishingSign(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityUNDistinguishingSign()));
+		xmlEAAPayload.setAdministrativeNumber(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityAdministrativeNumber()));
+		xmlEAAPayload.setHeight(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHeight()));
+		xmlEAAPayload.setWeight(getXmlDisclosableClaim(eaaPayloadProxy.getHolderWeight()));
+		xmlEAAPayload.setEyeColor(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEyeColor()));
+		xmlEAAPayload.setHairColor(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHairColor()));
+		xmlEAAPayload.setResidentAddress(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddress()));
+		xmlEAAPayload.setPortraitCaptureDate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortraitCaptureDate()));
+		xmlEAAPayload.setAgeInYears(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeInYears()));
+		xmlEAAPayload.setAgeBirthYear(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeBirthYear()));
+		xmlEAAPayload.getAgeOverNN().addAll(getXmlDisclosableClaims(eaaPayloadProxy.getHolderAgeOverList()));
+		xmlEAAPayload.setIssuingJurisdiction(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityJurisdiction()));
+		xmlEAAPayload.setResidentCity(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCity()));
+		xmlEAAPayload.setResidentState(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentState()));
+		xmlEAAPayload.setResidentPostalCode(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentPostalCode()));
+		xmlEAAPayload.setResidentCountry(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCountry()));
+		xmlEAAPayload.getBiometricTemplate().addAll(getXmlDisclosableClaims(eaaPayloadProxy.getHolderBiometricTemplateList()));
+		xmlEAAPayload.setSignatureUsualMark(getXmlDisclosableClaim(eaaPayloadProxy.getHolderSignatureUsualMark()));
+		xmlEAAPayload.setFingerprint(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFingerprint()));
+		xmlEAAPayload.setBusinessName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBusinessName()));
+		xmlEAAPayload.setOrganizationName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderOrganizationName()));
+		xmlEAAPayload.setBirthFullName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthFullName()));
+		xmlEAAPayload.setProfession(getXmlDisclosableClaim(eaaPayloadProxy.getHolderProfession()));
+		xmlEAAPayload.setRelationshipFather(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipFather()));
+		xmlEAAPayload.setRelationshipMother(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipMother()));
+		xmlEAAPayload.setRelationshipParent(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipParent()));
+		xmlEAAPayload.setRelationshipSon(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipSon()));
+		xmlEAAPayload.setRelationshipDaughter(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipDaughter()));
+		xmlEAAPayload.setRelationshipBrother(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipBrother()));
+		xmlEAAPayload.setRelationshipSister(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipSister()));
+		xmlEAAPayload.setRelationshipSibling(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipSibling()));
+		xmlEAAPayload.setRelationshipSpouse(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipSpouse()));
+		xmlEAAPayload.setRelationshipFatherInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipFatherInLaw()));
+		xmlEAAPayload.setRelationshipMotherInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipMotherInLaw()));
+		xmlEAAPayload.setRelationshipParentInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipParentInLaw()));
+		xmlEAAPayload.setRelationshipSonInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipSonInLaw()));
+		xmlEAAPayload.setRelationshipDaughterInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipDaughterInLaw()));
+		xmlEAAPayload.setRelationshipChildInLaw(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipChildInLaw()));
+		xmlEAAPayload.setRelationshipParentalAuthority(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipParentalAuthority()));
+		xmlEAAPayload.setRelationshipLegalRepresentative(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipLegalRepresentative()));
+		xmlEAAPayload.setRelationshipAgent(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipAgent()));
+		xmlEAAPayload.setDocumentType(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentType()));
 
 		List<ClaimWrapper> otherClaims = eaaPresentationWrapper.getOtherClaims();
 		if (Utils.isCollectionNotEmpty(otherClaims)) {
@@ -1032,6 +1097,13 @@ public class SimpleReportBuilder {
 		}
 
 		return xmlEAAPayload;
+	}
+
+	private List<XmlDisclosableClaim> getXmlDisclosableClaims(List<? extends ClaimWrapper> claimWrappers) {
+		if (Utils.isCollectionEmpty(claimWrappers)) {
+			return Collections.emptyList();
+		}
+		return claimWrappers.stream().map(c -> getXmlDisclosableClaim(c, null)).collect(Collectors.toList());
 	}
 
 	private XmlDisclosableClaim getXmlDisclosableClaim(ClaimWrapper claimWrapper) {
@@ -1042,13 +1114,17 @@ public class SimpleReportBuilder {
 		if (claimWrapper == null) {
 			return null;
 		}
-		XmlDisclosableClaim xmlDisclosableClaim = new XmlDisclosableClaim();
-		xmlDisclosableClaim.setName(getNamePath(claimWrapper));
 		Boolean isDisclosure = selectivelyDisclosable != null ? selectivelyDisclosable : claimWrapper.isSelectivelyDisclosable();
-		if (Utils.isTrue(isDisclosure)) {
-			xmlDisclosableClaim.setDisclosure(isDisclosure);
+		return getXmlDisclosableClaim(getNamePath(claimWrapper), isDisclosure, claimWrapper.getDisplayValue());
+	}
+
+	private XmlDisclosableClaim getXmlDisclosableClaim(String name, Boolean selectivelyDisclosable, String displayValue) {
+		XmlDisclosableClaim xmlDisclosableClaim = new XmlDisclosableClaim();
+		xmlDisclosableClaim.setName(name);
+		if (Utils.isTrue(selectivelyDisclosable)) {
+			xmlDisclosableClaim.setDisclosure(selectivelyDisclosable);
 		}
-		xmlDisclosableClaim.setValue(claimWrapper.getDisplayValue());
+		xmlDisclosableClaim.setValue(displayValue);
 		return xmlDisclosableClaim;
 	}
 

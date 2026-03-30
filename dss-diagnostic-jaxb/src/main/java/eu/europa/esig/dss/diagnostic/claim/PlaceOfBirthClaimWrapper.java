@@ -3,6 +3,9 @@ package eu.europa.esig.dss.diagnostic.claim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Wraps an {@code eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim}
  *
@@ -10,11 +13,11 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
 public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
 
     /**
-     * Default constructor
+     * Default constuctor
      *
-     * @param wrapped {@link XmlPlaceOfBirthClaim}
+     * @param wrapped {@link XmlClaim}
      */
-    public PlaceOfBirthClaimWrapper(final XmlPlaceOfBirthClaim wrapped) {
+    public PlaceOfBirthClaimWrapper(final XmlClaim wrapped) {
         super(wrapped);
     }
 
@@ -24,7 +27,7 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
      * @param wrapped {@link XmlClaim}
      * @param parent {@link ClaimWrapper}
      */
-    public PlaceOfBirthClaimWrapper(final XmlPlaceOfBirthClaim wrapped, final ClaimWrapper parent) {
+    public PlaceOfBirthClaimWrapper(final XmlClaim wrapped, final ClaimWrapper parent) {
         super(wrapped, parent);
     }
 
@@ -34,9 +37,12 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getCity() {
-        XmlClaim city = getWrapped().getCity();
-        if (city != null) {
-            return new ClaimWrapper(city, this);
+        XmlClaim wrapped = getWrapped();
+        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+            XmlClaim city = ((XmlPlaceOfBirthClaim) wrapped).getCity();
+            if (city != null) {
+                return new ClaimWrapper(city, this);
+            }
         }
         return null;
     }
@@ -47,9 +53,12 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getRegion() {
-        XmlClaim region = getWrapped().getRegion();
-        if (region != null) {
-            return new ClaimWrapper(region, this);
+        XmlClaim wrapped = getWrapped();
+        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+            XmlClaim region = ((XmlPlaceOfBirthClaim) wrapped).getRegion();
+            if (region != null) {
+                return new ClaimWrapper(region, this);
+            }
         }
         return null;
     }
@@ -60,16 +69,45 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getCountry() {
-        XmlClaim country = getWrapped().getCountry();
-        if (country != null) {
-            return new ClaimWrapper(country, this);
+        XmlClaim wrapped = getWrapped();
+        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+            XmlClaim country = ((XmlPlaceOfBirthClaim) wrapped).getCountry();
+            if (country != null) {
+                return new ClaimWrapper(country, this);
+            }
         }
         return null;
     }
 
     @Override
-    public XmlPlaceOfBirthClaim getWrapped() {
-        return (XmlPlaceOfBirthClaim) super.getWrapped();
+    public boolean isMap() {
+        XmlClaim wrapped = getWrapped();
+        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+            return true;
+        }
+        return super.isMap();
+    }
+
+    @Override
+    public Map<String, ClaimWrapper> getMap() {
+        XmlClaim wrapped = getWrapped();
+        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+            final Map<String, ClaimWrapper> result = new HashMap<>();
+            ClaimWrapper city = getCity();
+            if (city != null) {
+                result.put(city.getName(), city);
+            }
+            ClaimWrapper region = getRegion();
+            if (region != null) {
+                result.put(region.getName(), region);
+            }
+            ClaimWrapper country = getCountry();
+            if (country != null) {
+                result.put(country.getName(), country);
+            }
+            return result;
+        }
+        return super.getMap();
     }
 
 }

@@ -1,7 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt.claim;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
@@ -10,8 +9,6 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
-
-import java.util.Date;
 
 /**
  * SD-JWT implementation of a "4.8 Credential Subject" claim defined in W3C Verifiable Credentials Data Model v2.0.
@@ -171,23 +168,6 @@ public class SDJWTClaimCredentialSubject extends SDJWTClaimMap implements ClaimC
     @Override
     public ClaimString getPseudonym() {
         return getAsString(SDJWTConstants.USER_PSEUDONYM);
-    }
-
-    /**
-     * Gets the claim value if a Date from the current map using the {@code headerName} as a key
-     *
-     * @param headerName {@link String}
-     * @return {@link ClaimDate}
-     */
-    public ClaimDate getAsDate(String headerName) {
-        ClaimString claimString = getAsString(headerName);
-        if (claimString != null) {
-            Date date = DSSJsonUtils.getIsoDate(claimString.getStringValue());
-            if (date != null) {
-                return new ClaimDate(headerName, date, claimString.isSelectivelyDisclosable());
-            }
-        }
-        return null;
     }
 
 }

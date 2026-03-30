@@ -146,7 +146,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.longValue());
 			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
 		} else if (Utils.isStringNotEmpty(sigT)) {
-			return DSSJsonUtils.getDate(sigT);
+			return DSSUtils.parseRFCDate(sigT);
 		}
 		LOG.debug("Unable to extract claimed signing-time: No signing-time identifying header was found.");
 		return null;

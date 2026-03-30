@@ -4,28 +4,32 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimCredentialSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimDeviceKey;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimMap;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimPlaceOfBirth;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
+import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivileges;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
-import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,6 +87,15 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     @Override
     public ClaimDate getUpdatedAtTime() {
         return getAsDateTime(SDJWTConstants.UPDATED_AT);
+    }
+
+    @Override
+    public ClaimDeviceKey getDeviceKey() {
+        ClaimMap cnf = getAsMap(SDJWTConstants.CNF);
+        if (cnf != null) {
+            return new SDJWTClaimDeviceKey(cnf);
+        }
+        return null;
     }
 
     @Override
@@ -280,44 +293,253 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
         return Collections.emptyList();
     }
 
-    /**
-     * Gets the claim value if a Date from the current map using the {@code headerName} as a key
-     *
-     * @param headerName {@link String}
-     * @return {@link ClaimDate}
-     */
-    public ClaimDate getAsDate(String headerName) {
-        ClaimString claimString = getAsString(headerName);
-        if (claimString != null) {
-            Date date = DSSJsonUtils.getIsoDate(claimString.getStringValue());
-            if (date != null) {
-                return new ClaimDate(headerName, date, claimString.isSelectivelyDisclosable());
-            }
-        }
+    @Override
+    public ClaimString getIssuingCountry() {
         return null;
     }
 
-    /**
-     * Gets value of a header with name {@code headerName} as ClaimDate.
-     * Returns NULL if no value is provided or the Claim is of a different type.
-     *
-     * @param headerName {@link String} to get header value from the payload
-     * @return {@link ClaimDate}
-     */
-    public ClaimDate getAsDateTime(String headerName) {
-        ClaimString claimString = getAsString(headerName);
-        if (claimString != null) {
-            Date date = DSSJsonUtils.getDate(claimString.getStringValue());
-            if (date != null) {
-                return new ClaimDate(headerName, date, claimString.isSelectivelyDisclosable());
-            }
-        }
-        ClaimNumber claimNumber = getAsNumber(headerName);
-        if (claimNumber != null) {
-            long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(claimNumber.getNumberValue().longValue());
-            Date date = DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
-            return new ClaimDate(headerName, date, claimNumber.isSelectivelyDisclosable());
-        }
+    @Override
+    public ClaimString getIssuingAuthority() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getDocumentNumber() {
+        return null;
+    }
+
+    @Override
+    public ClaimByteString getPortrait() {
+        return null;
+    }
+
+    @Override
+    public ClaimDrivingPrivileges getDrivingPrivileges() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getUNDistinguishingSign() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getAdministrativeNumber() {
+        return null;
+    }
+
+    @Override
+    public ClaimNumber getHeight() {
+        return null;
+    }
+
+    @Override
+    public ClaimNumber getWeight() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getEyeColor() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getHairColor() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentAddress() {
+        return null;
+    }
+
+    @Override
+    public ClaimDate getPortraitCaptureDate() {
+        return null;
+    }
+
+    @Override
+    public ClaimNumber getAgeInYears() {
+        return null;
+    }
+
+    @Override
+    public ClaimNumber getAgeBirthYear() {
+        return null;
+    }
+
+    @Override
+    public List<ClaimAgeOverNN> getAgeOverNN() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public ClaimString getIssuingJurisdiction() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentCity() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentState() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentPostalCode() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentCountry() {
+        return null;
+    }
+
+    @Override
+    public List<ClaimBiometricTemplateXX> getBiometricTemplate() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public ClaimByteString getSignatureUsualMark() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getVersion() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getDocType() {
+        return null;
+    }
+
+    @Override
+    public ClaimValidityInfo getValidityInfo() {
+        return null;
+    }
+
+    @Override
+    public ClaimByteString getFingerprint() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getBusinessName() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getOrganizationName() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getBirthFullName() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getProfession() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipFather() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipMother() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipParent() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipSon() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipDaughter() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipBrother() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipSister() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipSibling() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipSpouse() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipFatherInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipMotherInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipParentInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipSonInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipDaughterInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipChildInLaw() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipParentalAuthority() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipLegalRepresentative() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getRelationshipAgent() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getDocumentType() {
         return null;
     }
 

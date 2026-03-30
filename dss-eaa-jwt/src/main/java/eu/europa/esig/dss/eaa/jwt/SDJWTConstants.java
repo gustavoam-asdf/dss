@@ -34,6 +34,9 @@ public class SDJWTConstants {
     /** SD-JWT payload "_sd_alg" header */
     public static final String _SD_ALG = "_sd_alg";
 
+    /** SD-JWT payload "cnf" header */
+    public static final String CNF = "cnf";
+
     // RFC 7519 claims
 
     /** 4.1.1. "iss" (Issuer) Claim */

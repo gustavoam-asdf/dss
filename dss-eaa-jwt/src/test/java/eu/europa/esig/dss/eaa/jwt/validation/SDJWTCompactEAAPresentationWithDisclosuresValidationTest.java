@@ -126,22 +126,22 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
-        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
-        assertEquals(DSSJsonUtils.getDate("2019-10-02T07:06:40Z"), eaaPresentation.getEAAUpdatedAt());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2019-10-02T07:06:40Z"), eaaPresentation.getEAAUpdatedAt());
 
-        assertEquals("John", eaaPresentation.getUserFirstName());
-        assertEquals("Doe", eaaPresentation.getUserLastName());
-        assertEquals("johndoe@example.com", eaaPresentation.getUserEmail());
-        assertNull(eaaPresentation.getUserEmailVerified());
-        assertEquals(DSSJsonUtils.getDate("1940-01-01T00:00:00Z"), eaaPresentation.getUserBirthdate());
-        assertEquals("Anytown", eaaPresentation.getUserAddressCity());
-        assertEquals("Anystate", eaaPresentation.getUserAddressStateOrProvince());
-        assertEquals("US", eaaPresentation.getUserAddressCountry());
-        assertEquals("123 Main St", eaaPresentation.getUserStreetAddress());
-        assertEquals("+1-202-555-0101", eaaPresentation.getUserPhoneNumber());
-        assertTrue(eaaPresentation.getUserPhoneNumberVerified());
-        assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getUserNationalities());
+        assertEquals("John", eaaPresentation.getHolderFirstName());
+        assertEquals("Doe", eaaPresentation.getHolderLastName());
+        assertEquals("johndoe@example.com", eaaPresentation.getHolderEmail());
+        assertNull(eaaPresentation.getHolderEmailVerified());
+        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
+        assertEquals("Anytown", eaaPresentation.getHolderAddressCity());
+        assertEquals("Anystate", eaaPresentation.getHolderAddressStateOrProvince());
+        assertEquals("US", eaaPresentation.getHolderAddressCountry());
+        assertEquals("123 Main St", eaaPresentation.getHolderStreetAddress());
+        assertEquals("+1-202-555-0101", eaaPresentation.getHolderPhoneNumber());
+        assertTrue(eaaPresentation.getHolderPhoneNumberVerified());
+        assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getHolderNationalities());
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
         assertEquals(10, selectivelyDisclosableClaims.size());

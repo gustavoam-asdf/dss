@@ -94,8 +94,8 @@ class SDJWTCompactEAAPresentationWithMetadataValidationTest extends AbstractSDJW
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
-        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
         assertEquals("urn:eudi:pid:1", eaaPresentation.getEAAMetadataUri());
         assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());
         assertEquals("1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=", Utils.toBase64(eaaPresentation.getEAAMetadataIntegrityBytes()));

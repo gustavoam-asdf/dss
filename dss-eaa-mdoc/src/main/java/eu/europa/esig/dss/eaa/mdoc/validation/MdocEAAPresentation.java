@@ -65,7 +65,7 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
             throw new IllegalStateException("SD-JWT VC signatures cannot be empty!");
         }
         CBAdESSignature signature = (CBAdESSignature) signatures.get(0); // payload is the same for EAA signatures within the same mdoc Document
-        return new MdocEAAPayloadVerifier(signature.getCoseSignature().getPayload());
+        return new MdocEAAPayloadVerifier(signature.getCoseSignature().getPayload()).setDocType(documentType);
     }
 
     /**

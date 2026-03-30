@@ -8,6 +8,7 @@ import eu.europa.esig.dss.model.lote.TrustedEntityServiceStatusAndInformationExt
 import eu.europa.esig.dss.model.timedependent.MutableTimeDependentValues;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +116,7 @@ public class JsonTrustedEntityServiceConverter implements Function<Map<?, ?>, Tr
 
         String statusStartingTime = DSSJsonUtils.getAsString(serviceInformation, JsonLoTEHeaderParameterNames.STATUS_STARTING_TIME);
         if (Utils.isStringNotEmpty(statusStartingTime)) {
-            statusBuilder.setStartDate(DSSJsonUtils.getDate(statusStartingTime));
+            statusBuilder.setStartDate(DSSUtils.parseRFCDate(statusStartingTime));
         }
 
         if (endDate != null) {

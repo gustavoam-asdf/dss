@@ -6,7 +6,26 @@ package eu.europa.esig.dss.eaa.mdoc;
  */
 public class MdocConstants {
 
-    // mdoc MobileSecurityObject parameters
+    /* List of supported mdoc document types */
+
+    /** mdoc document type as defined in ISO/IEC 18013-5 */
+    public static final String ISO18013_5_MDL_DOC_TYPE = "org.iso.18013.5.1.mDL";
+
+    /** mdoc document type as defined in ISO/IEC 23220-2 */
+    public static final String ISO23220_1_MID_DOC_TYPE = "org.iso.23220.1.mID";
+
+    /* Known namespaces */
+
+    /** Namespace for the data elements defined in section 6 of ETSI TS 119 472-1  */
+    public static final String ETSI_19472_1_NAMESPACE = "org.etsi.01947201.010101";
+
+    /** Namespace for the data elements defined in section 7.1 of ISO/IEC 18013-5  */
+    public static final String ISO18013_5_NAMESPACE = "org.iso.18013.5.1";
+
+    /** Namespace for the data elements defined in section 6.3 of ISO/IEC 23220-2  */
+    public static final String ISO23220_1_NAMESPACE = "org.iso.23220.1";
+
+    /* mdoc MobileSecurityObject parameters */
 
     /** List of individual data elements for a key usage */
     public static final String DATA_ELEMENTS = "dataElements";
@@ -52,5 +71,6 @@ public class MdocConstants {
 
     /** Version of the MobileSecurityObject */
     public static final String VERSION = "version";
+
 
 }

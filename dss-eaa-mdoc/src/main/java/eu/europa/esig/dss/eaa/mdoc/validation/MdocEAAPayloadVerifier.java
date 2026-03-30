@@ -44,6 +44,11 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
     private final CBORObject cborPayload;
 
     /**
+     * Document type
+     */
+    private String docType;
+
+    /**
      * Default constructor
      *
      * @param cborPayload {@link String} JSON payload to be verified
@@ -51,6 +56,17 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
     public MdocEAAPayloadVerifier(final CBORObject cborPayload) {
         Objects.requireNonNull(cborPayload, "Payload cannot be null!");
         this.cborPayload = cborPayload;
+    }
+
+    /**
+     * Sets the document type
+     *
+     * @param docType {@link String}
+     * @return {@link MdocEAAPayloadVerifier}
+     */
+    public MdocEAAPayloadVerifier setDocType(String docType) {
+        this.docType = docType;
+        return this;
     }
 
     /**
@@ -63,7 +79,7 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
         this.disclosureValidations = new ArrayList<>();
         this.digestAlgorithm = getDigestAlgorithm(originalPayloadMap);
         ClaimMap verifiedPayloadMap = (ClaimMap) buildClaimWithDisclosures(originalPayloadMap);
-        this.verifiedPayload = new MdocEAAPayload(verifiedPayloadMap);
+        this.verifiedPayload = new MdocEAAPayload(verifiedPayloadMap, docType);
     }
 
     /**

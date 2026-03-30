@@ -31,14 +31,11 @@ import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.TimeZone;
 
 /**
  * Utility class containing methods for CB-AdES processing
@@ -304,26 +301,7 @@ public class CBAdESUtils {
     private static Date getCRLIdIssueTime(CBORMap crlId) {
         String crlIdIssueTime = crlId.getAsString(COSEHeaderParameter.CRL_ID_ISSUE_TIME.cbor());
         if (crlIdIssueTime != null) {
-            return getDate(crlIdIssueTime);
-        }
-        return null;
-    }
-
-    /**
-     * Parses a IETF RFC 3339 dateTime String
-     *
-     * @param dateTimeString {@link String} in the RFC 3339 format to parse
-     * @return {@link Date}
-     */
-    public static Date getDate(String dateTimeString) {
-        if (Utils.isStringNotEmpty(dateTimeString)) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_RFC3339);
-                sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                return sdf.parse(dateTimeString);
-            } catch (ParseException e) {
-                LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
-            }
+            return DSSUtils.parseRFCDate(crlIdIssueTime);
         }
         return null;
     }
@@ -409,7 +387,7 @@ public class CBAdESUtils {
     private static Date getProducedAt(CBORMap ocspId) {
         String ocspIdProducedAt = ocspId.getAsString(COSEHeaderParameter.OCSP_ID_PRODUCED_AT.cbor());
         if (ocspIdProducedAt != null) {
-            return getDate(ocspIdProducedAt);
+            return DSSUtils.parseRFCDate(ocspIdProducedAt);
         } else {
             LOG.warn("Field 'producedAt' shall be present within a 'OCSPId' CBOR Map!");
         }

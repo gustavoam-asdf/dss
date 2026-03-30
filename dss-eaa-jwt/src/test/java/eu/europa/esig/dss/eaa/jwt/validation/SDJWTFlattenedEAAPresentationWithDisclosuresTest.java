@@ -18,6 +18,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
@@ -89,22 +90,22 @@ class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAP
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("john_doe_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
-        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
 
-        assertEquals("John", eaaPresentation.getUserFirstName());
-        assertEquals("Doe", eaaPresentation.getUserLastName());
-        assertEquals(DSSJsonUtils.getDate("1940-01-01T00:00:00Z"), eaaPresentation.getUserBirthdate());
+        assertEquals("John", eaaPresentation.getHolderFirstName());
+        assertEquals("Doe", eaaPresentation.getHolderLastName());
+        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
 
-        assertNull(eaaPresentation.getUserEmail());
-        assertNull(eaaPresentation.getUserEmailVerified());
-        assertNull(eaaPresentation.getUserAddressCity());
-        assertNull(eaaPresentation.getUserAddressStateOrProvince());
-        assertNull(eaaPresentation.getUserAddressCountry());
-        assertNull(eaaPresentation.getUserStreetAddress());
-        assertNull(eaaPresentation.getUserPhoneNumber());
-        assertNull(eaaPresentation.getUserPhoneNumberVerified());
-        assertFalse(Utils.isCollectionNotEmpty(eaaPresentation.getUserNationalities()));
+        assertNull(eaaPresentation.getHolderEmail());
+        assertNull(eaaPresentation.getHolderEmailVerified());
+        assertNull(eaaPresentation.getHolderAddressCity());
+        assertNull(eaaPresentation.getHolderAddressStateOrProvince());
+        assertNull(eaaPresentation.getHolderAddressCountry());
+        assertNull(eaaPresentation.getHolderStreetAddress());
+        assertNull(eaaPresentation.getHolderPhoneNumber());
+        assertNull(eaaPresentation.getHolderPhoneNumberVerified());
+        assertFalse(Utils.isCollectionNotEmpty(eaaPresentation.getHolderNationalities()));
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
         assertEquals(4, selectivelyDisclosableClaims.size());

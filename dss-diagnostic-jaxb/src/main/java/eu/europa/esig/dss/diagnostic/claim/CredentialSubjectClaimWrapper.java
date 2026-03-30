@@ -2,26 +2,27 @@ package eu.europa.esig.dss.diagnostic.claim;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubject;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Wraps an {@code eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubject}
+ * Wraps an {@code eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaimClaim}
  *
  */
-public class CredentialSubjectWrapper extends ClaimWrapper {
+public class CredentialSubjectClaimWrapper extends ClaimWrapper {
 
     /**
      * Default constructor
      *
-     * @param wrapped {@link XmlCredentialSubject}
+     * @param wrapped {@link XmlCredentialSubjectClaim}
      */
-    public CredentialSubjectWrapper(final XmlCredentialSubject wrapped) {
+    public CredentialSubjectClaimWrapper(final XmlCredentialSubjectClaim wrapped) {
         super(wrapped);
     }
     
@@ -265,7 +266,7 @@ public class CredentialSubjectWrapper extends ClaimWrapper {
      * @return {@link PlaceOfBirthClaimWrapper}
      */
     public PlaceOfBirthClaimWrapper getPlaceOfBirth() {
-        XmlPlaceOfBirthClaim placeOfBirth = getWrapped().getPlaceOfBirth();
+        XmlClaim placeOfBirth = getWrapped().getPlaceOfBirth();
         if (placeOfBirth != null) {
             return new PlaceOfBirthClaimWrapper(placeOfBirth, this);
         }
@@ -391,8 +392,134 @@ public class CredentialSubjectWrapper extends ClaimWrapper {
     }
 
     @Override
-    public XmlCredentialSubject getWrapped() {
-        return (XmlCredentialSubject) super.getWrapped();
+    public boolean isMap() {
+        return true;
+    }
+
+    @Override
+    public Map<String, ClaimWrapper> getMap() {
+        final Map<String, ClaimWrapper> result = new HashMap<>();ClaimWrapper fullName = getFullName();
+        if (fullName != null) {
+            result.put(fullName.getName(), fullName);
+        }
+        ClaimWrapper firstName = getFirstName();
+        if (firstName != null) {
+            result.put(firstName.getName(), firstName);
+        }
+        ClaimWrapper lastName = getLastName();
+        if (lastName != null) {
+            result.put(lastName.getName(), lastName);
+        }
+        ClaimWrapper middleName = getMiddleName();
+        if (middleName != null) {
+            result.put(middleName.getName(), middleName);
+        }
+        ClaimWrapper nickname = getNickname();
+        if (nickname != null) {
+            result.put(nickname.getName(), nickname);
+        }
+        ClaimWrapper shortName = getShortName();
+        if (shortName != null) {
+            result.put(shortName.getName(), shortName);
+        }
+        ClaimWrapper profileUrl = getProfileUrl();
+        if (profileUrl != null) {
+            result.put(profileUrl.getName(), profileUrl);
+        }
+        ClaimWrapper pictureUrl = getPictureUrl();
+        if (pictureUrl != null) {
+            result.put(pictureUrl.getName(), pictureUrl);
+        }
+        ClaimWrapper websiteUrl = getWebsiteUrl();
+        if (websiteUrl != null) {
+            result.put(websiteUrl.getName(), websiteUrl);
+        }
+        ClaimWrapper email = getEmail();
+        if (email != null) {
+            result.put(email.getName(), email);
+        }
+        ClaimWrapper emailVerified = getEmailVerified();
+        if (emailVerified != null) {
+            result.put(emailVerified.getName(), emailVerified);
+        }
+        ClaimWrapper gender = getGender();
+        if (gender != null) {
+            result.put(gender.getName(), gender);
+        }
+        ClaimWrapper birthdate = getBirthdate();
+        if (birthdate != null) {
+            result.put(birthdate.getName(), birthdate);
+        }
+        ClaimWrapper timezone = getTimezone();
+        if (timezone != null) {
+            result.put(timezone.getName(), timezone);
+        }
+        ClaimWrapper locale = getLocale();
+        if (locale != null) {
+            result.put(locale.getName(), locale);
+        }
+        ClaimWrapper address = getAddress();
+        if (address != null) {
+            result.put(address.getName(), address);
+        }
+        ClaimWrapper phoneNumber = getPhoneNumber();
+        if (phoneNumber != null) {
+            result.put(phoneNumber.getName(), phoneNumber);
+        }
+        ClaimWrapper phoneNumberVerified = getPhoneNumberVerified();
+        if (phoneNumberVerified != null) {
+            result.put(phoneNumberVerified.getName(), phoneNumberVerified);
+        }
+        ClaimWrapper placeOfBirth = getPlaceOfBirth();
+        if (placeOfBirth != null) {
+            result.put(placeOfBirth.getName(), placeOfBirth);
+        }
+        ClaimWrapper nationalities = getNationalities();
+        if (nationalities != null) {
+            result.put(nationalities.getName(), nationalities);
+        }
+        ClaimWrapper birthLastName = getBirthLastName();
+        if (birthLastName != null) {
+            result.put(birthLastName.getName(), birthLastName);
+        }
+        ClaimWrapper birthFirstName = getBirthFirstName();
+        if (birthFirstName != null) {
+            result.put(birthFirstName.getName(), birthFirstName);
+        }
+        ClaimWrapper birthMiddleName = getBirthMiddleName();
+        if (birthMiddleName != null) {
+            result.put(birthMiddleName.getName(), birthMiddleName);
+        }
+        ClaimWrapper salutation = getSalutation();
+        if (salutation != null) {
+            result.put(salutation.getName(), salutation);
+        }
+        ClaimWrapper title = getTitle();
+        if (title != null) {
+            result.put(title.getName(), title);
+        }
+        ClaimWrapper mobilePhoneNumber = getMobilePhoneNumber();
+        if (mobilePhoneNumber != null) {
+            result.put(mobilePhoneNumber.getName(), mobilePhoneNumber);
+        }
+        ClaimWrapper pseudonym = getPseudonym();
+        if (pseudonym != null) {
+            result.put(pseudonym.getName(), pseudonym);
+        }
+        List<ClaimWrapper> otherClaims = getOtherClaims();
+        if (otherClaims != null && !otherClaims.isEmpty()) {
+            for (ClaimWrapper otherClaim : otherClaims) {
+                if (otherClaim != null) {
+                    result.put(otherClaim.getName(), otherClaim);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public XmlCredentialSubjectClaim getWrapped() {
+        return (XmlCredentialSubjectClaim) super.getWrapped();
     }
 
 }

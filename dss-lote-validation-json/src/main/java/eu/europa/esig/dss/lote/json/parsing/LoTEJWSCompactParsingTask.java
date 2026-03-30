@@ -16,6 +16,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedEntityService;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.json.JSONParser;
 import eu.europa.esig.json.JsonObjectWrapper;
@@ -145,7 +146,7 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
     private void extractIssueDate(ListParsingResult result, Map<?, ?> listAndSchemeInformation) {
         String listIssueDateTimeString = DSSJsonUtils.getAsString(listAndSchemeInformation, JsonLoTEHeaderParameterNames.LIST_ISSUE_DATE_TIME);
         if (Utils.isStringNotEmpty(listIssueDateTimeString)) {
-            Date listIssueDateTime = DSSJsonUtils.getDate(listIssueDateTimeString);
+            Date listIssueDateTime = DSSUtils.parseRFCDate(listIssueDateTimeString);
             if (listIssueDateTime != null) {
                 result.setIssueDate(listIssueDateTime);
             }
@@ -155,7 +156,7 @@ public class LoTEJWSCompactParsingTask implements Supplier<ParsingResult> {
     private void extractNextUpdateDate(ListParsingResult result, Map<?, ?> listAndSchemeInformation) {
         String nextUpdateString = DSSJsonUtils.getAsString(listAndSchemeInformation, JsonLoTEHeaderParameterNames.NEXT_UPDATE);
         if (Utils.isStringNotEmpty(nextUpdateString)) {
-            Date nextUpdate = DSSJsonUtils.getDate(nextUpdateString);
+            Date nextUpdate = DSSUtils.parseRFCDate(nextUpdateString);
             if (nextUpdate != null) {
                 result.setNextUpdateDate(nextUpdate);
             }

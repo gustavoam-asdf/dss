@@ -406,6 +406,15 @@
 			<xs:element name="StatusIndex" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusUri" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Nonce" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="DeviceKey" type="DisclosableClaim" minOccurs="0" />
+
+			<!-- mdoc technical claims -->
+			<xs:element name="Version" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="DocType" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="SignatureCreatedAt" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="SignatureExpirationTime" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="SignatureNotBefore" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="SignatureNextUpdate" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- user info -->
 			<xs:element name="FullName" type="DisclosableClaim" minOccurs="0" />
@@ -442,6 +451,54 @@
 			<xs:element name="Title" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="MobilePhoneNumber" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Pseudonym" type="DisclosableClaim" minOccurs="0" />
+
+			<xs:element name="IssuingCountry" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="IssuingAuthority" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="DocumentNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Portrait" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="DrivingPrivileges" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="UNDistinguishingSign" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AdministrativeNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Height" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Weight" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="EyeColor" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="HairColor" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddress" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PortraitCaptureDate" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AgeInYears" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AgeBirthYear" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AgeOverNN" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="IssuingJurisdiction" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentCity" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentState" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentPostalCode" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentCountry" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BiometricTemplate" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="SignatureUsualMark" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Fingerprint" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BusinessName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="OrganizationName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthFullName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Profession" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipFather" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipMother" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipParent" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipSon" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipDaughter" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipBrother" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipSister" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipSibling" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipSpouse" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipFatherInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipMotherInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipParentInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipSonInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipDaughterInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipChildInLaw" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipParentalAuthority" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipLegalRepresentative" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="RelationshipAgent" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="DocumentType" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />

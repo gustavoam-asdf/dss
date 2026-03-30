@@ -80,7 +80,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
         assertEquals(getEAAPresentationType(), eaaPresentation.getEAAType());
-        assertEquals(EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), eaaPresentation.getDocumentType() != null);
+        assertEquals(EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), eaaPresentation.getEAADocumentType() != null);
 
         checkEAAPresentationDigestMatchers(diagnosticData);
         checkClaims(diagnosticData);

@@ -3,6 +3,9 @@ package eu.europa.esig.dss.diagnostic.claim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Wraps an {@code XmlAddressClaim}
  * 
@@ -106,6 +109,41 @@ public class AddressClaimWrapper extends ClaimWrapper {
             return new ClaimWrapper(streetAddress, this);
         }
         return null;
+    }
+
+    @Override
+    public boolean isMap() {
+        return true;
+    }
+
+    @Override
+    public Map<String, ClaimWrapper> getMap() {
+        final Map<String, ClaimWrapper> result = new HashMap<>();
+        ClaimWrapper postalAddress = getPostalAddress();
+        if (postalAddress != null) {
+            result.put(postalAddress.getName(), postalAddress);
+        }
+        ClaimWrapper streetAddress = getStreetAddress();
+        if (streetAddress != null) {
+            result.put(streetAddress.getName(), streetAddress);
+        }
+        ClaimWrapper city = getCity();
+        if (city != null) {
+            result.put(city.getName(), city);
+        }
+        ClaimWrapper stateOrProvince = getStateOrProvince();
+        if (stateOrProvince != null) {
+            result.put(stateOrProvince.getName(), stateOrProvince);
+        }
+        ClaimWrapper postalCode = getPostalCode();
+        if (postalCode != null) {
+            result.put(postalCode.getName(), postalCode);
+        }
+        ClaimWrapper country = getCountry();
+        if (country != null) {
+            result.put(country.getName(), country);
+        }
+        return result;
     }
 
     @Override

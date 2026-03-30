@@ -103,9 +103,9 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSJsonUtils.getDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
-        assertEquals(DSSJsonUtils.getDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
-        assertEquals(Arrays.asList("DE", "FR", "UK"), eaaPresentation.getUserNationalities());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(Arrays.asList("DE", "FR", "UK"), eaaPresentation.getHolderNationalities());
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
         assertEquals(4, selectivelyDisclosableClaims.size());

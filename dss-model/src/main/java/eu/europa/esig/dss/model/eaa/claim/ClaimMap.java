@@ -116,6 +116,16 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimMap getAsMap(String headerName) {
         Claim claim = get(headerName);
+        return getAsMap(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of map type and returns its value as {@code ClaimMap}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimMap}
+     */
+    protected ClaimMap getAsMap(Claim claim) {
         if (claim != null && claim.isMapValueType()) {
             return (ClaimMap) claim;
         }
@@ -130,6 +140,16 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimArray getAsArray(String headerName) {
         Claim claim = get(headerName);
+        return getAsArray(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of array type and returns its value as {@code ClaimArray}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimArray}
+     */
+    protected ClaimArray getAsArray(Claim claim) {
         if (claim != null && claim.isArrayValueType()) {
             return (ClaimArray) claim;
         }
@@ -144,6 +164,16 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimNumber getAsNumber(String headerName) {
         Claim claim = get(headerName);
+        return getAsNumber(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of number type and returns its value as {@code ClaimNumber}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimNumber}
+     */
+    protected ClaimNumber getAsNumber(Claim claim) {
         if (claim != null && claim.isNumberValueType()) {
             return (ClaimNumber) claim;
         }
@@ -158,6 +188,16 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimString getAsString(String headerName) {
         Claim claim = get(headerName);
+        return getAsString(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of string type and returns its value as {@code ClaimString}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimString}
+     */
+    protected ClaimString getAsString(Claim claim) {
         if (claim != null && claim.isStringValueType()) {
             return (ClaimString) claim;
         }
@@ -172,6 +212,16 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimBoolean getAsBoolean(String headerName) {
         Claim claim = get(headerName);
+        return getAsBoolean(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of boolean type and returns its value as {@code ClaimBoolean}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimBoolean}
+     */
+    protected ClaimBoolean getAsBoolean(Claim claim) {
         if (claim != null && claim.isBooleanValueType()) {
             return (ClaimBoolean) claim;
         }

@@ -61,8 +61,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,7 +73,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -128,12 +125,6 @@ public class DSSJsonUtils {
 
 	/** The binary content encoding (RFC 2045) */
 	public static final String CONTENT_ENCODING_BINARY = "binary";
-
-	/** Format date-time as specified in RFC 3339 5.6 */
-	private static final String DATE_TIME_FORMAT_RFC3339 = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-
-	/** Format date-time as specified in ISO 8601-1 */
-	private static final String DATE_FORMAT_ISO8601 = "yyyy-MM-dd";
 	
 	/**
 	 * Copied from org.jose4j.base64url.internal.apache.commons.codec.binary.Base64
@@ -633,37 +624,11 @@ public class DSSJsonUtils {
 	 * 
 	 * @param dateTimeString {@link String} in the RFC 3339 format to parse
 	 * @return {@link Date}
+	 * @deprecated since DSS 6.5. Please use {@code eu.europa.esig.dss.spi.DSSUtils#parseRFCDate} method instead.
 	 */
+	@Deprecated
 	public static Date getDate(String dateTimeString) {
-		if (Utils.isStringNotEmpty(dateTimeString)) {
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_RFC3339);
-				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-				return sdf.parse(dateTimeString);
-			} catch (ParseException e) {
-				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Parses an ISO 8601-1 date String
-	 *
-	 * @param dateTimeString {@link String} in the ISO 8601-1 format to parse
-	 * @return {@link Date}
-	 */
-	public static Date getIsoDate(String dateTimeString) {
-		if (Utils.isStringNotEmpty(dateTimeString)) {
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_ISO8601);
-				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-				return sdf.parse(dateTimeString);
-			} catch (ParseException e) {
-				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
-			}
-		}
-		return null;
+		return DSSUtils.parseRFCDate(dateTimeString);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubject;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,39 +13,39 @@ import java.util.stream.Collectors;
 public class CredentialSubjectProxy {
     
     /** Wrapped list of credential subjects */
-    private final List<XmlCredentialSubject> xmlCredentialSubjectList;
+    private final List<XmlCredentialSubjectClaim> xmlCredentialSubjectList;
 
     /**
      * Default constructor
      * 
-     * @param xmlCredentialSubjectList a list of {@link XmlCredentialSubject}s
+     * @param xmlCredentialSubjectList a list of {@link XmlCredentialSubjectClaim}s
      */
-    public CredentialSubjectProxy(final List<XmlCredentialSubject> xmlCredentialSubjectList) {
+    public CredentialSubjectProxy(final List<XmlCredentialSubjectClaim> xmlCredentialSubjectList) {
         this.xmlCredentialSubjectList = xmlCredentialSubjectList;
     }
 
     /**
      * Gets a list of credential subjects
      * 
-     * @return a list of {@link CredentialSubjectWrapper}s
+     * @return a list of {@link CredentialSubjectClaimWrapper}s
      */
-    public List<CredentialSubjectWrapper> getCredentialSubjects() {
+    public List<CredentialSubjectClaimWrapper> getCredentialSubjects() {
         if (xmlCredentialSubjectList == null || xmlCredentialSubjectList.isEmpty()) {
             return Collections.emptyList();
         }
-        return xmlCredentialSubjectList.stream().map(CredentialSubjectWrapper::new).collect(Collectors.toList());
+        return xmlCredentialSubjectList.stream().map(CredentialSubjectClaimWrapper::new).collect(Collectors.toList());
     }
 
     /**
      * Gets the first credential subject, when defined. Returns null otherwise
      * 
-     * @return {@link CredentialSubjectWrapper}
+     * @return {@link CredentialSubjectClaimWrapper}
      */
-    public CredentialSubjectWrapper getFirstCredentialSubject() {
+    public CredentialSubjectClaimWrapper getFirstCredentialSubject() {
         if (xmlCredentialSubjectList == null || xmlCredentialSubjectList.isEmpty()) {
             return null;
         }
-        return new CredentialSubjectWrapper(xmlCredentialSubjectList.get(0));
+        return new CredentialSubjectClaimWrapper(xmlCredentialSubjectList.get(0));
     }
     
     /**
@@ -54,7 +54,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getFullName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getFullName();
         }
@@ -67,7 +67,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getFirstName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getFirstName();
         }
@@ -80,7 +80,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getLastName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getLastName();
         }
@@ -93,7 +93,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getMiddleName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getMiddleName();
         }
@@ -106,7 +106,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getNickname() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getNickname();
         }
@@ -119,7 +119,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getShortName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getShortName();
         }
@@ -132,7 +132,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getProfileUrl() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getProfileUrl();
         }
@@ -145,7 +145,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPictureUrl() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getPictureUrl();
         }
@@ -158,7 +158,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getWebsiteUrl() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getWebsiteUrl();
         }
@@ -171,7 +171,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getEmail() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getEmail();
         }
@@ -184,7 +184,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getEmailVerified() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getEmailVerified();
         }
@@ -197,7 +197,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getGender() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getGender();
         }
@@ -210,7 +210,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getBirthdate() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getBirthdate();
         }
@@ -223,7 +223,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getTimezone() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getTimezone();
         }
@@ -236,7 +236,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getLocale() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getLocale();
         }
@@ -249,7 +249,7 @@ public class CredentialSubjectProxy {
      * @return {@link AddressClaimWrapper}
      */
     public AddressClaimWrapper getAddress() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getAddress();
         }
@@ -328,7 +328,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPhoneNumber() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getPhoneNumber();
         }
@@ -341,7 +341,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPhoneNumberVerified() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getPhoneNumberVerified();
         }
@@ -354,7 +354,7 @@ public class CredentialSubjectProxy {
      * @return {@link PlaceOfBirthClaimWrapper}
      */
     public PlaceOfBirthClaimWrapper getPlaceOfBirth() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getPlaceOfBirth();
         }
@@ -368,7 +368,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getNationalities() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getNationalities();
         }
@@ -381,7 +381,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getBirthLastName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getBirthLastName();
         }
@@ -394,7 +394,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getBirthFirstName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getBirthFirstName();
         }
@@ -407,7 +407,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getBirthMiddleName() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getBirthMiddleName();
         }
@@ -420,7 +420,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getSalutation() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getSalutation();
         }
@@ -433,7 +433,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getTitle() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getTitle();
         }
@@ -446,7 +446,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getMobilePhoneNumber() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getMobilePhoneNumber();
         }
@@ -459,7 +459,7 @@ public class CredentialSubjectProxy {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getPseudonym() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getPseudonym();
         }
@@ -473,7 +473,7 @@ public class CredentialSubjectProxy {
      * @return a lust of {@link ClaimWrapper}s
      */
     public List<ClaimWrapper> getOtherClaims() {
-        CredentialSubjectWrapper credentialSubject = getFirstCredentialSubject();
+        CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getOtherClaims();
         }

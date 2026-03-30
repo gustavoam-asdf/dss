@@ -75,6 +75,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -112,6 +113,9 @@ public final class DSSUtils {
 	/** RFC 3339 DateTime format used by default */
 	public static final String RFC3339_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
+	/** Format date-time as specified in ISO 8601-1 */
+	public static final String ISO8601_DATE_FORMAT = "yyyy-MM-dd";
+
 	/** The UTC timezone (GMT+0), used by default */
 	public static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone("UTC");
 
@@ -148,20 +152,89 @@ public final class DSSUtils {
 	}
 
 	/**
+	 * This method checks silently whether the date is conformant to the RFC 3339 date-time
+	 * pattern "yyyy-MM-dd'T'HH:mm:ss'Z'".
+	 *
+	 * @param dateTimeString {@link String} to check
+	 * @return TRUE if the string is confofmant to the RFC 3339 date-time pattern definition, FALSE otherwise
+	 */
+	public static boolean isRFCDate(final String dateTimeString) {
+		if (Utils.isStringNotEmpty(dateTimeString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				sdf.parse(dateTimeString);
+				return true;
+
+			} catch (ParseException e) {
+				// skip silently
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Parses a {@code String} date to {@code Date}
 	 *
-	 * @param str {@link String} in RFC format, e.g. "2019-11-19T17:28:15Z"
+	 * @param dateTimeString {@link String} in RFC format, e.g. "2019-11-19T17:28:15Z"
 	 * @return {@link Date}
 	 */
-	public static Date parseRFCDate(final String str) {
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
-			sdf.setTimeZone(UTC_TIMEZONE);
-			sdf.setLenient(false);
-			return sdf.parse(str);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("String '%s' doesn't follow the pattern '%s'", str, RFC3339_TIME_FORMAT));
+	public static Date parseRFCDate(final String dateTimeString) {
+		if (Utils.isStringNotEmpty(dateTimeString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				return sdf.parse(dateTimeString);
+			} catch (ParseException e) {
+				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
+			}
 		}
+		return null;
+	}
+
+	/**
+	 * This method checks silently whether the date is conformant to the ISO/IEC 8601-1 date
+	 * pattern "yyyy-MM-dd".
+	 *
+	 * @param dateString {@link String} to check
+	 * @return TRUE if the string is confofmant to the ISO/IEC 8601-1 date pattern definition, FALSE otherwise
+	 */
+	public static boolean isISO8601Date(final String dateString) {
+		if (Utils.isStringNotEmpty(dateString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_DATE_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				sdf.parse(dateString);
+				return true;
+
+			} catch (ParseException e) {
+				// skip silently
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Parses an ISO 8601-1 date String
+	 *
+	 * @param dateString {@link String} in the ISO 8601-1 format to parse, e.g. "2001-01-01"
+	 * @return {@link Date}
+	 */
+	public static Date parseISO8601Date(String dateString) {
+		if (Utils.isStringNotEmpty(dateString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_DATE_FORMAT);
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				sdf.setLenient(false);
+				return sdf.parse(dateString);
+			} catch (ParseException e) {
+				LOG.warn("Unable to parse date with value '{}' : {}", dateString, e.getMessage());
+			}
+		}
+		return null;
 	}
 
 	/**

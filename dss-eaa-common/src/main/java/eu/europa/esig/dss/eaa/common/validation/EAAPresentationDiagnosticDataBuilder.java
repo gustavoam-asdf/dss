@@ -1,11 +1,18 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubject;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDeviceKeyClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDisclosableClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegesClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodeClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodesClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
@@ -15,16 +22,25 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlValidityInfoClaim;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilege;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilegeCode;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilegeCodes;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivileges;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
+import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
@@ -203,6 +219,12 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setMetadataType(getXmlMetadataType(eaaPayload, supportedClaims));
         xmlEAAPayload.setStatus(getXmlStatus(eaaPayload.getStatus(), supportedClaims));
         xmlEAAPayload.setNonce(getXmlClaim(eaaPayload.getNonce(), supportedClaims));
+        xmlEAAPayload.setDeviceKey(getXmlDeviceKeyClaim(eaaPayload.getDeviceKey(), supportedClaims));
+
+        xmlEAAPayload.setVersion(getXmlClaim(eaaPayload.getVersion(), supportedClaims));
+        xmlEAAPayload.setDocType(getXmlClaim(eaaPayload.getDocType(), supportedClaims));
+        xmlEAAPayload.setValidityInfo(getXmlValidityInfoClaim(eaaPayload.getValidityInfo(), supportedClaims));
+
         xmlEAAPayload.setFullName(getXmlClaim(eaaPayload.getFullName(), supportedClaims));
         xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getFirstName(), supportedClaims));
         xmlEAAPayload.setLastName(getXmlClaim(eaaPayload.getLastName(), supportedClaims));
@@ -230,7 +252,55 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setTitle(getXmlClaim(eaaPayload.getTitle(), supportedClaims));
         xmlEAAPayload.setMobilePhoneNumber(getXmlClaim(eaaPayload.getMobilePhoneNumber(), supportedClaims));
         xmlEAAPayload.setPseudonym(getXmlClaim(eaaPayload.getPseudonym(), supportedClaims));
-        xmlEAAPayload.getCredentialSubject().addAll(getXmlCredentialSubjectList(eaaPayload.getCredentialSubjects(), supportedClaims));
+        xmlEAAPayload.getCredentialSubject().addAll(getXmlCredentialSubjectClaimList(eaaPayload.getCredentialSubjects(), supportedClaims));
+
+        xmlEAAPayload.setIssuingCountry(getXmlClaim(eaaPayload.getIssuingCountry(), supportedClaims));
+        xmlEAAPayload.setIssuingAuthority(getXmlClaim(eaaPayload.getIssuingAuthority(), supportedClaims));
+        xmlEAAPayload.setDocumentNumber(getXmlClaim(eaaPayload.getDocumentNumber(), supportedClaims));
+        xmlEAAPayload.setPortrait(getXmlClaim(eaaPayload.getPortrait(), supportedClaims));
+        xmlEAAPayload.setDrivingPrivileges(getXmlDrivingPrivilegesClaim(eaaPayload.getDrivingPrivileges(), supportedClaims));
+        xmlEAAPayload.setUNDistinguishingSign(getXmlClaim(eaaPayload.getUNDistinguishingSign(), supportedClaims));
+        xmlEAAPayload.setAdministrativeNumber(getXmlClaim(eaaPayload.getAdministrativeNumber(), supportedClaims));
+        xmlEAAPayload.setHeight(getXmlClaim(eaaPayload.getHeight(), supportedClaims));
+        xmlEAAPayload.setWeight(getXmlClaim(eaaPayload.getWeight(), supportedClaims));
+        xmlEAAPayload.setEyeColor(getXmlClaim(eaaPayload.getEyeColor(), supportedClaims));
+        xmlEAAPayload.setHairColor(getXmlClaim(eaaPayload.getHairColor(), supportedClaims));
+        xmlEAAPayload.setResidentAddress(getXmlClaim(eaaPayload.getResidentAddress(), supportedClaims));
+        xmlEAAPayload.setPortraitCaptureDate(getXmlClaim(eaaPayload.getPortraitCaptureDate(), supportedClaims));
+        xmlEAAPayload.setAgeInYears(getXmlClaim(eaaPayload.getAgeInYears(), supportedClaims));
+        xmlEAAPayload.setAgeBirthYear(getXmlClaim(eaaPayload.getAgeBirthYear(), supportedClaims));
+        xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayload.getAgeOverNN(), supportedClaims));
+        xmlEAAPayload.setIssuingJurisdiction(getXmlClaim(eaaPayload.getIssuingJurisdiction(), supportedClaims));
+        xmlEAAPayload.setResidentCity(getXmlClaim(eaaPayload.getResidentCity(), supportedClaims));
+        xmlEAAPayload.setResidentState(getXmlClaim(eaaPayload.getResidentState(), supportedClaims));
+        xmlEAAPayload.setResidentPostalCode(getXmlClaim(eaaPayload.getResidentPostalCode(), supportedClaims));
+        xmlEAAPayload.setResidentCountry(getXmlClaim(eaaPayload.getResidentCountry(), supportedClaims));
+        xmlEAAPayload.getBiometricTemplate().addAll(getXmlBiometricTemplateXXClaim(eaaPayload.getBiometricTemplate(), supportedClaims));
+        xmlEAAPayload.setSignatureUsualMark(getXmlClaim(eaaPayload.getSignatureUsualMark(), supportedClaims));
+        xmlEAAPayload.setFingerprint(getXmlClaim(eaaPayload.getFingerprint(), supportedClaims));
+        xmlEAAPayload.setBusinessName(getXmlClaim(eaaPayload.getBusinessName(), supportedClaims));
+        xmlEAAPayload.setOrganizationName(getXmlClaim(eaaPayload.getOrganizationName(), supportedClaims));
+        xmlEAAPayload.setBirthFullName(getXmlClaim(eaaPayload.getBirthFullName(), supportedClaims));
+        xmlEAAPayload.setProfession(getXmlClaim(eaaPayload.getProfession(), supportedClaims));
+        xmlEAAPayload.setRelationshipFather(getXmlClaim(eaaPayload.getRelationshipFather(), supportedClaims));
+        xmlEAAPayload.setRelationshipMother(getXmlClaim(eaaPayload.getRelationshipMother(), supportedClaims));
+        xmlEAAPayload.setRelationshipParent(getXmlClaim(eaaPayload.getRelationshipParent(), supportedClaims));
+        xmlEAAPayload.setRelationshipSon(getXmlClaim(eaaPayload.getRelationshipSon(), supportedClaims));
+        xmlEAAPayload.setRelationshipDaughter(getXmlClaim(eaaPayload.getRelationshipDaughter(), supportedClaims));
+        xmlEAAPayload.setRelationshipBrother(getXmlClaim(eaaPayload.getRelationshipBrother(), supportedClaims));
+        xmlEAAPayload.setRelationshipSister(getXmlClaim(eaaPayload.getRelationshipSister(), supportedClaims));
+        xmlEAAPayload.setRelationshipSibling(getXmlClaim(eaaPayload.getRelationshipSibling(), supportedClaims));
+        xmlEAAPayload.setRelationshipSpouse(getXmlClaim(eaaPayload.getRelationshipSpouse(), supportedClaims));
+        xmlEAAPayload.setRelationshipFatherInLaw(getXmlClaim(eaaPayload.getRelationshipFatherInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipMotherInLaw(getXmlClaim(eaaPayload.getRelationshipMotherInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipParentInLaw(getXmlClaim(eaaPayload.getRelationshipParentInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipSonInLaw(getXmlClaim(eaaPayload.getRelationshipSonInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipDaughterInLaw(getXmlClaim(eaaPayload.getRelationshipDaughterInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipChildInLaw(getXmlClaim(eaaPayload.getRelationshipChildInLaw(), supportedClaims));
+        xmlEAAPayload.setRelationshipParentalAuthority(getXmlClaim(eaaPayload.getRelationshipParentalAuthority(), supportedClaims));
+        xmlEAAPayload.setRelationshipLegalRepresentative(getXmlClaim(eaaPayload.getRelationshipLegalRepresentative(), supportedClaims));
+        xmlEAAPayload.setRelationshipAgent(getXmlClaim(eaaPayload.getRelationshipAgent(), supportedClaims));
+        xmlEAAPayload.setDocumentType(getXmlClaim(eaaPayload.getDocumentType(), supportedClaims));
 
         xmlEAAPayload.getOtherClaim().addAll(getOtherClaims(eaaPayload, supportedClaims));
 
@@ -251,7 +321,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
 
     private <T extends XmlClaim> T getXmlClaim(Claim claim, T xmlClaim, List<XmlClaim> supportedClaims) {
         if (claim != null) {
-            appendGenericInfo(xmlClaim, claim);
+            appendGenericInfo(xmlClaim, claim, supportedClaims);
             if (claim.isStringValueType()) {
                 xmlClaim.setText(claim.getStringValue());
             } else if (claim.isNumberValueType()) {
@@ -272,9 +342,6 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 }
             } else {
                 throw new UnsupportedOperationException(String.format("Unsupported Claim type '%s'", claim.getClass().getSimpleName()));
-            }
-            if (supportedClaims != null) {
-                supportedClaims.add(xmlClaim);
             }
             return xmlClaim;
         }
@@ -297,7 +364,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claimStatus == null) {
             return null;
         }
-        XmlStatusClaim xmlStatus = getXmlClaim(claimStatus, new XmlStatusClaim(), supportedClaims);
+        XmlStatusClaim xmlStatus = new XmlStatusClaim();
+        appendGenericInfo(xmlStatus, claimStatus, supportedClaims);
         if (claimStatus.getIndex() != null) {
             xmlStatus.setIndex(getXmlClaim(claimStatus.getIndex(), supportedClaims));
         }
@@ -307,11 +375,45 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlStatus;
     }
 
+    private XmlDeviceKeyClaim getXmlDeviceKeyClaim(ClaimDeviceKey deviceKey, List<XmlClaim> supportedClaims) {
+        if (deviceKey == null) {
+            return null;
+        }
+        // NOTE: here we aim to preserve the original structure of the claim
+        XmlDeviceKeyClaim xmlDeviceKeyClaim = getXmlClaim(deviceKey, new XmlDeviceKeyClaim(), supportedClaims);
+        if (deviceKey.getPublicKey() != null) {
+            xmlDeviceKeyClaim.setPublicKey(deviceKey.getPublicKey().getEncoded());
+        }
+        return xmlDeviceKeyClaim;
+    }
+
+    private XmlValidityInfoClaim getXmlValidityInfoClaim(ClaimValidityInfo validityInfo, List<XmlClaim> supportedClaims) {
+        if (validityInfo == null) {
+            return null;
+        }
+        XmlValidityInfoClaim xmlValidityInfoClaim = new XmlValidityInfoClaim();
+        appendGenericInfo(xmlValidityInfoClaim, validityInfo, supportedClaims);
+        if (validityInfo.getSigned() != null) {
+            xmlValidityInfoClaim.setSigned(getXmlClaim(validityInfo.getSigned()));
+        }
+        if (validityInfo.getValidFrom() != null) {
+            xmlValidityInfoClaim.setValidFrom(getXmlClaim(validityInfo.getValidFrom()));
+        }
+        if (validityInfo.getValidUntil() != null) {
+            xmlValidityInfoClaim.setValidUntil(getXmlClaim(validityInfo.getValidUntil()));
+        }
+        if (validityInfo.getExpectedUpdate() != null) {
+            xmlValidityInfoClaim.setExpectedUpdate(getXmlClaim(validityInfo.getExpectedUpdate()));
+        }
+        return xmlValidityInfoClaim;
+    }
+
     private XmlAddressClaim getXmlAddressClaim(ClaimAddress claimAddress, List<XmlClaim> supportedClaims) {
         if (claimAddress == null) {
             return null;
         }
-        XmlAddressClaim xmlAddress = getXmlClaim(claimAddress, new XmlAddressClaim(), supportedClaims);
+        XmlAddressClaim xmlAddress = new XmlAddressClaim();
+        appendGenericInfo(xmlAddress, claimAddress, supportedClaims);
         if (claimAddress.getPostalAddress() != null) {
             xmlAddress.setPostalAddress(getXmlClaim(claimAddress.getPostalAddress()));
         }
@@ -333,21 +435,27 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlAddress;
     }
 
-    private XmlPlaceOfBirthClaim getXmlPlaceOfBirthClaim(ClaimPlaceOfBirth claimPlaceOfBirth, List<XmlClaim> supportedClaims) {
-        if (claimPlaceOfBirth == null) {
+    private XmlClaim getXmlPlaceOfBirthClaim(Claim claim, List<XmlClaim> supportedClaims) {
+        if (claim == null) {
             return null;
         }
-        XmlPlaceOfBirthClaim xmlPlaceOfBirthClaim = getXmlClaim(claimPlaceOfBirth, new XmlPlaceOfBirthClaim(), supportedClaims);
-        if (claimPlaceOfBirth.getCountry() != null) {
-            xmlPlaceOfBirthClaim.setCountry(getXmlClaim(claimPlaceOfBirth.getCountry()));
+        if (claim instanceof ClaimPlaceOfBirth) {
+            ClaimPlaceOfBirth claimPlaceOfBirth = (ClaimPlaceOfBirth) claim;
+            XmlPlaceOfBirthClaim xmlPlaceOfBirthClaim = new XmlPlaceOfBirthClaim();
+            appendGenericInfo(xmlPlaceOfBirthClaim, claimPlaceOfBirth, supportedClaims);
+            if (claimPlaceOfBirth.getCountry() != null) {
+                xmlPlaceOfBirthClaim.setCountry(getXmlClaim(claimPlaceOfBirth.getCountry()));
+            }
+            if (claimPlaceOfBirth.getStateOrProvince() != null) {
+                xmlPlaceOfBirthClaim.setRegion(getXmlClaim(claimPlaceOfBirth.getStateOrProvince()));
+            }
+            if (claimPlaceOfBirth.getCity() != null) {
+                xmlPlaceOfBirthClaim.setCity(getXmlClaim(claimPlaceOfBirth.getCity()));
+            }
+            return xmlPlaceOfBirthClaim;
+
         }
-        if (claimPlaceOfBirth.getStateOrProvince() != null) {
-            xmlPlaceOfBirthClaim.setRegion(getXmlClaim(claimPlaceOfBirth.getStateOrProvince()));
-        }
-        if (claimPlaceOfBirth.getCity() != null) {
-            xmlPlaceOfBirthClaim.setCity(getXmlClaim(claimPlaceOfBirth.getCity()));
-        }
-        return xmlPlaceOfBirthClaim;
+        return getXmlClaim(claim, supportedClaims);
     }
 
     private XmlIntegrityClaim getXmlIntegrityClaim(ClaimIntegrity claimIntegrity, List<XmlClaim> supportedClaims) {
@@ -364,49 +472,171 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlIntegrityClaim;
     }
 
-    private List<XmlCredentialSubject> getXmlCredentialSubjectList(List<ClaimCredentialSubject> credentialSubjects, List<XmlClaim> supportedClaims) {
+    private List<XmlCredentialSubjectClaim> getXmlCredentialSubjectClaimList(List<ClaimCredentialSubject> credentialSubjects, List<XmlClaim> supportedClaims) {
         if (Utils.isCollectionEmpty(credentialSubjects)) {
             return Collections.emptyList();
         }
-        return credentialSubjects.stream().map(s -> getXmlCredentialSubject(s, supportedClaims)).collect(Collectors.toList());
+        return credentialSubjects.stream().map(s -> getXmlCredentialSubjectClaim(s, supportedClaims)).collect(Collectors.toList());
     }
 
-    private XmlCredentialSubject getXmlCredentialSubject(ClaimCredentialSubject credentialSubject, List<XmlClaim> supportedClaims) {
-        XmlCredentialSubject xmlCredentialSubject = new XmlCredentialSubject();
-        appendGenericInfo(xmlCredentialSubject, credentialSubject);
-        xmlCredentialSubject.setFullName(getXmlClaim(credentialSubject.getFullName(), supportedClaims));
-        xmlCredentialSubject.setFirstName(getXmlClaim(credentialSubject.getFirstName(), supportedClaims));
-        xmlCredentialSubject.setLastName(getXmlClaim(credentialSubject.getLastName(), supportedClaims));
-        xmlCredentialSubject.setMiddleName(getXmlClaim(credentialSubject.getMiddleName(), supportedClaims));
-        xmlCredentialSubject.setNickname(getXmlClaim(credentialSubject.getNickname(), supportedClaims));
-        xmlCredentialSubject.setShortName(getXmlClaim(credentialSubject.getShortName(), supportedClaims));
-        xmlCredentialSubject.setProfileUrl(getXmlClaim(credentialSubject.getProfileUrl(), supportedClaims));
-        xmlCredentialSubject.setPictureUrl(getXmlClaim(credentialSubject.getPictureUrl(), supportedClaims));
-        xmlCredentialSubject.setWebsiteUrl(getXmlClaim(credentialSubject.getWebsiteUrl(), supportedClaims));
-        xmlCredentialSubject.setEmail(getXmlClaim(credentialSubject.getEmail(), supportedClaims));
-        xmlCredentialSubject.setEmailVerified(getXmlClaim(credentialSubject.getEmailVerified(), supportedClaims));
-        xmlCredentialSubject.setGender(getXmlClaim(credentialSubject.getGender(), supportedClaims));
-        xmlCredentialSubject.setBirthdate(getXmlClaim(credentialSubject.getBirthdate(), supportedClaims));
-        xmlCredentialSubject.setTimezone(getXmlClaim(credentialSubject.getTimezone(), supportedClaims));
-        xmlCredentialSubject.setLocale(getXmlClaim(credentialSubject.getLocale(), supportedClaims));
-        xmlCredentialSubject.setAddress(getXmlAddressClaim(credentialSubject.getAddress(), supportedClaims));
-        xmlCredentialSubject.setPhoneNumber(getXmlClaim(credentialSubject.getPhoneNumber(), supportedClaims));
-        xmlCredentialSubject.setPhoneNumberVerified(getXmlClaim(credentialSubject.getPhoneNumberVerified(), supportedClaims));
-        xmlCredentialSubject.setPlaceOfBirth(getXmlPlaceOfBirthClaim(credentialSubject.getPlaceOfBirth(), supportedClaims));
-        xmlCredentialSubject.setNationalities(getXmlClaim(credentialSubject.getNationalities(), supportedClaims));
-        xmlCredentialSubject.setBirthLastName(getXmlClaim(credentialSubject.getBirthLastName(), supportedClaims));
-        xmlCredentialSubject.setBirthFirstName(getXmlClaim(credentialSubject.getBirthFirstName(), supportedClaims));
-        xmlCredentialSubject.setBirthMiddleName(getXmlClaim(credentialSubject.getBirthMiddleName(), supportedClaims));
-        xmlCredentialSubject.setSalutation(getXmlClaim(credentialSubject.getSalutation(), supportedClaims));
-        xmlCredentialSubject.setTitle(getXmlClaim(credentialSubject.getTitle(), supportedClaims));
-        xmlCredentialSubject.setMobilePhoneNumber(getXmlClaim(credentialSubject.getMobilePhoneNumber(), supportedClaims));
-        xmlCredentialSubject.setPseudonym(getXmlClaim(credentialSubject.getPseudonym(), supportedClaims));
+    private XmlCredentialSubjectClaim getXmlCredentialSubjectClaim(ClaimCredentialSubject credentialSubject, List<XmlClaim> supportedClaims) {
+        XmlCredentialSubjectClaim xmlCredentialSubjectClaim = new XmlCredentialSubjectClaim();
+        appendGenericInfo(xmlCredentialSubjectClaim, credentialSubject, supportedClaims);
+        xmlCredentialSubjectClaim.setFullName(getXmlClaim(credentialSubject.getFullName(), supportedClaims));
+        xmlCredentialSubjectClaim.setFirstName(getXmlClaim(credentialSubject.getFirstName(), supportedClaims));
+        xmlCredentialSubjectClaim.setLastName(getXmlClaim(credentialSubject.getLastName(), supportedClaims));
+        xmlCredentialSubjectClaim.setMiddleName(getXmlClaim(credentialSubject.getMiddleName(), supportedClaims));
+        xmlCredentialSubjectClaim.setNickname(getXmlClaim(credentialSubject.getNickname(), supportedClaims));
+        xmlCredentialSubjectClaim.setShortName(getXmlClaim(credentialSubject.getShortName(), supportedClaims));
+        xmlCredentialSubjectClaim.setProfileUrl(getXmlClaim(credentialSubject.getProfileUrl(), supportedClaims));
+        xmlCredentialSubjectClaim.setPictureUrl(getXmlClaim(credentialSubject.getPictureUrl(), supportedClaims));
+        xmlCredentialSubjectClaim.setWebsiteUrl(getXmlClaim(credentialSubject.getWebsiteUrl(), supportedClaims));
+        xmlCredentialSubjectClaim.setEmail(getXmlClaim(credentialSubject.getEmail(), supportedClaims));
+        xmlCredentialSubjectClaim.setEmailVerified(getXmlClaim(credentialSubject.getEmailVerified(), supportedClaims));
+        xmlCredentialSubjectClaim.setGender(getXmlClaim(credentialSubject.getGender(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthdate(getXmlClaim(credentialSubject.getBirthdate(), supportedClaims));
+        xmlCredentialSubjectClaim.setTimezone(getXmlClaim(credentialSubject.getTimezone(), supportedClaims));
+        xmlCredentialSubjectClaim.setLocale(getXmlClaim(credentialSubject.getLocale(), supportedClaims));
+        xmlCredentialSubjectClaim.setAddress(getXmlAddressClaim(credentialSubject.getAddress(), supportedClaims));
+        xmlCredentialSubjectClaim.setPhoneNumber(getXmlClaim(credentialSubject.getPhoneNumber(), supportedClaims));
+        xmlCredentialSubjectClaim.setPhoneNumberVerified(getXmlClaim(credentialSubject.getPhoneNumberVerified(), supportedClaims));
+        xmlCredentialSubjectClaim.setPlaceOfBirth(getXmlPlaceOfBirthClaim(credentialSubject.getPlaceOfBirth(), supportedClaims));
+        xmlCredentialSubjectClaim.setNationalities(getXmlClaim(credentialSubject.getNationalities(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthLastName(getXmlClaim(credentialSubject.getBirthLastName(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthFirstName(getXmlClaim(credentialSubject.getBirthFirstName(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthMiddleName(getXmlClaim(credentialSubject.getBirthMiddleName(), supportedClaims));
+        xmlCredentialSubjectClaim.setSalutation(getXmlClaim(credentialSubject.getSalutation(), supportedClaims));
+        xmlCredentialSubjectClaim.setTitle(getXmlClaim(credentialSubject.getTitle(), supportedClaims));
+        xmlCredentialSubjectClaim.setMobilePhoneNumber(getXmlClaim(credentialSubject.getMobilePhoneNumber(), supportedClaims));
+        xmlCredentialSubjectClaim.setPseudonym(getXmlClaim(credentialSubject.getPseudonym(), supportedClaims));
 
-        xmlCredentialSubject.getOtherClaim().addAll(getOtherClaims(credentialSubject, supportedClaims));
-        if (supportedClaims != null) {
-            supportedClaims.add(xmlCredentialSubject);
+        xmlCredentialSubjectClaim.getOtherClaim().addAll(getOtherClaims(credentialSubject, supportedClaims));
+        return xmlCredentialSubjectClaim;
+    }
+
+    private XmlDrivingPrivilegesClaim getXmlDrivingPrivilegesClaim(ClaimDrivingPrivileges claimDrivingPrivileges, List<XmlClaim> supportedClaims) {
+        if (claimDrivingPrivileges == null) {
+            return null;
         }
-        return xmlCredentialSubject;
+        XmlDrivingPrivilegesClaim xmlDrivingPrivilegesClaim = new XmlDrivingPrivilegesClaim();
+        appendGenericInfo(xmlDrivingPrivilegesClaim, claimDrivingPrivileges, supportedClaims);
+        if (Utils.isCollectionNotEmpty(claimDrivingPrivileges.getDrivingPrivileges())) {
+            for (ClaimDrivingPrivilege claimDrivingPrivilege : claimDrivingPrivileges.getDrivingPrivileges()) {
+                XmlDrivingPrivilegeClaim xmlDrivingPrivilegeClaim = getXmlDrivingPrivilegeClaim(claimDrivingPrivilege);
+                if (xmlDrivingPrivilegeClaim != null) {
+                    xmlDrivingPrivilegesClaim.getDrivingPrivilege().add(xmlDrivingPrivilegeClaim);
+                }
+            }
+        }
+        return xmlDrivingPrivilegesClaim;
+    }
+
+    private XmlDrivingPrivilegeClaim getXmlDrivingPrivilegeClaim(ClaimDrivingPrivilege claimDrivingPrivilege) {
+        if (claimDrivingPrivilege == null) {
+            return null;
+        }
+        XmlDrivingPrivilegeClaim xmlDrivingPrivilegeClaim = new XmlDrivingPrivilegeClaim();
+        appendGenericInfo(xmlDrivingPrivilegeClaim, claimDrivingPrivilege);
+        if (claimDrivingPrivilege.getVehicleCategoryCode() != null) {
+            xmlDrivingPrivilegeClaim.setVehicleCategoryCode(getXmlClaim(claimDrivingPrivilege.getVehicleCategoryCode()));
+        }
+        if (claimDrivingPrivilege.getIssueDate() != null) {
+            xmlDrivingPrivilegeClaim.setIssueDate(getXmlClaim(claimDrivingPrivilege.getIssueDate()));
+        }
+        if (claimDrivingPrivilege.getExpiryDate() != null) {
+            xmlDrivingPrivilegeClaim.setExpiryDate(getXmlClaim(claimDrivingPrivilege.getExpiryDate()));
+        }
+        if (claimDrivingPrivilege.getCodes() != null) {
+            xmlDrivingPrivilegeClaim.setCodes(getXmlDrivingPrivilegeCodesClaim(claimDrivingPrivilege.getCodes()));
+        }
+        return xmlDrivingPrivilegeClaim;
+    }
+
+    private XmlDrivingPrivilegeCodesClaim getXmlDrivingPrivilegeCodesClaim(ClaimDrivingPrivilegeCodes claimDrivingPrivilegeCodes) {
+        if (claimDrivingPrivilegeCodes == null) {
+            return null;
+        }
+        XmlDrivingPrivilegeCodesClaim XmlDrivingPrivilegeCodesClaim = new XmlDrivingPrivilegeCodesClaim();
+        appendGenericInfo(XmlDrivingPrivilegeCodesClaim, claimDrivingPrivilegeCodes);
+        if (Utils.isCollectionNotEmpty(claimDrivingPrivilegeCodes.getCodes())) {
+            for (ClaimDrivingPrivilegeCode claimDrivingPrivilegeCode : claimDrivingPrivilegeCodes.getCodes()) {
+                XmlDrivingPrivilegeCodeClaim XmlDrivingPrivilegeCodeClaim = getXmlDrivingPrivilegeCodeClaim(claimDrivingPrivilegeCode);
+                if (XmlDrivingPrivilegeCodeClaim != null) {
+                    XmlDrivingPrivilegeCodesClaim.getCode().add(XmlDrivingPrivilegeCodeClaim);
+                }
+            }
+        }
+        return XmlDrivingPrivilegeCodesClaim;
+    }
+
+    private XmlDrivingPrivilegeCodeClaim getXmlDrivingPrivilegeCodeClaim(ClaimDrivingPrivilegeCode claimDrivingPrivilegeCode) {
+        if (claimDrivingPrivilegeCode == null) {
+            return null;
+        }
+        XmlDrivingPrivilegeCodeClaim xmlDrivingPrivilegeCodeClaim = new XmlDrivingPrivilegeCodeClaim();
+        appendGenericInfo(xmlDrivingPrivilegeCodeClaim, claimDrivingPrivilegeCode);
+        if (claimDrivingPrivilegeCode.getCode() != null) {
+            xmlDrivingPrivilegeCodeClaim.setCode(getXmlClaim(claimDrivingPrivilegeCode.getCode()));
+        }
+        if (claimDrivingPrivilegeCode.getSign() != null) {
+            xmlDrivingPrivilegeCodeClaim.setSign(getXmlClaim(claimDrivingPrivilegeCode.getSign()));
+        }
+        if (claimDrivingPrivilegeCode.getValue() != null) {
+            xmlDrivingPrivilegeCodeClaim.setValue(getXmlClaim(claimDrivingPrivilegeCode.getValue()));
+        }
+        return xmlDrivingPrivilegeCodeClaim;
+    }
+
+    private List<XmlAgeOverNNClaim> getXmlAgeOverNNClaims(List<ClaimAgeOverNN> claimsAgeOverNN, List<XmlClaim> supportedClaims) {
+        if (Utils.isCollectionEmpty(claimsAgeOverNN)) {
+            return Collections.emptyList();
+        }
+        final List<XmlAgeOverNNClaim> result = new ArrayList<>();
+        for (ClaimAgeOverNN claimAgeOverNN : claimsAgeOverNN) {
+            XmlAgeOverNNClaim xmlAgeOverNNClaim = getXmlAgeOverNNClaim(claimAgeOverNN, supportedClaims);
+            if (xmlAgeOverNNClaim != null) {
+                result.add(xmlAgeOverNNClaim);
+            }
+        }
+        return result;
+    }
+
+    private XmlAgeOverNNClaim getXmlAgeOverNNClaim(ClaimAgeOverNN claimAgeOverNN, List<XmlClaim> supportedClaims) {
+        if (claimAgeOverNN == null) {
+            return null;
+        }
+        XmlAgeOverNNClaim xmlAgeOverNNClaim = new XmlAgeOverNNClaim();
+        appendGenericInfo(xmlAgeOverNNClaim, claimAgeOverNN, supportedClaims);
+        if (claimAgeOverNN.getAge() != null) {
+            xmlAgeOverNNClaim.setAge(claimAgeOverNN.getAge());
+        }
+        return xmlAgeOverNNClaim;
+    }
+
+    private List<XmlBiometricTemplateXXClaim> getXmlBiometricTemplateXXClaim(List<ClaimBiometricTemplateXX> claimsBiometricTemplateXX, List<XmlClaim> supportedClaims) {
+        if (Utils.isCollectionEmpty(claimsBiometricTemplateXX)) {
+            return Collections.emptyList();
+        }
+        final List<XmlBiometricTemplateXXClaim> result = new ArrayList<>();
+        for (ClaimBiometricTemplateXX claimBiometricTemplateXX : claimsBiometricTemplateXX) {
+            XmlBiometricTemplateXXClaim xmlBiometricTemplateXXClaim = getXmlBiometricTemplateXXClaim(claimBiometricTemplateXX, supportedClaims);
+            if (xmlBiometricTemplateXXClaim != null) {
+                result.add(xmlBiometricTemplateXXClaim);
+            }
+        }
+        return result;
+    }
+
+    private XmlBiometricTemplateXXClaim getXmlBiometricTemplateXXClaim(ClaimBiometricTemplateXX claimBiometricTemplateXX, List<XmlClaim> supportedClaims) {
+        if (claimBiometricTemplateXX == null) {
+            return null;
+        }
+        XmlBiometricTemplateXXClaim xmlBiometricTemplateXXClaim = new XmlBiometricTemplateXXClaim();
+        appendGenericInfo(xmlBiometricTemplateXXClaim, claimBiometricTemplateXX, supportedClaims);
+        if (claimBiometricTemplateXX.getType() != null) {
+            xmlBiometricTemplateXXClaim.setType(claimBiometricTemplateXX.getType());
+        }
+        return xmlBiometricTemplateXXClaim;
     }
 
     private List<XmlClaim> getOtherClaims(Claim claim, List<XmlClaim> supportedClaims) {
@@ -444,6 +674,10 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private void appendGenericInfo(XmlClaim xmlClaim, Claim claim) {
+        appendGenericInfo(xmlClaim, claim, null);
+    }
+
+    private void appendGenericInfo(XmlClaim xmlClaim, Claim claim, List<XmlClaim> supportedClaims) {
         if (claim != null) {
             if (claim.getName() != null) {
                 xmlClaim.setName(claim.getName());
@@ -453,6 +687,9 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             }
             if (claim.isSelectivelyDisclosable()) {
                 xmlClaim.setDisclosure(claim.isSelectivelyDisclosable());
+            }
+            if (supportedClaims != null) {
+                supportedClaims.add(xmlClaim);
             }
         }
     }

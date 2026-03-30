@@ -1715,8 +1715,14 @@
 			<xs:element name="MetadataType" type="MetadataTypeClaim" minOccurs="0" />
 			<xs:element name="Status" type="StatusClaim" minOccurs="0" />
 			<xs:element name="Nonce" type="Claim" minOccurs="0" />
+			<xs:element name="DeviceKey" type="DeviceKeyClaim" minOccurs="0" />
 
-			<!-- user info -->
+			<!-- mdoc technical claims -->
+			<xs:element name="Version" type="Claim" minOccurs="0" />
+			<xs:element name="DocType" type="Claim" minOccurs="0" />
+			<xs:element name="ValidityInfo" type="ValidityInfoClaim" minOccurs="0" />
+
+			<!-- holder info -->
 			<xs:element name="FullName" type="Claim" minOccurs="0" />
 			<xs:element name="FirstName" type="Claim" minOccurs="0" />
 			<xs:element name="LastName" type="Claim" minOccurs="0" />
@@ -1735,7 +1741,7 @@
 			<xs:element name="Address" type="AddressClaim" minOccurs="0" />
 			<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
 			<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
-			<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
+			<xs:element name="PlaceOfBirth" type="Claim" minOccurs="0" />
 			<xs:element name="Nationalities" type="Claim" minOccurs="0" />
 			<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
 			<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
@@ -1745,14 +1751,63 @@
 			<xs:element name="MobilePhoneNumber" type="Claim" minOccurs="0" />
 			<xs:element name="Pseudonym" type="Claim" minOccurs="0" />
 
-			<xs:element name="CredentialSubject" type="CredentialSubject" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="CredentialSubject" type="CredentialSubjectClaim" minOccurs="0" maxOccurs="unbounded" />
+
+			<!-- mdoc claims -->
+			<xs:element name="IssuingCountry" type="Claim" minOccurs="0" />
+			<xs:element name="IssuingAuthority" type="Claim" minOccurs="0" />
+			<xs:element name="DocumentNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Portrait" type="Claim" minOccurs="0" />
+			<xs:element name="DrivingPrivileges" type="DrivingPrivilegesClaim" minOccurs="0" />
+			<xs:element name="UNDistinguishingSign" type="Claim" minOccurs="0" />
+			<xs:element name="AdministrativeNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Height" type="Claim" minOccurs="0" />
+			<xs:element name="Weight" type="Claim" minOccurs="0" />
+			<xs:element name="EyeColor" type="Claim" minOccurs="0" />
+			<xs:element name="HairColor" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddress" type="Claim" minOccurs="0" />
+			<xs:element name="PortraitCaptureDate" type="Claim" minOccurs="0" />
+			<xs:element name="AgeInYears" type="Claim" minOccurs="0" />
+			<xs:element name="AgeBirthYear" type="Claim" minOccurs="0" />
+			<xs:element name="AgeOverNN" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="IssuingJurisdiction" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentCity" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentState" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentPostalCode" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentCountry" type="Claim" minOccurs="0" />
+			<xs:element name="BiometricTemplate" type="BiometricTemplateXXClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="SignatureUsualMark" type="Claim" minOccurs="0" />
+			<xs:element name="Fingerprint" type="Claim" minOccurs="0" />
+			<xs:element name="BusinessName" type="Claim" minOccurs="0" />
+			<xs:element name="OrganizationName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthFullName" type="Claim" minOccurs="0" />
+			<xs:element name="Profession" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipFather" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipMother" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParent" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSon" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipDaughter" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipBrother" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSister" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSibling" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSpouse" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipFatherInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipMotherInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParentInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSonInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipDaughterInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipChildInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParentalAuthority" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipLegalRepresentative" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipAgent" type="Claim" minOccurs="0" />
+			<xs:element name="DocumentType" type="Claim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="CredentialSubject">
+	<xs:complexType name="CredentialSubjectClaim">
 		<xs:complexContent>
 			<xs:extension base="Claim">
 				<xs:sequence>
@@ -1774,7 +1829,7 @@
 					<xs:element name="Address" type="AddressClaim" minOccurs="0" />
 					<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
 					<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
-					<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
+					<xs:element name="PlaceOfBirth" type="Claim" minOccurs="0" />
 					<xs:element name="Nationalities" type="Claim" minOccurs="0" />
 					<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
 					<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
@@ -1824,6 +1879,16 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="DeviceKeyClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="PublicKey" type="xs:base64Binary" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="AddressClaim">
 		<xs:complexContent>
 			<xs:extension base="Claim">
@@ -1847,6 +1912,80 @@
 					<xs:element name="Region" type="Claim" minOccurs="0"/>
 					<xs:element name="City" type="Claim" minOccurs="0"/>
 				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidityInfoClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Signed" type="Claim" minOccurs="0" />
+					<xs:element name="ValidFrom" type="Claim" minOccurs="0" />
+					<xs:element name="ValidUntil" type="Claim" minOccurs="0" />
+					<xs:element name="ExpectedUpdate" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegesClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="DrivingPrivilege" type="DrivingPrivilegeClaim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="VehicleCategoryCode" type="Claim" minOccurs="0"/>
+					<xs:element name="IssueDate" type="Claim" minOccurs="0"/>
+					<xs:element name="ExpiryDate" type="Claim" minOccurs="0"/>
+					<xs:element name="Codes" type="DrivingPrivilegeCodesClaim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeCodesClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Code" type="DrivingPrivilegeCodeClaim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeCodeClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Code" type="Claim" minOccurs="0"/>
+					<xs:element name="Sign" type="Claim" minOccurs="0"/>
+					<xs:element name="Value" type="Claim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AgeOverNNClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:attribute name="age" type="xs:int" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BiometricTemplateXXClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:attribute name="type" type="xs:string" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
