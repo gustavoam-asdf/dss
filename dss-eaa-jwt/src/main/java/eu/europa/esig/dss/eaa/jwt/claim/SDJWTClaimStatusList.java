@@ -7,7 +7,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 
 /**
- * SD-JWT VC token representation of a "status" header. See draft-ietf-oauth-status-list-13.
+ * SD-JWT VC token representation of a "status_list" header. See draft-ietf-oauth-status-list-13.
  *
  */
 public class SDJWTClaimStatusList extends SDJWTClaimMap implements ClaimStatusList {
@@ -25,20 +25,12 @@ public class SDJWTClaimStatusList extends SDJWTClaimMap implements ClaimStatusLi
 
     @Override
     public ClaimNumber getIndex() {
-        ClaimMap statusList = getAsMap(SDJWTConstants.STATUS_LIST);
-        if (statusList != null) {
-            return statusList.getAsNumber(SDJWTConstants.STATUS_INDEX);
-        }
-        return null;
+        return getAsNumber(SDJWTConstants.STATUS_INDEX);
     }
 
     @Override
     public ClaimString getUri() {
-        ClaimMap statusList = getAsMap(SDJWTConstants.STATUS_LIST);
-        if (statusList != null) {
-            return statusList.getAsString(SDJWTConstants.STATUS_URI);
-        }
-        return null;
+        return getAsString(SDJWTConstants.STATUS_URI);
     }
 
 }

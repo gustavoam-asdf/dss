@@ -109,13 +109,7 @@ public class EAAPresentationValidationBlock {
                 for (SignatureWrapper signature : eaaPresentation.getEAAPresentationSignatures()) {
 
                     XmlSignature xmlSignature = signatureValidationMap.get(signature.getId());
-                    if (xmlSignature == null) {
-                        throw new IllegalStateException(String.format("Signature validation is not found for Id '%s'", signature.getId()));
-                    }
-
-                    SignatureQualificationBlock signatureQualificationBlock = new SignatureQualificationBlock(
-                            i18nProvider, xmlSignature.getValidationProcessBasicSignature(), signature.getSigningCertificate(), tlAnalysis);
-                    XmlValidationSignatureQualification validationSignatureQualification = signatureQualificationBlock.execute();
+                    XmlValidationSignatureQualification validationSignatureQualification = getXmlValidationSignatureQualification(signature, xmlSignature);
                     xmlSignature.setValidationSignatureQualification(validationSignatureQualification);
 
                 }
@@ -132,7 +126,7 @@ public class EAAPresentationValidationBlock {
         return result;
     }
 
-    protected XmlSignature getEAAPresentationSignatureValidation(SignatureWrapper signatureWrapper) {
+    private XmlSignature getEAAPresentationSignatureValidation(SignatureWrapper signatureWrapper) {
 
         final XmlSignature xmlSignature = new XmlSignature();
         xmlSignature.setId(signatureWrapper.getId());
@@ -153,6 +147,16 @@ public class EAAPresentationValidationBlock {
         XmlValidationProcessBasicSignature bs = vpfbs.execute();
         signatureAnalysis.setValidationProcessBasicSignature(bs);
         return bs;
+    }
+
+    private XmlValidationSignatureQualification getXmlValidationSignatureQualification(SignatureWrapper signature, XmlSignature xmlSignature) {
+        if (xmlSignature == null) {
+            throw new IllegalStateException(String.format("Signature validation is not found for Id '%s'", signature.getId()));
+        }
+
+        SignatureQualificationBlock signatureQualificationBlock = new SignatureQualificationBlock(
+                i18nProvider, xmlSignature.getValidationProcessBasicSignature(), signature.getSigningCertificate(), tlAnalysis);
+        return signatureQualificationBlock.execute();
     }
 
     private Indication getSignatureFinalIndication(Indication highestIndication) {

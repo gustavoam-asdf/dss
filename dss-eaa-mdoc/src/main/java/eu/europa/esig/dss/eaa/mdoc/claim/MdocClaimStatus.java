@@ -12,6 +12,8 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
  */
 public class MdocClaimStatus extends MdocClaimMap implements ClaimStatus {
 
+    private static final long serialVersionUID = 8165315191811986745L;
+
     /**
      * Constructor to initialize MdocClaimStatus from a ClaimMap
      *
