@@ -7,17 +7,10 @@ package eu.europa.esig.dss.model.eaa.claim;
 public interface ClaimStatus extends Claim {
 
     /**
-     * Gets the EAA's Status index value, when present
+     * Gets the embedded status_list claim value
      *
-     * @return {@link ClaimNumber}
+     * @return {@link ClaimStatusList}
      */
-    ClaimNumber getIndex();
-
-    /**
-     * Gets the EAA's Status URI value, when present
-     *
-     * @return {@link ClaimString}
-     */
-    ClaimString getUri();
+    ClaimStatusList getStatusList();
 
 }

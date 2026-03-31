@@ -398,7 +398,8 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();ClaimWrapper fullName = getFullName();
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
+        ClaimWrapper fullName = getFullName();
         if (fullName != null) {
             result.put(fullName.getName(), fullName);
         }

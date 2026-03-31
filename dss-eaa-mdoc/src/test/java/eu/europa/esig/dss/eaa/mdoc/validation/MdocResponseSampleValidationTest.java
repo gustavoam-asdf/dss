@@ -14,7 +14,6 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
 import java.util.List;
 
@@ -31,13 +30,6 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
     @Override
     protected DSSDocument getSignedDocument() {
         return new FileDocument("src/test/resources/validation/mdocResponseIso180135.mdoc");
-    }
-
-    @Override
-    protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
-        SignedDocumentValidator validator = super.getValidator(signedDocument);
-        validator.setCertificateVerifier(getOfflineCertificateVerifier());
-        return validator;
     }
 
     @Override
@@ -221,11 +213,6 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
     protected void checkSigningDate(DiagnosticData diagnosticData) {
         SignatureWrapper signatureWrapper = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
         assertNull(signatureWrapper.getClaimedSigningTime());
-    }
-
-    @Override
-    protected String getSigningAlias() {
-        return GOOD_USER;
     }
 
 }

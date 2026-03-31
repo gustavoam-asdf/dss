@@ -118,7 +118,7 @@ public class AddressClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
         ClaimWrapper postalAddress = getPostalAddress();
         if (postalAddress != null) {
             result.put(postalAddress.getName(), postalAddress);

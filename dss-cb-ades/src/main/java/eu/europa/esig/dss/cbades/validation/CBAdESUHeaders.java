@@ -5,7 +5,6 @@ import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
-import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
@@ -226,7 +225,7 @@ public class CBAdESUHeaders implements SignatureProperties<CBAdESUHeadersCompone
         CBORObject originalObject = iterator.previous();
         CBORObject objectMapRepresentation = null;
         if (originalObject.isByteString()) {
-            objectMapRepresentation = CBORUtils.parseCbor(((CBORByteString) originalObject).getValueAsBytes());
+            objectMapRepresentation = CBORUtils.parseCbor(originalObject.getValueAsBytes());
         } else if (originalObject.isMap()) {
             objectMapRepresentation = originalObject;
         }

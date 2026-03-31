@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
-import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 
 import java.util.HashMap;
@@ -27,9 +26,9 @@ public class StatusClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getIndex() {
-        XmlClaim index = getWrapped().getIndex();
-        if (index != null) {
-            return new ClaimWrapper(index, this);
+        StatusListClaimWrapper statusList = getStatusList();
+        if (statusList != null) {
+            return statusList.getIndex();
         }
         return null;
     }
@@ -40,9 +39,21 @@ public class StatusClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getUri() {
-        XmlClaim index = getWrapped().getUri();
-        if (index != null) {
-            return new ClaimWrapper(index, this);
+        StatusListClaimWrapper statusList = getStatusList();
+        if (statusList != null) {
+            return statusList.getUri();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the status list
+     *
+     * @return {@link StatusListClaimWrapper}
+     */
+    public StatusListClaimWrapper getStatusList() {
+        if (getWrapped().getStatusList() != null) {
+            return new StatusListClaimWrapper(getWrapped().getStatusList());
         }
         return null;
     }
@@ -54,14 +65,10 @@ public class StatusClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();
-        ClaimWrapper index = getIndex();
-        if (index != null) {
-            result.put(index.getName(), index);
-        }
-        ClaimWrapper uri = getUri();
-        if (uri != null) {
-            result.put(uri.getName(), uri);
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
+        StatusListClaimWrapper statusList = getStatusList();
+        if (statusList != null) {
+            result.put(statusList.getName(), statusList);
         }
         return result;
     }

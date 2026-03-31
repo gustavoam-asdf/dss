@@ -92,7 +92,7 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
     public Map<String, ClaimWrapper> getMap() {
         XmlClaim wrapped = getWrapped();
         if (wrapped instanceof XmlPlaceOfBirthClaim) {
-            final Map<String, ClaimWrapper> result = new HashMap<>();
+            final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
             ClaimWrapper city = getCity();
             if (city != null) {
                 result.put(city.getName(), city);

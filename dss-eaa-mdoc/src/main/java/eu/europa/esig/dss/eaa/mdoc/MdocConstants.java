@@ -1,5 +1,8 @@
 package eu.europa.esig.dss.eaa.mdoc;
 
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
+
 /**
  * Contains a list of common constants used for reading and processing an mdoc content
  *
@@ -71,6 +74,23 @@ public class MdocConstants {
 
     /** Version of the MobileSecurityObject */
     public static final String VERSION = "version";
+
+    // Currently referenced in draft-ietf-oauth-status-list-19, but may be included in MobileSecurityObject
+
+    /** Specifies a CBOR Object that contains at least one reference to a status mechanism */
+    public static final String STATUS = "status";
+
+    /** Specifies a CBOR Object that contains at least one reference to a status mechanism. Long representation. */
+    public static final CBORObject STATUS_LONG = CBORObjectFactory.toCBORObject(65535L);
+
+    /** Specifies a CBOR Object that contains a reference to a Status List Token */
+    public static final String STATUS_LIST = "status_list";
+
+    /** A non-negative Integer that represents the index to check for status information for the current Token */
+    public static final String STATUS_INDEX = "idx";
+
+    /** String value that identifies the Status List Token containing the status information for the Token */
+    public static final String STATUS_URI = "uri";
 
 
 }

@@ -77,7 +77,7 @@ public class DrivingPrivilegeCodeClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
         ClaimWrapper code = getCode();
         if (code != null) {
             result.put(code.getName(), code);

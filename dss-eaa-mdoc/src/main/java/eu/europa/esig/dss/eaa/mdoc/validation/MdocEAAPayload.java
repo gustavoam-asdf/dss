@@ -9,6 +9,7 @@ import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimAgeOverNN;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDeviceKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDrivingPrivileges;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimMap;
+import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimStatus;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimValidityInfo;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
@@ -19,9 +20,9 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivileges;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
-import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -133,6 +134,20 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimStatus getStatus() {
+        ClaimMap statusClaim = getAsMap(MdocConstants.STATUS);
+        if (statusClaim == null) {
+            // Can be defined with a Long key
+            Object statusClaimObject = value.get(MdocConstants.STATUS_LONG);
+            if (statusClaimObject != null) {
+                Claim claim = createClaim(MdocConstants.STATUS_LONG.getValueAsString(), statusClaimObject);
+                if (claim != null && claim.isMapValueType()) {
+                    statusClaim = (ClaimMap) claim;
+                }
+            }
+        }
+        if (statusClaim != null) {
+            return new MdocClaimStatus(statusClaim);
+        }
         return null;
     }
 
@@ -205,7 +220,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimDate getBirthdate() {
-        return getAsDateTime(forIso180135(ISO180135Headers.BIRTH_DATE), forIso232202(ISO232202Headers.BIRTH_DATE));
+        return getAsDate(forIso180135(ISO180135Headers.BIRTH_DATE), forIso232202(ISO232202Headers.BIRTH_DATE));
     }
 
     @Override

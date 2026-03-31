@@ -7,7 +7,7 @@ import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimDeviceKey;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimMap;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimPlaceOfBirth;
-import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
@@ -23,7 +23,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
-import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
+import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
@@ -118,10 +118,10 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimStatus getStatus() {
+    public ClaimStatusList getStatus() {
         ClaimMap statusClaim = getAsMap(SDJWTConstants.STATUS);
         if (statusClaim != null) {
-            return new SDJWTClaimStatus(statusClaim);
+            return new SDJWTClaimStatusList(statusClaim);
         }
         return null;
     }

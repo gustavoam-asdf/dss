@@ -81,7 +81,7 @@ public class ValidityInfoClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
         ClaimWrapper signed = getSigned();
         if (signed != null) {
             result.put(signed.getName(), signed);

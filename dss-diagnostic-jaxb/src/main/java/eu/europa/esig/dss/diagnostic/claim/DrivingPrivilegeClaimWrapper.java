@@ -91,7 +91,7 @@ public class DrivingPrivilegeClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        final Map<String, ClaimWrapper> result = new HashMap<>();
+        final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
         ClaimWrapper vehicleCategoryCode = getVehicleCategoryCode();
         if (vehicleCategoryCode != null) {
             result.put(vehicleCategoryCode.getName(), vehicleCategoryCode);

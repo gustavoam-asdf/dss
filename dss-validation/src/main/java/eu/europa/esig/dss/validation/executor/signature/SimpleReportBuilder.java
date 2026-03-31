@@ -33,6 +33,8 @@ import eu.europa.esig.dss.diagnostic.RevocationWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DeviceKeyClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
@@ -62,6 +64,7 @@ import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
 import eu.europa.esig.dss.simplereport.jaxb.XmlMessage;
 import eu.europa.esig.dss.simplereport.jaxb.XmlPDFAInfo;
+import eu.europa.esig.dss.simplereport.jaxb.XmlParametrizedDisclosableClaim;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSemantic;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignatureLevel;
@@ -1058,13 +1061,13 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setPortraitCaptureDate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortraitCaptureDate()));
 		xmlEAAPayload.setAgeInYears(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeInYears()));
 		xmlEAAPayload.setAgeBirthYear(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeBirthYear()));
-		xmlEAAPayload.getAgeOverNN().addAll(getXmlDisclosableClaims(eaaPayloadProxy.getHolderAgeOverList()));
+		xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayloadProxy.getHolderAgeOverList()));
 		xmlEAAPayload.setIssuingJurisdiction(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityJurisdiction()));
 		xmlEAAPayload.setResidentCity(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCity()));
 		xmlEAAPayload.setResidentState(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentState()));
 		xmlEAAPayload.setResidentPostalCode(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentPostalCode()));
 		xmlEAAPayload.setResidentCountry(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCountry()));
-		xmlEAAPayload.getBiometricTemplate().addAll(getXmlDisclosableClaims(eaaPayloadProxy.getHolderBiometricTemplateList()));
+		xmlEAAPayload.getBiometricTemplate().addAll(getBiometricTemplateXXClaims(eaaPayloadProxy.getHolderBiometricTemplateList()));
 		xmlEAAPayload.setSignatureUsualMark(getXmlDisclosableClaim(eaaPayloadProxy.getHolderSignatureUsualMark()));
 		xmlEAAPayload.setFingerprint(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFingerprint()));
 		xmlEAAPayload.setBusinessName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBusinessName()));
@@ -1099,11 +1102,36 @@ public class SimpleReportBuilder {
 		return xmlEAAPayload;
 	}
 
-	private List<XmlDisclosableClaim> getXmlDisclosableClaims(List<? extends ClaimWrapper> claimWrappers) {
+	private List<XmlParametrizedDisclosableClaim> getXmlAgeOverNNClaims(List<AgeOverNNClaimWrapper> claimWrappers) {
 		if (Utils.isCollectionEmpty(claimWrappers)) {
 			return Collections.emptyList();
 		}
-		return claimWrappers.stream().map(c -> getXmlDisclosableClaim(c, null)).collect(Collectors.toList());
+		return claimWrappers.stream().map(this::getXmlAgeOverNNClaim).collect(Collectors.toList());
+	}
+
+	private XmlParametrizedDisclosableClaim getXmlAgeOverNNClaim(AgeOverNNClaimWrapper ageOverNNClaim) {
+		XmlParametrizedDisclosableClaim xmlParametrizedDisclosableClaim = new XmlParametrizedDisclosableClaim();
+		xmlParametrizedDisclosableClaim.setName(ageOverNNClaim.getName());
+		xmlParametrizedDisclosableClaim.setDisclosure(ageOverNNClaim.isSelectivelyDisclosable());
+		xmlParametrizedDisclosableClaim.setParameter(String.valueOf(ageOverNNClaim.getAge()));
+		xmlParametrizedDisclosableClaim.setValue(ageOverNNClaim.getDisplayValue());
+		return xmlParametrizedDisclosableClaim;
+	}
+
+	private List<XmlParametrizedDisclosableClaim> getBiometricTemplateXXClaims(List<BiometricTemplateXXClaimWrapper> claimWrappers) {
+		if (Utils.isCollectionEmpty(claimWrappers)) {
+			return Collections.emptyList();
+		}
+		return claimWrappers.stream().map(this::getXmlBiometricTemplateXXClaim).collect(Collectors.toList());
+	}
+
+	private XmlParametrizedDisclosableClaim getXmlBiometricTemplateXXClaim(BiometricTemplateXXClaimWrapper biometricTemplateXXClaim) {
+		XmlParametrizedDisclosableClaim xmlParametrizedDisclosableClaim = new XmlParametrizedDisclosableClaim();
+		xmlParametrizedDisclosableClaim.setName(biometricTemplateXXClaim.getName());
+		xmlParametrizedDisclosableClaim.setDisclosure(biometricTemplateXXClaim.isSelectivelyDisclosable());
+		xmlParametrizedDisclosableClaim.setParameter(biometricTemplateXXClaim.getType());
+		xmlParametrizedDisclosableClaim.setValue(biometricTemplateXXClaim.getDisplayValue());
+		return xmlParametrizedDisclosableClaim;
 	}
 
 	private XmlDisclosableClaim getXmlDisclosableClaim(ClaimWrapper claimWrapper) {

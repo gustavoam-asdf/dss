@@ -3,14 +3,14 @@ package eu.europa.esig.dss.eaa.jwt.claim;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
-import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
+import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 
 /**
  * SD-JWT VC token representation of a "status" header. See draft-ietf-oauth-status-list-13.
  *
  */
-public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
+public class SDJWTClaimStatusList extends SDJWTClaimMap implements ClaimStatusList {
 
     private static final long serialVersionUID = 2273453140105479397L;
 
@@ -19,7 +19,7 @@ public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
      *
      * @param value {@link ClaimMap}
      */
-    public SDJWTClaimStatus(ClaimMap value) {
+    public SDJWTClaimStatusList(ClaimMap value) {
         super(value.getName(), value.getMapValue(), value.isSelectivelyDisclosable(), value.getParent());
     }
 
