@@ -73,6 +73,11 @@ class SimpleReportFacadeTest {
 	void qeaaTest() throws Exception {
 		createAndValidate("sr-qeaa.xml");
 	}
+
+	@Test
+	void mdocTest() throws Exception {
+		createAndValidate("sr-mdoc.xml");
+	}
 	
 	@Test
 	void generateSemantics() throws Exception {

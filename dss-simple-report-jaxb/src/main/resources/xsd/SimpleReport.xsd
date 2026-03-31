@@ -467,13 +467,13 @@
 			<xs:element name="PortraitCaptureDate" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeBirthYear" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="AgeOverNN" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="AgeOverNN" type="ParametrizedDisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="IssuingJurisdiction" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ResidentCity" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ResidentState" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ResidentPostalCode" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ResidentCountry" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BiometricTemplate" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="BiometricTemplate" type="ParametrizedDisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="SignatureUsualMark" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Fingerprint" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="BusinessName" type="DisclosableClaim" minOccurs="0" />
@@ -503,6 +503,14 @@
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ParametrizedDisclosableClaim">
+		<xs:complexContent>
+			<xs:extension base="DisclosableClaim">
+				<xs:attribute name="parameter" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:complexType name="DisclosableClaim">

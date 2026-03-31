@@ -101,6 +101,11 @@ class PDFGenerationTest {
 	}
 
 	@Test
+	void generateMdocSimpleReport() throws Exception {
+		createAndValidate("sr-mdoc.xml");
+	}
+
+	@Test
 	void generateSemantics() throws Exception {
 		createAndValidate("sr-semantics.xml");
 	}
