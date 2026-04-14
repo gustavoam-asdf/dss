@@ -85,6 +85,7 @@
 					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EVIDENCE_RECORD']"/>
 				    
    					<xsl:apply-templates select="dss:TLAnalysis"/>
+					<xsl:apply-templates select="dss:LoTEAnalysis"/>
 	    			
    					<xsl:if test="dss:Semantic">
    						
@@ -147,7 +148,7 @@
 
     </xsl:template>
     
-	<xsl:template match="dss:TLAnalysis">
+	<xsl:template match="dss:TLAnalysis|dss:LoTEAnalysis">
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
 			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
@@ -367,7 +368,7 @@
     </xsl:template>
 
     <xsl:template match="dss:ValidationSignatureQualification|dss:ValidationTimestampQualification|dss:ValidationTimestampQualificationAtTime
-			|dss:ValidationEAAQualification">
+			|dss:ValidationEAAQualification|dss:ValidationEAAQualificationProcess|dss:ValidationPIDQualificationProcess">
 
     	<fo:table table-layout="fixed">
 			<xsl:attribute name="keep-with-next">always</xsl:attribute>
@@ -417,6 +418,11 @@
 					       		</xsl:when>
 								<xsl:when test="@EAAQualification">
 									<xsl:value-of select="@EAAQualification"/>
+								</xsl:when>
+								<xsl:when test="dss:EAAQualification">
+									<xsl:for-each select="dss:EAAQualification">
+										<xsl:text>&#xa;</xsl:text><xsl:value-of select="."/>
+									</xsl:for-each>
 								</xsl:when>
 				       		</xsl:choose>
 			       		</fo:block>
@@ -494,15 +500,18 @@
 								<xsl:when test="@CertificateQualification">
 									<xsl:value-of select="@CertificateQualification"/>
 								</xsl:when>
-								<xsl:when test="@CertificateUsage">
-									<xsl:choose>
-										<xsl:when test="dss:CertificateUsage/@label">
-											<xsl:value-of select="dss:CertificateUsage/@label"/>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:value-of select="dss:CertificateUsage/dss:ServiceTypeIdentifier"/>
-										</xsl:otherwise>
-									</xsl:choose>
+								<xsl:when test="dss:CertificateUsage">
+									<xsl:for-each select="dss:CertificateUsage">
+										<xsl:text>&#xa;</xsl:text>
+										<xsl:choose>
+											<xsl:when test="@label">
+												<xsl:value-of select="@label"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="dss:ServiceTypeIdentifier"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:for-each>
 								</xsl:when>
 							</xsl:choose>
 						</fo:block>
@@ -899,6 +908,7 @@
 	<xsl:template match="dss:DigestMatchersValidation" />
 	<xsl:template match="dss:CertificateChainCryptographicValidation" />
 	<xsl:template match="dss:ControlTime" />
+	<xsl:template match="dss:EAAQualification" />
 
 	<xsl:template name="formatdate">
 		<xsl:param name="DateTimeStr" />

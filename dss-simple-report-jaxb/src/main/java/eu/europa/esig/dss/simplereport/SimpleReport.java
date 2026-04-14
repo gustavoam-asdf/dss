@@ -29,6 +29,7 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampQualification;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.simplereport.jaxb.XmlCertificateChain;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAALevel;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
@@ -565,7 +566,9 @@ public class SimpleReport {
 	}
 
 	/**
-	 * This method returns the EAA's qualification
+	 * This method returns the first determined EAA's qualification.
+	 * This method could be used for a simple EAAQualification result extraction, suitable for the most use cases.
+	 * Should you need a more comprehensive validation output, please use the {@code #getEAAQualifications} method.
 	 *
 	 * @param eaaPresentationId
 	 *                    the EAA presentation id
@@ -573,8 +576,26 @@ public class SimpleReport {
 	 */
 	public EAAQualification getEAAQualification(final String eaaPresentationId) {
 		XmlEAAPresentation xmlEAAPresentation = getEAAPresentationById(eaaPresentationId);
-		if (xmlEAAPresentation != null && xmlEAAPresentation.getEAALevel() != null) {
-			return xmlEAAPresentation.getEAALevel().getValue();
+		if (xmlEAAPresentation != null && xmlEAAPresentation.getEAALevel() != null && !xmlEAAPresentation.getEAALevel().isEmpty()) {
+			return xmlEAAPresentation.getEAALevel().iterator().next().getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns a list of determined EAA's qualifications.
+	 * This list should be used if a comprehensive result of EAA validation is required,
+	 * as potentially a token may be qualified with different outputs during the validation process,
+	 * even thought it should not happen in production environments.
+	 *
+	 * @param eaaPresentationId
+	 *                    the EAA presentation id
+	 * @return a list of {@link EAAQualification}s for a given EAA
+	 */
+	public List<EAAQualification> getEAAQualifications(final String eaaPresentationId) {
+		XmlEAAPresentation xmlEAAPresentation = getEAAPresentationById(eaaPresentationId);
+		if (xmlEAAPresentation != null && xmlEAAPresentation.getEAALevel() != null && !xmlEAAPresentation.getEAALevel().isEmpty()) {
+			return xmlEAAPresentation.getEAALevel().stream().map(XmlEAALevel::getValue).collect(Collectors.toList());
 		}
 		return null;
 	}

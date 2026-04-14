@@ -754,7 +754,7 @@ public class DetailedReport {
 	 * @param eaaPresentationId {@link String}
 	 * @return {@link EAAQualification}
 	 */
-	public EAAQualification getEAAQualification(String eaaPresentationId) {
+	public List<EAAQualification> getEAAQualifications(String eaaPresentationId) {
 		XmlValidationEAAQualification eaaQualification = getXmlEAAQualificationById(eaaPresentationId);
 		if (eaaQualification !=null) {
 			return eaaQualification.getEAAQualification();

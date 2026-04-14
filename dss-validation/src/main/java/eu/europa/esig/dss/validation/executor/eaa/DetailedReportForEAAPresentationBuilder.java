@@ -3,6 +3,7 @@ package eu.europa.esig.dss.validation.executor.eaa;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.enumerations.ValidationLevel;
@@ -38,14 +39,14 @@ public class DetailedReportForEAAPresentationBuilder extends DetailedReportBuild
 
     @Override
     protected void executeValidation(XmlDetailedReport detailedReport, Map<String, XmlBasicBuildingBlocks> bbbs, POEExtraction poe) {
-        List<XmlEAAPresentation> eaaPresentations = executeEAAPresentationValidations(bbbs, detailedReport.getTLAnalysis());
+        List<XmlEAAPresentation> eaaPresentations = executeEAAPresentationValidations(bbbs, detailedReport.getTLAnalysis(), detailedReport.getLoTEAnalysis());
         detailedReport.getSignatureOrTimestampOrEvidenceRecord().addAll(eaaPresentations);
     }
 
     private List<XmlEAAPresentation> executeEAAPresentationValidations(
-            Map<String, XmlBasicBuildingBlocks> bbbs, List<XmlTLAnalysis> tlAnalysis) {
+            Map<String, XmlBasicBuildingBlocks> bbbs, List<XmlTLAnalysis> tlAnalysis, List<XmlLoTEAnalysis> loteAnalysis) {
         EAAPresentationValidationBlock eaaPresentationValidationBlock = new EAAPresentationValidationBlock(
-                i18nProvider, diagnosticData, policy, currentTime, bbbs, tlAnalysis);
+                i18nProvider, diagnosticData, policy, currentTime, bbbs, tlAnalysis, loteAnalysis);
         return eaaPresentationValidationBlock.execute();
     }
 

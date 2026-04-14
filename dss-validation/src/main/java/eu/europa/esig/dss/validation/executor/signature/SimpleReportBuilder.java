@@ -781,12 +781,9 @@ public class SimpleReportBuilder {
 			finalSubIndications.add(subIndication);
 		}
 
-		EAAQualification eaaQualification = detailedReport.getEAAQualification(eaaPresentationId);
-		if (eaaQualification != null) {
-			XmlEAALevel xmlEAALevel = new XmlEAALevel();
-			xmlEAALevel.setValue(eaaQualification);
-			xmlEAALevel.setDescription(eaaQualification.getLabel());
-			xmlEAAPresentation.setEAALevel(xmlEAALevel);
+		List<EAAQualification> eaaQualifications = detailedReport.getEAAQualifications(eaaPresentationId);
+		if (Utils.isCollectionNotEmpty(eaaQualifications)) {
+			xmlEAAPresentation.getEAALevel().addAll(getXmlEAALevels(eaaQualifications));
 		}
 
 		XmlDetails validationDetails = getAdESValidationDetails(eaaPresentationId);
@@ -813,6 +810,20 @@ public class SimpleReportBuilder {
 		xmlEAAPresentation.setEAAPayload(buildXmlEAAPayload(eaaPresentation));
 
 		return xmlEAAPresentation;
+	}
+
+	private List<XmlEAALevel> getXmlEAALevels(List<EAAQualification> eaaQualifications) {
+		if (Utils.isCollectionEmpty(eaaQualifications)) {
+			return Collections.emptyList();
+		}
+		final List<XmlEAALevel> result = new ArrayList<>();
+		for (EAAQualification eaaQualification : eaaQualifications) {
+			XmlEAALevel xmlEAALevel = new XmlEAALevel();
+			xmlEAALevel.setValue(eaaQualification);
+			xmlEAALevel.setDescription(eaaQualification.getLabel());
+			result.add(xmlEAALevel);
+		}
+		return result;
 	}
 
 	private Date getMinExtensionPeriod(AbstractTokenProxy token, List<TimestampWrapper> timestampList) {

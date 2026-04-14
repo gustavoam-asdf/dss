@@ -106,6 +106,11 @@ class PDFGenerationTest {
 	}
 
 	@Test
+	void generatePIDSimpleReport() throws Exception {
+		createAndValidate("sr-pid.xml");
+	}
+
+	@Test
 	void generateSemantics() throws Exception {
 		createAndValidate("sr-semantics.xml");
 	}

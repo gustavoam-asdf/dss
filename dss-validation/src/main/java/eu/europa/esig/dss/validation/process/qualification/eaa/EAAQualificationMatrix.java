@@ -1,5 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa;
 
+import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
@@ -53,10 +55,24 @@ public final class EAAQualificationMatrix {
     /** Not applicable validation status of electronic signature or seal */
     private static final int NA = 3;
 
+    /** Certificate is a PID Provider */
+    private static final int CERT_USAGE_PID = 0;
+
+    /** Certificate is not a PID Provider */
+    private static final int CERT_USAGE_OTHER = 1;
+
+    /** Not applicable validation of a PID Provider */
+    private static final int CERT_USAGE_NA = 2;
+
     /**
      * Array containing the relationship between qualification parameters and the final EAA qualification
      */
     private static final EAAQualification[][][] QUALIFS = new EAAQualification[3][5][4];
+
+    /**
+     * Array containing the relationship between qualification parameters and the final PID qualification
+     */
+    private static final EAAQualification[][] PID_QUALIFS = new EAAQualification[3][3];
 
     static {
 
@@ -82,12 +98,7 @@ public final class EAAQualificationMatrix {
         QUALIFS[PASSED_EAA][UNKNOWN_EAA][NOT_QUAL_SIG_SEAL] = EAAQualification.UNKNOWN;
         QUALIFS[PASSED_EAA][UNKNOWN_EAA][NA] = EAAQualification.NA;
 
-        QUALIFS[PASSED_EAA][NOT_EAA][QUAL_SIG_SEAL] = EAAQualification.NOT_EAA;
-        QUALIFS[PASSED_EAA][NOT_EAA][INDETERMINATE_QUAL_SIG_SEAL] = EAAQualification.NOT_EAA;
-        QUALIFS[PASSED_EAA][NOT_EAA][NOT_QUAL_SIG_SEAL] = EAAQualification.NOT_EAA;
-        QUALIFS[PASSED_EAA][NOT_EAA][NA] = EAAQualification.NA;
-
-        // Indeterminate AdES
+        // Indeterminate EAA
 
         QUALIFS[INDETERMINATE_EAA][QEAA][QUAL_SIG_SEAL] = EAAQualification.INDETERMINATE_QEAA;
         QUALIFS[INDETERMINATE_EAA][QEAA][INDETERMINATE_QUAL_SIG_SEAL] = EAAQualification.INDETERMINATE_QEAA;
@@ -141,6 +152,20 @@ public final class EAAQualificationMatrix {
         QUALIFS[FAILED_EAA][NOT_EAA][NOT_QUAL_SIG_SEAL] = EAAQualification.NOT_EAA;
         QUALIFS[FAILED_EAA][NOT_EAA][NA] = EAAQualification.NA;
 
+        // PID
+
+        PID_QUALIFS[PASSED_EAA][CERT_USAGE_PID] = EAAQualification.PID;
+        PID_QUALIFS[PASSED_EAA][CERT_USAGE_OTHER] = EAAQualification.UNKNOWN;
+        PID_QUALIFS[PASSED_EAA][CERT_USAGE_NA] = EAAQualification.NA;
+
+        PID_QUALIFS[INDETERMINATE_EAA][CERT_USAGE_PID] = EAAQualification.INDETERMINATE_PID;
+        PID_QUALIFS[INDETERMINATE_EAA][CERT_USAGE_OTHER] = EAAQualification.INDETERMINATE_UNKNOWN;
+        PID_QUALIFS[INDETERMINATE_EAA][CERT_USAGE_NA] = EAAQualification.NA;
+
+        PID_QUALIFS[FAILED_EAA][CERT_USAGE_PID] = EAAQualification.NOT_EAA;
+        PID_QUALIFS[FAILED_EAA][CERT_USAGE_OTHER] = EAAQualification.NOT_EAA;
+        PID_QUALIFS[FAILED_EAA][CERT_USAGE_NA] = EAAQualification.NA;
+
     }
 
     /**
@@ -151,8 +176,20 @@ public final class EAAQualificationMatrix {
      * @param signatureQualification {@link SignatureQualification} of the signature used to create the EAA
      * @return {@link EAAQualification}
      */
-    public static EAAQualification getEAAQualification(Indication indication, EAAQualification claimedQualification, SignatureQualification signatureQualification) {
+    public static EAAQualification getEAAQualification(Indication indication, EAAQualification claimedQualification,
+                                                       SignatureQualification signatureQualification) {
         return QUALIFS[getInt(indication)][getInt(claimedQualification)][getInt(signatureQualification)];
+    }
+
+    /**
+     * Gets PID qualification based on the given parameters
+     *
+     * @param indication {@link Indication} representing the final result of validation process for EAA presentation
+     * @param certificateUsage {@link CertificateUsage} determined certificate usage
+     * @return {@link EAAQualification}
+     */
+    public static EAAQualification getPIDQualification(Indication indication, CertificateUsage certificateUsage) {
+        return PID_QUALIFS[getInt(indication)][getInt(certificateUsage)];
     }
 
     private static int getInt(Indication indication) {
@@ -199,6 +236,16 @@ public final class EAAQualificationMatrix {
                 return NA;
             default:
                 return NOT_QUAL_SIG_SEAL;
+        }
+    }
+
+    private static int getInt(CertificateUsage certificateUsage) {
+        if (CertificateUsageEnum.PID_PROVIDER == certificateUsage) {
+            return CERT_USAGE_PID;
+        } else if (CertificateUsageEnum.NA == certificateUsage) {
+            return CERT_USAGE_NA;
+        } else {
+            return CERT_USAGE_OTHER;
         }
     }
 

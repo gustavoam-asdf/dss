@@ -18,6 +18,7 @@
 			</xs:sequence>
 			<xs:element type="BasicBuildingBlocks" name="BasicBuildingBlocks" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="TLAnalysis" type="TLAnalysis" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="LoTEAnalysis" type="LoTEAnalysis" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="Semantic" type="Semantic" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="ValidationTime" type="xs:dateTime" />
@@ -129,6 +130,12 @@
 	</xs:complexType>
 	
 	<xs:complexType name="TLAnalysis">
+		<xs:complexContent>
+			<xs:extension base="LoTEAnalysis" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="LoTEAnalysis">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:attribute name="CountryCode" type="xs:string" use="optional" /> <!-- can be null in case of parsing task failure -->
@@ -284,6 +291,31 @@
 	<xs:complexType name="ValidationEAAQualification">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<!-- Processes -->
+					<xs:element name="ValidationEAAQualificationProcess" type="ValidationEAAQualificationProcess" minOccurs="0" />
+					<xs:element name="ValidationPIDQualificationProcess" type="ValidationPIDQualificationProcess" minOccurs="0" />
+					<!-- Result -->
+					<xs:element name="EAAQualification" type="EAAQualification" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationEAAQualificationProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationPIDQualificationProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="ValidationCertificateUsage" type="ValidationCertificateUsage" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
 				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
 			</xs:extension>
 		</xs:complexContent>
@@ -657,11 +689,13 @@
 			<xs:enumeration value="QEAA" />
 			<xs:enumeration value="EAA" />
 			<xs:enumeration value="Pub-EAA" />
+			<xs:enumeration value="PID" />
 			<xs:enumeration value="Unknown" />
 
 			<xs:enumeration value="Indeterminate QEAA" />
 			<xs:enumeration value="Indeterminate EAA" />
 			<xs:enumeration value="Indeterminate Pub-EAA" />
+			<xs:enumeration value="Indeterminate PID" />
 			<xs:enumeration value="Indeterminate Unknown" />
 
 			<xs:enumeration value="Not EAA" />

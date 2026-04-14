@@ -172,7 +172,7 @@
 		<xs:complexContent>
 			<xs:extension base="Token">
 				<xs:sequence>
-					<xs:element name="EAALevel" type="EAALevel" minOccurs="0" />
+					<xs:element name="EAALevel" type="EAALevel" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element name="EAAPresentationSignature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
 					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
@@ -378,11 +378,13 @@
 			<xs:enumeration value="QEAA" />
 			<xs:enumeration value="EAA" />
 			<xs:enumeration value="Pub-EAA" />
+			<xs:enumeration value="PID" />
 			<xs:enumeration value="Unknown" />
 
 			<xs:enumeration value="Indeterminate QEAA" />
 			<xs:enumeration value="Indeterminate EAA" />
 			<xs:enumeration value="Indeterminate Pub-EAA" />
+			<xs:enumeration value="Indeterminate PID" />
 			<xs:enumeration value="Indeterminate Unknown" />
 
 			<xs:enumeration value="Not EAA" />

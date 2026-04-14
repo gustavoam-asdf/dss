@@ -185,7 +185,7 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         listAndSchemeInformation.setSchemeOperatorAddress(getAddressType(Arrays.asList(
                 getPostalAddress("fr", "12 Boulevard Sécurité", "Paris", "Île-de-France","75015", "ZZ"),
                 getPostalAddress("en", "12 Security Boulevard", "Paris", "Ile-de-France","75015", "ZZ")
-        ), getElectronicAddress(getLangURI("en", "mailto@schemeoperator.com"))));
+        ), getElectronicAddress(getLangURI("en", "mailto:mailto@schemeoperator.com"))));
 
         listAndSchemeInformation.setSchemeName(getNamesType(
                 getLangString("fr", "Liste de confiance zz"),

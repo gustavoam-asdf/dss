@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Verifies whether the Trusted Entity Service statuses are consistent
+ *
+ */
 public class TrustedEntityServiceStatusConsistencyCheck extends ChainItem<XmlValidationCertificateUsage> {
 
     /** List of {@code TrustedEntityServiceWrapper}s at control time */

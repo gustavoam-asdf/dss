@@ -308,7 +308,7 @@
             <Indication>PASSED</Indication>
         </Conclusion>
     </BasicBuildingBlocks>
-    <TLAnalysis CountryCode="EU" URL="https://test.test/lote-pid" Id="LoTE-7E4629CADCE9BAF2DBE323148D32A539CE15989484B1FBFA96089F5C309754A2" Title="List Of Trusted Entities EU">
+    <LoTEAnalysis CountryCode="EU" URL="https://test.test/lote-pid" Id="LoTE-7E4629CADCE9BAF2DBE323148D32A539CE15989484B1FBFA96089F5C309754A2" Title="List Of Trusted Entities EU">
         <Constraint>
             <Name Key="QUAL_TL_FRESH">Is the trusted list fresh?</Name>
             <Status>OK</Status>
@@ -328,8 +328,8 @@
         <Conclusion>
             <Indication>PASSED</Indication>
         </Conclusion>
-    </TLAnalysis>
-    <TLAnalysis CountryCode="EU" URL="https://test.test/lolote" Id="LoTE-140E43F709B1479B49D014EF8683547063B5EC39A9BD88FA4C511DCD4B60836F" Title="List Of Trusted Entities EU">
+    </LoTEAnalysis>
+    <LoTEAnalysis CountryCode="EU" URL="https://test.test/lolote" Id="LoTE-140E43F709B1479B49D014EF8683547063B5EC39A9BD88FA4C511DCD4B60836F" Title="List Of Trusted Entities EU">
         <Constraint>
             <Name Key="QUAL_TL_FRESH">Is the trusted list fresh?</Name>
             <Status>OK</Status>
@@ -351,5 +351,5 @@
             <Indication>PASSED</Indication>
             <Warnings Key="QUAL_TL_SV_ANS">The structure of the trusted list is not valid!</Warnings>
         </Conclusion>
-    </TLAnalysis>
+    </LoTEAnalysis>
 </DetailedReport>

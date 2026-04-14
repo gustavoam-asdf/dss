@@ -1462,7 +1462,25 @@ public class DiagnosticData {
 		List<XmlListOfTrustedEntities> result = new ArrayList<>();
 		List<XmlListOfTrustedEntities> listsOfTrustedEntities = wrapped.getListsOfTrustedEntities();
 		for (XmlListOfTrustedEntities lote : listsOfTrustedEntities) {
-			result.add(lote);
+			if (!lote.isLoLoTE()) {
+				result.add(lote);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * This method returns the JAXB model of the used lists of lists of trusted entities
+	 *
+	 * @return the JAXB model of the used lists of lists of trusted entities
+	 */
+	public List<XmlListOfTrustedEntities> getListsOfListsOfTrustedEntities() {
+		List<XmlListOfTrustedEntities> result = new ArrayList<>();
+		List<XmlListOfTrustedEntities> listsOfTrustedEntities = wrapped.getListsOfTrustedEntities();
+		for (XmlListOfTrustedEntities lote : listsOfTrustedEntities) {
+			if (lote.isLoLoTE()) {
+				result.add(lote);
+			}
 		}
 		return result;
 	}

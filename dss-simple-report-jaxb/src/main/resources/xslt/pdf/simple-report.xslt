@@ -427,7 +427,7 @@
 												<xsl:value-of select="dss:TimestampLevel/@description" />
 											</xsl:if>
 											<xsl:if test="dss:EAALevel">
-												<xsl:value-of select="dss:EAALevel/@description" />
+												<xsl:value-of select="dss:EAALevel" />
 											</xsl:if>
 										</fo:block>
 									</fo:table-cell>

@@ -119,6 +119,11 @@ class PDFGenerationTest {
 	void qeaaDetailedReport() throws Exception {
 		createAndValidate("dr-qeaa.xml");
 	}
+
+	@Test
+	void eaaPidDetailedReport() throws Exception {
+		createAndValidate("dr-eaa-pid.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		DetailedReportFacade facade = DetailedReportFacade.newFacade();

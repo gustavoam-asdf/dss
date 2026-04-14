@@ -26,6 +26,11 @@ public enum EAAQualification {
     PUBEAA("Pub-EAA", "Electronic Attestation of Attributes issued by or on behalf of a public sector body"),
 
     /**
+     * Personal Identification Data (PID)
+     */
+    PID("PID", "Personal Identification Data"),
+
+    /**
      * Electronic attestation of attributes of unknown or conflicting status.
      */
     UNKNOWN("Unknown", "Electronic Attestation of Attributes of unknown type"),
@@ -45,6 +50,11 @@ public enum EAAQualification {
      * for an authentic source as defined in Regulation EU 2024/1183, Article 45f.
      */
     INDETERMINATE_PUBEAA("Indeterminate Pub-EAA", "Indeterminate Electronic Attestation of Attributes issued by or on behalf of a public sector body"),
+
+    /**
+     * Indeterminate Personal Identification Data (PID)
+     */
+    INDETERMINATE_PID("Indeterminate PID", "Indeterminate Personal Identification Data"),
 
     /**
      * Indeterminate electronic attestation of attributes of unknown or conflicting status.

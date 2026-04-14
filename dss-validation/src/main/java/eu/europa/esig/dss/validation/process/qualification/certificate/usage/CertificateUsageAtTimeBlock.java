@@ -21,6 +21,7 @@ import eu.europa.esig.dss.validation.process.qualification.certificate.usage.che
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.TrustedEntityServiceStatusConsistencyCheck;
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.TrustedEntityServiceStatusKnownCheck;
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.TrustedEntityServiceTypeIdentifierKnownCheck;
+import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.TrustedEntityServiceWithStiCheck;
 import eu.europa.esig.dss.validation.process.qualification.trust.filter.TrustedEntitiesFilterFactory;
 import eu.europa.esig.dss.validation.process.qualification.trust.filter.TrustedEntityServiceFilter;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
     private final String listTypeUri;
 
     /** Service Type Identifier URI */
-    private final String stiUri;
+    private String stiUri;
 
     /** List of matching TrustServices */
     private final List<TrustedEntityServiceWrapper> acceptableServices;
@@ -60,6 +61,8 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
      * @param i18nProvider {@link I18nProvider}
      * @param validationTime {@link ValidationTime}
      * @param signingCertificate {@link CertificateWrapper} to get qualification for
+     * @param listTypeUri {@link String} representing a type of the List of Trusted Entities to be evaluated
+     * @param stiUri {@link String} representing a target service type identifier
      * @param acceptableServices list of {@link TrustedEntityServiceWrapper}s
      */
     public CertificateUsageAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime,
@@ -74,6 +77,8 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
      * @param validationTime {@link ValidationTime}
      * @param date {@link Date}
      * @param signingCertificate {@link CertificateWrapper} to get qualification for
+     * @param listTypeUri {@link String} representing a type of the List of Trusted Entities to be evaluated
+     * @param stiUri {@link String} representing a target service type identifier
      * @param acceptableServices list of {@link TrustedEntityServiceWrapper}s
      */
     public CertificateUsageAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime, Date date,
@@ -121,15 +126,22 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         filteredServices = new ArrayList<>(acceptableServices);
 
         // 1b. Filter by date
-        TrustedEntityServiceFilter filterByDate = TrustedEntitiesFilterFactory.createFilterByDate(date);
-        filteredServices = filterByDate.filter(filteredServices);
+        TrustedEntityServiceFilter filter = TrustedEntitiesFilterFactory.createFilterByDate(date);
+        filteredServices = filter.filter(filteredServices);
 
         ChainItem<XmlValidationCertificateUsage> item = firstItem = hasTrustedServiceAtTime(filteredServices);
 
+        // 2a. Check sti consistency
+
         item = item.setNextItem(trustedServiceTypeIdentifierKnown(stiUri));
 
-        // 2a. Check status consistency
-        item = item.setNextItem(hasTrustedServicesConsistent(filteredServices));
+        filter = TrustedEntitiesFilterFactory.createFilterByServiceTypeIdentifierUri(stiUri);
+        filteredServices = filter.filter(filteredServices);
+
+        item = item.setNextItem(trustedServicesWithSti(filteredServices));
+
+        // 2b. Check status consistency
+        item = item.setNextItem(trustedServicesStatusConsistent(filteredServices));
 
         String serviceStatusUri = getServiceStatusUri(filteredServices);
         if (serviceStatusUri != null) {
@@ -144,7 +156,8 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         XmlCertificateUsage certificateUsage = new XmlCertificateUsage();
         ListType listType = ListType.fromUri(listTypeUri);
         certificateUsage.setListType(listType);
-        LoTEServiceTypeIdentifier sti = LoTEServiceTypeIdentifier.fromUri(stiUri);
+        String serviceStiUri = getServiceStiUri(filteredServices);
+        LoTEServiceTypeIdentifier sti = LoTEServiceTypeIdentifier.fromUri(serviceStiUri);
         certificateUsage.setServiceTypeIdentifier(sti);
         String serviceStatusUri = getServiceStatusUri(filteredServices);
         LoTEServiceStatus status = LoTEServiceStatus.fromUri(serviceStatusUri);
@@ -165,16 +178,31 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         return new TrustedEntityServiceAtTimeCheck(i18nProvider, result, trustedServices, validationTime, getFailLevelRule());
     }
 
+    private ChainItem<XmlValidationCertificateUsage> trustedServicesWithSti(List<TrustedEntityServiceWrapper> trustedServices) {
+        return new TrustedEntityServiceWithStiCheck(i18nProvider, result, trustedServices, stiUri, getFailLevelRule());
+    }
+
     private ChainItem<XmlValidationCertificateUsage> trustedServiceTypeIdentifierKnown(String serviceStatusUri) {
         return new TrustedEntityServiceTypeIdentifierKnownCheck(i18nProvider, result, serviceStatusUri, getWarnLevelRule());
     }
 
-    private ChainItem<XmlValidationCertificateUsage> hasTrustedServicesConsistent(List<TrustedEntityServiceWrapper> trustedServices) {
+    private ChainItem<XmlValidationCertificateUsage> trustedServicesStatusConsistent(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceStatusConsistencyCheck(i18nProvider, result, trustedServices, getFailLevelRule());
     }
 
     private ChainItem<XmlValidationCertificateUsage> trustedServiceStatusKnown(String serviceStatusUri) {
         return new TrustedEntityServiceStatusKnownCheck(i18nProvider, result, serviceStatusUri, getWarnLevelRule());
+    }
+
+    private String getServiceStiUri(List<TrustedEntityServiceWrapper> filteredServices) {
+        Set<String> stiSet = filteredServices.stream().map(TrustedSourceServiceWrapper::getType).collect(Collectors.toSet());
+        if (Utils.collectionSize(stiSet) == 0) {
+            return null;
+        } else if (Utils.collectionSize(stiSet) == 1) {
+            return stiSet.iterator().next();
+        }
+        LOG.warn("Conflict in service type identifier detected!");
+        return "?";
     }
 
     private String getServiceStatusUri(List<TrustedEntityServiceWrapper> filteredServices) {

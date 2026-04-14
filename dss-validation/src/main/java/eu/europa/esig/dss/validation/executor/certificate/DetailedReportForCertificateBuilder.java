@@ -162,7 +162,7 @@ public class DetailedReportForCertificateBuilder extends AbstractDetailedReportB
 	 */
 	protected CertificateUsageBlock getCertificateUsageBlock(XmlDetailedReport detailedReport, XmlBasicBuildingBlocks basicBuildingBlocks) {
 		return new CertificateUsageBlock(i18nProvider, basicBuildingBlocks.getConclusion(), currentTime,
-				getCertificate(), detailedReport.getTLAnalysis());
+				getCertificate(), detailedReport.getLoTEAnalysis());
 	}
 
 	/**

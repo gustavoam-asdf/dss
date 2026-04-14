@@ -38,6 +38,7 @@
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EVIDENCE_RECORD']"/>
 				
 				<xsl:apply-templates select="dss:TLAnalysis" />
+				<xsl:apply-templates select="dss:LoTEAnalysis" />
 			</div>
 	    </div>
 	    		
@@ -439,7 +440,7 @@
     	</div>
     </xsl:template>
     
-    <xsl:template match="dss:TLAnalysis">
+    <xsl:template match="dss:TLAnalysis|dss:LoTEAnalysis">
  		<div>
 	  		<xsl:if test="@Id != ''">
 	  			<xsl:attribute name="id"><xsl:value-of select="@Id"/></xsl:attribute>
@@ -447,7 +448,7 @@
  			<xsl:attribute name="class">card mb-2 mb-sm-3</xsl:attribute>
 	   		<div>
 	   			<xsl:attribute name="class">card-header</xsl:attribute>
-	    		<xsl:attribute name="data-target">#collapseTL<xsl:value-of select="@CountryCode"/></xsl:attribute>
+	    		<xsl:attribute name="data-target">#collapseTL-<xsl:value-of select="@Id"/></xsl:attribute>
 		       	<xsl:attribute name="data-toggle">collapse</xsl:attribute>
 		       	
 				<xsl:call-template name="badge-conclusion">
@@ -471,7 +472,7 @@
 			<xsl:if test="count(child::*[name(.)!='Conclusion']) &gt; 0">
 	    		<div>
 	    			<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
-		        	<xsl:attribute name="id">collapseTL<xsl:value-of select="@CountryCode"/></xsl:attribute>
+		        	<xsl:attribute name="id">collapseTL-<xsl:value-of select="@Id"/></xsl:attribute>
 		        	<xsl:apply-templates/>
 	    		</div>
 	    	</xsl:if>
@@ -509,6 +510,31 @@
 				<xsl:attribute name="data-target">#collapseEAAAnalysis<xsl:value-of select="@Id"/></xsl:attribute>
 				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
 
+				<xsl:for-each select="dss:EAAQualification">
+					<span>
+						<xsl:attribute name="class">badge badge-secondary float-right mr-1</xsl:attribute>
+						<xsl:value-of select="."/>
+					</span>
+				</xsl:for-each>
+
+				<xsl:value-of select="@Title"/>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">collapseEAAAnalysis<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template match="dss:ValidationEAAQualificationProcess">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#collapseEAAQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
 				<span>
 					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
 					<xsl:value-of select="@EAAQualification"/>
@@ -518,7 +544,30 @@
 			</div>
 			<div>
 				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
-				<xsl:attribute name="id">collapseEAAAnalysis<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="id">collapseEAAQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template match="dss:ValidationPIDQualificationProcess">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#collapsePIDQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<span>
+					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
+					<xsl:value-of select="@EAAQualification"/>
+				</span>
+
+				<xsl:value-of select="@Title"/>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">collapsePIDQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
 				<xsl:apply-templates/>
 			</div>
 		</div>

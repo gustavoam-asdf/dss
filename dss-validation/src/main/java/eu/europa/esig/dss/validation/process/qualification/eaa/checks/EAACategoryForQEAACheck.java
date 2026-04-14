@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -15,7 +15,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * as an EU qualified electronic attestation of attributes
  *
  */
-public class EAACategoryForQEAACheck extends ChainItem<XmlValidationEAAQualification> {
+public class EAACategoryForQEAACheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /** EAA presentation to be checked */
     private final EAAPresentationWrapper eaaPresentation;
@@ -24,11 +24,11 @@ public class EAACategoryForQEAACheck extends ChainItem<XmlValidationEAAQualifica
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationEAAQualification}
+     * @param result {@link XmlValidationEAAQualificationProcess}
      * @param eaaPresentation {@link EAAPresentationWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAACategoryForQEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualification result,
+    public EAACategoryForQEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,
                                    EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
         super(i18nProvider, result, constraint);
 

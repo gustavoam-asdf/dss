@@ -4,6 +4,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusionWithProofOfExistence;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicSignature;
@@ -51,6 +52,9 @@ public class EAAPresentationValidationBlock {
     /** List of Trusted List validations */
     private final List<XmlTLAnalysis> tlAnalysis;
 
+    /** List of List of Trusted Entities validations */
+    private final List<XmlLoTEAnalysis> loteAnalysis;
+
     /**
      * Default constructor
      *
@@ -60,16 +64,18 @@ public class EAAPresentationValidationBlock {
      * @param currentTime {@link Date} validation time
      * @param bbbs map of {@link XmlBasicBuildingBlocks} to fill the validation result
      * @param tlAnalysis a list of {@link XmlTLAnalysis}
+     * @param loteAnalysis a list of {@link XmlLoTEAnalysis}
      */
     public EAAPresentationValidationBlock(final I18nProvider i18nProvider, final DiagnosticData diagnosticData,
                                           final ValidationPolicy policy, final Date currentTime, final Map<String, XmlBasicBuildingBlocks> bbbs,
-                                          final List<XmlTLAnalysis> tlAnalysis) {
+                                          final List<XmlTLAnalysis> tlAnalysis, final List<XmlLoTEAnalysis> loteAnalysis) {
         this.i18nProvider = i18nProvider;
         this.diagnosticData = diagnosticData;
         this.policy = policy;
         this.currentTime = currentTime;
         this.bbbs = bbbs;
         this.tlAnalysis = tlAnalysis;
+        this.loteAnalysis = loteAnalysis;
     }
 
     /**
@@ -115,7 +121,7 @@ public class EAAPresentationValidationBlock {
                 }
 
                 EAAQualificationBlock qualificationBlock = new EAAQualificationBlock(
-                        i18nProvider, eaaPresentation, conclusion, signatureValidationMap, tlAnalysis, currentTime);
+                        i18nProvider, eaaPresentation, conclusion, signatureValidationMap, tlAnalysis, loteAnalysis, currentTime);
                 eaaPresentationAnalysis.setValidationEAAQualification(qualificationBlock.execute());
 
             }

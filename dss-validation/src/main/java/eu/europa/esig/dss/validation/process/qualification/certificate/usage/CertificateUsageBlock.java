@@ -2,7 +2,7 @@ package eu.europa.esig.dss.validation.process.qualification.certificate.usage;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedSourceServiceWrapper;
@@ -46,7 +46,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
     protected final CertificateWrapper signingCertificate;
 
     /** List of validation results for all Trusted Lists */
-    protected final List<XmlTLAnalysis> tlAnalysis;
+    protected final List<XmlLoTEAnalysis> loteAnalysis;
 
     /**
      * Default constructor
@@ -55,11 +55,11 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
      * @param buildingBlocksConclusion {@link XmlConclusion} of BBB for the validating certificate
      * @param validationTime {@link Date} validation time
      * @param signingCertificate {@link CertificateWrapper} to be validated
-     * @param tlAnalysis a list of {@link XmlTLAnalysis}
+     * @param loteAnalysis a list of {@link XmlLoTEAnalysis}
      */
     public CertificateUsageBlock(I18nProvider i18nProvider, XmlConclusion buildingBlocksConclusion,
                                  Date validationTime, CertificateWrapper signingCertificate,
-                                 List<XmlTLAnalysis> tlAnalysis) {
+                                 List<XmlLoTEAnalysis> loteAnalysis) {
         super(i18nProvider, new XmlCertificateUsageProcess());
         Objects.requireNonNull(validationTime, "The validationTime shall be provided!");
         Objects.requireNonNull(signingCertificate, "The signingCertificate shall be provided!");
@@ -69,7 +69,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
         this.buildingBlocksConclusion = buildingBlocksConclusion;
         this.validationTime = validationTime;
         this.signingCertificate = signingCertificate;
-        this.tlAnalysis = tlAnalysis;
+        this.loteAnalysis = loteAnalysis;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
 
             Set<XmlTrustSourceList> acceptableLoLoTEs = new HashSet<>();
             for (XmlTrustSourceList listOfLists : listsOfLists) {
-                XmlTLAnalysis loloteAnalysis = getLoTEAnalysis(listOfLists);
+                XmlLoTEAnalysis loloteAnalysis = getLoTEAnalysis(listOfLists);
                 if (loloteAnalysis != null) {
                     AcceptableLoLoTECheck<XmlCertificateUsageProcess> acceptableLOTL = isAcceptableLoLoTE(loloteAnalysis);
                     item = item.setNextItem(acceptableLOTL);
@@ -109,7 +109,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
 
             if (Utils.isCollectionNotEmpty(lotes)) {
                 for (XmlTrustSourceList lote : lotes) {
-                    XmlTLAnalysis currentTL = getLoTEAnalysis(lote);
+                    XmlLoTEAnalysis currentTL = getLoTEAnalysis(lote);
                     if (currentTL != null) {
 
                         AcceptableLoTECheck<XmlCertificateUsageProcess> acceptableTL = isAcceptableLoTE(currentTL);
@@ -179,9 +179,9 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
         return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, validationTime, signingCertificate, listTypeUri, stiUri, acceptableServices);
     }
 
-    private XmlTLAnalysis getLoTEAnalysis(XmlTrustSourceList listSource) {
-        if (Utils.isCollectionNotEmpty(tlAnalysis)) {
-            for (XmlTLAnalysis xmlTLAnalysis : tlAnalysis) {
+    private XmlLoTEAnalysis getLoTEAnalysis(XmlTrustSourceList listSource) {
+        if (Utils.isCollectionNotEmpty(loteAnalysis)) {
+            for (XmlLoTEAnalysis xmlTLAnalysis : loteAnalysis) {
                 if (Utils.areStringsEqual(listSource.getUrl(), xmlTLAnalysis.getURL())) {
                     return xmlTLAnalysis;
                 }
@@ -231,11 +231,11 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
         }
     }
 
-    private AcceptableLoLoTECheck<XmlCertificateUsageProcess> isAcceptableLoLoTE(XmlTLAnalysis xmlLoLoTEAnalysis) {
+    private AcceptableLoLoTECheck<XmlCertificateUsageProcess> isAcceptableLoLoTE(XmlLoTEAnalysis xmlLoLoTEAnalysis) {
         return new AcceptableLoLoTECheck<>(i18nProvider, result, xmlLoLoTEAnalysis, getWarnLevelRule());
     }
 
-    private AcceptableLoTECheck<XmlCertificateUsageProcess> isAcceptableLoTE(XmlTLAnalysis xmlLoTEAnalysis) {
+    private AcceptableLoTECheck<XmlCertificateUsageProcess> isAcceptableLoTE(XmlLoTEAnalysis xmlLoTEAnalysis) {
         return new AcceptableLoTECheck<>(i18nProvider, result, xmlLoTEAnalysis, getWarnLevelRule());
     }
 

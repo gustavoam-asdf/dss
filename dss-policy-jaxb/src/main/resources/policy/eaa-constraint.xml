@@ -13,7 +13,7 @@
         <PolicyAvailable Level="INFORM" />
         <PolicyHashMatch Level="WARN" />
         <AcceptableFormats Level="FAIL">
-<!--            <Id>CBAdES-BASELINE-B</Id>-->
+            <Id>CBAdES-BASELINE-B</Id>
             <Id>JAdES-BASELINE-B</Id>
         </AcceptableFormats>
         <BasicSignatureConstraints>

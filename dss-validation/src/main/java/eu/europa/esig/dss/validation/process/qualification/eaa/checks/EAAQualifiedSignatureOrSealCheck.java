@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
@@ -16,7 +16,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * a qualified electronic signature or seal
  *
  */
-public class EAAQualifiedSignatureOrSealCheck extends ChainItem<XmlValidationEAAQualification> {
+public class EAAQualifiedSignatureOrSealCheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /** Signature to be checked */
     private final SignatureWrapper signature;
@@ -28,12 +28,12 @@ public class EAAQualifiedSignatureOrSealCheck extends ChainItem<XmlValidationEAA
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationEAAQualification}
+     * @param result {@link XmlValidationEAAQualificationProcess}
      * @param signature {@link SignatureWrapper}
      * @param signatureQualification {@link SignatureQualification}
      * @param constraint {@link LevelRule}
      */
-    public EAAQualifiedSignatureOrSealCheck(I18nProvider i18nProvider, XmlValidationEAAQualification result,
+    public EAAQualifiedSignatureOrSealCheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,
                                             SignatureWrapper signature, SignatureQualification signatureQualification,
                                             LevelRule constraint) {
         super(i18nProvider, result, constraint);

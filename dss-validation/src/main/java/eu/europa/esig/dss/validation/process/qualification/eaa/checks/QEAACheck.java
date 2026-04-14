@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -12,7 +12,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.List;
 
-public class QEAACheck extends ChainItem<XmlValidationEAAQualification> {
+public class QEAACheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /**
      * List of TrustServices declaring EAA/Q status for the certificate
@@ -23,11 +23,11 @@ public class QEAACheck extends ChainItem<XmlValidationEAAQualification> {
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationEAAQualification}
+     * @param result {@link XmlValidationEAAQualificationProcess}
      * @param trustServicesAtTime list of {@link TrustServiceWrapper}s
      * @param constraint {@link LevelRule}
      */
-    public QEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualification result,
+    public QEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,
                      List<TrustServiceWrapper> trustServicesAtTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.trustServicesAtTime = trustServicesAtTime;

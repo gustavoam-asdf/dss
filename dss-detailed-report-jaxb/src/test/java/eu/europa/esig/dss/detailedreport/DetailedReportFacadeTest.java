@@ -93,6 +93,11 @@ class DetailedReportFacadeTest {
 	void qeaaTest() throws Exception {
 		createAndValidate("dr-qeaa.xml");
 	}
+
+	@Test
+	void eaaPidTest() throws Exception {
+		createAndValidate("dr-eaa-pid.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		DetailedReportFacade facade = DetailedReportFacade.newFacade();

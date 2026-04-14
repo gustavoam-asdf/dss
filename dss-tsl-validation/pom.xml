@@ -29,12 +29,6 @@
 			<artifactId>dss-validation</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-		<dependency>
-			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
-			<artifactId>dss-eaa-jwt</artifactId>
-			<scope>test</scope>
-		</dependency>
 		
 		<dependency>
 			<groupId>eu.europa.ec.joinup.sd-dss</groupId>

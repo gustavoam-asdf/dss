@@ -46,7 +46,10 @@ public enum CertificateUsageEnum implements CertificateUsage {
     CERT_FOR_REGISTER("Certificate for Register", LoTETypeEnum.EURegistrarsAndRegistersList, LoTEServiceTypeIdentifierEnum.REGISTER, null),
 
     /** Represents a certificate of unknown type (e.g. an error or conflict on validation) */
-    CERT_FOR_UNKNOWN("Certificate for Unknown usage", null, null, null);
+    CERT_FOR_UNKNOWN("Certificate for Unknown usage", null, null, null),
+
+    /** Not applicable (e.g. no LoTE trust anchor reached) */
+    NA("Not applicable", null, null, null);
 
     /** User-friendly certificate label */
     private final String label;

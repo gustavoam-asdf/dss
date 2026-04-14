@@ -78,6 +78,11 @@ class SimpleReportFacadeTest {
 	void mdocTest() throws Exception {
 		createAndValidate("sr-mdoc.xml");
 	}
+
+	@Test
+	void pidTest() throws Exception {
+		createAndValidate("sr-pid.xml");
+	}
 	
 	@Test
 	void generateSemantics() throws Exception {

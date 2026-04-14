@@ -207,48 +207,67 @@
                 <Indication>TOTAL_PASSED</Indication>
             </Conclusion>
         </Signature>
-        <ValidationEAAQualification EAAQualification="QEAA" Title="EAA Qualification">
+        <ValidationEAAQualification Title="EAA Qualification">
             <Constraint>
-                <Name Key="EAA_CAT_EAA">Does the EAA include EAA category?</Name>
+                <Name Key="EAA_CAT_EAA">Is the EAA qualification process conclusive?</Name>
                 <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="EAA_CAT_QEAA">Does the EAA contain an indication that the attestation has been issued as a QEAA?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="QUAL_CERT_TRUSTED_LIST_REACHED">Has a trusted list been reached for the certificate chain?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint Id="TL-C6282FD891075871E0E5772DE4694425CCFFEF27EEAA27C965A62BEF1E868709">
-                <Name Key="QUAL_TRUSTED_LIST_ACCEPT">Is the trusted list acceptable?</Name>
-                <Status>OK</Status>
-                <AdditionalInfo>Trusted List : https://test.test/tl</AdditionalInfo>
-            </Constraint>
-            <Constraint>
-                <Name Key="QUAL_VALID_TRUSTED_LIST_PRESENT">Has been an acceptable trusted list found?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="QUAL_HAS_QEAA">Is the certificate related to an EAA/Q?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="QUAL_HAS_GRANTED">Is the certificate related to a trust service with a granted status?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="QUAL_HAS_GRANTED_AT">Is the certificate related to a trust service with a granted status at validation time?</Name>
-                <Status>OK</Status>
-            </Constraint>
-            <Constraint>
-                <Name Key="EAA_SIG_QUAL">Is the EAA created using a qualified electronic signature or seal?</Name>
-                <Status>OK</Status>
-                <AdditionalInfo>Signature Id = S-43CBB46DC3FFC2B858A0D7654D787AD34F95DC167FF365ADC06230891EF49A81</AdditionalInfo>
             </Constraint>
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
+            <ValidationEAAQualificationProcess Title="EAA Qualification Process" EAAQualification="QEAA">
+                <Constraint>
+                    <Name Key="EAA_CAT_EAA">Does the EAA include EAA category?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="EAA_CAT_QEAA">Does the EAA contain an indication that the attestation has been issued as a QEAA?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="QUAL_CERT_TRUSTED_LIST_REACHED">Has a trusted list been reached for the certificate chain?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint Id="TL-C6282FD891075871E0E5772DE4694425CCFFEF27EEAA27C965A62BEF1E868709">
+                    <Name Key="QUAL_TRUSTED_LIST_ACCEPT">Is the trusted list acceptable?</Name>
+                    <Status>OK</Status>
+                    <AdditionalInfo>Trusted List : https://test.test/tl</AdditionalInfo>
+                </Constraint>
+                <Constraint>
+                    <Name Key="QUAL_VALID_TRUSTED_LIST_PRESENT">Has been an acceptable trusted list found?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="QUAL_HAS_QEAA">Is the certificate related to an EAA/Q?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="QUAL_HAS_GRANTED">Is the certificate related to a trust service with a granted status?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="QUAL_HAS_GRANTED_AT">Is the certificate related to a trust service with a granted status at validation time?</Name>
+                    <Status>OK</Status>
+                </Constraint>
+                <Constraint>
+                    <Name Key="EAA_SIG_QUAL">Is the EAA created using a qualified electronic signature or seal?</Name>
+                    <Status>OK</Status>
+                    <AdditionalInfo>Signature Id = S-43CBB46DC3FFC2B858A0D7654D787AD34F95DC167FF365ADC06230891EF49A81</AdditionalInfo>
+                </Constraint>
+                <Conclusion>
+                    <Indication>PASSED</Indication>
+                </Conclusion>
+            </ValidationEAAQualificationProcess>
+            <ValidationPIDQualificationProcess Title="PID Qualification Process" EAAQualification="N/A">
+                <Constraint>
+                    <Name Key="EAA_SIG_QUAL">Is PID validation conclusive?</Name>
+                    <Status>NOT OK</Status>
+                </Constraint>
+                <Conclusion>
+                    <Indication>FAILED</Indication>
+                </Conclusion>
+            </ValidationPIDQualificationProcess>
+            <EAAQualification>QEAA</EAAQualification>
         </ValidationEAAQualification>
         <Conclusion>
             <Indication>PASSED</Indication>

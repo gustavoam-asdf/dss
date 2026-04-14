@@ -21,4 +21,5 @@ public class EAAPresentationProcessExecutor extends DefaultSignatureProcessExecu
     protected DetailedReportBuilder getDetailedReportBuilder(DiagnosticData diagnosticData) {
         return new DetailedReportForEAAPresentationBuilder(getI18nProvider(), currentTime, policy, diagnosticData, includeSemantics);
     }
+
 }
