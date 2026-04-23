@@ -30,14 +30,16 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
 import eu.europa.esig.dss.spi.x509.KidCertificateSource;
+import eu.europa.esig.dss.spi.x509.ListCertificateSource;
+import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
 import eu.europa.esig.dss.spi.x509.X509URLCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.SignatureCertificateSource;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.jose4j.jwk.PublicJsonWebKey;
 import org.jose4j.jwx.HeaderParameterNames;
@@ -67,6 +69,9 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 
 	/** Represents the unsigned 'etsiU' header */
 	private final transient JAdESEtsiUHeader etsiUHeader;
+
+	/** Map of 'kid' certificates, when present */
+	private final Map<String, CertificateToken> kidMap = new HashMap<>();
 
 	/** Map of 'x5u' certificates, when present */
 	private final Map<String, Collection<CertificateToken>> x509UrlMap = new HashMap<>();
@@ -303,7 +308,10 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 	protected CandidatesForSigningCertificate extractCandidatesForSigningCertificate(
 			CertificateSource signingCertificateSource) {
 
-		CandidatesForSigningCertificate candidatesForSigningCertificate = new CandidatesForSigningCertificate();
+		CandidatesForSigningCertificate candidatesForSigningCertificate = initCandidatesList(signingCertificateSource);
+		if (!candidatesForSigningCertificate.isEmpty()) {
+			return candidatesForSigningCertificate;
+		}
 
 		for (final CertificateToken certificateToken : getKeyInfoCertificates()) {
 			candidatesForSigningCertificate.add(new CertificateValidity(certificateToken));
@@ -334,6 +342,45 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 		checkSigningCertificateRef(candidatesForSigningCertificate);
 
 		return candidatesForSigningCertificate;
+	}
+
+	private CandidatesForSigningCertificate initCandidatesList(CertificateSource signingCertificateSource) {
+		if (signingCertificateSource instanceof ProofOfPossessionCertificateSource) {
+			ProofOfPossessionCertificateSource popCertificateSource = (ProofOfPossessionCertificateSource) signingCertificateSource;
+			final CandidatesForSigningCertificate candidates = new CandidatesForSigningCertificate();
+			List<CertificateToken> certificates = popCertificateSource.getCertificates();
+			if (Utils.isCollectionNotEmpty(certificates)) {
+				for (CertificateToken certificateToken : certificates) {
+					candidates.add(new CertificateValidity(certificateToken));
+				}
+			}
+			Set<CertificateRef> certificateRefs = popCertificateSource.getAllCertificateRefs();
+			if (Utils.isCollectionNotEmpty(certificateRefs)) {
+				Set<CertificateToken> certificateTokens = findTokensFromRefs(certificateRefs);
+				if (Utils.isCollectionNotEmpty(certificateTokens)) {
+					for (CertificateToken certificateToken : certificates) {
+						candidates.add(new CertificateValidity(certificateToken));
+					}
+				} else {
+					for (CertificateRef certificateRef : certificateRefs) {
+						if (certificateRef.getPublicKey() != null) {
+							candidates.add(new CertificateValidity(certificateRef.getPublicKey()));
+						}
+					}
+				}
+			}
+			return candidates;
+
+		} else if (signingCertificateSource instanceof ListCertificateSource) {
+			ListCertificateSource listCertificateSource = (ListCertificateSource) signingCertificateSource;
+			for (CertificateSource certificateSource : listCertificateSource.getSources()) {
+				CandidatesForSigningCertificate candidates = initCandidatesList(certificateSource);
+				if (!candidates.isEmpty()) {
+					return candidates;
+				}
+			}
+		}
+		return new CandidatesForSigningCertificate();
 	}
 
 	private void resolveFromSource(CertificateSource signingCertificateSource, CandidatesForSigningCertificate candidatesForSigningCertificate) {
@@ -380,7 +427,11 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 		if (Utils.isStringNotEmpty(kidHeader)) {
 			if (signingCertificateSource instanceof KidCertificateSource) {
 				KidCertificateSource kidCertificateSource = (KidCertificateSource) signingCertificateSource;
-				return kidCertificateSource.getCertificateByKid(kidHeader);
+				CertificateToken certificateByKid = kidCertificateSource.getCertificateByKid(kidHeader);
+				if (certificateByKid != null) {
+					kidMap.put(kidHeader, certificateByKid);
+				}
+				return certificateByKid;
 			} else {
 				LOG.info("JWS/JAdES contains a 'kid' header (provide a KidCertificateSource to resolve it)");
 			}
@@ -495,6 +546,15 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 	@Override
 	public List<CertificateRef> getReferencesForCertificateToken(CertificateToken certificateToken) {
 		final List<CertificateRef> result = super.getReferencesForCertificateToken(certificateToken);
+		for (Map.Entry<String, CertificateToken> kidEntry : kidMap.entrySet()) {
+			if (kidEntry.getValue().equals(certificateToken)) {
+				for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.KEY_IDENTIFIER)) {
+					if (kidEntry.getKey().equals(certificateRef.getKid())) {
+						result.add(certificateRef);
+					}
+				}
+			}
+		}
 		for (Map.Entry<String, Collection<CertificateToken>> x5uEntry : x509UrlMap.entrySet()) {
 			if (x5uEntry.getValue().contains(certificateToken)) {
 				for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.X509_URL)) {
@@ -510,6 +570,12 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 	@Override
 	public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
 		final Set<CertificateToken> certificates = super.findTokensFromCertRef(certificateRef);
+		if (Utils.isStringNotEmpty(certificateRef.getKid())) {
+			CertificateToken certificateTokenByKid = kidMap.get(certificateRef.getKid());
+			if (certificateTokenByKid != null) {
+				certificates.add(certificateTokenByKid);
+			}
+		}
 		if (Utils.isStringNotEmpty(certificateRef.getX509Url())) {
 			Collection<CertificateToken> x509UrlCertificates = x509UrlMap.get(certificateRef.getX509Url());
 			if (Utils.isCollectionNotEmpty(x509UrlCertificates)) {

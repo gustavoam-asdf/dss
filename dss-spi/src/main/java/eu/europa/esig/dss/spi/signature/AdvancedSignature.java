@@ -123,6 +123,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	void setManifestFile(ManifestFile manifestFile);
 
 	/**
+	 * Gets a signing certificate source, when provided
+	 *
+	 * @return {@link CertificateSource}
+	 */
+	CertificateSource getSigningCertificateSource();
+
+	/**
 	 * Set a certificate source which allows to find the signing certificate by kid
 	 * or certificate's digest
 	 * 
@@ -258,6 +265,14 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 * @return TRUE if it is a counter signature, FALSE otherwise
 	 */
 	boolean isCounterSignature();
+
+	/**
+	 * Checks if the current signature is a key binding signature.
+	 * NOTE: Used for EAA tokens.
+	 *
+	 * @return TRUE if it is a key binding signature, FALSE otherwise
+	 */
+	boolean isKeyBindingSignature();
 
 	/**
 	 * This method returns the signing certificate token or null if there is no valid signing certificate. Note that to

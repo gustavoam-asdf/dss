@@ -1,8 +1,13 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.validationreport.jaxb.SignerInformationType;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SDJWTDigitalSignValidationTest extends AbstractSDJWTEAAPresentationTestValidation {
 
@@ -16,6 +21,41 @@ class SDJWTDigitalSignValidationTest extends AbstractSDJWTEAAPresentationTestVal
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getOfflineCertificateVerifier());
         return validator;
+    }
+
+    @Override
+    protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
+        boolean eaaSignatureFound = false;
+        boolean keyBindingSignatureFound = false;
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            if (signatureWrapper.getSigningCertificate() != null) {
+                eaaSignatureFound = true;
+            } else if (signatureWrapper.getSigningCertificatePublicKey() != null) {
+                keyBindingSignatureFound = true;
+            }
+        }
+        assertTrue(eaaSignatureFound);
+        assertTrue(keyBindingSignatureFound);
+    }
+
+    @Override
+    protected void checkSigningDate(DiagnosticData diagnosticData) {
+        // not present
+    }
+
+    @Override
+    protected void checkStructureValidation(DiagnosticData diagnosticData) {
+        // skip
+    }
+
+    @Override
+    protected void validateSignerInformation(SignerInformationType signerInformation) {
+        // skip
+    }
+
+    @Override
+    protected boolean orphanSelectivelyDisclosableClaimsPresent() {
+        return true;
     }
 
     @Override

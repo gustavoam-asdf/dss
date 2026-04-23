@@ -4,6 +4,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -376,6 +377,133 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
             return new ClaimWrapper(xmlClaim, this);
         }
         return null;
+    }
+
+    /**
+     * Gets a list of all claims present with the Credential Subject claim
+     *
+     * @return a list of {@link ClaimWrapper}s
+     */
+    public List<ClaimWrapper> getAllCredentialSubjectClaims() {
+        if (getWrapped() == null) {
+            return Collections.emptyList();
+        }
+
+        final List<ClaimWrapper> claimList = new ArrayList<>();
+
+        ClaimWrapper fullName = getFullName();
+        if (fullName != null) {
+            claimList.add(fullName);
+        }
+        ClaimWrapper firstName = getFirstName();
+        if (firstName != null) {
+            claimList.add(firstName);
+        }
+        ClaimWrapper lastName = getLastName();
+        if (lastName != null) {
+            claimList.add(lastName);
+        }
+        ClaimWrapper middleName = getMiddleName();
+        if (middleName != null) {
+            claimList.add(middleName);
+        }
+        ClaimWrapper nickname = getNickname();
+        if (nickname != null) {
+            claimList.add(nickname);
+        }
+        ClaimWrapper shortName = getShortName();
+        if (shortName != null) {
+            claimList.add(shortName);
+        }
+        ClaimWrapper profileUrl = getProfileUrl();
+        if (profileUrl != null) {
+            claimList.add(profileUrl);
+        }
+        ClaimWrapper pictureUrl = getPictureUrl();
+        if (pictureUrl != null) {
+            claimList.add(pictureUrl);
+        }
+        ClaimWrapper websiteUrl = getWebsiteUrl();
+        if (websiteUrl != null) {
+            claimList.add(websiteUrl);
+        }
+        ClaimWrapper email = getEmail();
+        if (email != null) {
+            claimList.add(email);
+        }
+        ClaimWrapper emailVerified = getEmailVerified();
+        if (emailVerified != null) {
+            claimList.add(emailVerified);
+        }
+        ClaimWrapper gender = getGender();
+        if (gender != null) {
+            claimList.add(gender);
+        }
+        ClaimWrapper birthdate = getBirthdate();
+        if (birthdate != null) {
+            claimList.add(birthdate);
+        }
+        ClaimWrapper timezone = getTimezone();
+        if (timezone != null) {
+            claimList.add(timezone);
+        }
+        ClaimWrapper locale = getLocale();
+        if (locale != null) {
+            claimList.add(locale);
+        }
+        ClaimWrapper address = getAddress();
+        if (address != null) {
+            claimList.add(address);
+        }
+        ClaimWrapper phoneNumber = getPhoneNumber();
+        if (phoneNumber != null) {
+            claimList.add(phoneNumber);
+        }
+        ClaimWrapper phoneNumberVerified = getPhoneNumberVerified();
+        if (phoneNumberVerified != null) {
+            claimList.add(phoneNumberVerified);
+        }
+        ClaimWrapper placeOfBirth = getPlaceOfBirth();
+        if (placeOfBirth != null) {
+            claimList.add(placeOfBirth);
+        }
+        ClaimWrapper nationalities = getNationalities();
+        if (nationalities != null) {
+            claimList.add(nationalities);
+        }
+        ClaimWrapper birthLastName = getBirthLastName();
+        if (birthLastName != null) {
+            claimList.add(birthLastName);
+        }
+        ClaimWrapper birthFirstName = getBirthFirstName();
+        if (birthFirstName != null) {
+            claimList.add(birthFirstName);
+        }
+        ClaimWrapper birthMiddleName = getBirthMiddleName();
+        if (birthMiddleName != null) {
+            claimList.add(birthMiddleName);
+        }
+        ClaimWrapper salutation = getSalutation();
+        if (salutation != null) {
+            claimList.add(salutation);
+        }
+        ClaimWrapper title = getTitle();
+        if (title != null) {
+            claimList.add(title);
+        }
+        ClaimWrapper mobilePhoneNumber = getMobilePhoneNumber();
+        if (mobilePhoneNumber != null) {
+            claimList.add(mobilePhoneNumber);
+        }
+        ClaimWrapper pseudonym = getPseudonym();
+        if (pseudonym != null) {
+            claimList.add(pseudonym);
+        }
+        List<ClaimWrapper> otherClaims = getOtherClaims();
+        if (otherClaims != null) {
+            claimList.addAll(otherClaims);
+        }
+        return claimList;
     }
 
     /**

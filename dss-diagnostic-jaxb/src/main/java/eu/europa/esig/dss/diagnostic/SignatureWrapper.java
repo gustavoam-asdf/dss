@@ -244,6 +244,15 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	}
 
 	/**
+	 * Gets if the current signature is a key binding signature used to verify the authenticity of the token's holder
+	 *
+	 * @return TRUE if the signature is key binding signature, FALSE otherwise
+	 */
+	public boolean isKeyBindingSignature() {
+		return signature.isKeyBindingSignature() != null && signature.isKeyBindingSignature();
+	}
+
+	/**
 	 * Checks if the signature's Id is duplicated within the validating document
 	 *
 	 * @return TRUE if there is a duplicated signature Id, FALSE otherwise

@@ -51,6 +51,11 @@ public enum CertificateRefOrigin {
 	X509_URL,
 
 	/**
+	 * Contains a public key of the signing certificate
+	 */
+	PUBLIC_KEY,
+
+	/**
 	 * Certificate reference present within an unprotected header parameter (JWS or COSE)
 	 */
 	UNPROTECTED_HEADER_REFS

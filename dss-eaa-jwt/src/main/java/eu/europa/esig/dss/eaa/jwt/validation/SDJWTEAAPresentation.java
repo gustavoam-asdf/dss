@@ -2,11 +2,17 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentation;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimDeviceKey;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
+import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,6 +21,8 @@ import java.util.List;
  *
  */
 public class SDJWTEAAPresentation extends DefaultEAAPresentation {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SDJWTEAAPresentation.class);
 
     /**
      * Default constructor
@@ -44,7 +52,7 @@ public class SDJWTEAAPresentation extends DefaultEAAPresentation {
             throw new IllegalStateException("SD-JWT VC signatures cannot be empty!");
         }
         JAdESSignature signature = (JAdESSignature) signatures.get(0); // payload is the same for EAA signatures
-        return new SDJWTPayloadVerifier(signature.getJws().getUnverifiedPayload());
+        return new SDJWTPayloadVerifier(signature.getJws().getDecodedPayload());
     }
 
     /**
@@ -89,6 +97,20 @@ public class SDJWTEAAPresentation extends DefaultEAAPresentation {
         public SDJWTEAAPresentation build() {
             return (SDJWTEAAPresentation) super.build();
         }
+
+        @Override
+        protected CertificateSource getHolderCertificateSource(EAAPayload eaaPayload) {
+            ClaimDeviceKey claimDeviceKey = eaaPayload.getDeviceKey();
+            if (claimDeviceKey != null) {
+                try {
+                    return new DeviceKeyClaimCertificateSource((SDJWTClaimDeviceKey) claimDeviceKey);
+                } catch (Exception e) {
+                    LOG.warn("Unable to read the device key claim : {}", e.getMessage(), e);
+                }
+            }
+            return null;
+        }
+
     }
 
 }

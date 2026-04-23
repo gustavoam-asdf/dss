@@ -7,6 +7,8 @@ import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.ListCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
@@ -191,11 +193,34 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
             DefaultEAAPresentation eaaPresentation = initEAAPresentation();
             eaaPresentation.signatures = signatures;
             eaaPresentation.disclosures = disclosures;
-            eaaPresentation.keyBindingSignature = keyBindingSignature;
+            if (keyBindingSignature != null) {
+                CertificateSource signingCertificateSource = new ListCertificateSource(
+                        getHolderCertificateSource(eaaPresentation.getPayload()), getSigningCertificateSource(signatures));
+                keyBindingSignature.setSigningCertificateSource(signingCertificateSource);
+                eaaPresentation.keyBindingSignature = keyBindingSignature;
+            }
             eaaPresentation.filename = filename;
             return eaaPresentation;
         }
 
+        /**
+         * Gets a certificate source containing a key of the EAA holder
+         *
+         * @param eaaPayload {@link EAAPayload}
+         * @return {@link CertificateSource}
+         */
+        protected abstract CertificateSource getHolderCertificateSource(EAAPayload eaaPayload);
+
+        private CertificateSource getSigningCertificateSource(List<AdvancedSignature> signatures) {
+            AdvancedSignature signature = signatures.get(0);
+            return signature.getSigningCertificateSource();
+        }
+
+        /**
+         * Instantiates a new {@code DefaultEAAPresentation} object
+         *
+         * @return {@link DefaultEAAPresentation}
+         */
         protected abstract DefaultEAAPresentation initEAAPresentation();
 
     }

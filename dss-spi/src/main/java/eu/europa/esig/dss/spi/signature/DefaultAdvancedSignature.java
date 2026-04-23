@@ -193,6 +193,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	protected abstract SignatureIdentifierBuilder getSignatureIdentifierBuilder();
 
 	@Override
+	public CertificateSource getSigningCertificateSource() {
+		return signingCertificateSource;
+	}
+
+	@Override
 	public void setSigningCertificateSource(CertificateSource signingCertificateSource) {
 		this.signingCertificateSource = signingCertificateSource;
 	}
@@ -316,7 +321,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	/**
 	 * This method resets the source of certificates. It must be called when 
 	 * any certificate is added to the KeyInfo or CertificateValues (XAdES), or 'xVals' (JAdES).
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetCertificateSource() {
@@ -325,7 +330,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 
 	/**
 	 * This method resets the sources of the revocation data. It must be called when -LT level is created.
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetRevocationSources() {
@@ -335,7 +340,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 
 	/**
 	 * This method resets the timestamp source. It must be called when -LT level is created.
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetTimestampSource() {
@@ -387,6 +392,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	@Override
 	public boolean isCounterSignature() {
 		return masterSignature != null;
+	}
+
+	@Override
+	public boolean isKeyBindingSignature() {
+		return false;
 	}
 
 	@Override

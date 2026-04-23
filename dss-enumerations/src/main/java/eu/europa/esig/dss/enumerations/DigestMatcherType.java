@@ -110,6 +110,9 @@ public enum DigestMatcherType {
 	EAA_NESTED_DISCLOSURE,
 
 	/** Incorporated SD claim for which no matching provided disclosure has been found */
-	EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM
+	EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM,
+
+	/** Input used to compute a key binding signature (used in EAA) */
+	EAA_KEY_BINDING
 
 }

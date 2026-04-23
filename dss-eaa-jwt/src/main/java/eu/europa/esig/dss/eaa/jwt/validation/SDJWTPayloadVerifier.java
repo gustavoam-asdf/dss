@@ -34,14 +34,14 @@ public class SDJWTPayloadVerifier extends EAAPayloadVerifier {
     /**
      * Payload map to be verified
      */
-    private final String jsonPayload;
+    private final Map<String, Object> jsonPayload;
 
     /**
      * Default constructor
      *
-     * @param jsonPayload {@link String} JSON payload to be verified
+     * @param jsonPayload JSON payload to be verified
      */
-    public SDJWTPayloadVerifier(final String jsonPayload) {
+    public SDJWTPayloadVerifier(final Map<String, Object> jsonPayload) {
         Objects.requireNonNull(jsonPayload, "Payload cannot be null!");
         this.jsonPayload = jsonPayload;
     }
@@ -61,8 +61,7 @@ public class SDJWTPayloadVerifier extends EAAPayloadVerifier {
 
     private ClaimMap parseJsonPayload() {
         try {
-            Map<String, Object> payloadMap = DSSJsonUtils.parseJsonStringToMap(jsonPayload);
-            Claim payloadClaim = SDJWTUtils.createClaim(payloadMap);
+            Claim payloadClaim = SDJWTUtils.createClaim(jsonPayload);
             if (payloadClaim.isMapValueType()) {
                 return (ClaimMap) payloadClaim;
             } else {

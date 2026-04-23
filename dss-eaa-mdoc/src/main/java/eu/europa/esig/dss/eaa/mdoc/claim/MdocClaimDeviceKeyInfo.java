@@ -1,9 +1,13 @@
 package eu.europa.esig.dss.eaa.mdoc.claim;
 
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 
 import java.security.PublicKey;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Mdoc representartion of the wallet holder's key, as defined in "9.1.2.4 Signing method and structure for MSO" of
@@ -27,6 +31,26 @@ public class MdocClaimDeviceKeyInfo extends MdocClaimMap implements ClaimDeviceK
     public PublicKey getPublicKey() {
         // TODO : to be implemented
         return null;
+    }
+
+    @Override
+    public List<CertificateToken> getCertificates() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Digest> getCertificateDigests() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getCertificateKeyIdentifiers() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getCertificateUrls() {
+        return Collections.emptyList();
     }
 
 }

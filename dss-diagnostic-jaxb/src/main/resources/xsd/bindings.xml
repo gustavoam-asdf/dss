@@ -368,6 +368,11 @@
 			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlSignature" />
 		  </jaxb:property>
 	  </jaxb:bindings>
+	<jaxb:bindings node="//xs:complexType[@name='DeviceKeyClaim']//xs:element[@name='X509Certificate']//xs:attribute[@name='Certificate']">
+		  <jaxb:property>
+			  <jaxb:baseType name="eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate" />
+		  </jaxb:property>
+	  </jaxb:bindings>
 
     <jaxb:bindings node="//xs:complexType[@name='TimestampedObject']//xs:attribute[@name='Token']">
         <jaxb:property>

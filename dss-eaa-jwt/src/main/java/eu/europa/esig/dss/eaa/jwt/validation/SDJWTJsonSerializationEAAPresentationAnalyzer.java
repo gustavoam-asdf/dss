@@ -1,8 +1,23 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.SDJWTJsonSerializationParser;
 import eu.europa.esig.dss.eaa.jwt.SDJWTSerializationObject;
+import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
+import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class performs analysis and processing of an SD-JWT VC token, created using either
@@ -10,6 +25,8 @@ import eu.europa.esig.dss.model.DSSDocument;
  *
  */
 public class SDJWTJsonSerializationEAAPresentationAnalyzer extends AbstractSDJWTEAAPresentationAnalyzer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SDJWTJsonSerializationEAAPresentationAnalyzer.class);
 
     /**
      * Empty constructor
@@ -38,4 +55,67 @@ public class SDJWTJsonSerializationEAAPresentationAnalyzer extends AbstractSDJWT
         SDJWTJsonSerializationParser parser = new SDJWTJsonSerializationParser(document);
         return parser.parse();
     }
+
+    @Override
+    protected DSSDocument getKeyBindingDetachedContent(SDJWTSerializationObject sdJwtSerializationObject) {
+        /*
+         * RFC 9901 "8.1. New Unprotected Header Parameters":
+         *
+         * In an SD-JWT+KB, kb_jwt MUST be present when using the JWS JSON Serialization,
+         * and the digest in the sd_hash claim MUST be computed over the SD-JWT as described
+         * in Section 4.3.1. This means that even when using the JWS JSON Serialization,
+         * the representation as a regular SD-JWT Compact Serialization MUST be created temporarily
+         * to calculate the digest. In detail, the SD-JWT Compact Serialization part is built by
+         * concatenating the protected header, the payload, and the signature of the JWS JSON serialized
+         * SD-JWT using a . character as a separator, and using the Disclosures from the disclosures
+         * member of the unprotected header.
+         *
+         * <Issuer-signed JWT>~<Disclosure 1>~<Disclosure 2>~...~<Disclosure N>~
+         */
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream dos = new DataOutputStream(baos)) {
+            JWSJsonSerializationObject eaaSignature = sdJwtSerializationObject.getSignature();
+            JWS jws = eaaSignature.getSignatures().get(0);
+            dos.writeChars(jws.getEncodedHeader());
+            dos.writeChars(".");
+            dos.writeChars(jws.getSignedPayload());
+            dos.writeChars(".");
+            dos.writeChars(jws.getEncodedSignature());
+            dos.writeChars("~");
+            List<String> disclosures = getDisclosures(jws);
+            if (Utils.isCollectionNotEmpty(disclosures)) {
+                for (String disclosure : disclosures) {
+                    dos.writeChars(disclosure);
+                    dos.writeChars("~");
+                }
+            }
+            return new InMemoryDocument(baos.toByteArray());
+
+        } catch (IOException e) {
+            LOG.warn("Unable to compute input for the key binding signature verification : {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private List<String> getDisclosures(JWS jws) {
+        Map<String, Object> unprotectedHeader = jws.getUnprotected();
+        if (Utils.isMapNotEmpty(unprotectedHeader)) {
+            Object disclosuresObject = unprotectedHeader.get(SDJWTConstants.DISCLOSURES);
+            if (disclosuresObject instanceof List) {
+                final List<String> disclosures = new ArrayList<>();
+                List<?> disclosuresList = (List<?>) disclosuresObject;
+                for (Object disclosure : disclosuresList) {
+                    if (disclosure instanceof String) {
+                        disclosures.add((String) disclosure);
+                    } else {
+                        LOG.warn("Disclosure shall be represented by a String!");
+                    }
+                }
+                return disclosures;
+            } else {
+                LOG.warn("Disclosures shall be represented by a JSON Array!");
+            }
+        }
+        return Collections.emptyList();
+    }
+
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The common implementation of {@code X509URLCertificateSource} retrieving X.509 certificates by the given URI.
@@ -102,6 +103,18 @@ public class CommonX509URLCertificateSource extends CommonCertificateSource impl
     @Override
     public Collection<CertificateToken> getCertificatesByUrl(String uri) {
         return mapByUri.get(uri);
+    }
+
+    @Override
+    public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
+        final Set<CertificateToken> certificates = super.findTokensFromCertRef(certificateRef);
+        if (Utils.isStringNotEmpty(certificateRef.getX509Url())) {
+            Collection<CertificateToken> x509UrlCertificates = mapByUri.get(certificateRef.getX509Url());
+            if (Utils.isCollectionNotEmpty(x509UrlCertificates)) {
+                certificates.addAll(x509UrlCertificates);
+            }
+        }
+        return certificates;
     }
 
     @Override

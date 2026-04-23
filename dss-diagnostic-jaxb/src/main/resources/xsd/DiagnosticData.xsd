@@ -233,6 +233,7 @@
 					
 				</xs:sequence>
 				<xs:attribute name="CounterSignature" type="xs:boolean" use="optional" />
+				<xs:attribute name="KeyBindingSignature" type="xs:boolean" use="optional" />
 				<xs:attribute name="Parent" type="xs:IDREF" use="optional" /> <!-- If is a counter-signature -->
 			</xs:extension>
 		</xs:complexContent>
@@ -1204,6 +1205,7 @@
 			<xs:enumeration value="EAA_DISCLOSURE" />
 			<xs:enumeration value="EAA_NESTED_DISCLOSURE" />
 			<xs:enumeration value="EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM" />
+			<xs:enumeration value="EAA_KEY_BINDING" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1252,6 +1254,7 @@
 			<xs:choice>
 				<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue"/>
 				<xs:element name="SerialInfo" type="SignerInfo" /> <!-- OCSP -->
+				<xs:element name="KID" type="xs:string" /> <!-- JAdES -->
 				<xs:element name="X509Url" type="xs:string" /> <!-- JAdES -->
 			</xs:choice>
 		</xs:sequence>
@@ -1894,6 +1897,14 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="PublicKey" type="xs:base64Binary" minOccurs="0" />
+					<xs:element name="X509Certificate" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="Certificate" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="KID" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="X509Url" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

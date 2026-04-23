@@ -348,14 +348,43 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation device key when defined in the EAA payload
+     * Gets EAA Presentation device public key when defined in the EAA payload
      *
-     * @return byte array containing an encoded device key
+     * @return byte array containing an encoded device public key
      */
-    public byte[] getEAADeviceKey() {
+    public byte[] getEAADevicePublicKey() {
         DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
         if (eaaDeviceKey != null) {
             return eaaDeviceKey.getPublicKey();
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA Presentation device certificate token when defined in the EAA payload
+     *
+     * @return {@link CertificateWrapper}
+     */
+    public CertificateWrapper getEAADeviceCertificate() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            List<CertificateWrapper> certificates = eaaDeviceKey.getCertificates();
+            if (certificates != null && !certificates.isEmpty()) {
+                return certificates.get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA Presentation device certificate chain when defined in the EAA payload
+     *
+     * @return a list of {@link CertificateWrapper}s
+     */
+    public List<CertificateWrapper> getEAADeviceCertificateChain() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getCertificates();
         }
         return null;
     }

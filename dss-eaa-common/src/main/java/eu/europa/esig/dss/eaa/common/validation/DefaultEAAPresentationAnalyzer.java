@@ -3,11 +3,19 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.ValidationContext;
 import eu.europa.esig.dss.spi.validation.analyzer.DefaultDocumentAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.eaa.EAAPresentationAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.eaa.EAAPresentationAnalyzerFactory;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.ListCertificateSource;
+import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
+import eu.europa.esig.dss.spi.x509.evidencerecord.EvidenceRecord;
+import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,6 +85,42 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
             }
         }
         return result;
+    }
+
+    @Override
+    protected <T extends AdvancedSignature> ValidationContext prepareValidationContext(
+            Collection<T> signatures, Collection<TimestampToken> detachedTimestamps,
+            Collection<EvidenceRecord> detachedEvidenceRecords, CertificateVerifier certificateVerifier) {
+        ValidationContext validationContext = super.prepareValidationContext(signatures, detachedTimestamps, detachedEvidenceRecords, certificateVerifier);
+        for (EAAPresentation eaaPresentation : getEAAPresentations()) {
+            CertificateSource deviceKeyCertificateSource = getDeviceKeyCertificateSource(eaaPresentation);
+            if (deviceKeyCertificateSource != null) {
+                validationContext.addDocumentCertificateSource(deviceKeyCertificateSource);
+            }
+        }
+        return validationContext;
+    }
+
+    private CertificateSource getDeviceKeyCertificateSource(EAAPresentation eaaPresentation) {
+        AdvancedSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+        if (keyBindingSignature != null) {
+            return getProofOfPossessionCertificateSource(keyBindingSignature.getSigningCertificateSource());
+        }
+        return null;
+    }
+
+    private CertificateSource getProofOfPossessionCertificateSource(CertificateSource certificateSource) {
+        if (certificateSource instanceof ProofOfPossessionCertificateSource) {
+            return certificateSource;
+        } else if (certificateSource instanceof ListCertificateSource) {
+            for (CertificateSource embeddedCertSource : ((ListCertificateSource) certificateSource).getSources()) {
+                CertificateSource popCertificateSource = getProofOfPossessionCertificateSource(embeddedCertSource);
+                if (popCertificateSource != null) {
+                    return popCertificateSource;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

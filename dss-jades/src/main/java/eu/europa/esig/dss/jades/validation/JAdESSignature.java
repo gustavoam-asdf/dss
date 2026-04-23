@@ -88,10 +88,13 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	
 	/** Defines if the validating signature is detached */
 	private final boolean isDetached;
+
+	/** Master signature of the key binding signature used to create the issued EAA */
+	private JAdESSignature eaaMasterSignature;
 	
 	/**
 	 * The 'cSig' object embedding the current signature
-	 * 
+	 * <p>
 	 * NOTE: used for counter signatures only
 	 */
 	private EtsiUComponent masterCSigComponent;
@@ -196,6 +199,20 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	 */
 	public void setMasterCSigComponent(EtsiUComponent masterCSigComponent) {
 		this.masterCSigComponent = masterCSigComponent;
+	}
+
+	/**
+	 * Sets EAA master signature of the key binding signature used to issue EAA
+	 *
+	 * @param eaaMasterSignature {@link JAdESSignature}
+	 */
+	public void setEAAMasterSignature(JAdESSignature eaaMasterSignature) {
+		this.eaaMasterSignature = eaaMasterSignature;
+	}
+
+	@Override
+	public boolean isKeyBindingSignature() {
+		return eaaMasterSignature != null;
 	}
 
 	@Override
@@ -658,6 +675,10 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 			if (isCounterSignature()) {
 				referenceValidations.add(getCounterSignatureReferenceValidation());
 			}
+
+			if (isKeyBindingSignature()) {
+				referenceValidations.add(getKeyBindingSignatureReferenceValidation());
+			}
 			
 		}
 		return referenceValidations;
@@ -1093,6 +1114,63 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 		}
 
 		return referenceValidation;
+	}
+
+	private ReferenceValidation getKeyBindingSignatureReferenceValidation() {
+		ReferenceValidation referenceValidation = new ReferenceValidation();
+		referenceValidation.setType(DigestMatcherType.EAA_KEY_BINDING);
+
+		byte[] sdHash = getSdHash();
+		if (sdHash != null) {
+			if (Utils.collectionSize(detachedContents) == 1) {
+				referenceValidation.setFound(true);
+
+				DigestAlgorithm digestAlgorithm = getSdAlg();
+				if (digestAlgorithm != null) {
+					referenceValidation.setDigest(new Digest(digestAlgorithm, sdHash));
+
+					Digest kbInputDigest = detachedContents.get(0).getDigest(digestAlgorithm);
+					boolean intact = Arrays.equals(sdHash, kbInputDigest.getValue());
+					if (!intact) {
+						LOG.warn("The sd_hash present within key binding signature does not match the hash over the computed key binding input! " +
+										"Found : {}, Computed : {}",
+								Utils.toBase64(sdHash), kbInputDigest.getBase64Value());
+					}
+					referenceValidation.setIntact(intact);
+				}
+
+			} else {
+				LOG.warn("No detached content was found for the key binding signature verification!");
+			}
+		}
+
+		return referenceValidation;
+	}
+
+	private byte[] getSdHash() {
+		Map<String, Object> payload = getJws().getDecodedPayload();
+		String sdHashB64Url = DSSJsonUtils.getAsString(payload, "sd_hash");
+		if (sdHashB64Url != null && DSSJsonUtils.isBase64UrlEncoded(sdHashB64Url)) {
+			return DSSJsonUtils.fromBase64Url(sdHashB64Url);
+		} else {
+			LOG.warn("A base64url-encoded sd_hash header shall be present within SD-JWT key binding signature payload!");
+		}
+		return null;
+	}
+
+	private DigestAlgorithm getSdAlg() {
+		Map<String, Object> payload = eaaMasterSignature.getJws().getDecodedPayload();
+		String sdAlgId = DSSJsonUtils.getAsString(payload, "_sd_alg");
+		if (sdAlgId == null) {
+			LOG.warn("No _sd_alg header found within the SD-JWT payload!");
+		}
+		try {
+			return DigestAlgorithm.forSdJwtId(sdAlgId);
+
+		} catch (IllegalArgumentException e) {
+			LOG.warn("Unable to find a corresponding DigestAlgorithm for SD-JWT claim for value '{}'!", sdAlgId);
+			return null;
+		}
 	}
 	
 	private Map<?, ?> getUnsignedPropertyAsMap(String headerName) {

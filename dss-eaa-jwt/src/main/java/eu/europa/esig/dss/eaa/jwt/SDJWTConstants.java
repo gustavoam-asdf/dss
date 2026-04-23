@@ -215,5 +215,23 @@ public class SDJWTConstants {
     /** SD-JWT payload "credentialSubject" header */
     public static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
+    // RFC 7800 "Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs)" claims
+
+    /** Confirmation claim "jku" header */
+    public static final String JKU = "jku";
+
+    /** Confirmation claim "jwe" header */
+    public static final String JWE = "jwe";
+
+    /** Confirmation claim "jwk" header */
+    public static final String JWK = "jwk";
+
+    /** Confirmation claim "kid" header */
+    public static final String KID = "kid";
+
+    // RFC 7517 "JSON Web Key (JWK)" claims
+
+    /** JWT "kty" header */
+    public static final String KTY = "kty";
 
 }

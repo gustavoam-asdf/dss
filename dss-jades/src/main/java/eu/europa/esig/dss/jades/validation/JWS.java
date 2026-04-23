@@ -26,6 +26,8 @@ import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.lang.JoseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -40,10 +42,17 @@ public class JWS extends JsonWebSignature implements Serializable {
 
 	private static final long serialVersionUID = -3465226120689258742L;
 
+	private static final Logger LOG = LoggerFactory.getLogger(JWS.class);
+
 	/**
 	 * The unprotected header map
 	 */
 	private Map<String, Object> unprotected;
+
+	/**
+	 * Stores a cached parsed payload as a Map, when applicable
+	 */
+	private Map<String, Object> decodedPayload;
 	
 	/**
 	 * The parent {@code JWSJsonSerializationObject}
@@ -156,6 +165,25 @@ public class JWS extends JsonWebSignature implements Serializable {
 	 */
 	public void setUnprotected(Map<String, Object> unprotected) {
 		this.unprotected = unprotected;
+	}
+
+	/**
+	 * Gets verified payload as a Map, when applicable
+	 *
+	 * @return a map representing a parsed JWS payload
+	 */
+	public Map<String, Object> getDecodedPayload() {
+		if (decodedPayload == null) {
+			try {
+				String unverifiedPayload = getUnverifiedPayload();
+				if (unverifiedPayload != null) {
+					decodedPayload = DSSJsonUtils.parseJsonStringToMap(unverifiedPayload);
+				}
+			} catch (Exception e) {
+				LOG.warn("The JWS payload is not a JSON Map : {}", e.getMessage(), e);
+			}
+		}
+		return decodedPayload;
 	}
 
 	/**

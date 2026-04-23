@@ -4,6 +4,7 @@ import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.CredentialSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.CredentialSubjectProxy;
 import eu.europa.esig.dss.diagnostic.claim.DeviceKeyClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegesClaimWrapper;
@@ -15,7 +16,6 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDeviceKeyClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegesClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
@@ -1172,6 +1172,19 @@ public class EAAPayloadProxy {
     }
 
     /**
+     * Gets a list of credential subject claims
+     *
+     * @return a list of {@link CredentialSubjectClaimWrapper}s
+     */
+    public List<CredentialSubjectClaimWrapper> getCredentialSubjectClaims() {
+        if (xmlEAAPayload != null) {
+            CredentialSubjectProxy credentialSubject = getCredentialSubject();
+            return credentialSubject.getCredentialSubjects();
+        }
+        return Collections.emptyList();
+    }
+
+    /**
      * Gets a list of claims incorporated within the EAA Payload or provided as disclosures,
      * which are not (yet) directly supported by the implementation.
      *
@@ -1185,7 +1198,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets a list of all disclosable claims present within an EAA Payload
+     * Gets a list of all claims present within an EAA Payload
      *
      * @return a list of {@link ClaimWrapper}s
      */
@@ -1329,9 +1342,7 @@ public class EAAPayloadProxy {
             claimList.add(getClaim(xmlEAAPayload.getPseudonym()));
         }
         if (xmlEAAPayload.getCredentialSubject() != null) {
-            for (XmlCredentialSubjectClaim xmlCredentialSubjectClaim : xmlEAAPayload.getCredentialSubject()) {
-                claimList.add(getClaim(xmlCredentialSubjectClaim));
-            }
+            claimList.addAll(getCredentialSubject().getCredentialSubjects());
         }
 
         if (xmlEAAPayload.getIssuingCountry() != null) {

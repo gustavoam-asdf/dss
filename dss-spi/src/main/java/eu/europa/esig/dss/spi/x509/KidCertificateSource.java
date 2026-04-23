@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The certificate source containing a map of certificates by KIDs.
@@ -101,6 +102,12 @@ public class KidCertificateSource extends CommonCertificateSource {
 	 */
 	public CertificateToken getCertificateByKid(byte[] kid) {
 		return mapByKid.get(Utils.toBase64(kid));
+	}
+
+	@Override
+	public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
+		// TODO : implement extraction from a KID
+		return super.findTokensFromCertRef(certificateRef);
 	}
 
 	@Override

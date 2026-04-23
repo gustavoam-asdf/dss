@@ -52,10 +52,11 @@ public abstract class AbstractSDJWTEAAPresentationAnalyzer extends DefaultEAAPre
 
     @Override
     protected List<EAAPresentation> buildEAAPresentations() {
+        List<AdvancedSignature> signatures = getSignatures(sdJWTSerializationObject);
         SDJWTEAAPresentation sdJwtEaa = SDJWTEAAPresentation.initBuilder()
-                .setSignatures(getSignatures(sdJWTSerializationObject))
+                .setSignatures(signatures)
                 .setDisclosures(sdJWTSerializationObject.getDisclosures())
-                .setKeyBindingSignature(getKeyBindingSignature(sdJWTSerializationObject))
+                .setKeyBindingSignature(getKeyBindingSignature(sdJWTSerializationObject, signatures))
                 .setFilename(document.getName())
                 .build();
         return Collections.singletonList(sdJwtEaa); // only one EAA is possible
@@ -83,22 +84,38 @@ public abstract class AbstractSDJWTEAAPresentationAnalyzer extends DefaultEAAPre
      * Gets a key binding {@code AdvancedSignature}, when present
      *
      * @param sdJwtSerializationObject {@link SDJWTSerializationObject}
+     * @param signatures a list of {@link AdvancedSignature}s
      * @return {@link AdvancedSignature}
      */
-    protected AdvancedSignature getKeyBindingSignature(SDJWTSerializationObject sdJwtSerializationObject) {
-        JWSJsonSerializationObject keyBindingSignature = sdJwtSerializationObject.getKeyBindingSignature();
-        if (keyBindingSignature == null) {
+    protected AdvancedSignature getKeyBindingSignature(SDJWTSerializationObject sdJwtSerializationObject, List<AdvancedSignature> signatures) {
+        JWSJsonSerializationObject keyBindingSignatureJsonObject = sdJwtSerializationObject.getKeyBindingSignature();
+        if (keyBindingSignatureJsonObject == null) {
             return null;
         }
-        List<JWS> jwsKeyBindingList = keyBindingSignature.getSignatures();
+        List<JWS> jwsKeyBindingList = keyBindingSignatureJsonObject.getSignatures();
         if (Utils.isCollectionEmpty(jwsKeyBindingList)) {
             // should not happen
             return null;
         } else if (Utils.collectionSize(jwsKeyBindingList) != 1) {
             throw new IllegalStateException("Only one Key Binding signature is expected within SD-JWT VC token!");
         }
-        return buildSignature(jwsKeyBindingList.get(0));
+        JAdESSignature keyBindingSignature = buildSignature(jwsKeyBindingList.get(0));
+        keyBindingSignature.setSigningCertificateSource(signingCertificateSource);
+        keyBindingSignature.setEAAMasterSignature((JAdESSignature) signatures.get(0));
+        DSSDocument keyBindingDetachedContent = getKeyBindingDetachedContent(sdJwtSerializationObject);
+        if (keyBindingDetachedContent != null) {
+            keyBindingSignature.setDetachedContents(Collections.singletonList(keyBindingDetachedContent));
+        }
+        return keyBindingSignature;
     }
+
+    /**
+     * This method returns a computed detached content used for a payload computation of the key binding signature
+     *
+     * @param sdJwtSerializationObject {@link SDJWTSerializationObject} representing a serialized SD-JWT
+     * @return {@link DSSDocument}
+     */
+    protected abstract DSSDocument getKeyBindingDetachedContent(SDJWTSerializationObject sdJwtSerializationObject);
 
     /**
      * This method build a JAdES Signature from a {@code JWS} object

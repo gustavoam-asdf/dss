@@ -479,6 +479,8 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_EAA_NSD;
 			case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
 				return MessageTag.ACCM_POS_EAA_OSDC;
+			case EAA_KEY_BINDING:
+				return MessageTag.ACCM_POS_EAA_KB;
 			default:
 				throw new IllegalArgumentException(String.format(
 						"The provided DigestMatcherType '%s' is not supported!", digestMatcher.getType()));
@@ -529,6 +531,8 @@ public class ValidationProcessUtils {
 					return MessageTag.ACCM_POS_EAA_NSD_PL;
 				case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
 					return MessageTag.ACCM_POS_EAA_OSDC_PL;
+				case EAA_KEY_BINDING:
+					return MessageTag.ACCM_POS_EAA_KB;
 				default:
 					throw new IllegalArgumentException(String.format(
 							"The provided DigestMatcherType '%s' is not supported for multiple digest matchers!", digestMatcherType));

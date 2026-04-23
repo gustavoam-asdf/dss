@@ -682,11 +682,17 @@ public class SimpleReport {
 	private XmlToken getEAAPresentationSignatureById(XmlEAAPresentation eaaPresentation, String tokenId) {
 		List<XmlSignature> signatures = eaaPresentation.getEAAPresentationSignature();
 		if (signatures != null && !signatures.isEmpty()) {
-			return getEmbeddedTokenById(signatures, tokenId);
+			XmlToken embeddedTokenById = getEmbeddedTokenById(signatures, tokenId);
+			if (embeddedTokenById != null) {
+				return embeddedTokenById;
+			}
 		}
 		XmlSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
 		if (keyBindingSignature != null) {
-			return getEmbeddedTokenById(Collections.singletonList(keyBindingSignature), tokenId);
+			XmlToken embeddedTokenById = getEmbeddedTokenById(Collections.singletonList(keyBindingSignature), tokenId);
+			if (embeddedTokenById != null) {
+				return embeddedTokenById;
+			}
 		}
 		return null;
 	}

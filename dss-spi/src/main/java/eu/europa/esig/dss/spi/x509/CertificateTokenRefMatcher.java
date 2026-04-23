@@ -24,6 +24,7 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 
+import java.security.PublicKey;
 import java.util.Arrays;
 
 /**
@@ -55,11 +56,14 @@ public class CertificateTokenRefMatcher {
 		Digest certDigest = certificateRef.getCertDigest();
 		SignerIdentifier signerIdentifier = certificateRef.getCertificateIdentifier();
 		ResponderId responderId = certificateRef.getResponderId();
+		PublicKey publicKey = certificateRef.getPublicKey();
 		if (certDigest != null && matchByDigest(certificateToken, certificateRef)) {
 			return true;
 		} else if (signerIdentifier != null && signerIdentifier.isRelatedToCertificate(certificateToken)) {
 			return true;
 		} else if (responderId != null && responderId.isRelatedToCertificate(certificateToken)) {
+			return true;
+		} else if (publicKey != null && publicKey.equals(certificateToken.getPublicKey())) {
 			return true;
 		}
 		return false;

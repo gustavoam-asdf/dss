@@ -52,6 +52,13 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	private boolean includeSignatureType = true;
 
 	/**
+	 * Defines a MimeType of the signature to be created, to be provided within a signed header ('typ' attribute)
+	 * <p>
+	 * DEFAULT: The type is determined based on the JWS serialization type
+	 */
+	private String signatureType;
+
+	/**
 	 * This property defines whether a 'kid' (key identifier) header parameter should be added to a protected header.
 	 * <p>
 	 * NOTE: a signing certificate shall be provided to embed the 'kid' header
@@ -209,6 +216,26 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 */
 	public void setIncludeSignatureType(boolean includeSignatureType) {
 		this.includeSignatureType = includeSignatureType;
+	}
+
+	/**
+	 * Gets the MimeType of the signature, to be incorporated in the signed header ('typ' attribute)
+	 *
+	 * @return {@link String}
+	 */
+	public String getSignatureType() {
+		return signatureType;
+	}
+
+	/**
+	 * Sets the MimeType of the signature to be incorporated within the signed header ('typ' attribute)
+	 * <p>
+	 * Default: The signature type is derived from the selected JWS serialization type
+	 *
+	 * @param signatureType {@link String}
+	 */
+	public void setSignatureType(String signatureType) {
+		this.signatureType = signatureType;
 	}
 
 	/**

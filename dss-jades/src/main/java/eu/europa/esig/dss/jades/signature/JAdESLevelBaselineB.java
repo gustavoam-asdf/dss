@@ -284,32 +284,36 @@ public class JAdESLevelBaselineB {
 	 */
 	protected void incorporateType() {
 		if (parameters.isIncludeSignatureType()) {
-			
-			/*
-			 * RFC 7515 : 4.1.9. "typ" (Type) Header Parameter
-			 * 
-			 * The "typ" value "JOSE" can be used by applications to indicate that
-			 * this object is a JWS or JWE using the JWS Compact Serialization or
-			 * the JWE Compact Serialization.  The "typ" value "JOSE+JSON" can be
-			 * used by applications to indicate that this object is a JWS or JWE
-			 * using the JWS JSON Serialization or the JWE JSON Serialization.
-			 */
-			
-			MimeType signatureMimeType;
-			switch (parameters.getJwsSerializationType()) {
-				case COMPACT_SERIALIZATION:
-					signatureMimeType = MimeTypeEnum.JOSE;
-					break;
-				case JSON_SERIALIZATION:
-				case FLATTENED_JSON_SERIALIZATION:
-					signatureMimeType = MimeTypeEnum.JOSE_JSON;
-					break;
-				default:
-					throw new DSSException(String.format("The given JWS serialization type '%s' is not supported!", 
-							parameters.getJwsSerializationType()));
+
+			String signatureType = parameters.getSignatureType();
+			if (Utils.isStringEmpty(signatureType)) {
+				/*
+				 * RFC 7515 : 4.1.9. "typ" (Type) Header Parameter
+				 *
+				 * The "typ" value "JOSE" can be used by applications to indicate that
+				 * this object is a JWS or JWE using the JWS Compact Serialization or
+				 * the JWE Compact Serialization.  The "typ" value "JOSE+JSON" can be
+				 * used by applications to indicate that this object is a JWS or JWE
+				 * using the JWS JSON Serialization or the JWE JSON Serialization.
+				 */
+
+				MimeType signatureMimeType;
+				switch (parameters.getJwsSerializationType()) {
+					case COMPACT_SERIALIZATION:
+						signatureMimeType = MimeTypeEnum.JOSE;
+						break;
+					case JSON_SERIALIZATION:
+					case FLATTENED_JSON_SERIALIZATION:
+						signatureMimeType = MimeTypeEnum.JOSE_JSON;
+						break;
+					default:
+						throw new DSSException(String.format("The given JWS serialization type '%s' is not supported!",
+								parameters.getJwsSerializationType()));
+				}
+				signatureType = signatureMimeType.getMimeTypeString();
 			}
 			
-			String type = getRFC7515ConformantMimeTypeString(signatureMimeType.getMimeTypeString());
+			String type = getRFC7515ConformantMimeTypeString(signatureType);
 			addHeader(HeaderParameterNames.TYPE, type);
 		}
 	}

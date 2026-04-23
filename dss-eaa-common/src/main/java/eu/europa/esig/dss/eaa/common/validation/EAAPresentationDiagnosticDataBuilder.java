@@ -24,6 +24,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusListClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlValidityInfoClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlX509Certificate;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
@@ -43,6 +44,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
@@ -158,6 +160,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             throw new IllegalStateException(String.format("XmlSignature for key binding shall be built at this moment! " +
                     "Not found signature with id '%s'.", signature.getId()));
         }
+        xmlSignature.setKeyBindingSignature(signature.isKeyBindingSignature());
         xmlKeyBindingSignature.setSignature(xmlSignature);
         return xmlKeyBindingSignature;
     }
@@ -403,6 +406,32 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         XmlDeviceKeyClaim xmlDeviceKeyClaim = getXmlClaim(deviceKey, new XmlDeviceKeyClaim(), supportedClaims);
         if (deviceKey.getPublicKey() != null) {
             xmlDeviceKeyClaim.setPublicKey(deviceKey.getPublicKey().getEncoded());
+        }
+        List<CertificateToken> certificates = deviceKey.getCertificates();
+        if (Utils.isCollectionNotEmpty(certificates)) {
+            for (CertificateToken certificateToken : certificates) {
+                XmlX509Certificate xmlX509Certificate = new XmlX509Certificate();
+                xmlX509Certificate.setCertificate(xmlCertsMap.get(certificateToken.getDSSIdAsString()));
+                xmlDeviceKeyClaim.getX509Certificate().add(xmlX509Certificate);
+            }
+        }
+        List<Digest> certificateDigests = deviceKey.getCertificateDigests();
+        if (Utils.isCollectionNotEmpty(certificateDigests)) {
+            for (Digest digest : certificateDigests) {
+                xmlDeviceKeyClaim.getDigestAlgoAndValue().add(getXmlDigestAlgoAndValue(digest));
+            }
+        }
+        List<String> certificateKeyIdentifiers = deviceKey.getCertificateKeyIdentifiers();
+        if (Utils.isCollectionNotEmpty(certificateKeyIdentifiers)) {
+            for (String kid : certificateKeyIdentifiers) {
+                xmlDeviceKeyClaim.getKID().add(kid);
+            }
+        }
+        List<String> certificateUrls = deviceKey.getCertificateUrls();
+        if (Utils.isCollectionNotEmpty(certificateUrls)) {
+            for (String url : certificateUrls) {
+                xmlDeviceKeyClaim.getX509Url().add(url);
+            }
         }
         return xmlDeviceKeyClaim;
     }

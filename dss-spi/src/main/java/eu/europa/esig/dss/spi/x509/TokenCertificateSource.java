@@ -26,6 +26,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -117,10 +118,10 @@ public abstract class TokenCertificateSource extends CommonCertificateSource {
 	 * Returns Set of {@link CertificateToken}s for the provided
 	 * {@link CertificateRef}s
 	 * 
-	 * @param certificateRefs list of {@link CertificateRef}s
+	 * @param certificateRefs collection of {@link CertificateRef}s
 	 * @return Set of {@link CertificateToken}s
 	 */
-	public Set<CertificateToken> findTokensFromRefs(List<CertificateRef> certificateRefs) {
+	public Set<CertificateToken> findTokensFromRefs(Collection<CertificateRef> certificateRefs) {
 		Set<CertificateToken> result = new HashSet<>();
 		for (CertificateRef certificateRef : certificateRefs) {
 			result.addAll(findTokensFromCertRef(certificateRef));

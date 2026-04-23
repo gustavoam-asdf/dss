@@ -1,9 +1,27 @@
 package eu.europa.esig.dss.eaa.jwt.claim;
 
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.jades.DSSJsonUtils;
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.utils.Utils;
+import org.jose4j.jwk.PublicJsonWebKey;
+import org.jose4j.lang.JoseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SD-JWT VC representation of a wallet holder's key as defined in RFC 7517 "JSON Web Key (JWK)".
@@ -12,6 +30,13 @@ import java.security.PublicKey;
 public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey {
 
     private static final long serialVersionUID = -579979170978240327L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SDJWTClaimDeviceKey.class);
+
+    /**
+     * Cached instance of JWK
+     */
+    private PublicJsonWebKey publicJsonWebKey;
 
     /**
      * Constructor to initialize SDJWTClaimKey from a ClaimMap
@@ -24,8 +49,148 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
 
     @Override
     public PublicKey getPublicKey() {
-        // TODO : to be implemented
+        PublicJsonWebKey jwk = getPublicJsonWebKey();
+        if (jwk != null) {
+            return publicJsonWebKey.getPublicKey();
+        }
         return null;
+    }
+
+    @Override
+    public List<CertificateToken> getCertificates() {
+        PublicJsonWebKey jwk = getPublicJsonWebKey();
+        if (jwk != null) {
+            List<X509Certificate> x5cCertificates = jwk.getCertificateChain();
+            if (Utils.isCollectionNotEmpty(x5cCertificates)) {
+                final List<CertificateToken> result = new ArrayList<>();
+                for (X509Certificate x509Certificate : x5cCertificates) {
+                    result.add(new CertificateToken(x509Certificate));
+                }
+                return result;
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Digest> getCertificateDigests() {
+        PublicJsonWebKey jwk = getPublicJsonWebKey();
+        if (jwk != null) {
+            final List<Digest> result = new ArrayList<>();
+            String x509CertificateSha1Thumbprint = publicJsonWebKey.getX509CertificateSha1Thumbprint();
+            if (Utils.isStringNotEmpty(x509CertificateSha1Thumbprint)) {
+                result.add(new Digest(DigestAlgorithm.SHA1, DSSJsonUtils.fromBase64Url(x509CertificateSha1Thumbprint)));
+            }
+            String base64UrlSHA256Certificate = publicJsonWebKey.getX509CertificateSha256Thumbprint();
+            if (Utils.isStringNotEmpty(base64UrlSHA256Certificate)) {
+                result.add(new Digest(DigestAlgorithm.SHA256, DSSJsonUtils.fromBase64Url(base64UrlSHA256Certificate)));
+            }
+            return result;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getCertificateKeyIdentifiers() {
+        final List<String> result = new ArrayList<>();
+        PublicJsonWebKey jwk = getPublicJsonWebKey();
+        if (jwk != null) {
+            result.add(publicJsonWebKey.getKeyId());
+        }
+        ClaimString kid = getKID();
+        if (kid != null) {
+            result.add(kid.getStringValue());
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> getCertificateUrls() {
+        final List<String> result = new ArrayList<>();
+        PublicJsonWebKey jwk = getPublicJsonWebKey();
+        if (jwk != null) {
+            result.add(publicJsonWebKey.getX509Url());
+        }
+        ClaimString jku = getJKU();
+        if (jku != null) {
+            result.add(jku.getStringValue());
+        }
+        return result;
+    }
+
+    /**
+     * Gets the JWK claim representation
+     *
+     * @return {@link PublicJsonWebKey}
+     */
+    @SuppressWarnings("unchecked")
+    protected PublicJsonWebKey getPublicJsonWebKey() {
+        if (publicJsonWebKey == null) {
+            try {
+                publicJsonWebKey = PublicJsonWebKey.Factory.newPublicJwk((Map<String, Object>) toJavaObject(getJWK()));
+            } catch (JoseException e) {
+                LOG.warn("Unable to parse JWK confirmation claim. Reason : {}", e.getMessage(), e);
+            }
+        }
+        return publicJsonWebKey;
+    }
+
+    private Object toJavaObject(Claim claim) {
+        if (claim.isStringValueType()) {
+            return claim.getStringValue();
+
+        } else if (claim.isArrayValueType()) {
+            final List<Object> javaList = new ArrayList<>();
+            claim.getListValue().forEach(v -> javaList.add(toJavaObject(v)));
+            return javaList;
+
+        } else if (claim.isMapValueType()) {
+            final Map<String, Object> javaMap = new HashMap<>();
+            for (Map.Entry<String, Claim> claimEntry : claim.getMapValue().entrySet()) {
+                javaMap.put(claimEntry.getKey(), toJavaObject(claimEntry.getValue()));
+            }
+            return javaMap;
+
+        } else {
+            throw new UnsupportedOperationException(String.format("The object of type '%s' is not supported!", claim.getClass().getSimpleName()));
+        }
+    }
+
+    /**
+     * Gets the JWK claim value containing the representation of the public key
+     *
+     * @return {@link ClaimMap}
+     */
+    public ClaimMap getJWK() {
+        return getAsMap(SDJWTConstants.JWK);
+    }
+
+    /**
+     * Gets the JWE claim value containing the representation of the encryption symmetric key
+     *
+     * @return {@link ClaimString}
+     */
+    public ClaimString getJWE() {
+        return getAsString(SDJWTConstants.JWE);
+    }
+
+    /**
+     * Gets the JWK claim value containing the representation of the key identifier claim
+     *
+     * @return {@link ClaimString}
+     */
+    public ClaimString getKID() {
+        return getAsString(SDJWTConstants.KID);
+    }
+
+    /**
+     * Gets the JWK claim value containing the representation of the URL where
+     * the signing certificate can be downloaded from
+     *
+     * @return {@link ClaimString}
+     */
+    public ClaimString getJKU() {
+        return getAsString(SDJWTConstants.JKU);
     }
 
 }
