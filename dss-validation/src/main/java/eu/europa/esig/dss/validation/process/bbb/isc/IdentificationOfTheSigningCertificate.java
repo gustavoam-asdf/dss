@@ -90,7 +90,7 @@ public class IdentificationOfTheSigningCertificate extends Chain<XmlISC> {
 		 */
 		ChainItem<XmlISC> item = firstItem = signingCertificateRecognition();
 
-		boolean isSignature = Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context);
+		boolean isSignature = Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context);
 		boolean isTimestamp = Context.TIMESTAMP.equals(context);
 
 		if (isSignature || isTimestamp) {
@@ -102,7 +102,7 @@ public class IdentificationOfTheSigningCertificate extends Chain<XmlISC> {
 			 * step 2.
 			 */
 
-			if (!token.isSigningCertificateReferencePresent()) {
+			if (!token.isSigningCertificateReferencePresent() || token.getSigningCertificate() == null) {
 				return;
 			}
 			

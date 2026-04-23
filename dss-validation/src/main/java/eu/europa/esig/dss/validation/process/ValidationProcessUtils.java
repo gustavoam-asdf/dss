@@ -388,6 +388,7 @@ public class ValidationProcessUtils {
 		switch (context) {
 			case SIGNATURE:
 			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
 				return MessageTag.ACCM_POS_SIG_SIG;
 			case TIMESTAMP:
 				return MessageTag.ACCM_POS_TST_SIG;
@@ -412,17 +413,18 @@ public class ValidationProcessUtils {
 	 */
 	public static MessageTag getCertificateChainCryptoPosition(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.ACCM_POS_CERT_CHAIN_SIG;
-		case TIMESTAMP:
-			return MessageTag.ACCM_POS_CERT_CHAIN_TST;
-		case REVOCATION:
-			return MessageTag.ACCM_POS_CERT_CHAIN_REVOC;
-		case CERTIFICATE:
-			return MessageTag.ACCM_POS_CERT_CHAIN;
-		default:
-			throw new IllegalArgumentException("Unsupported context " + context);
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.ACCM_POS_CERT_CHAIN_SIG;
+			case TIMESTAMP:
+				return MessageTag.ACCM_POS_CERT_CHAIN_TST;
+			case REVOCATION:
+				return MessageTag.ACCM_POS_CERT_CHAIN_REVOC;
+			case CERTIFICATE:
+				return MessageTag.ACCM_POS_CERT_CHAIN;
+			default:
+				throw new IllegalArgumentException("Unsupported context " + context);
 		}
 	}
 	
@@ -582,6 +584,7 @@ public class ValidationProcessUtils {
 		switch (context) {
 			case SIGNATURE:
 			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
 			case CERTIFICATE:
 				return MessageTag.SIGNATURE;
 			case TIMESTAMP:
@@ -606,6 +609,7 @@ public class ValidationProcessUtils {
 				return MessageTag.CERTIFICATE;
 			case SIGNATURE:
 			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
 				switch (subContext) {
 					case SIGNING_CERT:
 						return MessageTag.SIGNING_CERTIFICATE;

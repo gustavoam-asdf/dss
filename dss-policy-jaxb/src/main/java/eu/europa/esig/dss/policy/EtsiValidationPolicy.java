@@ -1625,7 +1625,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	private BasicSignatureConstraints getBasicSignatureConstraintsByContext(Context context) {
 		switch (context) {
 			case SIGNATURE:
-			case KEY_BINDING_SIGNATURE: // TODO : temporary until an explicit key binding signature support
 			case CERTIFICATE: // TODO improve
 				SignatureConstraints mainSignature = getSignatureConstraints();
 				if (mainSignature != null) {
@@ -1636,6 +1635,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 				SignatureConstraints counterSignature = getCounterSignatureConstraints();
 				if (counterSignature != null) {
 					return counterSignature.getBasicSignatureConstraints();
+				}
+				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getBasicSignatureConstraints();
 				}
 				break;
 			case TIMESTAMP:
@@ -1660,29 +1665,35 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 	private SignedAttributesConstraints getSignedAttributeConstraints(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case CERTIFICATE: // TODO improve
-			SignatureConstraints mainSignature = getSignatureConstraints();
-			if (mainSignature != null) {
-				return mainSignature.getSignedAttributes();
+			case SIGNATURE:
+			case CERTIFICATE: // TODO improve
+				SignatureConstraints mainSignature = getSignatureConstraints();
+				if (mainSignature != null) {
+					return mainSignature.getSignedAttributes();
+				}
+				break;
+			case COUNTER_SIGNATURE:
+				SignatureConstraints counterSignature = getCounterSignatureConstraints();
+				if (counterSignature != null) {
+					return counterSignature.getSignedAttributes();
+				}
+				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getSignedAttributes();
+				}
+				break;
+			case TIMESTAMP:
+				TimestampConstraints timestampConstraints = getTimestampConstraints();
+				if (timestampConstraints != null) {
+					return timestampConstraints.getSignedAttributes();
+				}
+				break;
+			default:
+				LOG.warn("Unsupported context {}", context);
+				break;
 			}
-			break;
-		case COUNTER_SIGNATURE:
-			SignatureConstraints counterSignature = getCounterSignatureConstraints();
-			if (counterSignature != null) {
-				return counterSignature.getSignedAttributes();
-			}
-			break;
-		case TIMESTAMP:
-			TimestampConstraints timestampConstraints = getTimestampConstraints();
-			if (timestampConstraints != null) {
-				return timestampConstraints.getSignedAttributes();
-			}
-			break;
-		default:
-			LOG.warn("Unsupported context {}", context);
-			break;
-		}
 		return null;
 	}
 
@@ -1700,6 +1711,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return counterSignature.getUnsignedAttributes();
 				}
 				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getUnsignedAttributes();
+				}
+				break;
 			default:
 				LOG.warn("Unsupported context {}", context);
 				break;
@@ -1709,15 +1726,17 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 	private SignatureConstraints getSignatureConstraintsByContext(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case CERTIFICATE: // TODO improve
-			return getSignatureConstraints();
-		case COUNTER_SIGNATURE:
-			return getCounterSignatureConstraints();
-		default:
-			LOG.warn("Unsupported context {}", context);
-			break;
-		}
+			case SIGNATURE:
+			case CERTIFICATE: // TODO improve
+				return getSignatureConstraints();
+			case COUNTER_SIGNATURE:
+				return getCounterSignatureConstraints();
+			case KEY_BINDING_SIGNATURE:
+				return getKeyBindingSignatureConstraints();
+			default:
+				LOG.warn("Unsupported context {}", context);
+				break;
+			}
 		return null;
 	}
 
@@ -2040,6 +2059,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	 */
 	public SignatureConstraints getCounterSignatureConstraints() {
 		return policy.getCounterSignatureConstraints();
+	}
+
+	/**
+	 * Returns the constraint used for Key Binding Signature validation
+	 *
+	 * @return {@link SignatureConstraints}
+	 */
+	public SignatureConstraints getKeyBindingSignatureConstraints() {
+		return policy.getKeyBindingSignatureConstraints();
 	}
 
 	/**

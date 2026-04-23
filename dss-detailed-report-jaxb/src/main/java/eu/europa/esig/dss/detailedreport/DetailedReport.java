@@ -208,7 +208,7 @@ public class DetailedReport {
 		List<String> result = new ArrayList<>();
 		List<XmlBasicBuildingBlocks> bbbs = jaxbDetailedReport.getBasicBuildingBlocks();
 		for (XmlBasicBuildingBlocks bbb : bbbs) {
-			if (Context.SIGNATURE == bbb.getType() || Context.COUNTER_SIGNATURE == bbb.getType()) {
+			if (Context.SIGNATURE == bbb.getType() || Context.COUNTER_SIGNATURE == bbb.getType() || Context.KEY_BINDING_SIGNATURE == bbb.getType()) {
 				result.add(bbb.getId());
 			}
 		}

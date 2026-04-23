@@ -791,6 +791,7 @@ public class RevocationDataVerifier {
         switch (context) {
             case SIGNATURE:
             case COUNTER_SIGNATURE:
+            case KEY_BINDING_SIGNATURE:
             case CERTIFICATE:
                 return signatureMaximumRevocationFreshness;
             case TIMESTAMP:

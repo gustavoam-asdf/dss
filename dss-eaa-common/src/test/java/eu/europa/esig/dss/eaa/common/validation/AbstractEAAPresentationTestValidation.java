@@ -412,7 +412,8 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
             if (!createdWithTrustAnchor(simpleReport.getCertificateChain(sigId))
                     && !timestampedWithTrustAnchor(simpleReport.getSignatureTimestamps(sigId))
-                    && !preservedByERWithTrustAnchor(simpleReport.getSignatureEvidenceRecords(sigId))) {
+                    && !preservedByERWithTrustAnchor(simpleReport.getSignatureEvidenceRecords(sigId))
+                    && Utils.isStringNotEmpty(simpleReport.getSignedBy(sigId))) {
                 assertNotNull(simpleReport.getExtensionPeriodMax(sigId));
             }
 

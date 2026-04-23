@@ -285,6 +285,7 @@ class ValidationPolicyLoaderTest {
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.TIMESTAMP).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.REVOCATION).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.COUNTER_SIGNATURE).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.KEY_BINDING_SIGNATURE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getEvidenceRecordCryptographicConstraint().getAcceptableDigestAlgorithms().keySet());
 
@@ -296,6 +297,8 @@ class ValidationPolicyLoaderTest {
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.REVOCATION, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.COUNTER_SIGNATURE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.COUNTER_SIGNATURE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.KEY_BINDING_SIGNATURE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.KEY_BINDING_SIGNATURE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.CERTIFICATE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
 
@@ -321,6 +324,7 @@ class ValidationPolicyLoaderTest {
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.TIMESTAMP).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.REVOCATION).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.COUNTER_SIGNATURE).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.KEY_BINDING_SIGNATURE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getSignatureCryptographicConstraint(Context.CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getEvidenceRecordCryptographicConstraint().getAcceptableDigestAlgorithms().keySet());
 
@@ -332,6 +336,8 @@ class ValidationPolicyLoaderTest {
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.REVOCATION, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.COUNTER_SIGNATURE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.COUNTER_SIGNATURE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.KEY_BINDING_SIGNATURE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.KEY_BINDING_SIGNATURE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, policy.getCertificateCryptographicConstraint(Context.CERTIFICATE, SubContext.CA_CERTIFICATE).getAcceptableDigestAlgorithms().keySet());
     }

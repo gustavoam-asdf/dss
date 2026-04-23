@@ -150,6 +150,7 @@ public class RevocationDataVerifierFactory {
 
         populateRevocationSkipFromBasicSignatureConstraints(certificateExtensions, certificatePolicies, Context.SIGNATURE);
         populateRevocationSkipFromBasicSignatureConstraints(certificateExtensions, certificatePolicies, Context.COUNTER_SIGNATURE);
+        populateRevocationSkipFromBasicSignatureConstraints(certificateExtensions, certificatePolicies, Context.KEY_BINDING_SIGNATURE);
         populateRevocationSkipFromBasicSignatureConstraints(certificateExtensions, certificatePolicies, Context.REVOCATION);
         populateRevocationSkipFromBasicSignatureConstraints(certificateExtensions, certificatePolicies, Context.TIMESTAMP);
 
@@ -191,6 +192,7 @@ public class RevocationDataVerifierFactory {
 
         boolean revocationFreshnessNextUpdateConstraint = getRevocationFreshnessNextUpdateConstraintPresent(Context.SIGNATURE);
         revocationFreshnessNextUpdateConstraint = revocationFreshnessNextUpdateConstraint || getRevocationFreshnessNextUpdateConstraintPresent(Context.COUNTER_SIGNATURE);
+        revocationFreshnessNextUpdateConstraint = revocationFreshnessNextUpdateConstraint || getRevocationFreshnessNextUpdateConstraintPresent(Context.KEY_BINDING_SIGNATURE);
         revocationFreshnessNextUpdateConstraint = revocationFreshnessNextUpdateConstraint || getRevocationFreshnessNextUpdateConstraintPresent(Context.TIMESTAMP);
         revocationFreshnessNextUpdateConstraint = revocationFreshnessNextUpdateConstraint || getRevocationFreshnessNextUpdateConstraintPresent(Context.REVOCATION);
 
@@ -204,6 +206,11 @@ public class RevocationDataVerifierFactory {
         if (maximumRevocationFreshness == null || (counterSignatureRevocationFreshnessConstraint != null
                 && counterSignatureRevocationFreshnessConstraint < maximumRevocationFreshness)) {
             maximumRevocationFreshness = counterSignatureRevocationFreshnessConstraint;
+        }
+        Long keyBindingSignatureRevocationFreshnessConstraint = getRevocationFreshnessConstraint(Context.KEY_BINDING_SIGNATURE);
+        if (maximumRevocationFreshness == null || (keyBindingSignatureRevocationFreshnessConstraint != null
+                && keyBindingSignatureRevocationFreshnessConstraint < maximumRevocationFreshness)) {
+            maximumRevocationFreshness = keyBindingSignatureRevocationFreshnessConstraint;
         }
 
         return maximumRevocationFreshness;

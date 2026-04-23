@@ -211,7 +211,7 @@ public class BasicBuildingBlocks {
 	}
 
 	private XmlFC executeFormatChecking() {
-		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context)) {
+		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context)) {
 			SignatureFormatChecking fc = new SignatureFormatChecking(i18nProvider, diagnosticData, (SignatureWrapper) token, context, policy);
 			return fc.execute();
 		} else if (Context.TIMESTAMP.equals(context)) {
@@ -234,7 +234,7 @@ public class BasicBuildingBlocks {
 	}
 
 	private XmlVCI executeValidationContextInitialization() {
-		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context)) {
+		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context)) {
 			ValidationContextInitialization vci = new ValidationContextInitialization(i18nProvider, (SignatureWrapper) token, context, policy);
 			return vci.execute();
 		}
@@ -243,7 +243,7 @@ public class BasicBuildingBlocks {
 
 	private XmlAOV executeAlgorithmObsolescenceValidation() {
 		AlgorithmObsolescenceValidation<?> aov = null;
-		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context)) {
+		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context)) {
 			aov = new SignatureAlgorithmObsolescenceValidation<>(
 					i18nProvider, (SignatureWrapper) token, context, currentTime, policy);
 		} else if (Context.TIMESTAMP.equals(context)) {
@@ -276,7 +276,7 @@ public class BasicBuildingBlocks {
 		} else {
 			CertificateWrapper signingCertificate = token.getSigningCertificate();
 			if (signingCertificate != null) {
-				if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context)) {
+				if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context)) {
 					return new X509CertificateValidation(i18nProvider, signingCertificate, currentTime,
 							signingCertificate.getNotBefore(), context, aov, policy);
 
@@ -349,7 +349,7 @@ public class BasicBuildingBlocks {
 
 	private XmlSAV executeSignatureAcceptanceValidation(XmlAOV aov) {
 		AbstractAcceptanceValidation<?> aav = null;
-		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context)) {
+		if (Context.SIGNATURE.equals(context) || Context.COUNTER_SIGNATURE.equals(context) || Context.KEY_BINDING_SIGNATURE.equals(context)) {
 			aav = new SignatureAcceptanceValidation(
 					i18nProvider, diagnosticData, currentTime, (SignatureWrapper) token, context, bbbs, aov, policy);
 		} else if (Context.TIMESTAMP.equals(context)) {

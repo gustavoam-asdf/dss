@@ -41,6 +41,11 @@
 					<xsd:documentation>Constraints related to the counter-signatures</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="KeyBindingSignatureConstraints" type="SignatureConstraints" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Constraints related to the counter-signatures</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="Timestamp" type="TimestampConstraints" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Constraints on the timestamps</xsd:documentation>

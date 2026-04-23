@@ -107,40 +107,44 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 
 		ChainItem<XmlSAV> item = firstItem = structuralValidation();
 
-		item = item.setNextItem(signingCertificateAttributePresent());
+		if (token.getSigningCertificate() != null) {
 
-		if (token.isSigningCertificateReferencePresent()) {
-			/*
-			 * 5.2.8.4.2.1 Processing signing certificate reference constraint
-			 *
-			 * If the Signing Certificate Identifier attribute contains references to
-			 * other certificates in the path, the building block shall check each of
-			 * the certificates in the certification path against these references.
-			 *
-			 * When this property contains one or more references to certificates other than
-			 * those present in the certification path, the building block shall return
-			 * the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
-			 */
-			item = item.setNextItem(unicitySigningCertificateAttribute());
+			item = item.setNextItem(signingCertificateAttributePresent());
 
-			item = item.setNextItem(signingCertificateReferencesValidity());
+			if (token.isSigningCertificateReferencePresent()) {
+				/*
+				 * 5.2.8.4.2.1 Processing signing certificate reference constraint
+				 *
+				 * If the Signing Certificate Identifier attribute contains references to
+				 * other certificates in the path, the building block shall check each of
+				 * the certificates in the certification path against these references.
+				 *
+				 * When this property contains one or more references to certificates other than
+				 * those present in the certification path, the building block shall return
+				 * the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
+				 */
+				item = item.setNextItem(unicitySigningCertificateAttribute());
 
-			/*
-			 * When one or more certificates in the certification path are not referenced
-			 * by this property, and the signature policy mandates references to all
-			 * the certificates in the certification path to be present, the building block shall
-			 * return the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
-			 */
-			item = item.setNextItem(allCertificatesInPathReferenced());
-		}
+				item = item.setNextItem(signingCertificateReferencesValidity());
 
-		// 'kid' (key identifier) verification for JAdES
-		if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+				/*
+				 * When one or more certificates in the certification path are not referenced
+				 * by this property, and the signature policy mandates references to all
+				 * the certificates in the certification path to be present, the building block shall
+				 * return the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
+				 */
+				item = item.setNextItem(allCertificatesInPathReferenced());
+			}
 
-			item = item.setNextItem(keyIdentifierPresent());
+			// 'kid' (key identifier) verification for JAdES
+			if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
 
-			if (token.getKeyIdentifierReference() != null) {
-				item = item.setNextItem(keyIdentifierMatch());
+				item = item.setNextItem(keyIdentifierPresent());
+
+				if (token.getKeyIdentifierReference() != null) {
+					item = item.setNextItem(keyIdentifierMatch());
+				}
+
 			}
 
 		}

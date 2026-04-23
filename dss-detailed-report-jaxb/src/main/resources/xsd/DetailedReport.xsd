@@ -707,6 +707,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SIGNATURE" />
 			<xs:enumeration value="COUNTER_SIGNATURE" />
+			<xs:enumeration value="KEY_BINDING_SIGNATURE" />
 			<xs:enumeration value="TIMESTAMP" />
 			<xs:enumeration value="REVOCATION" />
 			<xs:enumeration value="EVIDENCE_RECORD" />

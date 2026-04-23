@@ -111,15 +111,16 @@ public class TrustServiceStatusCheck extends AbstractMultiValuesCheckItem<XmlXCV
 	@Override
 	protected MessageTag getErrorMessageTag() {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.XCV_TSL_ESP_SIG_ANS;
-		case TIMESTAMP:
-			return MessageTag.XCV_TSL_ESP_TSP_ANS;
-		case REVOCATION:
-			return MessageTag.XCV_TSL_ESP_REV_ANS;
-		default:
-			return MessageTag.XCV_TSL_ESP_ANS;
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.XCV_TSL_ESP_SIG_ANS;
+			case TIMESTAMP:
+				return MessageTag.XCV_TSL_ESP_TSP_ANS;
+			case REVOCATION:
+				return MessageTag.XCV_TSL_ESP_REV_ANS;
+			default:
+				return MessageTag.XCV_TSL_ESP_ANS;
 		}
 	}
 

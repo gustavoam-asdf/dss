@@ -117,11 +117,11 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
 
         // 2a. Verify disclosures
 
+        item = item.setNextItem(disclosurePresent());
+
         List<XmlDigestMatcher> digestMatchers = eaaPresentation.getDigestMatchers();
 
         if (Utils.isCollectionNotEmpty(digestMatchers)) {
-
-            item = item.setNextItem(disclosurePresent());
 
             for (XmlDigestMatcher digestMatcher : digestMatchers) {
 

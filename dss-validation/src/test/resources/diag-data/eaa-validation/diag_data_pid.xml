@@ -6,8 +6,31 @@
         <EAAPresentation Id="EAA-B011F0930552AB7B89D941C51FFDE7A769EA630B8DD5C926512C0870F637FE22">
             <DocumentName>simple-pid.jwt</DocumentName>
             <EAAType>SD_JWT_VC</EAAType>
-            <DigestMatchers/>
+            <DigestMatchers>
+                <DigestMatcher type="EAA_DISCLOSURE">
+                    <DigestMethod>SHA256</DigestMethod>
+                    <DigestValue>TGf4oLbgwd5JQaHyKVQZU9UdGE0w5rtDsrZzfUaomLo=</DigestValue>
+                    <DataFound>true</DataFound>
+                    <DataIntact>true</DataIntact>
+                    <DisclosableClaim name="family_name">Doe</DisclosableClaim>
+                </DigestMatcher>
+                <DigestMatcher type="EAA_DISCLOSURE">
+                    <DigestMethod>SHA256</DigestMethod>
+                    <DigestValue>gbOsI4Edq2x2Kw+w5wPEzakob9hV1cRD0ATN3oQL9JM=</DigestValue>
+                    <DataFound>true</DataFound>
+                    <DataIntact>true</DataIntact>
+                    <DisclosableClaim name="birthdate">1940-01-01</DisclosableClaim>
+                </DigestMatcher>
+                <DigestMatcher type="EAA_DISCLOSURE">
+                    <DigestMethod>SHA256</DigestMethod>
+                    <DigestValue>jsu9yVulwQQlhFlM/3JlzMaSFzglhQG0DpfayQwLUK4=</DigestValue>
+                    <DataFound>true</DataFound>
+                    <DataIntact>true</DataIntact>
+                    <DisclosableClaim name="given_name">John</DisclosableClaim>
+                </DigestMatcher>
+            </DigestMatchers>
             <EAAPresentationSignature Signature="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4"/>
+            <KeyBindingSignature Signature="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9"/>
             <EAAPayload>
                 <Issuer name="iss">
                     <Text>https://issuer.example.com</Text>
@@ -142,6 +165,71 @@
                 <DigestValue>XOzaoqLpIxvkuv4WNaycqOs/WXrPQiu690RhG9fPg0pXsYpP761jJLVQ9HCVBRN654PSofAqrgLFN058F5mw6w==</DigestValue>
             </DataToBeSignedRepresentation>
             <SignatureValue>Avrpk9AUP54ZfgsmETCLqT3Piy/TFtfrYnG7lnahrLveRwcP9BzBOyGQS6BDHTOnwUHESN4QYuH3/GQfHCa3g6stir5hnP4+DDkNnPOrqxS4FJUzOsbBRJP9qmv5JUXN1G7MRMA0cSAmpr7+lGnEZ2ESF49zKvGMtCQqXptA0826zd3kgw4Rhu7PGJCYOQ6U5Im0P927FGRzSkccZXjW/jh53IgXOlxh3DbA4mXor+q9RavaHUVoapZNxS7prmz3tcQUG8seZkT5HEIkpcJLqxYigROiOuT+c/I2pjQYlNbfr5cbKhcH8fhck8FieW4czQV6G5W/++6Fc66UCkeTog==</SignatureValue>
+        </Signature>
+        <Signature KeyBindingSignature="true" Id="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9">
+            <SignatureFilename>sample-jwt.jwt</SignatureFilename>
+            <ClaimedSigningTime>2026-04-23T09:28:59Z</ClaimedSigningTime>
+            <SignatureFormat>JAdES-BASELINE-B</SignatureFormat>
+            <JWSSerializationType>COMPACT_SERIALIZATION</JWSSerializationType>
+            <SignatureType>application/kb+jwt</SignatureType>
+            <StructuralValidation valid="true"/>
+            <DigestMatchers>
+                <DigestMatcher type="JWS_SIGNING_INPUT">
+                    <DigestMethod>SHA256</DigestMethod>
+                    <DigestValue>DwKYVjWJea/JpFFIJ04CVw8/eKF7f/SxXY1E5QHkT2Y=</DigestValue>
+                    <DataFound>true</DataFound>
+                    <DataIntact>true</DataIntact>
+                </DigestMatcher>
+                <DigestMatcher type="EAA_KEY_BINDING">
+                    <DigestMethod>SHA256</DigestMethod>
+                    <DigestValue>q8jTTKJJCo5gBLrdgeYz4SzUKuUb27tISQjmKS6gXxc=</DigestValue>
+                    <DataFound>true</DataFound>
+                    <DataIntact>true</DataIntact>
+                </DigestMatcher>
+            </DigestMatchers>
+            <BasicSignature>
+                <EncryptionAlgoUsedToSignThisToken>ECDSA</EncryptionAlgoUsedToSignThisToken>
+                <KeyLengthUsedToSignThisToken>256</KeyLengthUsedToSignThisToken>
+                <DigestAlgoUsedToSignThisToken>SHA256</DigestAlgoUsedToSignThisToken>
+                <SignatureIntact>true</SignatureIntact>
+                <SignatureValid>true</SignatureValid>
+            </BasicSignature>
+            <SigningCertificate>
+                <PublicKey>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1xBLRNWo4SbwDpY2Hd841AB4NlbtGyk4MOuaByhV805KCIsPkc+zs8m20TqmP/IY56rbVpAt0EYCnzFBYvl9DA==</PublicKey>
+            </SigningCertificate>
+            <CertificateChain/>
+            <MimeType>application/json</MimeType>
+            <CommitmentTypeIndications/>
+            <SignerDocumentRepresentations HashOnly="false" DocHashOnly="false"/>
+            <FoundCertificates>
+                <OrphanCertificate Token="C-04D6030F59C93E208160B23D44788053B07CC221651491AAE63C96928FCAD4ECB984F29F1B9D0A7FC20083AB9597BD9C7B3862ADC87C6FF6A68E3B56D43D0CA9">
+                    <CertificateRef>
+                        <Origin>SIGNING_CERTIFICATE</Origin>
+                        <DigestAlgoAndValue match="false">
+                            <DigestMethod>SHA512</DigestMethod>
+                            <DigestValue>BNYDD1nJPiCBYLI9RHiAU7B8wiFlFJGq5jyWko/K1Oy5hPKfG50Kf8IAg6uVl72cezhirch8b/amjjtW1D0MqQ==</DigestValue>
+                        </DigestAlgoAndValue>
+                    </CertificateRef>
+                </OrphanCertificate>
+            </FoundCertificates>
+            <FoundRevocations/>
+            <FoundTimestamps/>
+            <FoundEvidenceRecords/>
+            <SignatureScopes>
+                <SignatureScope SignerData="D-4B4F816C912C75121F3428899E74F258775B15DC217C26154F5C78923573AD58">
+                    <Scope>FULL</Scope>
+                    <Description>Full document</Description>
+                </SignatureScope>
+            </SignatureScopes>
+            <SignatureDigestReference>
+                <DigestMethod>SHA256</DigestMethod>
+                <DigestValue>cqsvTUcJs9I0fSWRXb3WflSoVfHTtmg5fFxvZ4BLTGQ=</DigestValue>
+            </SignatureDigestReference>
+            <DataToBeSignedRepresentation>
+                <DigestMethod>SHA256</DigestMethod>
+                <DigestValue>DwKYVjWJea/JpFFIJ04CVw8/eKF7f/SxXY1E5QHkT2Y=</DigestValue>
+            </DataToBeSignedRepresentation>
+            <SignatureValue>1dUVJOz4e4RrA60bC8EZlebSO1cDBYC8FV0mfsBhq8l4lU/QUwwDc15+/UNwTeTqLmMeACSD814PFFNExC7+FA==</SignatureValue>
         </Signature>
     </Signatures>
     <EvidenceRecords/>
@@ -483,12 +571,24 @@
     <UsedTimestamps/>
     <OrphanTokens>
         <OrphanCertificate EncapsulationType="REFERENCE" Id="C-9A94AFB2D6BA65F53908A170F9CEB2CF3F4BFEF22BD20235B32724B0136E7097"/>
+        <OrphanCertificate EncapsulationType="REFERENCE" Id="C-04D6030F59C93E208160B23D44788053B07CC221651491AAE63C96928FCAD4ECB984F29F1B9D0A7FC20083AB9597BD9C7B3862ADC87C6FF6A68E3B56D43D0CA9">
+            <DigestAlgoAndValue>
+                <DigestMethod>SHA512</DigestMethod>
+                <DigestValue>BNYDD1nJPiCBYLI9RHiAU7B8wiFlFJGq5jyWko/K1Oy5hPKfG50Kf8IAg6uVl72cezhirch8b/amjjtW1D0MqQ==</DigestValue>
+            </DigestAlgoAndValue>
+        </OrphanCertificate>
     </OrphanTokens>
     <OriginalDocuments>
         <SignerData Id="D-B591F5834847E86E222B306C0C658C74A018556CE17DA91964EAE9037BF7C1CF">
             <DigestAlgoAndValue>
                 <DigestMethod>SHA256</DigestMethod>
                 <DigestValue>HDlCa3EjtifKNG5kRv/AUred8ZDgVI6imwNEzKu5pQY=</DigestValue>
+            </DigestAlgoAndValue>
+        </SignerData>
+        <SignerData Id="D-4B4F816C912C75121F3428899E74F258775B15DC217C26154F5C78923573AD58">
+            <DigestAlgoAndValue>
+                <DigestMethod>SHA256</DigestMethod>
+                <DigestValue>e2iVKaVrkGKoIM2646i0uRJXF98JEpmLwfOxfz3bawM=</DigestValue>
             </DigestAlgoAndValue>
         </SignerData>
     </OriginalDocuments>

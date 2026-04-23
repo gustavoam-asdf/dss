@@ -1070,7 +1070,7 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() == null) {
+			if (!signatureWrapper.isCounterSignature() && !signatureWrapper.isKeyBindingSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}
@@ -1086,7 +1086,7 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() != null) {
+			if (signatureWrapper.isCounterSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}
@@ -1102,7 +1102,23 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() != null && signatureWrapper.getParent().equals(masterSignatureWrapper)) {
+			if (signatureWrapper.isCounterSignature() && signatureWrapper.getParent().equals(masterSignatureWrapper)) {
+				signatures.add(signatureWrapper);
+			}
+		}
+		return signatures;
+	}
+
+	/**
+	 * This method returns key binding signatures (not EAA signatures)
+	 *
+	 * @return a set of SignatureWrapper
+	 */
+	public Set<SignatureWrapper> getAllKeyBindingSignatures() {
+		Set<SignatureWrapper> signatures = new HashSet<>();
+		List<SignatureWrapper> mixedSignatures = getSignatures();
+		for (SignatureWrapper signatureWrapper : mixedSignatures) {
+			if (signatureWrapper.isKeyBindingSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}

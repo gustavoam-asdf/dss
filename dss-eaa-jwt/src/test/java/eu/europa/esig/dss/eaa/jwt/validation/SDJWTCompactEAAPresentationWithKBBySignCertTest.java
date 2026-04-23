@@ -1,9 +1,8 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -15,6 +14,9 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.simplereport.SimpleReport;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
@@ -23,9 +25,10 @@ import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class SDJWTCompactEAAPresentationWithKBBySignCertTest extends AbstractSDJWTEAAPresentationTestValidation {
@@ -98,6 +101,8 @@ class SDJWTCompactEAAPresentationWithKBBySignCertTest extends AbstractSDJWTEAAPr
         signer = ECDSA_USER;
 
         signatureParameters = new JAdESSignatureParameters();
+        signatureParameters.setSigningCertificate(getSigningCert());
+        signatureParameters.setIncludeCertificateChain(false);
         signatureParameters.setEncryptionAlgorithm(EncryptionAlgorithm.ECDSA);
         signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
@@ -132,21 +137,19 @@ class SDJWTCompactEAAPresentationWithKBBySignCertTest extends AbstractSDJWTEAAPr
     }
 
     @Override
-    protected void checkStructureValidation(DiagnosticData diagnosticData) {
-        boolean eaaSignatureFound = false;
-        boolean kbSignatureFound = false;
-        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-            if (signatureWrapper.isKeyBindingSignature()) {
-                assertFalse(Utils.isCollectionEmpty(signatureWrapper.getStructuralValidationMessages()));
-                assertTrue(signatureWrapper.getStructuralValidationMessages().get(0).contains("x5c"));
-                kbSignatureFound = true;
-            } else {
-                assertTrue(Utils.isCollectionEmpty(signatureWrapper.getStructuralValidationMessages()));
-                eaaSignatureFound = true;
-            }
-        }
-        assertTrue(eaaSignatureFound);
-        assertTrue(kbSignatureFound);
+    protected void verifySimpleReport(SimpleReport simpleReport) {
+        super.verifySimpleReport(simpleReport);
+
+        XmlEAAPresentation eaaPresentation = simpleReport.getEAAPresentationById(simpleReport.getFirstEAAPresentationId());
+        assertEquals(Indication.PASSED, eaaPresentation.getIndication());
+
+        List<XmlSignature> signatures = eaaPresentation.getEAAPresentationSignature();
+        assertEquals(1, signatures.size());
+        assertEquals(Indication.TOTAL_PASSED, signatures.get(0).getIndication());
+
+        XmlSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+        assertEquals(Indication.TOTAL_PASSED, keyBindingSignature.getIndication());
+        assertNull(keyBindingSignature.getAdESValidationDetails());
     }
 
     @Override

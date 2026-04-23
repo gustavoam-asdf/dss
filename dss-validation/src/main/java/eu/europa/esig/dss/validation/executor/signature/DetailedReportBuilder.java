@@ -278,21 +278,25 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				process(diagnosticData.getTimestampList(), Context.TIMESTAMP, bbbs);
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
+				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
 				break;
 			case LONG_TERM_DATA:
 				process(diagnosticData.getAllRevocationData(), Context.REVOCATION, bbbs);
 				process(diagnosticData.getNonEvidenceRecordTimestamps(), Context.TIMESTAMP, bbbs);
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
+				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
 				break;
 			case TIMESTAMPS:
 				process(diagnosticData.getNonEvidenceRecordTimestamps(), Context.TIMESTAMP, bbbs);
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
+				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
 				break;
 			case BASIC_SIGNATURES:
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
+				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported validation level " + validationLevel);
