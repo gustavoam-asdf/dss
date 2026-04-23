@@ -12,64 +12,64 @@ public enum EAAQualification {
     /**
      * Qualified electronic attestation of attributes as defined in Regulation EU 2024/1183, Article 45d.
      */
-    QEAA("QEAA", "Qualified Electronic Attestation of Attributes"),
+    QEAA("QEAA", "Qualified Electronic Attestation of Attributes", "urn:cef:dss:eaaQualification:QEAA"),
 
     /**
      * Electronic attestation of attributes as defined in Regulation EU 2024/1183, without a qualified status.
      */
-    EAA("EAA", "Electronic Attestation of Attributes"),
+    EAA("EAA", "Electronic Attestation of Attributes", "urn:cef:dss:eaaQualification:EAA"),
 
     /**
      * Electronic attestation of attributes issued by or on behalf of a public sector body responsible
      * for an authentic source as defined in Regulation EU 2024/1183, Article 45f.
      */
-    PUBEAA("Pub-EAA", "Electronic Attestation of Attributes issued by or on behalf of a public sector body"),
+    PUBEAA("Pub-EAA", "Electronic Attestation of Attributes issued by or on behalf of a public sector body", "urn:cef:dss:eaaQualification:PUBEAA"),
 
     /**
      * Personal Identification Data (PID)
      */
-    PID("PID", "Personal Identification Data"),
+    PID("PID", "Personal Identification Data", "urn:cef:dss:eaaQualification:PID"),
 
     /**
      * Electronic attestation of attributes of unknown or conflicting status.
      */
-    UNKNOWN("Unknown", "Electronic Attestation of Attributes of unknown type"),
+    UNKNOWN("Unknown", "Electronic Attestation of Attributes of unknown type", "urn:cef:dss:eaaQualification:Unknown"),
 
     /**
      * Indeterminate qualified electronic attestation of attributes as defined in Regulation EU 2024/1183, Article 45d.
      */
-    INDETERMINATE_QEAA("Indeterminate QEAA", "Indeterminate Qualified Electronic Attestation of Attributes"),
+    INDETERMINATE_QEAA("Indeterminate QEAA", "Indeterminate Qualified Electronic Attestation of Attributes", "urn:cef:dss:eaaQualification:indeterminateQEAA"),
 
     /**
      * Indeterminate electronic attestation of attributes as defined in Regulation EU 2024/1183, without a qualified status.
      */
-    INDETERMINATE_EAA("Indeterminate EAA", "Indeterminate Electronic Attestation of Attributes"),
+    INDETERMINATE_EAA("Indeterminate EAA", "Indeterminate Electronic Attestation of Attributes", "urn:cef:dss:eaaQualification:indeterminateEAA"),
 
     /**
      * Indeterminate electronic attestation of attributes issued by or on behalf of a public sector body responsible
      * for an authentic source as defined in Regulation EU 2024/1183, Article 45f.
      */
-    INDETERMINATE_PUBEAA("Indeterminate Pub-EAA", "Indeterminate Electronic Attestation of Attributes issued by or on behalf of a public sector body"),
+    INDETERMINATE_PUBEAA("Indeterminate Pub-EAA", "Indeterminate Electronic Attestation of Attributes issued by or on behalf of a public sector body", "urn:cef:dss:eaaQualification:indeterminatePUBEAA"),
 
     /**
      * Indeterminate Personal Identification Data (PID)
      */
-    INDETERMINATE_PID("Indeterminate PID", "Indeterminate Personal Identification Data"),
+    INDETERMINATE_PID("Indeterminate PID", "Indeterminate Personal Identification Data", "urn:cef:dss:eaaQualification:indeterminatePID"),
 
     /**
      * Indeterminate electronic attestation of attributes of unknown or conflicting status.
      */
-    INDETERMINATE_UNKNOWN("Indeterminate Unknown", "Indeterminate Electronic Attestation of Attributes of unknown type"),
+    INDETERMINATE_UNKNOWN("Indeterminate Unknown", "Indeterminate Electronic Attestation of Attributes of unknown type", "urn:cef:dss:eaaQualification:indeterminateUnknown"),
 
     /**
      * Not electronic attestation of attributes
      */
-    NOT_EAA("Not EAA", "Not Electronic Attestation of Attributes"),
+    NOT_EAA("Not EAA", "Not Electronic Attestation of Attributes", "urn:cef:dss:eaaQualification:NOTEAA"),
 
     /**
      * Not Applicable
      */
-    NA("N/A", "Not applicable");
+    NA("N/A", "Not applicable", "urn:cef:dss:eaaQualification:NA");
 
     /**
      * This class is used to provide a quick mapping of the user-friendly labels to enums
@@ -93,15 +93,20 @@ public enum EAAQualification {
     /** Description of the enumeration */
     private final String label;
 
+    /** Unique URL */
+    private final String uri;
+
     /**
      * Default constructor
      *
      * @param readable {@link String}
      * @param label {@link String}
+     * @param uri {@link String}
      */
-    EAAQualification(String readable, String label) {
+    EAAQualification(String readable, String label, String uri) {
         this.readable = readable;
         this.label = label;
+        this.uri = uri;
     }
 
     /**
@@ -120,6 +125,15 @@ public enum EAAQualification {
      */
     public String getLabel() {
         return label;
+    }
+
+    /**
+     * Gets a unique URI
+     *
+     * @return {@link String}
+     */
+    public String getUri() {
+        return uri;
     }
 
     /**

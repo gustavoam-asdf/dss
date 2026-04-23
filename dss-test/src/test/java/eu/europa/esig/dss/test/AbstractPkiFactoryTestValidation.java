@@ -2239,6 +2239,10 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 				assertNotNull(validationObject.getObjectType());
 				assertNotNull(validationObject.getValidationObjectRepresentation());
 
+				if (ObjectType.OTHER == validationObject.getObjectType()) {
+					continue;
+				}
+
 				List<Object> validationObjectRepresentationList = validationObject.getValidationObjectRepresentation().getDirectOrBase64OrDigestAlgAndValue();
 				assertEquals(1 , validationObjectRepresentationList.size());
 				Object validationObjectRepresentation = validationObjectRepresentationList.get(0);
@@ -2728,7 +2732,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			assertEquals(diagnosticData.getTimestampList().size(), timestampCounter);
 			assertEquals(diagnosticData.getEvidenceRecords().size(), evidenceRecordCounter);
 			assertEquals(diagnosticData.getAllSignerDocuments().size(), signedDataCounter);
-			assertEquals(0, otherCounter);
+			assertEquals(diagnosticData.getEAAPresentations().size(), otherCounter);
 			
 		} else {
 			assertEquals(0, diagnosticData.getUsedCertificates().size());
