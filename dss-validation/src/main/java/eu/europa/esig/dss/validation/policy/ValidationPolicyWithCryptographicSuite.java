@@ -1071,6 +1071,21 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getEAAPresentationEAATypePresentConstraint() {
+        return validationPolicy.getEAAPresentationEAATypePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint() {
+        return validationPolicy.getSDJWTEAAPresentationVctIntegrityTypePresentConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint() {
+        return validationPolicy.getEAAPresentationEAATypeAcceptableConstraint();
+    }
+
+    @Override
     public boolean isEIDASConstraintPresent() {
         return validationPolicy.isEIDASConstraintPresent();
     }

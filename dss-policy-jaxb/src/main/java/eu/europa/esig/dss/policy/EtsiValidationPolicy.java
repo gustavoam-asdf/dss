@@ -1892,7 +1892,34 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return null;
 	}
 
-	@Override
+    @Override
+    public LevelRule getEAAPresentationEAATypePresentConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getEAATypePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getSDJWTEAAVctIntegrityTypePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toRule(eaaPresentationConstraints.getAcceptableEAAType());
+        }
+        return null;
+    }
+
+    @Override
 	public boolean isEIDASConstraintPresent() {
 		return getEIDASConstraints() != null;
 	}

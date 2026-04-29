@@ -623,6 +623,22 @@
 							<xsd:documentation>Checks whether the key binding signature is valid (i.e. results to a TOTAL-PASSED validation status)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+                    <xsd:element name="EAATypePresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the EAA type is present within the EAA Presentation token</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="AcceptableEAAType" type="MultiValuesConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks if the EAA type is part of the acceptable value list</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="SDJWTEAAVctIntegrityTypePresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the claim "vct#integrity" is present within the SD-JWT EAA Presentation token</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <!-- ADD HERE new constraints -->
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Group of cryptographic checks to operate on the disclosure hash algorithm(s)</xsd:documentation>

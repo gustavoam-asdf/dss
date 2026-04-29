@@ -253,6 +253,8 @@
         <DisclosureFound Level="FAIL" />
         <DisclosureIntact Level="FAIL" />
         <KeyBindingSignatureValid Level="FAIL" />
+        <EAATypePresent Level="FAIL" />
+        <SDJWTEAAVctIntegrityTypePresent Level="FAIL" />
     </EAAPresentation>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>
