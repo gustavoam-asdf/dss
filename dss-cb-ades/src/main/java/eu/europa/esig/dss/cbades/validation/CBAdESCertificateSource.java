@@ -353,7 +353,11 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     @Override
     protected CandidatesForSigningCertificate extractCandidatesForSigningCertificate(
             CertificateSource signingCertificateSource) {
-        CandidatesForSigningCertificate candidatesForSigningCertificate = new CandidatesForSigningCertificate();
+
+        CandidatesForSigningCertificate candidatesForSigningCertificate = initCandidatesList(signingCertificateSource);
+        if (!candidatesForSigningCertificate.isEmpty()) {
+            return candidatesForSigningCertificate;
+        }
 
         for (final CertificateToken certificateToken : getKeyInfoCertificates()) {
             candidatesForSigningCertificate.add(new CertificateValidity(certificateToken));

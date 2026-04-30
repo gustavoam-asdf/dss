@@ -9,10 +9,12 @@ import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SignatureScopeType;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.simplereport.SimpleReport;
@@ -63,7 +65,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertNotNull(eaaPresentation.getDSSId());
 
         assertEquals(expectedSignaturesCount(), eaaPresentation.getSignatures().size());
-        assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDisclosureValidations()));
+        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDisclosureValidations()));
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
         assertEquals(getEAAPresentationType(), eaaPresentation.getEAAPresentationType());
     }
@@ -83,7 +85,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         EAAPresentationWrapper eaaPresentation = eaaPresentations.get(0);
         assertNotNull(eaaPresentation.getId());
         assertEquals(expectedSignaturesCount(), eaaPresentation.getEAAPresentationSignatures().size());
-        assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
+        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
         assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
         assertEquals(getEAAPresentationType(), eaaPresentation.getEAAType());
         assertEquals(EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), eaaPresentation.getEAADocumentType() != null);
@@ -91,21 +93,6 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         checkEAAPresentationDigestMatchers(diagnosticData);
         checkClaims(diagnosticData);
         checkDeviceKeyClaim(diagnosticData);
-    }
-
-    @Override
-    protected void checkDigestMatchers(DiagnosticData diagnosticData) {
-        super.checkDigestMatchers(diagnosticData);
-
-        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-            int kbDMCounter = 0;
-            for (XmlDigestMatcher xmlDigestMatcher : signatureWrapper.getDigestMatchers()) {
-                if (DigestMatcherType.EAA_KEY_BINDING == xmlDigestMatcher.getType()) {
-                    ++kbDMCounter;
-                }
-            }
-            assertEquals(signatureWrapper.isKeyBindingSignature(), kbDMCounter == 1);
-        }
     }
 
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
@@ -161,7 +148,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
                 assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
 
-                if (EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType()) {
+                if (EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType() && claimWrapper.isSelectivelyDisclosable()) {
                     assertNotNull(claimWrapper.getNamespace());
                 }
             }
@@ -310,6 +297,35 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 assertTrue(signatureWrapper.getSigningCertificate() != null || signatureWrapper.getSigningCertificatePublicKey() != null);
             }
 
+        }
+    }
+
+    @Override
+    protected void checkSignatureScopes(DiagnosticData diagnosticData) {
+        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+            for (SignatureWrapper signatureWrapper : eaaPresentation.getEAAPresentationSignatures()) {
+                if (signatureWrapper.isSignatureValid()) {
+                    assertEquals(1, Utils.collectionSize(signatureWrapper.getSignatureScopes()));
+                    XmlSignatureScope signatureScope = signatureWrapper.getSignatureScopes().get(0);
+                    assertNotNull(signatureScope.getScope());
+                    assertNotNull(signatureScope.getSignerData());
+                    assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue());
+                    assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue().getDigestMethod());
+                    assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue().getDigestValue());
+                    assertEquals(SignatureScopeType.EAA_SIGNATURE, signatureScope.getScope());
+                }
+            }
+            SignatureWrapper keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+            if (keyBindingSignature != null && keyBindingSignature.isSignatureValid()) {
+                assertEquals(1, Utils.collectionSize(keyBindingSignature.getSignatureScopes()));
+                XmlSignatureScope signatureScope = keyBindingSignature.getSignatureScopes().get(0);
+                assertNotNull(signatureScope.getScope());
+                assertNotNull(signatureScope.getSignerData());
+                assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue());
+                assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue().getDigestMethod());
+                assertNotNull(signatureScope.getSignerData().getDigestAlgoAndValue().getDigestValue());
+                assertEquals(SignatureScopeType.KEY_BINDING_SIGNATURE, signatureScope.getScope());
+            }
         }
     }
 

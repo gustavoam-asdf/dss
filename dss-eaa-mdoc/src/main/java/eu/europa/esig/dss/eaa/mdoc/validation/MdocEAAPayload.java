@@ -702,19 +702,6 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     /**
-     * Checks if the {@code claim} is of byte string type and returns its value as {@code ClaimByteString}
-     *
-     * @param claim {@link Claim}
-     * @return {@link ClaimByteString}
-     */
-    protected ClaimByteString getAsByteString(Claim claim) {
-        if (claim != null && claim.isBinaryValueType()) {
-            return (ClaimByteString) claim;
-        }
-        return null;
-    }
-
-    /**
      * Gets the date value for the found element matching the first {@code DataElementReference}
      *
      * @param references an array of {@link DataElementReference}s

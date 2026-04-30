@@ -129,6 +129,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public Long getAsLong(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isNegativeInteger() || item.isUnsignedInteger()) {
             return item.getValueAsLong();
         }
@@ -145,6 +148,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public Long getAsLongOrString(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isNegativeInteger() || item.isUnsignedInteger()) {
             return item.getValueAsLong();
         }
@@ -167,6 +173,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public String getAsString(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isUnicodeString()) {
             return item.getValueAsString();
         }
@@ -181,6 +190,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public byte[] getAsBinaries(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isByteString()) {
             return item.getValueAsBytes();
         }
@@ -195,6 +207,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public CBORArray getAsArray(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isArray()) {
             return ((CBORArray) item);
         }
@@ -209,6 +224,9 @@ public class CBORArray extends AbstractCBORObject<Array> {
      */
     public CBORMap getAsMap(int index) {
         CBORObject item = getItem(index);
+        if (item == null) {
+            return null;
+        }
         if (item.isMap()) {
             return ((CBORMap) item);
         }

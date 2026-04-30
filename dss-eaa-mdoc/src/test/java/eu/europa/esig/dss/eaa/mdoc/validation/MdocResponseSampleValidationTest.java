@@ -39,7 +39,7 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals(DSSUtils.parseRFCDate("2024-10-20T00:00:00Z"), eaaPresentation.getEAAExpirationTime());
         assertEquals(DSSUtils.parseRFCDate("2019-10-20T00:00:00Z"), eaaPresentation.getEAAIssuedAt());
-        // assertNotNull(eaaPresentation.getEAADeviceKey()); // TODO: add key binding support
+        assertNotNull(eaaPresentation.getEAADevicePublicKey());
 
         assertEquals("1.0", eaaPresentation.getEAAVersion());
         assertEquals("org.iso.18013.5.1.mDL", eaaPresentation.getEAADocumentType());
@@ -186,7 +186,7 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
 
     @Override
     protected boolean keyBindingPresent() {
-        // TODO : add support
+        // NOTE: deviceMac is not supported
         return false;
     }
 

@@ -1,9 +1,15 @@
 package eu.europa.esig.dss.eaa.mdoc.claim;
 
+import eu.europa.esig.dss.eaa.mdoc.COSEKeyParser;
+import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.PublicKey;
 import java.util.Collections;
@@ -15,6 +21,8 @@ import java.util.List;
  *
  */
 public class MdocClaimDeviceKeyInfo extends MdocClaimMap implements ClaimDeviceKey {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MdocClaimDeviceKeyInfo.class);
 
     private static final long serialVersionUID = 4939740857897930307L;
 
@@ -29,7 +37,19 @@ public class MdocClaimDeviceKeyInfo extends MdocClaimMap implements ClaimDeviceK
 
     @Override
     public PublicKey getPublicKey() {
-        // TODO : to be implemented
+        MdocClaimDeviceKey deviceKey = getDeviceKey();
+        if (deviceKey != null) {
+            try {
+                return COSEKeyParser.from(deviceKey).parse();
+            } catch (Exception e) {
+                String errorMessage = "Unable to extract public key : {}";
+                if (LOG.isDebugEnabled()) {
+                    LOG.warn(errorMessage, e.getMessage(), e);
+                } else {
+                    LOG.warn(errorMessage, e.getMessage());
+                }
+            }
+        }
         return null;
     }
 
@@ -45,12 +65,33 @@ public class MdocClaimDeviceKeyInfo extends MdocClaimMap implements ClaimDeviceK
 
     @Override
     public List<String> getCertificateKeyIdentifiers() {
+        MdocClaimDeviceKey deviceKey = getDeviceKey();
+        if (deviceKey != null) {
+            ClaimByteString kid = deviceKey.getKID();
+            if (kid != null) {
+                // TODO : process as a string or b64 ?
+                return Collections.singletonList(new String(kid.getBinaryValue()));
+            }
+        }
         return Collections.emptyList();
     }
 
     @Override
     public List<String> getCertificateUrls() {
         return Collections.emptyList();
+    }
+
+    /**
+     * Gets the device key claim value containing the representation of the key identifier claim
+     *
+     * @return {@link ClaimString}
+     */
+    public MdocClaimDeviceKey getDeviceKey() {
+        ClaimMap deviceKey = getAsMap(MdocConstants.DEVICE_KEY);
+        if (deviceKey != null) {
+            return new MdocClaimDeviceKey(deviceKey);
+        }
+        return null;
     }
 
 }

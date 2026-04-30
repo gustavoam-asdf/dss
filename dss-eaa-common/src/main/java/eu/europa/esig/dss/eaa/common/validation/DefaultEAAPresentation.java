@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.eaa.common.validation.identifier.EAAPresentationIdentifierBuilder;
 import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
+import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
@@ -10,6 +11,8 @@ import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.ListCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -118,6 +121,8 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
      */
     protected static abstract class DefaultEAAPresentationBuilder {
 
+        private static final Logger LOG = LoggerFactory.getLogger(DefaultEAAPresentationBuilder.class);
+
         /** Cached signature objects used to create the EAA */
         private List<AdvancedSignature> signatures;
 
@@ -192,12 +197,17 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
             }
             DefaultEAAPresentation eaaPresentation = initEAAPresentation();
             eaaPresentation.signatures = signatures;
+            for (AdvancedSignature signature : signatures) {
+                signature.setEAAPresentation(eaaPresentation);
+            }
             eaaPresentation.disclosures = disclosures;
             if (keyBindingSignature != null) {
                 CertificateSource signingCertificateSource = new ListCertificateSource(
                         getHolderCertificateSource(eaaPresentation.getPayload()), getSigningCertificateSource(signatures));
                 keyBindingSignature.setSigningCertificateSource(signingCertificateSource);
                 eaaPresentation.keyBindingSignature = keyBindingSignature;
+                keyBindingSignature.setEAAPresentation(eaaPresentation);
+                keyBindingSignature.setKeyBindingSignature(true);
             }
             eaaPresentation.filename = filename;
             return eaaPresentation;
@@ -209,7 +219,17 @@ public abstract class DefaultEAAPresentation implements EAAPresentation {
          * @param eaaPayload {@link EAAPayload}
          * @return {@link CertificateSource}
          */
-        protected abstract CertificateSource getHolderCertificateSource(EAAPayload eaaPayload);
+        protected CertificateSource getHolderCertificateSource(EAAPayload eaaPayload) {
+            ClaimDeviceKey claimDeviceKey = eaaPayload.getDeviceKey();
+            if (claimDeviceKey != null) {
+                try {
+                    return new DeviceKeyClaimCertificateSource(claimDeviceKey);
+                } catch (Exception e) {
+                    LOG.warn("Unable to read the device key claim : {}", e.getMessage(), e);
+                }
+            }
+            return null;
+        }
 
         private CertificateSource getSigningCertificateSource(List<AdvancedSignature> signatures) {
             AdvancedSignature signature = signatures.get(0);

@@ -36,8 +36,6 @@ import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
 import eu.europa.esig.dss.spi.x509.KidCertificateSource;
-import eu.europa.esig.dss.spi.x509.ListCertificateSource;
-import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
 import eu.europa.esig.dss.spi.x509.X509URLCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.x509.IssuerSerial;
@@ -342,45 +340,6 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 		checkSigningCertificateRef(candidatesForSigningCertificate);
 
 		return candidatesForSigningCertificate;
-	}
-
-	private CandidatesForSigningCertificate initCandidatesList(CertificateSource signingCertificateSource) {
-		if (signingCertificateSource instanceof ProofOfPossessionCertificateSource) {
-			ProofOfPossessionCertificateSource popCertificateSource = (ProofOfPossessionCertificateSource) signingCertificateSource;
-			final CandidatesForSigningCertificate candidates = new CandidatesForSigningCertificate();
-			List<CertificateToken> certificates = popCertificateSource.getCertificates();
-			if (Utils.isCollectionNotEmpty(certificates)) {
-				for (CertificateToken certificateToken : certificates) {
-					candidates.add(new CertificateValidity(certificateToken));
-				}
-			}
-			Set<CertificateRef> certificateRefs = popCertificateSource.getAllCertificateRefs();
-			if (Utils.isCollectionNotEmpty(certificateRefs)) {
-				Set<CertificateToken> certificateTokens = findTokensFromRefs(certificateRefs);
-				if (Utils.isCollectionNotEmpty(certificateTokens)) {
-					for (CertificateToken certificateToken : certificates) {
-						candidates.add(new CertificateValidity(certificateToken));
-					}
-				} else {
-					for (CertificateRef certificateRef : certificateRefs) {
-						if (certificateRef.getPublicKey() != null) {
-							candidates.add(new CertificateValidity(certificateRef.getPublicKey()));
-						}
-					}
-				}
-			}
-			return candidates;
-
-		} else if (signingCertificateSource instanceof ListCertificateSource) {
-			ListCertificateSource listCertificateSource = (ListCertificateSource) signingCertificateSource;
-			for (CertificateSource certificateSource : listCertificateSource.getSources()) {
-				CandidatesForSigningCertificate candidates = initCandidatesList(certificateSource);
-				if (!candidates.isEmpty()) {
-					return candidates;
-				}
-			}
-		}
-		return new CandidatesForSigningCertificate();
 	}
 
 	private void resolveFromSource(CertificateSource signingCertificateSource, CandidatesForSigningCertificate candidatesForSigningCertificate) {

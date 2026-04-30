@@ -35,6 +35,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifier;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifierBuilder;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -129,6 +130,16 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	 * The master signature in case if the current signature is a counter signature
 	 */
 	private AdvancedSignature masterSignature;
+
+	/**
+	 * EAA Presentation in case of a key binding signature
+	 */
+	private EAAPresentation eaaPresentation;
+
+	/**
+	 * Contains information whether the signature is a key binding signature
+	 */
+	private boolean keyBindingSignature;
 
 	/**
 	 * The SignaturePolicy identifier
@@ -395,8 +406,23 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	}
 
 	@Override
+	public EAAPresentation getEAAPresentation() {
+		return eaaPresentation;
+	}
+
+	@Override
+	public void setEAAPresentation(EAAPresentation eaaPresentation) {
+		this.eaaPresentation = eaaPresentation;
+	}
+
+	@Override
 	public boolean isKeyBindingSignature() {
-		return false;
+		return keyBindingSignature;
+	}
+
+	@Override
+	public void setKeyBindingSignature(boolean keyBindingSignature) {
+		this.keyBindingSignature = keyBindingSignature;
 	}
 
 	@Override

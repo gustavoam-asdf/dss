@@ -647,6 +647,16 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	}
 
 	/**
+	 * Get the algorithm Id used in MobileSecurityObject structure of mdoc.
+	 * Values are defined in ISO/IEC 18013-5 "9.1.2.5 Message digest function".
+	 *
+	 * @return {@link String} the algorithm MSO identifier
+	 */
+	public String getMSOId() {
+		return msoId;
+	}
+
+	/**
 	 * Get the salt length (PSS)
 	 * 
 	 * @return the salt length

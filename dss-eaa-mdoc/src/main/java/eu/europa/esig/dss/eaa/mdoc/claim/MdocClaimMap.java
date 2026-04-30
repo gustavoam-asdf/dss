@@ -2,8 +2,12 @@ package eu.europa.esig.dss.eaa.mdoc.claim;
 
 import eu.europa.esig.dss.eaa.mdoc.MdocUtils;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.DSSUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,46 @@ public class MdocClaimMap extends ClaimMap {
     public MdocClaimMap(final String name, final String namespace, final Map<?, ?> value,
                         final boolean selectivelyDisclosable, final Claim parent) {
         super(name, namespace, value, selectivelyDisclosable, parent);
+    }
+
+    /**
+     * Gets the claims for the corresponding header name key
+     *
+     * @param headerLabel {@link Number} header name or a map key to get a corresponding value for
+     * @return {@link Claim}
+     */
+    public Claim get(Number headerLabel) {
+        return getMapValue().get(getKeyAsString(headerLabel));
+    }
+
+    /**
+     * Gets the claim value if a string from the current map using the {@code headerLabel} as a key
+     *
+     * @param headerLabel {@link Number}
+     * @return {@link ClaimString}
+     */
+    public ClaimString getAsString(Number headerLabel) {
+        return getAsString(getKeyAsString(headerLabel));
+    }
+
+    /**
+     * Gets the claim value if a number from the current map using the {@code headerLabel} as a key
+     *
+     * @param headerLabel {@link Number}
+     * @return {@link ClaimNumber}
+     */
+    public ClaimNumber getAsNumber(Number headerLabel) {
+        return getAsNumber(getKeyAsString(headerLabel));
+    }
+
+    /**
+     * Checks if the claim for the {@code headerName} is of a CBOR array type and returns its value as {@code ClaimByteString}
+     *
+     * @param headerLabel {@link Number} to get header value from the map
+     * @return {@link ClaimArray}
+     */
+    protected ClaimArray getAsArray(Number headerLabel) {
+        return getAsArray(getKeyAsString(headerLabel));
     }
 
     /**
@@ -145,6 +189,40 @@ public class MdocClaimMap extends ClaimMap {
             long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(claim.getNumberValue().longValue());
             Date date = DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
             return new ClaimDate(claim.getName(), claim.getNamespace(), date, claim.isSelectivelyDisclosable(), claim.getParent());
+        }
+        return null;
+    }
+
+    /**
+     * Checks if the claim for the {@code headerName} is of byte string type and returns its value as {@code ClaimByteString}
+     *
+     * @param headerName {@link String} to get header value from the map
+     * @return {@link ClaimDate}
+     */
+    public ClaimByteString getAsByteString(String headerName) {
+        Claim claim = get(headerName);
+        return getAsByteString(claim);
+    }
+
+    /**
+     * Checks if the claim for the {@code headerName} is of byte string type and returns its value as {@code ClaimByteString}
+     *
+     * @param headerLabel {@link Number} to get header value from the map
+     * @return {@link ClaimDate}
+     */
+    public ClaimByteString getAsByteString(Number headerLabel) {
+        return getAsByteString(getKeyAsString(headerLabel));
+    }
+
+    /**
+     * Checks if the {@code claim} is of byte string type and returns its value as {@code ClaimByteString}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimByteString}
+     */
+    public ClaimByteString getAsByteString(Claim claim) {
+        if (claim != null && claim.isBinaryValueType()) {
+            return (ClaimByteString) claim;
         }
         return null;
     }

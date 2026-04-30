@@ -1,16 +1,19 @@
 package eu.europa.esig.dss.cbades.validation.scope;
 
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.scope.SignatureScope;
-import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.scope.AbstractSignatureScopeFinder;
 import eu.europa.esig.dss.spi.validation.scope.CounterSignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.DigestSignatureScope;
+import eu.europa.esig.dss.spi.validation.scope.EAASignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.FullSignatureScope;
+import eu.europa.esig.dss.spi.validation.scope.KeyBindingSignatureScope;
 import eu.europa.esig.dss.spi.validation.scope.SignatureScopeFinder;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
@@ -44,24 +47,38 @@ public class CBAdESSignatureScopeFinder extends AbstractSignatureScopeFinder imp
             return result;
         }
 
-        if (cbadesSignature.isCounterSignature()) {
-            result.add(new CounterSignatureScope(cbadesSignature.getMasterSignature(), originalDocuments.get(0)));
-        }
-
         List<ReferenceValidation> referenceValidations = cbadesSignature.getReferenceValidations();
-        for (ReferenceValidation referenceValidation : referenceValidations) {
+        for (int i = 0; i < referenceValidations.size(); i++) {
+            ReferenceValidation referenceValidation = referenceValidations.get(i);
             if (referenceValidation.isIntact()) {
-                if (originalDocuments.size() == 1 && !cbadesSignature.isCounterSignature()) {
+                if (cbadesSignature.isCounterSignature() && i == 0) {
+                    AdvancedSignature masterSignature = cbadesSignature.getMasterSignature();
+                    // first document shall always correspond to a counter signature signed value
+                    result.add(new CounterSignatureScope(masterSignature, originalDocuments.get(0)));
+                    if (COSESignatureType.COSE_SIGN1 == ((CBAdESSignature) masterSignature).getCOSESignatureType()) {
+                        result.addAll(masterSignature.getSignatureScopes());
+                    }
+                    return result;
+
+                } else if (cbadesSignature.isKeyBindingSignature()) {
+                    // only one document shall be present
+                    return Collections.singletonList(new KeyBindingSignatureScope(cbadesSignature.getEAAPresentation(), originalDocuments.get(0)));
+
+                } else if (cbadesSignature.getEAAPresentation() != null) {
+                    // only one document shall be present
+                    return Collections.singletonList(new EAASignatureScope(cbadesSignature.getEAAPresentation(), originalDocuments.get(0)));
+
+                } else if (originalDocuments.size() == 1) {
                     return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0)));
+
+                } else if (referenceValidation.getUri() != null) {
+                    DSSDocument document = referenceValidation.getDocument();
+                    result.add(getSignatureScopeFromOriginalDocument(document));
 
                 } else if (referenceValidations.size() == 1) {
                     return getSignatureScopeFromOriginalDocuments(originalDocuments);
-
-                } else if (referenceValidation.getUri() != null) {
-                    DSSDocument documentByName = getDocumentByName(originalDocuments, referenceValidation.getUri());
-                    result.add(getSignatureScopeFromOriginalDocument(documentByName));
-
                 }
+
             }
         }
 
@@ -97,23 +114,6 @@ public class CBAdESSignatureScopeFinder extends AbstractSignatureScopeFinder imp
         } else {
             return new FullSignatureScope(originalDocument.getName(), originalDocument);
         }
-    }
-
-    /**
-     * Returns a DSSDocument with the given name from the available list of documents
-     *
-     * @param documents a list of {@link DSSDocument}s
-     * @param documentName {@link String} document name to extract
-     * @return {@link DSSDocument}
-     */
-    private DSSDocument getDocumentByName(List<DSSDocument> documents, String documentName) {
-        documentName = DSSUtils.decodeURI(documentName);
-        for (DSSDocument document : documents) {
-            if (documentName.equals(document.getName())) {
-                return document;
-            }
-        }
-        return null;
     }
 
     /**

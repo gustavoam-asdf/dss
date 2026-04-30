@@ -101,7 +101,6 @@ public abstract class AbstractSDJWTEAAPresentationAnalyzer extends DefaultEAAPre
         }
         JAdESSignature keyBindingSignature = buildSignature(jwsKeyBindingList.get(0));
         keyBindingSignature.setSigningCertificateSource(signingCertificateSource);
-        keyBindingSignature.setEAAMasterSignature((JAdESSignature) signatures.get(0));
         DSSDocument keyBindingDetachedContent = getKeyBindingDetachedContent(sdJwtSerializationObject);
         if (keyBindingDetachedContent != null) {
             keyBindingSignature.setDetachedContents(Collections.singletonList(keyBindingDetachedContent));

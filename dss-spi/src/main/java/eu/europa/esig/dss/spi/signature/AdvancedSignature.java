@@ -42,6 +42,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifier;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
@@ -245,6 +246,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	void initBaselineRequirementsChecker(CertificateVerifier certificateVerifier);
 
 	/**
+	 * Gets master signature
+	 *
+	 * @return {@code AdvancedSignature}
+	 */
+	AdvancedSignature getMasterSignature();
+
+	/**
 	 * This setter allows to indicate the master signature. It means that this is a countersignature.
 	 *
 	 * @param masterSignature
@@ -253,11 +261,18 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	void setMasterSignature(final AdvancedSignature masterSignature);
 
 	/**
-	 * Gets master signature
+	 * Gets the EAA presentation of a EAA signing or key binding signature
 	 *
-	 * @return {@code AdvancedSignature}
+	 * @return {@code EAAPresentation}
 	 */
-	AdvancedSignature getMasterSignature();
+	EAAPresentation getEAAPresentation();
+
+	/**
+	 * Sets EAA presentation of the EAA signing or key binging signature
+	 *
+	 * @param eaaPresentation {@link EAAPresentation}
+	 */
+	void setEAAPresentation(EAAPresentation eaaPresentation);
 	
 	/**
 	 * Checks if the current signature is a counter signature (i.e. has a Master signature)
@@ -273,6 +288,14 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 * @return TRUE if it is a key binding signature, FALSE otherwise
 	 */
 	boolean isKeyBindingSignature();
+
+	/**
+	 * Sets whether the current signature is a key binding signature.
+	 * NOTE: Used for EAA tokens.
+	 *
+	 * @param keyBindingSignature whether the current signature is a key binding signature
+	 */
+	void setKeyBindingSignature(boolean keyBindingSignature);
 
 	/**
 	 * This method returns the signing certificate token or null if there is no valid signing certificate. Note that to

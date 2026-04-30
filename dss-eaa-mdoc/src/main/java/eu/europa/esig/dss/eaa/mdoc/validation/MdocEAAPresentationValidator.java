@@ -27,6 +27,15 @@ public class MdocEAAPresentationValidator extends DefaultEAAPresentationValidato
         super(new MdocEAAPresentationAnalyzer(document));
     }
 
+    /**
+     * Sets the session transcript of communication used for the device retrieval (mdoc key binding signature)
+     *
+     * @param sessionTranscript {@link DSSDocument}
+     */
+    public void setSessionTranscript(DSSDocument sessionTranscript) {
+        getDocumentAnalyzer().setSessionTranscript(sessionTranscript);
+    }
+
     @Override
     public MdocEAAPresentationAnalyzer getDocumentAnalyzer() {
         return (MdocEAAPresentationAnalyzer) super.getDocumentAnalyzer();

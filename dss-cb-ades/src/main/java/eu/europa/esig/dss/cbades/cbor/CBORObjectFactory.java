@@ -33,6 +33,9 @@ public class CBORObjectFactory {
         if (object == null) {
             return null;
         }
+        if (object instanceof CBORObject) {
+            return (CBORObject) object;
+        }
         DataItem dataItem;
         if (object instanceof DataItem) {
             dataItem = (DataItem) object;
@@ -76,9 +79,13 @@ public class CBORObjectFactory {
             CBORObject cborObject = (CBORObject) object;
             return cborObject.toDataItem();
 
+        } else if (object instanceof Integer) {
+            int intNumber = (Integer) object;
+            return intNumber >= 0 ? new UnsignedInteger(intNumber) : new NegativeInteger(intNumber);
+
         } else if (object instanceof Long) {
             long longNumber = (Long) object;
-            return longNumber > 0 ? new UnsignedInteger(longNumber) : new NegativeInteger(longNumber);
+            return longNumber >= 0 ? new UnsignedInteger(longNumber) : new NegativeInteger(longNumber);
 
         } else if (object instanceof Double) {
             double doubleNumber = (Double) object;

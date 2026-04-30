@@ -1,17 +1,24 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
+import co.nstant.in.cbor.CborException;
 import eu.europa.esig.dss.cbades.COSESignStructure;
-import eu.europa.esig.dss.enumerations.COSESignatureType;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
 import eu.europa.esig.dss.eaa.mdoc.MdocParser;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceAuth;
+import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceNameSpaces;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceResponse;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceSigned;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocument;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSignedItem;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -37,6 +44,9 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
     /** Cached instance of the mdoc */
     private MdocDeviceResponse mdoc;
 
+    /** Contains transcript of communication used for the device retrieval (mdoc key binding signature) */
+    private DSSDocument sessionTranscript;
+
     /**
      * Default constructor
      */
@@ -56,6 +66,15 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
         this.mdoc = buildMdoc();
     }
 
+    /**
+     * Sets the session transcript of communication used for the device retrieval (mdoc key binding signature)
+     *
+     * @param sessionTranscript {@link DSSDocument}
+     */
+    public void setSessionTranscript(DSSDocument sessionTranscript) {
+        this.sessionTranscript = sessionTranscript;
+    }
+
     @Override
     public boolean isSupported(DSSDocument document) {
         return new MdocParser(document).isSupported();
@@ -72,7 +91,7 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
             MdocEAAPresentation mdocEaa = MdocEAAPresentation.initBuilder()
                     .setSignatures(Collections.singletonList(getSignature(mdocDocument.getIssuerSigned().getIssuerAuth())))
                     .setDisclosures(getSignedItems(mdocDocument.getIssuerSigned().getNamespaces()))
-                    .setKeyBindingSignature(getKeyBindingSignature(mdocDocument.getDeviceSigned()))
+                    .setKeyBindingSignature(getKeyBindingSignature(mdocDocument.getDeviceSigned(), mdocDocument.getDocType(), mdocDocument.getDeviceSigned().getDeviceNameSpaces()))
                     .setFilename(document.getName())
                     .setDocumentType(mdocDocument.getDocType())
                     .build();
@@ -86,9 +105,9 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
      * NOTE: The ISO 18013-5 specifies that a COSE_Sign1 structure shall be used, thus only one signature is expected.
      *
      * @param coseSignStructureObject {@link COSESignStructure}
-     * @return {@link AdvancedSignature}
+     * @return {@link CBAdESSignature}
      */
-    protected AdvancedSignature getSignature(COSESignStructure coseSignStructureObject) {
+    protected CBAdESSignature getSignature(COSESignStructure coseSignStructureObject) {
         if (COSESignatureType.COSE_SIGN1 != coseSignStructureObject.getContext()) {
             throw new IllegalInputException("The mdoc signature shall be represented by a 'COSE_Sign1' object!");
         }
@@ -130,11 +149,14 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
      * @param deviceSigned {@link MdocDeviceSigned}
      * @return {@link AdvancedSignature}
      */
-    protected AdvancedSignature getKeyBindingSignature(MdocDeviceSigned deviceSigned) {
+    protected AdvancedSignature getKeyBindingSignature(MdocDeviceSigned deviceSigned, String docType, MdocDeviceNameSpaces deviceNameSpaces) {
         // TODO : support namespaces extraction for a key binding signature ?
         MdocDeviceAuth deviceAuth = deviceSigned.getDeviceAuth();
         if (deviceAuth.getDeviceSignature() != null) {
-            return getSignature(deviceAuth.getDeviceSignature());
+            CBAdESSignature signature = getSignature(deviceAuth.getDeviceSignature());
+            signature.setDetachedContents(Collections.singletonList(getDeviceAuthenticationBytes(docType, deviceNameSpaces)));
+            return signature;
+
         } else if (deviceAuth.getDeviceMac() != null) {
             LOG.warn("The 'deviceMac' is not supported by the implementation. " +
                     "The processing of key binding signature will be skipped.");
@@ -143,6 +165,60 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
                     "The processing of key binding signature will be skipped.");
         }
         return null;
+    }
+
+    /**
+     * Build a DeviceAuthenticationBytes object as defined in ISO 18013-5
+     *
+     * @param docType {@link String}
+     * @param deviceNameSpaces {@link MdocDeviceNameSpaces}
+     * @return {@link DSSDocument}
+     */
+    protected DSSDocument getDeviceAuthenticationBytes(String docType, MdocDeviceNameSpaces deviceNameSpaces) {
+        if (sessionTranscript == null) {
+            LOG.info("No session transcript bytes have been provided. Validation of key binding signature is limited.");
+            return null;
+        }
+
+        /*
+         * ISO 18013-5 "9.1.3.4 Mechanism (mdoc authentication)"
+         *
+         * DeviceAuthenticationBytes = #6.24(bstr .cbor DeviceAuthentication)
+         * DeviceAuthentication = [
+         *     "DeviceAuthentication",
+         *     SessionTranscript,
+         *     DocType,                    ; Same as in mdoc response
+         *     DeviceNameSpacesBytes       ; Same as in mdoc response
+         * ]
+         */
+        final CBORArray deviceAuthentication = new CBORArray();
+        deviceAuthentication.add("DeviceAuthentication");
+
+        CBORArray sessionTranscriptCbor = new CBORArray();
+        try {
+            CBORObject cborObject = CBORUtils.parseCbor(sessionTranscript);
+            if (cborObject.isArray()) {
+                sessionTranscriptCbor = (CBORArray) cborObject;
+            } else if (cborObject.isByteString()) {
+                cborObject = CBORUtils.parseCbor(cborObject.getValueAsBytes());
+                if (cborObject.isArray()) {
+                    sessionTranscriptCbor = (CBORArray) cborObject;
+                } else {
+                    LOG.warn("Session transcript binaries do not represent a CBOR array. Obtained type : {}", cborObject.getClass().getSimpleName());
+                }
+            } else {
+                LOG.warn("Session transcript is expected in a form of a CBOR array or binaries. Obtained type : {}", cborObject.getClass().getSimpleName());
+            }
+
+        } catch (CborException e) {
+            LOG.warn("Unable to parse session transcript as CBOR object : {}", e.getMessage(), e);
+        }
+        deviceAuthentication.add(sessionTranscriptCbor);
+        deviceAuthentication.add(docType);
+        deviceAuthentication.add(deviceNameSpaces.getDeviceNameSpaceBytes());
+
+        CBORByteString deviceAuthenticationBytes = CBORUtils.toCborBtsrWrappedTagged(deviceAuthentication);
+        return new InMemoryDocument(CBORUtils.serializeCborObject(deviceAuthenticationBytes));
     }
 
 }

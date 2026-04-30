@@ -38,30 +38,30 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.SignaturePolicyStore;
 import eu.europa.esig.dss.model.SpDocSpecification;
 import eu.europa.esig.dss.model.UserNotice;
 import eu.europa.esig.dss.model.scope.SignatureScope;
+import eu.europa.esig.dss.model.signature.CommitmentTypeIndication;
+import eu.europa.esig.dss.model.signature.SignatureCryptographicVerification;
+import eu.europa.esig.dss.model.signature.SignatureDigestReference;
+import eu.europa.esig.dss.model.signature.SignaturePolicy;
+import eu.europa.esig.dss.model.signature.SignatureProductionPlace;
+import eu.europa.esig.dss.model.signature.SignerRole;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.signature.DefaultAdvancedSignature;
+import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifierBuilder;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
 import eu.europa.esig.dss.spi.x509.SignatureIntegrityValidator;
 import eu.europa.esig.dss.spi.x509.revocation.crl.OfflineCRLSource;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OfflineOCSPSource;
-import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import eu.europa.esig.dss.spi.validation.CertificateVerifier;
-import eu.europa.esig.dss.model.signature.CommitmentTypeIndication;
-import eu.europa.esig.dss.spi.signature.DefaultAdvancedSignature;
-import eu.europa.esig.dss.model.ReferenceValidation;
-import eu.europa.esig.dss.spi.SignatureCertificateSource;
-import eu.europa.esig.dss.model.signature.SignatureCryptographicVerification;
-import eu.europa.esig.dss.model.signature.SignatureDigestReference;
-import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifierBuilder;
-import eu.europa.esig.dss.model.signature.SignaturePolicy;
-import eu.europa.esig.dss.model.signature.SignatureProductionPlace;
-import eu.europa.esig.dss.model.signature.SignerRole;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
+import eu.europa.esig.dss.utils.Utils;
 import org.jose4j.jwx.HeaderParameterNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +88,6 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	
 	/** Defines if the validating signature is detached */
 	private final boolean isDetached;
-
-	/** Master signature of the key binding signature used to create the issued EAA */
-	private JAdESSignature eaaMasterSignature;
 	
 	/**
 	 * The 'cSig' object embedding the current signature
@@ -199,20 +196,6 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	 */
 	public void setMasterCSigComponent(EtsiUComponent masterCSigComponent) {
 		this.masterCSigComponent = masterCSigComponent;
-	}
-
-	/**
-	 * Sets EAA master signature of the key binding signature used to issue EAA
-	 *
-	 * @param eaaMasterSignature {@link JAdESSignature}
-	 */
-	public void setEAAMasterSignature(JAdESSignature eaaMasterSignature) {
-		this.eaaMasterSignature = eaaMasterSignature;
-	}
-
-	@Override
-	public boolean isKeyBindingSignature() {
-		return eaaMasterSignature != null;
 	}
 
 	@Override
@@ -1159,7 +1142,12 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 
 	private DigestAlgorithm getSdAlg() {
-		Map<String, Object> payload = eaaMasterSignature.getJws().getDecodedPayload();
+		List<AdvancedSignature> eaaSignatures = getEAAPresentation().getSignatures();
+		if (Utils.isCollectionEmpty(eaaSignatures)) {
+			throw new IllegalStateException("EAA signatures cannot be null or empty!");
+		}
+		JAdESSignature eaaSignature = (JAdESSignature) eaaSignatures.iterator().next();
+		Map<String, Object> payload = eaaSignature.getJws().getDecodedPayload();
 		String sdAlgId = DSSJsonUtils.getAsString(payload, "_sd_alg");
 		if (sdAlgId == null) {
 			LOG.warn("No _sd_alg header found within the SD-JWT payload!");

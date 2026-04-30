@@ -177,7 +177,7 @@ public final class CBORUtils {
      */
     public static byte[] serializeCborObject(CBORObject cborObject) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            CborEncoder cborEncoder = new CborEncoder(baos);
+            CborEncoder cborEncoder = new CborEncoder(baos).nonCanonical(); // TODO: order of elements is to be ensured on our side ?
             cborEncoder.encode(cborObject.toDataItem());
             return baos.toByteArray();
         } catch (CborException | IOException e) {
@@ -188,11 +188,23 @@ public final class CBORUtils {
     /**
      * Returns a CBOR Byte String wrapped incorporation of the {@code cborObject}
      *
-     * @param cborObject {@link CBORObject} to serialized and incroporate into CBOR Byte String type
+     * @param cborObject {@link CBORObject} to serialized and incorporate into CBOR Byte String type
      * @return {@link CBORByteString}
      */
     public static CBORByteString toCborBtsrWrapped(CBORObject cborObject) {
         return new CBORByteString(serializeCborObject(cborObject));
+    }
+
+    /**
+     * Returns a CBOR Byte String wrapped incorporation of the {@code cborObject}, which also includes the #6.24 tag
+     *
+     * @param cborObject {@link CBORObject} to serialized and incorporate into CBOR Byte String type
+     * @return {@link CBORByteString}
+     */
+    public static CBORByteString toCborBtsrWrappedTagged(CBORObject cborObject) {
+        CBORByteString cborBtsrWrapped = toCborBtsrWrapped(cborObject);
+        cborBtsrWrapped.setTag(24L);
+        return cborBtsrWrapped;
     }
 
     /**

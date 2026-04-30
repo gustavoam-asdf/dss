@@ -27,7 +27,11 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.CertificateValidity;
+import eu.europa.esig.dss.spi.x509.ListCertificateSource;
+import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
 import eu.europa.esig.dss.spi.x509.TokenCertificateSource;
+import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
 import java.util.Set;
@@ -227,6 +231,51 @@ public abstract class SignatureCertificateSource extends TokenCertificateSource 
 	 */
 	protected abstract CandidatesForSigningCertificate extractCandidatesForSigningCertificate(
 			CertificateSource signingCertificateSource);
+
+	/**
+	 * This method is used to init candidates list from a provided signing certificate source
+	 *
+	 * @param signingCertificateSource {@link CertificateSource}
+	 * @return {@link CandidatesForSigningCertificate}
+	 */
+	protected CandidatesForSigningCertificate initCandidatesList(CertificateSource signingCertificateSource) {
+		if (signingCertificateSource instanceof ProofOfPossessionCertificateSource) {
+			ProofOfPossessionCertificateSource popCertificateSource = (ProofOfPossessionCertificateSource) signingCertificateSource;
+			final CandidatesForSigningCertificate candidates = new CandidatesForSigningCertificate();
+			List<CertificateToken> certificates = popCertificateSource.getCertificates();
+			if (Utils.isCollectionNotEmpty(certificates)) {
+				for (CertificateToken certificateToken : certificates) {
+					candidates.add(new CertificateValidity(certificateToken));
+				}
+			}
+			Set<CertificateRef> certificateRefs = popCertificateSource.getAllCertificateRefs();
+			if (Utils.isCollectionNotEmpty(certificateRefs)) {
+				Set<CertificateToken> certificateTokens = findTokensFromRefs(certificateRefs);
+				if (Utils.isCollectionNotEmpty(certificateTokens)) {
+					for (CertificateToken certificateToken : certificates) {
+						candidates.add(new CertificateValidity(certificateToken));
+					}
+				} else {
+					for (CertificateRef certificateRef : certificateRefs) {
+						if (certificateRef.getPublicKey() != null) {
+							candidates.add(new CertificateValidity(certificateRef.getPublicKey()));
+						}
+					}
+				}
+			}
+			return candidates;
+
+		} else if (signingCertificateSource instanceof ListCertificateSource) {
+			ListCertificateSource listCertificateSource = (ListCertificateSource) signingCertificateSource;
+			for (CertificateSource certificateSource : listCertificateSource.getSources()) {
+				CandidatesForSigningCertificate candidates = initCandidatesList(certificateSource);
+				if (!candidates.isEmpty()) {
+					return candidates;
+				}
+			}
+		}
+		return new CandidatesForSigningCertificate();
+	}
 
 	@Override
 	public CertificateSourceType getCertificateSourceType() {

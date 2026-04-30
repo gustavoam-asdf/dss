@@ -42,6 +42,106 @@ public final class COSEConstants {
     /** COSE_CertHash hashValue. Array position '1' */
     public static final int COSE_CERT_HASH_VALUE = 1;
 
+    /* COSE_Key */
+
+    /** COSE_Key 'kty'. Array position '1' */
+    public static final int COSE_KEY_KTY = 1;
+
+    /** COSE_Key 'kid'. Array position '2' */
+    public static final int COSE_KEY_KID = 2;
+
+    /** COSE_Key 'alg'. Array position '3' */
+    public static final int COSE_KEY_ALG = 3;
+
+    /** COSE_Key 'key_ops'. Array position '4' */
+    public static final int COSE_KEY_KEY_OPS = 4;
+
+    /** COSE_Key 'Base IV'. Array position '5' */
+    public static final int COSE_KEY_BASE_IV = 5;
+
+    /* COSE_Key "Table 21: Key Type Values" */
+
+    /** COSE_Key type 'OKP' name */
+    public static final String COSE_KEY_TYPE_OKP_NAME = "OKP";
+
+    /** COSE_Key type 'OKP' value */
+    public static final long COSE_KEY_TYPE_OKP_VALUE = 1;
+
+    /** COSE_Key type 'EC2' name */
+    public static final String COSE_KEY_TYPE_EC2_NAME = "EC2";
+
+    /** COSE_Key type 'EC2' value */
+    public static final long COSE_KEY_TYPE_EC2_VALUE = 2;
+
+    /** COSE_Key type 'Symmetric' name */
+    public static final String COSE_KEY_TYPE_RSA_NAME = "RSA";
+
+    /** COSE_Key type 'Symmetric' value */
+    public static final long COSE_KEY_TYPE_RSA_VALUE = 3;
+
+    /* RFC 9053 "CBOR Object Signing and Encryption (COSE): Initial Algorithms". Type 1 */
+
+    /** COSE_Key type 'OKP', EC identifier -- Taken from the "COSE Elliptic Curves" registry */
+    public static final long COSE_KEY_TYPE_OKP_CRV = -1;
+
+    /** COSE_Key type 'OKP', Public Key */
+    public static final long COSE_KEY_TYPE_OKP_X = -2;
+
+    /** COSE_Key type 'OKP', Private Key */
+    public static final long COSE_KEY_TYPE_OKP_D = -4;
+
+    /* RFC 9053 "CBOR Object Signing and Encryption (COSE): Initial Algorithms". Type 2 */
+
+    /** COSE_Key type 'EC2', EC identifier -- Taken from the "COSE Elliptic Curves" registry */
+    public static final long COSE_KEY_TYPE_EC2_CRV = -1;
+
+    /** COSE_Key type 'EC2', x-coordinate */
+    public static final long COSE_KEY_TYPE_EC2_X = -2;
+
+    /** COSE_Key type 'EC2', y-coordinate */
+    public static final long COSE_KEY_TYPE_EC2_Y = -3;
+
+    /** COSE_Key type 'EC2', Private key */
+    public static final long COSE_KEY_TYPE_EC2_D = -4;
+
+    /* RFC 8230 "Using RSA Algorithms with CBOR Object Signing and Encryption (COSE) Messages". Type 3 */
+
+    /** COSE_Key type 'RSA', the RSA modulus n */
+    public static final long COSE_KEY_TYPE_RSA_N = -1;
+
+    /** COSE_Key type 'RSA', the RSA public exponent e */
+    public static final long COSE_KEY_TYPE_RSA_E = -2;
+
+    /** COSE_Key type 'RSA', the RSA private exponent d */
+    public static final long COSE_KEY_TYPE_RSA_D = -3;
+
+    /** COSE_Key type 'RSA', the prime factor p of n */
+    public static final long COSE_KEY_TYPE_RSA_P = -4;
+
+    /** COSE_Key type 'RSA', the prime factor q of n */
+    public static final long COSE_KEY_TYPE_RSA_Q = -5;
+
+    /** COSE_Key type 'RSA', dP is d mod (p - 1) */
+    public static final long COSE_KEY_TYPE_RSA_DP = -6;
+
+    /** COSE_Key type 'RSA', dQ is d mod (q - 1) */
+    public static final long COSE_KEY_TYPE_RSA_DQ = -7;
+
+    /** COSE_Key type 'RSA', qInv is the CRT coefficient q^(-1) mod p */
+    public static final long COSE_KEY_TYPE_RSA_QINV = -8;
+
+    /** COSE_Key type 'RSA', other prime infos, an array */
+    public static final long COSE_KEY_TYPE_RSA_OTHER = -9;
+
+    /** COSE_Key type 'RSA', a prime factor r_i of n, where i >= 3 */
+    public static final long COSE_KEY_TYPE_RSA_R_I = -10;
+
+    /** COSE_Key type 'RSA', d_i = d mod (r_i - 1) */
+    public static final long COSE_KEY_TYPE_RSA_D_I = -11;
+
+    /** COSE_Key type 'RSA', the CRT coefficient t_i = (r_1 * r_2 * ... * r_(i-1))^(-1) mod r_i */
+    public static final long COSE_KEY_TYPE_RSA_T_I = -12;
+
     /**
      * Singleton
      */

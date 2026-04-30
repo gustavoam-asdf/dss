@@ -4,7 +4,6 @@ import eu.europa.esig.dss.cbades.CBAdESSignatureIntegrityValidator;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEConstants;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
-import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.cbades.COSEStructure;
 import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
@@ -16,6 +15,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.scope.CBAdESSignatureScopeFinder;
 import eu.europa.esig.dss.cbades.validation.timestamp.CBAdESTimestampSource;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EndorsementType;
@@ -67,6 +67,8 @@ import java.util.Map;
  *
  */
 public class CBAdESSignature extends DefaultAdvancedSignature {
+
+    private static final long serialVersionUID = 3946729148011406453L;
 
     private static final Logger LOG = LoggerFactory.getLogger(CBAdESSignature.class);
 

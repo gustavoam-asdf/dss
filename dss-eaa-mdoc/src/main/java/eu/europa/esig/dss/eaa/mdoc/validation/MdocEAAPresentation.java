@@ -5,9 +5,7 @@ import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentation;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.model.eaa.Disclosure;
-import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
@@ -127,11 +125,6 @@ public class MdocEAAPresentation extends DefaultEAAPresentation {
             MdocEAAPresentation mdocEAAPresentation = (MdocEAAPresentation) super.build();
             mdocEAAPresentation.setDocumentType(documentType);
             return mdocEAAPresentation;
-        }
-
-        @Override
-        protected CertificateSource getHolderCertificateSource(EAAPayload eaaPayload) {
-            return null;
         }
 
     }

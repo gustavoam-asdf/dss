@@ -156,11 +156,14 @@ public class CBAdESLevelBCounterSignatureCoseSign1Test extends AbstractCBAdESCou
         for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
             if (signatureWrapper.isCounterSignature()) {
                 List<XmlSignatureScope> signatureScopes = signatureWrapper.getSignatureScopes();
-                assertEquals(1, signatureScopes.size());
+                assertEquals(2, signatureScopes.size());
 
                 XmlSignatureScope xmlSignatureScope = signatureScopes.get(0);
                 assertEquals(SignatureScopeType.COUNTER_SIGNATURE, xmlSignatureScope.getScope());
                 assertEquals(signatureWrapper.getParent().getId(), xmlSignatureScope.getName());
+
+                xmlSignatureScope = signatureScopes.get(1);
+                assertEquals(SignatureScopeType.FULL, xmlSignatureScope.getScope());
 
                 counterSignatureFound = true;
             }

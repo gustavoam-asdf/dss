@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.eaa.jwt.validation;
+package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.model.Digest;
