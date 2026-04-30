@@ -730,7 +730,7 @@ public interface ValidationPolicy {
 	 * Indicates the country or set of countries under the legislation of which the certificate is issued as a
 	 * qualified certificate is present.
 	 * <p>
-	 * NOTE: in order to verify the EU compliance, the value shall be empty (no QcCCLegislation is allowed)
+	 * NOTE: in order to verify the EU compliance, the value shall be empty (no QcCClegislation is allowed)
 	 *
 	 * @param context {@link Context}
 	 * @param subContext {@link SubContext}
