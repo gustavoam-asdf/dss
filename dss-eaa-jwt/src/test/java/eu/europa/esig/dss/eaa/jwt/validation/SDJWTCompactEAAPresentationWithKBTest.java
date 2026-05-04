@@ -63,7 +63,9 @@ class SDJWTCompactEAAPresentationWithKBTest extends AbstractSDJWTEAAPresentation
                 "    \"region\": \"Anystate\",\n" +
                 "    \"country\": \"US\"\n" +
                 "  },\n" +
-                "  \"given_name\": \"John\"\n" +
+                "  \"given_name\": \"John\",\n" +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "}";
         originalDocument = new InMemoryDocument(payload.getBytes());
         originalDocument.setMimeType(MimeTypeEnum.JSON);

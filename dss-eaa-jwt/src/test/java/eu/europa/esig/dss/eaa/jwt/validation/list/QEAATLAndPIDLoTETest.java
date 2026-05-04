@@ -254,7 +254,7 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
         String commonName = DSSASN1Utils.extractAttributeFromX500Principal(BCStyle.CN, getSigningCert().getSubject());
 
         String category = null;
-        String vct = null;
+        String vct;
         if (commonName.contains("QEAA")) {
             category = EAACategory.EU_QEAA.getUrn();
         } else if (commonName.contains("PubEAA")) {
@@ -262,6 +262,8 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
         }
         if (commonName.contains("PID")) {
             vct = "urn:eudi:pid:1";
+        } else {
+            vct = "urn:eudi:eaa:1";
         }
 
         String payload = "{\n" +
@@ -270,7 +272,8 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
                 "  \"exp\": 1883000000,\n" +
                 "  \"sub\": \"user_42\",\n" +
                 (category != null ? ("  \"category\": \"" + category + "\",\n") : "") +
-                (vct != null ? ("  \"vct\": \"" + vct + "\",\n") : "") +
+                "  \"vct\": \"" + vct + "\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "  \"nationalities\": [\n" +
                 "    \"US\"\n" +
                 "  ],\n" +
@@ -289,7 +292,7 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
                 "    \"region\": \"Anystate\",\n" +
                 "    \"country\": \"US\"\n" +
                 "  },\n" +
-                "  \"given_name\": \"John\"\n" +
+                "  \"given_name\": \"John\",\n" +
                 "}";
         DSSDocument originalDocument = new InMemoryDocument(payload.getBytes());
 

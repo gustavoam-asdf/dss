@@ -1,13 +1,12 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -48,7 +47,9 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
                 "      \"x\": \"TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc\",\n" +
                 "      \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"\n" +
                 "    }\n" +
-                "  }\n" +
+                "  },\n" +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "}";
         originalDocument = new InMemoryDocument(payload.getBytes());
         originalDocument.setMimeType(MimeTypeEnum.JSON);

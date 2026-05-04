@@ -1,13 +1,13 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
-import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -46,7 +46,9 @@ class SDJWTCompactEAAPresentationWithAgeClaimValidationTest extends AbstractSDJW
                 "      \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"\n" +
                 "    }\n" +
                 "  },\n" +
-                "  \"age\": 42" +
+                "  \"age\": 42," +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "}";
         originalDocument = new InMemoryDocument(payload.getBytes());
         originalDocument.setMimeType(MimeTypeEnum.JSON);
@@ -94,6 +96,10 @@ class SDJWTCompactEAAPresentationWithAgeClaimValidationTest extends AbstractSDJW
         assertEquals("user_42", eaaPresentation.getEAASubject());
         assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+
+        assertEquals("urn:eudi:eaa:1", eaaPresentation.getEAAMetadataUri());
+        assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());
+        assertNotNull(eaaPresentation.getEAAMetadataIntegrityBytes());
 
         List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);

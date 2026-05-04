@@ -152,6 +152,7 @@ class PIDLoTETest extends PKIFactoryAccess {
                 "  \"exp\": 1883000000,\n" +
                 "  \"sub\": \"user_42\",\n" +
                 "  \"vct\": \"urn:eudi:pid:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "  \"nationalities\": [\n" +
                 "    \"US\"\n" +
                 "  ],\n" +
@@ -170,7 +171,7 @@ class PIDLoTETest extends PKIFactoryAccess {
                 "    \"region\": \"Anystate\",\n" +
                 "    \"country\": \"US\"\n" +
                 "  },\n" +
-                "  \"given_name\": \"John\"\n" +
+                "  \"given_name\": \"John\",\n" +
                 "}";
         DSSDocument originalDocument = new InMemoryDocument(payload.getBytes());
 

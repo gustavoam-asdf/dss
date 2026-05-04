@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -58,6 +59,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
                 "      \"...\": \"7Cf6JkPudry3lcbwHgeZ8khAv1U1OSlerP0VkBJrWZ0\"\n" +
                 "    }\n" +
                 "  ],\n" +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "  \"_sd_alg\": \"sha-256\",\n" +
                 "  \"cnf\": {\n" +
                 "    \"jwk\": {\n" +
@@ -143,6 +146,10 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertTrue(eaaPresentation.getHolderPhoneNumberVerified());
         assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getHolderNationalities());
 
+        assertEquals("urn:eudi:eaa:1", eaaPresentation.getEAAMetadataUri());
+        assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());
+        assertNotNull(eaaPresentation.getEAAMetadataIntegrityBytes());
+
         List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
         assertEquals(10, selectivelyDisclosableClaims.size());
 
@@ -163,6 +170,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         boolean phoneNumberVerifiedClaimFound = false;
         boolean nationalitiesClaimFound = false;
         boolean cnfClaimFound = false;
+        boolean vctClaimFound = false;
+        boolean vctIntegrityClaimFound = false;
         for (ClaimWrapper disclosableClaim : payloadClaims) {
             if ("iss".equals(disclosableClaim.getName())) {
                 assertEquals("https://issuer.example.com", disclosableClaim.getDisplayValue());
@@ -239,6 +248,16 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
                 assertFalse(disclosableClaim.isSelectivelyDisclosable());
                 cnfClaimFound = true;
 
+            } else if ("vct".equals(disclosableClaim.getName())) {
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                assertEquals("urn:eudi:eaa:1", disclosableClaim.getText());
+                vctClaimFound = true;
+
+            } else if ("vct#integrity".equals(disclosableClaim.getName())) {
+                assertFalse(disclosableClaim.isSelectivelyDisclosable());
+                assertEquals("sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=", disclosableClaim.getText());
+                vctIntegrityClaimFound = true;
+
             } else {
                 fail(String.format("Not processed claim with name '%s'", disclosableClaim.getName()));
             }
@@ -257,6 +276,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertTrue(phoneNumberVerifiedClaimFound);
         assertTrue(nationalitiesClaimFound);
         assertTrue(cnfClaimFound);
+        assertTrue(vctClaimFound);
+        assertTrue(vctIntegrityClaimFound);
     }
 
     @Override

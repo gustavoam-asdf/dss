@@ -65,6 +65,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresAndKBTest extends AbstractSDJWTE
                 "      \"...\": \"7Cf6JkPudry3lcbwHgeZ8khAv1U1OSlerP0VkBJrWZ0\"\n" +
                 "    }\n" +
                 "  ],\n" +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "  \"_sd_alg\": \"sha-256\",\n" +
                 "  \"cnf\": {\n" +
                 "    \"jwk\": {\n" +

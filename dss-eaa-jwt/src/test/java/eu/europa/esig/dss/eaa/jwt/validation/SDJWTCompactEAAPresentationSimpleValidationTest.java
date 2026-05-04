@@ -39,6 +39,8 @@ class SDJWTCompactEAAPresentationSimpleValidationTest extends AbstractSDJWTEAAPr
                 "      \"y\": \"ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ\"\n" +
                 "    }\n" +
                 "  },\n" +
+                "  \"vct\": \"urn:eudi:eaa:1\",\n" +
+                "  \"vct#integrity\": \"sha256-1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=\",\n" +
                 "  \"family_name\": \"Doe\",\n" +
                 "  \"address\": {\n" +
                 "    \"street_address\": \"123 Main St\",\n" +
