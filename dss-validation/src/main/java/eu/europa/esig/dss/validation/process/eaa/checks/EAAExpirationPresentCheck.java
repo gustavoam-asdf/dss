@@ -10,10 +10,10 @@ import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * This class verifies whether the EAA Presentation contains its technical validity
+ * This class verifies whether the EAA Presentation contains the expiration
  *
  */
-public class EAATechnicalValidityPresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class EAAExpirationPresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
 
     /** EAA Presentation to check */
     private final EAAPresentationWrapper eaaPresentation;
@@ -26,25 +26,25 @@ public class EAATechnicalValidityPresentCheck extends ChainItem<XmlValidationPro
      * @param eaaPresentation {@link EAAPresentationWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAATechnicalValidityPresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                            EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public EAAExpirationPresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
+                                     EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaaPresentation = eaaPresentation;
     }
 
     @Override
     protected boolean process() {
-        return eaaPresentation.getEAANotBefore() != null && eaaPresentation.getEAAExpirationTime() != null;
+        return eaaPresentation.getEAAExpirationTime() != null;
     }
 
     @Override
     protected MessageTag getMessageTag() {
-        return MessageTag.EAA_TVP;
+        return MessageTag.EAA_EXP_PRESENT;
     }
 
     @Override
     protected MessageTag getErrorMessageTag() {
-        return MessageTag.EAA_TVP_ANS;
+        return MessageTag.EAA_EXP_PRESENT_ANS;
     }
 
     @Override

@@ -162,7 +162,8 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
         // 4. Other checks (including TS 119 472-1)
 
         item = item.setNextItem(acceptableEaaType());
-        item = item.setNextItem(technicalValidityPresent());
+        item = item.setNextItem(notBeforePresent());
+        item = item.setNextItem(expirationPresent());
 
         if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()) {
             item = item.setNextItem(sdjwtEaaVctIntegrityPresent());
@@ -235,8 +236,13 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
         return new SDJWTEAAVctIntegrityPresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
-    private ChainItem<XmlValidationProcessEAAPresentation> technicalValidityPresent() {
-        LevelRule constraint = policy.getEAAPresentationEAATechnicalValidityPresentContraint();
+    private ChainItem<XmlValidationProcessEAAPresentation> notBeforePresent() {
+        LevelRule constraint = policy.getEAAPresentationEAANotBeforePresentContraint();
+        return new SDJWTEAAVctIntegrityPresentCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> expirationPresent() {
+        LevelRule constraint = policy.getEAAPresentationEAAExpirationPresentContraint();
         return new SDJWTEAAVctIntegrityPresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 

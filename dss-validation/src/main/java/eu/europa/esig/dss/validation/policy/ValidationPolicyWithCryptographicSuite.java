@@ -1081,8 +1081,13 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAPresentationEAATechnicalValidityPresentContraint() {
-        return validationPolicy.getEAAPresentationEAATechnicalValidityPresentContraint();
+    public LevelRule getEAAPresentationEAANotBeforePresentContraint() {
+        return validationPolicy.getEAAPresentationEAANotBeforePresentContraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAExpirationPresentContraint() {
+        return validationPolicy.getEAAPresentationEAAExpirationPresentContraint();
     }
 
     @Override

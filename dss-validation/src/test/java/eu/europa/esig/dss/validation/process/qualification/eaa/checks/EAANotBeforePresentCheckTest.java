@@ -14,16 +14,14 @@ import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATechnicalValidityPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.SDJWTEAAVctIntegrityPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 
-class EAATechnicalValidityPresentCheckTest extends AbstractTestCheck {
+class EAANotBeforePresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest(){
@@ -36,18 +34,14 @@ class EAATechnicalValidityPresentCheckTest extends AbstractTestCheck {
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date());
-        XmlClaim expiration = new XmlClaim();
-        expiration.setDateTime(new Date(notBefore.getDateTime().getTime()  + 3600 * 1000));
-
         xmlEAAPayload.setNotBefore(notBefore);
-        xmlEAAPayload.setExpirationTime(expiration);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        EAATechnicalValidityPresentCheck typePresentCheck = new EAATechnicalValidityPresentCheck(
+        EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
-        typePresentCheck.execute();
+        notBeforePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -66,33 +60,9 @@ class EAATechnicalValidityPresentCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        EAATechnicalValidityPresentCheck typePresentCheck = new EAATechnicalValidityPresentCheck(
+        EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
-        typePresentCheck.execute();
-
-        List<XmlConstraint> constraints = result.getConstraint();
-        assertEquals(1, constraints.size());
-        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
-    }
-
-    @Test
-    void invalidOnlyNotBeforeTest(){
-        LevelConstraint constraint = new LevelConstraint();
-        constraint.setLevel(Level.FAIL);
-
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
-        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlClaim notBefore = new XmlClaim();
-        notBefore.setDateTime(new Date());
-        xmlEAAPayload.setNotBefore(notBefore);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
-
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
-
-        EAATechnicalValidityPresentCheck typePresentCheck = new EAATechnicalValidityPresentCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
-        typePresentCheck.execute();
+        notBeforePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

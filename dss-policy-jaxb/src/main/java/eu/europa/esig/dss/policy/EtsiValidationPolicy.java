@@ -1930,10 +1930,19 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
-    public LevelRule getEAAPresentationEAATechnicalValidityPresentContraint() {
+    public LevelRule getEAAPresentationEAANotBeforePresentContraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAATechnicalValidityPresent());
+            return toLevelRule(eaaPresentationConstraints.getEAANotBeforePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAExpirationPresentContraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getEAAExpirationPresent());
         }
         return null;
     }

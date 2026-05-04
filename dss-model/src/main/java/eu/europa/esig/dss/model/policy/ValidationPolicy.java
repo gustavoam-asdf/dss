@@ -1728,11 +1728,18 @@ public interface ValidationPolicy {
     MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint();
 
     /**
-     * Returns EAATechnicalValidityPresent constraint if present in the policy, null otherwise
+     * Returns EAANotBeforePresent constraint if present in the policy, null otherwise
      *
-     * @return {@code LevelRule} if EAATechnicalValidityPresent element is present
+     * @return {@code LevelRule} if EAANotBeforePresent element is present
      */
-    LevelRule getEAAPresentationEAATechnicalValidityPresentContraint();
+    LevelRule getEAAPresentationEAANotBeforePresentContraint();
+
+    /**
+     * Returns EAAExpirationPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAExpirationPresent element is present
+     */
+    LevelRule getEAAPresentationEAAExpirationPresentContraint();
 
 	/* Article 32 */
 
