@@ -1727,6 +1727,13 @@ public interface ValidationPolicy {
      */
     MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint();
 
+    /**
+     * Returns EAATechnicalValidityPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAATechnicalValidityPresent element is present
+     */
+    LevelRule getEAAPresentationEAATechnicalValidityPresentContraint();
+
 	/* Article 32 */
 
 	/**

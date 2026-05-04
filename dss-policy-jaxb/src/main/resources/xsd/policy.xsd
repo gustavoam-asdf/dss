@@ -638,6 +638,11 @@
                             <xsd:documentation>Checks whether the claim "vct#integrity" is present within the SD-JWT EAA Presentation token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="EAATechnicalValidityPresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the technical validity is present within the EAA Presentation token</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                     <!-- ADD HERE new constraints -->
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>

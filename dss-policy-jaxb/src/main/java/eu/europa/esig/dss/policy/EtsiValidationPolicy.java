@@ -1930,6 +1930,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
+    public LevelRule getEAAPresentationEAATechnicalValidityPresentContraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getEAATechnicalValidityPresent());
+        }
+        return null;
+    }
+
+    @Override
 	public boolean isEIDASConstraintPresent() {
 		return getEIDASConstraints() != null;
 	}

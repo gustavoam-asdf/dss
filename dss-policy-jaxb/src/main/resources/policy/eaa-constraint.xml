@@ -345,6 +345,7 @@
             <Id>*</Id>
         </AcceptableEAAType>
         <SDJWTEAAVctIntegrityTypePresent Level="FAIL" />
+        <EAATechnicalValidityPresent Level="FAIL" />
     </EAAPresentation>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>
