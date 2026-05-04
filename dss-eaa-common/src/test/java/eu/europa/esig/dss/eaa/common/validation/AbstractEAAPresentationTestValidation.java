@@ -241,9 +241,11 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected void checkDeviceKeyClaim(DiagnosticData diagnosticData) {
         for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-            assertNotNull(eaaPresentation.getEAADevicePublicKey());
-            if (eaaPresentation.getEAADeviceCertificate() != null) {
-                assertEquals(1, eaaPresentation.getEAADeviceCertificateChain().size()); // only one certificate should be present
+            if (keyBindingPresent()) {
+                assertNotNull(eaaPresentation.getEAADevicePublicKey());
+                if (eaaPresentation.getEAADeviceCertificate() != null) {
+                    assertEquals(1, eaaPresentation.getEAADeviceCertificateChain().size()); // only one certificate should be present
+                }
             }
         }
     }
