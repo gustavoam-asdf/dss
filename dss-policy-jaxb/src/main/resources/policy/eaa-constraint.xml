@@ -341,7 +341,9 @@
         <DisclosureIntact Level="FAIL" />
         <KeyBindingSignaturePresent Level="WARN" />
         <KeyBindingSignatureValid Level="FAIL" />
-        <EAATypePresent Level="FAIL" />
+        <AcceptableEAAType Level="FAIL">
+            <Id>*</Id>
+        </AcceptableEAAType>
         <SDJWTEAAVctIntegrityTypePresent Level="FAIL" />
     </EAAPresentation>
     <Cryptographic Level="FAIL">

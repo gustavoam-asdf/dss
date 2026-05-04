@@ -48,9 +48,55 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
+    void sdjwtValidAllValuesTest(){
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+
+        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+
+        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
     void mdocValidTest(){
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("urn:eudi:pid:1");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+
+        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+
+        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocValidAllValuesTest(){
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
 
         XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
@@ -102,6 +148,46 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
         XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
         xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
         xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+
+        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+
+        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtNotPresentTest(){
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+
+        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+
+        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocNotPresentTest(){
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 

@@ -1912,15 +1912,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
     @Override
-    public LevelRule getEAAPresentationEAATypePresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAATypePresent());
-        }
-        return null;
-    }
-
-    @Override
     public LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {

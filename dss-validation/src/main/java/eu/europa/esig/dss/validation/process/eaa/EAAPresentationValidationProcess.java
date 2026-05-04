@@ -29,7 +29,6 @@ import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustiveCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATypePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignaturePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignatureValidationResultCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.SDJWTEAAVctIntegrityPresentCheck;
@@ -162,7 +161,6 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
 
         // 4. Other checks (including TS 119 472-1)
 
-        item = item.setNextItem(eaaTypePresent());
         item = item.setNextItem(acceptableEaaType());
 
         if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()) {
@@ -224,11 +222,6 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
         XmlSignature xmlSignature = xmlSignatures.get(signatureWrapper.getId());
         return new KeyBindingSignatureValidationResultCheck(i18nProvider, result,
                 xmlSignature.getValidationProcessBasicSignature().getConclusion(), constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAAPresentation> eaaTypePresent() {
-        LevelRule constraint = policy.getEAAPresentationEAATypePresentConstraint();
-        return new EAATypePresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> acceptableEaaType() {

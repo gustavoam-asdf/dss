@@ -1714,13 +1714,6 @@ public interface ValidationPolicy {
 	LevelRule getEAAPresentationKeyBindingSignatureValidConstraint();
 
     /**
-     * Returns EAATypePresent constraint if present in the policy, null otherwise
-     *
-     * @return {@code LevelRule} if EAATypePresent element is present
-     */
-    LevelRule getEAAPresentationEAATypePresentConstraint();
-
-    /**
      * Returns SDJWTEAAVctIntegrityTypePresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if SDJWTEAAVctIntegrityTypePresent element is present
