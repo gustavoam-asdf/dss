@@ -1727,6 +1727,14 @@
 			<xs:element name="DocType" type="Claim" minOccurs="0" />
 			<xs:element name="ValidityInfo" type="ValidityInfoClaim" minOccurs="0" />
 
+			<!-- ETSI TS 119 472-1 technical claims -->
+			<xs:element name="AdministrativeIssuanceDate" type="Claim" minOccurs="0" />
+			<xs:element name="AdministrativeExpirationDate" type="Claim" minOccurs="0" />
+			<xs:element name="OneTimeUse" type="Claim" minOccurs="0" />
+			<xs:element name="ShortLived" type="Claim" minOccurs="0" />
+			<xs:element name="Evidence" type="Claim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubject" type="Claim" minOccurs="0" />
+
 			<!-- holder info -->
 			<xs:element name="FullName" type="Claim" minOccurs="0" />
 			<xs:element name="FirstName" type="Claim" minOccurs="0" />
@@ -1806,6 +1814,14 @@
 			<xs:element name="RelationshipLegalRepresentative" type="Claim" minOccurs="0" />
 			<xs:element name="RelationshipAgent" type="Claim" minOccurs="0" />
 			<xs:element name="DocumentType" type="Claim" minOccurs="0" />
+
+			<!-- ETSI TS 119 472-1 other claims -->
+			<xs:element name="IssuingRegistrationIdentifier" type="Claim" minOccurs="0" />
+
+			<!-- PID Rulebook headers -->
+			<xs:element name="TrustAnchor" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentStreet" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentHouseNumber" type="Claim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />

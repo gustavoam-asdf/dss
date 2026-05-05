@@ -1197,6 +1197,144 @@ public class EAAPresentationWrapper {
     }
 
     /**
+     * Gets the date when the data (e.g. a PID) was issued
+     *
+     * @return {@link Date}
+     */
+    public Date getAdministrativeIssuanceDate() {
+        return getPayloadClaimDateValue(getEAAPayload().getAdministrativeIssuanceDate());
+    }
+
+    /**
+     * Gets the date when the data (e.g. a PID) will expire
+     *
+     * @return {@link Date}
+     */
+    public Date getAdministrativeExpirationDate() {
+        return getPayloadClaimDateValue(getEAAPayload().getAdministrativeExpirationDate());
+    }
+
+    /**
+     * Gets the URL at which a machine-readable version of the trust anchor to be used for
+     * verifying the PID can be found or looked up.
+     *
+     * @return {@link String}
+     */
+    public String getTrustAnchor() {
+        return getPayloadClaimTextValue(getEAAPayload().getTrustAnchor());
+    }
+
+    /**
+     * Gets the name of the street where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentStreet() {
+        return getPayloadClaimTextValue(getEAAPayload().getResidentStreet());
+    }
+
+    /**
+     * Gets the house number where the user to whom the person identification data relates currently resides,
+     * including any affix or suffix.
+     *
+     * @return {@link String}
+     */
+    public String getResidentHouseNumber() {
+        return getPayloadClaimTextValue(getEAAPayload().getResidentHouseNumber());
+    }
+
+    /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */
+
+    /**
+     * Gets the registration identifier of the legal entity on whose behalf the EAA has been issued.
+     *
+     * @return {@link String}
+     */
+    public String getIssuingRegistrationIdentifier() {
+        return getPayloadClaimTextValue(getEAAPayload().getIssuingRegistrationIdentifier());
+    }
+
+    /**
+     * Gets the signal indicating that the EAA shall be used only once, and that it shall not be retained for future use.
+     *
+     * @return {@link Boolean}
+     */
+    public Boolean getOneTimeUse() {
+        return getPayloadClaimBooleanValue(getEAAPayload().getOneTimeUse());
+    }
+
+    /**
+     * Gets the EAA short-lived component indicating that the validity period of the EAA is so short that
+     * it shall not be necessary to check its revocation status.
+     *
+     * @return {@link Boolean}
+     */
+    public Boolean getShortLived() {
+        return getPayloadClaimBooleanValue(getEAAPayload().getShortLived());
+    }
+
+    /**
+     * Gets the identifier of the attribute subject, which shall associate the attributes to this attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectId() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
+     * Gets the family name of the attribute subject, which shall associate the attributes to this attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectFamilyName() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
+     * Gets the given name of the attribute subject, which shall associate the attributes to this attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectGivenName() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
+     * Gets the document number of the attribute subject, which shall associate the attributes to this attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectDocumentNumber() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
+     * Gets the claim for associating a set of attributes to one entity different than the EAA subject.
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectPseudonym() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
+     * Gets the attributes associated to the attribute subject whose identifier appears in the sub_id member or
+     * whose pseudonym appears in the sub_aka member.
+     *
+     * @return {@link String}
+     */
+    public List<String> getAttestedAttributes() {
+        // TODO : to be implemented
+        return null;
+    }
+
+    /**
      * Gets a list of claims incorporated within the EAA Payload or provided as disclosures,
      * which are not (yet) directly supported by the implementation.
      *
@@ -1293,6 +1431,9 @@ public class EAAPresentationWrapper {
     private Boolean getPayloadClaimBooleanValue(ClaimWrapper xmlDisclosableClaim) {
         if (xmlDisclosableClaim == null) {
             return null;
+        }
+        if (xmlDisclosableClaim.isNull()) {
+            return true; // handle as a true flag
         }
         return xmlDisclosableClaim.isBoolean();
     }

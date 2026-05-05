@@ -52,4 +52,9 @@ public class SDJWTClaimAddress extends SDJWTClaimMap implements ClaimAddress {
         return getAsString(SDJWTConstants.USER_ADDRESS_COUNTRY);
     }
 
+    @Override
+    public ClaimString getHouseNumber() {
+        return getAsString(SDJWTConstants.USER_ADDRESS_HOUSE_NUMBER);
+    }
+
 }

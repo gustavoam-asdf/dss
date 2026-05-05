@@ -224,6 +224,21 @@ public class ClaimWrapper {
     }
 
     /**
+     * Gets whether the claim value is of a map type.
+     *
+     * @return TRUE if the value is of map type, FALSE otherwise
+     */
+    public boolean isNull() {
+        return getText() == null
+                && getNumber() == null
+                && getBoolean() == null
+                && getBinary() == null
+                && getDateTime() == null
+                && getList() == null
+                && getMap() == null;
+    }
+
+    /**
      * Gets the wrapped JAXB disclosable claim object
      *
      * @return {@link XmlClaim}
@@ -247,6 +262,7 @@ public class ClaimWrapper {
      * @return TRUE if the claim is empty, FALSE otherwise
      */
     public boolean isEmpty() {
+        // TODO : review
         return isText()
                 || isNumber()
                 || isBoolean()
@@ -275,8 +291,10 @@ public class ClaimWrapper {
             return toDisplayValue(getList());
         } else if (isMap()) {
             return toDisplayValue(getMap());
+        } else if (isNull()) {
+            return "null";
         }
-        return ""; // empty string
+        return "";
     }
 
     private String toDisplayValue(List<ClaimWrapper> items) {

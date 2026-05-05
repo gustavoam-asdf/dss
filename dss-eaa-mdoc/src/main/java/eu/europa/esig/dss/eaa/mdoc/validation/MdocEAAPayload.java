@@ -1,20 +1,24 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
 import eu.europa.esig.dss.eaa.mdoc.ETSI194721Headers;
+import eu.europa.esig.dss.eaa.mdoc.EUDIPIDHeaders;
 import eu.europa.esig.dss.eaa.mdoc.ISO180135Headers;
 import eu.europa.esig.dss.eaa.mdoc.ISO232202Headers;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocBiometricTemplateXX;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimAgeOverNN;
+import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDeviceKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDrivingPrivileges;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimMap;
+import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimPlaceOfBirth;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimStatus;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimValidityInfo;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
@@ -119,7 +123,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getCategory() {
-        return getAsString(forEtsi194721(ETSI194721Headers.CATEGORY));
+        return getAsString(forEtsi194721(ETSI194721Headers.CATEGORY), forEUDIPid(EUDIPIDHeaders.ATTESTATION_LEGAL_CATEGORY));
     }
 
     @Override
@@ -163,14 +167,20 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getFirstName() {
-        return getAsString(forIso180135(ISO180135Headers.GIVEN_NAME, ISO180135Headers.GIVEN_NAME_NATIONAL_CHARACTER),
-                forIso232202(ISO232202Headers.GIVEN_NAME_UNICODE, ISO232202Headers.GIVEN_NAME_LATIN1));
+        return getAsString(
+                forIso180135(ISO180135Headers.GIVEN_NAME, ISO180135Headers.GIVEN_NAME_NATIONAL_CHARACTER),
+                forIso232202(ISO232202Headers.GIVEN_NAME_UNICODE, ISO232202Headers.GIVEN_NAME_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.GIVEN_NAME)
+        );
     }
 
     @Override
     public ClaimString getLastName() {
-        return getAsString(forIso180135(ISO180135Headers.FAMILY_NAME, ISO180135Headers.FAMILY_NAME_NATIONAL_CHARACTER),
-                forIso232202(ISO232202Headers.FAMILY_NAME_UNICODE, ISO232202Headers.FAMILY_NAME_LATIN1));
+        return getAsString(
+                forIso180135(ISO180135Headers.FAMILY_NAME, ISO180135Headers.FAMILY_NAME_NATIONAL_CHARACTER),
+                forIso232202(ISO232202Headers.FAMILY_NAME_UNICODE, ISO232202Headers.FAMILY_NAME_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.FAMILY_NAME)
+        );
     }
 
     @Override
@@ -205,7 +215,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getEmail() {
-        return getAsString(forIso232202(ISO232202Headers.EMAIL_ADDRESS));
+        return getAsString(forIso232202(ISO232202Headers.EMAIL_ADDRESS), forEUDIPid(EUDIPIDHeaders.EMAIL_ADDRESS));
     }
 
     @Override
@@ -215,12 +225,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimNumber getGender() {
-        return getAsNumber(forIso180135(ISO180135Headers.SEX), forIso232202(ISO232202Headers.SEX));
+        return getAsNumber(forIso180135(ISO180135Headers.SEX), forIso232202(ISO232202Headers.SEX), forEUDIPid(EUDIPIDHeaders.SEX));
     }
 
     @Override
     public ClaimDate getBirthdate() {
-        return getAsDate(forIso180135(ISO180135Headers.BIRTH_DATE), forIso232202(ISO232202Headers.BIRTH_DATE));
+        return getAsDate(forIso180135(ISO180135Headers.BIRTH_DATE), forIso232202(ISO232202Headers.BIRTH_DATE), forEUDIPid(EUDIPIDHeaders.BIRTH_DATE));
     }
 
     @Override
@@ -250,23 +260,35 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getPlaceOfBirth() {
-        return getAsString(forIso180135(ISO180135Headers.BIRTH_PLACE), forIso232202(ISO232202Headers.BIRTHPLACE));
+    public Claim getPlaceOfBirth() {
+        ClaimString placeOfBirth = getAsString(forIso180135(ISO180135Headers.BIRTH_PLACE), forIso232202(ISO232202Headers.BIRTHPLACE));
+        if (placeOfBirth != null) {
+            return placeOfBirth;
+        }
+        ClaimMap placeOfBirthMap = getAsMap(forEUDIPid(EUDIPIDHeaders.PLACE_OF_BIRTH));
+        if (placeOfBirthMap != null) {
+            return new MdocClaimPlaceOfBirth(placeOfBirthMap);
+        }
+        return null;
     }
 
     @Override
-    public ClaimString getNationalities() {
-        return getAsString(forIso180135(ISO180135Headers.NATIONALITY), forIso232202(ISO232202Headers.NATIONALITY));
+    public Claim getNationalities() {
+        ClaimString nationalities = getAsString(forIso180135(ISO180135Headers.NATIONALITY), forIso232202(ISO232202Headers.NATIONALITY));
+        if (nationalities != null) {
+            return nationalities;
+        }
+        return getAsArray(forEUDIPid(EUDIPIDHeaders.NATIONALITY));
     }
 
     @Override
     public ClaimString getBirthFirstName() {
-        return null;
+        return getAsString(forEUDIPid(EUDIPIDHeaders.GIVEN_NAME_BIRTH));
     }
 
     @Override
     public ClaimString getBirthLastName() {
-        return null;
+        return getAsString(forEUDIPid(EUDIPIDHeaders.FAMILY_NAME_BIRTH));
     }
 
     @Override
@@ -286,12 +308,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getMobilePhoneNumber() {
-        return null;
+        return getAsString(forEUDIPid(EUDIPIDHeaders.MOBILE_PHONE_NUMBER));
     }
 
     @Override
     public ClaimString getPseudonym() {
-        return null;
+        return getAsString(forEtsi194721(ETSI194721Headers.ALSO_KNOWN_AS));
     }
 
     @Override
@@ -301,22 +323,28 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getIssuingCountry() {
-        return getAsString(forIso180135(ISO180135Headers.ISSUING_COUNTRY), forIso232202(ISO232202Headers.ISSUING_COUNTRY));
+        return getAsString(forIso180135(ISO180135Headers.ISSUING_COUNTRY), forIso232202(ISO232202Headers.ISSUING_COUNTRY),
+                forEUDIPid(EUDIPIDHeaders.ISSUING_COUNTRY));
     }
 
     @Override
     public ClaimString getIssuingAuthority() {
-        return getAsString(forIso180135(ISO180135Headers.ISSUING_AUTHORITY), forIso232202(ISO232202Headers.ISSUING_AUTHORITY_UNICODE, ISO232202Headers.ISSUING_AUTHORITY_LATIN1));
+        return getAsString(
+                forIso180135(ISO180135Headers.ISSUING_AUTHORITY),
+                forIso232202(ISO232202Headers.ISSUING_AUTHORITY_UNICODE, ISO232202Headers.ISSUING_AUTHORITY_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.ISSUING_AUTHORITY)
+        );
     }
 
     @Override
     public ClaimString getDocumentNumber() {
-        return getAsString(forIso180135(ISO180135Headers.LICENCE_NUMBER), forIso232202(ISO232202Headers.DOCUMENT_NUMBER));
+        return getAsString(forIso180135(ISO180135Headers.LICENCE_NUMBER), forIso232202(ISO232202Headers.DOCUMENT_NUMBER),
+                forEUDIPid(EUDIPIDHeaders.DOCUMENT_NUMBER));
     }
 
     @Override
     public ClaimByteString getPortrait() {
-        return getAsByteString(forIso180135(ISO180135Headers.PORTRAIT), forIso232202(ISO232202Headers.PORTRAIT));
+        return getAsByteString(forIso180135(ISO180135Headers.PORTRAIT), forIso232202(ISO232202Headers.PORTRAIT), forEUDIPid(EUDIPIDHeaders.PORTRAIT));
     }
 
     @Override
@@ -335,7 +363,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getAdministrativeNumber() {
-        return getAsString(forIso180135(ISO180135Headers.ADMINISTRATIVE_NUMBER));
+        return getAsString(forIso180135(ISO180135Headers.ADMINISTRATIVE_NUMBER), forEUDIPid(EUDIPIDHeaders.PERSONAL_ADMINISTRATIVE_NUMBER));
     }
 
     @Override
@@ -360,7 +388,11 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getResidentAddress() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_ADDRESS), forIso232202(ISO232202Headers.RESIDENT_ADDRESS_UNICODE, ISO232202Headers.RESIDENT_ADDRESS_LATIN1));
+        return getAsString(
+                forIso180135(ISO180135Headers.RESIDENT_ADDRESS),
+                forIso232202(ISO232202Headers.RESIDENT_ADDRESS_UNICODE, ISO232202Headers.RESIDENT_ADDRESS_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_ADDRESS)
+        );
     }
 
     @Override
@@ -397,27 +429,35 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getIssuingJurisdiction() {
-        return getAsString(forIso180135(ISO180135Headers.ISSUING_JURISDICTION), forIso232202(ISO232202Headers.ISSUING_SUBDIVISION));
+        return getAsString(forIso180135(ISO180135Headers.ISSUING_JURISDICTION), forIso232202(ISO232202Headers.ISSUING_SUBDIVISION),
+                forEUDIPid(EUDIPIDHeaders.ISSUING_JURISDICTION));
     }
 
     @Override
     public ClaimString getResidentCity() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_CITY), forIso232202(ISO232202Headers.RESIDENT_CITY_UNICODE, ISO232202Headers.RESIDENT_CITY_LATIN1));
+        return getAsString(
+                forIso180135(ISO180135Headers.RESIDENT_CITY),
+                forIso232202(ISO232202Headers.RESIDENT_CITY_UNICODE, ISO232202Headers.RESIDENT_CITY_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_CITY)
+        );
     }
 
     @Override
     public ClaimString getResidentState() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_STATE));
+        return getAsString(forIso180135(ISO180135Headers.RESIDENT_STATE), forEUDIPid(EUDIPIDHeaders.RESIDENT_STATE));
     }
 
     @Override
     public ClaimString getResidentPostalCode() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_POSTAL_CODE), forIso232202(ISO232202Headers.RESIDENT_POSTAL_CODE));
+        return getAsString(forIso180135(ISO180135Headers.RESIDENT_POSTAL_CODE), forIso232202(ISO232202Headers.RESIDENT_POSTAL_CODE),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_POSTAL_CODE)
+        );
     }
 
     @Override
     public ClaimString getResidentCountry() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_COUNTRY), forIso232202(ISO232202Headers.RESIDENT_COUNTRY));
+        return getAsString(forIso180135(ISO180135Headers.RESIDENT_COUNTRY), forIso232202(ISO232202Headers.RESIDENT_COUNTRY),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_COUNTRY));
     }
 
     @Override
@@ -584,6 +624,66 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     @Override
     public ClaimString getDocumentType() {
         return getAsString(forIso232202(ISO232202Headers.DOCUMENT_TYPE));
+    }
+
+    @Override
+    public ClaimDate getAdministrativeExpirationDate() {
+        return getAsDateOrDateTime(forEUDIPid(EUDIPIDHeaders.EXPIRY_DATE));
+    }
+
+    @Override
+    public ClaimDate getAdministrativeIssuanceDate() {
+        return getAsDateOrDateTime(forEUDIPid(EUDIPIDHeaders.ISSUANCE_DATE));
+    }
+
+    @Override
+    public ClaimString getResidentStreet() {
+        return getAsString(forEUDIPid(EUDIPIDHeaders.RESIDENT_STREET));
+    }
+
+    @Override
+    public ClaimString getResidentHouseNumber() {
+        return getAsString(forEUDIPid(EUDIPIDHeaders.RESIDENT_HOUSE_NUMBER));
+    }
+
+    @Override
+    public ClaimString getTrustAnchor() {
+        return getAsString(forEUDIPid(EUDIPIDHeaders.TRUST_ANCHOR));
+    }
+
+    @Override
+    public ClaimString getIssuingRegistrationIdentifier() {
+        return getAsString(forEtsi194721(ETSI194721Headers.ISSUING_REGISTRATION_IDENTIFIER));
+    }
+
+    @Override
+    public Claim getOneTimeUse() {
+        /* EAA-6.2.8.2-03: The oneTime data element shall have the bool CBOR type.  */
+        return getAsBoolean(forEtsi194721(ETSI194721Headers.ONE_TIME));
+    }
+
+    @Override
+    public Claim getShortLived() {
+        /* EAA-6.2.12-03: The shortLived data element shall have the bool CBOR type. */
+        return getAsBoolean(forEtsi194721(ETSI194721Headers.SHORT_LIVED));
+    }
+
+    @Override
+    public ClaimArray getEvidence() {
+        /*
+         * EAA-6.2.9-01: An ISO/IEC-mdoc EAA shall not incorporate any data element implementing the semantics
+         * specified in clause 4.2.10 of the present document.
+         */
+        return null;
+    }
+
+    @Override
+    public ClaimAttestedAttributesSubject getAttestedAttributesSubject() {
+        ClaimMap subAttrs = getAsMap(forEtsi194721(ETSI194721Headers.SUB_ATTRS));
+        if (subAttrs != null) {
+            return new MdocClaimAttestedAttributesSubject(subAttrs);
+        }
+        return null;
     }
 
     /**
@@ -783,6 +883,16 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      */
     protected DataElementReference forEtsi194721(final String... headerNames) {
         return new DataElementReference(null, MdocConstants.ETSI_19472_1_NAMESPACE, headerNames);
+    }
+
+    /**
+     * Creates a data element reference to EUDI PID header parameter names
+     *
+     * @param headerNames array of {@link String}s
+     * @return {@link DataElementReference}
+     */
+    protected DataElementReference forEUDIPid(final String... headerNames) {
+        return new DataElementReference(MdocConstants.EUDI_PID_DOC_TYPE, MdocConstants.EUDI_PID_NAMESPACE, headerNames);
     }
 
     /**

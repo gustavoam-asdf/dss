@@ -16,4 +16,34 @@ public final class ETSI194721Headers {
     /** An explicit signal identifying the category of the EAA in the context where the EAA has been issued */
     public static final String CATEGORY = "category";
 
+    /** A registration identifier */
+    public static final String ISSUING_REGISTRATION_IDENTIFIER = "iss_reg_id";
+
+    /** Contains the pseudonym of the EAA */
+    public static final String ALSO_KNOWN_AS = "also_known_as";
+
+    /** Indicates that the EAA shall be used only once, and that it shall not be retained for future use */
+    public static final String ONE_TIME = "oneTime";
+
+    /** Indicates  that the validity period of the EAA is so short that it shall not be necessary to check its revocation status */
+    public static final String SHORT_LIVED = "shortLived";
+
+    /** Associates one attribute to one entity different than the EAA subject */
+    public static final String SUB_ATTRS = "SubAttr";
+
+    /** The subject attribute identifier */
+    public static final String SUB_ATTRS_ID = "subId";
+
+    /** The subject attribute pseudonym */
+    public static final String SUB_ATTRS_AKA = "subAka";
+
+    /** The family name of the attribute subject */
+    public static final String SUB_ATTRS_ID_FAMILY_NAME = "family_name";
+
+    /** The given name of the attribute subject */
+    public static final String SUB_ATTRS_ID_GIVEN_NAME = "given_name";
+
+    /** The number of the personal identification data assigned to the attribute subject  */
+    public static final String SUB_ATTRS_ID_DOCUMENT_NUMBER = "document_number";
+
 }

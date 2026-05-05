@@ -230,6 +230,13 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setDocType(getXmlClaim(eaaPayload.getDocType(), supportedClaims));
         xmlEAAPayload.setValidityInfo(getXmlValidityInfoClaim(eaaPayload.getValidityInfo(), supportedClaims));
 
+        xmlEAAPayload.setAdministrativeIssuanceDate(getXmlClaim(eaaPayload.getAdministrativeIssuanceDate(), supportedClaims));
+        xmlEAAPayload.setAdministrativeExpirationDate(getXmlClaim(eaaPayload.getAdministrativeExpirationDate(), supportedClaims));
+        xmlEAAPayload.setOneTimeUse(getXmlClaim(eaaPayload.getOneTimeUse(), supportedClaims));
+        xmlEAAPayload.setShortLived(getXmlClaim(eaaPayload.getShortLived(), supportedClaims));
+        xmlEAAPayload.setEvidence(getXmlClaim(eaaPayload.getEvidence(), supportedClaims));
+        xmlEAAPayload.setAttestedAttributesSubject(getXmlClaim(eaaPayload.getAttestedAttributesSubject(), supportedClaims)); // TODO : enhance with AttestedAttributesSubjectWrapper
+
         xmlEAAPayload.setFullName(getXmlClaim(eaaPayload.getFullName(), supportedClaims));
         xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getFirstName(), supportedClaims));
         xmlEAAPayload.setLastName(getXmlClaim(eaaPayload.getLastName(), supportedClaims));
@@ -307,6 +314,11 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setRelationshipAgent(getXmlClaim(eaaPayload.getRelationshipAgent(), supportedClaims));
         xmlEAAPayload.setDocumentType(getXmlClaim(eaaPayload.getDocumentType(), supportedClaims));
 
+        xmlEAAPayload.setIssuingRegistrationIdentifier(getXmlClaim(eaaPayload.getIssuingRegistrationIdentifier(), supportedClaims));
+        xmlEAAPayload.setTrustAnchor(getXmlClaim(eaaPayload.getTrustAnchor(), supportedClaims));
+        xmlEAAPayload.setResidentStreet(getXmlClaim(eaaPayload.getResidentStreet(), supportedClaims));
+        xmlEAAPayload.setResidentHouseNumber(getXmlClaim(eaaPayload.getResidentHouseNumber(), supportedClaims));
+
         xmlEAAPayload.getOtherClaim().addAll(getOtherClaims(eaaPayload, supportedClaims));
 
         return xmlEAAPayload;
@@ -345,6 +357,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 for (Map.Entry<String, Claim> entry : claim.getMapValue().entrySet()) {
                     xmlClaim.getEntry().add(getXmlClaim(entry.getValue(), new XmlClaim()));
                 }
+            } else if (claim.isNullValueType()) {
+                // no information is to be embedded
             } else {
                 throw new UnsupportedOperationException(String.format("Unsupported Claim type '%s'", claim.getClass().getSimpleName()));
             }

@@ -1172,6 +1172,131 @@ public class EAAPayloadProxy {
     }
 
     /**
+     * Gets the date when the data (e.g. a PID) was issued
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getAdministrativeIssuanceDate() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getAdministrativeIssuanceDate());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the date when the data (e.g. a PID) will expire
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getAdministrativeExpirationDate() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getAdministrativeExpirationDate());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the URL at which a machine-readable version of the trust anchor to be used for
+     * verifying the PID can be found or looked up.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getTrustAnchor() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getTrustAnchor());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the name of the street where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getResidentStreet() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getResidentStreet());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the house number where the user to whom the person identification data relates currently resides,
+     * including any affix or suffix.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getResidentHouseNumber() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getResidentHouseNumber());
+        }
+        return null;
+    }
+
+    /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */
+
+    /**
+     * Gets the registration identifier of the legal entity on whose behalf the EAA has been issued.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getIssuingRegistrationIdentifier() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getIssuingRegistrationIdentifier());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the signal indicating that the EAA shall be used only once, and that it shall not be retained for future use.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getOneTimeUse() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getOneTimeUse());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the EAA short-lived component indicating that the validity period of the EAA is so short that
+     * it shall not be necessary to check its revocation status.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getShortLived() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getShortLived());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the array of evidence elements.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getEvidence() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getEvidence());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the claim for associating a set of attributes to one entity different than the EAA subject.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getAttestedAttributesSubject() {
+        if (xmlEAAPayload != null) {
+            return getClaim(xmlEAAPayload.getAttestedAttributesSubject());
+        }
+        return null;
+    }
+
+    /**
      * Gets a list of credential subject claims
      *
      * @return a list of {@link CredentialSubjectClaimWrapper}s
@@ -1344,199 +1469,181 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getCredentialSubject() != null) {
             claimList.addAll(getCredentialSubject().getCredentialSubjects());
         }
-
         if (xmlEAAPayload.getIssuingCountry() != null) {
             claimList.add(getClaim(xmlEAAPayload.getIssuingCountry()));
         }
-
         if (xmlEAAPayload.getIssuingAuthority() != null) {
             claimList.add(getClaim(xmlEAAPayload.getIssuingAuthority()));
         }
-
         if (xmlEAAPayload.getDocumentNumber() != null) {
             claimList.add(getClaim(xmlEAAPayload.getDocumentNumber()));
         }
-
         if (xmlEAAPayload.getPortrait() != null) {
             claimList.add(getClaim(xmlEAAPayload.getPortrait()));
         }
-
         if (xmlEAAPayload.getDrivingPrivileges() != null) {
             claimList.add(getDrivingPrivilegesClaim(xmlEAAPayload.getDrivingPrivileges()));
         }
-
         if (xmlEAAPayload.getUNDistinguishingSign() != null) {
             claimList.add(getClaim(xmlEAAPayload.getUNDistinguishingSign()));
         }
-
         if (xmlEAAPayload.getAdministrativeNumber() != null) {
             claimList.add(getClaim(xmlEAAPayload.getAdministrativeNumber()));
         }
-
         if (xmlEAAPayload.getHeight() != null) {
             claimList.add(getClaim(xmlEAAPayload.getHeight()));
         }
-
         if (xmlEAAPayload.getWeight() != null) {
             claimList.add(getClaim(xmlEAAPayload.getWeight()));
         }
-
         if (xmlEAAPayload.getEyeColor() != null) {
             claimList.add(getClaim(xmlEAAPayload.getEyeColor()));
         }
-
         if (xmlEAAPayload.getHairColor() != null) {
             claimList.add(getClaim(xmlEAAPayload.getHairColor()));
         }
-
         if (xmlEAAPayload.getResidentAddress() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentAddress()));
         }
-
         if (xmlEAAPayload.getPortraitCaptureDate() != null) {
             claimList.add(getClaim(xmlEAAPayload.getPortraitCaptureDate()));
         }
-
         if (xmlEAAPayload.getAgeInYears() != null) {
             claimList.add(getClaim(xmlEAAPayload.getAgeInYears()));
         }
-
         if (xmlEAAPayload.getAgeBirthYear() != null) {
             claimList.add(getClaim(xmlEAAPayload.getAgeBirthYear()));
         }
-
         if (xmlEAAPayload.getAgeOverNN() != null) {
             for (XmlClaim item : xmlEAAPayload.getAgeOverNN()) {
                 claimList.add(getClaim(item));
             }
         }
-
         if (xmlEAAPayload.getIssuingJurisdiction() != null) {
             claimList.add(getClaim(xmlEAAPayload.getIssuingJurisdiction()));
         }
-
         if (xmlEAAPayload.getResidentCity() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentCity()));
         }
-
         if (xmlEAAPayload.getResidentState() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentState()));
         }
-
         if (xmlEAAPayload.getResidentPostalCode() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentPostalCode()));
         }
-
         if (xmlEAAPayload.getResidentCountry() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentCountry()));
         }
-
         if (xmlEAAPayload.getBiometricTemplate() != null) {
             for (XmlClaim item : xmlEAAPayload.getBiometricTemplate()) {
                 claimList.add(getClaim(item));
             }
         }
-
         if (xmlEAAPayload.getSignatureUsualMark() != null) {
             claimList.add(getClaim(xmlEAAPayload.getSignatureUsualMark()));
         }
-
         if (xmlEAAPayload.getFingerprint() != null) {
             claimList.add(getClaim(xmlEAAPayload.getFingerprint()));
         }
-
         if (xmlEAAPayload.getBusinessName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getBusinessName()));
         }
-
         if (xmlEAAPayload.getOrganizationName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getOrganizationName()));
         }
-
         if (xmlEAAPayload.getBirthFullName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getBirthFullName()));
         }
-
         if (xmlEAAPayload.getProfession() != null) {
             claimList.add(getClaim(xmlEAAPayload.getProfession()));
         }
-
         if (xmlEAAPayload.getRelationshipFather() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipFather()));
         }
-
         if (xmlEAAPayload.getRelationshipMother() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipMother()));
         }
-
         if (xmlEAAPayload.getRelationshipParent() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipParent()));
         }
-
         if (xmlEAAPayload.getRelationshipSon() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipSon()));
         }
-
         if (xmlEAAPayload.getRelationshipDaughter() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipDaughter()));
         }
-
         if (xmlEAAPayload.getRelationshipBrother() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipBrother()));
         }
-
         if (xmlEAAPayload.getRelationshipSister() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipSister()));
         }
-
         if (xmlEAAPayload.getRelationshipSibling() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipSibling()));
         }
-
         if (xmlEAAPayload.getRelationshipSpouse() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipSpouse()));
         }
-
         if (xmlEAAPayload.getRelationshipFatherInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipFatherInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipMotherInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipMotherInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipParentInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipParentInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipSonInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipSonInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipDaughterInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipDaughterInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipChildInLaw() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipChildInLaw()));
         }
-
         if (xmlEAAPayload.getRelationshipParentalAuthority() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipParentalAuthority()));
         }
-
         if (xmlEAAPayload.getRelationshipLegalRepresentative() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipLegalRepresentative()));
         }
-
         if (xmlEAAPayload.getRelationshipAgent() != null) {
             claimList.add(getClaim(xmlEAAPayload.getRelationshipAgent()));
         }
-
         if (xmlEAAPayload.getDocumentType() != null) {
             claimList.add(getClaim(xmlEAAPayload.getDocumentType()));
         }
-
+        if (xmlEAAPayload.getAdministrativeIssuanceDate() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getAdministrativeIssuanceDate()));
+        }
+        if (xmlEAAPayload.getAdministrativeExpirationDate() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getAdministrativeExpirationDate()));
+        }
+        if (xmlEAAPayload.getTrustAnchor() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getTrustAnchor()));
+        }
+        if (xmlEAAPayload.getResidentStreet() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentStreet()));
+        }
+        if (xmlEAAPayload.getResidentHouseNumber() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentHouseNumber()));
+        }
+        if (xmlEAAPayload.getIssuingRegistrationIdentifier() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getIssuingRegistrationIdentifier()));
+        }
+        if (xmlEAAPayload.getOneTimeUse() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getOneTimeUse()));
+        }
+        if (xmlEAAPayload.getShortLived() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getShortLived()));
+        }
+        if (xmlEAAPayload.getEvidence() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getEvidence()));
+        }
+        if (xmlEAAPayload.getAttestedAttributesSubject() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getAttestedAttributesSubject()));
+        }
         if (xmlEAAPayload.getOtherClaim() != null && !xmlEAAPayload.getOtherClaim().isEmpty()) {
             List<ClaimWrapper> claimWrappers = xmlEAAPayload.getOtherClaim().stream()
                     .map(this::getClaim).collect(Collectors.toList());

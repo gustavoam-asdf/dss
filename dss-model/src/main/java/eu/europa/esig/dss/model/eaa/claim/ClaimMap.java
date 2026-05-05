@@ -109,7 +109,7 @@ public abstract class ClaimMap extends AbstractClaim {
     protected abstract Claim createClaim(String name, Object value);
 
     /**
-     * Gets the claim value if a map from the current map using the {@code headerName} as a key
+     * Gets the claim value is a map from the current map using the {@code headerName} as a key
      *
      * @param headerName {@link String}
      * @return {@link ClaimMap}
@@ -133,7 +133,7 @@ public abstract class ClaimMap extends AbstractClaim {
     }
 
     /**
-     * Gets the claim value if an array from the current map using the {@code headerName} as a key
+     * Gets the claim value is an array from the current map using the {@code headerName} as a key
      *
      * @param headerName {@link String}
      * @return {@link ClaimArray}
@@ -157,7 +157,7 @@ public abstract class ClaimMap extends AbstractClaim {
     }
 
     /**
-     * Gets the claim value if a number from the current map using the {@code headerName} as a key
+     * Gets the claim value is a number from the current map using the {@code headerName} as a key
      *
      * @param headerName {@link String}
      * @return {@link ClaimNumber}
@@ -181,7 +181,7 @@ public abstract class ClaimMap extends AbstractClaim {
     }
 
     /**
-     * Gets the claim value if a string from the current map using the {@code headerName} as a key
+     * Gets the claim value is a string from the current map using the {@code headerName} as a key
      *
      * @param headerName {@link String}
      * @return {@link ClaimString}
@@ -205,7 +205,7 @@ public abstract class ClaimMap extends AbstractClaim {
     }
 
     /**
-     * Gets the claim value if a boolean from the current map using the {@code headerName} as a key
+     * Gets the claim value is a boolean from the current map using the {@code headerName} as a key
      *
      * @param headerName {@link String}
      * @return {@link ClaimBoolean}
@@ -224,6 +224,30 @@ public abstract class ClaimMap extends AbstractClaim {
     protected ClaimBoolean getAsBoolean(Claim claim) {
         if (claim != null && claim.isBooleanValueType()) {
             return (ClaimBoolean) claim;
+        }
+        return null;
+    }
+
+    /**
+     * Gets the claim value is a null from the current map using the {@code headerName} as a key
+     *
+     * @param headerName {@link String}
+     * @return {@link ClaimNull}
+     */
+    public ClaimNull getAsNull(String headerName) {
+        Claim claim = get(headerName);
+        return getAsNull(claim);
+    }
+
+    /**
+     * Checks if the {@code claim} is of null type and returns its value as {@code ClaimNull}
+     *
+     * @param claim {@link Claim}
+     * @return {@link ClaimNull}
+     */
+    protected ClaimNull getAsNull(Claim claim) {
+        if (claim != null && claim.isNullValueType()) {
+            return (ClaimNull) claim;
         }
         return null;
     }

@@ -79,6 +79,8 @@ public final class SDJWTUtils {
             return new ClaimBoolean(claimName, ((ClaimBoolean) value).getBooleanValue(), selectivelyDisclosable, parent);
         } else if (value instanceof ClaimDate) {
             return new ClaimDate(claimName, ((ClaimDate) value).getDateValue(), selectivelyDisclosable, parent);
+        } else if (value instanceof ClaimNull) {
+            return new ClaimNull(claimName, selectivelyDisclosable, parent);
         } else if (value instanceof ClaimMap) {
             return new SDJWTClaimMap(claimName, ((ClaimMap) value).getMapValue(), selectivelyDisclosable, parent);
         } else if (value instanceof ClaimArray) {

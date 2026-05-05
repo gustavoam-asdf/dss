@@ -17,6 +17,9 @@ public class MdocConstants {
     /** mdoc document type as defined in ISO/IEC 23220-2 */
     public static final String ISO23220_1_MID_DOC_TYPE = "org.iso.23220.1.mID";
 
+    /** PID Rulebook, ISO/IEC 18013-5-compliant encoding of PID mdoc document type  */
+    public static final String EUDI_PID_DOC_TYPE = "eu.europa.ec.eudi.pid.1";
+
     /* Known namespaces */
 
     /** Namespace for the data elements defined in section 6 of ETSI TS 119 472-1  */
@@ -27,6 +30,9 @@ public class MdocConstants {
 
     /** Namespace for the data elements defined in section 6.3 of ISO/IEC 23220-2  */
     public static final String ISO23220_1_NAMESPACE = "org.iso.23220.1";
+
+    /** PID Rulebook, ISO/IEC 18013-5-compliant encoding of PID namespace */
+    public static final String EUDI_PID_NAMESPACE = "eu.europa.ec.eudi.pid.1";
 
     /* mdoc MobileSecurityObject parameters */
 

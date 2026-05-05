@@ -2,6 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimCredentialSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimDeviceKey;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimIntegrity;
@@ -12,6 +13,7 @@ import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
@@ -21,6 +23,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivileges;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimNull;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -100,7 +103,11 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getCategory() {
-        return getAsString(SDJWTConstants.CATEGORY);
+        ClaimString category = getAsString(SDJWTConstants.CATEGORY);
+        if (category != null) {
+            return category;
+        }
+        return getAsString(SDJWTConstants.ATTESTATION_LEGAL_CATEGORY);
     }
 
     @Override
@@ -187,8 +194,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getGender() {
-        return getAsString(SDJWTConstants.USER_GENDER);
+    public Claim getGender() {
+        ClaimString userGender = getAsString(SDJWTConstants.USER_GENDER);
+        if (userGender != null) {
+            return userGender;
+        }
+        return getAsNumber(SDJWTConstants.SEX);
     }
 
     @Override
@@ -295,12 +306,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getIssuingCountry() {
-        return null;
+        return getAsString(SDJWTConstants.ISSUING_COUNTRY);
     }
 
     @Override
     public ClaimString getIssuingAuthority() {
-        return null;
+        return getAsString(SDJWTConstants.ISSUING_AUTHORITY);
     }
 
     @Override
@@ -325,7 +336,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getAdministrativeNumber() {
-        return null;
+        return getAsString(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER);
     }
 
     @Override
@@ -375,7 +386,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getIssuingJurisdiction() {
-        return null;
+        return getAsString(SDJWTConstants.ISSUING_JURISDICTION);
     }
 
     @Override
@@ -540,6 +551,73 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getDocumentType() {
+        return null;
+    }
+
+    @Override
+    public ClaimDate getAdministrativeExpirationDate() {
+        // TODO : PID Rulebook and ETSI both define their own headers, check for conflict ?
+        ClaimDate admExp = getAsDateTime(SDJWTConstants.ADMINISTRATIVE_VALIDITY_EXPIRY);
+        if (admExp != null) {
+            return admExp;
+        }
+        return getAsDate(SDJWTConstants.EXPIRY_DATE);
+    }
+
+    @Override
+    public ClaimDate getAdministrativeIssuanceDate() {
+        // TODO : PID Rulebook and ETSI both define their own headers, check for conflict ?
+        ClaimDate admNbf = getAsDateTime(SDJWTConstants.ADMINISTRATIVE_VALIDITY_NOT_BEFORE);
+        if (admNbf != null) {
+            return admNbf;
+        }
+        return getAsDate(SDJWTConstants.ISSUANCE_DATE);
+    }
+
+    @Override
+    public ClaimString getTrustAnchor() {
+        return getAsString(SDJWTConstants.TRUST_ANCHOR);
+    }
+
+    @Override
+    public ClaimString getResidentStreet() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getResidentHouseNumber() {
+        return null;
+    }
+
+    @Override
+    public ClaimString getIssuingRegistrationIdentifier() {
+        return getAsString(SDJWTConstants.ISSUING_REGISTRATION_IDENTIFIER);
+    }
+
+    @Override
+    public ClaimNull getOneTimeUse() {
+        /* EAA-5.2.8.2-05: The oneTime claim shall have the null JSON primitive type. */
+        return getAsNull(SDJWTConstants.ONE_TIME);
+    }
+
+    @Override
+    public Claim getShortLived() {
+        /* EAA-5.2.12-02: The shortLived claim shall have the null JSON primitive type.  */
+        return getAsNull(SDJWTConstants.SHORT_LIVED);
+    }
+
+    @Override
+    public ClaimArray getEvidence() {
+        // TODO : evidence structure is not supported yet (see https://openid.net/specs/openid-ida-verified-claims-1_0.html)
+        return getAsArray(SDJWTConstants.EVIDENCE);
+    }
+
+    @Override
+    public ClaimAttestedAttributesSubject getAttestedAttributesSubject() {
+        ClaimMap subAttrs = getAsMap(SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT);
+        if (subAttrs != null) {
+            return new SDJWTClaimAttestedAttributesSubject(subAttrs);
+        }
         return null;
     }
 

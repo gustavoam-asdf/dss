@@ -116,6 +116,9 @@ public final class MdocUtils {
         } else if (value instanceof ClaimArray) {
             return new MdocClaimArray(claimName, namespace, ((ClaimArray) value).getListValue(), selectivelyDisclosable, parent);
 
+        } else if (value instanceof ClaimNull) {
+            return new ClaimNull(claimName, namespace, selectivelyDisclosable, parent);
+
         } else if (value instanceof CBORObject) {
             CBORObject cborObject = (CBORObject) value;
             if (cborObject.isArray()) {

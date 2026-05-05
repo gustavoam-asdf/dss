@@ -163,53 +163,59 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
             assertTrue(claimWrapper.getText() != null || claimWrapper.getDateTime() != null ||
                     claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getText() != null, claimWrapper.getDateTime() != null ||
                     claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getDateTime() != null, claimWrapper.getText() != null ||
                     claimWrapper.getNumber() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getNumber() != null, claimWrapper.getText() != null ||
                     claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(Utils.isCollectionNotEmpty(claimWrapper.getList()), claimWrapper.getText() != null ||
                     claimWrapper.getDateTime() != null || claimWrapper.getNumber() != null ||
-                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getBoolean() != null, claimWrapper.getText() != null ||
                     claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getNumber() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getNumber() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getBinary() != null, claimWrapper.getText() != null ||
                     claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null || claimWrapper.getMap() != null);
+                    claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null || claimWrapper.getMap() != null || claimWrapper.isNull());
             assertNotEquals(claimWrapper.getMap() != null, claimWrapper.getText() != null ||
                     claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
-                    claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null);
+                    claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.isNull());
+            assertNotEquals(claimWrapper.isNull(), claimWrapper.getText() != null ||
+                    claimWrapper.getDateTime() != null || Utils.isCollectionNotEmpty(claimWrapper.getList()) ||
+                    claimWrapper.getNumber() != null || claimWrapper.getBoolean() != null || claimWrapper.getBinary() != null || claimWrapper.getMap() != null);
 
             assertTrue(claimWrapper.isText() || claimWrapper.isDateTime() ||
                     claimWrapper.isNumber() || claimWrapper.isList() ||
-                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isText(), claimWrapper.isDateTime() ||
                     claimWrapper.isNumber() || claimWrapper.isList() ||
-                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isDateTime(), claimWrapper.isText() ||
                     claimWrapper.isNumber() || claimWrapper.isList() ||
-                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isNumber(), claimWrapper.isText() ||
                     claimWrapper.isDateTime() || claimWrapper.isList() ||
-                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isList(), claimWrapper.isText() ||
                     claimWrapper.isDateTime() || claimWrapper.isNumber() ||
-                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isBoolean(), claimWrapper.isText() ||
                     claimWrapper.isDateTime() || claimWrapper.isList() ||
-                    claimWrapper.isNumber() || claimWrapper.isBinary() || claimWrapper.isMap());
+                    claimWrapper.isNumber() || claimWrapper.isBinary() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isBinary(), claimWrapper.isText() ||
                     claimWrapper.isDateTime() || claimWrapper.isList() ||
-                    claimWrapper.isNumber() || claimWrapper.isBoolean() || claimWrapper.isMap());
+                    claimWrapper.isNumber() || claimWrapper.isBoolean() || claimWrapper.isMap() || claimWrapper.isNull());
             assertNotEquals(claimWrapper.isMap(), claimWrapper.isText() ||
                     claimWrapper.isDateTime() || claimWrapper.isList() ||
-                    claimWrapper.isNumber() || claimWrapper.isBoolean() || claimWrapper.isBinary());
+                    claimWrapper.isNumber() || claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isNull());
+            assertNotEquals(claimWrapper.isNull(), claimWrapper.isText() ||
+                    claimWrapper.isDateTime() || claimWrapper.isList() ||
+                    claimWrapper.isNumber() || claimWrapper.isBoolean() || claimWrapper.isBinary() || claimWrapper.isMap());
 
             assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
 

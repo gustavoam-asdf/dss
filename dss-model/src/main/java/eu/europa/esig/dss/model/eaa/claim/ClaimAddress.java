@@ -50,4 +50,14 @@ public interface ClaimAddress extends Claim {
      */
     ClaimString getCountry();
 
+    /* ARF PID Rulebook claims */
+
+    /**
+     * Gets The house number where the user to whom the person identification data relates currently resides,
+     * including any affix or suffix, when present.
+     *
+     * @return {@link ClaimString}
+     */
+    ClaimString getHouseNumber();
+
 }

@@ -210,10 +210,70 @@ public class SDJWTConstants {
     /** SD-JWT payload "category" header */
     public static final String CATEGORY = "category";
 
+    /** SD-JWT payload "iss_reg_id" header */
+    public static final String ISSUING_REGISTRATION_IDENTIFIER = "iss_reg_id";
+
+    /** SD-JWT payload "adm_nbf" header */
+    public static final String ADMINISTRATIVE_VALIDITY_NOT_BEFORE = "adm_nbf";
+
+    /** SD-JWT payload "adm_exp" header */
+    public static final String ADMINISTRATIVE_VALIDITY_EXPIRY= "adm_exp";
+
+    /** SD-JWT payload "oneTime" header */
+    public static final String ONE_TIME = "oneTime";
+
+    /** SD-JWT payload "shortLived" header */
+    public static final String SHORT_LIVED = "shortLived";
+
+    /** SD-JWT payload "subAttrs" header */
+    public static final String ATTESTED_ATTRIBUTES_SUBJECT = "subAttrs";
+
+    /** SD-JWT payload "sub_id" header of the attested attributes subject header */
+    public static final String ATTESTED_ATTRIBUTES_SUBJECT_ID = "sub_id";
+
+    /** SD-JWT payload "sub_aka" header of the attested attributes subject header */
+    public static final String ATTESTED_ATTRIBUTES_SUBJECT_AKA = "sub_aka";
+
+    /** SD-JWT payload "attrs" header of the attested attributes subject header */
+    public static final String ATTESTED_ATTRIBUTES_SUBJECT_ATTRIBUTES = "attrs";
+
     // W3C Verifiable Credentials Data Model v2.0
 
     /** SD-JWT payload "credentialSubject" header */
     public static final String CREDENTIAL_SUBJECT = "credentialSubject";
+
+    // PID Rulebook clams (last synchronized with ARF v2.8.0)
+    // {@see https://github.com/eu-digital-identity-wallet/eudi-doc-attestation-rulebooks-catalog/blob/main/rulebooks/pid/pid-rulebook.md}
+
+    /** SD-JWT payload "date_of_expiry" header */
+    public static final String EXPIRY_DATE = "date_of_expiry";
+
+    /** SD-JWT payload "date_of_issuance" header */
+    public static final String ISSUANCE_DATE = "date_of_issuance";
+
+    /** SD-JWT payload "personal_administrative_number" header */
+    public static final String PERSONAL_ADMINISTRATIVE_NUMBER = "personal_administrative_number";
+
+    /** SD-JWT payload "sex" header */
+    public static final String SEX = "sex";
+
+    /** End-User's address's house number component */
+    public static final String USER_ADDRESS_HOUSE_NUMBER = "house_number";
+
+    /** SD-JWT payload "issuing_authority" header */
+    public static final String ISSUING_AUTHORITY = "issuing_authority";
+
+    /** SD-JWT payload "issuing_country" header */
+    public static final String ISSUING_COUNTRY = "issuing_country";
+
+    /** SD-JWT payload "issuing_jurisdiction" header */
+    public static final String ISSUING_JURISDICTION = "issuing_jurisdiction";
+
+    /** SD-JWT payload "trust_anchor" header */
+    public static final String TRUST_ANCHOR = "trust_anchor";
+
+    /** SD-JWT payload "attestation_legal_category" header */
+    public static final String ATTESTATION_LEGAL_CATEGORY = "attestation_legal_category";
 
     // RFC 7800 "Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs)" claims
 
@@ -233,5 +293,10 @@ public class SDJWTConstants {
 
     /** JWT "kty" header */
     public static final String KTY = "kty";
+
+    // OpenID Identity Assurance Schema Definition 1.0 claims
+
+    /** SD-JWT payload "evidence" header */
+    public static final String EVIDENCE = "evidence";
 
 }

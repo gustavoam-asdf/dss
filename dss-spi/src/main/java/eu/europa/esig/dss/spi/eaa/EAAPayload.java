@@ -4,6 +4,7 @@ import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBoolean;
 import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
@@ -702,5 +703,81 @@ public interface EAAPayload extends Claim {
      */
     ClaimString getDocumentType();
 
+    /* ARF PID Rulebook headers */
+
+    /**
+     * Gets the date when the data (e.g. a PID) was issued
+     *
+     * @return {@link ClaimDate}
+     */
+    ClaimDate getAdministrativeIssuanceDate();
+
+    /**
+     * Gets the date when the data (e.g. a PID) will expire
+     *
+     * @return {@link ClaimDate}
+     */
+    ClaimDate getAdministrativeExpirationDate();
+
+    /**
+     * Gets the URL at which a machine-readable version of the trust anchor to be used for
+     * verifying the PID can be found or looked up.
+     *
+     * @return {@link ClaimString}
+     */
+    ClaimString getTrustAnchor();
+
+    /**
+     * Gets the name of the street where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link ClaimString}
+     */
+    ClaimString getResidentStreet();
+
+    /**
+     * Gets the house number where the user to whom the person identification data relates currently resides,
+     * including any affix or suffix.
+     *
+     * @return {@link ClaimString}
+     */
+    ClaimString getResidentHouseNumber();
+
+    /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */
+
+    /**
+     * Gets the registration identifier of the legal entity on whose behalf the EAA has been issued.
+     *
+     * @return {@link ClaimString}
+     */
+    ClaimString getIssuingRegistrationIdentifier();
+
+    /**
+     * Gets the signal indicating that the EAA shall be used only once, and that it shall not be retained for future use.
+     *
+     * @return {@link Claim}
+     */
+    Claim getOneTimeUse();
+
+    /**
+     * Gets the EAA short-lived component indicating that the validity period of the EAA is so short that
+     * it shall not be necessary to check its revocation status.
+     *
+     * @return {@link Claim}
+     */
+    Claim getShortLived();
+
+    /**
+     * Gets the array of evidence elements.
+     *
+     * @return {@link Claim}
+     */
+    ClaimArray getEvidence();
+
+    /**
+     * Gets the claim for associating a set of attributes to one entity different than the EAA subject.
+     *
+     * @return {@link Claim}
+     */
+    ClaimAttestedAttributesSubject getAttestedAttributesSubject();
 
 }

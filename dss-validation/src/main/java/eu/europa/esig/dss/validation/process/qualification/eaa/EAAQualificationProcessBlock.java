@@ -312,7 +312,6 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
         return null;
     }
 
-
     private EAAQualification getClaimedQualification() {
         String eaaCategory = eaaPresentation.getEAACategory();
         if (EAACategory.EU_QEAA.getUrn().equals(eaaCategory)) {
