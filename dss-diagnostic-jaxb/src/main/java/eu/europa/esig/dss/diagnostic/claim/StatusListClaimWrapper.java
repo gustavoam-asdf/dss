@@ -22,6 +22,16 @@ public class StatusListClaimWrapper extends ClaimWrapper {
     }
 
     /**
+     * Constructor with a parent provided
+     *
+     * @param wrapped {@link XmlStatusListClaim}
+     * @param parent {@link ClaimWrapper}
+     */
+    public StatusListClaimWrapper(final XmlStatusListClaim wrapped, final ClaimWrapper parent) {
+        super(wrapped, parent);
+    }
+
+    /**
      * Gets the status's unique index identifier
      *
      * @return {@link ClaimWrapper}
@@ -40,9 +50,9 @@ public class StatusListClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getUri() {
-        XmlClaim index = getWrapped().getUri();
-        if (index != null) {
-            return new ClaimWrapper(index, this);
+        XmlClaim uri = getWrapped().getUri();
+        if (uri != null) {
+            return new ClaimWrapper(uri, this);
         }
         return null;
     }

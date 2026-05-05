@@ -2,8 +2,10 @@ package eu.europa.esig.dss.eaa.mdoc.claim;
 
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
+import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 
 /**
  * Mdoc implementation of a Status structure as defined in
@@ -30,6 +32,26 @@ public class MdocClaimStatus extends MdocClaimMap implements ClaimStatus {
             return new MdocClaimStatusList(statusList);
         }
         return null;
+    }
+
+    @Override
+    public ClaimNumber getIndex() {
+        return getAsNumber(MdocConstants.STATUS_INDEX);
+    }
+
+    @Override
+    public ClaimString getUri() {
+        return getAsString(MdocConstants.STATUS_URI);
+    }
+
+    @Override
+    public ClaimString getType() {
+        return getAsString(MdocConstants.STATUS_TYPE);
+    }
+
+    @Override
+    public ClaimString getPurpose() {
+        return getAsString(MdocConstants.STATUS_PURPOSE);
     }
 
 }

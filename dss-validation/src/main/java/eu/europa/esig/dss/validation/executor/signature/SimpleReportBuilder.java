@@ -1000,6 +1000,8 @@ public class SimpleReportBuilder {
 		if (eaaStatus != null) {
 			xmlEAAPayload.setStatusIndex(getXmlDisclosableClaim(eaaStatus.getIndex(), eaaStatus.isSelectivelyDisclosable()));
 			xmlEAAPayload.setStatusUri(getXmlDisclosableClaim(eaaStatus.getUri(), eaaStatus.isSelectivelyDisclosable()));
+			xmlEAAPayload.setStatusType(getXmlDisclosableClaim(eaaStatus.getType(), eaaStatus.isSelectivelyDisclosable()));
+			xmlEAAPayload.setStatusPurpose(getXmlDisclosableClaim(eaaStatus.getPurpose(), eaaStatus.isSelectivelyDisclosable()));
 		}
 		xmlEAAPayload.setNonce(getXmlDisclosableClaim(eaaPayloadProxy.getEAANonce()));
 		DeviceKeyClaimWrapper eaaDeviceKey = eaaPayloadProxy.getEAADeviceKey();

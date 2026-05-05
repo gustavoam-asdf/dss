@@ -93,10 +93,19 @@ public class MdocConstants {
     public static final String STATUS_LIST = "status_list";
 
     /** A non-negative Integer that represents the index to check for status information for the current Token */
-    public static final String STATUS_INDEX = "idx";
+    public static final String STATUS_IDX = "idx";
+
+    /** A non-negative Integer that represents the index to check for status information for the current Token */
+    public static final String STATUS_INDEX = "index";
 
     /** String value that identifies the Status List Token containing the status information for the Token */
     public static final String STATUS_URI = "uri";
+
+    /** An identifier of the type of the status information provided by the service */
+    public static final String STATUS_TYPE = "type";
+
+    /** Purpose of the status entry claim */
+    public static final String STATUS_PURPOSE = "purpose";
 
 
 }

@@ -1733,7 +1733,7 @@
 			<xs:element name="OneTimeUse" type="Claim" minOccurs="0" />
 			<xs:element name="ShortLived" type="Claim" minOccurs="0" />
 			<xs:element name="Evidence" type="Claim" minOccurs="0" />
-			<xs:element name="AttestedAttributesSubject" type="Claim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubject" type="AttestedAttributesSubjectClaim" minOccurs="0" />
 
 			<!-- holder info -->
 			<xs:element name="FullName" type="Claim" minOccurs="0" />
@@ -1754,7 +1754,7 @@
 			<xs:element name="Address" type="AddressClaim" minOccurs="0" />
 			<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
 			<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
-			<xs:element name="PlaceOfBirth" type="Claim" minOccurs="0" />
+			<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
 			<xs:element name="Nationalities" type="Claim" minOccurs="0" />
 			<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
 			<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
@@ -1894,6 +1894,10 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="StatusList" type="StatusListClaim" minOccurs="0" />
+					<xs:element name="Index" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Type" type="Claim" minOccurs="0" />
+					<xs:element name="Purpose" type="Claim" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2025,6 +2029,30 @@
 		<xs:complexContent>
 			<xs:extension base="Claim">
 				<xs:attribute name="type" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AttestedAttributesSubjectClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="SubjectId" type="AttestedAttributesSubjectIdClaim" minOccurs="0" />
+					<xs:element name="SubjectPseudonym" type="Claim" minOccurs="0" />
+					<xs:element name="Attributes" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AttestedAttributesSubjectIdClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="FamilyName" type="Claim" minOccurs="0" />
+					<xs:element name="GivenName" type="Claim" minOccurs="0" />
+					<xs:element name="DocumentNumber" type="Claim" minOccurs="0" />
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

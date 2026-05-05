@@ -2,6 +2,8 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectIdClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
@@ -31,6 +33,8 @@ import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubjectId;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
 import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
@@ -235,7 +239,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setOneTimeUse(getXmlClaim(eaaPayload.getOneTimeUse(), supportedClaims));
         xmlEAAPayload.setShortLived(getXmlClaim(eaaPayload.getShortLived(), supportedClaims));
         xmlEAAPayload.setEvidence(getXmlClaim(eaaPayload.getEvidence(), supportedClaims));
-        xmlEAAPayload.setAttestedAttributesSubject(getXmlClaim(eaaPayload.getAttestedAttributesSubject(), supportedClaims)); // TODO : enhance with AttestedAttributesSubjectWrapper
+        xmlEAAPayload.setAttestedAttributesSubject(getXmlAttestedAttributesSubjectClaim(eaaPayload.getAttestedAttributesSubject(), supportedClaims)); // TODO : enhance with AttestedAttributesSubjectWrapper
 
         xmlEAAPayload.setFullName(getXmlClaim(eaaPayload.getFullName(), supportedClaims));
         xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getFirstName(), supportedClaims));
@@ -390,6 +394,18 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claimStatus.getStatusList() != null) {
             xmlStatus.setStatusList(getXmlStatusList(claimStatus.getStatusList(), claimSupportedClaims));
         }
+        if (claimStatus.getIndex() != null) {
+            xmlStatus.setIndex(getXmlClaim(claimStatus.getIndex(), claimSupportedClaims));
+        }
+        if (claimStatus.getUri() != null) {
+            xmlStatus.setUri(getXmlClaim(claimStatus.getUri(), claimSupportedClaims));
+        }
+        if (claimStatus.getType() != null) {
+            xmlStatus.setType(getXmlClaim(claimStatus.getType(), claimSupportedClaims));
+        }
+        if (claimStatus.getPurpose() != null) {
+            xmlStatus.setPurpose(getXmlClaim(claimStatus.getPurpose(), claimSupportedClaims));
+        }
         xmlStatus.getEntry().addAll(getOtherClaims(claimStatus, claimSupportedClaims));
         return xmlStatus;
     }
@@ -504,7 +520,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlAddress;
     }
 
-    private XmlClaim getXmlPlaceOfBirthClaim(Claim claim, List<XmlClaim> supportedClaims) {
+    private XmlPlaceOfBirthClaim getXmlPlaceOfBirthClaim(Claim claim, List<XmlClaim> supportedClaims) {
         if (claim == null) {
             return null;
         }
@@ -527,7 +543,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             return xmlPlaceOfBirthClaim;
 
         }
-        return getXmlClaim(claim, supportedClaims);
+        return getXmlClaim(claim, new XmlPlaceOfBirthClaim(), supportedClaims);
     }
 
     private XmlIntegrityClaim getXmlIntegrityClaim(ClaimIntegrity claimIntegrity, List<XmlClaim> supportedClaims) {
@@ -715,6 +731,55 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             xmlBiometricTemplateXXClaim.setType(claimBiometricTemplateXX.getType());
         }
         return xmlBiometricTemplateXXClaim;
+    }
+
+    private XmlAttestedAttributesSubjectClaim getXmlAttestedAttributesSubjectClaim(ClaimAttestedAttributesSubject attestedAttributesSubject, List<XmlClaim> supportedClaims) {
+        if (attestedAttributesSubject == null) {
+            return null;
+        }
+
+        XmlAttestedAttributesSubjectClaim xmlAttestedAttributesSubject = new XmlAttestedAttributesSubjectClaim();
+        appendGenericInfo(xmlAttestedAttributesSubject, attestedAttributesSubject, supportedClaims);
+
+        List<XmlClaim> claimSupportedClaims = new ArrayList<>();
+        if (attestedAttributesSubject.getSubjectId() != null) {
+            xmlAttestedAttributesSubject.setSubjectId(getXmlAttestedAttributesSubjectIdClaim(attestedAttributesSubject.getSubjectId(), claimSupportedClaims));
+        }
+        if (attestedAttributesSubject.getSubjectPseudonym() != null) {
+            xmlAttestedAttributesSubject.setSubjectPseudonym(getXmlClaim(attestedAttributesSubject.getSubjectPseudonym(), claimSupportedClaims));
+        }
+        if (attestedAttributesSubject.getAttributes() != null) {
+            xmlAttestedAttributesSubject.setAttributes(getXmlClaim(attestedAttributesSubject.getAttributes(), claimSupportedClaims));
+        }
+        xmlAttestedAttributesSubject.getEntry().addAll(getOtherClaims(attestedAttributesSubject, claimSupportedClaims));
+        return xmlAttestedAttributesSubject;
+    }
+
+    private XmlAttestedAttributesSubjectIdClaim getXmlAttestedAttributesSubjectIdClaim(Claim claim, List<XmlClaim> supportedClaims) {
+        if (claim == null) {
+            return null;
+        }
+
+        if (claim instanceof ClaimAttestedAttributesSubjectId) {
+            XmlAttestedAttributesSubjectIdClaim xmlAttestedAttributesSubjectIdClaim = new XmlAttestedAttributesSubjectIdClaim();
+            appendGenericInfo(xmlAttestedAttributesSubjectIdClaim, claim, supportedClaims);
+
+            List<XmlClaim> claimSupportedClaims = new ArrayList<>();
+
+            ClaimAttestedAttributesSubjectId attestedAttributesSubjectId = (ClaimAttestedAttributesSubjectId) claim;
+            if (attestedAttributesSubjectId.getFamilyName() != null) {
+                xmlAttestedAttributesSubjectIdClaim.setFamilyName(getXmlClaim(attestedAttributesSubjectId.getFamilyName(), claimSupportedClaims));
+            }
+            if (attestedAttributesSubjectId.getGivenName() != null) {
+                xmlAttestedAttributesSubjectIdClaim.setGivenName(getXmlClaim(attestedAttributesSubjectId.getGivenName(), claimSupportedClaims));
+            }
+            if (attestedAttributesSubjectId.getDocumentNumber() != null) {
+                xmlAttestedAttributesSubjectIdClaim.setDocumentNumber(getXmlClaim(attestedAttributesSubjectId.getDocumentNumber(), claimSupportedClaims));
+            }
+            xmlAttestedAttributesSubjectIdClaim.getEntry().addAll(getOtherClaims(claim, claimSupportedClaims));
+            return xmlAttestedAttributesSubjectIdClaim;
+        }
+        return getXmlClaim(claim, new XmlAttestedAttributesSubjectIdClaim(), supportedClaims);
     }
 
     private List<XmlClaim> getOtherClaims(Claim claim, List<XmlClaim> supportedClaims) {

@@ -2,6 +2,7 @@ package eu.europa.esig.dss.diagnostic;
 
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DeviceKeyClaimWrapper;
@@ -320,7 +321,11 @@ public class EAAPresentationWrapper {
     public BigInteger getEAAStatusIndex() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
         if (eaaStatus != null) {
-            return getPayloadClaimNumberValue(eaaStatus.getIndex());
+            if (eaaStatus.getIndex() != null) {
+                return getPayloadClaimNumberValue(eaaStatus.getIndex());
+            } else if (eaaStatus.getStatusList() != null) {
+                return getPayloadClaimNumberValue(eaaStatus.getStatusList().getIndex());
+            }
         }
         return null;
     }
@@ -333,7 +338,37 @@ public class EAAPresentationWrapper {
     public String getEAAStatusUri() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
         if (eaaStatus != null) {
-            return getPayloadClaimTextValue(eaaStatus.getUri());
+            if (eaaStatus.getUri() != null) {
+                return getPayloadClaimTextValue(eaaStatus.getUri());
+            } else if (eaaStatus.getStatusList() != null) {
+                return getPayloadClaimTextValue(eaaStatus.getStatusList().getUri());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA Presentation status type as defined in the EAA payload
+     *
+     * @return {@link String}
+     */
+    public String getEAAStatusType() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            return getPayloadClaimTextValue(eaaStatus.getType());
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA Presentation status purpose as defined in the EAA payload
+     *
+     * @return {@link String}
+     */
+    public String getEAAStatusPurpose() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            return getPayloadClaimTextValue(eaaStatus.getPurpose());
         }
         return null;
     }
@@ -1279,7 +1314,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getAttestedAttributesSubjectId() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null) {
+            return getPayloadClaimTextValue(attestedAttributesSubject.getSubjectId());
+        }
         return null;
     }
 
@@ -1289,7 +1327,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getAttestedAttributesSubjectFamilyName() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null && attestedAttributesSubject.getSubjectId() != null) {
+            return getPayloadClaimTextValue(attestedAttributesSubject.getSubjectId().getFamilyName());
+        }
         return null;
     }
 
@@ -1299,7 +1340,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getAttestedAttributesSubjectGivenName() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null && attestedAttributesSubject.getSubjectId() != null) {
+            return getPayloadClaimTextValue(attestedAttributesSubject.getSubjectId().getGivenName());
+        }
         return null;
     }
 
@@ -1309,7 +1353,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getAttestedAttributesSubjectDocumentNumber() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null && attestedAttributesSubject.getSubjectId() != null) {
+            return getPayloadClaimTextValue(attestedAttributesSubject.getSubjectId().getDocumentNumber());
+        }
         return null;
     }
 
@@ -1319,7 +1366,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getAttestedAttributesSubjectPseudonym() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null) {
+            return getPayloadClaimTextValue(attestedAttributesSubject.getSubjectPseudonym());
+        }
         return null;
     }
 
@@ -1330,7 +1380,10 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public List<String> getAttestedAttributes() {
-        // TODO : to be implemented
+        AttestedAttributesSubjectClaimWrapper attestedAttributesSubject = getEAAPayload().getAttestedAttributesSubject();
+        if (attestedAttributesSubject != null) {
+            return getPayloadClaimArrayAsStringsValue(attestedAttributesSubject.getAttributes());
+        }
         return null;
     }
 

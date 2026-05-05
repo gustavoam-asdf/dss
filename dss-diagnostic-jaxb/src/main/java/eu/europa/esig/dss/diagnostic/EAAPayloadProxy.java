@@ -2,6 +2,7 @@ package eu.europa.esig.dss.diagnostic;
 
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.CredentialSubjectClaimWrapper;
@@ -14,6 +15,7 @@ import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDeviceKeyClaim;
@@ -1289,9 +1291,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getAttestedAttributesSubject() {
+    public AttestedAttributesSubjectClaimWrapper getAttestedAttributesSubject() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getAttestedAttributesSubject());
+            return getAttestedAttributesSubjectClaim(xmlEAAPayload.getAttestedAttributesSubject());
         }
         return null;
     }
@@ -1720,6 +1722,13 @@ public class EAAPayloadProxy {
             return null;
         }
         return new DrivingPrivilegesClaimWrapper(xmlDrivingPrivilegesClaim);
+    }
+
+    private AttestedAttributesSubjectClaimWrapper getAttestedAttributesSubjectClaim(XmlAttestedAttributesSubjectClaim xmlAttestedAttributesSubjectClaim) {
+        if (xmlAttestedAttributesSubjectClaim == null) {
+            return null;
+        }
+        return new AttestedAttributesSubjectClaimWrapper(xmlAttestedAttributesSubjectClaim);
     }
     
 }

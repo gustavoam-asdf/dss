@@ -409,6 +409,8 @@
 			<xs:element name="MetadataType" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusIndex" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusUri" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="StatusType" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="StatusPurpose" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Nonce" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="DeviceKey" type="DisclosableClaim" minOccurs="0" />
 
