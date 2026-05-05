@@ -1732,14 +1732,28 @@ public interface ValidationPolicy {
      *
      * @return {@code LevelRule} if EAANotBeforePresent element is present
      */
-    LevelRule getEAAPresentationEAANotBeforePresentContraint();
+    LevelRule getEAAPresentationEAANotBeforePresentConstraint();
 
     /**
      * Returns EAAExpirationPresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAAExpirationPresent element is present
      */
-    LevelRule getEAAPresentationEAAExpirationPresentContraint();
+    LevelRule getEAAPresentationEAAExpirationPresentConstraint();
+
+    /**
+     * Returns EAAAdministrativeIssuanceDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAAdministrativeIssuanceDatePresent element is present
+     */
+    LevelRule getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint();
+
+    /**
+     * Returns EAAAdministrativeExpirationDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAAdministrativeExpirationDatePresent element is present
+     */
+    LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
 
 	/* Article 32 */
 

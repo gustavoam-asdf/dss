@@ -1930,7 +1930,7 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
-    public LevelRule getEAAPresentationEAANotBeforePresentContraint() {
+    public LevelRule getEAAPresentationEAANotBeforePresentConstraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
             return toLevelRule(eaaPresentationConstraints.getEAANotBeforePresent());
@@ -1939,10 +1939,28 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAExpirationPresentContraint() {
+    public LevelRule getEAAPresentationEAAExpirationPresentConstraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
             return toLevelRule(eaaPresentationConstraints.getEAAExpirationPresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getEAAAdministrativeIssuanceDatePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getEAAAdministrativeExpirationDatePresent());
         }
         return null;
     }

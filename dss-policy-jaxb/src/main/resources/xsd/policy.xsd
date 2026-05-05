@@ -648,6 +648,16 @@
                             <xsd:documentation>Checks whether the expiration is present within the EAA Presentation token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="EAAAdministrativeIssuanceDatePresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the administrative issuance date is present within the EAA Presentation token</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="EAAAdministrativeExpirationDatePresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the administrative expiration date is present within the EAA Presentation token</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                     <!-- ADD HERE new constraints -->
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
