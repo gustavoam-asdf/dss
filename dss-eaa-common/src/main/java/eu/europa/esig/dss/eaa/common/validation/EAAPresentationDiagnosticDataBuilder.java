@@ -220,7 +220,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setIssuer(getXmlClaim(eaaPayload.getIssuer(), supportedClaims));
         xmlEAAPayload.setSubject(getXmlClaim(eaaPayload.getSubject(), supportedClaims));
         xmlEAAPayload.setAudience(getXmlClaim(eaaPayload.getAudience(), supportedClaims));
-        xmlEAAPayload.setExpirationTime(getXmlClaim(eaaPayload.getExpirationTime(), supportedClaims));
+        xmlEAAPayload.setNotAfter(getXmlClaim(eaaPayload.getNotAfterTime(), supportedClaims));
         xmlEAAPayload.setNotBefore(getXmlClaim(eaaPayload.getNotBeforeTime(), supportedClaims));
         xmlEAAPayload.setIssuedAt(getXmlClaim(eaaPayload.getIssuedAtTime(), supportedClaims));
         xmlEAAPayload.setUpdatedAt(getXmlClaim(eaaPayload.getUpdatedAtTime(), supportedClaims));

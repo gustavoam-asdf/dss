@@ -8,7 +8,6 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -94,7 +93,7 @@ class SDJWTCompactEAAPresentationWithMetadataValidationTest extends AbstractSDJW
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
         assertEquals("urn:eudi:pid:1", eaaPresentation.getEAAMetadataUri());
         assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());

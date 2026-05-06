@@ -991,9 +991,10 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setIssuer(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIssuer()));
 		xmlEAAPayload.setSubject(getXmlDisclosableClaim(eaaPayloadProxy.getEAASubject()));
 		xmlEAAPayload.setAudience(getXmlDisclosableClaim(eaaPayloadProxy.getEAAAudience()));
-		xmlEAAPayload.setExpirationTime(getXmlDisclosableClaim(eaaPayloadProxy.getEAAExpirationTime()));
+		xmlEAAPayload.setNotAfter(getXmlDisclosableClaim(eaaPayloadProxy.getEAANotAfter()));
 		xmlEAAPayload.setNotBefore(getXmlDisclosableClaim(eaaPayloadProxy.getEAANotBefore()));
 		xmlEAAPayload.setIssuedAt(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIssuedAt()));
+		xmlEAAPayload.setUpdatedAt(getXmlDisclosableClaim(eaaPayloadProxy.getEAAUpdatedAt()));
 		xmlEAAPayload.setUpdatedAt(getXmlDisclosableClaim(eaaPayloadProxy.getEAAUpdatedAt()));
 		xmlEAAPayload.setCategory(getXmlDisclosableClaim(eaaPayloadProxy.getEAACategory()));
 		xmlEAAPayload.setMetadataType(getXmlDisclosableClaim(eaaPayloadProxy.getEAAMetadataType()));
@@ -1013,10 +1014,10 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setDocType(getXmlDisclosableClaim(eaaPayloadProxy.getEAADocType()));
 		ValidityInfoClaimWrapper eaaValidityInfo = eaaPayloadProxy.getEAAValidityInfo();
 		if (eaaValidityInfo != null) {
-			xmlEAAPayload.setSignatureCreatedAt(getXmlDisclosableClaim(eaaValidityInfo.getSigned(), eaaValidityInfo.isSelectivelyDisclosable()));
-			xmlEAAPayload.setSignatureNotBefore(getXmlDisclosableClaim(eaaValidityInfo.getValidFrom(), eaaValidityInfo.isSelectivelyDisclosable()));
-			xmlEAAPayload.setSignatureExpirationTime(getXmlDisclosableClaim(eaaValidityInfo.getValidUntil(), eaaValidityInfo.isSelectivelyDisclosable()));
-			xmlEAAPayload.setSignatureNextUpdate(getXmlDisclosableClaim(eaaValidityInfo.getExpectedUpdate(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setIssuedAt(getXmlDisclosableClaim(eaaValidityInfo.getSigned(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setNotBefore(getXmlDisclosableClaim(eaaValidityInfo.getValidFrom(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setAdministrativeExpirationDate(getXmlDisclosableClaim(eaaValidityInfo.getValidUntil(), eaaValidityInfo.isSelectivelyDisclosable()));
+			xmlEAAPayload.setNextUpdate(getXmlDisclosableClaim(eaaValidityInfo.getExpectedUpdate(), eaaValidityInfo.isSelectivelyDisclosable()));
 		}
 		xmlEAAPayload.setAdministrativeIssuanceDate(getXmlDisclosableClaim(eaaPayloadProxy.getAdministrativeIssuanceDate()));
 		xmlEAAPayload.setAdministrativeExpirationDate(getXmlDisclosableClaim(eaaPayloadProxy.getAdministrativeExpirationDate()));

@@ -760,10 +760,9 @@
 		<xsl:apply-templates />
 	</xsl:template>
 
-	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:ExpirationTime|dss:NotBefore|dss:IssuedAt
-			|dss:UpdatedAt|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose|dss:Nonce
-			|dss:Version|dss:DocType|dss:SignatureCreatedAt|dss:SignatureExpirationTime|dss:SignatureNotBefore
-			|dss:SignatureNextUpdate|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
+	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:NotAfter|dss:UpdatedAt
+			|dss:NextUpdate|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
+			|dss:Nonce|dss:Version|dss:DocType|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
 			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
 			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
 			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:FirstName|dss:LastName
@@ -789,10 +788,11 @@
 				<xsl:when test="name() = 'Issuer'">Issuer</xsl:when>
 				<xsl:when test="name() = 'Subject'">Subject</xsl:when>
 				<xsl:when test="name() = 'Audience'">Audience</xsl:when>
-				<xsl:when test="name() = 'ExpirationTime'">Expiration time</xsl:when>
-				<xsl:when test="name() = 'NotBefore'">NotBefore time</xsl:when>
 				<xsl:when test="name() = 'IssuedAt'">Issuance time</xsl:when>
+				<xsl:when test="name() = 'NotBefore'">Valid from</xsl:when>
+				<xsl:when test="name() = 'NotAfter'">Valid until</xsl:when>
 				<xsl:when test="name() = 'UpdatedAt'">Update time</xsl:when>
+				<xsl:when test="name() = 'NextUpdate'">Next update time</xsl:when>
 				<xsl:when test="name() = 'Category'">Category</xsl:when>
 				<xsl:when test="name() = 'MetadataType'">Metadata type</xsl:when>
 				<xsl:when test="name() = 'StatusIndex'">Status index</xsl:when>
@@ -803,10 +803,6 @@
 
 				<xsl:when test="name() = 'Version'">Version</xsl:when>
 				<xsl:when test="name() = 'DocType'">Document type</xsl:when>
-				<xsl:when test="name() = 'SignatureCreatedAt'">Signature creation time</xsl:when>
-				<xsl:when test="name() = 'SignatureExpirationTime'">Signature expiration time</xsl:when>
-				<xsl:when test="name() = 'SignatureNotBefore'">Signature NotBefore time</xsl:when>
-				<xsl:when test="name() = 'SignatureNextUpdate'">Signature NextUpdate time</xsl:when>
 
 				<xsl:when test="name() = 'AdministrativeIssuanceDate'">Administrative issuance date</xsl:when>
 				<xsl:when test="name() = 'AdministrativeExpirationDate'">Administrative expiration date</xsl:when>
@@ -938,11 +934,10 @@
 												 scaling="uniform"
 												 fox:alt-text="{name()}"/>
 						</xsl:when>
-						<xsl:when test="name() = 'ExpirationTime' or name() = 'NotBefore' or name() = 'IssuedAt'
-								 or name() = 'UpdatedAt' or name() = 'Birthdate' or name() = 'PortraitCaptureDate'
-								 or name() = 'SignatureCreatedAt' or name() = 'SignatureExpirationTime'
-								 or name() = 'SignatureNotBefore' or name() = 'SignatureNextUpdate'
-								 or name() = 'AdministrativeIssuanceDate' or name() = 'AdministrativeExpirationDate'">
+						<xsl:when test="name() = 'NotAfter' or name() = 'NotBefore' or name() = 'IssuedAt'
+								 or name() = 'UpdatedAt' or name() = 'NextUpdate' or name() = 'Birthdate'
+								 or name() = 'PortraitCaptureDate' or name() = 'AdministrativeIssuanceDate'
+								 or name() = 'AdministrativeExpirationDate'">
 							<xsl:call-template name="formatdate">
 								<xsl:with-param name="DateTimeStr" select="."/>
 							</xsl:call-template>

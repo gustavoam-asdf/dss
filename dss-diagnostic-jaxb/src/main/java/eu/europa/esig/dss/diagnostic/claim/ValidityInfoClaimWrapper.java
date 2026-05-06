@@ -67,7 +67,7 @@ public class ValidityInfoClaimWrapper extends ClaimWrapper {
      * @return {@link ClaimWrapper}
      */
     public ClaimWrapper getExpectedUpdate() {
-        XmlClaim expectedUpdate = getWrapped().getSigned();
+        XmlClaim expectedUpdate = getWrapped().getExpectedUpdate();
         if (expectedUpdate != null) {
             return new ClaimWrapper(expectedUpdate, this);
         }

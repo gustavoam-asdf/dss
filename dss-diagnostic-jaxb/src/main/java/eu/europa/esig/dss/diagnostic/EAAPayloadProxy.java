@@ -97,13 +97,13 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation expiration time as defined in the EAA payload
+     * Gets EAA Presentation issuance time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getEAAExpirationTime() {
+    public ClaimWrapper getEAAIssuedAt() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getExpirationTime());
+            return getClaim(xmlEAAPayload.getIssuedAt());
         }
         return null;
     }
@@ -121,13 +121,13 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation issuance time as defined in the EAA payload
+     * Gets EAA Presentation expiration time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getEAAIssuedAt() {
+    public ClaimWrapper getEAANotAfter() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getIssuedAt());
+            return getClaim(xmlEAAPayload.getNotAfter());
         }
         return null;
     }
@@ -1348,14 +1348,14 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getAudience() != null) {
             claimList.add(getClaim(xmlEAAPayload.getAudience()));
         }
-        if (xmlEAAPayload.getExpirationTime() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getExpirationTime()));
+        if (xmlEAAPayload.getIssuedAt() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getIssuedAt()));
         }
         if (xmlEAAPayload.getNotBefore() != null) {
             claimList.add(getClaim(xmlEAAPayload.getNotBefore()));
         }
-        if (xmlEAAPayload.getIssuedAt() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getIssuedAt()));
+        if (xmlEAAPayload.getNotAfter() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getNotAfter()));
         }
         if (xmlEAAPayload.getUpdatedAt() != null) {
             claimList.add(getClaim(xmlEAAPayload.getUpdatedAt()));

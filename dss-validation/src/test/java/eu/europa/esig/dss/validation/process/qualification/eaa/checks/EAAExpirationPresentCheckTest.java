@@ -1,12 +1,5 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
@@ -20,7 +13,12 @@ import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
+import org.junit.jupiter.api.Test;
+
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
@@ -35,7 +33,7 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date());
-        xmlEAAPayload.setExpirationTime(expiration);
+        xmlEAAPayload.setNotAfter(expiration);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();

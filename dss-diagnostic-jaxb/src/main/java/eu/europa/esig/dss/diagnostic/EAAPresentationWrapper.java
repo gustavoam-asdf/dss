@@ -182,12 +182,20 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation expiration time as defined in the EAA payload
+     * Gets EAA Presentation issuance time as defined in the EAA payload
      *
      * @return {@link Date}
      */
-    public Date getEAAExpirationTime() {
-        return getPayloadClaimDateValue(getEAAPayload().getEAAExpirationTime());
+    public Date getEAAIssuedAt() {
+        Date issuedAt = getPayloadClaimDateValue(getEAAPayload().getEAAIssuedAt());
+        if (issuedAt != null) {
+            return issuedAt;
+        }
+        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
+        if (eaaValidityInfo != null) {
+            return getPayloadClaimDateValue(eaaValidityInfo.getSigned());
+        }
+        return null;
     }
 
     /**
@@ -196,16 +204,32 @@ public class EAAPresentationWrapper {
      * @return {@link Date}
      */
     public Date getEAANotBefore() {
-        return getPayloadClaimDateValue(getEAAPayload().getEAANotBefore());
+        Date notBefore = getPayloadClaimDateValue(getEAAPayload().getEAANotBefore());
+        if (notBefore != null) {
+            return notBefore;
+        }
+        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
+        if (eaaValidityInfo != null) {
+            return getPayloadClaimDateValue(eaaValidityInfo.getValidFrom());
+        }
+        return null;
     }
 
     /**
-     * Gets EAA Presentation issuance time as defined in the EAA payload
+     * Gets EAA Presentation expiration time as defined in the EAA payload
      *
      * @return {@link Date}
      */
-    public Date getEAAIssuedAt() {
-        return getPayloadClaimDateValue(getEAAPayload().getEAAIssuedAt());
+    public Date getEAANotAfter() {
+        Date expirationTime = getPayloadClaimDateValue(getEAAPayload().getEAANotAfter());
+        if (expirationTime != null) {
+            return expirationTime;
+        }
+        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
+        if (eaaValidityInfo != null) {
+            return getPayloadClaimDateValue(eaaValidityInfo.getValidUntil());
+        }
+        return null;
     }
 
     /**
@@ -218,50 +242,11 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets time when the Mobile Security Object (MSO) or/and its signature was created
+     * Gets EAA Presentation expected next update time
      *
      * @return {@link Date}
      */
-    public Date getSignatureCreatedAt() {
-        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
-        if (eaaValidityInfo != null) {
-            return getPayloadClaimDateValue(eaaValidityInfo.getSigned());
-        }
-        return null;
-    }
-
-    /**
-     * Gets time before which the Mobile Security Object (MSO) or/and its signature is not yet valid
-     *
-     * @return {@link Date}
-     */
-    public Date getSignatureNotBefore() {
-        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
-        if (eaaValidityInfo != null) {
-            return getPayloadClaimDateValue(eaaValidityInfo.getValidFrom());
-        }
-        return null;
-    }
-
-    /**
-     * Gets time after which the Mobile Security Object (MSO) or/and its signature is not longer valid
-     *
-     * @return {@link Date}
-     */
-    public Date getSignatureExpirationTime() {
-        ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
-        if (eaaValidityInfo != null) {
-            return getPayloadClaimDateValue(eaaValidityInfo.getValidUntil());
-        }
-        return null;
-    }
-
-    /**
-     * Gets time when the Mobile Security Object (MSO) or/and its signature is to be updated
-     *
-     * @return {@link Date}
-     */
-    public Date getSignatureNextUpdate() {
+    public Date getEAANextUpdate() {
         ValidityInfoClaimWrapper eaaValidityInfo = getEAAPayload().getEAAValidityInfo();
         if (eaaValidityInfo != null) {
             return getPayloadClaimDateValue(eaaValidityInfo.getExpectedUpdate());

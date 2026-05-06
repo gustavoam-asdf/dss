@@ -129,7 +129,7 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
         assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
         assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAAExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
         assertEquals(DSSUtils.parseRFCDate("2019-10-02T07:06:40Z"), eaaPresentation.getEAAUpdatedAt());
 

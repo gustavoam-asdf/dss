@@ -401,10 +401,11 @@
 			<xs:element name="Issuer" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Subject" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Audience" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ExpirationTime" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="NotBefore" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="IssuedAt" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="NotBefore" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="NotAfter" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="UpdatedAt" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="NextUpdate" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Category" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="MetadataType" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusIndex" type="DisclosableClaim" minOccurs="0" />
@@ -417,10 +418,6 @@
 			<!-- mdoc technical claims -->
 			<xs:element name="Version" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="DocType" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="SignatureCreatedAt" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="SignatureExpirationTime" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="SignatureNotBefore" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="SignatureNextUpdate" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- ETSI TS 119 472-1 technical claims -->
 			<xs:element name="AdministrativeIssuanceDate" type="DisclosableClaim" minOccurs="0" />

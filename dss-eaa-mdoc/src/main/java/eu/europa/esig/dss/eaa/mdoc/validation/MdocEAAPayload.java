@@ -92,23 +92,26 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimDate getExpirationTime() {
-        return getAsDateOrDateTime(forIso180135(ISO180135Headers.EXPIRY_DATE), forIso232202(ISO232202Headers.EXPIRY_DATE));
-    }
-
-    @Override
-    public ClaimDate getNotBeforeTime() {
-        // not applicable
+    public ClaimDate getIssuedAtTime() {
+        // see ValidityInfo
         return null;
     }
 
     @Override
-    public ClaimDate getIssuedAtTime() {
-        return getAsDateOrDateTime(forIso180135(ISO180135Headers.ISSUE_DATE), forIso232202(ISO232202Headers.ISSUE_DATE));
+    public ClaimDate getNotBeforeTime() {
+        // see ValidityInfo
+        return null;
+    }
+
+    @Override
+    public ClaimDate getNotAfterTime() {
+        // see ValidityInfo
+        return null;
     }
 
     @Override
     public ClaimDate getUpdatedAtTime() {
+        // see ValidityInfo
         return null;
     }
 
@@ -628,12 +631,14 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimDate getAdministrativeExpirationDate() {
-        return getAsDateOrDateTime(forEUDIPid(EUDIPIDHeaders.EXPIRY_DATE));
+        return  getAsDateOrDateTime(forIso180135(ISO180135Headers.EXPIRY_DATE), forIso232202(ISO232202Headers.EXPIRY_DATE),
+                forEUDIPid(EUDIPIDHeaders.EXPIRY_DATE));
     }
 
     @Override
     public ClaimDate getAdministrativeIssuanceDate() {
-        return getAsDateOrDateTime(forEUDIPid(EUDIPIDHeaders.ISSUANCE_DATE));
+        return getAsDateOrDateTime(forIso180135(ISO180135Headers.ISSUE_DATE), forIso232202(ISO232202Headers.ISSUE_DATE),
+                forEUDIPid(EUDIPIDHeaders.ISSUANCE_DATE));
     }
 
     @Override

@@ -73,8 +73,8 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimDate getExpirationTime() {
-        return getAsDateTime(SDJWTConstants.EXPIRATION_TIME);
+    public ClaimDate getIssuedAtTime() {
+        return getAsDateTime(SDJWTConstants.ISSUED_AT);
     }
 
     @Override
@@ -83,8 +83,8 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimDate getIssuedAtTime() {
-        return getAsDateTime(SDJWTConstants.ISSUED_AT);
+    public ClaimDate getNotAfterTime() {
+        return getAsDateTime(SDJWTConstants.EXPIRATION_TIME);
     }
 
     @Override

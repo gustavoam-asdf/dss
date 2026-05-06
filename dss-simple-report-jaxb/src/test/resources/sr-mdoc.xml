@@ -46,14 +46,14 @@
             <SignatureScope Id="D-63251A75D87F550212BE922E7E325B3951E80E444CBFFB3BF30001D9AE4A6F66" scope="FULL">Full document</SignatureScope>
         </EAAPresentationSignature>
         <EAAPayload>
-            <ExpirationTime name="expiry_date" disclosure="true">2024-10-20T00:00:00Z</ExpirationTime>
-            <IssuedAt name="issue_date" disclosure="true">2019-10-20T00:00:00Z</IssuedAt>
+            <IssuedAt name="validityInfo/signed">2020-10-01T13:30:02Z</IssuedAt>
+            <NotBefore name="validityInfo/validFrom">2020-10-01T13:30:02Z</NotBefore>
+            <NotAfter name="validityInfo/validUntil">2021-10-01T13:30:02Z</NotAfter>
+            <NextUpdate name="validityInfo/signed">2020-10-01T13:30:02Z</NextUpdate>
             <Version name="version">1.0</Version>
             <DocType name="docType">org.iso.18013.5.1.mDL</DocType>
-            <SignatureCreatedAt name="validityInfo/signed">2020-10-01T13:30:02Z</SignatureCreatedAt>
-            <SignatureExpirationTime name="validityInfo/validUntil">2021-10-01T13:30:02Z</SignatureExpirationTime>
-            <SignatureNotBefore name="validityInfo/validFrom">2020-10-01T13:30:02Z</SignatureNotBefore>
-            <SignatureNextUpdate name="validityInfo/signed">2020-10-01T13:30:02Z</SignatureNextUpdate>
+            <AdministrativeIssuanceDate name="issue_date" disclosure="true">2019-10-20T00:00:00Z</AdministrativeIssuanceDate>
+            <AdministrativeExpirationDate name="expiry_date" disclosure="true">2024-10-20T00:00:00Z</AdministrativeExpirationDate>
             <LastName name="family_name" disclosure="true">Doe</LastName>
             <DocumentNumber name="document_number" disclosure="true">123456789</DocumentNumber>
             <Portrait name="portrait" disclosure="true">/9j/4AAQSkZJRgABAQEAkACQAAD/2wBDABMNDhEODBMRDxEVFBMXHTAfHRoaHToqLCMwRT1JR0Q9Q0FMVm1dTFFoUkFDX4JgaHF1e3x7SlyGkIV3j214e3b/2wBDARQVFR0ZHTgfHzh2T0NPdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnb/wAARCAAYAGQDASIAAhEBAxEB/8QAGwAAAwEAAwEAAAAAAAAAAAAAAAUGBAECAwf/xAAyEAABAwMDAgUCAwkAAAAAAAABAgMEAAURBhIhEzEUFVFhcSJBB4GhFjVCUnORssHx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/xAAaEQEBAQADAQAAAAAAAAAAAAAAAUERITFh/9oADAMBAAIRAxEAPwClu94i2iMpx9aSvH0NA/Us+w/3Xnp+8+dwlyOh0NrhRt37s8A5zgetK9R6fjLbuN0dUtbvSyhPZKSABn37Ufh/+5X/AOuf8U0hXeZq8InORLfb3py2iQooOO3fGAePet1i1BHvTbmxCmXWuVoUc4HqDUlbkzJ1/mu6dcEUEEqLpBBBPpg9/wBPWvXTS0tM3mMtC/H9FZK92RxkEfOTTC+mr2tUl10Qbc9KZa5W6FYAHrwDx84p3Z7vHvEPxEfcnadq0q7pNTehun5PcN2O/wBXxt/7XhoZhUqDdY5UUodQlG7GcEhQzQN7zrCLbX0sx20zF/x7XMBPtnByacXG4MW2CuVJJCEjsOST9gKgdVWeNZlw2Y24lSVFa1HJUcivoT6o6Y48WWg2eD1cY/WmGpn9tykIddtL6IqzhLu7v8cYP96qYz6JUdt9o5bcSFJPsai9YRpaoqJDLzCrQgp6bTJAxxjPAx+p70ya1VAgWqApUd9KHWyEIbAVt2nbjJIpg36ivosbDTnQ66nFFITv24wO/Y0lja88RJaZ8u29RYTnr5xk4/lrm+so1KxAkx5keMjnaiSoJUSVAdhn0rHc3rrpm5x1KuTs1t3koXnBweRgk4+RSe9lXlFcA5GaKJyz3KJ4+3vxd/T6qCndjOPyrJp+zeSQlx+v19zhXu2bccAYxk+lFFFLJOjk+MXJt1wegledwSM9/sCCOPat1i05GswcUlannnBtUtQxx6AUUUC5/RSes6YNxeiMu8LaCSQR6dxx85p3ZrRHs0ToR9ysnctau6jRRQYdQ6b88eZc8V0OkCMdPdnP5imVxtzFyhKiyQShX3HdJ9RRRT4J0aIUUJYcuz6oqVZDO3gfHOM9/tVPDitQorcdhO1tsYAoooF190/GvaEFxSmnkcJcTzx6EfcVhiaPSma3JuM96epvG1Kxgcdgck5HtRRSClooooP/2Q==</Portrait>

@@ -54,11 +54,11 @@ public interface EAAPayload extends Claim {
     ClaimArray getAudience();
 
     /**
-     * Gets the expiration time of the EAA, after which the EAA is not accepted for processing, when present
+     * Gets the time at which the EAA was issued, when present
      *
      * @return {@link ClaimDate}
      */
-    ClaimDate getExpirationTime();
+    ClaimDate getIssuedAtTime();
 
     /**
      * Gets the time before which the EAA is not accepted for processing, when present
@@ -68,11 +68,11 @@ public interface EAAPayload extends Claim {
     ClaimDate getNotBeforeTime();
 
     /**
-     * Gets the time at which the EAA was issued, when present
+     * Gets the expiration time of the EAA, after which the EAA is not accepted for processing, when present
      *
      * @return {@link ClaimDate}
      */
-    ClaimDate getIssuedAtTime();
+    ClaimDate getNotAfterTime();
 
     /**
      * Gets the time at which the information present within the EAA was the last time updated, when present

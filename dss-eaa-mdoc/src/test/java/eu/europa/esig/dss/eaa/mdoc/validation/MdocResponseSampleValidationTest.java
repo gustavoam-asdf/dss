@@ -37,15 +37,16 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
         super.checkClaims(diagnosticData);
 
         EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals(DSSUtils.parseRFCDate("2024-10-20T00:00:00Z"), eaaPresentation.getEAAExpirationTime());
-        assertEquals(DSSUtils.parseRFCDate("2019-10-20T00:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2024-10-20T00:00:00Z"), eaaPresentation.getAdministrativeExpirationDate());
+        assertEquals(DSSUtils.parseRFCDate("2019-10-20T00:00:00Z"), eaaPresentation.getAdministrativeIssuanceDate());
         assertNotNull(eaaPresentation.getEAADevicePublicKey());
 
         assertEquals("1.0", eaaPresentation.getEAAVersion());
         assertEquals("org.iso.18013.5.1.mDL", eaaPresentation.getEAADocumentType());
-        assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaaPresentation.getSignatureCreatedAt());
-        assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaaPresentation.getSignatureNotBefore());
-        assertEquals(DSSUtils.parseRFCDate("2021-10-01T13:30:02Z"), eaaPresentation.getSignatureExpirationTime());
+        assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaaPresentation.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaaPresentation.getEAANotBefore());
+        assertEquals(DSSUtils.parseRFCDate("2021-10-01T13:30:02Z"), eaaPresentation.getEAANotAfter());
+        assertNull(eaaPresentation.getEAANextUpdate());
         assertEquals("Doe", eaaPresentation.getHolderLastName());
         assertEquals("123456789", eaaPresentation.getDocumentNumber());
         assertTrue(Utils.isArrayNotEmpty(eaaPresentation.getHolderPortrait()));
