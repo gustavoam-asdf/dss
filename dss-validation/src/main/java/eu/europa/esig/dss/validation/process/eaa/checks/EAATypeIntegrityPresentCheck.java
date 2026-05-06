@@ -13,7 +13,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * This class verifies whether the SD-JWT EAA Presentation contains the claim "vct#integrity"
  *
  */
-public class SDJWTEAAVctIntegrityPresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class EAATypeIntegrityPresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
 
     /** EAA Presentation to check */
     private final EAAPresentationWrapper eaaPresentation;
@@ -26,8 +26,8 @@ public class SDJWTEAAVctIntegrityPresentCheck extends ChainItem<XmlValidationPro
      * @param eaaPresentation {@link EAAPresentationWrapper}
      * @param constraint {@link LevelRule}
      */
-    public SDJWTEAAVctIntegrityPresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                            EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public EAATypeIntegrityPresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
+                                        EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaaPresentation = eaaPresentation;
     }
@@ -49,12 +49,12 @@ public class SDJWTEAAVctIntegrityPresentCheck extends ChainItem<XmlValidationPro
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.FAILED;
+        return Indication.INDETERMINATE;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.FORMAT_FAILURE;
+        return SubIndication.EAA_CONSTRAINTS_FAILURE;
     }
 
 }

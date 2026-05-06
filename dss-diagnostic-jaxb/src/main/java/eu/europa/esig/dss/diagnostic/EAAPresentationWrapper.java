@@ -15,7 +15,9 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.enumerations.EAAQualification;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -138,7 +140,7 @@ public class EAAPresentationWrapper {
 
     /**
      * Gets access to the EAA payload, containing complete claims data
-     * 
+     *
      * @return {@link EAAPayloadProxy}
      */
     public EAAPayloadProxy getEAAPayload() {
@@ -261,6 +263,23 @@ public class EAAPresentationWrapper {
      */
     public String getEAACategory() {
         return getPayloadClaimTextValue(getEAAPayload().getEAACategory());
+    }
+
+    public EAAQualification getCategoryQualification() {
+        String eaaCategory = getEAACategory();
+        if (EAACategory.EU_QEAA.getUrn().equals(eaaCategory)) {
+            return EAAQualification.QEAA;
+        } else if (EAACategory.EU_PUBEAA.getUrn().equals(eaaCategory)) {
+            return EAAQualification.PUBEAA;
+        } else if (eaaCategory == null) {
+            /*
+             * EAA-5.2.2.1-01: SD-JWT VC EAAs issued by EAAs issuers registered in the European Union,
+             * which are neither SD-JWT VC QEAAs nor SD-JWT VC PuB-EAAs, shall not include the category claim.
+             */
+            return EAAQualification.EAA;
+        } else {
+            return EAAQualification.UNKNOWN;
+        }
     }
 
     /**

@@ -20,9 +20,9 @@ import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.SDJWTEAAVctIntegrityPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
 
-class SDJWTEAAVctIntegrityPresentCheckTest extends AbstractTestCheck {
+class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest(){
@@ -43,9 +43,9 @@ class SDJWTEAAVctIntegrityPresentCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        SDJWTEAAVctIntegrityPresentCheck typePresentCheck = new SDJWTEAAVctIntegrityPresentCheck(
+        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
-        typePresentCheck.execute();
+        integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -66,9 +66,9 @@ class SDJWTEAAVctIntegrityPresentCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        SDJWTEAAVctIntegrityPresentCheck typePresentCheck = new SDJWTEAAVctIntegrityPresentCheck(
+        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
-        typePresentCheck.execute();
+        integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

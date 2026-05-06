@@ -25,7 +25,7 @@ import eu.europa.esig.dss.validation.process.bbb.aov.EAAPresentationAlgorithmObs
 import eu.europa.esig.dss.validation.process.bbb.aov.checks.AlgorithmObsolescenceValidationCheck;
 import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataExistenceCheck;
 import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataIntactCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAATypeCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustiveCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
@@ -33,9 +33,10 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanc
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignaturePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignatureValidationResultCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.SDJWTEAAVctIntegrityPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
 import eu.europa.esig.dss.validation.process.qualification.signature.checks.SignatureValidationResultCheck;
 
 import java.util.Date;
@@ -165,17 +166,16 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
 
         // 4. Other checks (including TS 119 472-1)
 
-        item = item.setNextItem(acceptableEaaType());
+        item = item.setNextItem(eaaType());
+        if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()) {
+            item = item.setNextItem(typeIntegrityPresent());
+        }
+
         item = item.setNextItem(notBeforePresent());
         item = item.setNextItem(expirationPresent());
         item = item.setNextItem(administrativeIssuanceDatePresent());
         item = item.setNextItem(administrativeExpirationDatePresent());
-
-        if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()) {
-            item = item.setNextItem(sdjwtEaaVctIntegrityPresent());
-        }
-
-        // TODO : implement
+        item = item.setNextItem(etsi194721Conformance());
 
         result.setAOV(xmlAOV);
 
@@ -232,14 +232,14 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
                 xmlSignature.getValidationProcessBasicSignature().getConclusion(), constraint);
     }
 
-    private ChainItem<XmlValidationProcessEAAPresentation> acceptableEaaType() {
-        MultiValuesRule constraint = policy.getEAAPresentationEAATypeAcceptableConstraint();
-        return new AcceptableEAATypeCheck(i18nProvider, result, eaaPresentation, constraint);
+    private ChainItem<XmlValidationProcessEAAPresentation> eaaType() {
+        MultiValuesRule constraint = policy.getEAAPresentationEAATypeConstraint();
+        return new EAATypeCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
-    private ChainItem<XmlValidationProcessEAAPresentation> sdjwtEaaVctIntegrityPresent() {
-        LevelRule constraint = policy.getSDJWTEAAPresentationVctIntegrityTypePresentConstraint();
-        return new SDJWTEAAVctIntegrityPresentCheck(i18nProvider, result, eaaPresentation, constraint);
+    private ChainItem<XmlValidationProcessEAAPresentation> typeIntegrityPresent() {
+        LevelRule constraint = policy.getEAAPresentationEAATypeIntegrityPresentConstraint();
+        return new EAATypeIntegrityPresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> notBeforePresent() {
@@ -260,6 +260,11 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
     private ChainItem<XmlValidationProcessEAAPresentation> administrativeExpirationDatePresent() {
         LevelRule constraint = policy.getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
         return new EAAAdministrativeExpirationDatePresentCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> etsi194721Conformance() {
+        LevelRule constraint = policy.getEAAPresentationEAAETSI194721ConformanceConstraint();
+        return new ETSI194721ConformanceCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> algorithmsObsolescenceValidation(XmlAOV aovResult, Date lowestPOETime) {

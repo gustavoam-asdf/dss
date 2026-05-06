@@ -1714,18 +1714,18 @@ public interface ValidationPolicy {
 	LevelRule getEAAPresentationKeyBindingSignatureValidConstraint();
 
     /**
-     * Returns SDJWTEAAVctIntegrityTypePresent constraint if present in the policy, null otherwise
+     * Returns EAATypeIntegrityPresent constraint if present in the policy, null otherwise
      *
-     * @return {@code LevelRule} if SDJWTEAAVctIntegrityTypePresent element is present
+     * @return {@code LevelRule} if EAATypeIntegrityPresent element is present
      */
-    LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint();
+    LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint();
 
     /**
-     * Returns AcceptableEAAType constraint if present in the policy, null otherwise
+     * Returns EAAType constraint if present in the policy, null otherwise
      *
-     * @return {@code MultiValuesRule} if AcceptableEAAType element is present
+     * @return {@code MultiValuesRule} if EAAType element is present
      */
-    MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint();
+    MultiValuesRule getEAAPresentationEAATypeConstraint();
 
     /**
      * Returns EAANotBeforePresent constraint if present in the policy, null otherwise
@@ -1754,6 +1754,13 @@ public interface ValidationPolicy {
      * @return {@code LevelRule} if EAAAdministrativeExpirationDatePresent element is present
      */
     LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
+
+    /**
+     * Returns ETSI194721Conformance constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if ETSI194721Conformance element is present
+     */
+    LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint();
 
 	/* Article 32 */
 

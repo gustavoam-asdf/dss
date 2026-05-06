@@ -2,7 +2,6 @@ package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
 import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -14,7 +13,7 @@ import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
  * This class verifies whether the EAA Presentation contains an acceptable EAA type
  *
  */
-public class AcceptableEAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAAPresentation> {
+public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAAPresentation> {
 
     /** EAA Presentation to check */
     private final EAAPresentationWrapper eaaPresentation;
@@ -27,8 +26,8 @@ public class AcceptableEAATypeCheck extends AbstractMultiValuesCheckItem<XmlVali
      * @param eaaPresentation {@link EAAPresentationWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public AcceptableEAATypeCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                  EAAPresentationWrapper eaaPresentation, MultiValuesRule constraint) {
+    public EAATypeCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
+                        EAAPresentationWrapper eaaPresentation, MultiValuesRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaaPresentation = eaaPresentation;
     }
@@ -57,12 +56,12 @@ public class AcceptableEAATypeCheck extends AbstractMultiValuesCheckItem<XmlVali
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.FAILED;
+        return Indication.INDETERMINATE;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.FORMAT_FAILURE;
+        return SubIndication.EAA_CONSTRAINTS_FAILURE;
     }
 
 }

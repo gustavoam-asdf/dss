@@ -18,9 +18,9 @@ import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAATypeCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 
-class AcceptableEAATypeCheckTest extends AbstractTestCheck {
+class EAATypeCheckTest extends AbstractTestCheck {
 
     @Test
     void sdjwtValidTest(){
@@ -38,7 +38,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -63,7 +63,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -84,7 +84,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -105,7 +105,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -130,7 +130,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -151,7 +151,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -171,7 +171,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
@@ -191,7 +191,7 @@ class AcceptableEAATypeCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
 
-        AcceptableEAATypeCheck typePresentCheck = new AcceptableEAATypeCheck(
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 

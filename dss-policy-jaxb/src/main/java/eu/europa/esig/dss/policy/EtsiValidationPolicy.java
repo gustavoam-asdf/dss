@@ -1912,19 +1912,19 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
     @Override
-    public LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint() {
+    public LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getSDJWTEAAVctIntegrityTypePresent());
+            return toLevelRule(eaaPresentationConstraints.getEAATypeIntegrityPresent());
         }
         return null;
     }
 
     @Override
-    public MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint() {
+    public MultiValuesRule getEAAPresentationEAATypeConstraint() {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
-            return toRule(eaaPresentationConstraints.getAcceptableEAAType());
+            return toRule(eaaPresentationConstraints.getEAAType());
         }
         return null;
     }
@@ -1961,6 +1961,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
         EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
         if (eaaPresentationConstraints != null) {
             return toLevelRule(eaaPresentationConstraints.getEAAAdministrativeExpirationDatePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint() {
+        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
+        if (eaaPresentationConstraints != null) {
+            return toLevelRule(eaaPresentationConstraints.getETSI194721Conformance());
         }
         return null;
     }

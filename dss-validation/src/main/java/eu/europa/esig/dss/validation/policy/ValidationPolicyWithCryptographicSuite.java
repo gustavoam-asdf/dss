@@ -1071,13 +1071,13 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getSDJWTEAAPresentationVctIntegrityTypePresentConstraint() {
-        return validationPolicy.getSDJWTEAAPresentationVctIntegrityTypePresentConstraint();
+    public LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint() {
+        return validationPolicy.getEAAPresentationEAATypeIntegrityPresentConstraint();
     }
 
     @Override
-    public MultiValuesRule getEAAPresentationEAATypeAcceptableConstraint() {
-        return validationPolicy.getEAAPresentationEAATypeAcceptableConstraint();
+    public MultiValuesRule getEAAPresentationEAATypeConstraint() {
+        return validationPolicy.getEAAPresentationEAATypeConstraint();
     }
 
     @Override
@@ -1098,6 +1098,11 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getEAAPresentationEAAExpirationPresentConstraint() {
         return validationPolicy.getEAAPresentationEAAExpirationPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint() {
+        return validationPolicy.getEAAPresentationEAAETSI194721ConformanceConstraint();
     }
 
     @Override

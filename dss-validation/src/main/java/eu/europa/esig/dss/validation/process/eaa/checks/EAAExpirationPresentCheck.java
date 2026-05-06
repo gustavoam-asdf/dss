@@ -49,12 +49,12 @@ public class EAAExpirationPresentCheck extends ChainItem<XmlValidationProcessEAA
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.FAILED;
+        return Indication.INDETERMINATE;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.FORMAT_FAILURE;
+        return SubIndication.EAA_CONSTRAINTS_FAILURE;
     }
 
 }

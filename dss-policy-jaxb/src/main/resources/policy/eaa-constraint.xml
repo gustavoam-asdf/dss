@@ -341,12 +341,13 @@
         <DisclosureIntact Level="FAIL" />
         <KeyBindingSignaturePresent Level="WARN" />
         <KeyBindingSignatureValid Level="FAIL" />
-        <AcceptableEAAType Level="FAIL">
+        <EAAType Level="FAIL">
             <Id>*</Id>
-        </AcceptableEAAType>
-        <SDJWTEAAVctIntegrityTypePresent Level="FAIL" />
+        </EAAType>
+        <EAATypeIntegrityPresent Level="FAIL" />
         <EAANotBeforePresent Level="FAIL" />
         <EAAExpirationPresent Level="FAIL" />
+        <ETSI194721Conformance Level="FAIL" />
     </EAAPresentation>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>
