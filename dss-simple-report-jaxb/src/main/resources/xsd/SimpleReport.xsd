@@ -422,6 +422,19 @@
 			<xs:element name="SignatureNotBefore" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="SignatureNextUpdate" type="DisclosableClaim" minOccurs="0" />
 
+			<!-- ETSI TS 119 472-1 technical claims -->
+			<xs:element name="AdministrativeIssuanceDate" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AdministrativeExpirationDate" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="OneTimeUse" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ShortLived" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="Evidence" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubjectId" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubjectFamilyName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubjectGivenName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubjectDocumentNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubjectPseudonym" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="AttestedAttributes" type="DisclosableClaim" minOccurs="0" />
+
 			<!-- user info -->
 			<xs:element name="FullName" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="FirstName" type="DisclosableClaim" minOccurs="0" />
@@ -505,6 +518,14 @@
 			<xs:element name="RelationshipLegalRepresentative" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="RelationshipAgent" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="DocumentType" type="DisclosableClaim" minOccurs="0" />
+
+			<!-- ETSI TS 119 472-1 other claims -->
+			<xs:element name="IssuingRegistrationIdentifier" type="DisclosableClaim" minOccurs="0" />
+
+			<!-- PID Rulebook headers -->
+			<xs:element name="TrustAnchor" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentStreet" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentHouseNumber" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />

@@ -761,24 +761,28 @@
 	</xsl:template>
 
 	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:ExpirationTime|dss:NotBefore|dss:IssuedAt
-			|dss:UpdatedAt|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:Nonce
+			|dss:UpdatedAt|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose|dss:Nonce
 			|dss:Version|dss:DocType|dss:SignatureCreatedAt|dss:SignatureExpirationTime|dss:SignatureNotBefore
-			|dss:SignatureNextUpdate|dss:FullName|dss:FirstName|dss:LastName|dss:MiddleName|dss:Nickname|dss:ShortName
-			|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email|dss:EmailVerified|dss:Gender|dss:Birthdate
-			|dss:Timezone|dss:Locale|dss:AddressPostalAddress|dss:AddressCity|dss:AddressStateOrProvince
-			|dss:AddressPostalCode|dss:AddressCountryName|dss:AddressStreetAddress|dss:PhoneNumber
-			|dss:PhoneNumberVerified|dss:PlaceOfBirthCountry|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity
-			|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName|dss:BirthMiddleName|dss:Salutation|dss:Title
-			|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait
-			|dss:DrivingPrivileges|dss:UNDistinguishingSign|dss:AdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor
-			|dss:HairColor|dss:ResidentAddress|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN
-			|dss:IssuingJurisdiction|dss:ResidentCity|dss:ResidentState|dss:ResidentPostalCode|dss:ResidentCountry
-			|dss:BiometricTemplate|dss:SignatureUsualMark|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession
-			|dss:RelationshipFather|dss:RelationshipMother|dss:RelationshipParent|dss:RelationshipSon|dss:RelationshipDaughter
+			|dss:SignatureNextUpdate|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
+			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
+			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
+			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:FirstName|dss:LastName
+			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
+			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:Timezone|dss:Locale|dss:AddressPostalAddress
+			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
+			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirthCountry
+			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName
+			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry
+			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
+			|dss:AdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentAddress
+			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentCity
+			|dss:ResidentState|dss:ResidentPostalCode|dss:ResidentCountry|dss:BiometricTemplate|dss:SignatureUsualMark
+			|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession|dss:RelationshipFather
+			|dss:RelationshipMother|dss:RelationshipParent|dss:RelationshipSon|dss:RelationshipDaughter
 			|dss:RelationshipBrother|dss:RelationshipSister|dss:RelationshipSibling|dss:RelationshipSpouse|dss:RelationshipFatherInLaw
 			|dss:RelationshipMotherInLaw|dss:RelationshipParentInLaw|dss:RelationshipSonInLaw|dss:RelationshipDaughterInLaw
 			|dss:RelationshipChildInLaw|dss:RelationshipParentalAuthority|dss:RelationshipLegalRepresentative|dss:RelationshipAgent
-			|dss:DocumentType|dss:OtherClaim">
+			|dss:DocumentType|dss:IssuingRegistrationIdentifier|dss:TrustAnchor|dss:ResidentStreet|dss:ResidentHouseNumber|dss:OtherClaim">
 		<xsl:variable name="header">
 			<xsl:choose>
 				<xsl:when test="name() = 'Identifier'">Identifier</xsl:when>
@@ -793,6 +797,8 @@
 				<xsl:when test="name() = 'MetadataType'">Metadata type</xsl:when>
 				<xsl:when test="name() = 'StatusIndex'">Status index</xsl:when>
 				<xsl:when test="name() = 'StatusUri'">Status URI</xsl:when>
+				<xsl:when test="name() = 'StatusType'">Status type</xsl:when>
+				<xsl:when test="name() = 'StatusPurpose'">Status purpose</xsl:when>
 				<xsl:when test="name() = 'Nonce'">Nonce</xsl:when>
 
 				<xsl:when test="name() = 'Version'">Version</xsl:when>
@@ -801,6 +807,18 @@
 				<xsl:when test="name() = 'SignatureExpirationTime'">Signature expiration time</xsl:when>
 				<xsl:when test="name() = 'SignatureNotBefore'">Signature NotBefore time</xsl:when>
 				<xsl:when test="name() = 'SignatureNextUpdate'">Signature NextUpdate time</xsl:when>
+
+				<xsl:when test="name() = 'AdministrativeIssuanceDate'">Administrative issuance date</xsl:when>
+				<xsl:when test="name() = 'AdministrativeExpirationDate'">Administrative expiration date</xsl:when>
+				<xsl:when test="name() = 'OneTimeUse'">One-time use</xsl:when>
+				<xsl:when test="name() = 'ShortLived'">Short-lived</xsl:when>
+				<xsl:when test="name() = 'Evidence'">Evidence</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributesSubjectId'">Attested attributes subject</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributesSubjectFamilyName'">Attested attributes subject family name</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributesSubjectGivenName'">Attested attributes subject given name</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributesSubjectDocumentNumber'">Attested attributes subject document number</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributesSubjectPseudonym'">Attested attributes subject pseudonym</xsl:when>
+				<xsl:when test="name() = 'AttestedAttributes'">Attested attributes</xsl:when>
 
 				<xsl:when test="name() = 'FullName'">Full name</xsl:when>
 				<xsl:when test="name() = 'FirstName'">Firstname</xsl:when>
@@ -839,6 +857,7 @@
 
 				<xsl:when test="name() = 'IssuingCountry'">Issuing country</xsl:when>
 				<xsl:when test="name() = 'IssuingAuthority'">Issuing authority</xsl:when>
+				<xsl:when test="name() = 'IssuingRegistrationIdentifier'">Issuing registration identifier</xsl:when>
 				<xsl:when test="name() = 'DocumentNumber'">Document number</xsl:when>
 				<xsl:when test="name() = 'Portrait'">Portrait</xsl:when>
 				<xsl:when test="name() = 'DrivingPrivileges'">Driving privileges</xsl:when>
@@ -854,6 +873,8 @@
 				<xsl:when test="name() = 'AgeBirthYear'">Age birth year</xsl:when>
 				<xsl:when test="name() = 'AgeOverNN'">Age over <xsl:value-of select="@parameter"/></xsl:when>
 				<xsl:when test="name() = 'IssuingJurisdiction'">Issuing jurisdiction</xsl:when>
+				<xsl:when test="name() = 'ResidentHouseNumber'">Resident house number</xsl:when>
+				<xsl:when test="name() = 'ResidentStreet'">Resident street</xsl:when>
 				<xsl:when test="name() = 'ResidentCity'">Resident city</xsl:when>
 				<xsl:when test="name() = 'ResidentState'">Resident state</xsl:when>
 				<xsl:when test="name() = 'ResidentPostalCode'">Resident postal code</xsl:when>
@@ -884,6 +905,7 @@
 				<xsl:when test="name() = 'RelationshipLegalRepresentative'">Relationship legal representative</xsl:when>
 				<xsl:when test="name() = 'RelationshipAgent'">Relationship agent</xsl:when>
 				<xsl:when test="name() = 'DocumentType'">Document type</xsl:when>
+				<xsl:when test="name() = 'TrustAnchor'">Trust anchor</xsl:when>
 
 				<xsl:when test="name() = 'OtherClaim'"><xsl:value-of select="@name"/></xsl:when>
 			</xsl:choose>
@@ -918,8 +940,9 @@
 						</xsl:when>
 						<xsl:when test="name() = 'ExpirationTime' or name() = 'NotBefore' or name() = 'IssuedAt'
 								 or name() = 'UpdatedAt' or name() = 'Birthdate' or name() = 'PortraitCaptureDate'
-								 or name() = 'SignatureCreatedAt' or name() = 'SignatureExpirationTime' or name() = 'SignatureNotBefore'
-								 or name() = 'SignatureNextUpdate'">
+								 or name() = 'SignatureCreatedAt' or name() = 'SignatureExpirationTime'
+								 or name() = 'SignatureNotBefore' or name() = 'SignatureNextUpdate'
+								 or name() = 'AdministrativeIssuanceDate' or name() = 'AdministrativeExpirationDate'">
 							<xsl:call-template name="formatdate">
 								<xsl:with-param name="DateTimeStr" select="."/>
 							</xsl:call-template>

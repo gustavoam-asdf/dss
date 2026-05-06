@@ -34,6 +34,7 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TimestampWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimIdWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DeviceKeyClaimWrapper;
@@ -1017,6 +1018,30 @@ public class SimpleReportBuilder {
 			xmlEAAPayload.setSignatureExpirationTime(getXmlDisclosableClaim(eaaValidityInfo.getValidUntil(), eaaValidityInfo.isSelectivelyDisclosable()));
 			xmlEAAPayload.setSignatureNextUpdate(getXmlDisclosableClaim(eaaValidityInfo.getExpectedUpdate(), eaaValidityInfo.isSelectivelyDisclosable()));
 		}
+		xmlEAAPayload.setAdministrativeIssuanceDate(getXmlDisclosableClaim(eaaPayloadProxy.getAdministrativeIssuanceDate()));
+		xmlEAAPayload.setAdministrativeExpirationDate(getXmlDisclosableClaim(eaaPayloadProxy.getAdministrativeExpirationDate()));
+		xmlEAAPayload.setOneTimeUse(getXmlDisclosableClaim(eaaPayloadProxy.getOneTimeUse()));
+		xmlEAAPayload.setShortLived(getXmlDisclosableClaim(eaaPayloadProxy.getShortLived()));
+		xmlEAAPayload.setEvidence(getXmlDisclosableClaim(eaaPayloadProxy.getEvidence()));
+		if (eaaPayloadProxy.getAttestedAttributesSubject() != null) {
+			AttestedAttributesSubjectClaimIdWrapper subjectId = eaaPayloadProxy.getAttestedAttributesSubject().getSubjectId();
+			if (subjectId != null) {
+				if (subjectId.getText() != null) {
+					xmlEAAPayload.setAttestedAttributesSubjectId(getXmlDisclosableClaim(subjectId));
+				}
+				if (subjectId.getFamilyName() != null) {
+					xmlEAAPayload.setAttestedAttributesSubjectFamilyName(getXmlDisclosableClaim(subjectId.getFamilyName()));
+				}
+				if (subjectId.getGivenName() != null) {
+					xmlEAAPayload.setAttestedAttributesSubjectGivenName(getXmlDisclosableClaim(subjectId.getGivenName()));
+				}
+				if (subjectId.getDocumentNumber() != null) {
+					xmlEAAPayload.setAttestedAttributesSubjectDocumentNumber(getXmlDisclosableClaim(subjectId.getDocumentNumber()));
+				}
+			}
+			xmlEAAPayload.setAttestedAttributesSubjectPseudonym(getXmlDisclosableClaim(eaaPayloadProxy.getAttestedAttributesSubject().getSubjectPseudonym()));
+			xmlEAAPayload.setAttestedAttributes(getXmlDisclosableClaim(eaaPayloadProxy.getAttestedAttributesSubject().getAttributes()));
+		}
 
 		xmlEAAPayload.setFullName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFullName()));
 		xmlEAAPayload.setFirstName(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFirstName()));
@@ -1106,6 +1131,12 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setRelationshipLegalRepresentative(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipLegalRepresentative()));
 		xmlEAAPayload.setRelationshipAgent(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipAgent()));
 		xmlEAAPayload.setDocumentType(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentType()));
+
+		xmlEAAPayload.setIssuingRegistrationIdentifier(getXmlDisclosableClaim(eaaPayloadProxy.getIssuingRegistrationIdentifier()));
+
+		xmlEAAPayload.setTrustAnchor(getXmlDisclosableClaim(eaaPayloadProxy.getTrustAnchor()));
+		xmlEAAPayload.setResidentStreet(getXmlDisclosableClaim(eaaPayloadProxy.getResidentStreet()));
+		xmlEAAPayload.setResidentHouseNumber(getXmlDisclosableClaim(eaaPayloadProxy.getResidentHouseNumber()));
 
 		List<ClaimWrapper> otherClaims = eaaPresentationWrapper.getOtherClaims();
 		if (Utils.isCollectionNotEmpty(otherClaims)) {

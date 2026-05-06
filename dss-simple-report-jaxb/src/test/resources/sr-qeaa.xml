@@ -61,12 +61,20 @@
             <ExpirationTime name="exp">2029-09-01T23:33:20Z</ExpirationTime>
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
             <Category name="category">urn:etsi:esi:eaa:eu:qualified</Category>
+            <StatusUri name="status/uri">https://nowina.lu/pki-factory/status</StatusUri>
+            <StatusType name="status/type">TokenStatusList</StatusType>
+            <StatusPurpose name="status/purpose">revocation</StatusPurpose>
+            <OneTimeUse name="oneTime">null</OneTimeUse>
+            <AttestedAttributesSubjectId name="subAttrs/sub_id">good-user</AttestedAttributesSubjectId>
+            <AttestedAttributes name="subAttrs/attrs">given_name, family_name</AttestedAttributes>
             <FirstName name="given_name" disclosure="true">John</FirstName>
             <LastName name="family_name" disclosure="true">Doe</LastName>
             <AddressCity name="locality">Anytown</AddressCity>
             <AddressStateOrProvince name="region">Anystate</AddressStateOrProvince>
             <AddressCountryName name="country">US</AddressCountryName>
             <AddressStreetAddress name="street_address">123 Main St</AddressStreetAddress>
+            <PlaceOfBirthCountry name="place_of_birth/country">LU</PlaceOfBirthCountry>
+            <IssuingAuthority name="issuing_authority">Public body</IssuingAuthority>
             <OtherClaim name="nationalities">US</OtherClaim>
             <OtherClaim name="cnf">{"jwk": {"kty": "EC", "crv": "P-256", "x": "TCAER19Zvu3OHF4j4W4vfSVoHIP1ILilDls7vCeGemc", "y": "ZxjiWWbZMQGHVWKVQ4hbSIirsVfuecCE6t4jT9F2HZQ"}}</OtherClaim>
         </EAAPayload>
