@@ -9,9 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
@@ -51,13 +48,7 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
 
     @Override
     public ToBeSigned getDataToBeSigned(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
-        Objects.requireNonNull(payload, "payload cannot be null!");
-        Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
-
-        if (!DSSJsonUtils.isJsonDocument(payload)) {
-            throw new DSSException("Payload is not a JSON document!");
-        }
-
+        this.validatePayloadAndSignatureParameters(payload, signatureParameters);
         return jadesService.getDataToSign(payload, signatureParameters);
     }
 
@@ -68,6 +59,19 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
 
     @Override
     public DSSDocument signEAA(final DSSDocument payload, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        this.validatePayloadAndSignatureParameters(payload, signatureParameters);
+        return jadesService.signDocument(payload, signatureParameters, signatureValue);
+    }
+
+    @Override
+    public DSSDocument signEAA(final SDJWTEAAParameters eaaParameters, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        return this.signEAA(payloadBuilder.buildPayload(eaaParameters), signatureParameters, signatureValue);
+    }
+
+    private void validatePayloadAndSignatureParameters(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
+        Objects.requireNonNull(payload, "payload cannot be null!");
+        Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
+
         if (!DSSJsonUtils.isJsonDocument(payload)) {
             throw new DSSException("Payload is not a JSON document!");
         }
@@ -87,13 +91,6 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
         if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
             throw new DSSException("Signature packaging must be ENVELOPING");
         }
-
-        return jadesService.signDocument(payload, signatureParameters, signatureValue);
-    }
-
-    @Override
-    public DSSDocument signEAA(final SDJWTEAAParameters eaaParameters, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
-        return this.signEAA(payloadBuilder.buildPayload(eaaParameters), signatureParameters, signatureValue);
     }
 
     @Override
