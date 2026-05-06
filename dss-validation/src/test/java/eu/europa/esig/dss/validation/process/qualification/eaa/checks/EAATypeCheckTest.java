@@ -23,7 +23,7 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 class EAATypeCheckTest extends AbstractTestCheck {
 
     @Test
-    void sdjwtValidTest(){
+    void sdjwtValidTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("urn:eudi:pid:1");
         constraint.setLevel(Level.FAIL);
@@ -48,7 +48,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void sdjwtValidAllValuesTest(){
+    void sdjwtValidAllValuesTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
@@ -73,7 +73,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void mdocValidTest(){
+    void mdocValidTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("urn:eudi:pid:1");
         constraint.setLevel(Level.FAIL);
@@ -94,7 +94,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void mdocValidAllValuesTest(){
+    void mdocValidAllValuesTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
@@ -115,7 +115,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void sdjwtInvalidTest(){
+    void sdjwtInvalidTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("urn:eudi:pid:2");
         constraint.setLevel(Level.FAIL);
@@ -140,7 +140,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void mdocInvalidTest(){
+    void mdocInvalidTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("urn:eudi:pid:2");
         constraint.setLevel(Level.FAIL);
@@ -161,7 +161,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void sdjwtNotPresentTest(){
+    void sdjwtNotPresentTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
@@ -181,7 +181,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void mdocNotPresentTest(){
+    void mdocNotPresentTest() {
         MultiValuesConstraint constraint = new MultiValuesConstraint();
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);

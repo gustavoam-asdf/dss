@@ -54,16 +54,16 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
                 && checkNowBeforeExpiration()
                 && checkNowAfterAdministrativeDateIssuance()
                 && checkNowBeforeAdministrativeDateExpiration()
-                && checkMDOCDocumentNumberPresentCheck()
+                && checkMDOCDocumentNumberPresent()
                 && checkSDJWTAdministrativeDateConformance()
-                && checkMDOCIssuingAuthorityPresentCheck()
-                && checkSDJWTIssuingAuthorityPresentCheck()
+                && checkMDOCIssuingAuthorityPresent()
+                && checkSDJWTIssuingAuthorityPresent()
                 && checkNoStatusIfShortLived()
                 && checkStatusIsPresentIfMandatory()
                 && checkSDJWTStatusConformance();
     }
 
-    private boolean checkSDJWTIssuingAuthorityPresentCheck() {
+    private boolean checkSDJWTIssuingAuthorityPresent() {
         if (EAAPresentationType.SD_JWT_VC.equals(eaaPresentation.getEAAType())) {
             SignatureWrapper eaaSignature = eaaPresentation.getEAAPresentationSignatures().get(0);
             CertificateWrapper signingCertificate = eaaSignature.getSigningCertificate();
@@ -80,7 +80,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
         return true;
     }
 
-    private boolean checkMDOCIssuingAuthorityPresentCheck() {
+    private boolean checkMDOCIssuingAuthorityPresent() {
         if (EAAPresentationType.ISO_IEC_MDOC.equals(eaaPresentation.getEAAType())) {
             return eaaPresentation.getDocumentIssuingAuthority() != null;
         }
@@ -88,7 +88,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
         return true;
     }
 
-    private boolean checkMDOCDocumentNumberPresentCheck() {
+    private boolean checkMDOCDocumentNumberPresent() {
         if (EAAPresentationType.ISO_IEC_MDOC.equals(eaaPresentation.getEAAType())) {
             return eaaPresentation.getDocumentNumber() != null;
         }
@@ -161,45 +161,45 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     @Override
     protected String buildAdditionalInfo() {
         List<String> errors = new ArrayList<>();
-        if (checkNowAfterNotBefore()) {
+        if (!checkNowAfterNotBefore()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_NBF,
                     ValidationProcessUtils.getFormattedDate(now),
                     ValidationProcessUtils.getFormattedDate(eaaPresentation.getEAANotBefore())));
         }
-        if (checkNowBeforeExpiration()) {
+        if (!checkNowBeforeExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_EXP,
                     ValidationProcessUtils.getFormattedDate(now),
                     ValidationProcessUtils.getFormattedDate(eaaPresentation.getEAANotAfter())));
         }
-        if (checkNowAfterAdministrativeDateIssuance()) {
+        if (!checkNowAfterAdministrativeDateIssuance()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_ADI,
                     ValidationProcessUtils.getFormattedDate(now),
                     ValidationProcessUtils.getFormattedDate(eaaPresentation.getAdministrativeIssuanceDate())));
         }
-        if (checkNowBeforeAdministrativeDateExpiration()) {
+        if (!checkNowBeforeAdministrativeDateExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_ADE,
                     ValidationProcessUtils.getFormattedDate(now),
                     ValidationProcessUtils.getFormattedDate(eaaPresentation.getAdministrativeExpirationDate())));
         }
-        if (checkMDOCDocumentNumberPresentCheck()) {
+        if (!checkMDOCDocumentNumberPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MDOC_DOCUMENT_NUMBER_ABSENT));
         }
-        if (checkMDOCIssuingAuthorityPresentCheck()) {
+        if (!checkMDOCIssuingAuthorityPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MDOC_ISSUING_AUTHORITY));
         }
-        if (checkSDJWTIssuingAuthorityPresentCheck()) {
+        if (!checkSDJWTIssuingAuthorityPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_SDJWT_ISSUING_AUTHORITY));
         }
-        if (checkSDJWTAdministrativeDateConformance()) {
+        if (!checkSDJWTAdministrativeDateConformance()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_AD_SDJWT_CONFORMANCE));
         }
-        if (checkNoStatusIfShortLived()) {
+        if (!checkNoStatusIfShortLived()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_SHORT_LIVED_STATUS_PRESENT));
         }
-        if (checkStatusIsPresentIfMandatory()) {
+        if (!checkStatusIsPresentIfMandatory()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MANDATORY_STATUS_ABSENT));
         }
-        if (checkSDJWTStatusConformance()) {
+        if (!checkSDJWTStatusConformance()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_STATUS_SDJWT_CONFORMANCE));
         }
 

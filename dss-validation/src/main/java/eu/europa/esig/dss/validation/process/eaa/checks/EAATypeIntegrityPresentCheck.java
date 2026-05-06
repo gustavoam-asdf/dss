@@ -11,7 +11,6 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
  * This class verifies whether the SD-JWT EAA Presentation contains the claim "vct#integrity"
- *
  */
 public class EAATypeIntegrityPresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
 

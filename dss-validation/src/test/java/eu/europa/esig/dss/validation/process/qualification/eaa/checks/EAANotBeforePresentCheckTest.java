@@ -24,7 +24,7 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck
 class EAANotBeforePresentCheckTest extends AbstractTestCheck {
 
     @Test
-    void validTest(){
+    void validTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
@@ -49,7 +49,7 @@ class EAANotBeforePresentCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void invalidTest(){
+    void invalidTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 

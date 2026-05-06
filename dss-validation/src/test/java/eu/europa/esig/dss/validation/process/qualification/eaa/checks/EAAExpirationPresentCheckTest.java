@@ -13,6 +13,7 @@ import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
     @Test
-    void validTest(){
+    void validTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
@@ -48,7 +49,7 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void invalidTest(){
+    void invalidTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 

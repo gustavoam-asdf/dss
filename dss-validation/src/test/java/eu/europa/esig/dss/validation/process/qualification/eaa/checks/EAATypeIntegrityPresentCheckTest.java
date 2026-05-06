@@ -25,7 +25,7 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentC
 class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
 
     @Test
-    void validTest(){
+    void validTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
@@ -53,7 +53,7 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
     }
 
     @Test
-    void invalidTest(){
+    void invalidTest() {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
