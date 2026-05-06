@@ -149,6 +149,7 @@ class PIDLoTETest extends PKIFactoryAccess {
         String payload = "{\n" +
                 "  \"iss\": \"https://issuer.example.com\",\n" +
                 "  \"iat\": 1683000000,\n" +
+                "  \"nbf\": 1683000000,\n" +
                 "  \"exp\": 1883000000,\n" +
                 "  \"sub\": \"user_42\",\n" +
                 "  \"vct\": \"urn:eudi:pid:1\",\n" +
