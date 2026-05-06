@@ -1721,6 +1721,13 @@ public interface ValidationPolicy {
     LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint();
 
     /**
+     * Returns EAAIdentifierPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAIdentifierPresent element is present
+     */
+    LevelRule getEAAPresentationEAAIdentifierPresentConstraint();
+
+    /**
      * Returns EAAType constraint if present in the policy, null otherwise
      *
      * @return {@code MultiValuesRule} if EAAType element is present

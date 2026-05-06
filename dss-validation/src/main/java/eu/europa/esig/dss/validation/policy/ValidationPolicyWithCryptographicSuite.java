@@ -1076,6 +1076,11 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getEAAPresentationEAAIdentifierPresentConstraint() {
+        return validationPolicy.getEAAPresentationEAAIdentifierPresentConstraint();
+    }
+
+    @Override
     public MultiValuesRule getEAAPresentationEAATypeConstraint() {
         return validationPolicy.getEAAPresentationEAATypeConstraint();
     }

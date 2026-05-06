@@ -25,6 +25,7 @@ import eu.europa.esig.dss.validation.process.bbb.aov.EAAPresentationAlgorithmObs
 import eu.europa.esig.dss.validation.process.bbb.aov.checks.AlgorithmObsolescenceValidationCheck;
 import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataExistenceCheck;
 import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataIntactCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustiveCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
@@ -171,6 +172,7 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
             item = item.setNextItem(typeIntegrityPresent());
         }
 
+        item = item.setNextItem(eaaIdentifierPresent());
         item = item.setNextItem(notBeforePresent());
         item = item.setNextItem(expirationPresent());
         item = item.setNextItem(administrativeIssuanceDatePresent());
@@ -260,6 +262,11 @@ public class EAAPresentationValidationProcess extends Chain<XmlValidationProcess
     private ChainItem<XmlValidationProcessEAAPresentation> administrativeExpirationDatePresent() {
         LevelRule constraint = policy.getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
         return new EAAAdministrativeExpirationDatePresentCheck(i18nProvider, result, eaaPresentation, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAAPresentation> eaaIdentifierPresent() {
+        LevelRule constraint = policy.getEAAPresentationEAAIdentifierPresentConstraint();
+        return new EAAIdentifierPresentCheck(i18nProvider, result, eaaPresentation, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAAPresentation> etsi194721Conformance() {
