@@ -21,11 +21,10 @@
 package eu.europa.esig.dss.simplereport;
 
 import eu.europa.esig.dss.simplereport.jaxb.ObjectFactory;
-import eu.europa.esig.dss.xml.common.XmlDefinerUtils;
-import org.xml.sax.SAXException;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import org.xml.sax.SAXException;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
@@ -50,6 +49,9 @@ public final class SimpleReportXmlDefiner {
 	/** The XSLT for PDF simple report generation path */
 	private static final String SIMPLE_REPORT_XSLT_PDF_LOCATION = "/xslt/pdf/simple-report.xslt";
 
+	/**
+	 * Default constructor
+	 */
 	private SimpleReportXmlDefiner() {
 		// empty
 	}
@@ -59,28 +61,28 @@ public final class SimpleReportXmlDefiner {
 
 	/**
 	 * Cached JAXBContext
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static JAXBContext jc;
 
 	/**
 	 * Cached Schema
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Schema schema;
 
 	/**
 	 * Cached Bootstrap 4 Template
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Templates htmlBootstrap4Templates;
 
 	/**
 	 * Cached PDF Template
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Templates pdfTemplates;
@@ -108,7 +110,7 @@ public final class SimpleReportXmlDefiner {
 	public static Schema getSchema() throws IOException, SAXException {
 		if (schema == null) {
 			try (InputStream inputStream = SimpleReportXmlDefiner.class.getResourceAsStream(SIMPLE_REPORT_SCHEMA_LOCATION)) {
-				SchemaFactory sf = XmlDefinerUtils.getInstance().getSecureSchemaFactory();
+				SchemaFactory sf = SimpleReportXmlDefinedUtils.getInstance().getSecureSchemaFactory();
 				schema = sf.newSchema(new Source[] { new StreamSource(inputStream) });
 			}
 		}
@@ -145,7 +147,7 @@ public final class SimpleReportXmlDefiner {
 
 	private static Templates loadTemplates(String path) throws TransformerConfigurationException, IOException {
 		try (InputStream is = SimpleReportXmlDefiner.class.getResourceAsStream(path)) {
-			TransformerFactory transformerFactory = XmlDefinerUtils.getInstance().getSecureTransformerFactory();
+			TransformerFactory transformerFactory = SimpleReportXmlDefinedUtils.getInstance().getSecureTransformerFactory();
 			return transformerFactory.newTemplates(new StreamSource(is));
 		}
 	}
