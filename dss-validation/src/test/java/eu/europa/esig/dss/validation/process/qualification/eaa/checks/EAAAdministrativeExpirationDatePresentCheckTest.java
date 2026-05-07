@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
@@ -28,8 +28,8 @@ class EAAAdministrativeExpirationDatePresentCheckTest extends AbstractTestCheck 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAAPresentation = new XmlEAA();
+        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
         XmlClaim expiration = new XmlClaim();
@@ -37,10 +37,10 @@ class EAAAdministrativeExpirationDatePresentCheckTest extends AbstractTestCheck 
         xmlEAAPayload.setAdministrativeExpirationDate(expiration);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAAdministrativeExpirationDatePresentCheck administrativeExpirationDatePresentCheck = new EAAAdministrativeExpirationDatePresentCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
         administrativeExpirationDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -53,15 +53,15 @@ class EAAAdministrativeExpirationDatePresentCheckTest extends AbstractTestCheck 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAAPresentation = new XmlEAA();
+        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAAdministrativeExpirationDatePresentCheck administrativeExpirationDatePresentCheck = new EAAAdministrativeExpirationDatePresentCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
         administrativeExpirationDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

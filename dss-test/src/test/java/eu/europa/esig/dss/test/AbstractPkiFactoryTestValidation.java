@@ -2732,7 +2732,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			assertEquals(diagnosticData.getTimestampList().size(), timestampCounter);
 			assertEquals(diagnosticData.getEvidenceRecords().size(), evidenceRecordCounter);
 			assertEquals(diagnosticData.getAllSignerDocuments().size(), signedDataCounter);
-			assertEquals(diagnosticData.getEAAPresentations().size(), otherCounter);
+			assertEquals(diagnosticData.getElectronicAttestationsOfAttributes().size(), otherCounter);
 			
 		} else {
 			assertEquals(0, diagnosticData.getUsedCertificates().size());

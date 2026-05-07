@@ -249,10 +249,10 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public CryptographicSuite getEAAPresentationCryptographicConstraint() {
+    public CryptographicSuite getEAACryptographicConstraint() {
         CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EAA_PRESENTATION, null);
         if (cryptographicSuite == null) {
-            cryptographicSuite = validationPolicy.getEAAPresentationCryptographicConstraint();
+            cryptographicSuite = validationPolicy.getEAACryptographicConstraint();
         }
         return cryptographicSuite;
     }
@@ -1031,83 +1031,83 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAPresentationEAASignatureUnicityConstraint() {
-        return validationPolicy.getEAAPresentationEAASignatureUnicityConstraint();
+    public LevelRule getEAASignatureUnicityConstraint() {
+        return validationPolicy.getEAASignatureUnicityConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAASignatureValidConstraint() {
-        return validationPolicy.getEAAPresentationEAASignatureValidConstraint();
+    public LevelRule getEAASignatureValidConstraint() {
+        return validationPolicy.getEAASignatureValidConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationDisclosurePresentConstraint() {
-        return validationPolicy.getEAAPresentationDisclosurePresentConstraint();
+    public LevelRule getEAADisclosurePresentConstraint() {
+        return validationPolicy.getEAADisclosurePresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationDisclosureFoundConstraint() {
-        return validationPolicy.getEAAPresentationDisclosureFoundConstraint();
+    public LevelRule getEAADisclosureFoundConstraint() {
+        return validationPolicy.getEAADisclosureFoundConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationDisclosureIntactConstraint() {
-        return validationPolicy.getEAAPresentationDisclosureIntactConstraint();
+    public LevelRule getEAADisclosureIntactConstraint() {
+        return validationPolicy.getEAADisclosureIntactConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationDisclosureListExhaustiveConstraint() {
-        return validationPolicy.getEAAPresentationDisclosureListExhaustiveConstraint();
+    public LevelRule getEAADisclosureListExhaustiveConstraint() {
+        return validationPolicy.getEAADisclosureListExhaustiveConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint() {
-        return validationPolicy.getEAAPresentationKeyBindingSignaturePresentConstraint();
+    public LevelRule getEAAKeyBindingSignaturePresentConstraint() {
+        return validationPolicy.getEAAKeyBindingSignaturePresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationKeyBindingSignatureValidConstraint() {
-        return validationPolicy.getEAAPresentationKeyBindingSignatureValidConstraint();
+    public LevelRule getEAAKeyBindingSignatureValidConstraint() {
+        return validationPolicy.getEAAKeyBindingSignatureValidConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint() {
-        return validationPolicy.getEAAPresentationEAATypeIntegrityPresentConstraint();
+    public LevelRule getEAATypeIntegrityPresentConstraint() {
+        return validationPolicy.getEAATypeIntegrityPresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAIdentifierPresentConstraint() {
-        return validationPolicy.getEAAPresentationEAAIdentifierPresentConstraint();
+    public LevelRule getEAAIdentifierPresentConstraint() {
+        return validationPolicy.getEAAIdentifierPresentConstraint();
     }
 
     @Override
-    public MultiValuesRule getEAAPresentationEAATypeConstraint() {
-        return validationPolicy.getEAAPresentationEAATypeConstraint();
+    public MultiValuesRule getEAATypeConstraint() {
+        return validationPolicy.getEAATypeConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAANotBeforePresentConstraint() {
-        return validationPolicy.getEAAPresentationEAANotBeforePresentConstraint();
+    public LevelRule getEAANotBeforePresentConstraint() {
+        return validationPolicy.getEAANotBeforePresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint() {
-        return validationPolicy.getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint();
+    public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
+        return validationPolicy.getEAAAdministrativeIssuanceDatePresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint() {
-        return validationPolicy.getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
+    public LevelRule getEAAAdministrativeExpirationDatePresentConstraint() {
+        return validationPolicy.getEAAAdministrativeExpirationDatePresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAExpirationPresentConstraint() {
-        return validationPolicy.getEAAPresentationEAAExpirationPresentConstraint();
+    public LevelRule getEAAExpirationPresentConstraint() {
+        return validationPolicy.getEAAExpirationPresentConstraint();
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint() {
-        return validationPolicy.getEAAPresentationEAAETSI194721ConformanceConstraint();
+    public LevelRule getEAAETSI194721ConformanceConstraint() {
+        return validationPolicy.getEAAETSI194721ConformanceConstraint();
     }
 
     @Override

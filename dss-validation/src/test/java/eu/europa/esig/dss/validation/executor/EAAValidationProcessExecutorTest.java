@@ -2,9 +2,9 @@ package eu.europa.esig.dss.validation.executor;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
@@ -63,20 +63,20 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -85,7 +85,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         int disclosureIntactCounter = 0;
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -120,7 +120,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
         assertNotNull(diagnosticData);
 
-        List<XmlDigestMatcher> digestMatchers = diagnosticData.getEAAPresentations().get(0).getDigestMatchers();
+        List<XmlDigestMatcher> digestMatchers = diagnosticData.getEAAs().get(0).getDigestMatchers();
 
         XmlDigestMatcher xmlDigestMatcher = new XmlDigestMatcher();
         xmlDigestMatcher.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
@@ -138,20 +138,20 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -160,7 +160,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         int disclosureIntactCounter = 0;
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -195,7 +195,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
         assertNotNull(diagnosticData);
 
-        List<XmlDigestMatcher> digestMatchers = diagnosticData.getEAAPresentations().get(0).getDigestMatchers();
+        List<XmlDigestMatcher> digestMatchers = diagnosticData.getEAAs().get(0).getDigestMatchers();
         digestMatchers.get(0).setDataIntact(false);
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
@@ -208,24 +208,24 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.HASH_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAPresentationId()));
-        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId()), i18nProvider.getMessage(MessageTag.BBB_CV_EAA_SDCBI_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.HASH_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.BBB_CV_EAA_SDCBI_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.HASH_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.HASH_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.FAILED, validationProcessEAAPresentation.getConclusion().getIndication());
-        assertEquals(SubIndication.HASH_FAILURE, validationProcessEAAPresentation.getConclusion().getSubIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.HASH_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -234,7 +234,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         int disclosureIntactCounter = 0;
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigPresentCheckFound = true;
@@ -278,7 +278,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         LevelConstraint levelConstraint = new LevelConstraint();
         levelConstraint.setLevel(Level.WARN);
-        validationPolicy.getEAAPresentationConstraints().setDisclosurePresent(levelConstraint);
+        validationPolicy.getEAAConstraints().setDisclosurePresent(levelConstraint);
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
         executor.setDiagnosticData(diagnosticData);
@@ -290,21 +290,21 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId()), i18nProvider.getMessage(MessageTag.EAA_DPEAAP_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_DPEAAP_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -314,7 +314,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigPresentCheckFound = true;
@@ -359,7 +359,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
         LevelConstraint levelConstraint = new LevelConstraint();
         levelConstraint.setLevel(Level.FAIL);
-        validationPolicy.getEAAPresentationConstraints().setDisclosurePresent(levelConstraint);
+        validationPolicy.getEAAConstraints().setDisclosurePresent(levelConstraint);
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
         executor.setDiagnosticData(diagnosticData);
@@ -371,25 +371,25 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, simpleReport.getSubIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
 
-        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId()), i18nProvider.getMessage(MessageTag.EAA_DPEAAP_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_DPEAAP_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.INDETERMINATE, validationProcessEAAPresentation.getConclusion().getIndication());
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, validationProcessEAAPresentation.getConclusion().getSubIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, validationProcessEAA.getConclusion().getSubIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -399,7 +399,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigPresentCheckFound = true;
@@ -457,16 +457,16 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAPresentationId()));
-        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId()), i18nProvider.getMessage(MessageTag.ADEST_IBSVPSC_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.ADEST_IBSVPSC_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
-        List<XmlSignature> eaaPresentationSignatures = simpleReport.getEAAPresentationSignatures(simpleReport.getFirstEAAPresentationId());
-        assertEquals(1, eaaPresentationSignatures.size());
-        XmlSignature eaaSignature = eaaPresentationSignatures.get(0);
+        List<XmlSignature> eaaSignatures = simpleReport.getEAASignatures(simpleReport.getFirstEAAId());
+        assertEquals(1, eaaSignatures.size());
+        XmlSignature eaaSignature = eaaSignatures.get(0);
 
         assertEquals(Indication.TOTAL_FAILED, simpleReport.getIndication(eaaSignature.getId()));
         assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(eaaSignature.getId()));
@@ -475,7 +475,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(eaaSignature.getId())));
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(eaaSignature.getId())));
 
-        XmlSignature keyBindingSignature = simpleReport.getEAAPresentationKeyBindingSignature(simpleReport.getFirstEAAPresentationId());
+        XmlSignature keyBindingSignature = simpleReport.getEAAKeyBindingSignature(simpleReport.getFirstEAAId());
         assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(keyBindingSignature.getId()));
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(keyBindingSignature.getId())));
         assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(keyBindingSignature.getId())));
@@ -483,16 +483,16 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(keyBindingSignature.getId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.FORMAT_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.FAILED, validationProcessEAAPresentation.getConclusion().getIndication());
-        assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAAPresentation.getConclusion().getSubIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -501,7 +501,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         int disclosureIntactCounter = 0;
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigPresentCheckFound = true;
@@ -554,23 +554,23 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAPresentationId()));
-        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAPresentationId()), i18nProvider.getMessage(MessageTag.EAA_KBRC_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_KBRC_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
-        List<XmlSignature> eaaPresentationSignatures = simpleReport.getEAAPresentationSignatures(simpleReport.getFirstEAAPresentationId());
-        assertEquals(1, eaaPresentationSignatures.size());
-        XmlSignature eaaSignature = eaaPresentationSignatures.get(0);
+        List<XmlSignature> eaaSignatures = simpleReport.getEAASignatures(simpleReport.getFirstEAAId());
+        assertEquals(1, eaaSignatures.size());
+        XmlSignature eaaSignature = eaaSignatures.get(0);
 
         assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(eaaSignature.getId()));
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(eaaSignature.getId())));
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(eaaSignature.getId())));
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(eaaSignature.getId())));
 
-        XmlSignature keyBindingSignature = simpleReport.getEAAPresentationKeyBindingSignature(simpleReport.getFirstEAAPresentationId());
+        XmlSignature keyBindingSignature = simpleReport.getEAAKeyBindingSignature(simpleReport.getFirstEAAId());
         assertEquals(Indication.TOTAL_FAILED, simpleReport.getIndication(keyBindingSignature.getId()));
         assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(keyBindingSignature.getId()));
         assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(keyBindingSignature.getId())));
@@ -580,16 +580,16 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(keyBindingSignature.getId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(SubIndication.FORMAT_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.FAILED, validationProcessEAAPresentation.getConclusion().getIndication());
-        assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAAPresentation.getConclusion().getSubIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
@@ -598,7 +598,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         int disclosureIntactCounter = 0;
         boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigPresentCheckFound = true;

@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -91,17 +91,17 @@ class SDJWTCompactEAAPresentationWithAgeClaimValidationTest extends AbstractSDJW
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
-        assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
-        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
+        assertEquals("user_42", eaa.getEAASubject());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAANotAfter());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
 
-        assertEquals("urn:eudi:eaa:1", eaaPresentation.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());
-        assertNotNull(eaaPresentation.getEAAMetadataIntegrityBytes());
+        assertEquals("urn:eudi:eaa:1", eaa.getEAAMetadataUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
+        assertNotNull(eaa.getEAAMetadataIntegrityBytes());
 
-        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
 
         boolean ageClaimFound = false;

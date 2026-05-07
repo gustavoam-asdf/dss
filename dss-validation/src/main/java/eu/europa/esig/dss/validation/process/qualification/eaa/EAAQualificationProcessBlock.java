@@ -6,7 +6,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.enumerations.EAACategory;
@@ -47,11 +47,11 @@ import java.util.stream.Collectors;
  */
 public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualificationProcess> {
 
-    /** The EAA Presentation to be validated */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** The EAA to be validated */
+    private final EAAWrapper eaa;
 
-    /** The conclusion of EAA Presentation validation */
-    private final XmlConclusion eaaPresentationConclusion;
+    /** The conclusion of EAA validation */
+    private final XmlConclusion eaaConclusion;
 
     /** Map of signature validation processes */
     private final Map<String, XmlSignature> signatureMap;
@@ -66,18 +66,18 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
      * Default constructor
      *
      * @param i18nProvider         {@link I18nProvider}
-     * @param eaaPresentation      {@link EAAPresentationWrapper} for which qualification is to be determined
-     * @param eaaPresentationConclusion {@link XmlConclusion}
+     * @param eaa      {@link EAAWrapper} for which qualification is to be determined
+     * @param eaaConclusion {@link XmlConclusion}
      * @param signatureMap         a map of signature validations
      * @param tlAnalysis           a list of performed {@link XmlTLAnalysis}
      * @param currentTime          {@link Date}
      */
-    public EAAQualificationProcessBlock(final I18nProvider i18nProvider, final EAAPresentationWrapper eaaPresentation,
-                                 final XmlConclusion eaaPresentationConclusion, final Map<String, XmlSignature> signatureMap,
-                                 final List<XmlTLAnalysis> tlAnalysis, final Date currentTime) {
+    public EAAQualificationProcessBlock(final I18nProvider i18nProvider, final EAAWrapper eaa,
+                                        final XmlConclusion eaaConclusion, final Map<String, XmlSignature> signatureMap,
+                                        final List<XmlTLAnalysis> tlAnalysis, final Date currentTime) {
         super(i18nProvider, new XmlValidationEAAQualificationProcess());
-        this.eaaPresentation = eaaPresentation;
-        this.eaaPresentationConclusion = eaaPresentationConclusion;
+        this.eaa = eaa;
+        this.eaaConclusion = eaaConclusion;
         this.signatureMap = signatureMap;
         this.tlAnalysis = tlAnalysis;
         this.currentTime = currentTime;
@@ -91,11 +91,11 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
     @Override
     protected void initChain() {
 
-        if (Utils.isCollectionEmpty(eaaPresentation.getEAAPresentationSignatures())) {
+        if (Utils.isCollectionEmpty(eaa.getEAASignatures())) {
             throw new IllegalStateException("No signatures found within the EAA token!");
         }
 
-        SignatureWrapper signature = eaaPresentation.getEAAPresentationSignatures().get(0);
+        SignatureWrapper signature = eaa.getEAASignatures().get(0);
         CertificateWrapper signingCertificate = signature.getSigningCertificate();
 
         ChainItem<XmlValidationEAAQualificationProcess> item = firstItem = isTrustedListReachedForCertificateChain(signingCertificate);
@@ -246,15 +246,15 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
     }
 
     private ChainItem<XmlValidationEAAQualificationProcess> categoryPresent() {
-        return new EAACategoryForEAAPresenceCheck(i18nProvider, result, eaaPresentation, getInfoLevelRule());
+        return new EAACategoryForEAAPresenceCheck(i18nProvider, result, eaa, getInfoLevelRule());
     }
 
     private ChainItem<XmlValidationEAAQualificationProcess> categoryForQEAA() {
-        return new EAACategoryForQEAACheck(i18nProvider, result, eaaPresentation, getFailLevelRule());
+        return new EAACategoryForQEAACheck(i18nProvider, result, eaa, getFailLevelRule());
     }
 
     private ChainItem<XmlValidationEAAQualificationProcess> categoryForPubEAA() {
-        return new EAACategoryForPubEAACheck(i18nProvider, result, eaaPresentation, getFailLevelRule());
+        return new EAACategoryForPubEAACheck(i18nProvider, result, eaa, getFailLevelRule());
     }
 
     private ChainItem<XmlValidationEAAQualificationProcess> isSignatureQualificationStatusAcceptable(
@@ -313,7 +313,7 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
     }
 
     private EAAQualification getClaimedQualification() {
-        String eaaCategory = eaaPresentation.getEAACategory();
+        String eaaCategory = eaa.getEAACategory();
         if (EAACategory.EU_QEAA.getUrn().equals(eaaCategory)) {
             return EAAQualification.QEAA;
         } else if (EAACategory.EU_PUBEAA.getUrn().equals(eaaCategory)) {
@@ -338,7 +338,7 @@ public class EAAQualificationProcessBlock extends Chain<XmlValidationEAAQualific
 
     private void determineFinalQualification(EAAQualification claimedQualification, SignatureQualification signatureQualification) {
         EAAQualification finalQualification = EAAQualificationMatrix.getEAAQualification(
-                eaaPresentationConclusion.getIndication(), claimedQualification, signatureQualification);
+                eaaConclusion.getIndication(), claimedQualification, signatureQualification);
         result.setEAAQualification(finalQualification);
     }
 

@@ -21,7 +21,7 @@
 				<xs:element name="Signature" type="Signature" />
 				<xs:element name="Timestamp" type="Timestamp" />
 				<xs:element name="EvidenceRecord" type="EvidenceRecord" />
-				<xs:element name="EAAPresentation" type="EAAPresentation" />
+				<xs:element name="EAA" type="EAA" />
 			</xs:choice>
 			
 			<xs:element name="Semantic" type="Semantic" minOccurs="0" maxOccurs="unbounded" />
@@ -170,12 +170,12 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="EAAPresentation">
+	<xs:complexType name="EAA">
 		<xs:complexContent>
 			<xs:extension base="Token">
 				<xs:sequence>
 					<xs:element name="EAALevel" type="EAALevel" minOccurs="0" maxOccurs="unbounded" />
-					<xs:element name="EAAPresentationSignature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="EAASignature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
 					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
 				</xs:sequence>

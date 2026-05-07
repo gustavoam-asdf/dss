@@ -29,7 +29,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlProofOfExistence;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlQWACProcess;
@@ -42,7 +42,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationTimestampQualification;
@@ -304,13 +304,13 @@ public class DetailedReport {
 	 *
 	 * @return a list of {@link String} ids
 	 */
-	public List<String> getEAAPresentationIds() {
+	public List<String> getEAAIds() {
 		List<String> result = new ArrayList<>();
 		List<?> tokens = jaxbDetailedReport.getSignatureOrTimestampOrEvidenceRecord();
 		for (Object token : tokens) {
-			if (token instanceof XmlEAAPresentation) {
-				XmlEAAPresentation xmlEAAPresentation = (XmlEAAPresentation) token;
-				result.add(xmlEAAPresentation.getId());
+			if (token instanceof XmlEAA) {
+				XmlEAA xmlEAA = (XmlEAA) token;
+				result.add(xmlEAA.getId());
 			}
 		}
 		return result;
@@ -321,10 +321,10 @@ public class DetailedReport {
 	 *
 	 * @return the first EAA presentation id
 	 */
-	public String getFirstEAAPresentationId() {
-		final List<String> eaaPresentationIds = getEAAPresentationIds();
-		if (!eaaPresentationIds.isEmpty()) {
-			return eaaPresentationIds.get(0);
+	public String getFirstEAAId() {
+		final List<String> EAAIds = getEAAIds();
+		if (!EAAIds.isEmpty()) {
+			return EAAIds.get(0);
 		}
 		return null;
 	}
@@ -553,13 +553,13 @@ public class DetailedReport {
 	/**
 	 * Gets EAA presentation validation indication for an EAA presentation with id
 	 *
-	 * @param eaaPresentationId {@link String}
+	 * @param EAAId {@link String}
 	 * @return {@link Indication}
 	 */
-	public Indication getEAAPresentationValidationIndication(String eaaPresentationId) {
-		XmlValidationProcessEAAPresentation eaaPresentationValidationById = getEAAPresentationValidationById(eaaPresentationId);
-		if (eaaPresentationValidationById != null && eaaPresentationValidationById.getConclusion() != null) {
-			return eaaPresentationValidationById.getConclusion().getIndication();
+	public Indication getEAAValidationIndication(String EAAId) {
+		XmlValidationProcessEAA EAAValidationById = getEAAValidationById(EAAId);
+		if (EAAValidationById != null && EAAValidationById.getConclusion() != null) {
+			return EAAValidationById.getConclusion().getIndication();
 		}
 		return null;
 	}
@@ -567,36 +567,36 @@ public class DetailedReport {
 	/**
 	 * Gets EAA presentation validation subIndication for an EAA presentation with id
 	 *
-	 * @param eaaPresentationId {@link String}
+	 * @param EAAId {@link String}
 	 * @return {@link SubIndication}
 	 */
-	public SubIndication getEAAPresentationValidationSubIndication(String eaaPresentationId) {
-		XmlValidationProcessEAAPresentation eaaPresentationValidationById = getEAAPresentationValidationById(eaaPresentationId);
-		if (eaaPresentationValidationById != null && eaaPresentationValidationById.getConclusion() != null) {
-			return eaaPresentationValidationById.getConclusion().getSubIndication();
+	public SubIndication getEAAValidationSubIndication(String EAAId) {
+		XmlValidationProcessEAA EAAValidationById = getEAAValidationById(EAAId);
+		if (EAAValidationById != null && EAAValidationById.getConclusion() != null) {
+			return EAAValidationById.getConclusion().getSubIndication();
 		}
 		return null;
 	}
 
-	private XmlValidationProcessEAAPresentation getEAAPresentationValidationById(String evidenceRecordId) {
-		XmlEAAPresentation eaaPresentation = getXmlEAAPresentationById(evidenceRecordId);
-		if (eaaPresentation != null) {
-			return eaaPresentation.getValidationProcessEAAPresentation();
+	private XmlValidationProcessEAA getEAAValidationById(String evidenceRecordId) {
+		XmlEAA EAA = getXmlEAAById(evidenceRecordId);
+		if (EAA != null) {
+			return EAA.getValidationProcessEAA();
 		}
 		return null;
 	}
 
 	/**
-	 * Returns an {@code XmlEAAPresentation} by the given id
-	 * Null if the EAA Presentation is not found
+	 * Returns an {@code XmlEAA} by the given id
+	 * Null if the EAA is not found
 	 *
-	 * @param eaaPresentationId {@link String} id of an EAA Presentation to get
-	 * @return {@link XmlEAAPresentation}
+	 * @param eaaId {@link String} id of an EAA to get
+	 * @return {@link XmlEAA}
 	 */
-	public XmlEAAPresentation getXmlEAAPresentationById(String eaaPresentationId) {
-		for (XmlEAAPresentation xmlEAAPresentation : getEAAPresentations()) {
-			if (xmlEAAPresentation.getId().equals(eaaPresentationId)) {
-				return xmlEAAPresentation;
+	public XmlEAA getXmlEAAById(String eaaId) {
+		for (XmlEAA xmlEAA : getEAAs()) {
+			if (xmlEAA.getId().equals(eaaId)) {
+				return xmlEAA;
 			}
 		}
 		return null;
@@ -751,21 +751,21 @@ public class DetailedReport {
 	/**
 	 * Gets the final qualification result for an EAA presentation with id
 	 *
-	 * @param eaaPresentationId {@link String}
+	 * @param EAAId {@link String}
 	 * @return {@link EAAQualification}
 	 */
-	public List<EAAQualification> getEAAQualifications(String eaaPresentationId) {
-		XmlValidationEAAQualification eaaQualification = getXmlEAAQualificationById(eaaPresentationId);
+	public List<EAAQualification> getEAAQualifications(String EAAId) {
+		XmlValidationEAAQualification eaaQualification = getXmlEAAQualificationById(EAAId);
 		if (eaaQualification !=null) {
 			return eaaQualification.getEAAQualification();
 		}
 		return null;
 	}
 
-	private XmlValidationEAAQualification getXmlEAAQualificationById(String eaaPresentationId) {
-		XmlEAAPresentation eaaPresentation = getXmlEAAPresentationById(eaaPresentationId);
-		if (eaaPresentation != null) {
-			return eaaPresentation.getValidationEAAQualification();
+	private XmlValidationEAAQualification getXmlEAAQualificationById(String EAAId) {
+		XmlEAA EAA = getXmlEAAById(EAAId);
+		if (EAA != null) {
+			return EAA.getValidationEAAQualification();
 		}
 		return null;
 	}
@@ -869,11 +869,11 @@ public class DetailedReport {
 			if (element instanceof XmlSignature) {
 				result.add((XmlSignature) element);
 			}
-			if (element instanceof XmlEAAPresentation) {
-				XmlEAAPresentation xmlEAAPresentation = (XmlEAAPresentation) element;
-				result.addAll(xmlEAAPresentation.getSignature());
-				if (xmlEAAPresentation.getKeyBindingSignature() != null) {
-					result.add(xmlEAAPresentation.getKeyBindingSignature());
+			if (element instanceof XmlEAA) {
+				XmlEAA xmlEAA = (XmlEAA) element;
+				result.addAll(xmlEAA.getSignature());
+				if (xmlEAA.getKeyBindingSignature() != null) {
+					result.add(xmlEAA.getKeyBindingSignature());
 				}
 			}
 		}
@@ -913,13 +913,13 @@ public class DetailedReport {
 	/**
 	 * Returns a list of all EAA presentations
 	 *
-	 * @return a list of {@link XmlEAAPresentation}s
+	 * @return a list of {@link XmlEAA}s
 	 */
-	public List<XmlEAAPresentation> getEAAPresentations() {
-		List<XmlEAAPresentation> result = new ArrayList<>();
+	public List<XmlEAA> getEAAs() {
+		List<XmlEAA> result = new ArrayList<>();
 		for (Serializable element : jaxbDetailedReport.getSignatureOrTimestampOrEvidenceRecord()) {
-			if (element instanceof XmlEAAPresentation) {
-				result.add((XmlEAAPresentation) element);
+			if (element instanceof XmlEAA) {
+				result.add((XmlEAA) element);
 			}
 		}
 		return result;
@@ -1204,9 +1204,9 @@ public class DetailedReport {
 		if (evidenceRecordById != null) {
 			return evidenceRecordById.getConclusion();
 		}
-		XmlEAAPresentation eaaPresentationById = getXmlEAAPresentationById(tokenId);
-		if (eaaPresentationById != null) {
-			return eaaPresentationById.getConclusion();
+		XmlEAA EAAById = getXmlEAAById(tokenId);
+		if (EAAById != null) {
+			return EAAById.getConclusion();
 		}
 		XmlBasicBuildingBlocks bbb = getBasicBuildingBlockById(tokenId);
 		if (bbb != null) {

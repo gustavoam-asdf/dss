@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocParserTest {
+class MdocDeviceResponseParserTest {
 
     @Test
     void iso180135MdocResponseSample() {
         DSSDocument mdocDocument = new FileDocument("src/test/resources/validation/mdocResponseIso180135.mdoc");
 
-        MdocParser mdocParser = new MdocParser(mdocDocument);
+        MdocDeviceResponseParser mdocParser = new MdocDeviceResponseParser(mdocDocument);
         assertTrue(mdocParser.isSupported());
 
         MdocDeviceResponse deviceResponse = mdocParser.parse();

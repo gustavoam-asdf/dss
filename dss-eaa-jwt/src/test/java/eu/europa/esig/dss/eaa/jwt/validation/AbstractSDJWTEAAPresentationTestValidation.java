@@ -3,9 +3,11 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.validationreport.jaxb.SignatureIdentifierType;
 import eu.europa.esig.validationreport.jaxb.SignatureValidationReportType;
@@ -18,8 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public abstract class AbstractSDJWTEAAPresentationTestValidation extends AbstractEAAPresentationTestValidation {
 
     @Override
-    protected EAAPresentationType getEAAPresentationType() {
-        return EAAPresentationType.SD_JWT_VC;
+    protected EAAType getEAAType() {
+        return EAAType.SD_JWT_VC;
+    }
+
+    @Override
+    protected void checkEAAPresentationInfo(DiagnosticData diagnosticData) {
+        super.checkEAAPresentationInfo(diagnosticData);
+
+        XmlEAAPresentationInfo eaaPresentationInfo = diagnosticData.getEAAPresentationInfo();
+        assertEquals(EAAPresentationType.SD_JWT, eaaPresentationInfo.getEAAPresentationType());
+        assertEquals(EAAPresentationType.SD_JWT, diagnosticData.getEAAPresentationType());
     }
 
     @Override

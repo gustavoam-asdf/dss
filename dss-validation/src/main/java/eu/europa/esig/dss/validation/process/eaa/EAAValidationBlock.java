@@ -3,15 +3,15 @@ package eu.europa.esig.dss.validation.process.eaa;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusionWithProofOfExistence;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicSignature;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class performs validation of the EAA Presentation
+ * This class performs validation of the EAA
  *
  */
-public class EAAPresentationValidationBlock {
+public class EAAValidationBlock {
 
     /** The i18n provider */
     private final I18nProvider i18nProvider;
@@ -66,9 +66,9 @@ public class EAAPresentationValidationBlock {
      * @param tlAnalysis a list of {@link XmlTLAnalysis}
      * @param loteAnalysis a list of {@link XmlLoTEAnalysis}
      */
-    public EAAPresentationValidationBlock(final I18nProvider i18nProvider, final DiagnosticData diagnosticData,
-                                          final ValidationPolicy policy, final Date currentTime, final Map<String, XmlBasicBuildingBlocks> bbbs,
-                                          final List<XmlTLAnalysis> tlAnalysis, final List<XmlLoTEAnalysis> loteAnalysis) {
+    public EAAValidationBlock(final I18nProvider i18nProvider, final DiagnosticData diagnosticData,
+                              final ValidationPolicy policy, final Date currentTime, final Map<String, XmlBasicBuildingBlocks> bbbs,
+                              final List<XmlTLAnalysis> tlAnalysis, final List<XmlLoTEAnalysis> loteAnalysis) {
         this.i18nProvider = i18nProvider;
         this.diagnosticData = diagnosticData;
         this.policy = policy;
@@ -81,38 +81,38 @@ public class EAAPresentationValidationBlock {
     /**
      * Performs validation of EAA presentations
      */
-    public List<XmlEAAPresentation> execute() {
-        final List<XmlEAAPresentation> result = new ArrayList<>();
+    public List<XmlEAA> execute() {
+        final List<XmlEAA> result = new ArrayList<>();
 
-        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-            final XmlEAAPresentation eaaPresentationAnalysis = new XmlEAAPresentation();
-            eaaPresentationAnalysis.setId(eaaPresentation.getId());
+        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+            final XmlEAA eaaAnalysis = new XmlEAA();
+            eaaAnalysis.setId(eaa.getId());
 
             final Map<String, XmlSignature> signatureValidationMap = new HashMap<>();
 
-            for (SignatureWrapper signature : eaaPresentation.getEAAPresentationSignatures()) {
-                XmlSignature signatureValidation = getEAAPresentationSignatureValidation(signature);
-                eaaPresentationAnalysis.getSignature().add(signatureValidation);
+            for (SignatureWrapper signature : eaa.getEAASignatures()) {
+                XmlSignature signatureValidation = getEAASignatureValidation(signature);
+                eaaAnalysis.getSignature().add(signatureValidation);
                 signatureValidationMap.put(signature.getId(), signatureValidation);
             }
 
-            if (eaaPresentation.getKeyBindingSignature() != null) {
-                XmlSignature signatureValidation = getEAAPresentationSignatureValidation(eaaPresentation.getKeyBindingSignature());
-                eaaPresentationAnalysis.setKeyBindingSignature(signatureValidation);
-                signatureValidationMap.put(eaaPresentation.getKeyBindingSignature().getId(), signatureValidation);
+            if (eaa.getKeyBindingSignature() != null) {
+                XmlSignature signatureValidation = getEAASignatureValidation(eaa.getKeyBindingSignature());
+                eaaAnalysis.setKeyBindingSignature(signatureValidation);
+                signatureValidationMap.put(eaa.getKeyBindingSignature().getId(), signatureValidation);
             }
 
-            EAAPresentationValidationProcess eaapvp = new EAAPresentationValidationProcess(
-                    i18nProvider, diagnosticData, eaaPresentation, signatureValidationMap, policy, currentTime);
-            XmlValidationProcessEAAPresentation validationProcessEAAPresentation = eaapvp.execute();
-            eaaPresentationAnalysis.setValidationProcessEAAPresentation(validationProcessEAAPresentation);
+            EAAValidationProcess eaapvp = new EAAValidationProcess(
+                    i18nProvider, eaa, signatureValidationMap, policy, currentTime);
+            XmlValidationProcessEAA validationProcessEAA = eaapvp.execute();
+            eaaAnalysis.setValidationProcessEAA(validationProcessEAA);
 
-            XmlConclusion conclusion = validationProcessEAAPresentation.getConclusion();
-            eaaPresentationAnalysis.setConclusion(conclusion);
+            XmlConclusion conclusion = validationProcessEAA.getConclusion();
+            eaaAnalysis.setConclusion(conclusion);
 
             if (policy.isEIDASConstraintPresent()) {
 
-                for (SignatureWrapper signature : eaaPresentation.getEAAPresentationSignatures()) {
+                for (SignatureWrapper signature : eaa.getEAASignatures()) {
 
                     XmlSignature xmlSignature = signatureValidationMap.get(signature.getId());
                     XmlValidationSignatureQualification validationSignatureQualification = getXmlValidationSignatureQualification(signature, xmlSignature);
@@ -121,18 +121,18 @@ public class EAAPresentationValidationBlock {
                 }
 
                 EAAQualificationBlock qualificationBlock = new EAAQualificationBlock(
-                        i18nProvider, eaaPresentation, conclusion, signatureValidationMap, tlAnalysis, loteAnalysis, currentTime);
-                eaaPresentationAnalysis.setValidationEAAQualification(qualificationBlock.execute());
+                        i18nProvider, eaa, conclusion, signatureValidationMap, tlAnalysis, loteAnalysis, currentTime);
+                eaaAnalysis.setValidationEAAQualification(qualificationBlock.execute());
 
             }
 
-            result.add(eaaPresentationAnalysis);
+            result.add(eaaAnalysis);
         }
 
         return result;
     }
 
-    private XmlSignature getEAAPresentationSignatureValidation(SignatureWrapper signatureWrapper) {
+    private XmlSignature getEAASignatureValidation(SignatureWrapper signatureWrapper) {
 
         final XmlSignature xmlSignature = new XmlSignature();
         xmlSignature.setId(signatureWrapper.getId());

@@ -6,7 +6,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationPIDQualificationProcess;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
@@ -50,11 +50,11 @@ import java.util.stream.Collectors;
  */
 public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualificationProcess> {
 
-    /** The EAA Presentation to be validated */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** The EAA to be validated */
+    private final EAAWrapper eaa;
 
-    /** The conclusion of EAA Presentation validation */
-    private final XmlConclusion eaaPresentationConclusion;
+    /** The conclusion of EAA validation */
+    private final XmlConclusion eaaConclusion;
 
     /** List of List of Trusted Entities validations */
     private final List<XmlLoTEAnalysis> loteAnalysis;
@@ -66,17 +66,17 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
      * Default constructor
      *
      * @param i18nProvider         {@link I18nProvider}
-     * @param eaaPresentation      {@link EAAPresentationWrapper} for which qualification is to be determined
-     * @param eaaPresentationConclusion {@link XmlConclusion}
+     * @param eaa      {@link EAAWrapper} for which qualification is to be determined
+     * @param eaaConclusion {@link XmlConclusion}
      * @param loteAnalysis         a list of performed {@link XmlLoTEAnalysis}
      * @param currentTime          {@link Date}
      */
-    public PIDQualificationProcessBlock(final I18nProvider i18nProvider, final EAAPresentationWrapper eaaPresentation,
-                                        final XmlConclusion eaaPresentationConclusion, final List<XmlLoTEAnalysis> loteAnalysis,
+    public PIDQualificationProcessBlock(final I18nProvider i18nProvider, final EAAWrapper eaa,
+                                        final XmlConclusion eaaConclusion, final List<XmlLoTEAnalysis> loteAnalysis,
                                         final Date currentTime) {
         super(i18nProvider, new XmlValidationPIDQualificationProcess());
-        this.eaaPresentation = eaaPresentation;
-        this.eaaPresentationConclusion = eaaPresentationConclusion;
+        this.eaa = eaa;
+        this.eaaConclusion = eaaConclusion;
         this.loteAnalysis = loteAnalysis;
         this.currentTime = currentTime;
     }
@@ -89,14 +89,14 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
     @Override
     protected void initChain() {
 
-        if (Utils.isCollectionEmpty(eaaPresentation.getEAAPresentationSignatures())) {
+        if (Utils.isCollectionEmpty(eaa.getEAASignatures())) {
             throw new IllegalStateException("No signatures found within the EAA token!");
         }
 
         CertificateUsage certificateUsageAtIssuanceTime = CertificateUsageEnum.NA;
         CertificateUsage certificateUsageAtValidationTime = CertificateUsageEnum.NA;
 
-        SignatureWrapper signature = eaaPresentation.getEAAPresentationSignatures().get(0);
+        SignatureWrapper signature = eaa.getEAASignatures().get(0);
         CertificateWrapper signingCertificate = signature.getSigningCertificate();
 
         ChainItem<XmlValidationPIDQualificationProcess> item = firstItem = isListOfTrustedEntitiesReachedForCertificateChain(signingCertificate);
@@ -226,7 +226,7 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
     }
 
     private PIDDocumentTypeAcceptableCheck pidDocumentTypeAcceptable() {
-        return new PIDDocumentTypeAcceptableCheck(i18nProvider, result, eaaPresentation, getFailLevelRule());
+        return new PIDDocumentTypeAcceptableCheck(i18nProvider, result, eaa, getFailLevelRule());
     }
 
     private ChainItem<XmlValidationPIDQualificationProcess> pidProviderAtIssuanceTime(CertificateUsage certificateUsage) {
@@ -289,7 +289,7 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
     private void determineFinalQualification(CertificateUsage certificateUsageAtIssuanceTime, CertificateUsage certificateUsageAtValidationTime) {
         CertificateUsage certificateUsage = determinedFinalCertificateUsage(certificateUsageAtIssuanceTime, certificateUsageAtValidationTime);
         EAAQualification finalQualification = EAAQualificationMatrix.getPIDQualification(
-                eaaPresentationConclusion.getIndication(), certificateUsage);
+                eaaConclusion.getIndication(), certificateUsage);
         result.setEAAQualification(finalQualification);
     }
 

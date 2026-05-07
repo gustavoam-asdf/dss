@@ -26,7 +26,7 @@ import eu.europa.esig.dss.diagnostic.CertificateRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAPayloadProxy;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.EvidenceRecordWrapper;
 import eu.europa.esig.dss.diagnostic.RelatedRevocationWrapper;
 import eu.europa.esig.dss.diagnostic.RevocationWrapper;
@@ -60,7 +60,7 @@ import eu.europa.esig.dss.simplereport.jaxb.XmlDetails;
 import eu.europa.esig.dss.simplereport.jaxb.XmlDisclosableClaim;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEAALevel;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPayload;
-import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAA;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
 import eu.europa.esig.dss.simplereport.jaxb.XmlMessage;
@@ -175,13 +175,13 @@ public class SimpleReportBuilder {
 		Set<String> attachedSignatureIds = new HashSet<>();
 		Set<String> attachedTimestampIds = new HashSet<>();
 		Set<String> attachedEvidenceRecordIds = new HashSet<>();
-		if (Utils.isCollectionNotEmpty(diagnosticData.getEAAPresentations())) {
-			for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-				attachedSignatureIds.addAll(eaaPresentation.getEAAPresentationSignatureIds());
-				if (eaaPresentation.getKeyBindingSignature() != null) {
-					attachedSignatureIds.add(eaaPresentation.getKeyBindingSignatureId());
+		if (Utils.isCollectionNotEmpty(diagnosticData.getElectronicAttestationsOfAttributes())) {
+			for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+				attachedSignatureIds.addAll(eaa.getEAASignatureIds());
+				if (eaa.getKeyBindingSignature() != null) {
+					attachedSignatureIds.add(eaa.getKeyBindingSignatureId());
 				}
-				simpleReport.getSignatureOrTimestampOrEvidenceRecord().add(getEAAPresentation(eaaPresentation));
+				simpleReport.getSignatureOrTimestampOrEvidenceRecord().add(getEAA(eaa));
 			}
 		}
 
@@ -765,52 +765,52 @@ public class SimpleReportBuilder {
 		return timestampList;
 	}
 
-	private XmlEAAPresentation getEAAPresentation(EAAPresentationWrapper eaaPresentation) {
-		XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
+	private XmlEAA getEAA(EAAWrapper eaaWrapper) {
+		XmlEAA xmlEAA = new XmlEAA();
 
-		String eaaPresentationId = eaaPresentation.getId();
-		xmlEAAPresentation.setId(eaaPresentationId);
-		xmlEAAPresentation.setFilename(eaaPresentation.getFilename());
+		String eaaId = eaaWrapper.getId();
+		xmlEAA.setId(eaaId);
+		xmlEAA.setFilename(eaaWrapper.getFilename());
 
-		Indication indication = detailedReport.getFinalIndication(eaaPresentationId);
-		xmlEAAPresentation.setIndication(indication);
+		Indication indication = detailedReport.getFinalIndication(eaaId);
+		xmlEAA.setIndication(indication);
 		finalIndications.add(indication);
 
-		SubIndication subIndication = detailedReport.getFinalSubIndication(eaaPresentationId);
+		SubIndication subIndication = detailedReport.getFinalSubIndication(eaaId);
 		if (subIndication != null) {
-			xmlEAAPresentation.setSubIndication(subIndication);
+			xmlEAA.setSubIndication(subIndication);
 			finalSubIndications.add(subIndication);
 		}
 
-		List<EAAQualification> eaaQualifications = detailedReport.getEAAQualifications(eaaPresentationId);
+		List<EAAQualification> eaaQualifications = detailedReport.getEAAQualifications(eaaId);
 		if (Utils.isCollectionNotEmpty(eaaQualifications)) {
-			xmlEAAPresentation.getEAALevel().addAll(getXmlEAALevels(eaaQualifications));
+			xmlEAA.getEAALevel().addAll(getXmlEAALevels(eaaQualifications));
 		}
 
-		XmlDetails validationDetails = getAdESValidationDetails(eaaPresentationId);
+		XmlDetails validationDetails = getAdESValidationDetails(eaaId);
 		if (isNotEmpty(validationDetails)) {
-			xmlEAAPresentation.setAdESValidationDetails(validationDetails);
+			xmlEAA.setAdESValidationDetails(validationDetails);
 		}
 
-		XmlDetails qualificationDetails = getQualificationDetails(eaaPresentationId);
+		XmlDetails qualificationDetails = getQualificationDetails(eaaId);
 		if (isNotEmpty(qualificationDetails)) {
-			xmlEAAPresentation.setQualificationDetails(qualificationDetails);
+			xmlEAA.setQualificationDetails(qualificationDetails);
 		}
 
-		List<SignatureWrapper> signatures = eaaPresentation.getEAAPresentationSignatures();
+		List<SignatureWrapper> signatures = eaaWrapper.getEAASignatures();
 		if (Utils.isCollectionNotEmpty(signatures)) {
 			for (SignatureWrapper signature : signatures) {
-				xmlEAAPresentation.getEAAPresentationSignature().add(getSignature(signature, false));
+				xmlEAA.getEAASignature().add(getSignature(signature, false));
 			}
 		}
-		SignatureWrapper keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+		SignatureWrapper keyBindingSignature = eaaWrapper.getKeyBindingSignature();
 		if (keyBindingSignature != null) {
-			xmlEAAPresentation.setKeyBindingSignature(getSignature(keyBindingSignature, false));
+			xmlEAA.setKeyBindingSignature(getSignature(keyBindingSignature, false));
 		}
 
-		xmlEAAPresentation.setEAAPayload(buildXmlEAAPayload(eaaPresentation));
+		xmlEAA.setEAAPayload(buildXmlEAAPayload(eaaWrapper));
 
-		return xmlEAAPresentation;
+		return xmlEAA;
 	}
 
 	private List<XmlEAALevel> getXmlEAALevels(List<EAAQualification> eaaQualifications) {
@@ -983,10 +983,10 @@ public class SimpleReportBuilder {
 		return timestampedObjects.stream().anyMatch(o -> tokenId.equals(o.getToken().getId()));
 	}
 
-	private XmlEAAPayload buildXmlEAAPayload(EAAPresentationWrapper eaaPresentationWrapper) {
+	private XmlEAAPayload buildXmlEAAPayload(EAAWrapper eaaWrapper) {
 		XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
-		EAAPayloadProxy eaaPayloadProxy = eaaPresentationWrapper.getEAAPayload();
+		EAAPayloadProxy eaaPayloadProxy = eaaWrapper.getEAAPayload();
 		xmlEAAPayload.setIdentifier(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIdentifier()));
 		xmlEAAPayload.setIssuer(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIssuer()));
 		xmlEAAPayload.setSubject(getXmlDisclosableClaim(eaaPayloadProxy.getEAASubject()));
@@ -1139,7 +1139,7 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setResidentStreet(getXmlDisclosableClaim(eaaPayloadProxy.getResidentStreet()));
 		xmlEAAPayload.setResidentHouseNumber(getXmlDisclosableClaim(eaaPayloadProxy.getResidentHouseNumber()));
 
-		List<ClaimWrapper> otherClaims = eaaPresentationWrapper.getOtherClaims();
+		List<ClaimWrapper> otherClaims = eaaWrapper.getOtherClaims();
 		if (Utils.isCollectionNotEmpty(otherClaims)) {
 			xmlEAAPayload.getOtherClaim().addAll(otherClaims.stream().map(this::getXmlDisclosableClaim).collect(Collectors.toList()));
 		}

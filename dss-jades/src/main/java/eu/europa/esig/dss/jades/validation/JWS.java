@@ -174,13 +174,9 @@ public class JWS extends JsonWebSignature implements Serializable {
 	 */
 	public Map<String, Object> getDecodedPayload() {
 		if (decodedPayload == null) {
-			try {
-				String unverifiedPayload = getUnverifiedPayload();
-				if (unverifiedPayload != null) {
-					decodedPayload = DSSJsonUtils.parseJsonStringToMap(unverifiedPayload);
-				}
-			} catch (Exception e) {
-				LOG.warn("The JWS payload is not a JSON Map : {}", e.getMessage(), e);
+			String unverifiedPayload = getUnverifiedPayload();
+			if (unverifiedPayload != null) {
+				decodedPayload = DSSJsonUtils.parseJsonStringToMap(unverifiedPayload);
 			}
 		}
 		return decodedPayload;

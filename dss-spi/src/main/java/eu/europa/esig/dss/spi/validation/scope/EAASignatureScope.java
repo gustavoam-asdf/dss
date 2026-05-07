@@ -4,7 +4,7 @@ import eu.europa.esig.dss.enumerations.SignatureScopeType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.model.scope.SignatureScope;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAA;
 
 import java.util.Objects;
 
@@ -17,18 +17,18 @@ public class EAASignatureScope extends SignatureScope {
     private static final long serialVersionUID = 2439442860342669997L;
 
     /** The counter-signed parent signature */
-    protected EAAPresentation eaaPresentation;
+    protected EAA eaa;
 
     /**
      * Default constructor
      *
-     * @param eaaPresentation {@link EAAPresentation}
+     * @param eaa {@link EAA}
      * @param originalDocument {@link DSSDocument}
      */
-    public EAASignatureScope(final EAAPresentation eaaPresentation, final DSSDocument originalDocument) {
+    public EAASignatureScope(final EAA eaa, final DSSDocument originalDocument) {
         super(originalDocument);
-        Objects.requireNonNull(eaaPresentation, "EAA Presentation cannot be null!");
-        this.eaaPresentation = eaaPresentation;
+        Objects.requireNonNull(eaa, "ElectronicAttestationOfAttributes cannot be null!");
+        this.eaa = eaa;
     }
 
     @Override
@@ -38,11 +38,11 @@ public class EAASignatureScope extends SignatureScope {
 
     @Override
     public String getDescription(TokenIdentifierProvider tokenIdentifierProvider) {
-        return String.format("EAA Presentation with Id : %s", getEAAPresentationId(tokenIdentifierProvider));
+        return String.format("EAA with Id : %s", getEAAPresentationId(tokenIdentifierProvider));
     }
 
     private String getEAAPresentationId(TokenIdentifierProvider tokenIdentifierProvider) {
-        return tokenIdentifierProvider.getIdAsString(eaaPresentation);
+        return tokenIdentifierProvider.getIdAsString(eaa);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTStringPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
@@ -79,8 +79,8 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertTrue(eaaPresentation.getOneTimeUse());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertTrue(eaa.getOneTimeUse());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -10,31 +10,31 @@ import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * This class verifies whether the EAA Presentation contains the 'not before' information
+ * This class verifies whether the EAA contains the 'not before' information
  *
  */
-public class EAANotBeforePresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class EAANotBeforePresentCheck extends ChainItem<XmlValidationProcessEAA> {
 
-    /** EAA Presentation to check */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** EAA to check */
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAAPresentation}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param result {@link XmlValidationProcessEAA}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAANotBeforePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                    EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public EAANotBeforePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+                                    EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        return eaaPresentation.getEAANotBefore() != null;
+        return eaa.getEAANotBefore() != null;
     }
 
     @Override

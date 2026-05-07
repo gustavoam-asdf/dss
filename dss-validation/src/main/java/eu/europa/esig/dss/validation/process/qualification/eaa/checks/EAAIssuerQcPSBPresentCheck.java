@@ -2,7 +2,7 @@ package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -24,7 +24,7 @@ public class EAAIssuerQcPSBPresentCheck extends ChainItem<XmlValidationEAAQualif
      *
      * @param i18nProvider {@link I18nProvider}
      * @param result {@link XmlValidationEAAQualificationProcess}
-     * @param signingCertificate {@link EAAPresentationWrapper}
+     * @param signingCertificate {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
     public EAAIssuerQcPSBPresentCheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,

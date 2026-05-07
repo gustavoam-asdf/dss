@@ -12,7 +12,7 @@ import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * This class is used to verify whether the EAA Presentation has been created with
+ * This class is used to verify whether the EAA has been created with
  * a qualified electronic signature or seal
  *
  */

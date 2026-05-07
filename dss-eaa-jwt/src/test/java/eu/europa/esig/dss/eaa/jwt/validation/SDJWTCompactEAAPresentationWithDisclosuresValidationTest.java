@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -126,34 +126,34 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
-        assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
-        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
-        assertEquals(DSSUtils.parseRFCDate("2019-10-02T07:06:40Z"), eaaPresentation.getEAAUpdatedAt());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
+        assertEquals("user_42", eaa.getEAASubject());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAANotAfter());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
+        assertEquals(DSSUtils.parseRFCDate("2019-10-02T07:06:40Z"), eaa.getEAAUpdatedAt());
 
-        assertEquals("John", eaaPresentation.getHolderFirstName());
-        assertEquals("Doe", eaaPresentation.getHolderLastName());
-        assertEquals("johndoe@example.com", eaaPresentation.getHolderEmail());
-        assertNull(eaaPresentation.getHolderEmailVerified());
-        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
-        assertEquals("Anytown", eaaPresentation.getHolderAddressCity());
-        assertEquals("Anystate", eaaPresentation.getHolderAddressStateOrProvince());
-        assertEquals("US", eaaPresentation.getHolderAddressCountry());
-        assertEquals("123 Main St", eaaPresentation.getHolderStreetAddress());
-        assertEquals("+1-202-555-0101", eaaPresentation.getHolderPhoneNumber());
-        assertTrue(eaaPresentation.getHolderPhoneNumberVerified());
-        assertEquals(Arrays.asList("US", "DE"), eaaPresentation.getHolderNationalities());
+        assertEquals("John", eaa.getHolderFirstName());
+        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals("johndoe@example.com", eaa.getHolderEmail());
+        assertNull(eaa.getHolderEmailVerified());
+        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaa.getHolderBirthdate());
+        assertEquals("Anytown", eaa.getHolderAddressCity());
+        assertEquals("Anystate", eaa.getHolderAddressStateOrProvince());
+        assertEquals("US", eaa.getHolderAddressCountry());
+        assertEquals("123 Main St", eaa.getHolderStreetAddress());
+        assertEquals("+1-202-555-0101", eaa.getHolderPhoneNumber());
+        assertTrue(eaa.getHolderPhoneNumberVerified());
+        assertEquals(Arrays.asList("US", "DE"), eaa.getHolderNationalities());
 
-        assertEquals("urn:eudi:eaa:1", eaaPresentation.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaaPresentation.getEAAMetadataIntegrityDigestAlgorithm());
-        assertNotNull(eaaPresentation.getEAAMetadataIntegrityBytes());
+        assertEquals("urn:eudi:eaa:1", eaa.getEAAMetadataUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
+        assertNotNull(eaa.getEAAMetadataIntegrityBytes());
 
-        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(10, selectivelyDisclosableClaims.size());
 
-        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
 
         boolean issuerClaimFound = false;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <DetailedReport ValidationTime="2026-04-03T09:58:12Z" xmlns="http://dss.esig.europa.eu/validation/detailed-report">
-    <EAAPresentation Id="EAA-B011F0930552AB7B89D941C51FFDE7A769EA630B8DD5C926512C0870F637FE22">
-        <ValidationProcessEAAPresentation Title="Validation Process for EAA Presentations">
+    <EAA Id="EAA-B011F0930552AB7B89D941C51FFDE7A769EA630B8DD5C926512C0870F637FE22">
+        <ValidationProcessEAA Title="Validation Process for EAA Presentations">
             <Constraint>
                 <Name Key="EAA_SIG_PRESENT">Does the EAA contain an EAA creation signature?</Name>
                 <Status>OK</Status>
@@ -13,7 +13,7 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-        </ValidationProcessEAAPresentation>
+        </ValidationProcessEAA>
         <Signature Id="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4">
             <ValidationProcessBasicSignature Title="Validation Process for Basic Signatures">
                 <Constraint Id="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4-FC">
@@ -188,7 +188,7 @@
         <Conclusion>
             <Indication>PASSED</Indication>
         </Conclusion>
-    </EAAPresentation>
+    </EAA>
     <BasicBuildingBlocks Id="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4" Type="SIGNATURE">
         <FC Title="Format Checking">
             <Constraint>

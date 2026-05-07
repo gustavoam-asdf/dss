@@ -9,7 +9,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -122,7 +122,7 @@ class MdocEAAPresentationWithDisclosuresValidationTest extends AbstractMdocEAAPr
 
         documents.add(document);
         mdocResponse.put("documents", documents);
-        mdocResponse.put("status", 1L);
+        mdocResponse.put("status", 0L);
 
         // embed in mdoc
         DSSDocument mdocDocument = new InMemoryDocument(CBORUtils.serializeCborObject(mdocResponse));
@@ -140,23 +140,23 @@ class MdocEAAPresentationWithDisclosuresValidationTest extends AbstractMdocEAAPr
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertNotNull(eaaPresentation.getEAAIssuedAt());
-        assertNotNull(eaaPresentation.getEAANotBefore());
-        assertNotNull(eaaPresentation.getEAANotAfter());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertNotNull(eaa.getEAAIssuedAt());
+        assertNotNull(eaa.getEAANotBefore());
+        assertNotNull(eaa.getEAANotAfter());
 
-        assertNotNull(eaaPresentation.getEAADevicePublicKey());
-        assertEquals("1.0", eaaPresentation.getEAAVersion());
-        assertEquals("org.iso.18013.5.1.mDL", eaaPresentation.getEAADocumentType());
+        assertNotNull(eaa.getEAADevicePublicKey());
+        assertEquals("1.0", eaa.getEAAVersion());
+        assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
 
-        assertEquals("John", eaaPresentation.getHolderFirstName());
-        assertEquals("Doe", eaaPresentation.getHolderLastName());
-        assertEquals(DSSUtils.parseRFCDate("2000-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
+        assertEquals("John", eaa.getHolderFirstName());
+        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals(DSSUtils.parseRFCDate("2000-01-01T00:00:00Z"), eaa.getHolderBirthdate());
 
-        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(3, selectivelyDisclosableClaims.size());
 
-        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
 
         boolean validityInfoClaimFound = false;

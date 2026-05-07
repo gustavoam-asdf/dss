@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -18,26 +18,26 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 public class EAACategoryForQEAACheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /** EAA presentation to be checked */
-    private final EAAPresentationWrapper eaaPresentation;
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
      * @param result {@link XmlValidationEAAQualificationProcess}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
     public EAACategoryForQEAACheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,
-                                   EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+                                   EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
 
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        return EAACategory.EU_QEAA.getUrn().equals(eaaPresentation.getEAACategory());
+        return EAACategory.EU_QEAA.getUrn().equals(eaa.getEAACategory());
     }
 
     @Override

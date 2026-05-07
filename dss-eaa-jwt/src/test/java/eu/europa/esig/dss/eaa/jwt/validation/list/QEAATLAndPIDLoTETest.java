@@ -189,7 +189,7 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
         Reports reports = validator.validateDocument();
 
         SimpleReport simpleReport = reports.getSimpleReport();
-        assertEquals(expectedQualification, simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(expectedQualification, simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
     }
 
     private TrustedListsCertificateSource getTrustedListSource() {

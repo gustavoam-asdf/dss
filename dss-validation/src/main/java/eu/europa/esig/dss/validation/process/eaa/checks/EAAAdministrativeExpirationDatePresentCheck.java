@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -10,31 +10,31 @@ import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * This class verifies whether the EAA Presentation contains an administrative expiration date
+ * This class verifies whether the EAA contains an administrative expiration date
  *
  */
-public class EAAAdministrativeExpirationDatePresentCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class EAAAdministrativeExpirationDatePresentCheck extends ChainItem<XmlValidationProcessEAA> {
 
-    /** EAA Presentation to check */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** EAA to check */
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAAPresentation}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param result {@link XmlValidationProcessEAA}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAAAdministrativeExpirationDatePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                                       EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public EAAAdministrativeExpirationDatePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+                                                       EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        return eaaPresentation.getAdministrativeExpirationDate() != null;
+        return eaa.getAdministrativeExpirationDate() != null;
     }
 
     @Override

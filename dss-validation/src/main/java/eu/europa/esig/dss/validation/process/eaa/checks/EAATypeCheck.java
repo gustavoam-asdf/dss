@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -10,35 +10,35 @@ import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
 
 /**
- * This class verifies whether the EAA Presentation contains an acceptable EAA type
+ * This class verifies whether the EAA contains an acceptable EAA type
  *
  */
-public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAAPresentation> {
+public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAA> {
 
-    /** EAA Presentation to check */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** EAA to check */
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAAPresentation}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param result {@link XmlValidationProcessEAA}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAATypeCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                        EAAPresentationWrapper eaaPresentation, MultiValuesRule constraint) {
+    public EAATypeCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+                        EAAWrapper eaa, MultiValuesRule constraint) {
         super(i18nProvider, result, constraint);
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        switch (eaaPresentation.getEAAType()) {
+        switch (eaa.getEAAType()) {
             case SD_JWT_VC:
-                return processValueCheck(eaaPresentation.getEAAMetadataUri());
+                return processValueCheck(eaa.getEAAMetadataUri());
             case ISO_IEC_MDOC:
-                return processValueCheck(eaaPresentation.getEAADocumentType());
+                return processValueCheck(eaa.getEAADocumentType());
             default:
                 return false; // Other EAA types not supported
         }

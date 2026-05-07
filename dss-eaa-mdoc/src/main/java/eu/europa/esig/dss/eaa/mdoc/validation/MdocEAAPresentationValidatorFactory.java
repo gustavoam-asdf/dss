@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
+import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
 import eu.europa.esig.dss.eaa.common.validation.EAAPresentationValidatorFactory;
 import eu.europa.esig.dss.model.DSSDocument;
 
@@ -19,13 +20,32 @@ public class MdocEAAPresentationValidatorFactory implements EAAPresentationValid
 
     @Override
     public boolean isSupported(DSSDocument document) {
-        MdocEAAPresentationValidator validator = new MdocEAAPresentationValidator();
-        return validator.isSupported(document);
+        MdocDeviceResponseEAAPresentationValidator mdocDeviceResponseValidator = new MdocDeviceResponseEAAPresentationValidator();
+        if (mdocDeviceResponseValidator.isSupported(document)) {
+            return true;
+        }
+
+        MdocIssuerSignedEAAPresentationValidator mdocIssuerSignedValidator = new MdocIssuerSignedEAAPresentationValidator();
+        if (mdocIssuerSignedValidator.isSupported(document)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
-    public MdocEAAPresentationValidator create(DSSDocument document) {
-        return new MdocEAAPresentationValidator(document);
+    public DefaultEAAPresentationValidator create(DSSDocument document) {
+        MdocDeviceResponseEAAPresentationValidator mdocDeviceResponseValidator = new MdocDeviceResponseEAAPresentationValidator();
+        if (mdocDeviceResponseValidator.isSupported(document)) {
+            return new MdocDeviceResponseEAAPresentationValidator(document);
+        }
+
+        MdocIssuerSignedEAAPresentationValidator mdocIssuerSignedValidator = new MdocIssuerSignedEAAPresentationValidator();
+        if (mdocIssuerSignedValidator.isSupported(document)) {
+            return new MdocIssuerSignedEAAPresentationValidator(document);
+        }
+
+        throw new IllegalArgumentException("Not supported document");
     }
 
 }

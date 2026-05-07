@@ -18,7 +18,7 @@
 		<xsl:apply-templates select="dss:Signature"/>
 		<xsl:apply-templates select="dss:Timestamp"/>
 		<xsl:apply-templates select="dss:EvidenceRecord"/>
-		<xsl:apply-templates select="dss:EAAPresentation"/>
+		<xsl:apply-templates select="dss:EAA"/>
 	    
 	    <xsl:call-template name="documentInformation"/>
     </xsl:template>
@@ -46,8 +46,8 @@
     	</div>
     </xsl:template>
 
-    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAAPresentation
-    		|dss:EAAPresentationSignature|dss:KeyBindingSignature">
+    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAA
+    		|dss:EAASignature|dss:KeyBindingSignature">
 		<xsl:param name="cardStyle" select="'primary'" />
 		<xsl:param name="parentId" />
 
@@ -108,10 +108,10 @@
 					<xsl:if test="$nodeName = 'EvidenceRecord'">
 						Evidence Record
 					</xsl:if>
-					<xsl:if test="$nodeName = 'EAAPresentation'">
-						EAA Presentation
+					<xsl:if test="$nodeName = 'EAA'">
+						Electronic Attestation Of Attributes
 					</xsl:if>
-					<xsl:if test="$nodeName = 'EAAPresentationSignature'">
+					<xsl:if test="$nodeName = 'EAASignature'">
 						EAA Signature
 					</xsl:if>
 					<xsl:if test="$nodeName = 'KeyBindingSignature'">
@@ -154,10 +154,10 @@
 								Evidence record filename:
 							</dt>
 						</xsl:if>
-						<xsl:if test="$nodeName = 'EAAPresentation'">
+						<xsl:if test="$nodeName = 'EAA'">
 							<dt>
 								<xsl:attribute name="class">col-sm-3</xsl:attribute>
-								EAA Presentation filename:
+								Electronic Attestation Of Attributes filename:
 							</dt>
 						</xsl:if>
 			            <dd>
@@ -433,7 +433,7 @@
 				</xsl:if>
 
 				<!-- Ignore embedded timestamps -->
-				<xsl:if test="((not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)) and not($nodeName = 'EAAPresentation'))">
+				<xsl:if test="((not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)) and not($nodeName = 'EAA'))">
 					<dl>
 						<xsl:attribute name="class">row mb-0</xsl:attribute>
 						<dt>
@@ -533,10 +533,10 @@
 					</div>
 				</xsl:if>
 
-				<xsl:if test="dss:EAAPresentationSignature|dss:KeyBindingSignature">
+				<xsl:if test="dss:EAASignature|dss:KeyBindingSignature">
 					<div>
 						<xsl:attribute name="class">mt-3</xsl:attribute>
-						<xsl:apply-templates select="dss:EAAPresentationSignature|dss:KeyBindingSignature">
+						<xsl:apply-templates select="dss:EAASignature|dss:KeyBindingSignature">
 							<xsl:with-param name="parentId" select="$idToken"/>
 						</xsl:apply-templates>
 					</div>

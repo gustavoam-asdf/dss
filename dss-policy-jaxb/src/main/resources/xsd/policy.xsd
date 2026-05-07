@@ -61,7 +61,7 @@
 					<xsd:documentation>Constraints on the evidence records</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="EAAPresentation" type="EAAPresentationConstraints" minOccurs="0">
+			<xsd:element name="EAA" type="EAAConstraints" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Constraints on the EAA presentations</xsd:documentation>
 				</xsd:annotation>
@@ -581,16 +581,16 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="EAAPresentationConstraints">
+	<xsd:complexType name="EAAConstraints">
 		<xsd:annotation>
-			<xsd:documentation>Group of constraints for the EAA Presentation validation process</xsd:documentation>
+			<xsd:documentation>Group of constraints for the Electronic Attestation Of Attributes validation process</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="LevelConstraint">
 				<xsd:sequence>
 					<xsd:element name="EAASignatureUnicity" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks if the EAA Presentation has been created with a single signature (not considering key binding signature)</xsd:documentation>
+							<xsd:documentation>Checks if the EAA has been created with a single signature (not considering key binding signature)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="EAASignatureValid" type="LevelConstraint" minOccurs="0">
@@ -600,12 +600,12 @@
 					</xsd:element>
 					<xsd:element name="DisclosurePresent" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA Presentation contains attached disclosures</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA contains attached disclosures</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="DisclosureFound" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA Presentation contains a selectively disclosable claim hash for the provided disclosure</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA contains a selectively disclosable claim hash for the provided disclosure</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="DisclosureIntact" type="LevelConstraint" minOccurs="0">
@@ -615,12 +615,12 @@
 					</xsd:element>
 					<xsd:element name="DisclosureListExhaustive" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether for all selectively disclosable claim hashes defined within an EAA Presentation a matching disclosure attached to the EAA Presentation was found</xsd:documentation>
+							<xsd:documentation>Checks whether for all selectively disclosable claim hashes defined within an EAA a matching disclosure attached to the EAA Presentation was found</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="KeyBindingSignaturePresent" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the key binding signature is present within the EAA Presentation token</xsd:documentation>
+							<xsd:documentation>Checks whether the key binding signature is present within the EAA token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="KeyBindingSignatureValid" type="LevelConstraint" minOccurs="0">
@@ -635,37 +635,37 @@
                     </xsd:element>
                     <xsd:element name="EAATypeIntegrityPresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the claim "vct#integrity" is present within the EAA Presentation token. This check is only executed for SD-JWT VC EAA.</xsd:documentation>
+                            <xsd:documentation>Checks whether the claim "vct#integrity" is present within the EAA token. This check is only executed for SD-JWT VC EAA.</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="EAAIdentifierPresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the EAA Identifier is present within the EAA Presentation token</xsd:documentation>
+                            <xsd:documentation>Checks whether the EAA Identifier is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="EAANotBeforePresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the "not before" is present within the EAA Presentation token</xsd:documentation>
+                            <xsd:documentation>Checks whether the "not before" is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="EAAExpirationPresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the expiration is present within the EAA Presentation token</xsd:documentation>
+                            <xsd:documentation>Checks whether the expiration is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="EAAAdministrativeIssuanceDatePresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the administrative issuance date is present within the EAA Presentation token</xsd:documentation>
+                            <xsd:documentation>Checks whether the administrative issuance date is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="EAAAdministrativeExpirationDatePresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the administrative expiration date is present within the EAA Presentation token</xsd:documentation>
+                            <xsd:documentation>Checks whether the administrative expiration date is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <xsd:element name="ETSI194721Conformance" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
-                            <xsd:documentation>Checks whether the EAA Presentation token is conformant to the standard ETSI TS 119 472-1</xsd:documentation>
+                            <xsd:documentation>Checks whether the EAA token is conformant to the standard ETSI TS 119 472-1</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
                     <!-- ADD HERE new constraints -->

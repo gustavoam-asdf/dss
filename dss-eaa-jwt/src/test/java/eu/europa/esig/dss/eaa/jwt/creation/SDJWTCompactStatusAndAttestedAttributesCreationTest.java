@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTArrayPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTStringPresentableClaim;
@@ -87,21 +87,21 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
 
-        assertEquals("TokenStatusList", eaaPresentation.getEAAStatusType());
-        assertEquals("revocation", eaaPresentation.getEAAStatusPurpose());
+        assertEquals("TokenStatusList", eaa.getEAAStatusType());
+        assertEquals("revocation", eaa.getEAAStatusPurpose());
         // assertEquals(0, eaaPresentation.getEAAStatusIndex().intValue()); // TODO : add support of numeric claims
-        assertEquals("https://nowina.lu/pki-factory/status", eaaPresentation.getEAAStatusUri());
+        assertEquals("https://nowina.lu/pki-factory/status", eaa.getEAAStatusUri());
 
-        assertEquals("good-user", eaaPresentation.getAttestedAttributesSubjectId());
-        assertNull(eaaPresentation.getAttestedAttributesSubjectFamilyName());
-        assertNull(eaaPresentation.getAttestedAttributesSubjectGivenName());
-        assertNull(eaaPresentation.getAttestedAttributesSubjectDocumentNumber());
-        assertNull(eaaPresentation.getAttestedAttributesSubjectPseudonym());
-        assertEquals(Arrays.asList("given_name", "family_name"), eaaPresentation.getAttestedAttributes());
+        assertEquals("good-user", eaa.getAttestedAttributesSubjectId());
+        assertNull(eaa.getAttestedAttributesSubjectFamilyName());
+        assertNull(eaa.getAttestedAttributesSubjectGivenName());
+        assertNull(eaa.getAttestedAttributesSubjectDocumentNumber());
+        assertNull(eaa.getAttestedAttributesSubjectPseudonym());
+        assertEquals(Arrays.asList("given_name", "family_name"), eaa.getAttestedAttributes());
 
-        assertEquals("LU", eaaPresentation.getHolderPlaceOfBirthCountry());
+        assertEquals("LU", eaa.getHolderPlaceOfBirthCountry());
     }
 
     @Override

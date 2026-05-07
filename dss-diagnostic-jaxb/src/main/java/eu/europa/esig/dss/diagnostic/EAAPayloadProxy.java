@@ -49,7 +49,7 @@ public class EAAPayloadProxy {
     }
     
     /**
-     * Gets EAA Presentation identifier provided in the EAA payload
+     * Gets EAA identifier provided in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -61,7 +61,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation issuer as defined in the EAA payload
+     * Gets EAA issuer as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -73,7 +73,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation subject as defined in the EAA payload
+     * Gets EAA subject as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -85,7 +85,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation audience as defined in the EAA payload
+     * Gets EAA audience as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -97,7 +97,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation issuance time as defined in the EAA payload
+     * Gets EAA issuance time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -109,7 +109,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation not before time as defined in the EAA payload
+     * Gets EAA not before time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -121,7 +121,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation expiration time as defined in the EAA payload
+     * Gets EAA expiration time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -133,7 +133,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation update time as defined in the EAA payload
+     * Gets EAA update time as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -157,7 +157,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation metadata type (e.g. 'vct' claim) as defined in the EAA payload
+     * Gets EAA metadata type (e.g. 'vct' claim) as defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -169,7 +169,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets the integrity material for the EAA Presentation metadata (when present)
+     * Gets the integrity material for the EAA metadata (when present)
      *
      * @return {@link ClaimWrapper}
      */
@@ -181,7 +181,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation status as defined in the EAA payload
+     * Gets EAA status as defined in the EAA payload
      *
      * @return {@link StatusClaimWrapper}
      */
@@ -193,7 +193,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation nonce when defined in the EAA payload
+     * Gets EAA nonce when defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */
@@ -205,7 +205,7 @@ public class EAAPayloadProxy {
     }
 
     /**
-     * Gets EAA Presentation device key when defined in the EAA payload
+     * Gets EAA device key when defined in the EAA payload
      *
      * @return {@link ClaimWrapper}
      */

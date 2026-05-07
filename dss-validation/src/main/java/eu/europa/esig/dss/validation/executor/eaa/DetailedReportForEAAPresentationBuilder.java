@@ -2,7 +2,7 @@ package eu.europa.esig.dss.validation.executor.eaa;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -10,7 +10,7 @@ import eu.europa.esig.dss.enumerations.ValidationLevel;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.validation.executor.signature.DetailedReportBuilder;
-import eu.europa.esig.dss.validation.process.eaa.EAAPresentationValidationBlock;
+import eu.europa.esig.dss.validation.process.eaa.EAAValidationBlock;
 import eu.europa.esig.dss.validation.process.vpfswatsp.POEExtraction;
 
 import java.util.Date;
@@ -39,15 +39,15 @@ public class DetailedReportForEAAPresentationBuilder extends DetailedReportBuild
 
     @Override
     protected void executeValidation(XmlDetailedReport detailedReport, Map<String, XmlBasicBuildingBlocks> bbbs, POEExtraction poe) {
-        List<XmlEAAPresentation> eaaPresentations = executeEAAPresentationValidations(bbbs, detailedReport.getTLAnalysis(), detailedReport.getLoTEAnalysis());
-        detailedReport.getSignatureOrTimestampOrEvidenceRecord().addAll(eaaPresentations);
+        List<XmlEAA> eaas = executeEAAValidations(bbbs, detailedReport.getTLAnalysis(), detailedReport.getLoTEAnalysis());
+        detailedReport.getSignatureOrTimestampOrEvidenceRecord().addAll(eaas);
     }
 
-    private List<XmlEAAPresentation> executeEAAPresentationValidations(
+    private List<XmlEAA> executeEAAValidations(
             Map<String, XmlBasicBuildingBlocks> bbbs, List<XmlTLAnalysis> tlAnalysis, List<XmlLoTEAnalysis> loteAnalysis) {
-        EAAPresentationValidationBlock eaaPresentationValidationBlock = new EAAPresentationValidationBlock(
+        EAAValidationBlock eaaValidationBlock = new EAAValidationBlock(
                 i18nProvider, diagnosticData, policy, currentTime, bbbs, tlAnalysis, loteAnalysis);
-        return eaaPresentationValidationBlock.execute();
+        return eaaValidationBlock.execute();
     }
 
 }

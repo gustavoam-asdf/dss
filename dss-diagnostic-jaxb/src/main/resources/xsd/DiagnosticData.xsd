@@ -13,10 +13,11 @@
 			<xs:element name="ContainerInfo" type="ContainerInfo" minOccurs="0" />
 			<xs:element name="PDFAInfo" type="PDFAInfo" minOccurs="0" />
 			<xs:element name="ConnectionInfo" type="ConnectionInfo" minOccurs="0" />
-			<xs:element name="EAAPresentations" minOccurs="0">
+			<xs:element name="EAAPresentationInfo" type="EAAPresentationInfo" minOccurs="0" />
+			<xs:element name="EAAs" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="EAAPresentation" type="EAAPresentation" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="EAA" type="EAA" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -165,6 +166,42 @@
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="url" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="EAAPresentationInfo">
+		<xs:sequence>
+			<xs:element name="EAAPresentationType" type="EAAPresentationType" />
+			<xs:element name="Version" type="xs:string" minOccurs="0" /> <!-- mdoc -->
+			<xs:element name="Documents" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAADocument" type="EAADocument" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Errors" type="Errors" minOccurs="0" /> <!-- mdoc -->
+			<xs:element name="Status" type="xs:integer" minOccurs="0" /> <!-- mdoc -->
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="EAADocument">
+		<xs:sequence>
+			<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
+			<xs:element name="Errors" type="Errors" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="EAA" type="xs:IDREF" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Errors">
+		<xs:sequence>
+			<xs:element name="Error" type="Error" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="namespace" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Error">
+		<xs:attribute name="label" type="xs:string" />
+		<xs:attribute name="code" type="xs:integer" />
 	</xs:complexType>
 	
 	<xs:complexType name="AbstractToken" abstract="true">
@@ -1203,7 +1240,7 @@
 			<xs:enumeration value="EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE" />
 			<xs:enumeration value="EVIDENCE_RECORD_MASTER_SIGNATURE" />
 
-			<!-- EAA Presentation -->
+			<!-- EAA -->
 			<xs:enumeration value="EAA_DISCLOSURE" />
 			<xs:enumeration value="EAA_NESTED_DISCLOSURE" />
 			<xs:enumeration value="EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM" />
@@ -1680,16 +1717,16 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="EAAPresentation">
+	<xs:complexType name="EAA">
 		<xs:complexContent>
 			<xs:extension base="AbstractToken">
 				<xs:sequence>
 					<xs:element name="DocumentName" type="xs:string" minOccurs="0" />
 					<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
-					<xs:element name="EAAType" type="EAAPresentationType" />
+					<xs:element name="EAAType" type="EAAType" />
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 					<xs:element name="DigestMatchers" type="DigestMatchers" minOccurs="0" />
-					<xs:element name="EAAPresentationSignature" maxOccurs="unbounded">
+					<xs:element name="EAASignature" maxOccurs="unbounded">
 						<xs:complexType>
 							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
 						</xs:complexType>
@@ -2100,11 +2137,21 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="EAAPresentationType" final="restriction">
+	<xs:simpleType name="EAAType" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SD_JWT_VC" />
 			<xs:enumeration value="ISO_IEC_MDOC" />
 			<xs:enumeration value="W3C_VC" />
+			<xs:enumeration value="X509_AC" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="EAAPresentationType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SD_JWT" />
+			<xs:enumeration value="MDOC_DEVICE_RESPONSE" />
+			<xs:enumeration value="MDOC_ISSUER_SIGNED" />
+			<xs:enumeration value="JWS" />
 			<xs:enumeration value="X509_AC" />
 		</xs:restriction>
 	</xs:simpleType>

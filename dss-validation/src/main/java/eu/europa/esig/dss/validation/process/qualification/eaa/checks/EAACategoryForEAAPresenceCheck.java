@@ -2,7 +2,7 @@ package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -21,27 +21,27 @@ import java.util.Arrays;
 public class EAACategoryForEAAPresenceCheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /** EAA presentation to be checked */
-    private final EAAPresentationWrapper eaaPresentation;
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
      * @param result {@link XmlValidationEAAQualificationProcess}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
     public EAACategoryForEAAPresenceCheck(I18nProvider i18nProvider, XmlValidationEAAQualificationProcess result,
-                                          EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+                                          EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
 
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        return eaaPresentation.getEAACategory() != null &&
-                Arrays.stream(EAACategory.values()).anyMatch(c -> c.getUrn().equals(eaaPresentation.getEAACategory()));
+        return eaa.getEAACategory() != null &&
+                Arrays.stream(EAACategory.values()).anyMatch(c -> c.getUrn().equals(eaa.getEAACategory()));
     }
 
     @Override
@@ -51,10 +51,10 @@ public class EAACategoryForEAAPresenceCheck extends ChainItem<XmlValidationEAAQu
 
     @Override
     protected XmlMessage buildErrorMessage() {
-        if (eaaPresentation.getEAACategory() == null) {
+        if (eaa.getEAACategory() == null) {
             return buildXmlMessage(MessageTag.EAA_CAT_EAA_ANS_1);
         } else {
-            return buildXmlMessage(MessageTag.EAA_CAT_EAA_ANS_2, eaaPresentation.getEAACategory());
+            return buildXmlMessage(MessageTag.EAA_CAT_EAA_ANS_2, eaa.getEAACategory());
         }
     }
 

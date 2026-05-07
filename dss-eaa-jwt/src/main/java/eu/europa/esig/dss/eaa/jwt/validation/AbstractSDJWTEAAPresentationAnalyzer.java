@@ -2,11 +2,11 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
 import eu.europa.esig.dss.eaa.jwt.SDJWTSerializationObject;
+import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -51,21 +51,26 @@ public abstract class AbstractSDJWTEAAPresentationAnalyzer extends DefaultEAAPre
     protected abstract SDJWTSerializationObject buildSDJWTSerializationObject();
 
     @Override
-    protected List<EAAPresentation> buildEAAPresentations() {
+    protected SDJWTEAAPresentation buildEAAPresentation() {
+        SDJWTEAAPresentation eaaPresentation = new SDJWTEAAPresentation();
+        eaaPresentation.setEAAPresentationType(EAAPresentationType.SD_JWT);
+
         List<AdvancedSignature> signatures = getSignatures(sdJWTSerializationObject);
-        SDJWTEAAPresentation sdJwtEaa = SDJWTEAAPresentation.initBuilder()
+        SDJWTEAA sdJwtEaa = SDJWTEAA.initBuilder()
                 .setSignatures(signatures)
                 .setDisclosures(sdJWTSerializationObject.getDisclosures())
                 .setKeyBindingSignature(getKeyBindingSignature(sdJWTSerializationObject, signatures))
                 .setFilename(document.getName())
                 .build();
-        return Collections.singletonList(sdJwtEaa); // only one EAA is possible
+        eaaPresentation.setElectronicAttestationsOfAttributes(Collections.singletonList(sdJwtEaa)); // only one EAA is possible
+
+        return eaaPresentation;
     }
 
     /**
      * Gets a list of {@code AdvancedSignature}s from a {@code SDJWTSerializationObject} object
      *
-     * @param sdJwtSerializationObject {@link SDJWTSerializationObject} to extract EAA Presentation signatures from
+     * @param sdJwtSerializationObject {@link SDJWTSerializationObject} to extract EAA signatures from
      * @return a list of {@link AdvancedSignature}s
      */
     protected List<AdvancedSignature> getSignatures(SDJWTSerializationObject sdJwtSerializationObject) {

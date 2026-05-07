@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -13,34 +13,34 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
  * This method verifies whether disclosures have been provided for all selectively disclosable claim hashes
- * present within the EAA Presentation's payload
+ * present within the EAA's payload
  *
  */
-public class DisclosureListExhaustiveCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class DisclosureListExhaustiveCheck extends ChainItem<XmlValidationProcessEAA> {
 
-    /** EAA Presentation to check */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** EAA to check */
+    private final EAAWrapper eaa;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAAPresentation}
-     * @param eaaPresentation {@link EAAPresentationWrapper}
+     * @param result {@link XmlValidationProcessEAA}
+     * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public DisclosureListExhaustiveCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                  EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public DisclosureListExhaustiveCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+                                         EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
     protected boolean process() {
-        if (Utils.isCollectionEmpty(eaaPresentation.getDigestMatchers())) {
+        if (Utils.isCollectionEmpty(eaa.getDigestMatchers())) {
             return true;
         }
-        return eaaPresentation.getDigestMatchers().stream().allMatch(XmlDigestMatcher::isDataFound);
+        return eaa.getDigestMatchers().stream().allMatch(XmlDigestMatcher::isDataFound);
     }
 
     @Override

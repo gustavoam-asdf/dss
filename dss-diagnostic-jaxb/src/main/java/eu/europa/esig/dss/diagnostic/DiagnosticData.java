@@ -23,7 +23,8 @@ package eu.europa.esig.dss.diagnostic;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlContainerInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEncapsulationType;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
@@ -41,6 +42,7 @@ import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
 import eu.europa.esig.dss.enumerations.CertificateStatus;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.RevocationReason;
 import eu.europa.esig.dss.enumerations.RevocationType;
@@ -79,7 +81,7 @@ public class DiagnosticData {
 	private List<EvidenceRecordWrapper> foundEvidenceRecords;
 
 	/** List of found EAA presentations */
-	private List<EAAPresentationWrapper> foundEAAPresentations;
+	private List<EAAWrapper> foundEAAs;
 
 	/**
 	 * Default constructor
@@ -1009,35 +1011,35 @@ public class DiagnosticData {
 	}
 
 	/**
-	 * This method retrieves a list of EAA presentation wrappers
+	 * This method retrieves a list of EAA wrappers
 	 *
-	 * @return a list of EAA presentation wrappers
+	 * @return a list of EAA wrappers
 	 */
-	public List<EAAPresentationWrapper> getEAAPresentations() {
-		if (foundEAAPresentations == null) {
-			foundEAAPresentations = new ArrayList<>();
-			List<XmlEAAPresentation> xmlEAAPresentations = wrapped.getEAAPresentations();
-			if (xmlEAAPresentations != null) {
-				for (XmlEAAPresentation xmlEAAPresentation : xmlEAAPresentations) {
-					foundEAAPresentations.add(new EAAPresentationWrapper(xmlEAAPresentation));
+	public List<EAAWrapper> getElectronicAttestationsOfAttributes() {
+		if (foundEAAs == null) {
+			foundEAAs = new ArrayList<>();
+			List<XmlEAA> xmlEAAs = wrapped.getEAAs();
+			if (xmlEAAs != null) {
+				for (XmlEAA xmlEAA : xmlEAAs) {
+					foundEAAs.add(new EAAWrapper(xmlEAA));
 				}
 			}
 		}
-		return foundEAAPresentations;
+		return foundEAAs;
 	}
 
 	/**
-	 * Returns the EAAPresentationWrapper corresponding to the given id.
+	 * Returns the EAAWrapper corresponding to the given id.
 	 *
 	 * @param id
 	 *            EAA presentation id
 	 * @return evidence record wrapper or null
 	 */
-	public EAAPresentationWrapper getEAAPresentationById(String id) {
-		List<EAAPresentationWrapper> eaaPresentations = getEAAPresentations();
-		for (EAAPresentationWrapper eaaPresentation : eaaPresentations) {
-			if (id.equals(eaaPresentation.getId())) {
-				return eaaPresentation;
+	public EAAWrapper getElectronicAttestationOfAttributesById(String id) {
+		List<EAAWrapper> eaas = getElectronicAttestationsOfAttributes();
+		for (EAAWrapper eaa : eaas) {
+			if (id.equals(eaa.getId())) {
+				return eaa;
 			}
 		}
 		return null;
@@ -1433,6 +1435,28 @@ public class DiagnosticData {
 		if (wrapped.getConnectionInfo() != null && wrapped.getConnectionInfo().getTLSCertificateBindingSignature() != null
 				&& wrapped.getConnectionInfo().getTLSCertificateBindingSignature().getSignature() != null) {
 			return new SignatureWrapper(wrapped.getConnectionInfo().getTLSCertificateBindingSignature().getSignature());
+		}
+		return null;
+	}
+
+	/**
+	 * Returns information about EAA Presentation document
+	 *
+	 * @return {@link XmlEAAPresentationInfo}
+	 */
+	public XmlEAAPresentationInfo getEAAPresentationInfo() {
+		return wrapped.getEAAPresentationInfo();
+	}
+
+	/**
+	 * Gets type of the EAA Presentation document
+	 *
+	 * @return {@link EAAPresentationType}
+	 */
+	public EAAPresentationType getEAAPresentationType() {
+		XmlEAAPresentationInfo eaaPresentationInfo = getEAAPresentationInfo();
+		if (eaaPresentationInfo != null) {
+			return eaaPresentationInfo.getEAAPresentationType();
 		}
 		return null;
 	}

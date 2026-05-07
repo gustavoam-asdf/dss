@@ -158,7 +158,7 @@
 					<xsl:apply-templates select="dss:Signature"/>
 					<xsl:apply-templates select="dss:Timestamp"/>
 					<xsl:apply-templates select="dss:EvidenceRecord"/>
-					<xsl:apply-templates select="dss:EAAPresentation"/>
+					<xsl:apply-templates select="dss:EAA"/>
 					
 	    			<xsl:call-template name="documentInformation"/>
 	    			
@@ -248,8 +248,8 @@
 		
     </xsl:template>
 
-	<xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAAPresentation
-			|dss:EAAPresentationSignature|dss:KeyBindingSignature">
+	<xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:EAA
+			|dss:EAASignature|dss:KeyBindingSignature">
 		<xsl:param name="sigCounter" />
 		<xsl:param name="erCounter" />
 
@@ -325,10 +325,10 @@
 							<xsl:if test="$nodeName = 'EvidenceRecord'">
 								<xsl:text>Evidence Record: </xsl:text>
 							</xsl:if>
-							<xsl:if test="$nodeName = 'EAAPresentation'">
-								EAA Presentation
+							<xsl:if test="$nodeName = 'EAA'">
+								Electronic Attestation Of Attributes
 							</xsl:if>
-							<xsl:if test="$nodeName = 'EAAPresentationSignature'">
+							<xsl:if test="$nodeName = 'EAASignature'">
 								EAA Signature
 							</xsl:if>
 							<xsl:if test="$nodeName = 'KeyBindingSignature'">
@@ -386,8 +386,8 @@
 											<xsl:if test="$nodeName = 'EvidenceRecord'">
 												Evidence Record filename:
 											</xsl:if>
-											<xsl:if test="$nodeName = 'EAAPresentation'">
-												EAA Presentation filename:
+											<xsl:if test="$nodeName = 'EAA'">
+												Electronic Attestation Of Attributes filename:
 											</xsl:if>
 										</fo:block>
 									</fo:table-cell>
@@ -617,7 +617,7 @@
 							</xsl:if>
 
 							<!-- Ignore embedded timestamps -->
-							<xsl:if test="((not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)) and not($nodeName = 'EAAPresentation'))">
+							<xsl:if test="((not($nodeName = 'Timestamp') or (count(ancestor::*/dss:Signature) = 0 and count(ancestor::*/dss:EvidenceRecord) = 0)) and not($nodeName = 'EAA'))">
 								<fo:table-row>
 									<xsl:attribute name="margin-top">1px</xsl:attribute>
 									<xsl:attribute name="margin-bottom">1px</xsl:attribute>
@@ -695,7 +695,7 @@
 					</xsl:variable>
 					<xsl:variable name="eaaPosition">
 						<xsl:choose>
-							<xsl:when test="$nodeName = 'EAAPresentation'"><xsl:value-of select="$counter" /></xsl:when>
+							<xsl:when test="$nodeName = 'EAA'"><xsl:value-of select="$counter" /></xsl:when>
 						</xsl:choose>
 					</xsl:variable>
 		
@@ -708,7 +708,7 @@
 						<xsl:with-param name="sigCounter" select="$counter"/>
 					</xsl:apply-templates>
 
-					<xsl:apply-templates select="dss:EAAPresentationSignature|dss:KeyBindingSignature" />
+					<xsl:apply-templates select="dss:EAASignature|dss:KeyBindingSignature" />
 		
 		       	</fo:block-container>
 	       	</fo:block-container>

@@ -15,7 +15,7 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.simplereport.SimpleReport;
-import eu.europa.esig.dss.simplereport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAA;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
@@ -143,14 +143,14 @@ class SDJWTCompactEAAPresentationWithKBBySignCertTest extends AbstractSDJWTEAAPr
     protected void verifySimpleReport(SimpleReport simpleReport) {
         super.verifySimpleReport(simpleReport);
 
-        XmlEAAPresentation eaaPresentation = simpleReport.getEAAPresentationById(simpleReport.getFirstEAAPresentationId());
-        assertEquals(Indication.PASSED, eaaPresentation.getIndication());
+        XmlEAA eaa = simpleReport.getEAAById(simpleReport.getFirstEAAId());
+        assertEquals(Indication.PASSED, eaa.getIndication());
 
-        List<XmlSignature> signatures = eaaPresentation.getEAAPresentationSignature();
+        List<XmlSignature> signatures = eaa.getEAASignature();
         assertEquals(1, signatures.size());
         assertEquals(Indication.TOTAL_PASSED, signatures.get(0).getIndication());
 
-        XmlSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+        XmlSignature keyBindingSignature = eaa.getKeyBindingSignature();
         assertEquals(Indication.TOTAL_PASSED, keyBindingSignature.getIndication());
         assertNull(keyBindingSignature.getAdESValidationDetails());
     }

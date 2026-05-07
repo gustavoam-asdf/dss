@@ -91,7 +91,7 @@ class MdocEAAPresentationSimpleValidationTest extends AbstractMdocEAAPresentatio
 
         documents.add(document);
         mdocResponse.put("documents", documents);
-        mdocResponse.put("status", 1L);
+        mdocResponse.put("status", 0L);
 
         // embed in mdoc
         DSSDocument mdocDocument = new InMemoryDocument(CBORUtils.serializeCborObject(mdocResponse));

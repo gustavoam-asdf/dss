@@ -12,7 +12,7 @@
 					<xs:element name="Signature" type="Signature" />
 					<xs:element name="Timestamp" type="Timestamp" />
 					<xs:element name="EvidenceRecord" type="EvidenceRecord" />
-					<xs:element name="EAAPresentation" type="EAAPresentation" />
+					<xs:element name="EAA" type="EAA" />
 					<xs:element name="Certificate" type="Certificate" />
 				</xs:choice>
 			</xs:sequence>
@@ -65,9 +65,9 @@
 		<xs:attribute name="Id" type="xs:string" />
 	</xs:complexType>
 
-	<xs:complexType name="EAAPresentation">
+	<xs:complexType name="EAA">
 		<xs:sequence>
-			<xs:element name="ValidationProcessEAAPresentation" type="ValidationProcessEAAPresentation"  />
+			<xs:element name="ValidationProcessEAA" type="ValidationProcessEAA"  />
 			<xs:element name="Signature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
 
@@ -331,7 +331,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ValidationProcessEAAPresentation">
+	<xs:complexType name="ValidationProcessEAA">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
 				<xs:sequence>

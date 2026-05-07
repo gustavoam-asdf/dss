@@ -1,18 +1,20 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAADocument;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureScopeType;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -20,6 +22,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
 import eu.europa.esig.dss.utils.Utils;
@@ -57,17 +60,21 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         super.checkValidationContext(validator);
 
         EAAPresentationValidator eaaValidator = assertInstanceOf(EAAPresentationValidator.class, validator);
-        List<EAAPresentation> eaaPresentations = eaaValidator.getEAAPresentations();
-        assertEquals(1, Utils.collectionSize(eaaPresentations));
+        EAAPresentation eaaPresentation = eaaValidator.getEAAPresentation();
+        assertNotNull(eaaPresentation);
+        assertNotNull(eaaPresentation.getEAAPresentationType());
 
-        EAAPresentation eaaPresentation = eaaPresentations.get(0);
-        assertNotNull(eaaPresentation.getId());
-        assertNotNull(eaaPresentation.getDSSId());
+        List<EAA> eaas = eaaPresentation.getElectronicAttestationsOfAttributes();
+        assertEquals(1, Utils.collectionSize(eaas));
 
-        assertEquals(expectedSignaturesCount(), eaaPresentation.getSignatures().size());
-        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDisclosureValidations()));
-        assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
-        assertEquals(getEAAPresentationType(), eaaPresentation.getEAAPresentationType());
+        EAA eaa = eaas.get(0);
+        assertNotNull(eaa.getId());
+        assertNotNull(eaa.getDSSId());
+
+        assertEquals(expectedSignaturesCount(), eaa.getSignatures().size());
+        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaa.getDisclosureValidations()));
+        assertEquals(keyBindingPresent(), eaa.getKeyBindingSignature() != null);
+        assertEquals(getEAAType(), eaa.getEAAType());
     }
 
     @Override
@@ -79,26 +86,36 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     protected void verifyDiagnosticData(DiagnosticData diagnosticData) {
         super.verifyDiagnosticData(diagnosticData);
 
-        List<EAAPresentationWrapper> eaaPresentations = diagnosticData.getEAAPresentations();
-        assertEquals(1, eaaPresentations.size());
+        List<EAAWrapper> eaas = diagnosticData.getElectronicAttestationsOfAttributes();
+        assertEquals(1, eaas.size());
 
-        EAAPresentationWrapper eaaPresentation = eaaPresentations.get(0);
-        assertNotNull(eaaPresentation.getId());
-        assertEquals(expectedSignaturesCount(), eaaPresentation.getEAAPresentationSignatures().size());
-        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getDigestMatchers()));
-        assertEquals(keyBindingPresent(), eaaPresentation.getKeyBindingSignature() != null);
-        assertEquals(getEAAPresentationType(), eaaPresentation.getEAAType());
-        assertEquals(EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), eaaPresentation.getEAADocumentType() != null);
+        EAAWrapper eaaWrappper = eaas.get(0);
+        assertNotNull(eaaWrappper.getId());
+        assertEquals(expectedSignaturesCount(), eaaWrappper.getEAASignatures().size());
+        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaWrappper.getDigestMatchers()));
+        assertEquals(keyBindingPresent(), eaaWrappper.getKeyBindingSignature() != null);
+        assertEquals(getEAAType(), eaaWrappper.getEAAType());
 
+        checkEAAPresentationInfo(diagnosticData);
         checkEAAPresentationDigestMatchers(diagnosticData);
         checkClaims(diagnosticData);
         checkDeviceKeyClaim(diagnosticData);
     }
 
+    protected void checkEAAPresentationInfo(DiagnosticData diagnosticData) {
+        XmlEAAPresentationInfo eaaPresentationInfo = diagnosticData.getEAAPresentationInfo();
+        assertNotNull(eaaPresentationInfo);
+        assertNotNull(eaaPresentationInfo.getEAAPresentationType());
+        assertEquals(eaaPresentationInfo.getEAAPresentationType(), diagnosticData.getEAAPresentationType());
+        List<XmlEAADocument> documents = eaaPresentationInfo.getDocuments();
+        assertTrue(Utils.isCollectionNotEmpty(documents));
+        assertEquals(documents.size(), diagnosticData.getElectronicAttestationsOfAttributes().size());
+    }
+
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
-        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
             boolean namespaceFound = false;
-            for (XmlDigestMatcher digestMatcher : eaaPresentation.getDigestMatchers()) {
+            for (XmlDigestMatcher digestMatcher : eaa.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
                     assertFalse(digestMatcher.isDataFound());
                     assertFalse(digestMatcher.isDataIntact());
@@ -110,17 +127,17 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     namespaceFound |= digestMatcher.getDisclosableClaim().getNamespace() != null;
                 }
             }
-            assertEquals(disclosuresPresent() && EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType(), namespaceFound);
+            assertEquals(disclosuresPresent() && EAAType.ISO_IEC_MDOC == eaa.getEAAType(), namespaceFound);
         }
     }
 
     protected void checkClaims(DiagnosticData diagnosticData) {
-        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-            List<ClaimWrapper> eaaPayloadClaims = new ArrayList<>(eaaPresentation.getAllEAAPayloadClaims());
+        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+            List<ClaimWrapper> eaaPayloadClaims = new ArrayList<>(eaa.getAllEAAPayloadClaims());
             assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
             checkClaimsRecursively(eaaPayloadClaims, true);
             for (ClaimWrapper claimWrapper : eaaPayloadClaims) {
-                ClaimWrapper claimByHeaderName = eaaPresentation.getClaimByHeaderName(claimWrapper.getName());
+                ClaimWrapper claimByHeaderName = eaa.getClaimByHeaderName(claimWrapper.getName());
                 assertNotNull(claimByHeaderName);
                 assertEquals(claimByHeaderName.getName(), claimWrapper.getName());
                 assertEquals(claimByHeaderName.getNamespace(), claimWrapper.getNamespace());
@@ -148,12 +165,12 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
                 assertTrue(Utils.isStringNotEmpty(claimWrapper.getDisplayValue()));
 
-                if (EAAPresentationType.ISO_IEC_MDOC == eaaPresentation.getEAAType() && claimWrapper.isSelectivelyDisclosable()) {
+                if (EAAType.ISO_IEC_MDOC == eaa.getEAAType() && claimWrapper.isSelectivelyDisclosable()) {
                     assertNotNull(claimWrapper.getNamespace());
                 }
             }
             assertEquals(disclosuresPresent(), isDisclosureFound(eaaPayloadClaims));
-            assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaaPresentation.getSelectivelyDisclosableClaims()));
+            assertEquals(disclosuresPresent(), Utils.isCollectionNotEmpty(eaa.getSelectivelyDisclosableClaims()));
         }
     }
 
@@ -246,11 +263,11 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     }
 
     protected void checkDeviceKeyClaim(DiagnosticData diagnosticData) {
-        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
+        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
             if (keyBindingPresent()) {
-                assertNotNull(eaaPresentation.getEAADevicePublicKey());
-                if (eaaPresentation.getEAADeviceCertificate() != null) {
-                    assertEquals(1, eaaPresentation.getEAADeviceCertificateChain().size()); // only one certificate should be present
+                assertNotNull(eaa.getEAADevicePublicKey());
+                if (eaa.getEAADeviceCertificate() != null) {
+                    assertEquals(1, eaa.getEAADeviceCertificateChain().size()); // only one certificate should be present
                 }
             }
         }
@@ -272,7 +289,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         return true;
     }
 
-    protected abstract EAAPresentationType getEAAPresentationType();
+    protected abstract EAAType getEAAType();
 
     @Override
     protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
@@ -310,8 +327,8 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     @Override
     protected void checkSignatureScopes(DiagnosticData diagnosticData) {
-        for (EAAPresentationWrapper eaaPresentation : diagnosticData.getEAAPresentations()) {
-            for (SignatureWrapper signatureWrapper : eaaPresentation.getEAAPresentationSignatures()) {
+        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+            for (SignatureWrapper signatureWrapper : eaa.getEAASignatures()) {
                 if (signatureWrapper.isSignatureValid()) {
                     assertEquals(1, Utils.collectionSize(signatureWrapper.getSignatureScopes()));
                     XmlSignatureScope signatureScope = signatureWrapper.getSignatureScopes().get(0);
@@ -323,7 +340,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertEquals(SignatureScopeType.EAA_SIGNATURE, signatureScope.getScope());
                 }
             }
-            SignatureWrapper keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+            SignatureWrapper keyBindingSignature = eaa.getKeyBindingSignature();
             if (keyBindingSignature != null && keyBindingSignature.isSignatureValid()) {
                 assertEquals(1, Utils.collectionSize(keyBindingSignature.getSignatureScopes()));
                 XmlSignatureScope signatureScope = keyBindingSignature.getSignatureScopes().get(0);
@@ -367,15 +384,15 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
             }
         }
 
-        List<String> eaaPresentationIds = detailedReport.getEAAPresentationIds();
-        for (String eaaId : eaaPresentationIds) {
-            XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(eaaId);
-            assertNotNull(xmlEAAPresentation);
+        List<String> eaaIds = detailedReport.getEAAIds();
+        for (String eaaId : eaaIds) {
+            XmlEAA xmlEAA = detailedReport.getXmlEAAById(eaaId);
+            assertNotNull(xmlEAA);
 
-            Indication indication = detailedReport.getEAAPresentationValidationIndication(eaaId);
+            Indication indication = detailedReport.getEAAValidationIndication(eaaId);
             assertNotNull(indication);
             if (!Indication.PASSED.equals(indication)) {
-                SubIndication subIndication = detailedReport.getEAAPresentationValidationSubIndication(eaaId);
+                SubIndication subIndication = detailedReport.getEAAValidationSubIndication(eaaId);
                 assertNotNull(subIndication);
             }
         }
@@ -385,12 +402,12 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     protected void verifySimpleReport(SimpleReport simpleReport) {
         assertNotNull(simpleReport);
 
-        List<String> eaaPresentationIdList = simpleReport.getEAAPresentationIdList();
+        List<String> eaaPresentationIdList = simpleReport.getEAAIdList();
         assertEquals(1, eaaPresentationIdList.size());
 
-        assertEquals(eaaPresentationIdList.get(0), simpleReport.getFirstEAAPresentationId());
+        assertEquals(eaaPresentationIdList.get(0), simpleReport.getFirstEAAId());
 
-        String eaaPresentationId = simpleReport.getFirstEAAPresentationId();
+        String eaaPresentationId = simpleReport.getFirstEAAId();
 
         Indication indication = simpleReport.getIndication(eaaPresentationId);
         assertNotNull(indication);
@@ -408,13 +425,13 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         }
         assertNotNull(simpleReport.getEAAQualification(eaaPresentationId));
 
-        List<XmlSignature> eaaPresentationSignatures = simpleReport.getEAAPresentationSignatures(eaaPresentationId);
-        assertEquals(expectedSignaturesCount(), eaaPresentationSignatures.size());
-        for (XmlSignature xmlSignature : eaaPresentationSignatures) {
+        List<XmlSignature> eaaSignatures = simpleReport.getEAASignatures(eaaPresentationId);
+        assertEquals(expectedSignaturesCount(), eaaSignatures.size());
+        for (XmlSignature xmlSignature : eaaSignatures) {
             verifySimpleReportSignature(simpleReport, xmlSignature);
         }
 
-        XmlSignature keyBindingSignature = simpleReport.getEAAPresentationKeyBindingSignature(eaaPresentationId);
+        XmlSignature keyBindingSignature = simpleReport.getEAAKeyBindingSignature(eaaPresentationId);
         assertEquals(keyBindingPresent(), keyBindingSignature != null);
         if (keyBindingSignature != null) {
             verifySimpleReportSignature(simpleReport, keyBindingSignature);

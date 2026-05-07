@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -87,27 +87,27 @@ class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAP
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
-        assertEquals("john_doe_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
-        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
+        assertEquals("john_doe_42", eaa.getEAASubject());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAANotAfter());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
 
-        assertEquals("John", eaaPresentation.getHolderFirstName());
-        assertEquals("Doe", eaaPresentation.getHolderLastName());
-        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
+        assertEquals("John", eaa.getHolderFirstName());
+        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaa.getHolderBirthdate());
 
-        assertNull(eaaPresentation.getHolderEmail());
-        assertNull(eaaPresentation.getHolderEmailVerified());
-        assertNull(eaaPresentation.getHolderAddressCity());
-        assertNull(eaaPresentation.getHolderAddressStateOrProvince());
-        assertNull(eaaPresentation.getHolderAddressCountry());
-        assertNull(eaaPresentation.getHolderStreetAddress());
-        assertNull(eaaPresentation.getHolderPhoneNumber());
-        assertNull(eaaPresentation.getHolderPhoneNumberVerified());
-        assertFalse(Utils.isCollectionNotEmpty(eaaPresentation.getHolderNationalities()));
+        assertNull(eaa.getHolderEmail());
+        assertNull(eaa.getHolderEmailVerified());
+        assertNull(eaa.getHolderAddressCity());
+        assertNull(eaa.getHolderAddressStateOrProvince());
+        assertNull(eaa.getHolderAddressCountry());
+        assertNull(eaa.getHolderStreetAddress());
+        assertNull(eaa.getHolderPhoneNumber());
+        assertNull(eaa.getHolderPhoneNumberVerified());
+        assertFalse(Utils.isCollectionNotEmpty(eaa.getHolderNationalities()));
 
-        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(4, selectivelyDisclosableClaims.size());
     }
 

@@ -1,17 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
@@ -23,6 +13,15 @@ import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPresentationTestValidation {
 
@@ -70,12 +69,12 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
-        assertEquals(expiration.toInstant().getEpochSecond(), eaaPresentation.getEAANotAfter().toInstant().getEpochSecond());
-        assertEquals(issuanceDate.toInstant().getEpochSecond(), eaaPresentation.getEAAIssuedAt().toInstant().getEpochSecond());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
+        assertEquals(expiration.toInstant().getEpochSecond(), eaa.getEAANotAfter().toInstant().getEpochSecond());
+        assertEquals(issuanceDate.toInstant().getEpochSecond(), eaa.getEAAIssuedAt().toInstant().getEpochSecond());
 
-        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
 
         boolean claimFound = false;

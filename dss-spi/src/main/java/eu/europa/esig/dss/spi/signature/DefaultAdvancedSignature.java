@@ -35,7 +35,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifier;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifierBuilder;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -132,9 +132,9 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	private AdvancedSignature masterSignature;
 
 	/**
-	 * EAA Presentation in case of a key binding signature
+	 * EAA in case of a key binding signature
 	 */
-	private EAAPresentation eaaPresentation;
+	private EAA eaa;
 
 	/**
 	 * Contains information whether the signature is a key binding signature
@@ -406,13 +406,13 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	}
 
 	@Override
-	public EAAPresentation getEAAPresentation() {
-		return eaaPresentation;
+	public EAA getElectronicAttestationOfAttributes() {
+		return eaa;
 	}
 
 	@Override
-	public void setEAAPresentation(EAAPresentation eaaPresentation) {
-		this.eaaPresentation = eaaPresentation;
+	public void setElectronicAttestationOfAttributes(EAA eaa) {
+		this.eaa = eaa;
 	}
 
 	@Override

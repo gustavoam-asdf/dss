@@ -1,31 +1,30 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.math.BigInteger;
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 import eu.europa.esig.dss.enumerations.EAACategory;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
@@ -34,13 +33,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -55,12 +54,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
         xmlEAAPayload.setNotAfter(notAfter);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -74,13 +73,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -103,12 +102,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         issuingAuthority.setText("issuingAuthority");
         xmlEAAPayload.setIssuingAuthority(issuingAuthority);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -122,13 +121,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -143,12 +142,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
         xmlEAAPayload.setNotAfter(notAfter);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -162,13 +161,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -183,12 +182,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         notAfter.setDateTime(new Date(System.currentTimeMillis() - 60000));
         xmlEAAPayload.setNotAfter(notAfter);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -202,13 +201,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -231,12 +230,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         administrativeExpiration.setDateTime(new Date(System.currentTimeMillis() - 60000));
         xmlEAAPayload.setAdministrativeExpirationDate(administrativeExpiration);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -250,13 +249,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -279,12 +278,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         administrativeExpiration.setDateTime(new Date(administrativeIssuance.getDateTime().getTime() + 3600 * 1000));
         xmlEAAPayload.setAdministrativeExpirationDate(administrativeExpiration);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -298,13 +297,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -323,12 +322,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         administrativeIssuance.setDateTime(new Date(System.currentTimeMillis() - 60000));
         xmlEAAPayload.setAdministrativeIssuanceDate(administrativeIssuance);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -342,13 +341,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -375,12 +374,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         issuingAuthority.setText("issuingAuthority");
         xmlEAAPayload.setIssuingAuthority(issuingAuthority);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -394,13 +393,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -419,12 +418,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         issuingAuthority.setText("issuingAuthority");
         xmlEAAPayload.setIssuingAuthority(issuingAuthority);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -438,13 +437,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -463,12 +462,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         documentNumber.setText("test-value");
         xmlEAAPayload.setDocumentNumber(documentNumber);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -482,13 +481,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -507,12 +506,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         category.setText(EAACategory.EU_QEAA.getUrn());
         xmlEAAPayload.setCategory(category);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -526,13 +525,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -551,12 +550,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         category.setText(EAACategory.EU_PUBEAA.getUrn());
         xmlEAAPayload.setCategory(category);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -570,13 +569,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -602,12 +601,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         issuingAuthority.setText("issuingAuthority");
         xmlEAAPayload.setIssuingAuthority(issuingAuthority);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -621,13 +620,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -644,12 +643,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAAPayload.setStatus(new XmlStatusClaim());
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -663,13 +662,13 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlEAAPresentationSignature presentationSignature = new XmlEAAPresentationSignature();
+        XmlEAASignature presentationSignature = new XmlEAASignature();
         XmlSignature signature = new XmlSignature();
         presentationSignature.setSignature(signature);
-        xmlEAAPresentation.getEAAPresentationSignature().add(presentationSignature);
+        xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
@@ -700,12 +699,12 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAAPayload.setStatus(statusClaim);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

@@ -109,9 +109,9 @@ class PIDLoTETest extends PKIFactoryAccess {
 
         SimpleReport simpleReport = reports.getSimpleReport();
 
-        EAAQualification eaaQualification = simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId());
+        EAAQualification eaaQualification = simpleReport.getEAAQualification(simpleReport.getFirstEAAId());
         assertEquals(expectedQualification, eaaQualification);
-        assertEquals(1, simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()).size());
+        assertEquals(1, simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()).size());
     }
 
     private TrustedEntitiesCertificateSource getTrustedSource() {

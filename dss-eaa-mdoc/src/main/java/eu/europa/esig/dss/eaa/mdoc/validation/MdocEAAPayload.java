@@ -64,7 +64,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      */
     public MdocEAAPayload(final ClaimMap verifiedPayloadMap, final String docType) {
         super(verifiedPayloadMap.getMapValue());
-        this.docType = docType;
+        this.docType = docType != null ? docType : getDocType() != null ? getDocType().getStringValue() : null;
     }
 
     @Override

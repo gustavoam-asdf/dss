@@ -2,8 +2,8 @@
 <DiagnosticData xmlns="http://dss.esig.europa.eu/validation/diagnostic">
     <DocumentName>sample-jwt.jwt</DocumentName>
     <ValidationDate>2026-04-23T09:29:00Z</ValidationDate>
-    <EAAPresentations>
-        <EAAPresentation Id="EAA-142BE84DAB5CA7AC88CCAC3DC9E7F4A3C2372EEA97B822978540C31CE18CC20C">
+    <EAAs>
+        <EAA Id="EAA-142BE84DAB5CA7AC88CCAC3DC9E7F4A3C2372EEA97B822978540C31CE18CC20C">
             <EAAType>SD_JWT_VC</EAAType>
             <DigestMatchers>
                 <DigestMatcher type="EAA_DISCLOSURE">
@@ -77,7 +77,7 @@
                     <DisclosableClaim>DE</DisclosableClaim>
                 </DigestMatcher>
             </DigestMatchers>
-            <EAAPresentationSignature Signature="S-61D369A7F2D4DD3A70C24A844C4C8E693ECF3BAECFBB558A2B4D3FEF8827A09C"/>
+            <EAASignature Signature="S-61D369A7F2D4DD3A70C24A844C4C8E693ECF3BAECFBB558A2B4D3FEF8827A09C"/>
             <KeyBindingSignature Signature="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9"/>
             <EAAPayload>
                 <Issuer name="iss">
@@ -86,12 +86,12 @@
                 <Subject name="sub">
                     <Text>user_42</Text>
                 </Subject>
-                <ExpirationTime name="exp">
-                    <DateTime>2029-09-01T23:33:20Z</DateTime>
-                </ExpirationTime>
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
+                <NotAfter name="exp">
+                    <DateTime>2029-09-01T23:33:20Z</DateTime>
+                </NotAfter>
                 <UpdatedAt name="updated_at" disclosure="true">
                     <DateTime>2019-10-02T07:06:40Z</DateTime>
                 </UpdatedAt>
@@ -153,8 +153,8 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
-        </EAAPresentation>
-    </EAAPresentations>
+        </EAA>
+    </EAAs>
     <Signatures>
         <Signature Id="S-61D369A7F2D4DD3A70C24A844C4C8E693ECF3BAECFBB558A2B4D3FEF8827A09C">
             <SignatureFilename>sample-jwt.jwt</SignatureFilename>

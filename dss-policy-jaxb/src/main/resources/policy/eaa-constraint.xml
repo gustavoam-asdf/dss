@@ -333,7 +333,7 @@
             <Cryptographic />
         </BasicSignatureConstraints>
     </Revocation>
-    <EAAPresentation>
+    <EAA>
         <EAASignatureUnicity Level="FAIL" />
         <EAASignatureValid Level="FAIL" />
         <DisclosurePresent Level="WARN" />
@@ -348,7 +348,7 @@
         <EAANotBeforePresent Level="FAIL" />
         <EAAExpirationPresent Level="FAIL" />
         <ETSI194721Conformance Level="FAIL" />
-    </EAAPresentation>
+    </EAA>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>
             <Algo>RSA</Algo>

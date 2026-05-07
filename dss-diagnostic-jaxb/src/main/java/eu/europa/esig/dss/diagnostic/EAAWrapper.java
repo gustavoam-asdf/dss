@@ -12,12 +12,12 @@ import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.EAAQualification;
+import eu.europa.esig.dss.enumerations.EAAType;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -28,24 +28,21 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Provides a user-friendly interface for information extraction from a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation} JAXB object
+ * Provides a user-friendly interface for information extraction from a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlEAA} JAXB object
  *
  */
-public class EAAPresentationWrapper {
+public class EAAWrapper {
 
-    /** Wrapped EAA Presentation object */
-    private final XmlEAAPresentation eaaPresentation;
-
-    /** Cached list of all claims present within the EAA Payload or provided as disclosures */
-    private List<ClaimWrapper> claimList;
+    /** Wrapped EAA object */
+    private final XmlEAA eaa;
 
     /**
      * Default constructor
      *
-     * @param eaaPresentation {@link XmlEAAPresentation} to read
+     * @param eaa {@link XmlEAA} to read
      */
-    public EAAPresentationWrapper(final XmlEAAPresentation eaaPresentation) {
-        this.eaaPresentation = eaaPresentation;
+    public EAAWrapper(final XmlEAA eaa) {
+        this.eaa = eaa;
     }
 
     /**
@@ -54,7 +51,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getId() {
-        return eaaPresentation.getId();
+        return eaa.getId();
     }
 
     /**
@@ -63,7 +60,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getFilename() {
-        return eaaPresentation.getDocumentName();
+        return eaa.getDocumentName();
     }
 
     /**
@@ -73,7 +70,7 @@ public class EAAPresentationWrapper {
      * @return {@link String}
      */
     public String getEAADocumentType() {
-        return eaaPresentation.getDocumentType();
+        return eaa.getDocumentType();
     }
 
     /**
@@ -82,20 +79,20 @@ public class EAAPresentationWrapper {
      * @return a list of {@link XmlDigestMatcher}
      */
     public List<XmlDigestMatcher> getDigestMatchers() {
-        return eaaPresentation.getDigestMatchers();
+        return eaa.getDigestMatchers();
     }
 
     /**
-     * Gets signatures used to create the EAA presentation.
+     * Gets signatures used to create the EAA.
      * NOTE: in most of the cases a single signature is expected,
-     * but it is possible for EAA presentation to be signed by multiple signers.
+     * but it is possible for EAA to be signed by multiple signers.
      *
      * @return a list of {@link SignatureWrapper}s
      */
-    public List<SignatureWrapper> getEAAPresentationSignatures() {
+    public List<SignatureWrapper> getEAASignatures() {
         final List<SignatureWrapper> result = new ArrayList<>();
-        for (XmlEAAPresentationSignature xmlEAAPresentationSignature : eaaPresentation.getEAAPresentationSignature()) {
-            result.add(new SignatureWrapper(xmlEAAPresentationSignature.getSignature()));
+        for (XmlEAASignature xmlEAASignature : eaa.getEAASignature()) {
+            result.add(new SignatureWrapper(xmlEAASignature.getSignature()));
         }
         return result;
     }
@@ -105,8 +102,8 @@ public class EAAPresentationWrapper {
      *
      * @return a list of {@link String}s
      */
-    public List<String> getEAAPresentationSignatureIds() {
-        List<SignatureWrapper> eaaPresentationSignatures = getEAAPresentationSignatures();
+    public List<String> getEAASignatureIds() {
+        List<SignatureWrapper> eaaPresentationSignatures = getEAASignatures();
         if (eaaPresentationSignatures != null && !eaaPresentationSignatures.isEmpty()) {
             return eaaPresentationSignatures.stream().map(SignatureWrapper::getId).collect(Collectors.toList());
         }
@@ -119,8 +116,8 @@ public class EAAPresentationWrapper {
      * @return {@link SignatureWrapper}
      */
     public SignatureWrapper getKeyBindingSignature() {
-        if (eaaPresentation.getKeyBindingSignature() != null) {
-            return new SignatureWrapper(eaaPresentation.getKeyBindingSignature().getSignature());
+        if (eaa.getKeyBindingSignature() != null) {
+            return new SignatureWrapper(eaa.getKeyBindingSignature().getSignature());
         }
         return null;
     }
@@ -144,11 +141,11 @@ public class EAAPresentationWrapper {
      * @return {@link EAAPayloadProxy}
      */
     public EAAPayloadProxy getEAAPayload() {
-        return new EAAPayloadProxy(eaaPresentation.getEAAPayload());
+        return new EAAPayloadProxy(eaa.getEAAPayload());
     }
 
     /**
-     * Gets EAA Presentation identifier provided in the EAA payload
+     * Gets EAA identifier provided in the EAA payload
      *
      * @return {@link String}
      */
@@ -157,7 +154,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation issuer as defined in the EAA payload
+     * Gets EAA issuer as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -166,7 +163,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation subject as defined in the EAA payload
+     * Gets EAA subject as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -175,7 +172,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation audience as defined in the EAA payload
+     * Gets EAA audience as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -184,7 +181,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation issuance time as defined in the EAA payload
+     * Gets EAA issuance time as defined in the EAA payload
      *
      * @return {@link Date}
      */
@@ -201,7 +198,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation not before time as defined in the EAA payload
+     * Gets EAA not before time as defined in the EAA payload
      *
      * @return {@link Date}
      */
@@ -218,7 +215,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation expiration time as defined in the EAA payload
+     * Gets EAA expiration time as defined in the EAA payload
      *
      * @return {@link Date}
      */
@@ -235,7 +232,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation update time as defined in the EAA payload
+     * Gets EAA update time as defined in the EAA payload
      *
      * @return {@link Date}
      */
@@ -244,7 +241,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation expected next update time
+     * Gets EAA expected next update time
      *
      * @return {@link Date}
      */
@@ -283,7 +280,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation metadata URI (e.g. 'vct' claim) as defined in the EAA payload
+     * Gets EAA metadata URI (e.g. 'vct' claim) as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -292,7 +289,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets Digest Algorithm used to compute the integrity material for the EAA Presentation metadata (when present)
+     * Gets Digest Algorithm used to compute the integrity material for the EAA metadata (when present)
      *
      * @return {@link DigestAlgorithm}
      */
@@ -305,9 +302,9 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets the integrity material for the EAA Presentation metadata (when present)
+     * Gets the integrity material for the EAA metadata (when present)
      *
-     * @return byte array representing the EAA Presentation's metadata hash
+     * @return byte array representing the EAA's metadata hash
      */
     public byte[] getEAAMetadataIntegrityBytes() {
         IntegrityClaimWrapper eaaMetadataIntegrity = getEAAPayload().getEAAMetadataIntegrity();
@@ -318,7 +315,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation status index as defined in the EAA payload
+     * Gets EAA status index as defined in the EAA payload
      *
      * @return {@link BigInteger}
      */
@@ -335,7 +332,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation status URI as defined in the EAA payload
+     * Gets EAA status URI as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -352,7 +349,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation status type as defined in the EAA payload
+     * Gets EAA status type as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -365,7 +362,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation status purpose as defined in the EAA payload
+     * Gets EAA status purpose as defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -378,7 +375,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation nonce when defined in the EAA payload
+     * Gets EAA nonce when defined in the EAA payload
      *
      * @return {@link String}
      */
@@ -387,7 +384,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation device public key when defined in the EAA payload
+     * Gets EAA device public key when defined in the EAA payload
      *
      * @return byte array containing an encoded device public key
      */
@@ -400,7 +397,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation device certificate token when defined in the EAA payload
+     * Gets EAA device certificate token when defined in the EAA payload
      *
      * @return {@link CertificateWrapper}
      */
@@ -416,7 +413,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets EAA Presentation device certificate chain when defined in the EAA payload
+     * Gets EAA device certificate chain when defined in the EAA payload
      *
      * @return a list of {@link CertificateWrapper}s
      */
@@ -1412,7 +1409,7 @@ public class EAAPresentationWrapper {
             return null;
         }
         List<ClaimWrapper> eaaPayloadClaims = getAllEAAPayloadClaims();
-        if (eaaPresentation != null && !eaaPayloadClaims.isEmpty()) {
+        if (eaa != null && !eaaPayloadClaims.isEmpty()) {
             for (ClaimWrapper claim : eaaPayloadClaims) {
                 if (headerName.equals(claim.getName())) {
                     return claim;
@@ -1423,7 +1420,7 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * This method returns all claims that have been selectively disclosed and identified on the EAA Presentation
+     * This method returns all claims that have been selectively disclosed and identified on the EAA
      * (i.e. provided in the form of disclosures).
      *
      * @return a list of {@link ClaimWrapper}s
@@ -1431,7 +1428,7 @@ public class EAAPresentationWrapper {
     public List<ClaimWrapper> getSelectivelyDisclosableClaims() {
         final List<ClaimWrapper> result = new ArrayList<>();
         List<ClaimWrapper> eaaPayloadClaims = getAllEAAPayloadClaims();
-        if (eaaPresentation != null && !eaaPayloadClaims.isEmpty()) {
+        if (eaa != null && !eaaPayloadClaims.isEmpty()) {
             for (ClaimWrapper claim : eaaPayloadClaims) {
                 result.addAll(getSelectivelyDisclosableClaimsRecursively(claim));
             }
@@ -1520,12 +1517,12 @@ public class EAAPresentationWrapper {
     }
 
     /**
-     * Gets type of the EAA Presentation
+     * Gets type of the EAA
      *
-     * @return {@link EAAPresentationType}
+     * @return {@link EAAType}
      */
-    public EAAPresentationType getEAAType() {
-        return eaaPresentation.getEAAType();
+    public EAAType getEAAType() {
+        return eaa.getEAAType();
     }
 
 }

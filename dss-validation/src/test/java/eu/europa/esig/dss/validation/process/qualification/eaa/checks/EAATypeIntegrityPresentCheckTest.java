@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
@@ -29,8 +29,8 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAAPresentation = new XmlEAA();
+        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
@@ -41,10 +41,10 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
         integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -57,17 +57,17 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setEAAType(EAAPresentationType.SD_JWT_VC);
+        XmlEAA xmlEAAPresentation = new XmlEAA();
+        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAAPresentation result = new XmlValidationProcessEAAPresentation();
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
-                i18nProvider, result, new EAAPresentationWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
         integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

@@ -3,10 +3,10 @@ package eu.europa.esig.dss.eaa.common.validation.identifier;
 import eu.europa.esig.dss.model.identifier.MultipleDigestIdentifier;
 
 /**
- * Builds identifier for EAA Presentation token
+ * Builds identifier for EAA token
  *
  */
-public class EAAPresentationIdentifier extends MultipleDigestIdentifier {
+public class EAAIdentifier extends MultipleDigestIdentifier {
 
     private static final long serialVersionUID = 6359543697190790257L;
 
@@ -15,7 +15,7 @@ public class EAAPresentationIdentifier extends MultipleDigestIdentifier {
      *
      * @param binaries token binaries
      */
-    protected EAAPresentationIdentifier(byte[] binaries) {
+    protected EAAIdentifier(byte[] binaries) {
         super("EAA-", binaries);
     }
 

@@ -15,9 +15,11 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodesClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegesClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAADocument;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
@@ -51,6 +53,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
@@ -59,6 +62,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,11 +75,14 @@ import java.util.stream.Collectors;
  */
 public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnosticDataBuilder {
 
-    /** The collection of EAA presentations */
-    protected Collection<EAAPresentation> eaaPresentations;
+    /** The EAA presentation */
+    protected EAAPresentation eaaPresentation;
 
     /** Builder used to build a signature object */
     private SignedDocumentDiagnosticDataBuilder signatureDiagnosticDataBuilder;
+
+    /** The cached map of EAAs */
+    protected Map<String, XmlEAA> xmlEAAMap = new HashMap<>();
 
     /**
      * Default constructor
@@ -85,13 +92,13 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     /**
-     * Sets a collection of found EAA presentations
+     * Sets found EAA presentation
      *
-     * @param eaaPresentations a collection of {@code EAAPresentation}s
+     * @param eaaPresentation {@code EAAPresentation}
      * @return this builder
      */
-    public EAAPresentationDiagnosticDataBuilder foundEAAPresentations(Collection<EAAPresentation> eaaPresentations) {
-        this.eaaPresentations = eaaPresentations;
+    public EAAPresentationDiagnosticDataBuilder foundEAAPresentation(EAAPresentation eaaPresentation) {
+        this.eaaPresentation = eaaPresentation;
         return this;
     }
     /**
@@ -108,46 +115,81 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     @Override
     public XmlDiagnosticData build() {
         XmlDiagnosticData xmlDiagnosticData = super.build();
-        if (Utils.isCollectionNotEmpty(eaaPresentations)) {
-            Collection<XmlEAAPresentation> xmlEAAPresentations = buildXmlEAAPresentations(eaaPresentations);
-            xmlDiagnosticData.getEAAPresentations().addAll(xmlEAAPresentations);
+        if (eaaPresentation != null) {
+            xmlDiagnosticData.setEAAPresentationInfo(buildXmlEAAPresentationInfo(eaaPresentation));
+            List<EAA> eaas = eaaPresentation.getElectronicAttestationsOfAttributes();
+            Collection<XmlEAA> xmlEAAs = buildXmlEAA(eaas);
+            xmlDiagnosticData.getEAAs().addAll(xmlEAAs);
         }
         return xmlDiagnosticData;
     }
 
-    private Collection<XmlEAAPresentation> buildXmlEAAPresentations(Collection<EAAPresentation> eaaPresentations) {
-        List<XmlEAAPresentation> builtEAAPresentations = new ArrayList<>();
-        for (EAAPresentation eaaPresentation : eaaPresentations) {
-            XmlEAAPresentation xmlEAAPresentation = buildDetachedXmlEAAPresentation(eaaPresentation);
+    /**
+     * Builds {@code XmlEAAPresentationInfo} based on the {@code EAAPresentation}
+     *
+     * @param eaaPresentation {@link EAAPresentation}
+     * @return {@link XmlEAAPresentationInfo}
+     */
+    protected XmlEAAPresentationInfo buildXmlEAAPresentationInfo(EAAPresentation eaaPresentation) {
+        final XmlEAAPresentationInfo xmlEAAPresentationInfo = new XmlEAAPresentationInfo();
+        xmlEAAPresentationInfo.setEAAPresentationType(eaaPresentation.getEAAPresentationType());
+        if (Utils.isCollectionNotEmpty(eaaPresentation.getElectronicAttestationsOfAttributes())) {
+            for (EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
+                xmlEAAPresentationInfo.getDocuments().add(buildXmlEAADocument(eaa));
+            }
+        }
+        return xmlEAAPresentationInfo;
+    }
+
+    /**
+     * Builds an instance of {@code XmlEAADocument} for a {@code ElectronicAttestationOfAttributes}
+     *
+     * @param eaa {@link EAA}
+     * @return {@link XmlEAADocument}
+     */
+    protected XmlEAADocument buildXmlEAADocument(EAA eaa) {
+        final XmlEAADocument xmlEAADocument = new XmlEAADocument();
+        xmlEAADocument.setEAA(getXmlEAA(eaa));
+        return xmlEAADocument;
+    }
+
+    private Collection<XmlEAA> buildXmlEAA(Collection<EAA> eaas) {
+        List<XmlEAA> builtEAAPresentations = new ArrayList<>();
+        for (EAA eaa : eaas) {
+            XmlEAA xmlEAAPresentation = getXmlEAA(eaa);
             builtEAAPresentations.add(xmlEAAPresentation);
         }
         return builtEAAPresentations;
     }
 
+    private XmlEAA getXmlEAA(EAA eaa) {
+        return xmlEAAMap.computeIfAbsent(eaa.getId(), k -> buildDetachedXmlEAA(eaa));
+    }
+
     /**
-     * Builds an {@code XmlEAAPresentation} instance
+     * Builds an {@code XmlEAA} instance
      *
-     * @param eaaPresentation {@link EAAPresentation}
-     * @return {@link XmlEAAPresentation}
+     * @param eaa {@link EAA}
+     * @return {@link XmlEAA}
      */
-    protected XmlEAAPresentation buildDetachedXmlEAAPresentation(EAAPresentation eaaPresentation) {
-        final XmlEAAPresentation xmlEAAPresentation = new XmlEAAPresentation();
-        xmlEAAPresentation.setId(eaaPresentation.getId());
-        xmlEAAPresentation.setDocumentName(eaaPresentation.getFilename());
-        xmlEAAPresentation.setEAAType(eaaPresentation.getEAAPresentationType());
-        for (AdvancedSignature signature : eaaPresentation.getSignatures()) {
-            xmlEAAPresentation.getEAAPresentationSignature().add(getXmlEAAPresentationSignature(signature));
+    protected XmlEAA buildDetachedXmlEAA(EAA eaa) {
+        final XmlEAA xmlEAAPresentation = new XmlEAA();
+        xmlEAAPresentation.setId(eaa.getId());
+        xmlEAAPresentation.setDocumentName(eaa.getFilename());
+        xmlEAAPresentation.setEAAType(eaa.getEAAType());
+        for (AdvancedSignature signature : eaa.getSignatures()) {
+            xmlEAAPresentation.getEAASignature().add(getXmlEAASignature(signature));
         }
-        xmlEAAPresentation.setDigestMatchers(buildXmlDigestMatchers(eaaPresentation.getDisclosureValidations()));
-        if (eaaPresentation.getKeyBindingSignature() != null) {
-            xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaaPresentation.getKeyBindingSignature()));
+        xmlEAAPresentation.setDigestMatchers(buildXmlDigestMatchers(eaa.getDisclosureValidations()));
+        if (eaa.getKeyBindingSignature() != null) {
+            xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaa.getKeyBindingSignature()));
         }
-        xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaaPresentation.getPayload()));
+        xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaa.getPayload()));
         return xmlEAAPresentation;
     }
 
-    private XmlEAAPresentationSignature getXmlEAAPresentationSignature(AdvancedSignature signature) {
-        XmlEAAPresentationSignature xmlEAAPresentationSignature = new XmlEAAPresentationSignature();
+    private XmlEAASignature getXmlEAASignature(AdvancedSignature signature) {
+        XmlEAASignature xmlEAAPresentationSignature = new XmlEAASignature();
         XmlSignature xmlSignature = xmlSignaturesMap.get(signature.getId());
         if (xmlSignature == null) {
             throw new IllegalStateException(String.format(

@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -101,14 +101,14 @@ class SDJWTCompactEAAPresentationWithNestedDisclosuresValidationTest extends Abs
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertEquals("https://issuer.example.com", eaaPresentation.getEAAIssuer());
-        assertEquals("user_42", eaaPresentation.getEAASubject());
-        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaaPresentation.getEAANotAfter());
-        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaaPresentation.getEAAIssuedAt());
-        assertEquals(Arrays.asList("DE", "FR", "UK"), eaaPresentation.getHolderNationalities());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
+        assertEquals("user_42", eaa.getEAASubject());
+        assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAANotAfter());
+        assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
+        assertEquals(Arrays.asList("DE", "FR", "UK"), eaa.getHolderNationalities());
 
-        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(4, selectivelyDisclosableClaims.size());
         assertEquals("nationalities", selectivelyDisclosableClaims.get(0).getName());
         assertTrue(selectivelyDisclosableClaims.get(0).isSelectivelyDisclosable());

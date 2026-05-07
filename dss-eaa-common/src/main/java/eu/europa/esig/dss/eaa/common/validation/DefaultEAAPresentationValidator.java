@@ -64,8 +64,8 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
-    public List<EAAPresentation> getEAAPresentations() {
-        return getDocumentAnalyzer().getEAAPresentations();
+    public EAAPresentation getEAAPresentation() {
+        return getDocumentAnalyzer().getEAAPresentation();
     }
 
     @Override
@@ -82,7 +82,7 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     @Override
     public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new EAAPresentationDiagnosticDataBuilder()
-                .foundEAAPresentations(getEAAPresentations())
+                .foundEAAPresentation(getEAAPresentation())
                 .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());
     }
 

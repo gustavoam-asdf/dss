@@ -2,8 +2,8 @@
 <DiagnosticData xmlns="http://dss.esig.europa.eu/validation/diagnostic">
     <DocumentName>simple-pid.jwt</DocumentName>
     <ValidationDate>2026-04-03T09:58:12Z</ValidationDate>
-    <EAAPresentations>
-        <EAAPresentation Id="EAA-B011F0930552AB7B89D941C51FFDE7A769EA630B8DD5C926512C0870F637FE22">
+    <EAAs>
+        <EAA Id="EAA-B011F0930552AB7B89D941C51FFDE7A769EA630B8DD5C926512C0870F637FE22">
             <DocumentName>simple-pid.jwt</DocumentName>
             <EAAType>SD_JWT_VC</EAAType>
             <DigestMatchers>
@@ -29,7 +29,7 @@
                     <DisclosableClaim name="given_name">John</DisclosableClaim>
                 </DigestMatcher>
             </DigestMatchers>
-            <EAAPresentationSignature Signature="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4"/>
+            <EAASignature Signature="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4"/>
             <KeyBindingSignature Signature="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9"/>
             <EAAPayload>
                 <Issuer name="iss">
@@ -38,12 +38,12 @@
                 <Subject name="sub">
                     <Text>user_42</Text>
                 </Subject>
-                <ExpirationTime name="exp">
-                    <DateTime>2029-09-01T23:33:20Z</DateTime>
-                </ExpirationTime>
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
+                <NotAfter name="exp">
+                    <DateTime>2029-09-01T23:33:20Z</DateTime>
+                </NotAfter>
                 <MetadataType name="vct">
                     <Text>urn:eudi:pid:1</Text>
                 </MetadataType>
@@ -89,8 +89,8 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
-        </EAAPresentation>
-    </EAAPresentations>
+        </EAA>
+    </EAAs>
     <Signatures>
         <Signature Id="S-59A46D40714D80AB3B6D087B938BE6358130244BAE1D9ACECBB28959F48D06F4">
             <SignatureFilename>simple-pid.jwt</SignatureFilename>

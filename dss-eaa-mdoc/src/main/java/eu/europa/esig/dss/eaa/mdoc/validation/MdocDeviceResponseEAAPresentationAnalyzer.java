@@ -1,45 +1,38 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
 import co.nstant.in.cbor.CborException;
-import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
-import eu.europa.esig.dss.cbades.validation.CBORSignature;
-import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
-import eu.europa.esig.dss.eaa.mdoc.MdocParser;
+import eu.europa.esig.dss.eaa.mdoc.MdocDeviceResponseParser;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceAuth;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceNameSpaces;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceResponse;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceSigned;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocument;
-import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSignedItem;
-import eu.europa.esig.dss.enumerations.COSESignatureType;
+import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSigned;
+import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.eaa.Disclosure;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.exception.IllegalInputException;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
- * This class is used to parse and process EAAs embedded within an mdoc structure
+ * This class is used to parse and process EAAs embedded within an mdoc DeviceResponse structure
  *
  */
-public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer {
+public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPresentationAnalyzer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdocEAAPresentationAnalyzer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MdocDeviceResponseEAAPresentationAnalyzer.class);
 
     /** Cached instance of the mdoc */
     private MdocDeviceResponse mdoc;
@@ -50,7 +43,7 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
     /**
      * Default constructor
      */
-    public MdocEAAPresentationAnalyzer() {
+    public MdocDeviceResponseEAAPresentationAnalyzer() {
         // empty
     }
 
@@ -59,10 +52,8 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
      *
      * @param document {@link DSSDocument} to validate
      */
-    public MdocEAAPresentationAnalyzer(DSSDocument document) {
-        Objects.requireNonNull(document, "Document to be validated cannot be null!");
-
-        this.document = document;
+    public MdocDeviceResponseEAAPresentationAnalyzer(DSSDocument document) {
+        super(document);
         this.mdoc = buildMdoc();
     }
 
@@ -77,70 +68,54 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
 
     @Override
     public boolean isSupported(DSSDocument document) {
-        return new MdocParser(document).isSupported();
+        return new MdocDeviceResponseParser(document).isSupported();
     }
 
     private MdocDeviceResponse buildMdoc() {
-        return new MdocParser(document).parse();
+        return new MdocDeviceResponseParser(document).parse();
     }
 
     @Override
-    protected List<EAAPresentation> buildEAAPresentations() {
-        final List<EAAPresentation> result = new ArrayList<>();
+    protected MdocEAAPresentation buildEAAPresentation() {
+        MdocEAAPresentation eaaPresentation = new MdocEAAPresentation();
+        eaaPresentation.setEAAPresentationType(EAAPresentationType.MDOC_DEVICE_RESPONSE);
+        eaaPresentation.setMdocDeviceResponse(mdoc);
+
+        final List<EAA> eaas = new ArrayList<>();
         for (MdocDocument mdocDocument : mdoc.getDocuments()) {
-            MdocEAAPresentation mdocEaa = MdocEAAPresentation.initBuilder()
-                    .setSignatures(Collections.singletonList(getSignature(mdocDocument.getIssuerSigned().getIssuerAuth())))
-                    .setDisclosures(getSignedItems(mdocDocument.getIssuerSigned().getNamespaces()))
+            MdocEAA mdocEaa = MdocEAA.initBuilder()
+                    .setSignatures(Collections.singletonList(getSignature(mdocDocument.getIssuerSigned())))
+                    .setDisclosures(getSignedItems(mdocDocument.getIssuerSigned()))
                     .setKeyBindingSignature(getKeyBindingSignature(mdocDocument.getDeviceSigned(), mdocDocument.getDocType(), mdocDocument.getDeviceSigned().getDeviceNameSpaces()))
                     .setFilename(document.getName())
-                    .setDocumentType(mdocDocument.getDocType())
+                    .setDocument(mdocDocument)
                     .build();
-            result.add(mdocEaa);
+            eaas.add(mdocEaa);
         }
-        return result;
+        eaaPresentation.setElectronicAttestationsOfAttributes(eaas);
+
+        return eaaPresentation;
     }
 
     /**
      * Gets a list of signatures extracted from an 'issuerSigned'/'issuerAuth' header of a Document object.
      * NOTE: The ISO 18013-5 specifies that a COSE_Sign1 structure shall be used, thus only one signature is expected.
      *
-     * @param coseSignStructureObject {@link COSESignStructure}
+     * @param issuerSigned {@link MdocIssuerSigned}
      * @return {@link CBAdESSignature}
      */
-    protected CBAdESSignature getSignature(COSESignStructure coseSignStructureObject) {
-        if (COSESignatureType.COSE_SIGN1 != coseSignStructureObject.getContext()) {
-            throw new IllegalInputException("The mdoc signature shall be represented by a 'COSE_Sign1' object!");
-        }
-
-        List<CBORSignature> cborSignatures = CBORSignature.fromCOSESignStructure(coseSignStructureObject);
-        if (Utils.collectionSize(cborSignatures) != 1) {
-            throw new IllegalInputException(String.format("1 signature is expected. Obtained : '%s'", Utils.collectionSize(cborSignatures)));
-        }
-        CBORSignature cose = cborSignatures.get(0);
-        CBAdESSignature cbadesSignature = new CBAdESSignature(cose);
-        cbadesSignature.setFilename(document.getName());
-        cbadesSignature.setSigningCertificateSource(signingCertificateSource);
-        cbadesSignature.setDetachedContents(detachedContents);
-        cbadesSignature.initBaselineRequirementsChecker(certificateVerifier);
-        validateSignaturePolicy(cbadesSignature);
-        return cbadesSignature;
+    protected CBAdESSignature getSignature(MdocIssuerSigned issuerSigned) {
+        return new MdocIssuerSignedEAAPresentationAnalyzer(document, issuerSigned).getSignature();
     }
 
     /**
      * Returns a list of disclosures extracted for every namespace from a Document structure
      *
-     * @param namespaces a map of namespaces and corresponding signed items
+     * @param issuerSigned {@link MdocIssuerSigned}
      * @return a list of {@link Disclosure}s
      */
-    protected List<Disclosure> getSignedItems(Map<String, List<MdocIssuerSignedItem>> namespaces) {
-        if (Utils.isMapEmpty(namespaces)) {
-            return Collections.emptyList();
-        }
-        final List<Disclosure> result = new ArrayList<>();
-        for (List<MdocIssuerSignedItem> signedItems : namespaces.values()) {
-            result.addAll(signedItems);
-        }
-        return result;
+    protected List<Disclosure> getSignedItems(MdocIssuerSigned issuerSigned) {
+        return new MdocIssuerSignedEAAPresentationAnalyzer(document, issuerSigned).getSignedItems();
     }
 
     /**
@@ -153,7 +128,7 @@ public class MdocEAAPresentationAnalyzer extends DefaultEAAPresentationAnalyzer 
         // TODO : support namespaces extraction for a key binding signature ?
         MdocDeviceAuth deviceAuth = deviceSigned.getDeviceAuth();
         if (deviceAuth.getDeviceSignature() != null) {
-            CBAdESSignature signature = getSignature(deviceAuth.getDeviceSignature());
+            CBAdESSignature signature = getCoseSignature(deviceAuth.getDeviceSignature());
             signature.setDetachedContents(Collections.singletonList(getDeviceAuthenticationBytes(docType, deviceNameSpaces)));
             return signature;
 

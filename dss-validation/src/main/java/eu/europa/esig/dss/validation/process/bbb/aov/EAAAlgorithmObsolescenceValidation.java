@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.bbb.aov;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.model.policy.CryptographicSuite;
@@ -14,18 +14,18 @@ import java.util.Date;
  * Performs algorithm obsolescence validation for cryptographic algorithms used within an EAA
  *
  */
-public class EAAPresentationAlgorithmObsolescenceValidation extends DigestAlgorithmObsolescenceValidation<EAAPresentationWrapper> {
+public class EAAAlgorithmObsolescenceValidation extends DigestAlgorithmObsolescenceValidation<EAAWrapper> {
 
     /**
      * Default constructor
      *
      * @param i18nProvider     the access to translations
-     * @param token            instance of {@link EAAPresentationWrapper} to be processed
+     * @param token            instance of {@link EAAWrapper} to be processed
      * @param validationDate   {@link Date} validation time
      * @param validationPolicy {@link ValidationPolicy} to be used during the validation
      */
-    public EAAPresentationAlgorithmObsolescenceValidation(I18nProvider i18nProvider, EAAPresentationWrapper token,
-                                                          Date validationDate, ValidationPolicy validationPolicy) {
+    public EAAAlgorithmObsolescenceValidation(I18nProvider i18nProvider, EAAWrapper token,
+                                              Date validationDate, ValidationPolicy validationPolicy) {
         super(i18nProvider, token, Context.EAA_PRESENTATION, validationDate, validationPolicy);
     }
 
@@ -36,7 +36,7 @@ public class EAAPresentationAlgorithmObsolescenceValidation extends DigestAlgori
 
     @Override
     protected CryptographicSuite getCryptographicSuite() {
-        return validationPolicy.getEAAPresentationCryptographicConstraint();
+        return validationPolicy.getEAACryptographicConstraint();
     }
 
 }

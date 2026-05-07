@@ -2,11 +2,11 @@
 <DiagnosticData xmlns="http://dss.esig.europa.eu/validation/diagnostic">
     <DocumentName>sample-jwt.jwt</DocumentName>
     <ValidationDate>2026-04-23T08:33:10Z</ValidationDate>
-    <EAAPresentations>
-        <EAAPresentation Id="EAA-62DAA5104BA633281939DF2271396FDC1345BB55B9C786E76DEDF9FCB0E464E3">
+    <EAAs>
+        <EAA Id="EAA-62DAA5104BA633281939DF2271396FDC1345BB55B9C786E76DEDF9FCB0E464E3">
             <EAAType>SD_JWT_VC</EAAType>
             <DigestMatchers/>
-            <EAAPresentationSignature Signature="S-B2CFE51EC9DE416F729051941F47145C3F2FB5571CAEFE3E661BD810D03CDC5F"/>
+            <EAASignature Signature="S-B2CFE51EC9DE416F729051941F47145C3F2FB5571CAEFE3E661BD810D03CDC5F"/>
             <KeyBindingSignature Signature="S-9C630F3A99773E09B7227D07CD0675A8EFB7EB1350408231DE83696A5F33D38E"/>
             <EAAPayload>
                 <Issuer name="iss">
@@ -15,12 +15,12 @@
                 <Subject name="sub">
                     <Text>user_42</Text>
                 </Subject>
-                <ExpirationTime name="exp">
-                    <DateTime>2029-09-01T23:33:20Z</DateTime>
-                </ExpirationTime>
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
+                <NotBefore name="exp">
+                    <DateTime>2029-09-01T23:33:20Z</DateTime>
+                </NotBefore>
                 <DeviceKey name="cnf">
                     <Entry name="jwk">
                         <Entry name="kty">
@@ -70,8 +70,8 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
-        </EAAPresentation>
-    </EAAPresentations>
+        </EAA>
+    </EAAs>
     <Signatures>
         <Signature Id="S-B2CFE51EC9DE416F729051941F47145C3F2FB5571CAEFE3E661BD810D03CDC5F">
             <SignatureFilename>sample-jwt.jwt</SignatureFilename>

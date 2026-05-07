@@ -37,8 +37,8 @@ import eu.europa.esig.dss.policy.jaxb.CertificateValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.policy.jaxb.ContainerConstraints;
 import eu.europa.esig.dss.policy.jaxb.CryptographicConstraint;
-import eu.europa.esig.dss.policy.jaxb.EAAPresentationConstraints;
 import eu.europa.esig.dss.policy.jaxb.EIDAS;
+import eu.europa.esig.dss.policy.jaxb.EAAConstraints;
 import eu.europa.esig.dss.policy.jaxb.EvidenceRecordConstraints;
 import eu.europa.esig.dss.policy.jaxb.IntValueConstraint;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
@@ -1596,11 +1596,11 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public CryptographicSuite getEAAPresentationCryptographicConstraint() {
+	public CryptographicSuite getEAACryptographicConstraint() {
 		CryptographicConstraint eaaPresentationCryptographic = new CryptographicConstraint();
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null && eaaPresentationConstraints.getCryptographic() != null) {
-			eaaPresentationCryptographic = eaaPresentationConstraints.getCryptographic();
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null && EAAConstraints.getCryptographic() != null) {
+			eaaPresentationCryptographic = EAAConstraints.getCryptographic();
 		}
 		initializeCryptographicSuite(eaaPresentationCryptographic, getCryptographic());
 		return toCryptographicSuite(eaaPresentationCryptographic);
@@ -1840,145 +1840,145 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAPresentationEAASignatureUnicityConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getEAASignatureUnicity());
+	public LevelRule getEAASignatureUnicityConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getEAASignatureUnicity());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationEAASignatureValidConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getEAASignatureValid());
+	public LevelRule getEAASignatureValidConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getEAASignatureValid());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationDisclosurePresentConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getDisclosurePresent());
+	public LevelRule getEAADisclosurePresentConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getDisclosurePresent());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationDisclosureFoundConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getDisclosureFound());
+	public LevelRule getEAADisclosureFoundConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getDisclosureFound());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationDisclosureIntactConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getDisclosureIntact());
+	public LevelRule getEAADisclosureIntactConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getDisclosureIntact());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationDisclosureListExhaustiveConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getDisclosureListExhaustive());
+	public LevelRule getEAADisclosureListExhaustiveConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getDisclosureListExhaustive());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getKeyBindingSignaturePresent());
+	public LevelRule getEAAKeyBindingSignaturePresentConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getKeyBindingSignaturePresent());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAPresentationKeyBindingSignatureValidConstraint() {
-		EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-		if (eaaPresentationConstraints != null) {
-			return toLevelRule(eaaPresentationConstraints.getKeyBindingSignatureValid());
+	public LevelRule getEAAKeyBindingSignatureValidConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getKeyBindingSignatureValid());
 		}
 		return null;
 	}
 
     @Override
-    public LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAATypeIntegrityPresent());
+    public LevelRule getEAATypeIntegrityPresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAATypeIntegrityPresent());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAIdentifierPresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAAIdentifierPresent());
+    public LevelRule getEAAIdentifierPresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAAIdentifierPresent());
         }
         return null;
     }
 
     @Override
-    public MultiValuesRule getEAAPresentationEAATypeConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toRule(eaaPresentationConstraints.getEAAType());
+    public MultiValuesRule getEAATypeConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toRule(EAAConstraints.getEAAType());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAANotBeforePresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAANotBeforePresent());
+    public LevelRule getEAANotBeforePresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAANotBeforePresent());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAExpirationPresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAAExpirationPresent());
+    public LevelRule getEAAExpirationPresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAAExpirationPresent());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAAAdministrativeIssuanceDatePresent());
+    public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAAAdministrativeIssuanceDatePresent());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getEAAAdministrativeExpirationDatePresent());
+    public LevelRule getEAAAdministrativeExpirationDatePresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAAAdministrativeExpirationDatePresent());
         }
         return null;
     }
 
     @Override
-    public LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint() {
-        EAAPresentationConstraints eaaPresentationConstraints = getEAAPresentationConstraints();
-        if (eaaPresentationConstraints != null) {
-            return toLevelRule(eaaPresentationConstraints.getETSI194721Conformance());
+    public LevelRule getEAAETSI194721ConformanceConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getETSI194721Conformance());
         }
         return null;
     }
@@ -2143,12 +2143,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	/**
-	 * Returns the constraint used for EAA Presentation validation
+	 * Returns the constraint used for EAA validation
 	 *
-	 * @return {@code EAAPresentationConstraints}
+	 * @return {@code EAAConstraints}
 	 */
-	public EAAPresentationConstraints getEAAPresentationConstraints() {
-		return policy.getEAAPresentation();
+	public EAAConstraints getEAAConstraints() {
+		return policy.getEAA();
 	}
 
 	/**

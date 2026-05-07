@@ -1,29 +1,31 @@
 package eu.europa.esig.dss.enumerations;
 
 /**
- * Defines a list of EAA presentation types known by the current implementation
+ * Defines a list of format types on which supported EAA presentations may be based.
+ * NOTE: This type relates to a format of an EAA presentation document.
  *
  */
 public enum EAAPresentationType {
 
     /**
-     * Realization of EAA that implements EAA as a JSON Web Signature as specified in IETF RFC 7515,
-     * built on IETF SD-JWT VC, which further profiles a Selective Disclosure JSON Web Token as
-     * specified in IETF SD-JWT draft-ietf-oauth-selective-disclosure-jwt-22.
+     * Represents an IETF RFC 9901 "Selective Disclosure for JSON Web Tokens" token.
      */
-    SD_JWT_VC,
+    SD_JWT,
 
     /**
-     * Realization of EAA that implements EAA built on the data structures defined in ISO/IEC 18013-5.
+     * Represents a DeviceResponse mdoc structure as per ISO/IEC 18013-5 "8.3.2.1.2.2 Device retrieval mdoc response"
      */
-    ISO_IEC_MDOC,
+    MDOC_DEVICE_RESPONSE,
 
     /**
-     * Realization of EAA based on the JSON-LD (specified in W3C Recommendation:
-     * "JSON-LD 1.1. A JSON-based Serialization for Linked Data") serialization of W3C
-     * Recommendation (15 May 2025): "Verifiable Credentials Data Model v2.0".
+     * Represents an IssuerSigned mdoc structure as per ISO/IEC 18013-5 "8.3.2.1.2.2 Device retrieval mdoc response"
      */
-    W3C_VC,
+    MDOC_ISSUER_SIGNED,
+
+    /**
+     * Represents a JOSE token, as defined in IETF RFC 7515 "JSON Web Signature (JWS)"
+     */
+    JWS,
 
     /**
      * Realization of EAA based on X.509 Attribute certificates as specified in IETF RFC 5755.

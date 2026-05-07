@@ -2,12 +2,12 @@ package eu.europa.esig.dss.validation.executor;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualification;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationEAAQualificationProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationPIDQualificationProcess;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.DiagnosticDataFacade;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
@@ -67,25 +67,25 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.PID, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.PID), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertEquals(EAAQualification.PID, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.PID), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.PID), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.PID), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -96,7 +96,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.PASSED, validationEAAQualification.getConclusion().getIndication());
 
@@ -169,8 +169,8 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_pid.xml"));
         assertNotNull(diagnosticData);
 
-        XmlSigningCertificate signingCertificate = diagnosticData.getEAAPresentations().get(0)
-                .getEAAPresentationSignature().get(0).getSignature().getSigningCertificate();
+        XmlSigningCertificate signingCertificate = diagnosticData.getEAAs().get(0)
+                .getEAASignature().get(0).getSignature().getSigningCertificate();
         signingCertificate.getCertificate().getTrustedEntities().clear();
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
@@ -183,26 +183,26 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_CERT_TRUST_ANCHOR_LIST_REACHED_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -213,7 +213,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 
@@ -288,8 +288,8 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_pid.xml"));
         assertNotNull(diagnosticData);
 
-        eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentation eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        eaaPresentation.getEAAPayload().getMetadataType().setText("urn:none:eu:pid:1");
+        eu.europa.esig.dss.diagnostic.jaxb.XmlEAA eaa = diagnosticData.getEAAs().get(0);
+        eaa.getEAAPayload().getMetadataType().setText("urn:none:eu:pid:1");
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
         executor.setDiagnosticData(diagnosticData);
@@ -301,28 +301,28 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_QUAL_CONCLUSIVE_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.PID_DOCUMENT_TYPE_ANS, "urn:none:eu:pid:1")));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -333,7 +333,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 
@@ -427,29 +427,29 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_QUAL_CONCLUSIVE_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.CERT_USAGE_VALID_LOTE_PRESENT_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.CERT_USAGE_LOTE_ACCEPT_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -460,7 +460,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 
@@ -558,29 +558,29 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.NA, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_QUAL_CONCLUSIVE_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.CERT_USAGE_VALID_LOTE_PRESENT_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.PID_LOTE_TYPE_PID_PROVIDERS_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.NA), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -591,7 +591,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 
@@ -671,8 +671,8 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_pid.xml"));
         assertNotNull(diagnosticData);
 
-        XmlSigningCertificate signingCertificate = diagnosticData.getEAAPresentations().get(0)
-                .getEAAPresentationSignature().get(0).getSignature().getSigningCertificate();
+        XmlSigningCertificate signingCertificate = diagnosticData.getEAAs().get(0)
+                .getEAASignature().get(0).getSignature().getSigningCertificate();
         List<XmlTrustedEntity> trustedEntities = signingCertificate.getCertificate().getTrustedEntities();
         trustedEntities.get(0).getTrustedEntityServices().get(0).setServiceType(LoTEServiceTypeIdentifierEnum.PID_REVOCATION.getUri());
 
@@ -691,28 +691,28 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.UNKNOWN, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.UNKNOWN, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_QUAL_CONCLUSIVE_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.PID_STI_PID_ISSUANCE_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId())));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -723,7 +723,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 
@@ -803,8 +803,8 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 new File("src/test/resources/diag-data/eaa-validation/diag_data_pid.xml"));
         assertNotNull(diagnosticData);
 
-        XmlSigningCertificate signingCertificate = diagnosticData.getEAAPresentations().get(0)
-                .getEAAPresentationSignature().get(0).getSignature().getSigningCertificate();
+        XmlSigningCertificate signingCertificate = diagnosticData.getEAAs().get(0)
+                .getEAASignature().get(0).getSignature().getSigningCertificate();
         List<XmlTrustedEntity> trustedEntities = signingCertificate.getCertificate().getTrustedEntities();
         trustedEntities.get(0).getTrustedEntityServices().get(0).setStatus("unknown");
 
@@ -823,29 +823,29 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(EAAQualification.UNKNOWN, simpleReport.getEAAQualification(simpleReport.getFirstEAAPresentationId()));
-        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), simpleReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertEquals(EAAQualification.UNKNOWN, simpleReport.getEAAQualification(simpleReport.getFirstEAAId()));
+        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), simpleReport.getEAAQualifications(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.EAA_QUAL_CONCLUSIVE_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationErrors(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.PID_PROVIDER_AT_ISSUANCE_TIME_ANS)));
-        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAPresentationId()),
+        assertTrue(checkMessageValuePresence(simpleReport.getQualificationWarnings(simpleReport.getFirstEAAId()),
                 i18nProvider.getMessage(MessageTag.CERT_USAGE_STATUS_KNOWN_ANS)));
-        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAPresentationId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getQualificationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), detailedReport.getEAAQualifications(simpleReport.getFirstEAAPresentationId()));
+        assertEquals(Collections.singletonList(EAAQualification.UNKNOWN), detailedReport.getEAAQualifications(simpleReport.getFirstEAAId()));
 
-        XmlEAAPresentation xmlEAAPresentation = detailedReport.getXmlEAAPresentationById(detailedReport.getFirstEAAPresentationId());
-        assertNotNull(xmlEAAPresentation);
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
 
-        XmlValidationProcessEAAPresentation validationProcessEAAPresentation = xmlEAAPresentation.getValidationProcessEAAPresentation();
-        assertNotNull(validationProcessEAAPresentation);
-        assertEquals(Indication.PASSED, validationProcessEAAPresentation.getConclusion().getIndication());
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
         boolean sigPresentCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAAPresentation.getConstraint()) {
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
@@ -856,7 +856,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(sigPresentCheckFound);
         assertTrue(sigValidationConclusiveCheckFound);
 
-        XmlValidationEAAQualification validationEAAQualification = xmlEAAPresentation.getValidationEAAQualification();
+        XmlValidationEAAQualification validationEAAQualification = xmlEAA.getValidationEAAQualification();
         assertNotNull(validationEAAQualification);
         assertEquals(Indication.FAILED, validationEAAQualification.getConclusion().getIndication());
 

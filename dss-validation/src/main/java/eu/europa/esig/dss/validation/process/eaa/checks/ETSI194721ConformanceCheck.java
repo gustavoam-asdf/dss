@@ -1,16 +1,12 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAAPresentation;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
-import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.EAAQualification;
+import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -20,13 +16,17 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 /**
  * This class verifies whether the issuing authority identifier is valid as per TS 119 472-1
  */
-public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEAAPresentation> {
+public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEAA> {
 
-    /** EAA Presentation to check */
-    private final EAAPresentationWrapper eaaPresentation;
+    /** EAA to check */
+    private final EAAWrapper eaa;
 
     private final Date now = new Date();
 
@@ -36,16 +36,16 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
      * @param i18nProvider
      *         {@link I18nProvider}
      * @param result
-     *         {@link XmlValidationProcessEAAPresentation}
-     * @param eaaPresentation
-     *         {@link EAAPresentationWrapper}
+     *         {@link XmlValidationProcessEAA}
+     * @param eaa
+     *         {@link EAAWrapper}
      * @param constraint
      *         {@link LevelRule}
      */
-    public ETSI194721ConformanceCheck(I18nProvider i18nProvider, XmlValidationProcessEAAPresentation result,
-                                      EAAPresentationWrapper eaaPresentation, LevelRule constraint) {
+    public ETSI194721ConformanceCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+                                      EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
-        this.eaaPresentation = eaaPresentation;
+        this.eaa = eaa;
     }
 
     @Override
@@ -64,16 +64,16 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkSDJWTIssuingAuthorityPresent() {
-        if (EAAPresentationType.SD_JWT_VC.equals(eaaPresentation.getEAAType())) {
-            SignatureWrapper eaaSignature = eaaPresentation.getEAAPresentationSignatures().get(0);
+        if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
+            SignatureWrapper eaaSignature = eaa.getEAASignatures().get(0);
             CertificateWrapper signingCertificate = eaaSignature.getSigningCertificate();
             List<RelatedCertificateWrapper> relatedCertificates = eaaSignature.foundCertificates().getRelatedCertificates();
             if (signingCertificate != null && signingCertificate.isQcCompliance() && Utils.isCollectionNotEmpty(relatedCertificates)
                     && relatedCertificates.stream().anyMatch(c -> signingCertificate.getId().equals(c.getId()))) {
-                return eaaPresentation.getDocumentIssuingAuthority() == null && eaaPresentation.getDocumentIssuingAuthorityCountry() == null;
-            } else if (eaaPresentation.getCategoryQualification().equals(EAAQualification.QEAA)
-                    || eaaPresentation.getCategoryQualification().equals(EAAQualification.PUBEAA)) {
-                return eaaPresentation.getDocumentIssuingAuthority() != null;
+                return eaa.getDocumentIssuingAuthority() == null && eaa.getDocumentIssuingAuthorityCountry() == null;
+            } else if (eaa.getCategoryQualification().equals(EAAQualification.QEAA)
+                    || eaa.getCategoryQualification().equals(EAAQualification.PUBEAA)) {
+                return eaa.getDocumentIssuingAuthority() != null;
             }
         }
 
@@ -81,32 +81,32 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkMDOCIssuingAuthorityPresent() {
-        if (EAAPresentationType.ISO_IEC_MDOC.equals(eaaPresentation.getEAAType())) {
-            return eaaPresentation.getDocumentIssuingAuthority() != null;
+        if (EAAType.ISO_IEC_MDOC.equals(eaa.getEAAType())) {
+            return eaa.getDocumentIssuingAuthority() != null;
         }
 
         return true;
     }
 
     private boolean checkMDOCDocumentNumberPresent() {
-        if (EAAPresentationType.ISO_IEC_MDOC.equals(eaaPresentation.getEAAType())) {
-            return eaaPresentation.getDocumentNumber() != null;
+        if (EAAType.ISO_IEC_MDOC.equals(eaa.getEAAType())) {
+            return eaa.getDocumentNumber() != null;
         }
 
         return true;
     }
 
     private boolean checkSDJWTAdministrativeDateConformance() {
-        if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()) {
-            return (eaaPresentation.getAdministrativeIssuanceDate() == null) == (eaaPresentation.getAdministrativeExpirationDate() == null);
+        if (EAAType.SD_JWT_VC == eaa.getEAAType()) {
+            return (eaa.getAdministrativeIssuanceDate() == null) == (eaa.getAdministrativeExpirationDate() == null);
         }
 
         return true;
     }
 
     private boolean checkNowAfterAdministrativeDateIssuance() {
-        if (eaaPresentation.getAdministrativeIssuanceDate() != null) {
-            return now.after(eaaPresentation.getAdministrativeIssuanceDate());
+        if (eaa.getAdministrativeIssuanceDate() != null) {
+            return now.after(eaa.getAdministrativeIssuanceDate());
         }
 
         // Administrative date is optional, return true if not present
@@ -114,8 +114,8 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkNowBeforeAdministrativeDateExpiration() {
-        if (eaaPresentation.getAdministrativeExpirationDate() != null) {
-            return now.before(eaaPresentation.getAdministrativeExpirationDate());
+        if (eaa.getAdministrativeExpirationDate() != null) {
+            return now.before(eaa.getAdministrativeExpirationDate());
         }
 
         // Administrative date is optional, return true if not present
@@ -123,36 +123,36 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkNowAfterNotBefore() {
-        return eaaPresentation.getEAANotBefore() != null && now.after(eaaPresentation.getEAANotBefore());
+        return eaa.getEAANotBefore() != null && now.after(eaa.getEAANotBefore());
     }
 
     private boolean checkNowBeforeExpiration() {
-        return eaaPresentation.getEAANotAfter() != null && now.before(eaaPresentation.getEAANotAfter());
+        return eaa.getEAANotAfter() != null && now.before(eaa.getEAANotAfter());
     }
 
     private boolean checkNoStatusIfShortLived() {
-        if (Boolean.TRUE.equals(eaaPresentation.getShortLived())) {
-            return eaaPresentation.getEAAPayload().getEAAStatus() == null;
+        if (Boolean.TRUE.equals(eaa.getShortLived())) {
+            return eaa.getEAAPayload().getEAAStatus() == null;
         }
         return true;
     }
 
     private boolean checkStatusIsPresentIfMandatory() {
-        if ((eaaPresentation.getCategoryQualification().equals(EAAQualification.QEAA) || eaaPresentation.getCategoryQualification().equals(EAAQualification.PUBEAA))
-                && !Boolean.TRUE.equals(eaaPresentation.getShortLived())) {
-            return eaaPresentation.getEAAPayload().getEAAStatus() != null;
+        if ((eaa.getCategoryQualification().equals(EAAQualification.QEAA) || eaa.getCategoryQualification().equals(EAAQualification.PUBEAA))
+                && !Boolean.TRUE.equals(eaa.getShortLived())) {
+            return eaa.getEAAPayload().getEAAStatus() != null;
         }
 
         return true;
     }
 
     private boolean checkSDJWTStatusConformance() {
-        if (EAAPresentationType.SD_JWT_VC == eaaPresentation.getEAAType()
-                && eaaPresentation.getEAAPayload().getEAAStatus() != null) {
-            return eaaPresentation.getEAAStatusUri() != null
-                    && eaaPresentation.getEAAStatusIndex() != null
-                    && eaaPresentation.getEAAStatusType() != null
-                    && eaaPresentation.getEAAStatusPurpose() != null;
+        if (EAAType.SD_JWT_VC == eaa.getEAAType()
+                && eaa.getEAAPayload().getEAAStatus() != null) {
+            return eaa.getEAAStatusUri() != null
+                    && eaa.getEAAStatusIndex() != null
+                    && eaa.getEAAStatusType() != null
+                    && eaa.getEAAStatusPurpose() != null;
         }
 
         return true;
@@ -164,22 +164,22 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
         if (!checkNowAfterNotBefore()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_NBF,
                     ValidationProcessUtils.getFormattedDate(now),
-                    ValidationProcessUtils.getFormattedDate(eaaPresentation.getEAANotBefore())));
+                    ValidationProcessUtils.getFormattedDate(eaa.getEAANotBefore())));
         }
         if (!checkNowBeforeExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_EXP,
                     ValidationProcessUtils.getFormattedDate(now),
-                    ValidationProcessUtils.getFormattedDate(eaaPresentation.getEAANotAfter())));
+                    ValidationProcessUtils.getFormattedDate(eaa.getEAANotAfter())));
         }
         if (!checkNowAfterAdministrativeDateIssuance()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_ADI,
                     ValidationProcessUtils.getFormattedDate(now),
-                    ValidationProcessUtils.getFormattedDate(eaaPresentation.getAdministrativeIssuanceDate())));
+                    ValidationProcessUtils.getFormattedDate(eaa.getAdministrativeIssuanceDate())));
         }
         if (!checkNowBeforeAdministrativeDateExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_ADE,
                     ValidationProcessUtils.getFormattedDate(now),
-                    ValidationProcessUtils.getFormattedDate(eaaPresentation.getAdministrativeExpirationDate())));
+                    ValidationProcessUtils.getFormattedDate(eaa.getAdministrativeExpirationDate())));
         }
         if (!checkMDOCDocumentNumberPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MDOC_DOCUMENT_NUMBER_ABSENT));

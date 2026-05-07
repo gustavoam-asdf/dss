@@ -2,6 +2,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationContext;
@@ -26,8 +27,8 @@ import java.util.Objects;
  */
 public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnalyzer implements EAAPresentationAnalyzer {
 
-    /** Cached list of presentations of Electronic Attestation of Attributes */
-    private List<EAAPresentation> eaaPresentations;
+    /** Cached presentation of Electronic Attestation of Attributes */
+    private EAAPresentation eaaPresentation;
 
     /**
      * Empty constructor
@@ -58,30 +59,30 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     }
 
     @Override
-    public List<EAAPresentation> getEAAPresentations() {
-        if (eaaPresentations == null) {
-            eaaPresentations = buildEAAPresentations();
+    public EAAPresentation getEAAPresentation() {
+        if (eaaPresentation == null) {
+            eaaPresentation = buildEAAPresentation();
             // TODO : scopes ?
         }
-        return eaaPresentations;
+        return eaaPresentation;
     }
 
     /**
-     * Builds a list of presentation of Electronic Attestation of Attributes objects
+     * Builds a list of presentation of Electronic Attestation of Attributes
      *
-     * @return a list of {@link EAAPresentation}s
+     * @return {@link EAAPresentation}
      */
-    protected abstract List<EAAPresentation> buildEAAPresentations();
+    protected abstract EAAPresentation buildEAAPresentation();
 
     @Override
     protected List<AdvancedSignature> getAllSignatures() {
-        List<EAAPresentation> presentations = getEAAPresentations();
+        EAAPresentation presentation = getEAAPresentation();
 
         final List<AdvancedSignature> result = new ArrayList<>();
-        for (EAAPresentation presentation : presentations) {
-            result.addAll(presentation.getSignatures());
-            if (presentation.getKeyBindingSignature() != null) {
-                result.add(presentation.getKeyBindingSignature());
+        for (EAA eaa : presentation.getElectronicAttestationsOfAttributes()) {
+            result.addAll(eaa.getSignatures());
+            if (eaa.getKeyBindingSignature() != null) {
+                result.add(eaa.getKeyBindingSignature());
             }
         }
         return result;
@@ -92,8 +93,9 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
             Collection<T> signatures, Collection<TimestampToken> detachedTimestamps,
             Collection<EvidenceRecord> detachedEvidenceRecords, CertificateVerifier certificateVerifier) {
         ValidationContext validationContext = super.prepareValidationContext(signatures, detachedTimestamps, detachedEvidenceRecords, certificateVerifier);
-        for (EAAPresentation eaaPresentation : getEAAPresentations()) {
-            CertificateSource deviceKeyCertificateSource = getDeviceKeyCertificateSource(eaaPresentation);
+        EAAPresentation eaaPresentation = getEAAPresentation();
+        for (EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
+            CertificateSource deviceKeyCertificateSource = getDeviceKeyCertificateSource(eaa);
             if (deviceKeyCertificateSource != null) {
                 validationContext.addDocumentCertificateSource(deviceKeyCertificateSource);
             }
@@ -101,8 +103,8 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
         return validationContext;
     }
 
-    private CertificateSource getDeviceKeyCertificateSource(EAAPresentation eaaPresentation) {
-        AdvancedSignature keyBindingSignature = eaaPresentation.getKeyBindingSignature();
+    private CertificateSource getDeviceKeyCertificateSource(EAA eaa) {
+        AdvancedSignature keyBindingSignature = eaa.getKeyBindingSignature();
         if (keyBindingSignature != null) {
             return getProofOfPossessionCertificateSource(keyBindingSignature.getSigningCertificateSource());
         }

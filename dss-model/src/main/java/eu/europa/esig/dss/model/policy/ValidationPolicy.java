@@ -289,11 +289,11 @@ public interface ValidationPolicy {
 	CryptographicSuite getEvidenceRecordCryptographicConstraint();
 
 	/**
-	 * This method returns cryptographic constraints for validation of EAA Presentation
+	 * This method returns cryptographic constraints for validation of EAA
 	 *
 	 * @return {@link CryptographicSuite}
 	 */
-	CryptographicSuite getEAAPresentationCryptographicConstraint();
+	CryptographicSuite getEAACryptographicConstraint();
 
 	/**
 	 * Returns certificate CA constraint
@@ -1662,112 +1662,112 @@ public interface ValidationPolicy {
 	 *
 	 * @return {@code LevelRule} if EAASignatureUnicity element is present
 	 */
-	LevelRule getEAAPresentationEAASignatureUnicityConstraint();
+	LevelRule getEAASignatureUnicityConstraint();
 
 	/**
 	 * Returns EAASignatureValid constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if EAASignatureValid element is present
 	 */
-	LevelRule getEAAPresentationEAASignatureValidConstraint();
+	LevelRule getEAASignatureValidConstraint();
 
 	/**
 	 * Returns DisclosurePresent constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if DisclosurePresent element is present
 	 */
-	LevelRule getEAAPresentationDisclosurePresentConstraint();
+	LevelRule getEAADisclosurePresentConstraint();
 
 	/**
 	 * Returns DisclosureFound constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if DisclosureFound element is present
 	 */
-	LevelRule getEAAPresentationDisclosureFoundConstraint();
+	LevelRule getEAADisclosureFoundConstraint();
 
 	/**
 	 * Returns DisclosureIntact constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if DisclosureIntact element is present
 	 */
-	LevelRule getEAAPresentationDisclosureIntactConstraint();
+	LevelRule getEAADisclosureIntactConstraint();
 
 	/**
 	 * Returns DisclosureListExhaustive constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if DisclosureListExhaustive element is present
 	 */
-	LevelRule getEAAPresentationDisclosureListExhaustiveConstraint();
+	LevelRule getEAADisclosureListExhaustiveConstraint();
 
 	/**
 	 * Returns KeyBindingSignaturePresent constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if KeyBindingSignaturePresent element is present
 	 */
-	LevelRule getEAAPresentationKeyBindingSignaturePresentConstraint();
+	LevelRule getEAAKeyBindingSignaturePresentConstraint();
 
 	/**
 	 * Returns KeyBindingSignatureValid constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if KeyBindingSignatureValid element is present
 	 */
-	LevelRule getEAAPresentationKeyBindingSignatureValidConstraint();
+	LevelRule getEAAKeyBindingSignatureValidConstraint();
 
     /**
      * Returns EAATypeIntegrityPresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAATypeIntegrityPresent element is present
      */
-    LevelRule getEAAPresentationEAATypeIntegrityPresentConstraint();
+    LevelRule getEAATypeIntegrityPresentConstraint();
 
     /**
      * Returns EAAIdentifierPresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAAIdentifierPresent element is present
      */
-    LevelRule getEAAPresentationEAAIdentifierPresentConstraint();
+    LevelRule getEAAIdentifierPresentConstraint();
 
     /**
      * Returns EAAType constraint if present in the policy, null otherwise
      *
      * @return {@code MultiValuesRule} if EAAType element is present
      */
-    MultiValuesRule getEAAPresentationEAATypeConstraint();
+    MultiValuesRule getEAATypeConstraint();
 
     /**
      * Returns EAANotBeforePresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAANotBeforePresent element is present
      */
-    LevelRule getEAAPresentationEAANotBeforePresentConstraint();
+    LevelRule getEAANotBeforePresentConstraint();
 
     /**
      * Returns EAAExpirationPresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAAExpirationPresent element is present
      */
-    LevelRule getEAAPresentationEAAExpirationPresentConstraint();
+    LevelRule getEAAExpirationPresentConstraint();
 
     /**
      * Returns EAAAdministrativeIssuanceDatePresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAAAdministrativeIssuanceDatePresent element is present
      */
-    LevelRule getEAAPresentationEAAAdministrativeIssuanceDatePresentConstraint();
+    LevelRule getEAAAdministrativeIssuanceDatePresentConstraint();
 
     /**
      * Returns EAAAdministrativeExpirationDatePresent constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if EAAAdministrativeExpirationDatePresent element is present
      */
-    LevelRule getEAAPresentationEAAAdministrativeExpirationDatePresentConstraint();
+    LevelRule getEAAAdministrativeExpirationDatePresentConstraint();
 
     /**
      * Returns ETSI194721Conformance constraint if present in the policy, null otherwise
      *
      * @return {@code LevelRule} if ETSI194721Conformance element is present
      */
-    LevelRule getEAAPresentationEAAETSI194721ConformanceConstraint();
+    LevelRule getEAAETSI194721ConformanceConstraint();
 
 	/* Article 32 */
 

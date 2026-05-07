@@ -9,7 +9,7 @@ import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAPresentationWrapper;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.eaa.mdoc.signature.SessionTranscriptBuilder;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
@@ -147,7 +147,7 @@ class MdocEAAPresentationWithDisclosuresAndKeyBindingValidationTest extends Abst
 
         documents.add(document);
         mdocResponse.put("documents", documents);
-        mdocResponse.put("status", 1L);
+        mdocResponse.put("status", 0L);
 
         // embed in mdoc
         DSSDocument mdocDocument = new InMemoryDocument(CBORUtils.serializeCborObject(mdocResponse));
@@ -158,7 +158,7 @@ class MdocEAAPresentationWithDisclosuresAndKeyBindingValidationTest extends Abst
     protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
-        MdocEAAPresentationValidator mdocValidator = assertInstanceOf(MdocEAAPresentationValidator.class, validator);
+        MdocDeviceResponseEAAPresentationValidator mdocValidator = assertInstanceOf(MdocDeviceResponseEAAPresentationValidator.class, validator);
         mdocValidator.setSessionTranscript(new InMemoryDocument(CBORUtils.serializeCborObject(buildSessionTranscript())));
         return validator;
     }
@@ -167,23 +167,23 @@ class MdocEAAPresentationWithDisclosuresAndKeyBindingValidationTest extends Abst
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAPresentationWrapper eaaPresentation = diagnosticData.getEAAPresentations().get(0);
-        assertNotNull(eaaPresentation.getEAAIssuedAt());
-        assertNotNull(eaaPresentation.getEAANotBefore());
-        assertNotNull(eaaPresentation.getEAANotAfter());
+        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        assertNotNull(eaa.getEAAIssuedAt());
+        assertNotNull(eaa.getEAANotBefore());
+        assertNotNull(eaa.getEAANotAfter());
 
-        assertNotNull(eaaPresentation.getEAADevicePublicKey());
-        assertEquals("1.0", eaaPresentation.getEAAVersion());
-        assertEquals("org.iso.18013.5.1.mDL", eaaPresentation.getEAADocumentType());
+        assertNotNull(eaa.getEAADevicePublicKey());
+        assertEquals("1.0", eaa.getEAAVersion());
+        assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
 
-        assertEquals("John", eaaPresentation.getHolderFirstName());
-        assertEquals("Doe", eaaPresentation.getHolderLastName());
-        assertEquals(DSSUtils.parseRFCDate("2000-01-01T00:00:00Z"), eaaPresentation.getHolderBirthdate());
+        assertEquals("John", eaa.getHolderFirstName());
+        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals(DSSUtils.parseRFCDate("2000-01-01T00:00:00Z"), eaa.getHolderBirthdate());
 
-        List<ClaimWrapper> selectivelyDisclosableClaims = eaaPresentation.getSelectivelyDisclosableClaims();
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(3, selectivelyDisclosableClaims.size());
 
-        List<ClaimWrapper> payloadClaims = eaaPresentation.getAllEAAPayloadClaims();
+        List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);
 
         boolean validityInfoClaimFound = false;
