@@ -30,6 +30,7 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirat
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
@@ -163,6 +164,9 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
             item = item.setNextItem(typeIntegrityPresent());
         }
 
+        if (EAAType.ISO_IEC_MDOC == eaa.getEAAType()) {
+            item = item.setNextItem(issuanceDatePresent());
+        }
         item = item.setNextItem(eaaIdentifierPresent());
         item = item.setNextItem(notBeforePresent());
         item = item.setNextItem(expirationPresent());
@@ -258,6 +262,11 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     private ChainItem<XmlValidationProcessEAA> eaaIdentifierPresent() {
         LevelRule constraint = policy.getEAAIdentifierPresentConstraint();
         return new EAAIdentifierPresentCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> issuanceDatePresent() {
+        LevelRule constraint = policy.getEAAIssuanceDatePresentConstraint();
+        return new EAAIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> etsi194721Conformance() {

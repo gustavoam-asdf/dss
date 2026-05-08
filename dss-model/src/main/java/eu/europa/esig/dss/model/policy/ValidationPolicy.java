@@ -1728,6 +1728,13 @@ public interface ValidationPolicy {
     LevelRule getEAAIdentifierPresentConstraint();
 
     /**
+     * Returns EAAIssuanceDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAIssuanceDatePresent element is present
+     */
+    LevelRule getEAAIssuanceDatePresentConstraint();
+
+    /**
      * Returns EAAType constraint if present in the policy, null otherwise
      *
      * @return {@code MultiValuesRule} if EAAType element is present

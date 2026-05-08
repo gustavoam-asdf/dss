@@ -643,6 +643,11 @@
                             <xsd:documentation>Checks whether the EAA Identifier is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+                    <xsd:element name="EAAIssuanceDatePresent" type="LevelConstraint" minOccurs="0">
+                        <xsd:annotation>
+                            <xsd:documentation>Checks whether the EAA issuance is present within the EAA token. This check is only executed for ISO/IEC-mdoc EAA.</xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                     <xsd:element name="EAANotBeforePresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Checks whether the "not before" is present within the EAA token</xsd:documentation>

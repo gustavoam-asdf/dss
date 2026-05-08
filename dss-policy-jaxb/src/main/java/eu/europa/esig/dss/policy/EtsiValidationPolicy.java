@@ -1930,6 +1930,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
+    public LevelRule getEAAIssuanceDatePresentConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toLevelRule(EAAConstraints.getEAAIssuanceDatePresent());
+        }
+        return null;
+    }
+
+    @Override
     public MultiValuesRule getEAATypeConstraint() {
         EAAConstraints EAAConstraints = getEAAConstraints();
         if (EAAConstraints != null) {

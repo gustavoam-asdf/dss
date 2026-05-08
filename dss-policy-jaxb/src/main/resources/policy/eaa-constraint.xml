@@ -345,6 +345,7 @@
             <Id>*</Id>
         </EAAType>
         <EAATypeIntegrityPresent Level="FAIL" />
+        <EAAIssuanceDatePresent Level="FAIL" />
         <EAANotBeforePresent Level="FAIL" />
         <EAAExpirationPresent Level="FAIL" />
         <ETSI194721Conformance Level="FAIL" />
