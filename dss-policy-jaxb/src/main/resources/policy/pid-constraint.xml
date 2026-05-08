@@ -121,7 +121,6 @@
             <KeyIdentifierMatch Level="WARN" />
             <SigningTime Level="WARN" />
             <SigningTimeInCertRange Level="FAIL" />
-            <MessageDigestOrSignedPropertiesPresent Level="FAIL" />
             <EllipticCurveKeySize Level="WARN" />
         </SignedAttributes>
     </SignatureConstraints>

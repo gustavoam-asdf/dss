@@ -26,7 +26,7 @@ class CBAdESLevelBWithSigTTest extends AbstractCBAdESTestValidation {
 
     @Override
     protected void checkSignatureLevel(DiagnosticData diagnosticData) {
-        assertEquals(SignatureLevel.CBOR_NOT_ETSI, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
+        assertEquals(SignatureLevel.CB_AdES, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
     }
 
 }

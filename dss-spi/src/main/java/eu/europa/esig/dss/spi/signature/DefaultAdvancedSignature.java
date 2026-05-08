@@ -604,6 +604,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	protected abstract BaselineRequirementsChecker createBaselineRequirementsChecker(CertificateVerifier certificateVerifier);
 
 	@Override
+	public boolean hasAdESProfile() {
+		return getBaselineRequirementsChecker().hasAdESProfile();
+	}
+
+	@Override
 	public boolean hasBProfile() {
 		return getBaselineRequirementsChecker().hasBaselineBProfile();
 	}

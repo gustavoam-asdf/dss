@@ -1083,8 +1083,11 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
 
     @Override
     public SignatureLevel getDataFoundUpToLevel() {
-        if (!hasBProfile()) {
+        if (!hasAdESProfile()) {
             return SignatureLevel.CBOR_NOT_ETSI;
+        }
+        if (!hasBProfile()) {
+            return SignatureLevel.CB_AdES;
         }
         if (!hasTProfile()) {
             return SignatureLevel.CB_AdES_BASELINE_B;

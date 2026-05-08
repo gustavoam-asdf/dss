@@ -78,6 +78,13 @@ public abstract class BaselineRequirementsChecker<AS extends DefaultAdvancedSign
     }
 
     /**
+     * Checks if the signature is conformant to a corresponding AdES profile
+     *
+     * @return TRUE if the signature is AdES, FALSE otherwise
+     */
+    public abstract boolean hasAdESProfile();
+
+    /**
      * Checks if the signature has a corresponding BASELINE-B profile
      *
      * @return TRUE if the signature has a BASELINE-B profile, FALSE otherwise

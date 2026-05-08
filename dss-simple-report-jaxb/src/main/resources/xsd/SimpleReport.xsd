@@ -339,11 +339,13 @@
 			<xs:enumeration value="PKCS7-LT" />
 			<xs:enumeration value="PKCS7-LTA" />
 			<xs:enumeration value="JSON-NOT-ETSI" />
+			<xs:enumeration value="JAdES" />
 			<xs:enumeration value="JAdES-BASELINE-B" />
 			<xs:enumeration value="JAdES-BASELINE-T" />
 			<xs:enumeration value="JAdES-BASELINE-LT" />
 			<xs:enumeration value="JAdES-BASELINE-LTA" />
 			<xs:enumeration value="CBOR-NOT-ETSI" />
+			<xs:enumeration value="CB-AdES" />
 			<xs:enumeration value="CB-AdES-BASELINE-B" />
 			<xs:enumeration value="CB-AdES-BASELINE-T" />
 			<xs:enumeration value="CB-AdES-BASELINE-LT" />

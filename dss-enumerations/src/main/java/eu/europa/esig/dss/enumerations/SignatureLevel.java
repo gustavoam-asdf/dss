@@ -23,11 +23,10 @@ package eu.europa.esig.dss.enumerations;
 import java.util.Objects;
 
 import static eu.europa.esig.dss.enumerations.SignatureForm.CAdES;
-import static eu.europa.esig.dss.enumerations.SignatureForm.CBAdES;
-import static eu.europa.esig.dss.enumerations.SignatureForm.JAdES;
 import static eu.europa.esig.dss.enumerations.SignatureForm.PAdES;
 import static eu.europa.esig.dss.enumerations.SignatureForm.PKCS7;
 import static eu.europa.esig.dss.enumerations.SignatureForm.XAdES;
+import static eu.europa.esig.dss.enumerations.SignatureProfile.AdES;
 import static eu.europa.esig.dss.enumerations.SignatureProfile.BASELINE_B;
 import static eu.europa.esig.dss.enumerations.SignatureProfile.BASELINE_LT;
 import static eu.europa.esig.dss.enumerations.SignatureProfile.BASELINE_LTA;
@@ -62,9 +61,11 @@ public enum SignatureLevel {
 	PAdES_BES(PAdES, EXTENDED_BES), PAdES_EPES(PAdES, EXTENDED_EPES), PAdES_LTV(PAdES, EXTENDED_LTV),
 	PAdES_BASELINE_B(PAdES, BASELINE_B), PAdES_BASELINE_T(PAdES, BASELINE_T), PAdES_BASELINE_LT(PAdES, BASELINE_LT), PAdES_BASELINE_LTA(PAdES, BASELINE_LTA),
 
-	JSON_NOT_ETSI(JAdES, NOT_ETSI), JAdES_BASELINE_B(JAdES, BASELINE_B), JAdES_BASELINE_T(JAdES, BASELINE_T), JAdES_BASELINE_LT(JAdES, BASELINE_LT), JAdES_BASELINE_LTA(JAdES, BASELINE_LTA),
+	JSON_NOT_ETSI(SignatureForm.JAdES, NOT_ETSI), JAdES(SignatureForm.JAdES, AdES), JAdES_BASELINE_B(SignatureForm.JAdES, BASELINE_B),
+	JAdES_BASELINE_T(SignatureForm.JAdES, BASELINE_T), JAdES_BASELINE_LT(SignatureForm.JAdES, BASELINE_LT), JAdES_BASELINE_LTA(SignatureForm.JAdES, BASELINE_LTA),
 
-	CBOR_NOT_ETSI(CBAdES, NOT_ETSI), CB_AdES_BASELINE_B(CBAdES, BASELINE_B), CB_AdES_BASELINE_T(CBAdES, BASELINE_T), CB_AdES_BASELINE_LT(CBAdES, BASELINE_LT), CB_AdES_BASELINE_LTA(CBAdES, BASELINE_LTA),
+	CBOR_NOT_ETSI(SignatureForm.CBAdES, NOT_ETSI), CB_AdES(SignatureForm.CBAdES, AdES), CB_AdES_BASELINE_B(SignatureForm.CBAdES, BASELINE_B),
+	CB_AdES_BASELINE_T(SignatureForm.CBAdES, BASELINE_T), CB_AdES_BASELINE_LT(SignatureForm.CBAdES, BASELINE_LT), CB_AdES_BASELINE_LTA(SignatureForm.CBAdES, BASELINE_LTA),
 	
 	UNKNOWN(null, NOT_ETSI);
 

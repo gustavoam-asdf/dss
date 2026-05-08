@@ -1217,8 +1217,11 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 
 	@Override
 	public SignatureLevel getDataFoundUpToLevel() {
-		if (!hasBProfile()) {
+		if (!hasAdESProfile()) {
 			return SignatureLevel.JSON_NOT_ETSI;
+		}
+		if (!hasBProfile()) {
+			return SignatureLevel.JAdES;
 		}
 		if (!hasTProfile()) {
 			return SignatureLevel.JAdES_BASELINE_B;

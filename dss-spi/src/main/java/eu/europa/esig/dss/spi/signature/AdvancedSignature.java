@@ -536,6 +536,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	SignatureLevel getDataFoundUpToLevel();
 
 	/**
+	 * Checks if the signature is conformant to the corresponding AdES profile
+	 *
+	 * @return TRUE if the signature is AdES, FALSE otherwise
+	 */
+	boolean hasAdESProfile();
+
+	/**
 	 * Checks if the signature is conformant to AdES-BASELINE-B level
 	 *
 	 * @return TRUE if the B-level is present, FALSE otherwise

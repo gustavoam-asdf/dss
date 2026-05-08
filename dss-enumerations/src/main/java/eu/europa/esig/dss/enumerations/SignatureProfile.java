@@ -123,6 +123,11 @@ public enum SignatureProfile {
     EXTENDED_LTV,
 
     /**
+     * Defines an AdES profile, which is not BASELINE or EXTENDED.
+     */
+    AdES,
+
+    /**
      * Represents an unknown or a not supported signature profile.
      */
     NOT_ETSI;

@@ -36,6 +36,52 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
     }
 
     @Override
+    public boolean hasAdESProfile() {
+        CBORSignature cose = signature.getCoseSignature();
+
+        COSEProtectedHeader signatureProtectedHeader = cose.getSignatureProtectedHeader();
+        if (signatureProtectedHeader == null) {
+            LOG.warn("Signature protected header shall be present for CB-AdES signature!");
+            return false;
+        }
+
+        // 5.1.2 The alg (algorithm) header parameter
+        if (signatureProtectedHeader.getAsLong(COSEHeaderParameter.ALG.cbor()) == null &&
+                Utils.isStringEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameter.ALG.cbor()))) {
+            LOG.warn("'alg' header shall be present for CB-AdES signature!");
+            return false;
+        }
+
+        // 5.1.3 The content type (content type) header parameter
+        if (Utils.isStringNotEmpty(signatureProtectedHeader.getAsString(COSEHeaderParameter.CONTENT_TYPE.cbor()))) {
+            if (signatureProtectedHeader.getAsMap(COSEHeaderParameter.SIG_D.cbor()) != null) {
+                LOG.warn("'content type' header shall not be present for a detached CB-AdES with 'sigD' header parameter!");
+                return false;
+            }
+            if (signature.isCounterSignature()) {
+                LOG.warn("'content type' header shall not be present for a CB-AdES counter signature!");
+                return false;
+            }
+        }
+        // 5.1.10 The crit (critical) header parameter
+        if (!critRequirements(signatureProtectedHeader, "CB-AdES")) {
+            // validation errors returned inside
+            return false;
+        }
+        // 5.2.2 The x5ts (X.509 certificates Thumbprints) header parameter
+        int certHeaders = 0;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5T.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5TS.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
+        if (signatureProtectedHeader.getAsBinaries(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
+        if (certHeaders == 0) {
+            LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present for CB-AdES signature (cardinality == 1)!");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public boolean hasBaselineBProfile() {
         CBORSignature cose = signature.getCoseSignature();
         CBAdESUHeaders uHeaders = signature.getUHeaders();
@@ -58,7 +104,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
             return false;
         }
         // verify 'crit' as of RFC 9052 and ETSI TS 119 152-1
-        if (!critRequirements(signatureProtectedHeader)) {
+        if (!critRequirements(signatureProtectedHeader, "CB-AdES-BASELINE-B")) {
             // validation errors returned inside
             return false;
         }
@@ -94,7 +140,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         return true;
     }
 
-    private boolean critRequirements(COSEProtectedHeader protectedHeader) {
+    private boolean critRequirements(COSEProtectedHeader protectedHeader, String profile) {
         // NOTE: RFC 9052 requirements are more lax than RFC 7515 for JWS
         List<CBORObject> critList = new ArrayList<>();
 
@@ -104,7 +150,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
             // crit cannot be empty
             critList.addAll(crit.getValueAsList());
             if (crit.isEmpty()) {
-                LOG.warn("'crit' header shall not be empty for a CB-AdES-BASELINE-B signature (see RFC 9052)!");
+                LOG.warn("'crit' header shall not be empty for a {} signature (see RFC 9052)!", profile);
                 return false;
             }
         }
@@ -113,10 +159,10 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         for (CBORObject key : keySet) {
             if (CBORUtils.isRequiredCriticalHeader(key)) {
                 if (crit == null) {
-                    LOG.warn("'crit' header shall be present when '{}' header is present in a signature for CB-AdES-BASELINE-B signature!", key);
+                    LOG.warn("'crit' header shall be present when '{}' header is present in a signature for {} signature!", key, profile);
                     return false;
                 } else if (!critList.contains(key)) {
-                    LOG.warn("'crit' header shall contain '{}' header when present in a signature for CB-AdES-BASELINE-B signature!", key);
+                    LOG.warn("'crit' header shall contain '{}' header when present in a signature for {} signature!", key, profile);
                     return false;
                 }
             }
@@ -125,7 +171,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
             // crit shall not contain not-used entries
             if (!keySet.contains(critEntry)) {
                 LOG.warn("'crit' header can contain only entries used within a protected header " +
-                        "for CB-AdES-BASELINE-B signature (see RFC 9052)! Found header : '{}'", critEntry);
+                        "for {} signature (see RFC 9052)! Found header : '{}'", profile, critEntry);
                 return false;
             }
         }
