@@ -729,7 +729,7 @@ public class ValidationProcessUtils {
 	 *
 	 * @param values {@link String} to check
 	 * @param expectedValues {@link String}s to check against
-	 * @return TRUE if the values are allowed by the list of expected values, FALSE otherwise
+	 * @return TRUE if at least one of the value is allowed by the list of expected values, FALSE otherwise
 	 */
 	public static boolean processValuesCheck(List<String> values, List<String> expectedValues) {
 		if (Utils.isCollectionNotEmpty(values)) {
@@ -743,6 +743,26 @@ public class ValidationProcessUtils {
 			return Utils.isCollectionEmpty(expectedValues);
 		}
 	}
+
+    /**
+     * Checks the values against the expected values
+     *
+     * @param values {@link String} to check
+     * @param expectedValues {@link String}s to check against
+     * @return TRUE if all the values are allowed by the list of expected values, FALSE otherwise
+     */
+    public static boolean processAllValuesCheck(List<String> values, List<String> expectedValues) {
+        if (Utils.isCollectionNotEmpty(values)) {
+            for (String value : values) {
+                if (!processValueCheck(value, expectedValues)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return Utils.isCollectionEmpty(expectedValues);
+        }
+    }
 
 	/**
 	 * Returns final cryptographic validation from the AOV block.

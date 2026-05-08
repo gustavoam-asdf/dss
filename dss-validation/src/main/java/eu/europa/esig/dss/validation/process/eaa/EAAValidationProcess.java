@@ -173,6 +173,7 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         item = item.setNextItem(administrativeIssuanceDatePresent());
         item = item.setNextItem(administrativeExpirationDatePresent());
         item = item.setNextItem(etsi194721Conformance());
+        item = item.setNextItem(supportedClaims());
 
         result.setAOV(xmlAOV);
 
@@ -272,6 +273,11 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     private ChainItem<XmlValidationProcessEAA> etsi194721Conformance() {
         LevelRule constraint = policy.getEAAETSI194721ConformanceConstraint();
         return new ETSI194721ConformanceCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> supportedClaims() {
+        MultiValuesRule constraint = policy.getEAASupportedClaimsConstraint();
+        return new EAATypeCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> algorithmsObsolescenceValidation(XmlAOV aovResult, Date lowestPOETime) {

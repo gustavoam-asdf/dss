@@ -1939,6 +1939,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
     @Override
+    public MultiValuesRule getEAASupportedClaimsConstraint() {
+        EAAConstraints EAAConstraints = getEAAConstraints();
+        if (EAAConstraints != null) {
+            return toRule(EAAConstraints.getEAASupportedClaims());
+        }
+        return null;
+    }
+
+    @Override
     public MultiValuesRule getEAATypeConstraint() {
         EAAConstraints EAAConstraints = getEAAConstraints();
         if (EAAConstraints != null) {
