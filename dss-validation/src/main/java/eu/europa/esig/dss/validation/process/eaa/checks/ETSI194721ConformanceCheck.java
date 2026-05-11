@@ -57,23 +57,29 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
                 && checkSDJWTAdministrativeDateConformance()
                 && checkMDOCDocumentNumberPresent()
                 && checkMDOCIssuingAuthorityPresent()
-                && checkSDJWTIssuingAuthorityPresent()
+                && checkSDJWTIssuingAuthorityAndCountryPresent()
                 && checkNoStatusIfShortLived()
                 && checkStatusIsPresentIfMandatory()
                 && checkSDJWTStatusConformance();
     }
 
-    private boolean checkSDJWTIssuingAuthorityPresent() {
+    private boolean checkSDJWTIssuingAuthorityAndCountryPresent() {
         if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
             SignatureWrapper eaaSignature = eaa.getEAASignatures().get(0);
             CertificateWrapper signingCertificate = eaaSignature.getSigningCertificate();
             List<RelatedCertificateWrapper> relatedCertificates = eaaSignature.foundCertificates().getRelatedCertificates();
-            if (signingCertificate != null && signingCertificate.isQcCompliance() && Utils.isCollectionNotEmpty(relatedCertificates)
-                    && relatedCertificates.stream().anyMatch(c -> signingCertificate.getId().equals(c.getId()))) {
-                return eaa.getDocumentIssuingAuthority() == null && eaa.getDocumentIssuingAuthorityCountry() == null;
+
+            boolean signCertPresent = signingCertificate != null && Utils.isCollectionNotEmpty(relatedCertificates)
+                    && relatedCertificates.stream().anyMatch(c -> signingCertificate.getId().equals(c.getId()));
+            if (signCertPresent) {
+                if (signingCertificate.isQcCompliance()) {
+                    return eaa.getDocumentIssuingAuthority() == null && eaa.getDocumentIssuingAuthorityCountry() == null;
+                }
             } else if (eaa.getCategoryQualification().equals(EAAQualification.QEAA)
                     || eaa.getCategoryQualification().equals(EAAQualification.PUBEAA)) {
-                return eaa.getDocumentIssuingAuthority() != null;
+                // NOTE: TS 119 472-1 v1.2.1 expects a QC for a QEAA/PubEAA, but does not define how to proceed for a not QC
+                // Therefore we accept any certificate in such a case
+                return eaa.getDocumentIssuingAuthority() != null && eaa.getDocumentIssuingAuthorityCountry() != null;
             }
         }
 
@@ -131,7 +137,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkNoStatusIfShortLived() {
-        if (Boolean.TRUE.equals(eaa.getShortLived())) {
+        if (Utils.isTrue(eaa.getShortLived())) {
             return eaa.getEAAPayload().getEAAStatus() == null;
         }
         return true;
@@ -139,7 +145,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
 
     private boolean checkStatusIsPresentIfMandatory() {
         if ((eaa.getCategoryQualification().equals(EAAQualification.QEAA) || eaa.getCategoryQualification().equals(EAAQualification.PUBEAA))
-                && !Boolean.TRUE.equals(eaa.getShortLived())) {
+                && !Utils.isTrue(eaa.getShortLived())) {
             return eaa.getEAAPayload().getEAAStatus() != null;
         }
 
@@ -187,7 +193,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
         if (!checkMDOCIssuingAuthorityPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MDOC_ISSUING_AUTHORITY));
         }
-        if (!checkSDJWTIssuingAuthorityPresent()) {
+        if (!checkSDJWTIssuingAuthorityAndCountryPresent()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_SDJWT_ISSUING_AUTHORITY));
         }
         if (!checkSDJWTAdministrativeDateConformance()) {
@@ -203,7 +209,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
             errors.add(i18nProvider.getMessage(MessageTag.EAA_STATUS_SDJWT_CONFORMANCE));
         }
 
-        return String.join(" - ", errors);
+        return Utils.joinStrings(errors, " - ");
     }
 
     @Override

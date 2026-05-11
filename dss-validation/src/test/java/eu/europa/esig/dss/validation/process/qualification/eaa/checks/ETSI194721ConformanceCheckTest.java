@@ -494,6 +494,9 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
         xmlEAAPayload.setNotBefore(notBefore);
@@ -538,6 +541,9 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
         xmlEAAPayload.setNotBefore(notBefore);
@@ -562,6 +568,218 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void qeaaIssuingCountryAbsentTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim issuingAuthority = new XmlClaim();
+        issuingAuthority.setText("VAT-12345");
+        xmlEAAPayload.setIssuingAuthority(issuingAuthority);
+
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setNotAfter(notAfter);
+
+        XmlClaim category = new XmlClaim();
+        category.setText(EAACategory.EU_QEAA.getUrn());
+        xmlEAAPayload.setCategory(category);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void pubeaaIssuingCountryAbsentTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim issuingAuthority = new XmlClaim();
+        issuingAuthority.setText("VAT-12345");
+        xmlEAAPayload.setIssuingAuthority(issuingAuthority);
+
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setNotAfter(notAfter);
+
+        XmlClaim category = new XmlClaim();
+        category.setText(EAACategory.EU_PUBEAA.getUrn());
+        xmlEAAPayload.setCategory(category);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void qeaaIssuingCountryPresentTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim issuingAuthority = new XmlClaim();
+        issuingAuthority.setText("VAT-12345");
+        xmlEAAPayload.setIssuingAuthority(issuingAuthority);
+
+        XmlClaim issuingCountry = new XmlClaim();
+        issuingCountry.setText("LU");
+        xmlEAAPayload.setIssuingCountry(issuingCountry);
+
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setNotAfter(notAfter);
+
+        XmlClaim category = new XmlClaim();
+        category.setText(EAACategory.EU_QEAA.getUrn());
+        xmlEAAPayload.setCategory(category);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void pubeaaIssuingCountryPresentTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim issuingAuthority = new XmlClaim();
+        issuingAuthority.setText("VAT-12345");
+        xmlEAAPayload.setIssuingAuthority(issuingAuthority);
+
+        XmlClaim issuingCountry = new XmlClaim();
+        issuingCountry.setText("LU");
+        xmlEAAPayload.setIssuingCountry(issuingCountry);
+
+        XmlClaim shortLived = new XmlClaim();
+        xmlEAAPayload.setShortLived(shortLived);
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setNotAfter(notAfter);
+
+        XmlClaim category = new XmlClaim();
+        category.setText(EAACategory.EU_PUBEAA.getUrn());
+        xmlEAAPayload.setCategory(category);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
     }
 
     @Test

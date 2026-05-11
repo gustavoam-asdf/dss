@@ -89,12 +89,44 @@
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
+                <NotBefore name="nbf">
+                    <DateTime>2023-05-02T04:00:00Z</DateTime>
+                </NotBefore>
                 <NotAfter name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
                 </NotAfter>
                 <UpdatedAt name="updated_at" disclosure="true">
                     <DateTime>2019-10-02T07:06:40Z</DateTime>
                 </UpdatedAt>
+                <MetadataType name="vct">
+                    <Text>nowina:lu:oid</Text>
+                    <Integrity name="vct#integrity">
+                        <DigestMethod>SHA256</DigestMethod>
+                        <DigestValue>ztYSkjm28ZN3FjZBWKimYkC6XQGBqdyepA0cTMMhPPQ=</DigestValue>
+                    </Integrity>
+                </MetadataType>
+                <Status name="status">
+                    <StatusList name="status_list">
+                        <Index name="index">
+                            <Number>1</Number>
+                        </Index>
+                        <Uri name="uri">
+                            <Text>http://nowina.lu/eaa/status</Text>
+                        </Uri>
+                    </StatusList>
+                    <Index name="index">
+                        <Number>1</Number>
+                    </Index>
+                    <Uri name="uri">
+                        <Text>http://nowina.lu/eaa/status</Text>
+                    </Uri>
+                    <Type name="type">
+                        <Text>TokenStatusList</Text>
+                    </Type>
+                    <Purpose name="purpose">
+                        <Text>revocation</Text>
+                    </Purpose>
+                </Status>
                 <DeviceKey name="cnf">
                     <Entry name="jwk">
                         <Entry name="kty">

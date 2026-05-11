@@ -294,6 +294,7 @@ class QEAATLAndPIDLoTETest extends PKIFactoryAccess {
                 "    \"country\": \"US\"\n" +
                 "  },\n" +
                 "  \"given_name\": \"John\",\n" +
+                "  \"shortLived\": null,\n" +
                 "}";
         DSSDocument originalDocument = new InMemoryDocument(payload.getBytes());
 
