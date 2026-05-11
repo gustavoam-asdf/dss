@@ -914,7 +914,7 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	}
 
 	/**
-	 * This method returns a reference extracted from a 'kid' (key identifier) header (used in JAdES)
+	 * This method returns a reference extracted from a 'kid' (key identifier) header (used in JAdES, CB-AdES)
 	 *
 	 * @return {@link CertificateRefWrapper}
 	 */
@@ -927,6 +927,18 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 			return certificateRefs.iterator().next();
 		}
 		return null;
+	}
+
+	/**
+	 * This method returns a list of references extracted from a 'x5u' (X.509 URL) header (used in JAdES, CB-AdES)
+	 *
+	 * @return a list of {@link CertificateRefWrapper}s
+	 */
+	public List<CertificateRefWrapper> getX509UrlReferences() {
+		List<CertificateRefWrapper> certificateRefs = new ArrayList<>();
+		certificateRefs.addAll(foundCertificates().getRelatedCertificateRefsByRefOrigin(CertificateRefOrigin.X509_URL));
+		certificateRefs.addAll(foundCertificates().getOrphanCertificateRefsByRefOrigin(CertificateRefOrigin.X509_URL));
+		return certificateRefs;
 	}
 
 	/**

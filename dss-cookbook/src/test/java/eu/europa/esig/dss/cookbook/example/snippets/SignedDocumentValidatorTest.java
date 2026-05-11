@@ -31,6 +31,7 @@ import eu.europa.esig.dss.enumerations.ValidationLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.policy.DefaultSignaturePolicyValidatorLoader;
@@ -41,6 +42,7 @@ import eu.europa.esig.dss.spi.validation.executor.DefaultValidationContextExecut
 import eu.europa.esig.dss.spi.validation.executor.SkipValidationContextExecutor;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.spi.x509.CommonX509URLCertificateSource;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.executor.signature.DefaultSignatureProcessExecutor;
 import eu.europa.esig.dss.validation.identifier.UserFriendlyIdentifierProvider;
@@ -279,6 +281,29 @@ class SignedDocumentValidatorTest {
 		assertNotNull(schema);
 		assertNotNull(bootstrap4Templates);
 		assertNotNull(pdfTemplates);
+	}
+
+	@Test
+	void x509CertSourceTest() {
+		DSSDocument document = new FileDocument("src/test/resources/signature-pool/signedXmlXadesLT.xml");
+
+		SignedDocumentValidator documentValidator = SignedDocumentValidator.fromDocument(document);
+		documentValidator.setCertificateVerifier(new CommonCertificateVerifier());
+
+		// tag::x509CertSource[]
+		// import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
+		// import eu.europa.esig.dss.spi.x509.CommonX509URLCertificateSource;
+
+		// Instantiate an X509Url certificate source
+		CommonX509URLCertificateSource x509URLCertificateSource = new CommonX509URLCertificateSource();
+
+		// Provide DataLoader to download the certificates from the remote
+		x509URLCertificateSource.setDataLoader(new CommonsDataLoader());
+
+		// Set as the signing certificate source within a DocumentValidator
+		documentValidator.setSigningCertificateSource(x509URLCertificateSource);
+		// end::x509CertSource[]
+
 	}
 
 }

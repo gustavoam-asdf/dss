@@ -1308,6 +1308,24 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelRule getX509UrlPresent(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toLevelRule(signedAttributeConstraints.getX509UrlPresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getX509UrlMatch(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toLevelRule(signedAttributeConstraints.getX509UrlMatch());
+		}
+		return null;
+	}
+
+	@Override
 	public LevelRule getReferenceDataExistenceConstraint(Context context) {
 		BasicSignatureConstraints basicSignatureConstraints = getBasicSignatureConstraintsByContext(context);
 		if (basicSignatureConstraints != null) {

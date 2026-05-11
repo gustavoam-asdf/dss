@@ -50,6 +50,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -420,6 +421,182 @@ class JAdESValidationExecutorTest extends AbstractProcessExecutorTest {
         assertFalse(ellipticCurveCheckFound);
 
         checkReports(reports);
+    }
+
+    @Test
+    void checkJAdESX5UPresentAndValidTest() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_jades_valid.xml"));
+        assertNotNull(diagnosticData);
+
+        XmlSignature signature = diagnosticData.getSignatures().get(0);
+        List<XmlRelatedCertificate> relatedCertificates = signature.getFoundCertificates().getRelatedCertificates();
+        for (XmlRelatedCertificate xmlRelatedCertificate : relatedCertificates) {
+            if (signature.getSigningCertificate().getCertificate().getId().equals(xmlRelatedCertificate.getCertificate().getId())) {
+                XmlCertificateRef xmlCertificateRef = new XmlCertificateRef();
+                xmlCertificateRef.setOrigin(CertificateRefOrigin.X509_URL);
+                xmlCertificateRef.setX509Url("https://nowina.lu/pki-factory/good-pki/p7c");
+                xmlRelatedCertificate.getCertificateRefs().add(xmlCertificateRef);
+            }
+        }
+
+        LevelConstraint levelConstraint = new LevelConstraint();
+        levelConstraint.setLevel(Level.FAIL);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        SignedAttributesConstraints signedAttributes = validationPolicy.getSignatureConstraints().getSignedAttributes();
+        signedAttributes.setX509UrlPresent(levelConstraint);
+        signedAttributes.setX509UrlMatch(levelConstraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        assertNotNull(reports);
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(signatureBBB);
+
+        XmlSAV sav = signatureBBB.getSAV();
+        assertNotNull(sav);
+        assertEquals(Indication.PASSED, sav.getConclusion().getIndication());
+
+        boolean kidPresentCheckFound = false;
+        boolean kidPresentMatchFound = false;
+        for (XmlConstraint constraint : sav.getConstraint()) {
+            if (MessageTag.BBB_ICS_ISAX509UP.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                kidPresentCheckFound = true;
+            } else if (MessageTag.BBB_ICS_ISAX509UA.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                kidPresentMatchFound = true;
+            }
+        }
+        assertTrue(kidPresentCheckFound);
+        assertTrue(kidPresentMatchFound);
+    }
+
+    @Test
+    void checkJAdESX5UNotPresentTest() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_jades_valid.xml"));
+        assertNotNull(diagnosticData);
+
+        LevelConstraint levelConstraint = new LevelConstraint();
+        levelConstraint.setLevel(Level.FAIL);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        SignedAttributesConstraints signedAttributes = validationPolicy.getSignatureConstraints().getSignedAttributes();
+        signedAttributes.setX509UrlPresent(levelConstraint);
+        signedAttributes.setX509UrlMatch(levelConstraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        assertNotNull(reports);
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_ICS_ISAX509UP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(signatureBBB);
+
+        XmlSAV sav = signatureBBB.getSAV();
+        assertNotNull(sav);
+        assertEquals(Indication.INDETERMINATE, sav.getConclusion().getIndication());
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, sav.getConclusion().getSubIndication());
+
+        boolean kidPresentCheckFound = false;
+        boolean kidPresentMatchFound = false;
+        for (XmlConstraint constraint : sav.getConstraint()) {
+            if (MessageTag.BBB_ICS_ISAX509UP.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                assertEquals(MessageTag.BBB_ICS_ISAX509UP_ANS.getId(), constraint.getError().getKey());
+                kidPresentCheckFound = true;
+            } else if (MessageTag.BBB_ICS_ISAX509UA.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                kidPresentMatchFound = true;
+            }
+        }
+        assertTrue(kidPresentCheckFound);
+        assertFalse(kidPresentMatchFound);
+    }
+
+    @Test
+    void checkJAdESX5UNoMatchTest() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_jades_valid.xml"));
+        assertNotNull(diagnosticData);
+
+        XmlSignature signature = diagnosticData.getSignatures().get(0);
+        List<XmlRelatedCertificate> relatedCertificates = signature.getFoundCertificates().getRelatedCertificates();
+        for (XmlRelatedCertificate xmlRelatedCertificate : relatedCertificates) {
+            if (!signature.getSigningCertificate().getCertificate().getId().equals(xmlRelatedCertificate.getCertificate().getId())) {
+                XmlCertificateRef xmlCertificateRef = new XmlCertificateRef();
+                xmlCertificateRef.setOrigin(CertificateRefOrigin.X509_URL);
+                xmlCertificateRef.setX509Url("https://nowina.lu/pki-factory/good-pki/p7c");
+                xmlRelatedCertificate.getCertificateRefs().add(xmlCertificateRef);
+            }
+        }
+
+        LevelConstraint levelConstraint = new LevelConstraint();
+        levelConstraint.setLevel(Level.FAIL);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        SignedAttributesConstraints signedAttributes = validationPolicy.getSignatureConstraints().getSignedAttributes();
+        signedAttributes.setX509UrlPresent(levelConstraint);
+        signedAttributes.setX509UrlMatch(levelConstraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        assertNotNull(reports);
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_ICS_ISAX509UA_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(signatureBBB);
+
+        XmlSAV sav = signatureBBB.getSAV();
+        assertNotNull(sav);
+        assertEquals(Indication.INDETERMINATE, sav.getConclusion().getIndication());
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, sav.getConclusion().getSubIndication());
+
+        boolean kidPresentCheckFound = false;
+        boolean kidPresentMatchFound = false;
+        for (XmlConstraint constraint : sav.getConstraint()) {
+            if (MessageTag.BBB_ICS_ISAX509UP.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                kidPresentCheckFound = true;
+            } else if (MessageTag.BBB_ICS_ISAX509UA.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                assertEquals(MessageTag.BBB_ICS_ISAX509UA_ANS.getId(), constraint.getError().getKey());
+                kidPresentMatchFound = true;
+            }
+        }
+        assertTrue(kidPresentCheckFound);
+        assertTrue(kidPresentMatchFound);
     }
 
 }

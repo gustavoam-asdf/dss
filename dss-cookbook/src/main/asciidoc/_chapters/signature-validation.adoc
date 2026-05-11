@@ -636,6 +636,19 @@ DSS allows adding the certificate that was used to sign the document to the inpu
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/SignedDocumentValidatorTest.java[tags=demo-signing-certificate]
 ----
 
+While any implementation of a `CertificateSource` can be used to provide a source of signing certificates, DSS provides a few format specific implementations, such as:
+
+* `KidCertificateSource` - allow providing a collection of certificates by a unique `kid` (key identifier) value. The certificate source can be used for referencing certificates in JAdES and CB-AdES signature formats by the corresponding signed header parameter.
+* `X509URLCertificateSource` - allow providing a collection of certificates by a unique `x5u` (X509 URL) value. The certificate source can be used for referencing certificates in JAdES and CB-AdES signature formats by the corresponding signed header parameter.
+* `CommonX509URLCertificateSource` - Default implementation of the `X509URLCertificateSource` allowing manual configuration of the URL to certificate(s) mapping or dynamically by using a `DataLoader` (see an example below).
+* `COSEX509URLCertificateSource` - Implementation of the `X509URLCertificateSource` allowing extraction of CBOR encoded certificates, as defined in RFC 9360 (used in CB-AdES).
+
+[source,java,indent=0]
+.Provide X509URLCertificateSource to the validation
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/SignedDocumentValidatorTest.java[tags=x509CertSource]
+----
+
 ==== Trusted Certificates
 
 To build a prospective certificate chain, a list of pre-configured trust anchors must be provided to the validator. It may be done manually by adding a keystore or a set of certificates to the trusted certificate source, or in an automated way, e.g. using the EU LOTL (see <<tlValidationJob>> for more information).

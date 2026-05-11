@@ -936,6 +936,25 @@ public interface ValidationPolicy {
 	LevelRule getKeyIdentifierMatch(Context context);
 
 	/**
+	 * Indicates if the value of 'x5u' (X.509 URL) header parameter is present within the protected header of the signature
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if X509UrlPresent for a given context element is present
+	 *         in the constraint file, null otherwise.
+	 */
+	LevelRule getX509UrlPresent(Context context);
+
+	/**
+	 * Indicates if the application is able to derive the signing-certificate using the value indicated within
+	 * the 'x5u' header parameter of the protected header of the signature
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if X509UrlMatch for a given context element is present
+	 *         in the constraint file, null otherwise.
+	 */
+	LevelRule getX509UrlMatch(Context context);
+
+	/**
 	 * Indicates if the referenced data is found
 	 *
 	 * @param context {@link Context}

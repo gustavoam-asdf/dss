@@ -36,6 +36,7 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ArchiveTimeStampCheck;
@@ -59,6 +60,8 @@ import eu.europa.esig.dss.validation.process.bbb.sav.checks.SigningTimeInCertifi
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.StructuralValidationCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ValidationDataRefsOnlyTimeStampCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ValidationDataTimeStampCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.X509UrlMatchCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.X509UrlPresentCheck;
 import eu.europa.esig.dss.validation.process.vpfltvd.checks.TimestampMessageImprintWithIdCheck;
 
 import java.util.Date;
@@ -136,13 +139,20 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 				item = item.setNextItem(allCertificatesInPathReferenced());
 			}
 
-			// 'kid' (key identifier) verification for JAdES
-			if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+			// verification for JAdES / CB-AdES
+			if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm()) ||
+					SignatureForm.CBAdES.equals(token.getSignatureFormat().getSignatureForm())) {
 
 				item = item.setNextItem(keyIdentifierPresent());
 
 				if (token.getKeyIdentifierReference() != null) {
 					item = item.setNextItem(keyIdentifierMatch());
+				}
+
+				item = item.setNextItem(x509UrlPresent());
+
+				if (Utils.isCollectionNotEmpty(token.getX509UrlReferences())) {
+					item = item.setNextItem(x509UrlMatch());
 				}
 
 			}
@@ -240,6 +250,16 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 	private ChainItem<XmlSAV> keyIdentifierMatch() {
 		LevelRule constraint = validationPolicy.getKeyIdentifierMatch(context);
 		return new KeyIdentifierMatchCheck(i18nProvider, result, token, constraint);
+	}
+
+	private ChainItem<XmlSAV> x509UrlPresent() {
+		LevelRule constraint = validationPolicy.getX509UrlPresent(context);
+		return new X509UrlPresentCheck(i18nProvider, result, token, constraint);
+	}
+
+	private ChainItem<XmlSAV> x509UrlMatch() {
+		LevelRule constraint = validationPolicy.getX509UrlMatch(context);
+		return new X509UrlMatchCheck(i18nProvider, result, token, constraint);
 	}
 
 	private ChainItem<XmlSAV> signingTime() {

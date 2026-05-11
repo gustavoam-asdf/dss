@@ -14,6 +14,7 @@ import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,12 +161,32 @@ public final class CBORUtils {
      * @return TRUE if the document is CBOR, FALSE otherwise
      */
     public static boolean isCbor(DSSDocument document) {
-        try (InputStream is = document.openStream()) {
+        return isCbor(document.openStream());
+    }
+
+    /**
+     * Checks if the given data byte array is of CBOR format
+     *
+     * @param input byte array to check
+     * @return TRUE if the byte array data in CBOR, FALSE otherwise
+     */
+    public static boolean isCbor(byte[] input) {
+        return isCbor(new ByteArrayInputStream(input));
+    }
+
+    /**
+     * Checks if the given InputStream contains data in a CBOR format
+     *
+     * @param inputStream {@link InputStream} to check
+     * @return TRUE if the InputStream is CBOR, FALSE otherwise
+     */
+    public static boolean isCbor(InputStream inputStream) {
+        try (InputStream is = inputStream) {
             return new CborDecoder(is).decode() != null;
         } catch (CborException e) {
             return false;
         } catch (IOException e) {
-            throw new DSSException(String.format("Unable to read document with name '%s' : %s", document.getName(), e.getMessage()), e);
+            throw new DSSException(String.format("Unable to read InputStream : %s", e.getMessage()), e);
         }
     }
 

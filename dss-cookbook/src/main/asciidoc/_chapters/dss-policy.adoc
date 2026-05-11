@@ -1934,11 +1934,11 @@ Default: `FAIL`
 </SignedAttributes>
 ----
 
-* `KeyIdentifierPresent` - this constraint checks whether the 'kid' signed attribute is present within the JAdES signature. If the 'kid' signed attribute is not present within the signature, the check will fail.
+* `KeyIdentifierPresent` - this constraint checks whether the 'kid' signed attribute is present within the JAdES or CB-AdES signature. If the 'kid' signed attribute is not present within the signature, the check will fail.
 
 Default: not executed
 
-Note: the check is executed only for JAdES
+Note: the check is executed only for JAdES and CB-AdES
 
 [source,xml,indent=0]
 .Example of KeyIdentifierPresent usage (with WARN validation level)
@@ -1954,7 +1954,7 @@ Note: the check is executed only for JAdES
 
 Default: `WARN`
 
-Note: the check is executed only for JAdES
+Note: the check is executed only for JAdES and CB-AdES
 
 [source,xml,indent=0]
 .Example of KeyIdentifierMatch usage (with WARN validation level)
@@ -1962,6 +1962,38 @@ Note: the check is executed only for JAdES
 <SignedAttributes>
     ...
     <KeyIdentifierMatch Level="WARN" />
+    ...
+</SignedAttributes>
+----
+
+* `X509UrlPresent` - this constraint checks whether the 'x5u' signed attribute is present within the JAdES or CB-AdES signature. If the 'x5u' signed attribute is not present within the signature, the check will fail.
+
+Default: not executed
+
+Note: the check is executed only for JAdES and CB-AdES
+
+[source,xml,indent=0]
+.Example of X509UrlPresent usage (with WARN validation level)
+----
+<SignedAttributes>
+    ...
+    <X509UrlPresent Level="WARN" />
+    ...
+</SignedAttributes>
+----
+
+* `X509UrlMatch` - this constraint checks whether the value of the 'x5u' signed attribute matches the signing-certificate, when attribute is present. If the value of 'x5u' signed attribute does not match the signing-certificate, the check will fail.
+
+Default: `WARN`
+
+Note: the check is executed only for JAdES and CB-AdES
+
+[source,xml,indent=0]
+.Example of X509UrlMatch usage (with WARN validation level)
+----
+<SignedAttributes>
+    ...
+    <X509UrlMatch Level="WARN" />
     ...
 </SignedAttributes>
 ----
@@ -3106,7 +3138,7 @@ This table defines the correspondence between the enforced validation policy con
                                   |QcIdentificationMethod          |MultiValuesConstraint             |INDETERMINATE         |CHAIN_CONSTRAINTS_FAILURE
                                   |UsePseudonym                    |LevelConstraint                   |INDETERMINATE         |CHAIN_CONSTRAINTS_FAILURE
                                   |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint
-.11+|SignedAttributesConstraints  |SigningCertificatePresent       |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+.12+|SignedAttributesConstraints  |SigningCertificatePresent       |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |UnicitySigningCertificate       |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |SigningCertificateRefersCertificateChain  |LevelConstraint         |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |ReferencesToAllCertificateChainPresent    |LevelConstraint         |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
@@ -3116,8 +3148,10 @@ This table defines the correspondence between the enforced validation policy con
                                   |IssuerSerialMatch               |LevelConstraint                   |INDETERMINATE         |NO_SIGNING_CERTIFICATE_FOUND
                                   |KeyIdentifierPresent            |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |KeyIdentifierMatch              |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
-                                  |SigningTime                     |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
-.11+|SignedAttributesConstraints  |SigningTimeInCertRange          |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+                                  |X509UrlPresent                  |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+                                  |X509UrlMatch                    |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+.12+|SignedAttributesConstraints  |SigningTime                     |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
+                                  |SigningTimeInCertRange          |LevelConstraint                   |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |ContentType                     |MultiValuesConstraint             |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |ContentHints                    |MultiValuesConstraint             |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE
                                   |ContentIdentifier               |MultiValuesConstraint             |INDETERMINATE         |SIG_CONSTRAINTS_FAILURE

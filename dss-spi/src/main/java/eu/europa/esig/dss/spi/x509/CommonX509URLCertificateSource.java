@@ -20,13 +20,17 @@
  */
 package eu.europa.esig.dss.spi.x509;
 
+import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.client.http.DataLoader;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +38,12 @@ import java.util.Set;
 /**
  * The common implementation of {@code X509URLCertificateSource} retrieving X.509 certificates by the given URI.
  * This class is used for validation of JAdES and CB-AdES signatures.
+ * <p>
+ * This class provides the following workflows:
+ * - Provide a mapping between URL and certificate pairs using {@code #addCertificate} and/or {@code #addCertificates} methods; or
+ * - Instantiate the class either using a constructor with a DataLoader to access the certificates in the runtime or
+ *   by setting the DataLoader using the {@code #setDataLoader} method; or
+ * - By using combination of both.
  * 
  */
 public class CommonX509URLCertificateSource extends CommonCertificateSource implements X509URLCertificateSource {
@@ -42,14 +52,36 @@ public class CommonX509URLCertificateSource extends CommonCertificateSource impl
 
     private static final Logger LOG = LoggerFactory.getLogger(CommonX509URLCertificateSource.class);
 
+    /** DataLoader used to access 'x5u' certificates */
+    private DataLoader dataLoader;
+
     /** Map of uris and related certificate tokens */
     private Map<String, Collection<CertificateToken>> mapByUri = new HashMap<>();
 
     /**
-     * Default constructor
+     * Constructor to instantiate a pre-configured certificate source
      */
     public CommonX509URLCertificateSource() {
         // empty
+    }
+
+    /**
+     * Constructor to create an instance of the class with a {@code dataLoader} to access
+     * the certificates from the corresponding 'x5u' location in the runtime
+     *
+     * @param dataLoader {@link DataLoader}
+     */
+    public CommonX509URLCertificateSource(DataLoader dataLoader) {
+        this.dataLoader = dataLoader;
+    }
+
+    /**
+     * Sets the DataLoader to access the certificates from the corresponding 'x5u' location in the runtime
+     *
+     * @param dataLoader {@link DataLoader}
+     */
+    public void setDataLoader(DataLoader dataLoader) {
+        this.dataLoader = dataLoader;
     }
 
     @Override
@@ -102,7 +134,60 @@ public class CommonX509URLCertificateSource extends CommonCertificateSource impl
 
     @Override
     public Collection<CertificateToken> getCertificatesByUrl(String uri) {
-        return mapByUri.get(uri);
+        Collection<CertificateToken> certificates = mapByUri.get(uri);
+        if (Utils.isCollectionNotEmpty(certificates)) {
+            LOG.debug("Certificates are known for 'x5u' value '{}'. Return existing values.", uri);
+            return certificates;
+        }
+        certificates = loadCertificates(uri);
+        if (Utils.isCollectionNotEmpty(certificates)) {
+            return certificates;
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Loads the certificates using a {@code DataLoader} from the given {@code url}
+     *
+     * @param url {@link String} to load certificates from
+     * @return collection of {@link CertificateToken}s
+     */
+    protected Collection<CertificateToken> loadCertificates(String url) {
+        if (dataLoader != null) {
+            byte[] content = dataLoader.get(url);
+            if (content != null) {
+                LOG.debug("Content obtained from the 'x5u' protected header with value '{}'", url);
+                try {
+                    return loadCertificates(content);
+                } catch (Exception e) {
+                    String errorMessage = "Unable to load certificates from 'x5u' protected header with value '{}' : {}";
+                    if (LOG.isDebugEnabled()) {
+                        LOG.warn(errorMessage, url, e.getMessage(), e);
+                    } else {
+                        LOG.warn(errorMessage, url, e.getMessage());
+                    }
+                }
+            } else {
+                LOG.warn("No content has been extracted from the 'x5u' protected header with value '{}'", url);
+            }
+        } else {
+            LOG.debug("No DataLoader is configured within the CommonX509URLCertificateSource.");
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Loads certificates from the obtained {@code content}
+     *
+     * @param content representing the certificates (implementation specific)
+     * @return collection of {@link CertificateToken}s
+     */
+    protected Collection<CertificateToken> loadCertificates(byte[] content) {
+        try {
+            return DSSUtils.loadCertificateFromP7c(content);
+        } catch (Exception e) {
+            throw new DSSException(String.format("Unable to load certificates : %s", e.getMessage()), e);
+        }
     }
 
     @Override

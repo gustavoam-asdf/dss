@@ -62,6 +62,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -243,6 +244,34 @@ class DSSUtilsTest {
 
 		CertificateToken certificate2 = DSSUtils.loadCertificate(certDER);
 		assertEquals(certificate2, DSSUtilsTest.certificate);
+	}
+
+	@Test
+	void loadCertificateFromPEMTest() {
+		String convertToPEM = DSSUtils.convertToPEM(certificate);
+
+		List<CertificateToken> certificateTokens = DSSUtils.loadCertificateFromP7c(convertToPEM.getBytes());
+		assertEquals(1, certificateTokens.size());
+		CertificateToken certificate = certificateTokens.get(0);
+		assertEquals(certificate, DSSUtilsTest.certificate);
+
+		String certChainPem = "";
+		Collection<CertificateToken> certificateChain = DSSUtils.loadCertificateFromP7c(new File("src/test/resources/certchain.p7c"));
+		assertEquals(3, Utils.collectionSize(certificateChain));
+		for (CertificateToken certificateToken : certificateChain) {
+			certChainPem = certChainPem.concat(DSSUtils.convertToPEM(certificateToken));
+			certChainPem = certChainPem.concat("\n");
+		}
+		certificateTokens = DSSUtils.loadCertificateFromP7c(certChainPem.getBytes());
+		assertEquals(3, certificateTokens.size());
+	}
+
+	@Test
+	void loadDERCertificateTest() {
+		List<CertificateToken> certificateTokens = DSSUtils.loadCertificateFromP7c(certificate.getEncoded());
+		assertEquals(1, certificateTokens.size());
+		CertificateToken certificate = certificateTokens.get(0);
+		assertEquals(certificate, DSSUtilsTest.certificate);
 	}
 
 	@Test

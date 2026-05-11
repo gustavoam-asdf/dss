@@ -265,12 +265,22 @@
 			</xsd:element>
 			<xsd:element name="KeyIdentifierPresent" type="LevelConstraint" minOccurs="0">
 				<xsd:annotation>
-					<xsd:documentation>Checks if 'kid' (key identifier) header parameter is present within a protected header of the signature (JAdES only)</xsd:documentation>
+					<xsd:documentation>Checks if 'kid' (key identifier) header parameter is present within a protected header of the signature (JAdES, CB-AdES)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="KeyIdentifierMatch" type="LevelConstraint" minOccurs="0">
 				<xsd:annotation>
-					<xsd:documentation>Checks if the value of 'kid' (key identifier) header parameter matches the signing-certificate (JAdES only)</xsd:documentation>
+					<xsd:documentation>Checks if the value of 'kid' (key identifier) header parameter matches the signing-certificate (JAdES, CB-AdES)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="X509UrlPresent" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if 'x5u' (X.509 URL) header parameter is present within a protected header of the signature (JAdES, CB-AdES)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="X509UrlMatch" type="LevelConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the SVA was able to derive the signing certificate using the 'x5u' protected header value (JAdES, CB-AdES)</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="SigningTime" type="LevelConstraint" minOccurs="0">

@@ -625,6 +625,16 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getX509UrlPresent(Context context) {
+        return validationPolicy.getX509UrlPresent(context);
+    }
+
+    @Override
+    public LevelRule getX509UrlMatch(Context context) {
+        return validationPolicy.getX509UrlMatch(context);
+    }
+
+    @Override
     public LevelRule getReferenceDataExistenceConstraint(Context context) {
         return validationPolicy.getReferenceDataExistenceConstraint(context);
     }
