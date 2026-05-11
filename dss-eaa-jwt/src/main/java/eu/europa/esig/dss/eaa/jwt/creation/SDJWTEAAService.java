@@ -28,28 +28,29 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 
 /**
  * Implementation of {@link EAAService} to create SD-JWT EAA
  */
 public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJWTEAAParameters, SDJWTPresentableClaim> {
 
-    private final JAdESService jadesService;
+    private final CertificateVerifier certificateVerifier;
     private final SDJWTPayloadBuilder payloadBuilder;
 
-    public SDJWTEAAService(JAdESService jadesService) {
-        this(jadesService, new  SDJWTPayloadBuilder());
+    public SDJWTEAAService(final CertificateVerifier certificateVerifier) {
+        this(certificateVerifier, new  SDJWTPayloadBuilder());
     }
 
-    public SDJWTEAAService(final JAdESService jadesService, final SDJWTPayloadBuilder payloadBuilder) {
-        this.jadesService = jadesService;
+    public SDJWTEAAService(final CertificateVerifier certificateVerifier, final SDJWTPayloadBuilder payloadBuilder) {
+        this.certificateVerifier = certificateVerifier;
         this.payloadBuilder = payloadBuilder;
     }
 
     @Override
     public ToBeSigned getDataToBeSigned(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
         this.validatePayloadAndSignatureParameters(payload, signatureParameters);
-        return jadesService.getDataToSign(payload, signatureParameters);
+        return getJAdESService().getDataToSign(payload, signatureParameters);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     @Override
     public DSSDocument signEAA(final DSSDocument payload, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
         this.validatePayloadAndSignatureParameters(payload, signatureParameters);
-        return jadesService.signDocument(payload, signatureParameters, signatureValue);
+        return getJAdESService().signDocument(payload, signatureParameters, signatureValue);
     }
 
     @Override
@@ -112,6 +113,10 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     public DSSDocument createKeybindingSignature(final DSSDocument eea, final List<String> disclosures, final JAdESSignatureParameters signatureParameters,
                                                  final SignatureValue signatureValue) {
         return null;
+    }
+
+    protected JAdESService getJAdESService() {
+        return new JAdESService(certificateVerifier);
     }
 
     @Override

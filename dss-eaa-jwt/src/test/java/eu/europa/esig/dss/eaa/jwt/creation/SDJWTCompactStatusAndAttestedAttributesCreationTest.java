@@ -73,8 +73,7 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         signatureParameters.setIncludeKeyIdentifier(false);
         signatureParameters.setSignatureType("dc+sd-jwt");
 
-        JAdESService jadesService = new JAdESService(getOfflineCertificateVerifier());
-        SDJWTEAAService service = new SDJWTEAAService(jadesService);
+        SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
         ToBeSigned dataToSign = service.getDataToBeSigned(eaaParameters, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());

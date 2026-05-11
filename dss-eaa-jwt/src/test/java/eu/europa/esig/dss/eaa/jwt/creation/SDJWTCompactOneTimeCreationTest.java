@@ -38,7 +38,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         eaaParameters.addClaim(new SDJWTStringPresentableClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253()));
         eaaParameters.addClaim(new SDJWTStringPresentableClaim("given_name", "Alice"));
         eaaParameters.addClaim(new SDJWTStringPresentableClaim("family_name", "Doe"));
-        
+
         eaaParameters.addClaim(new SDJWTStringPresentableClaim("oneTime", null));
 
         SDJWTObjectPresentableClaim cnf = new SDJWTObjectPresentableClaim("cnf");
@@ -62,8 +62,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         signatureParameters.setIncludeKeyIdentifier(false);
         signatureParameters.setSignatureType("dc+sd-jwt");
 
-        JAdESService jadesService = new JAdESService(getOfflineCertificateVerifier());
-        SDJWTEAAService service = new SDJWTEAAService(jadesService);
+        SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
         DSSDocument payload = new SDJWTPayloadBuilder().buildPayload(eaaParameters);
         payload.setMimeType(null); // avoid cty

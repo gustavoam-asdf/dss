@@ -55,8 +55,7 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
         signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
         signatureParameters.setX509Url("http://nowina.lu/pki-factory/good-cert");
 
-        JAdESService jadesService = new JAdESService(getOfflineCertificateVerifier());
-        SDJWTEAAService service = new SDJWTEAAService(jadesService);
+        SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
         ToBeSigned dataToSign = service.getDataToBeSigned(eaaParameters, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
