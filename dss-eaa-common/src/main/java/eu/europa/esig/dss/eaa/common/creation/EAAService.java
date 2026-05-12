@@ -13,16 +13,16 @@ import eu.europa.esig.dss.model.ToBeSigned;
  *
  * @param <SP>
  *         implementation of signature parameters corresponding to the supported signature format
- * @param <P>
- *         implementation of EAA parameters corresponding to the EAA format
+ * @param <B>
+ *         implementation of EAA payload builder to the EAA format
  * @param <C>
  *         Type of a claim for this implementation
  */
-public interface EAAService<SP extends SerializableSignatureParameters, P extends EAAParameters, C> {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder, C> {
 
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
-    ToBeSigned getDataToBeSigned(P eaaParameters, SP signatureParameters);
+    ToBeSigned getDataToBeSigned(B payloadBuilder, SP signatureParameters);
 
     /**
      * Signs an EAA with the provided signatureValue.
@@ -40,15 +40,15 @@ public interface EAAService<SP extends SerializableSignatureParameters, P extend
     /**
      * Signs the payload with the provided signatureValue.
      *
-     * @param eaaParameters
-     *            the parameters to use to generate the payload
+     * @param payloadBuilder
+     *            the payload builder
      * @param signatureParameters
      *            set of the driving signing parameters
      * @param signatureValue
      *            the signature value to incorporate
      * @return the signed EAA
      */
-    DSSDocument signEAA(P eaaParameters, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument signEAA(B payloadBuilder, SP signatureParameters, SignatureValue signatureValue);
 
     ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, SP signatureParameters);
 
@@ -63,11 +63,11 @@ public interface EAAService<SP extends SerializableSignatureParameters, P extend
      *
      * @param claims
      *         the list of claims
-     * @param eaaParameters
-     *         the parameters
+     * @param payloadBuilder
+     *         the payload builder
      * @return the list of disclosure as {@link String} Base64URL encoded
      */
-    List<String> getDisclosures(List<C> claims, P eaaParameters);
+    List<String> getDisclosures(List<C> claims, B payloadBuilder);
 
     /**
      * This method allows to create a list of disclosures for the provided claims based on the provided digest algorithm

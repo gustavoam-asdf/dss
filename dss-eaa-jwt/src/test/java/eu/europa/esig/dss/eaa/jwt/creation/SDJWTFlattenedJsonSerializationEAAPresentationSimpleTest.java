@@ -9,10 +9,10 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
@@ -34,18 +34,18 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
         issuanceDate = new Date();
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
 
-        SDJWTClaimBuilder claimBuilder = new SDJWTClaimBuilder();
-        claim = claimBuilder.createStringClaim("test-key", "test-value", true);
+        SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
+        claim = new SDJWTPresentableClaim("test-key", "test-value", true, saltGenerator.generateSalt());
     }
 
     @Override
     protected DSSDocument getSignedDocument() {
-        SDJWTEAAParameters eaaParameters = new SDJWTEAAParameters();
-        eaaParameters.setIssuanceDate(issuanceDate);
-        eaaParameters.setExpirationDate(expiration);
-        eaaParameters.setIssuer("https://issuer.example.com");
+        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
+        payloadBuilder.setIssuanceDate(issuanceDate);
+        payloadBuilder.setExpirationDate(expiration);
+        payloadBuilder.setIssuer("https://issuer.example.com");
 
-        eaaParameters.addClaim(claim);
+        payloadBuilder.addClaim(claim);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -57,10 +57,10 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        ToBeSigned dataToSign = service.getDataToBeSigned(eaaParameters, signatureParameters);
+        ToBeSigned dataToSign = service.getDataToBeSigned(payloadBuilder, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-        DSSDocument signedDocument = service.signEAA(eaaParameters, signatureParameters, signatureValue);
-        List<String> disclosures = service.getDisclosures(Collections.singletonList(claim), eaaParameters);
+        DSSDocument signedDocument = service.signEAA(payloadBuilder, signatureParameters, signatureValue);
+        List<String> disclosures = service.getDisclosures(Collections.singletonList(claim), payloadBuilder);
         return service.issuePresentation(signedDocument, disclosures);
     }
 
@@ -80,8 +80,8 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
         for (ClaimWrapper disclosableClaim : payloadClaims) {
             if (claim.getName().equals(disclosableClaim.getName())) {
                 assertTrue(disclosableClaim.isText());
-                assertEquals(claim.getValueAsString(), disclosableClaim.getText());
-                assertEquals(claim.getValueAsString(), disclosableClaim.getDisplayValue());
+                assertEquals(claim.getValue(), disclosableClaim.getText());
+                assertEquals(claim.getValue(), disclosableClaim.getDisplayValue());
                 assertTrue(disclosableClaim.isSelectivelyDisclosable());
                 claimFound = true;
 

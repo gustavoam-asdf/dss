@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,11 @@ import java.util.stream.Collectors;
 
 import org.jose4j.base64url.Base64Url;
 import org.jose4j.json.JsonUtil;
+import org.jose4j.json.internal.json_simple.JSONAware;
+import org.jose4j.json.internal.json_simple.JSONStreamAware;
+import org.jose4j.json.internal.json_simple.JSONValue;
 
+import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTArrayPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
@@ -21,22 +26,36 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 
-public class SDJWTPayloadBuilder {
+public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
 
-    public DSSDocument buildPayload(SDJWTEAAParameters parameters) {
+    private DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
+    private SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
+    private final Map<String, SDJWTPresentableClaim> claims = new LinkedHashMap<>();
+
+    public void addClaim(final SDJWTPresentableClaim claim) {
+        claims.put(claim.getName(), claim);
+    }
+
+    public SDJWTPresentableClaim addClaim(final String key, final Object value, final boolean isSelectivelyDisclosable) {
+        return this.addClaim(key, value, isSelectivelyDisclosable, saltGenerator.generateSalt());
+    }
+
+    public SDJWTPresentableClaim addClaim(final String key, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
+        SDJWTPresentableClaim claim = new SDJWTPresentableClaim(key, value, isSelectivelyDisclosable, salt);
+        claims.put(claim.getName(), claim);
+        return claim;
+    }
+
+    @Override
+    public DSSDocument buildPayload() {
         final Map<String, Object> map = new LinkedHashMap<>();
 
-        DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256; // Default digest algorithm
-        if (parameters.getDigestAlgorithm() != null) {
-            digestAlgorithm = parameters.getDigestAlgorithm();
-        }
-
-        final List<SDJWTPresentableClaim> claimsSelectivelyDisclosable = parameters.getClaims()
+        final List<SDJWTPresentableClaim> claimsSelectivelyDisclosable = claims.values()
                 .stream()
                 .filter(SDJWTPresentableClaim::isSelectivelyDisclosable)
                 .collect(Collectors.toList());
 
-        final List<SDJWTPresentableClaim> visibleClaims = parameters.getClaims()
+        final List<SDJWTPresentableClaim> visibleClaims = claims.values()
                 .stream()
                 .filter(claim -> !claim.isSelectivelyDisclosable())
                 .collect(Collectors.toList());
@@ -44,28 +63,28 @@ public class SDJWTPayloadBuilder {
         if (!claimsSelectivelyDisclosable.isEmpty()) {
             List<String> hashedDisclosures = new ArrayList<>();
             for (final SDJWTPresentableClaim claim : claimsSelectivelyDisclosable) {
-                hashedDisclosures.add(getHashedDisclosure(claim, digestAlgorithm));
+                hashedDisclosures.add(getHashedDisclosure(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm));
             }
             map.put(SDJWTConstants._SD, hashedDisclosures);
         }
 
         for (final SDJWTPresentableClaim claim : visibleClaims) {
-            map.put(claim.getName(), getClaimValue(claim, digestAlgorithm, null));
+            map.put(claim.getName(), getClaimValue(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm, null));
         }
 
-        if (parameters.getIssuer() != null) {
-            map.put(SDJWTConstants.ISSUER, parameters.getIssuer());
+        if (getIssuer() != null) {
+            map.put(SDJWTConstants.ISSUER, getIssuer());
         }
-        if (parameters.getIssuanceDate() != null) {
-            map.put(SDJWTConstants.ISSUED_AT, parameters.getIssuanceDate().toInstant().getEpochSecond());
+        if (getIssuanceDate() != null) {
+            map.put(SDJWTConstants.ISSUED_AT, getIssuanceDate().toInstant().getEpochSecond());
         }
-        if (parameters.getExpirationDate() != null) {
-            map.put(SDJWTConstants.EXPIRATION_TIME, parameters.getExpirationDate().toInstant().getEpochSecond());
+        if (getExpirationDate() != null) {
+            map.put(SDJWTConstants.EXPIRATION_TIME, getExpirationDate().toInstant().getEpochSecond());
         }
-        if (parameters.getSubject() != null) {
-            map.put(SDJWTConstants.SUBJECT, parameters.getSubject());
+        if (getSubject() != null) {
+            map.put(SDJWTConstants.SUBJECT, getSubject());
         }
-        if (parameters.getDigestAlgorithm() != null) {
+        if (digestAlgorithm != null) {
             map.put(SDJWTConstants._SD_ALG, digestAlgorithm.getSDJWTId());
         }
 
@@ -75,45 +94,60 @@ public class SDJWTPayloadBuilder {
     }
 
     private Object getClaimValue(final SDJWTPresentableClaim claim, final DigestAlgorithm digestAlgorithm, SDJWTPresentableClaim parentClaim) {
-        if (!(parentClaim instanceof SDJWTArrayPresentableClaim)) {
+        if (parentClaim != null && !(parentClaim instanceof SDJWTArrayPresentableClaim)) {
             Objects.requireNonNull(claim.getName(), "The name of a claim cannot be null");
         }
         if (claim instanceof SDJWTObjectPresentableClaim) {
-            SDJWTObjectPresentableClaim objectClaim = (SDJWTObjectPresentableClaim) claim;
-            Map<String, Object> result = new LinkedHashMap<>();
-            List<String> selectivelyDisclosableClaims = new ArrayList<>();
-
-            objectClaim.getChildren().forEach(child -> {
-                if (child.isSelectivelyDisclosable()) {
-                    selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm));
-                } else {
-                    result.put(child.getName(), getClaimValue(child, digestAlgorithm, claim));
-                }
-            });
-
-            if (!selectivelyDisclosableClaims.isEmpty()) {
-                result.put(SDJWTConstants._SD, selectivelyDisclosableClaims);
-            }
-
-            return result;
+            return this.getSDJWTObjectPresentableClaimValue((SDJWTObjectPresentableClaim) claim, digestAlgorithm);
         } else if (claim instanceof SDJWTArrayPresentableClaim) {
-            SDJWTArrayPresentableClaim arrayClaim = (SDJWTArrayPresentableClaim) claim;
-            List<Object> result = new ArrayList<>();
-
-            arrayClaim.getElements().forEach(element -> {
-                if (element.isSelectivelyDisclosable()) {
-                    Map<String, String> hashedElement = new LinkedHashMap<>();
-                    hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(element, digestAlgorithm));
-                    result.add(hashedElement);
-                } else {
-                    result.add(getClaimValue(element, digestAlgorithm, claim));
-                }
-            });
-
-            return result;
-        } else {
-            return claim.getValueAsString();
+            return this.getSDJWTArrayPresentableClaimValue((SDJWTArrayPresentableClaim) claim, digestAlgorithm);
+        } else if (claim.getValue() == null) {
+            return null;
+        } else if (claim.getValue() instanceof String
+                || claim.getValue() instanceof Number
+                || claim.getValue() instanceof Map
+                || claim.getValue() instanceof Collection
+                || claim.getValue() instanceof JSONAware
+                || claim.getValue() instanceof JSONStreamAware
+                || claim.getValue().getClass().isArray()) {
+            return claim.getValue();
         }
+        return JSONValue.toJSONString(claim.getValue());
+    }
+
+    private Object getSDJWTObjectPresentableClaimValue(final SDJWTObjectPresentableClaim objectClaim, final DigestAlgorithm digestAlgorithm) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        List<String> selectivelyDisclosableClaims = new ArrayList<>();
+
+        objectClaim.getChildren().forEach(child -> {
+            if (child.isSelectivelyDisclosable()) {
+                selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm));
+            } else {
+                result.put(child.getName(), getClaimValue(child, digestAlgorithm, objectClaim));
+            }
+        });
+
+        if (!selectivelyDisclosableClaims.isEmpty()) {
+            result.put(SDJWTConstants._SD, selectivelyDisclosableClaims);
+        }
+
+        return result;
+    }
+
+    private Object getSDJWTArrayPresentableClaimValue(final SDJWTArrayPresentableClaim arrayClaim, final DigestAlgorithm digestAlgorithm) {
+        List<Object> result = new ArrayList<>();
+
+        arrayClaim.getElements().forEach(element -> {
+            if (element.isSelectivelyDisclosable()) {
+                Map<String, String> hashedElement = new LinkedHashMap<>();
+                hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(element, digestAlgorithm));
+                result.add(hashedElement);
+            } else {
+                result.add(getClaimValue(element, digestAlgorithm, arrayClaim));
+            }
+        });
+
+        return result;
     }
 
     private String getHashedDisclosure(SDJWTPresentableClaim claim, DigestAlgorithm digestAlgorithm) {
@@ -141,4 +175,15 @@ public class SDJWTPayloadBuilder {
         return DSSJsonUtils.toBase64Url(data);
     }
 
+    public void setSaltGenerator(final SDJWTSaltGenerator saltGenerator) {
+        this.saltGenerator = saltGenerator;
+    }
+
+    public void setDigestAlgorithm(final DigestAlgorithm digestAlgorithm) {
+        this.digestAlgorithm = digestAlgorithm;
+    }
+
+    public DigestAlgorithm getDigestAlgorithm() {
+        return digestAlgorithm;
+    }
 }

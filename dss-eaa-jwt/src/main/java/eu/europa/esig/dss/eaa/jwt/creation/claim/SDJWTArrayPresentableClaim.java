@@ -28,8 +28,6 @@ public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<SDJWTPresentableClaim> elements = new ArrayList<>();
-
     /**
      * Default constructor
      */
@@ -54,7 +52,7 @@ public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
     public SDJWTArrayPresentableClaim(final String name, final boolean selectivelyDisclosable, final String salt) {
-        super(name, selectivelyDisclosable, salt);
+        super(name, new ArrayList<SDJWTPresentableClaim>(), selectivelyDisclosable, salt);
     }
 
     /**
@@ -63,28 +61,11 @@ public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
      * @param element {@link SDJWTPresentableClaim}
      */
     public void addElement(final SDJWTPresentableClaim element) {
-        elements.add(element);
+        getElements().add(element);
     }
 
-    /**
-     * Gets the array elements
-     *
-     * @return unmodifiable list of {@link SDJWTPresentableClaim}
-     */
     public List<SDJWTPresentableClaim> getElements() {
-        return Collections.unmodifiableList(elements);
-    }
-
-    @Override
-    public String getValueAsString() {
-        List<String> values = new ArrayList<>();
-        for (SDJWTPresentableClaim element : elements) {
-            values.add(element.getValueAsString());
-        }
-
-        final Map<String, Object> result = new HashMap<>();
-        result.put(getName(), values);
-        return JsonUtil.toJson(result);
+        return (List<SDJWTPresentableClaim>) getValue();
     }
 }
 

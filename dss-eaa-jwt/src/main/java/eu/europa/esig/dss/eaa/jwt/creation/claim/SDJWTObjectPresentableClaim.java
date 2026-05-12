@@ -26,8 +26,6 @@ public class SDJWTObjectPresentableClaim extends SDJWTPresentableClaim {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<SDJWTPresentableClaim> children = new ArrayList<>();
-
     /**
      * Default constructor
      */
@@ -52,7 +50,7 @@ public class SDJWTObjectPresentableClaim extends SDJWTPresentableClaim {
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
     public SDJWTObjectPresentableClaim(final String name, final boolean selectivelyDisclosable, final String salt) {
-        super(name, selectivelyDisclosable, salt);
+        super(name, new ArrayList<SDJWTPresentableClaim>(), selectivelyDisclosable, salt);
     }
 
     /**
@@ -61,25 +59,12 @@ public class SDJWTObjectPresentableClaim extends SDJWTPresentableClaim {
      * @param child {@link SDJWTPresentableClaim}
      */
     public void addChild(final SDJWTPresentableClaim child) {
-        children.add(child);
+        getChildren().add(child);
     }
 
-    /**
-     * Gets the child claim
-     *
-     * @return unmodifiable list of {@link SDJWTPresentableClaim}
-     */
     public List<SDJWTPresentableClaim> getChildren() {
-        return Collections.unmodifiableList(children);
+        return (List<SDJWTPresentableClaim>) getValue();
     }
 
-    @Override
-    public String getValueAsString() {
-        final Map<String, Object> map = new LinkedHashMap<>();
-        for (SDJWTPresentableClaim child : children) {
-            map.put(child.getName(), child.getValueAsString());
-        }
-        return JsonUtil.toJson(map);
-    }
 }
 

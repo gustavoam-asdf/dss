@@ -6,9 +6,11 @@ import java.util.Objects;
 /**
  * Base class for defining an SD-JWT claim
  */
-public abstract class SDJWTPresentableClaim implements Serializable {
+public class SDJWTPresentableClaim implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private final Object value;
 
     private final String name;
 
@@ -17,17 +19,38 @@ public abstract class SDJWTPresentableClaim implements Serializable {
     private final String salt;
 
     /**
-     * Constructor with the claim name, selectively disclosable status and salt provided
+     * Constructor with the value
+     *
+     * @param value {@link Object} the value of the claim
+     */
+    public SDJWTPresentableClaim(final Object value) {
+        this(null, value, false, null);
+    }
+
+    /**
+     * Constructor with the value and claim name
      *
      * @param name {@link String} the claim name
+     * @param value {@link Object} the value of the claim
+     */
+    public SDJWTPresentableClaim(final String name, final Object value) {
+        this(name, value, false, null);
+    }
+
+    /**
+     * Constructor with the value, claim name, selectively disclosable status and salt provided
+     *
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the value of the claim
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
-    protected SDJWTPresentableClaim(final String name, final boolean selectivelyDisclosable, final String salt) {
+    public SDJWTPresentableClaim(final String name, final Object value, final boolean selectivelyDisclosable, final String salt) {
         if (selectivelyDisclosable) {
             Objects.requireNonNull(salt, "The salt cannot be null if selectivelyDisclosable is true");
         }
 
+        this.value = value;
         this.name = name;
         this.selectivelyDisclosable = selectivelyDisclosable;
         this.salt = salt;
@@ -61,10 +84,12 @@ public abstract class SDJWTPresentableClaim implements Serializable {
     }
 
     /**
-     * Converts the claim's value to its corresponding string representation
+     * Gets the value
      *
-     * @return {@link String}
+     * @return {@link Object} the value
      */
-    public abstract String getValueAsString();
+    public Object getValue() {
+        return value;
+    }
 }
 

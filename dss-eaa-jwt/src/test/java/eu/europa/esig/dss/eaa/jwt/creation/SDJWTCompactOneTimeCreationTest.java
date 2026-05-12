@@ -3,14 +3,13 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTStringPresentableClaim;
+import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
@@ -30,26 +29,26 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         signer = ECDSA_USER;
 
         // TODO : refactor the claims building
-        SDJWTEAAParameters eaaParameters = new SDJWTEAAParameters();
-        eaaParameters.setIssuer("https://issuer.example.com");
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("issuing_authority", "Public body"));
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("issuing_country", "LU"));
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("iss_reg_id", "XX12345"));
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253()));
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("given_name", "Alice"));
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("family_name", "Doe"));
+        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
+        payloadBuilder.setIssuer("https://issuer.example.com");
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("issuing_authority", "Public body"));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("issuing_country", "LU"));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("iss_reg_id", "XX12345"));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253()));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("given_name", "Alice"));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("family_name", "Doe"));
 
-        eaaParameters.addClaim(new SDJWTStringPresentableClaim("oneTime", null));
+        payloadBuilder.addClaim(new SDJWTPresentableClaim("oneTime", null));
 
         SDJWTObjectPresentableClaim cnf = new SDJWTObjectPresentableClaim("cnf");
         SDJWTObjectPresentableClaim jwk = new SDJWTObjectPresentableClaim("jwk");
-        jwk.addChild(new SDJWTStringPresentableClaim("kty", "EC"));
-        jwk.addChild(new SDJWTStringPresentableClaim("crv", "P-256"));
-        jwk.addChild(new SDJWTStringPresentableClaim("x",  toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineX(), 32)));
-        jwk.addChild(new SDJWTStringPresentableClaim("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
+        jwk.addChild(new SDJWTPresentableClaim("kty", "EC"));
+        jwk.addChild(new SDJWTPresentableClaim("crv", "P-256"));
+        jwk.addChild(new SDJWTPresentableClaim("x",  toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineX(), 32)));
+        jwk.addChild(new SDJWTPresentableClaim("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
         cnf.addChild(jwk);
 
-        eaaParameters.addClaim(cnf);
+        payloadBuilder.addClaim(cnf);
 
         signer = GOOD_USER;
 
@@ -64,7 +63,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        DSSDocument payload = new SDJWTPayloadBuilder().buildPayload(eaaParameters);
+        DSSDocument payload = payloadBuilder.buildPayload();
         payload.setMimeType(null); // avoid cty
 
         ToBeSigned dataToSign = service.getDataToBeSigned(payload, signatureParameters);

@@ -29,11 +29,14 @@ import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.utils.Utils;
 
 /**
  * Implementation of {@link EAAService} to create SD-JWT EAA
  */
-public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJWTEAAParameters, SDJWTPresentableClaim> {
+public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJWTPayloadBuilder, SDJWTPresentableClaim> {
+
+    public static final String EAA_SDJWT_SIGNATURE_TYPE = "dc+sd-jwt";
 
     private final CertificateVerifier certificateVerifier;
     private final SDJWTPayloadBuilder payloadBuilder;
@@ -54,8 +57,8 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     }
 
     @Override
-    public ToBeSigned getDataToBeSigned(final SDJWTEAAParameters eaaParameters, final JAdESSignatureParameters signatureParameters) {
-        return getDataToBeSigned(payloadBuilder.buildPayload(eaaParameters), signatureParameters);
+    public ToBeSigned getDataToBeSigned(final SDJWTPayloadBuilder payloadBuilder, final JAdESSignatureParameters signatureParameters) {
+        return getDataToBeSigned(payloadBuilder.buildPayload(), signatureParameters);
     }
 
     @Override
@@ -65,8 +68,8 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     }
 
     @Override
-    public DSSDocument signEAA(final SDJWTEAAParameters eaaParameters, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
-        return this.signEAA(payloadBuilder.buildPayload(eaaParameters), signatureParameters, signatureValue);
+    public DSSDocument signEAA(final SDJWTPayloadBuilder payloadBuilder, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        return this.signEAA(payloadBuilder.buildPayload(), signatureParameters, signatureValue);
     }
 
     private void validatePayloadAndSignatureParameters(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
@@ -91,6 +94,14 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
 
         if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
             throw new DSSException("Signature packaging must be ENVELOPING");
+        }
+
+        if (signatureParameters.getSignatureType() == null) {
+            signatureParameters.setSignatureType(EAA_SDJWT_SIGNATURE_TYPE);
+        }
+
+        if (!Utils.areStringsEqual(EAA_SDJWT_SIGNATURE_TYPE, signatureParameters.getSignatureType())) {
+            throw new DSSException("Signature type must be " + EAA_SDJWT_SIGNATURE_TYPE);
         }
     }
 
@@ -120,8 +131,8 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     }
 
     @Override
-    public List<String> getDisclosures(final List<SDJWTPresentableClaim> claims, final SDJWTEAAParameters eaaParameters) {
-        DigestAlgorithm digestAlgorithm = eaaParameters.getDigestAlgorithm() == null ? DigestAlgorithm.SHA256 : eaaParameters.getDigestAlgorithm();
+    public List<String> getDisclosures(final List<SDJWTPresentableClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
+        DigestAlgorithm digestAlgorithm = payloadBuilder.getDigestAlgorithm() == null ? DigestAlgorithm.SHA256 : payloadBuilder.getDigestAlgorithm();
         return getDisclosures(claims, digestAlgorithm);
     }
 

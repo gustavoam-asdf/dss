@@ -16,7 +16,6 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTArrayPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
 import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTStringPresentableClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -26,54 +25,53 @@ class SDJWTPayloadBuilderTest {
     @Test
     void buildSDJWTEAAPayload() throws JoseException {
         SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
-        SDJWTEAAParameters parameters = new SDJWTEAAParameters();
+        final SDJWTPayloadBuilder builder = new SDJWTPayloadBuilder();
 
         final SDJWTObjectPresentableClaim addressClaim = new SDJWTObjectPresentableClaim("address");
-        addressClaim.addChild(new SDJWTStringPresentableClaim("country", "LU"));
-        addressClaim.addChild(new SDJWTStringPresentableClaim("street", "Test street"));
-        addressClaim.addChild(new SDJWTStringPresentableClaim("city", "Luxembourg", true, saltGenerator.generateSalt()));
-        addressClaim.addChild(new SDJWTStringPresentableClaim("postal-code", "4000", true, saltGenerator.generateSalt()));
+        addressClaim.addChild(new SDJWTPresentableClaim("country", "LU"));
+        addressClaim.addChild(new SDJWTPresentableClaim("street", "Test street"));
+        addressClaim.addChild(new SDJWTPresentableClaim("city", "Luxembourg", true, saltGenerator.generateSalt()));
+        addressClaim.addChild(new SDJWTPresentableClaim("postal-code", "4000", true, saltGenerator.generateSalt()));
 
         final SDJWTObjectPresentableClaim subObject = new SDJWTObjectPresentableClaim("sub-addressClaim");
-        subObject.addChild(new SDJWTStringPresentableClaim("sub-key", "sub-value"));
-        subObject.addChild(new SDJWTStringPresentableClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSalt()));
+        subObject.addChild(new SDJWTPresentableClaim("sub-key", "sub-value"));
+        subObject.addChild(new SDJWTPresentableClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSalt()));
         addressClaim.addChild(subObject);
 
         final SDJWTArrayPresentableClaim pets = new SDJWTArrayPresentableClaim("pets");
-        pets.addElement(new SDJWTStringPresentableClaim(null, "dog", true, saltGenerator.generateSalt()));
-        pets.addElement(new SDJWTStringPresentableClaim(null, "cat", true, saltGenerator.generateSalt()));
+        pets.addElement(new SDJWTPresentableClaim(null, "dog", true, saltGenerator.generateSalt()));
+        pets.addElement(new SDJWTPresentableClaim(null, "cat", true, saltGenerator.generateSalt()));
         addressClaim.addChild(pets);
 
         final SDJWTArrayPresentableClaim nationalities = new SDJWTArrayPresentableClaim("nationalities");
-        nationalities.addElement(new SDJWTStringPresentableClaim("DE"));
-        nationalities.addElement(new SDJWTStringPresentableClaim("EN"));
-        nationalities.addElement(new SDJWTStringPresentableClaim("FR"));
-        nationalities.addElement(new SDJWTStringPresentableClaim(null, "LU", true, saltGenerator.generateSalt()));
+        nationalities.addElement(new SDJWTPresentableClaim("DE"));
+        nationalities.addElement(new SDJWTPresentableClaim("EN"));
+        nationalities.addElement(new SDJWTPresentableClaim("FR"));
+        nationalities.addElement(new SDJWTPresentableClaim(null, "LU", true, saltGenerator.generateSalt()));
 
         final SDJWTArrayPresentableClaim nationalities2 = new SDJWTArrayPresentableClaim("nationalities2", true, saltGenerator.generateSalt());
-        nationalities2.addElement(new SDJWTStringPresentableClaim(null, "DE", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new SDJWTStringPresentableClaim(null, "EN", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new SDJWTStringPresentableClaim(null, "FR", true, saltGenerator.generateSalt()));
+        nationalities2.addElement(new SDJWTPresentableClaim(null, "DE", true, saltGenerator.generateSalt()));
+        nationalities2.addElement(new SDJWTPresentableClaim(null, "EN", true, saltGenerator.generateSalt()));
+        nationalities2.addElement(new SDJWTPresentableClaim(null, "FR", true, saltGenerator.generateSalt()));
 
-        parameters.addClaim(addressClaim);
-        parameters.addClaim(nationalities);
-        parameters.addClaim(nationalities2);
+        builder.addClaim(addressClaim);
+        builder.addClaim(nationalities);
+        builder.addClaim(nationalities2);
 
-        final SDJWTPresentableClaim nonSelectivelyDisclosableClaim = new SDJWTStringPresentableClaim("visible-claim", "visible-value");
-        parameters.addClaim(nonSelectivelyDisclosableClaim);
+        final SDJWTPresentableClaim nonSelectivelyDisclosableClaim = new SDJWTPresentableClaim("visible-claim", "visible-value");
+        builder.addClaim(nonSelectivelyDisclosableClaim);
 
-        final SDJWTPresentableClaim selectivelyDisclosableClaim = new SDJWTStringPresentableClaim("test-name", "test-value", true, saltGenerator.generateSalt());
-        parameters.addClaim(selectivelyDisclosableClaim);
+        final SDJWTPresentableClaim selectivelyDisclosableClaim = new SDJWTPresentableClaim("test-name", "test-value", true, saltGenerator.generateSalt());
+        builder.addClaim(selectivelyDisclosableClaim);
 
         final Date now = new Date();
         final Date expiration = new Date(now.getTime() + 3600 * 1000);
-        parameters.setIssuanceDate(now);
-        parameters.setExpirationDate(expiration);
-        parameters.setSubject("test-subject");
-        parameters.setIssuer("test-issuer");
+        builder.setIssuanceDate(now);
+        builder.setExpirationDate(expiration);
+        builder.setSubject("test-subject");
+        builder.setIssuer("test-issuer");
 
-        final SDJWTPayloadBuilder builder = new SDJWTPayloadBuilder();
-        final InMemoryDocument payload = (InMemoryDocument) builder.buildPayload(parameters);
+        final InMemoryDocument payload = (InMemoryDocument) builder.buildPayload();
 
         assertTrue(DSSJsonUtils.isJsonDocument(payload));
 
@@ -89,7 +87,7 @@ class SDJWTPayloadBuilderTest {
         assertEquals(2, digests.size());
 
         assertNull(payloadMap.get(selectivelyDisclosableClaim.getName()));
-        assertEquals(nonSelectivelyDisclosableClaim.getValueAsString(), payloadMap.get(nonSelectivelyDisclosableClaim.getName()));
+        assertEquals(nonSelectivelyDisclosableClaim.getValue(), payloadMap.get(nonSelectivelyDisclosableClaim.getName()));
 
         final Map<String, Object> addressMap = (Map<String, Object>) payloadMap.get(addressClaim.getName());
         assertEquals(5, addressMap.size());
