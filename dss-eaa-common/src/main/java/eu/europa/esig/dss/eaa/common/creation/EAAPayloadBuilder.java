@@ -9,6 +9,8 @@ public abstract class EAAPayloadBuilder {
     private Date expirationDate;
     private String issuer;
     private String subject;
+    private boolean shortLived;
+    private boolean oneTime;
 
     public Date getExpirationDate() {
         return expirationDate;
@@ -40,6 +42,22 @@ public abstract class EAAPayloadBuilder {
 
     public void setSubject(final String subject) {
         this.subject = subject;
+    }
+
+    public boolean isShortLived() {
+        return shortLived;
+    }
+
+    public void setShortLived(final boolean shortLived) {
+        this.shortLived = shortLived;
+    }
+
+    public boolean isOneTime() {
+        return oneTime;
+    }
+
+    public void setOneTime(final boolean oneTime) {
+        this.oneTime = oneTime;
     }
 
     public abstract DSSDocument buildPayload();

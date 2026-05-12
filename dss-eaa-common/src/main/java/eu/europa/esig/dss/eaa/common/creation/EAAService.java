@@ -69,17 +69,6 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
      */
     List<String> getDisclosures(List<C> claims, B payloadBuilder);
 
-    /**
-     * This method allows to create a list of disclosures for the provided claims based on the provided digest algorithm
-     *
-     * @param claims
-     *         the list of claims
-     * @param digestAlgorithm
-     *         the {@link DigestAlgorithm}
-     * @return the list of disclosure as {@link String} Base64URL encoded
-     */
-    List<String> getDisclosures(List<C> claims, DigestAlgorithm digestAlgorithm);
-
     DSSDocument issuePresentation(DSSDocument eaa, List<String> disclosures);
 
     DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keybinding);

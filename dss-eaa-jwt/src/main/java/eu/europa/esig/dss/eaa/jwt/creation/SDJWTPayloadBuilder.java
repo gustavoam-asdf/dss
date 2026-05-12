@@ -36,12 +36,17 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         claims.put(claim.getName(), claim);
     }
 
-    public SDJWTPresentableClaim addClaim(final String key, final Object value, final boolean isSelectivelyDisclosable) {
-        return this.addClaim(key, value, isSelectivelyDisclosable, saltGenerator.generateSalt());
+    public SDJWTPresentableClaim addClaim(final String name, final Object value) {
+        return addClaim(name, value, false, null);
     }
 
-    public SDJWTPresentableClaim addClaim(final String key, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
-        SDJWTPresentableClaim claim = new SDJWTPresentableClaim(key, value, isSelectivelyDisclosable, salt);
+    public SDJWTPresentableClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable) {
+        String salt = isSelectivelyDisclosable ? saltGenerator.generateSalt() : null;
+        return addClaim(name, value, isSelectivelyDisclosable, salt);
+    }
+
+    public SDJWTPresentableClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
+        SDJWTPresentableClaim claim = new SDJWTPresentableClaim(name, value, isSelectivelyDisclosable, salt);
         claims.put(claim.getName(), claim);
         return claim;
     }
@@ -72,6 +77,13 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             map.put(claim.getName(), getClaimValue(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm, null));
         }
 
+        if (isOneTime()) {
+            map.put(SDJWTConstants.ONE_TIME, null);
+        }
+        if (isShortLived()) {
+            map.put(SDJWTConstants.SHORT_LIVED, null);
+        }
+
         if (getIssuer() != null) {
             map.put(SDJWTConstants.ISSUER, getIssuer());
         }
@@ -98,21 +110,11 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             Objects.requireNonNull(claim.getName(), "The name of a claim cannot be null");
         }
         if (claim instanceof SDJWTObjectPresentableClaim) {
-            return this.getSDJWTObjectPresentableClaimValue((SDJWTObjectPresentableClaim) claim, digestAlgorithm);
+            return getSDJWTObjectPresentableClaimValue((SDJWTObjectPresentableClaim) claim, digestAlgorithm);
         } else if (claim instanceof SDJWTArrayPresentableClaim) {
-            return this.getSDJWTArrayPresentableClaimValue((SDJWTArrayPresentableClaim) claim, digestAlgorithm);
-        } else if (claim.getValue() == null) {
-            return null;
-        } else if (claim.getValue() instanceof String
-                || claim.getValue() instanceof Number
-                || claim.getValue() instanceof Map
-                || claim.getValue() instanceof Collection
-                || claim.getValue() instanceof JSONAware
-                || claim.getValue() instanceof JSONStreamAware
-                || claim.getValue().getClass().isArray()) {
-            return claim.getValue();
+            return getSDJWTArrayPresentableClaimValue((SDJWTArrayPresentableClaim) claim, digestAlgorithm);
         }
-        return JSONValue.toJSONString(claim.getValue());
+        return claim.getValue();
     }
 
     private Object getSDJWTObjectPresentableClaimValue(final SDJWTObjectPresentableClaim objectClaim, final DigestAlgorithm digestAlgorithm) {

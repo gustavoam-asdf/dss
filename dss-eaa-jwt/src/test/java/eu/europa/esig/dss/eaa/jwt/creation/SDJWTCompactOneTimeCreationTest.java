@@ -31,14 +31,14 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         // TODO : refactor the claims building
         SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
         payloadBuilder.setIssuer("https://issuer.example.com");
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("issuing_authority", "Public body"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("issuing_country", "LU"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("iss_reg_id", "XX12345"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253()));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("given_name", "Alice"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("family_name", "Doe"));
+        payloadBuilder.addClaim("issuing_authority", "Public body");
+        payloadBuilder.addClaim("issuing_country", "LU");
+        payloadBuilder.addClaim("iss_reg_id", "XX12345");
+        payloadBuilder.addClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253());
+        payloadBuilder.addClaim("given_name", "Alice");
+        payloadBuilder.addClaim("family_name", "Doe");
 
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("oneTime", null));
+        payloadBuilder.setOneTime(true);
 
         SDJWTObjectPresentableClaim cnf = new SDJWTObjectPresentableClaim("cnf");
         SDJWTObjectPresentableClaim jwk = new SDJWTObjectPresentableClaim("jwk");
