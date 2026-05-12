@@ -1046,6 +1046,24 @@ public class DiagnosticData {
 	}
 
 	/**
+	 * This method returns the first EAA id.
+	 *
+	 * @return the first EAA id
+	 */
+	public String getFirstEAAId() {
+		EAAWrapper firstEAA = getFirstEAANullSafe();
+		return firstEAA.getId();
+	}
+
+	private EAAWrapper getFirstEAANullSafe() {
+		List<EAAWrapper> eaas = getElectronicAttestationsOfAttributes();
+		if (eaas != null && !eaas.isEmpty()) {
+			return eaas.get(0);
+		}
+		return new EAAWrapper(new XmlEAA());
+	}
+
+	/**
 	 * This method retrieves a list of certificate wrappers
 	 * 
 	 * @return a list of {@link CertificateWrapper}s.

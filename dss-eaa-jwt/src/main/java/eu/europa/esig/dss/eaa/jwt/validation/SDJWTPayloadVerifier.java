@@ -55,7 +55,7 @@ public class SDJWTPayloadVerifier extends EAAPayloadVerifier {
         ClaimMap originalPayloadMap = parseJsonPayload();
         this.disclosureValidations = new ArrayList<>();
         this.digestAlgorithm = getSDDigestAlgorithm(originalPayloadMap);
-        ClaimMap verifiedPayloadMap = (ClaimMap) buildClaimWithDisclosures(originalPayloadMap);
+        ClaimMap verifiedPayloadMap = buildPayloadWithDisclosures(originalPayloadMap);
         this.verifiedPayload = new SDJWTPayload(verifiedPayloadMap);
     }
 

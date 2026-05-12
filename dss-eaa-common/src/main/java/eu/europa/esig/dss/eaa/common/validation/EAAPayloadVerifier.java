@@ -100,6 +100,22 @@ public abstract class EAAPayloadVerifier {
     public abstract void verify();
 
     /**
+     * This method verified the payload claims recursively and
+     * re-constructs the original payload using the attached disclosures
+     *
+     * @param payloadMap {@link ClaimMap} representing the parse payload map
+     * @return {@link ClaimMap} representing the processed payload
+     */
+    protected ClaimMap buildPayloadWithDisclosures(ClaimMap payloadMap) {
+        Claim verifiedPayload = buildClaimWithDisclosures(payloadMap);
+        if (!(verifiedPayload instanceof ClaimMap)) {
+            throw new IllegalStateException("The verified paylaod is expected to be of a ClaimMap type!");
+        }
+        ensureAllDisclosuresFound();
+        return (ClaimMap) verifiedPayload;
+    }
+
+    /**
      * This method looks recursively for protected hashes of selectively disclosable values and embeds them if needed.
      * This method also updates the {@code disclosureValidations} list.
      *
@@ -211,8 +227,17 @@ public abstract class EAAPayloadVerifier {
      */
     protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures) {
         DisclosureValidation disclosureValidation = validateHashClaim(hashClaim, disclosures);
+        return getDisclosedClaim(disclosureValidation);
+    }
+
+    /**
+     * Gets the claim validated from the provided disclosure
+     *
+     * @param disclosureValidation {@link DisclosureValidation}
+     * @return {@link Claim}
+     */
+    protected Claim getDisclosedClaim(DisclosureValidation disclosureValidation) {
         if (disclosureValidation != null) {
-            disclosureValidations.add(disclosureValidation);
             if (disclosureValidation.isFound() && disclosureValidation.isIntact() && disclosureValidation.getDisclosure() != null) {
                 return disclosureValidation.getDisclosure().getClaimValue();
             }
@@ -251,6 +276,7 @@ public abstract class EAAPayloadVerifier {
             disclosureValidation.setType(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM);
             disclosureValidation.setDigest(new Digest(digestAlgorithm, hashBytes));
         }
+        disclosureValidations.add(disclosureValidation);
         return disclosureValidation;
     }
 
@@ -274,6 +300,30 @@ public abstract class EAAPayloadVerifier {
             }
         }
         return null;
+    }
+
+    /**
+     * This method ensures that EAA contains hashes for all disclosures attached
+     */
+    protected void ensureAllDisclosuresFound() {
+        List<DisclosureValidation> disclosureValidations = getDisclosureValidations();
+        if (disclosureValidations == null) {
+            throw new IllegalStateException("Disclosure validations have not yet been build! The method #verify shall be called first!");
+        }
+        for (Disclosure disclosure : disclosures) {
+            if (disclosure == null) {
+                continue;
+            }
+            boolean disclosureFound = disclosureValidations.stream().anyMatch(v -> disclosure.equals(v.getDisclosure()));
+            if (!disclosureFound) {
+                DisclosureValidation disclosureValidation = new DisclosureValidation(disclosure);
+                disclosureValidation.setType(DigestMatcherType.EAA_DISCLOSURE);
+                disclosureValidation.setDigest(disclosure.getDigest(digestAlgorithm));
+                disclosureValidation.setFound(true);
+                disclosureValidation.setIntact(false);
+                disclosureValidations.add(disclosureValidation);
+            }
+        }
     }
 
 }

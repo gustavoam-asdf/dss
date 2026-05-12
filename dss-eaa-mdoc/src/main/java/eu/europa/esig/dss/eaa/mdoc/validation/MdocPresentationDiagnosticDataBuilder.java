@@ -1,8 +1,8 @@
 package eu.europa.esig.dss.eaa.mdoc.validation;
 
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAADocument;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlError;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlErrors;
 import eu.europa.esig.dss.eaa.common.validation.EAAPresentationDiagnosticDataBuilder;
@@ -10,8 +10,8 @@ import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceResponse;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocument;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocumentError;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocErrorItems;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAA;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.math.BigInteger;

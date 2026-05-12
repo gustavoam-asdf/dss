@@ -7,7 +7,6 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.MdocUtils;
-import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSignedItem;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.eaa.Disclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
@@ -78,7 +77,7 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
         ClaimMap originalPayloadMap = parseCborPayload();
         this.disclosureValidations = new ArrayList<>();
         this.digestAlgorithm = getDigestAlgorithm(originalPayloadMap);
-        ClaimMap verifiedPayloadMap = (ClaimMap) buildClaimWithDisclosures(originalPayloadMap);
+        ClaimMap verifiedPayloadMap = buildPayloadWithDisclosures(originalPayloadMap);
         this.verifiedPayload = new MdocEAAPayload(verifiedPayloadMap, docType);
     }
 
@@ -155,8 +154,9 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
                 }
                 Claim digest = digestIDsEntry.getValue();
 
-                List<Disclosure> disclosureCandidates = getDisclosureByNamespaceAndId(namespace, Long.parseLong(digestId));
-                Claim claim = buildSelectivelyDisclosableClaim(digest, disclosureCandidates);
+                long digestIdLong = Long.parseLong(digestId);
+                List<Disclosure> disclosureCandidates = getDisclosureByNamespaceAndId(namespace, digestIdLong);
+                Claim claim = buildSelectivelyDisclosableClaim(digest, disclosureCandidates, namespace, digestIdLong);
                 if (claim != null) {
                     if (claim.getName() != null) {
                         result.put(claim.getName(), claim);
@@ -172,8 +172,39 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
 
     private List<Disclosure> getDisclosureByNamespaceAndId(String namespace, Long digestId) {
         return disclosures.stream()
-                .filter(d -> namespace.equals(((MdocIssuerSignedItem) d).getNamespace()) && digestId.equals(((MdocIssuerSignedItem) d).getDigestId()))
+                .filter(d -> namespace.equals((d).getNamespace()) && digestId.equals((d).getDigestId()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Validates the disclosure and returns the extracted value
+     *
+     * @param hashClaim {@link Claim}
+     * @param disclosures a list of {@link Disclosure}s
+     * @param namespace {@link String}
+     * @param digestId {@link Long}
+     * @return {@link Claim}
+     */
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures, String namespace, Long digestId) {
+        DisclosureValidation disclosureValidation = validateHashClaim(hashClaim, disclosures, namespace, digestId);
+        return getDisclosedClaim(disclosureValidation);
+    }
+
+    /**
+     * Validates the {@code hashClaim} against a list of {@code disclosures} and returns the resulted {@code DisclosureValidation}
+     *
+     * @param hashClaim {@link Claim}
+     * @param disclosures a list of {@link Disclosure}s
+     * @param namespace {@link String}
+     * @param digestId {@link Long}
+     * @return {@link DisclosureValidation}
+     */
+    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures, String namespace, Long digestId) {
+        DisclosureValidation disclosureValidation = super.validateHashClaim(hashClaim, disclosures);
+        disclosureValidation.setId(hashClaim.getName());
+        disclosureValidation.setNamespace(namespace);
+        disclosureValidation.setDigestId(digestId);
+        return disclosureValidation;
     }
 
     @Override
@@ -190,17 +221,6 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
     protected Claim getClaimHashItem(Claim claim) {
         // not applicable for mdoc
         return null;
-    }
-
-    @Override
-    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures) {
-        DisclosureValidation disclosureValidation = super.validateHashClaim(hashClaim, disclosures);
-        disclosureValidation.setId(hashClaim.getName());
-        // TODO : find a better way to provide namespace ?
-        if (disclosureValidation.getDisclosure() != null) {
-            disclosureValidation.setNamespace(((MdocIssuerSignedItem) disclosureValidation.getDisclosure()).getNamespace());
-        }
-        return disclosureValidation;
     }
 
     @Override

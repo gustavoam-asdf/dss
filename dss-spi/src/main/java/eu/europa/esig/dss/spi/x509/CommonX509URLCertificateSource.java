@@ -154,6 +154,7 @@ public class CommonX509URLCertificateSource extends CommonCertificateSource impl
      */
     protected Collection<CertificateToken> loadCertificates(String url) {
         if (dataLoader != null) {
+            LOG.trace("--> X509URLCertificateSource queried for {}", url);
             byte[] content = dataLoader.get(url);
             if (content != null) {
                 LOG.debug("Content obtained from the 'x5u' protected header with value '{}'", url);

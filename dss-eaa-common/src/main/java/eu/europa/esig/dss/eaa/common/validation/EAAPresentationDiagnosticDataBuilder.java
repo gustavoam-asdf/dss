@@ -223,25 +223,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private void buildXmlDigestMatcherRecursively(DisclosureValidation disclosureValidation, List<XmlDigestMatcher> digestMatchersList) {
-        XmlDigestMatcher ref = new XmlDigestMatcher();
-        ref.setType(disclosureValidation.getType());
-        if (disclosureValidation.getClaimName() != null || disclosureValidation.getValue() != null) {
-            XmlDisclosableClaim xmlClaim = new XmlDisclosableClaim();
-            xmlClaim.setName(disclosureValidation.getClaimName());
-            xmlClaim.setNamespace(disclosureValidation.getNamespace());
-            if (disclosureValidation.getValue() != null) {
-                xmlClaim.setValue(disclosureValidation.getValue().getValueAsString());
-            }
-            ref.setDisclosableClaim(xmlClaim);
-        }
-        Digest digest = disclosureValidation.getDigest();
-        if (digest != null) {
-            ref.setDigestValue(digest.getValue());
-            ref.setDigestMethod(digest.getAlgorithm());
-        }
-        ref.setDataFound(disclosureValidation.isFound());
-        ref.setDataIntact(disclosureValidation.isIntact());
-
+        XmlDigestMatcher ref = getXmlDigestMatcher(disclosureValidation);
         digestMatchersList.add(ref);
 
         if (Utils.isCollectionNotEmpty(disclosureValidation.getDependentValidations())) {
@@ -252,6 +234,49 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 buildXmlDigestMatcherRecursively((DisclosureValidation) refValidation, digestMatchersList);
             }
         }
+    }
+
+    /**
+     * Builds {@code XmlDigestMatcher} from the {@code DisclosureValidation}
+     *
+     * @param disclosureValidation {@link DisclosureValidation}
+     * @return {@link XmlDigestMatcher}
+     */
+    protected XmlDigestMatcher getXmlDigestMatcher(DisclosureValidation disclosureValidation) {
+        XmlDigestMatcher ref = new XmlDigestMatcher();
+        ref.setType(disclosureValidation.getType());
+        ref.setDisclosableClaim(getXmlDisclosableClaim(disclosureValidation));
+        Digest digest = disclosureValidation.getDigest();
+        if (digest != null) {
+            ref.setDigestValue(digest.getValue());
+            ref.setDigestMethod(digest.getAlgorithm());
+        }
+        ref.setDataFound(disclosureValidation.isFound());
+        ref.setDataIntact(disclosureValidation.isIntact());
+        return ref;
+    }
+
+    /**
+     * Builds {@code XmlDisclosableClaim} from the {@code DisclosureValidation}
+     *
+     * @param disclosureValidation {@link DisclosureValidation}
+     * @return {@link XmlDisclosableClaim}
+     */
+    protected XmlDisclosableClaim getXmlDisclosableClaim(DisclosureValidation disclosureValidation) {
+        if (disclosureValidation == null || (disclosureValidation.getClaimName() == null && disclosureValidation.getValue() == null
+                && disclosureValidation.getNamespace() == null && disclosureValidation.getDigestId() == null)) {
+            return null;
+        }
+        XmlDisclosableClaim xmlClaim = new XmlDisclosableClaim();
+        if (disclosureValidation.getDigestId() != null) {
+            xmlClaim.setId(BigInteger.valueOf(disclosureValidation.getDigestId()));
+        }
+        xmlClaim.setName(disclosureValidation.getClaimName());
+        xmlClaim.setNamespace(disclosureValidation.getNamespace());
+        if (disclosureValidation.getValue() != null) {
+            xmlClaim.setValue(disclosureValidation.getValue().getValueAsString());
+        }
+        return xmlClaim;
     }
 
     private XmlEAAPayload getXmlEAAPayload(EAAPayload eaaPayload) {

@@ -114,7 +114,6 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
         for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
-            boolean namespaceFound = false;
             for (XmlDigestMatcher digestMatcher : eaa.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
                     assertFalse(digestMatcher.isDataFound());
@@ -124,10 +123,12 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                     assertTrue(digestMatcher.isDataFound());
                     assertTrue(digestMatcher.isDataIntact());
                     assertNotNull(digestMatcher.getDisclosableClaim());
-                    namespaceFound |= digestMatcher.getDisclosableClaim().getNamespace() != null;
+                }
+                if (EAAType.ISO_IEC_MDOC == eaa.getEAAType()) {
+                    assertNotNull(digestMatcher.getDisclosableClaim().getId());
+                    assertNotNull(digestMatcher.getDisclosableClaim().getNamespace());
                 }
             }
-            assertEquals(disclosuresPresent() && EAAType.ISO_IEC_MDOC == eaa.getEAAType(), namespaceFound);
         }
     }
 

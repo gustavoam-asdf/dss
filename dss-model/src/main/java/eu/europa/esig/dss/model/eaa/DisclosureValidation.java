@@ -17,14 +17,11 @@ public class DisclosureValidation extends ReferenceValidation {
     /** Disclosure object, when applicable */
     private Disclosure disclosure;
 
-    /** Name of the disclosure */
-    private String name;
-
-    /** Value of the disclosure */
-    private Claim value;
-
-    /** Original namespace of the disclosure */
+    /** Namespace of the selective disclosure (mdoc) */
     private String namespace;
+
+    /** Unique identifier of the selective disclosure (mdoc) */
+    private Long digestId;
 
     /**
      * Default constructor
@@ -39,8 +36,6 @@ public class DisclosureValidation extends ReferenceValidation {
     public DisclosureValidation(Disclosure disclosure) {
         Objects.requireNonNull(disclosure, "Disclosure cannot be null!");
         this.disclosure = disclosure;
-        this.name = disclosure.getName();
-        this.value = disclosure.getClaimValue();
     }
 
     /**
@@ -58,7 +53,7 @@ public class DisclosureValidation extends ReferenceValidation {
      * @return {@link String}
      */
     public String getClaimName() {
-        return name;
+        return disclosure != null ? disclosure.getName() : null;
     }
 
     /**
@@ -67,25 +62,49 @@ public class DisclosureValidation extends ReferenceValidation {
      * @return {@link Claim}
      */
     public Claim getValue() {
-        return value;
+        return disclosure != null ? disclosure.getClaimValue() : null;
     }
 
     /**
-     * Gets disclosure's namespace
+     * Gets disclosure's namespace (mdoc only)
      *
      * @return {@link String}
      */
     public String getNamespace() {
-        return namespace;
+        if (namespace != null) {
+            return namespace;
+        }
+        return disclosure != null ? disclosure.getNamespace() : null;
     }
 
     /**
-     * Sets disclosure's namespace
+     * Sets the namespace of the selective disclosure (mdoc only)
      *
      * @param namespace {@link String}
      */
     public void setNamespace(String namespace) {
         this.namespace = namespace;
+    }
+
+    /**
+     * Gets the digest Id (mdoc only)
+     *
+     * @return {@link Long}
+     */
+    public Long getDigestId() {
+        if (digestId != null) {
+            return digestId;
+        }
+        return disclosure != null ? disclosure.getDigestId() : null;
+    }
+
+    /**
+     * Sets the unique identifier of the selective disclosure (mdoc only)
+     *
+     * @param digestId {@link Long}
+     */
+    public void setDigestId(Long digestId) {
+        this.digestId = digestId;
     }
 
     @Override
@@ -95,15 +114,15 @@ public class DisclosureValidation extends ReferenceValidation {
 
         DisclosureValidation that = (DisclosureValidation) object;
         return Objects.equals(disclosure, that.disclosure)
-                && Objects.equals(name, that.name)
-                && Objects.equals(value, that.value);
+                && Objects.equals(namespace, that.namespace)
+                && Objects.equals(digestId, that.digestId);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hashCode(disclosure);
-        result = 31 * result + Objects.hashCode(name);
-        result = 31 * result + Objects.hashCode(value);
+        result = 31 * result + Objects.hashCode(namespace);
+        result = 31 * result + Objects.hashCode(digestId);
         return result;
     }
 

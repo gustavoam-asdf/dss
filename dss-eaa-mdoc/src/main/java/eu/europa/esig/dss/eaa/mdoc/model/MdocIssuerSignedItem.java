@@ -110,20 +110,12 @@ public class MdocIssuerSignedItem extends Disclosure {
         return elementValue;
     }
 
-    /**
-     * Gets the applicable namespace
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getNamespace() {
         return namespace;
     }
 
-    /**
-     * Gets the digest ID for the issuer data authentication
-     *
-     * @return {@link Long}
-     */
+    @Override
     public Long getDigestId() {
         return digestId;
     }

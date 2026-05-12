@@ -61,6 +61,24 @@ public abstract class Disclosure implements Serializable {
     }
 
     /**
+     * Gets the applicable namespace (mdoc only)
+     *
+     * @return {@link String}
+     */
+    public String getNamespace() {
+        return null;
+    }
+
+    /**
+     * Gets the digest ID for the issuer data authentication (mdoc only)
+     *
+     * @return {@link Long}
+     */
+    public Long getDigestId() {
+        return null;
+    }
+
+    /**
      * Gets digest value of the for the {@code DigestAlgorithm}
      *
      * @param digestAlgorithm {@link DigestAlgorithm} to be used to compute digest with

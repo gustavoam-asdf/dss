@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
+import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
@@ -153,14 +154,14 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkSDJWTStatusConformance() {
-        if (EAAType.SD_JWT_VC == eaa.getEAAType()
-                && eaa.getEAAPayload().getEAAStatus() != null) {
-            return eaa.getEAAStatusUri() != null
-                    && eaa.getEAAStatusIndex() != null
-                    && eaa.getEAAStatusType() != null
-                    && eaa.getEAAStatusPurpose() != null;
-        }
-
+        // TODO: lax processing until TS 119 472-1 review
+//        if (EAAType.SD_JWT_VC == eaa.getEAAType()
+//                && eaa.getEAAPayload().getEAAStatus() != null) {
+//            return eaa.getEAAStatusUri() != null
+//                    && eaa.getEAAStatusIndex() != null
+//                    && eaa.getEAAStatusType() != null
+//                    && eaa.getEAAStatusPurpose() != null;
+//        }
         return true;
     }
 
@@ -218,8 +219,8 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     @Override
-    protected MessageTag getErrorMessageTag() {
-        return MessageTag.EAA_ETSI194721_ANS;
+    protected XmlMessage buildErrorMessage() {
+        return buildXmlMessage(MessageTag.EAA_ETSI194721_ANS, buildAdditionalInfo());
     }
 
     @Override
