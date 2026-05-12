@@ -194,9 +194,15 @@ public class JAdESLevelBaselineB {
 	 * Incorporates 5.1.4 The kid (key identifier) header parameter
 	 */
 	protected void incorporateKeyIdentifier() {
-		if (parameters.isIncludeKeyIdentifier() && parameters.getSigningCertificate() != null) {
-			byte[] kid = DSSUtils.generateKid(parameters.getSigningCertificate());
-			addHeader(HeaderParameterNames.KEY_ID, Utils.toBase64(kid));
+		if (parameters.isIncludeKeyIdentifier()) {
+			String kid = parameters.getKeyIdentifier();
+			if (kid == null && parameters.getSigningCertificate() != null) {
+				byte[] issuerSerial = DSSUtils.generateKid(parameters.getSigningCertificate());
+				kid = Utils.toBase64(issuerSerial);
+			}
+			if (kid != null) {
+				addHeader(HeaderParameterNames.KEY_ID, kid);
+			}
 		}
 	}
 

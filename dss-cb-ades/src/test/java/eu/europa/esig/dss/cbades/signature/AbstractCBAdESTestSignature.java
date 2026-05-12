@@ -361,10 +361,18 @@ public abstract class AbstractCBAdESTestSignature
 
                 } else if (CertificateRefOrigin.KEY_IDENTIFIER.equals(certificateRef.getOrigin())) {
                     assertNotNull(certificateRef.getCertificateId());
-                    assertNotNull(certificateRef.getIssuerSerial());
-                    assertTrue(certificateRef.isIssuerSerialPresent());
-                    assertTrue(certificateRef.isIssuerSerialMatch());
+                    if (certificateRef.getIssuerSerial() != null) {
+                        assertNotNull(certificateRef.getIssuerSerial());
+                        assertTrue(certificateRef.isIssuerSerialPresent());
+                        assertTrue(certificateRef.isIssuerSerialMatch());
+                    } else {
+                        assertNotNull(certificateRef.getKid());
+                    }
                     assertNull(certificateRef.getDigestAlgoAndValue());
+
+                } else if (CertificateRefOrigin.X509_URL.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getCertificateId());
+                    assertNotNull(certificateRef.getX509Url());
                 }
             }
         }

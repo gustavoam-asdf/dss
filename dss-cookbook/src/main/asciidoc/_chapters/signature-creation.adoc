@@ -576,9 +576,11 @@ Unsigned attributes are not obligatory and can be added after the signature crea
 .5+|B-Level      .5+|Signed attributes                         |_class JAdESSignatureParameters_ +
                                                                 *#setIncludeCertificateChain*                           |/                                    |/                                        |/                                                          |x5c
                                                                |_class JAdESSignatureParameters_ +
-                                                                *#setIncludeSignatureType*                              |/                                    |/                                        |/                                                          |typ
+                                                                *#setIncludeSignatureType*       +
+                                                                *#setSignatureType*                                     |/                                    |/                                        |/                                                          |typ
                                                                |_class JAdESSignatureParameters_ +
-                                                                *#setIncludeKeyIdentifier*                              |/                                    |/                                        |/                                                          |kid
+                                                                *#setIncludeKeyIdentifier*       +
+                                                                *#setKeyIdentifier*                                     |/                                    |/                                        |/                                                          |kid
                                                                |_class JAdESSignatureParameters_ +
                                                                 *#setX509Url*                                           |/                                    |/                                        |/                                                          |x5u
                                                                |_class JAdESSignatureParameters_ +

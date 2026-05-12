@@ -48,6 +48,9 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     /** Represents the unsigned 'uHeaders' header */
     private final transient CBAdESUHeaders uHeaders;
 
+    /** Map of 'kid' certificates, when present */
+    private final Map<String, CertificateToken> kidMap = new HashMap<>();
+
     /** Map of 'x5u' certificates, when present */
     private final Map<String, Collection<CertificateToken>> x509UrlMap = new HashMap<>();
 
@@ -226,12 +229,14 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     private void extractKid() {
         byte[] kid = getKidValue();
         if (kid != null) {
-            IssuerSerial kidIssuerSerial = CBORUtils.getIssuerSerial(kid);
-            if (kidIssuerSerial != null) {
-                CertificateRef certificateRef = new CertificateRef();
-                certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(kidIssuerSerial));
-                addCertificateRef(certificateRef, CertificateRefOrigin.KEY_IDENTIFIER);
+            CertificateRef certificateRef = new CertificateRef();
+            IssuerSerial issuerSerial = CBORUtils.getIssuerSerial(kid);
+            if (issuerSerial != null) {
+                certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(issuerSerial));
+            } else {
+                certificateRef.setKid(Utils.toBase64(kid));
             }
+            addCertificateRef(certificateRef, CertificateRefOrigin.KEY_IDENTIFIER);
         }
     }
 
@@ -427,7 +432,11 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
         if (kid != null) {
             if (signingCertificateSource instanceof KidCertificateSource) {
                 KidCertificateSource kidCertificateSource = (KidCertificateSource) signingCertificateSource;
-                return kidCertificateSource.getCertificateByKid(kid);
+                CertificateToken certificateByKid = kidCertificateSource.getCertificateByKid(kid);
+                if (certificateByKid != null) {
+                    kidMap.put(Utils.toBase64(kid), certificateByKid);
+                }
+                return certificateByKid;
             } else {
                 LOG.info("COSE/CB-AdES contains a 'kid' header (provide a KidCertificateSource to resolve it)");
             }
@@ -515,6 +524,15 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     @Override
     public List<CertificateRef> getReferencesForCertificateToken(CertificateToken certificateToken) {
         final List<CertificateRef> result = super.getReferencesForCertificateToken(certificateToken);
+        for (Map.Entry<String, CertificateToken> kidEntry : kidMap.entrySet()) {
+            if (kidEntry.getValue().equals(certificateToken)) {
+                for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.KEY_IDENTIFIER)) {
+                    if (kidEntry.getKey().equals(certificateRef.getKid())) {
+                        result.add(certificateRef);
+                    }
+                }
+            }
+        }
         for (CertificateRef certificateRef : getCertificateRefsByOrigin(CertificateRefOrigin.UNPROTECTED_HEADER_REFS)) {
             if (doesCertificateReferenceMatch(certificateToken, certificateRef)) {
                 result.add(certificateRef);
@@ -540,6 +558,12 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
     @Override
     public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
         final Set<CertificateToken> certificates = super.findTokensFromCertRef(certificateRef);
+        if (Utils.isStringNotEmpty(certificateRef.getKid())) {
+            CertificateToken certificateTokenByKid = kidMap.get(certificateRef.getKid());
+            if (certificateTokenByKid != null) {
+                certificates.add(certificateTokenByKid);
+            }
+        }
         if (Utils.isStringNotEmpty(certificateRef.getX509Url())) {
             Collection<CertificateToken> x509UrlCertificates = x509UrlMap.get(certificateRef.getX509Url());
             if (Utils.isCollectionNotEmpty(x509UrlCertificates)) {

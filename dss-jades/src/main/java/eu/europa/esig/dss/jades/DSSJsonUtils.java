@@ -641,11 +641,12 @@ public class DSSJsonUtils {
 		if (Utils.isStringNotEmpty(value)) {
 			if (Utils.isBase64Encoded(value)) {
 				byte[] binary = Utils.fromBase64(value);
-				return DSSASN1Utils.getIssuerSerial(binary);
-			} else {
-				LOG.warn("The IssuerSerial value is not base64-encoded!");
+				if (DSSASN1Utils.isAsn1Encoded(binary)) {
+					return DSSASN1Utils.getIssuerSerial(binary);
+				}
 			}
 		}
+		// process silently
 		return null;
 	}
 	

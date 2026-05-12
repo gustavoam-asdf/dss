@@ -48,14 +48,16 @@ public final class JAdESCertificateRefExtractionUtils {
 	 * @return {@link CertificateRef} of the value has been parsed successfully, FALSE otherwise
 	 */
 	public static CertificateRef createCertificateRef(Map<?, ?> certificateRefMap) {
-		IssuerSerial issuerSerial = DSSJsonUtils.getIssuerSerial((String) certificateRefMap.get(HeaderParameterNames.KEY_ID));
-
 		Digest digest = DSSJsonUtils.getDigest(certificateRefMap);
 		if (digest != null) {
 			CertificateRef certificateRef = new CertificateRef();
 			certificateRef.setCertDigest(digest);
+			String kid = (String) certificateRefMap.get(HeaderParameterNames.KEY_ID);
+			IssuerSerial issuerSerial = DSSJsonUtils.getIssuerSerial(kid);
 			if (issuerSerial != null) {
 				certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(issuerSerial));
+			} else {
+				certificateRef.setKid(kid);
 			}
 			return certificateRef;
 		}

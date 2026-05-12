@@ -69,6 +69,14 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	private boolean includeKeyIdentifier = true;
 
 	/**
+	 * The value of the 'kid' (key identifier) parameter to be embedded within the protected header of the signature
+	 * <p>
+	 * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+	 *          protected header corresponds to the IssuerSerial of the signing-certificate.
+	 */
+	private String keyIdentifier;
+
+	/**
 	 * This property defines the value of the 'cty' (content type) header parameter.
 	 * When set, the value of 'cty' header parameter will be defined with a given String.
 	 * If not set, the value of 'cty' header parameter will be derived from a MimeType of the signer document
@@ -257,6 +265,27 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 */
 	public void setIncludeKeyIdentifier(boolean includeKeyIdentifier) {
 		this.includeKeyIdentifier = includeKeyIdentifier;
+	}
+
+	/**
+	 * Gets the value of the 'kid' (key identifier) protected header parameter.
+	 *
+	 * @return {@link String}
+	 */
+	public String getKeyIdentifier() {
+		return keyIdentifier;
+	}
+
+	/**
+	 * Sets the 'kid' value to be incorporated within the signature's protected header.
+	 * <p>
+	 * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+	 *          protected header corresponds to the IssuerSerial of the signing-certificate.
+	 *
+	 * @param keyIdentifier {@link String}
+	 */
+	public void setKeyIdentifier(String keyIdentifier) {
+		this.keyIdentifier = keyIdentifier;
 	}
 
 	/**

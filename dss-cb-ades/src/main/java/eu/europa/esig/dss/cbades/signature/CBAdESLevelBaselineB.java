@@ -154,9 +154,14 @@ public class CBAdESLevelBaselineB {
      * Incorporates 5.1.4 The kid (key identifier) header parameter
      */
     protected void incorporateKeyIdentifier() {
-        if (parameters.isIncludeKeyIdentifier() && parameters.getSigningCertificate() != null) {
-            byte[] kid = DSSUtils.generateKid(parameters.getSigningCertificate());
-            addHeader(COSEHeaderParameter.KID.cbor(), kid); // bstr
+        if (parameters.isIncludeKeyIdentifier()) {
+            byte[] kid = parameters.getKid();
+            if (kid == null && parameters.getSigningCertificate() != null) {
+                kid = DSSUtils.generateKid(parameters.getSigningCertificate());
+            }
+            if (kid != null) {
+                addHeader(COSEHeaderParameter.KID.cbor(), kid); // bstr
+            }
         }
     }
 

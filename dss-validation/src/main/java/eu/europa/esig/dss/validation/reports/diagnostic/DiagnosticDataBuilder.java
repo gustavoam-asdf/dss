@@ -1430,6 +1430,10 @@ public abstract class DiagnosticDataBuilder {
 		} else if (responderId != null) {
 			certificateRef.setSerialInfo(getXmlSignerInfo(responderId));
 		}
+		String kid = ref.getKid();
+		if (kid != null) {
+			certificateRef.setKID(kid);
+		}
 		String x509Url = ref.getX509Url();
 		if (x509Url != null) {
 			certificateRef.setX509Url(x509Url);

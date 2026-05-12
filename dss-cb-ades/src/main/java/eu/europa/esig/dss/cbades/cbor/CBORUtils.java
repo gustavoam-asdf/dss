@@ -253,7 +253,7 @@ public final class CBORUtils {
      * @return {@link IssuerSerial}
      */
     public static IssuerSerial getIssuerSerial(byte[] value) {
-        if (value != null) {
+        if (value != null && DSSASN1Utils.isAsn1Encoded(value)) {
             return DSSASN1Utils.getIssuerSerial(value);
         }
         return null;

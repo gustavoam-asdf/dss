@@ -193,8 +193,12 @@ public class CBAdESUtils {
 
             byte[] kid = certId.getAsBinaries(COSEHeaderParameter.CERT_ID_KID.cbor());
             if (kid != null) {
-                IssuerSerial kidIssuerSerial = CBORUtils.getIssuerSerial(kid);
-                certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(kidIssuerSerial));
+                IssuerSerial issuerSerial = CBORUtils.getIssuerSerial(kid);
+                if (issuerSerial != null) {
+                    certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(issuerSerial));
+                } else {
+                    certificateRef.setKid(Utils.toBase64(kid));
+                }
             }
 
             String x5u = certId.getAsString(COSEHeaderParameter.CERT_ID_X5U.cbor());

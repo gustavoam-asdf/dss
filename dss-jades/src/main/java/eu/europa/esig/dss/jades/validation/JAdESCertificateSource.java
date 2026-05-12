@@ -166,10 +166,15 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 	}
 
 	private void extractKid() {
-		IssuerSerial kidIssuerSerial = getKidIssuerSerial();
-		if (kidIssuerSerial != null) {
+		String kid = jws.getKeyIdHeaderValue();
+		if (kid != null) {
 			CertificateRef certificateRef = new CertificateRef();
-			certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(kidIssuerSerial));
+			IssuerSerial issuerSerial = DSSJsonUtils.getIssuerSerial(kid);
+			if (issuerSerial != null) {
+				certificateRef.setCertificateIdentifier(DSSASN1Utils.toSignerIdentifier(issuerSerial));
+			} else {
+				certificateRef.setKid(kid);
+			}
 			addCertificateRef(certificateRef, CertificateRefOrigin.KEY_IDENTIFIER);
 		}
 	}
@@ -482,10 +487,6 @@ public class JAdESCertificateSource extends SignatureCertificateSource {
 			return signingCert.getCertDigest();
 		}
 		return null;
-	}
-
-	private IssuerSerial getKidIssuerSerial() {
-		return DSSJsonUtils.getIssuerSerial(jws.getKeyIdHeaderValue());
 	}
 
 	@Override

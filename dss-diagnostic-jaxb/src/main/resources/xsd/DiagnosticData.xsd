@@ -1295,8 +1295,8 @@
 			<xs:choice>
 				<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue"/>
 				<xs:element name="SerialInfo" type="SignerInfo" /> <!-- OCSP -->
-				<xs:element name="KID" type="xs:string" /> <!-- JAdES -->
-				<xs:element name="X509Url" type="xs:string" /> <!-- JAdES -->
+				<xs:element name="KID" type="xs:string" /> <!-- JAdES / CB-AdES -->
+				<xs:element name="X509Url" type="xs:string" /> <!-- JAdES / CB-AdES -->
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>	

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -53,6 +54,7 @@ public class KidCertificateSource extends CommonCertificateSource {
 
 	@Override
 	public CertificateToken addCertificate(CertificateToken certificateToAdd) {
+		Objects.requireNonNull(certificateToAdd, "The certificate must be filled");
 		LOG.debug("kid is not provided (generate kid following the JAdES specification)");
 		return addCertificate(generateKidBase64String(certificateToAdd), certificateToAdd);
 	}
@@ -69,19 +71,33 @@ public class KidCertificateSource extends CommonCertificateSource {
 	}
 
 	/**
-	 * Adds a certificate for a given 'kid' (JWS/COSE)
+	 * Adds a certificate for a given String 'kid' (JWS)
 	 * 
-	 * @param kid         base64-encoded value of kid used in the JWS/COSE
+	 * @param kid         {@link String} representing the key identifier of the corresponding certificate
 	 * @param certificate the related certificate token
 	 * @return the certificate
 	 */
 	public CertificateToken addCertificate(String kid, CertificateToken certificate) {
+		Objects.requireNonNull(kid, "kid cannot be null!");
 		CertificateToken addedCertificate = super.addCertificate(certificate);
 		if (mapByKid.containsKey(kid)) {
-			LOG.warn("kid {} is already known, the certificate will be replaced", kid);
+			LOG.warn("kid value '{}' is already known, the certificate will be replaced", kid);
 		}
 		mapByKid.put(kid, addedCertificate);
 		return addedCertificate;
+	}
+
+	/**
+	 * Adds a certificate for a given byte array 'kid' (COSE).
+	 * NOTE: when used, the value of the byte array kid is to be base64-encoded for a preservation within a map
+	 *
+	 * @param kid         byte array representing the key identifier of the corresponding certificate
+	 * @param certificate the related certificate token
+	 * @return the certificate
+	 */
+	public CertificateToken addCertificate(byte[] kid, CertificateToken certificate) {
+		Objects.requireNonNull(kid, "kid cannot be null!");
+		return addCertificate(Utils.toBase64(kid), certificate);
 	}
 
 	/**
@@ -106,8 +122,14 @@ public class KidCertificateSource extends CommonCertificateSource {
 
 	@Override
 	public Set<CertificateToken> findTokensFromCertRef(CertificateRef certificateRef) {
-		// TODO : implement extraction from a KID
-		return super.findTokensFromCertRef(certificateRef);
+		final Set<CertificateToken> certificates = super.findTokensFromCertRef(certificateRef);
+		if (Utils.isStringNotEmpty(certificateRef.getKid())) {
+			CertificateToken kidCertificate = mapByKid.get(certificateRef.getKid());
+			if (kidCertificate != null) {
+				certificates.add(kidCertificate);
+			}
+		}
+		return certificates;
 	}
 
 	@Override

@@ -41,6 +41,14 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     private boolean includeKeyIdentifier = true;
 
     /**
+     * The value of the 'kid' (key identifier) parameter to be embedded within the protected header of the signature
+     * <p>
+     * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+     *          protected header corresponds to the IssuerSerial of the signing-certificate.
+     */
+    private byte[] kid;
+
+    /**
      * This property defines a value for the 'x5u' signed header parameter (see RFC 9360).
      * The value shall refer to a URI where the X.509 public key certificate or certificate chain
      * corresponding to the key used to digitally sign the COSE can be retrieved from.
@@ -84,16 +92,6 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * Defines a used 'sigD' mechanism for a detached signature
      */
     private SigDMechanism sigDMechanism;
-
-    /**
-     * Defines if the items of the 'uHeader' unprotected headers will be incorporated
-     * in their corresponding CBOR Byte String encodings, if FALSE the components will
-     * appear as clear CBOR object instances.
-     * All the components of 'uHeader' header shall appear in the same representation.
-     * <p>
-     * Default : TRUE (CBOR Byte String wrapped uHeader components)
-     */
-    private boolean cborBtsrWrappedComponents = true;
 
     /**
      * Default constructor instantiating object with default parameters
@@ -195,6 +193,27 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setIncludeKeyIdentifier(boolean includeKeyIdentifier) {
         this.includeKeyIdentifier = includeKeyIdentifier;
+    }
+
+    /**
+     * Gets the value of the 'kid' (key identifier) protected header parameter.
+     *
+     * @return byte array
+     */
+    public byte[] getKid() {
+        return kid;
+    }
+
+    /**
+     * Sets the 'kid' value to be incorporated within the signature's protected header.
+     * <p>
+     * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+     *          protected header corresponds to the IssuerSerial of the signing-certificate.
+     *
+     * @param kid byte array
+     */
+    public void setKid(byte[] kid) {
+        this.kid = kid;
     }
 
     /**
