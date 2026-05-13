@@ -8,16 +8,18 @@ import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class verifies whether the EAA contains only supported claims
+ * This class verifies whether the EAA contains all the specified claims,
+ * either as part of the original payload or through the provided selective disclosures
  *
  */
-public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAA> {
+public class EAAClaimsCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAA> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -30,8 +32,8 @@ public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlVal
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAASupportedClaimsCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
-                                   EAAWrapper eaa, MultiValuesRule constraint) {
+    public EAAClaimsCheck(final I18nProvider i18nProvider, final XmlValidationProcessEAA result,
+                          final EAAWrapper eaa, final MultiValuesRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
     }
@@ -39,25 +41,25 @@ public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlVal
     @Override
     protected boolean process() {
         List<String> claimNames = eaa.getAllEAAPayloadClaimNames();
-        return processAllValuesCheck(claimNames);
+        return processValuesForEachExpectedCheck(claimNames);
     }
 
     @Override
     protected String buildAdditionalInfo() {
-        List<String> unsupportedClaims = eaa.getAllEAAPayloadClaimNames().stream()
-                .filter(c -> !processValueCheck(c))
+        List<String> notPresentClaims = getValues().stream()
+                .filter(v -> !ValidationProcessUtils.processValueCheck(v, eaa.getAllEAAPayloadClaimNames()))
                 .collect(Collectors.toList());
-        return i18nProvider.getMessage(MessageTag.EAA_UNSUPPORTED_CLAIMS, Utils.joinStrings(unsupportedClaims, ", "));
+        return i18nProvider.getMessage(MessageTag.EAA_CLAIMS_INFO, Utils.joinStrings(notPresentClaims, ", "));
     }
 
     @Override
     protected MessageTag getMessageTag() {
-        return MessageTag.EAA_SUPPORTED_CLAIMS;
+        return MessageTag.EAA_CLAIMS;
     }
 
     @Override
     protected MessageTag getErrorMessageTag() {
-        return MessageTag.EAA_SUPPORTED_CLAIMS_ANS;
+        return MessageTag.EAA_CLAIMS_ANS;
     }
 
     @Override

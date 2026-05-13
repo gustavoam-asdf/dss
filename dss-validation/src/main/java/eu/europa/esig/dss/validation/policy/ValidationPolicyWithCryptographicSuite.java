@@ -1101,6 +1101,11 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public MultiValuesRule getEAAClaimsConstraint() {
+        return validationPolicy.getEAAClaimsConstraint();
+    }
+
+    @Override
     public MultiValuesRule getEAASupportedClaimsConstraint() {
         return validationPolicy.getEAASupportedClaimsConstraint();
     }

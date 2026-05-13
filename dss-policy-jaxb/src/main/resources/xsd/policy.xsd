@@ -698,12 +698,16 @@
 							<xsd:documentation>Checks whether the validation time is within the EAA administrative validity range ('adm_nbf' and 'adm_exp' headers)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element name="EAAClaims" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA token contains all specified claims (whether as part of the original payload or through selective disclosures). Only the root level of the EAA is checked, not the nested claims.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
                     <xsd:element name="EAASupportedClaims" type="MultiValuesConstraint" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Checks whether the EAA token contains only claims that are supported. Only the root level of the EAA is checked, not the nested claims.</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    <!-- ADD HERE new constraints -->
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Group of cryptographic checks to operate on the disclosure hash algorithm(s)</xsd:documentation>

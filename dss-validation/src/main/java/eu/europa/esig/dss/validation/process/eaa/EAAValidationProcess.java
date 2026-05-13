@@ -29,12 +29,14 @@ import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
@@ -190,6 +192,8 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
             item = item.setNextItem(administrativePeriodNotExpired());
         }
 
+        item = item.setNextItem(claims());
+
         item = item.setNextItem(supportedClaims());
 
         result.setAOV(xmlAOV);
@@ -302,9 +306,14 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         return new EAAIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
     }
 
+    private ChainItem<XmlValidationProcessEAA> claims() {
+        MultiValuesRule constraint = policy.getEAAClaimsConstraint();
+        return new EAAClaimsCheck(i18nProvider, result, eaa, constraint);
+    }
+
     private ChainItem<XmlValidationProcessEAA> supportedClaims() {
         MultiValuesRule constraint = policy.getEAASupportedClaimsConstraint();
-        return new EAATypeCheck(i18nProvider, result, eaa, constraint);
+        return new EAASupportedClaimsCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> algorithmsObsolescenceValidation(XmlAOV aovResult, Date lowestPOETime) {

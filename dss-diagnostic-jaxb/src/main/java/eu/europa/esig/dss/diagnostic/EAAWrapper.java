@@ -1509,11 +1509,22 @@ public class EAAWrapper {
 
     /**
      * Gets a list of all disclosable claims present within an EAA Payload
+     * NOTE: The method retrieves claims from the root payload level only
      *
      * @return a list of {@link ClaimWrapper}s
      */
     public List<ClaimWrapper> getAllEAAPayloadClaims() {
         return getEAAPayload().getAllEAAPayloadClaims();
+    }
+
+    /**
+     * Gets a list of names (keys) for all disclosable claims present within an EAA Payload
+     * NOTE: The method retrieves names from the root payload level only
+     *
+     * @return a list of {@link ClaimWrapper}s
+     */
+    public List<String> getAllEAAPayloadClaimNames() {
+        return getAllEAAPayloadClaims().stream().map(ClaimWrapper::getName).collect(Collectors.toList());
     }
 
     /**

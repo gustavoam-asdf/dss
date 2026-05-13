@@ -72,11 +72,31 @@ public abstract class AbstractMultiValuesCheckItem<T extends XmlConstraintsConcl
 
     /**
      * Checks the values
+	 *
      * @param values {@link String} to check
      * @return TRUE if all the values are allowed by the constraint, FALSE otherwise
      */
     protected boolean processAllValuesCheck(List<String> values) {
         return ValidationProcessUtils.processAllValuesCheck(values, constraint.getValues());
     }
+
+	/**
+	 * Checks whether {@code values} contain all the expected values specified in the policy constraint
+	 *
+	 * @param values {@link String} to check
+	 * @return TRUE if all the values are allowed by the constraint, FALSE otherwise
+	 */
+	protected boolean processValuesForEachExpectedCheck(List<String> values) {
+		return ValidationProcessUtils.processValuesForEachExpectedCheck(values, constraint.getValues());
+	}
+
+	/**
+	 * Gets a list of expected values as specified within the policy constraint
+	 *
+	 * @return a list of {@link String}s
+	 */
+	protected List<String> getValues() {
+		return constraint.getValues();
+	}
 
 }

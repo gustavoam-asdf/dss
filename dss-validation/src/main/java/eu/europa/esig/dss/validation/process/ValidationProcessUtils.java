@@ -765,6 +765,26 @@ public class ValidationProcessUtils {
     }
 
 	/**
+	 * Checks whether {@code values} contain all the {@code expectedValues}
+	 *
+	 * @param values {@link String} to check
+	 * @param expectedValues {@link String}s to check against
+	 * @return TRUE if all values is present within the expected values, FALSE otherwise
+	 */
+	public static boolean processValuesForEachExpectedCheck(List<String> values, List<String> expectedValues) {
+		if (Utils.isCollectionNotEmpty(values)) {
+			for (String expectedValue : expectedValues) {
+				if (!processValueCheck(expectedValue, values)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return Utils.isCollectionEmpty(expectedValues);
+		}
+	}
+
+	/**
 	 * Returns final cryptographic validation from the AOV block.
 	 * This method returns the first algorithm which is going to expire in case of failure,
 	 * or the first applicable algorithm (which is SignatureValue's signature algorithm in most of the cases).

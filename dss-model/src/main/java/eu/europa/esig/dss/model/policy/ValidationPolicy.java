@@ -1762,6 +1762,13 @@ public interface ValidationPolicy {
      */
     LevelRule getEAAIssuanceDatePresentConstraint();
 
+	/**
+	 * Returns EAAClaims constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAClaims element is present
+	 */
+	MultiValuesRule getEAAClaimsConstraint();
+
     /**
      * Returns EAASupportedClaims constraint if present in the policy, null otherwise
      *

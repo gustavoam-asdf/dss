@@ -3081,6 +3081,24 @@ Default: `WARN`
 </EAA>
 ----
 
+* `EAAClaims` - this constraint checks whether the EAA token contains all claims specified within the list in the constraint. Nested claims are not validated by this constraint.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAClaims usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAClaims Level="WARN">
+         <Id>given_name</Id>
+         <Id>family_name</Id>
+         ...
+    </EAAClaims>
+    ...
+</EAA>
+----
+
 * `EAASupportedClaims` - this constraint checks whether the EAA token contains only supported root-level claims. Nested claims are not validated by this constraint.
 
 Default: not executed
@@ -3554,13 +3572,14 @@ This table defines the correspondence between the enforced validation policy con
                                   |EAAType                         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAATypeIntegrityPresent         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAIdentifierPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
-.9+|EAAConstraints                |EAAIssuanceDatePresent          |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+.10+|EAAConstraints                |EAAIssuanceDatePresent          |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAANotBeforePresent             |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAExpirationPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAANotExpired                   |LevelConstraint                   |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
                                   |EAAAdministrativeIssuanceDatePresent        |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAAdministrativeExpirationDatePresent      |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAAdministrativePeriodNotExpired           |LevelConstraint       |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
+                                  |EAAClaims                       |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAASupportedClaims              |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint
 .4+|Cryptographic                 |AcceptableEncryptionAlgo        |ListAlgo                          |INDETERMINATE         |CRYPTO_CONSTRAINTS_FAILURE_NO_POE +

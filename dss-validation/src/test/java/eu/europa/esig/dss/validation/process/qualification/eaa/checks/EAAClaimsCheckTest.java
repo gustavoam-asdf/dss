@@ -13,14 +13,14 @@ import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAClaimsCheck;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EAASupportedClaimsCheckTest extends AbstractTestCheck {
+class EAAClaimsCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -39,9 +39,9 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
+        EAAClaimsCheck eaacc = new EAAClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
-        supportedClaimsCheck.execute();
+        eaacc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -65,9 +65,9 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
+        EAAClaimsCheck eaacc = new EAAClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
-        supportedClaimsCheck.execute();
+        eaacc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -96,13 +96,13 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
+        EAAClaimsCheck eaacc = new EAAClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
-        supportedClaimsCheck.execute();
+        eaacc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
-        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
     }
 
     @Test
@@ -124,13 +124,13 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
+        EAAClaimsCheck eaacc = new EAAClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
-        supportedClaimsCheck.execute();
+        eaacc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
-        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
-
+    
 }
