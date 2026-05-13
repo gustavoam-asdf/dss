@@ -77,7 +77,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertTrue(eaa.getOneTimeUse());
     }
 

@@ -91,7 +91,7 @@ public class POEExtraction {
 		for (EvidenceRecordWrapper evidenceRecord : diagnosticData.getEvidenceRecords()) {
 			addPOE(evidenceRecord.getId(), controlTimePoe);
 		}
-		for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+		for (EAAWrapper eaa : diagnosticData.getEAAs()) {
 			addPOE(eaa.getId(), controlTimePoe);
 		}
 		for (CertificateWrapper certificate : diagnosticData.getUsedCertificates()) {

@@ -142,7 +142,7 @@ class MdocEAAPresentationWithDisclosuresDiffIdValidationTest extends AbstractMdo
 
     @Override
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
-        EAAWrapper eaaWrapper = diagnosticData.getElectronicAttestationOfAttributesById(diagnosticData.getFirstEAAId());
+        EAAWrapper eaaWrapper = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertNotNull(eaaWrapper);
 
         List<XmlDigestMatcher> digestMatchers = eaaWrapper.getDigestMatchers();

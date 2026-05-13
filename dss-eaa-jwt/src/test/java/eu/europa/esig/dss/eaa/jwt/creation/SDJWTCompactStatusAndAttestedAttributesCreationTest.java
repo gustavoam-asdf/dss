@@ -85,7 +85,7 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
 
         assertEquals("TokenStatusList", eaa.getEAAStatusType());
         assertEquals("revocation", eaa.getEAAStatusPurpose());

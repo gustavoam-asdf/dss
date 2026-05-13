@@ -87,7 +87,7 @@ class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAP
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
         assertEquals("john_doe_42", eaa.getEAASubject());
         assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAAExpiration());

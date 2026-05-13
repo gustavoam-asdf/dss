@@ -68,7 +68,7 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
         assertEquals(expiration.toInstant().getEpochSecond(), eaa.getEAAExpiration().toInstant().getEpochSecond());
         assertEquals(issuanceDate.toInstant().getEpochSecond(), eaa.getEAAIssuedAt().toInstant().getEpochSecond());

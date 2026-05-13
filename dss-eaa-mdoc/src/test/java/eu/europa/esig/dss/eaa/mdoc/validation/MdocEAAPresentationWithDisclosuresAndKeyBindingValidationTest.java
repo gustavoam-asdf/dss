@@ -167,7 +167,7 @@ class MdocEAAPresentationWithDisclosuresAndKeyBindingValidationTest extends Abst
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertNotNull(eaa.getEAAIssuedAt());
         assertNotNull(eaa.getEAANotBefore());
         assertNotNull(eaa.getEAAExpiration());

@@ -1142,7 +1142,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	}
 
 	private DigestAlgorithm getSdAlg() {
-		List<AdvancedSignature> eaaSignatures = getElectronicAttestationOfAttributes().getSignatures();
+		List<AdvancedSignature> eaaSignatures = getEAA().getSignatures();
 		if (Utils.isCollectionEmpty(eaaSignatures)) {
 			throw new IllegalStateException("EAA signatures cannot be null or empty!");
 		}

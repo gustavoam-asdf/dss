@@ -84,7 +84,7 @@ public class EAAValidationBlock {
     public List<XmlEAA> execute() {
         final List<XmlEAA> result = new ArrayList<>();
 
-        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             final XmlEAA eaaAnalysis = new XmlEAA();
             eaaAnalysis.setId(eaa.getId());
 

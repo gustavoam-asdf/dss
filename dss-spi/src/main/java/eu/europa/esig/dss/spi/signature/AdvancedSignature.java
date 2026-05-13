@@ -263,16 +263,16 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	/**
 	 * Gets the EAA of an EAA issuing or key binding signature
 	 *
-	 * @return {@code ElectronicAttestationOfAttributes}
+	 * @return {@link EAA}
 	 */
-	EAA getElectronicAttestationOfAttributes();
+	EAA getEAA();
 
 	/**
 	 * Sets EAA presentation of the EAA issuing or key binging signature
 	 *
 	 * @param eaa {@link EAA}
 	 */
-	void setElectronicAttestationOfAttributes(EAA eaa);
+	void setEAA(EAA eaa);
 	
 	/**
 	 * Checks if the current signature is a counter signature (i.e. has a Master signature)

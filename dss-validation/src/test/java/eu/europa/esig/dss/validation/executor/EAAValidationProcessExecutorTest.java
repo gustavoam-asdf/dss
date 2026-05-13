@@ -1178,7 +1178,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
         DiagnosticData diagnosticData = new DiagnosticData(xmlDiagnosticData);
-        EAAWrapper eaaWrapper = diagnosticData.getElectronicAttestationOfAttributesById(diagnosticData.getFirstEAAId());
+        EAAWrapper eaaWrapper = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
 
         MultiValuesConstraint claims = new MultiValuesConstraint();
         claims.setLevel(Level.FAIL);
@@ -1243,7 +1243,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
         DiagnosticData diagnosticData = new DiagnosticData(xmlDiagnosticData);
-        EAAWrapper eaaWrapper = diagnosticData.getElectronicAttestationOfAttributesById(diagnosticData.getFirstEAAId());
+        EAAWrapper eaaWrapper = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
 
         MultiValuesConstraint claims = new MultiValuesConstraint();
         claims.setLevel(Level.FAIL);
@@ -1314,7 +1314,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
         DiagnosticData diagnosticData = new DiagnosticData(xmlDiagnosticData);
-        EAAWrapper eaaWrapper = diagnosticData.getElectronicAttestationOfAttributesById(diagnosticData.getFirstEAAId());
+        EAAWrapper eaaWrapper = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
 
         MultiValuesConstraint claims = new MultiValuesConstraint();
         claims.setLevel(Level.FAIL);

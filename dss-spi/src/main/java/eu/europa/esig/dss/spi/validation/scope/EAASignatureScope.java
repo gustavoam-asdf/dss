@@ -27,7 +27,7 @@ public class EAASignatureScope extends SignatureScope {
      */
     public EAASignatureScope(final EAA eaa, final DSSDocument originalDocument) {
         super(originalDocument);
-        Objects.requireNonNull(eaa, "ElectronicAttestationOfAttributes cannot be null!");
+        Objects.requireNonNull(eaa, "EAA cannot be null!");
         this.eaa = eaa;
     }
 

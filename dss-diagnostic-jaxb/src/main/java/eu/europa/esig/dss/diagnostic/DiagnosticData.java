@@ -1015,7 +1015,7 @@ public class DiagnosticData {
 	 *
 	 * @return a list of EAA wrappers
 	 */
-	public List<EAAWrapper> getElectronicAttestationsOfAttributes() {
+	public List<EAAWrapper> getEAAs() {
 		if (foundEAAs == null) {
 			foundEAAs = new ArrayList<>();
 			List<XmlEAA> xmlEAAs = wrapped.getEAAs();
@@ -1035,8 +1035,8 @@ public class DiagnosticData {
 	 *            EAA presentation id
 	 * @return evidence record wrapper or null
 	 */
-	public EAAWrapper getElectronicAttestationOfAttributesById(String id) {
-		List<EAAWrapper> eaas = getElectronicAttestationsOfAttributes();
+	public EAAWrapper getEAAById(String id) {
+		List<EAAWrapper> eaas = getEAAs();
 		for (EAAWrapper eaa : eaas) {
 			if (id.equals(eaa.getId())) {
 				return eaa;
@@ -1056,7 +1056,7 @@ public class DiagnosticData {
 	}
 
 	private EAAWrapper getFirstEAANullSafe() {
-		List<EAAWrapper> eaas = getElectronicAttestationsOfAttributes();
+		List<EAAWrapper> eaas = getEAAs();
 		if (eaas != null && !eaas.isEmpty()) {
 			return eaas.get(0);
 		}

@@ -454,7 +454,7 @@ public class ETSIValidationReportBuilder {
 			validationObjectListType.getValidationObject().add(timestampValidationObject);
 		}
 
-		for (EAAWrapper EAA : diagnosticData.getElectronicAttestationsOfAttributes()) {
+		for (EAAWrapper EAA : diagnosticData.getEAAs()) {
 			ValidationObjectType EAAValidationObject = getEAAValidationObject(EAA);
 			EAAValidationObject.setPOE(getPOE(EAA.getId(), poeExtraction));
 			validationObjectListType.getValidationObject().add(EAAValidationObject);

@@ -406,12 +406,12 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	}
 
 	@Override
-	public EAA getElectronicAttestationOfAttributes() {
+	public EAA getEAA() {
 		return eaa;
 	}
 
 	@Override
-	public void setElectronicAttestationOfAttributes(EAA eaa) {
+	public void setEAA(EAA eaa) {
 		this.eaa = eaa;
 	}
 

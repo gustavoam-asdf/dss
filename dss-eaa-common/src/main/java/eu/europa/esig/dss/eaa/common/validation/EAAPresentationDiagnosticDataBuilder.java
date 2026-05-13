@@ -142,7 +142,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     /**
-     * Builds an instance of {@code XmlEAADocument} for a {@code ElectronicAttestationOfAttributes}
+     * Builds an instance of {@code XmlEAADocument} for a {@code EAA}
      *
      * @param eaa {@link EAA}
      * @return {@link XmlEAADocument}

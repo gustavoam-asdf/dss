@@ -175,8 +175,8 @@ public class SimpleReportBuilder {
 		Set<String> attachedSignatureIds = new HashSet<>();
 		Set<String> attachedTimestampIds = new HashSet<>();
 		Set<String> attachedEvidenceRecordIds = new HashSet<>();
-		if (Utils.isCollectionNotEmpty(diagnosticData.getElectronicAttestationsOfAttributes())) {
-			for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+		if (Utils.isCollectionNotEmpty(diagnosticData.getEAAs())) {
+			for (EAAWrapper eaa : diagnosticData.getEAAs()) {
 				attachedSignatureIds.addAll(eaa.getEAASignatureIds());
 				if (eaa.getKeyBindingSignature() != null) {
 					attachedSignatureIds.add(eaa.getKeyBindingSignatureId());

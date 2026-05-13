@@ -62,11 +62,11 @@ public class CBAdESSignatureScopeFinder extends AbstractSignatureScopeFinder imp
 
                 } else if (cbadesSignature.isKeyBindingSignature()) {
                     // only one document shall be present
-                    return Collections.singletonList(new KeyBindingSignatureScope(cbadesSignature.getElectronicAttestationOfAttributes(), originalDocuments.get(0)));
+                    return Collections.singletonList(new KeyBindingSignatureScope(cbadesSignature.getEAA(), originalDocuments.get(0)));
 
-                } else if (cbadesSignature.getElectronicAttestationOfAttributes() != null) {
+                } else if (cbadesSignature.getEAA() != null) {
                     // only one document shall be present
-                    return Collections.singletonList(new EAASignatureScope(cbadesSignature.getElectronicAttestationOfAttributes(), originalDocuments.get(0)));
+                    return Collections.singletonList(new EAASignatureScope(cbadesSignature.getEAA(), originalDocuments.get(0)));
 
                 } else if (originalDocuments.size() == 1) {
                     return Collections.singletonList(getSignatureScopeFromOriginalDocument(originalDocuments.get(0)));

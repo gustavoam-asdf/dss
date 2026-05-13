@@ -198,7 +198,7 @@ public abstract class DefaultEAA implements EAA {
             DefaultEAA eaa = initEAA();
             eaa.signatures = signatures;
             for (AdvancedSignature signature : signatures) {
-                signature.setElectronicAttestationOfAttributes(eaa);
+                signature.setEAA(eaa);
             }
             eaa.disclosures = disclosures;
             if (keyBindingSignature != null) {
@@ -206,7 +206,7 @@ public abstract class DefaultEAA implements EAA {
                         getHolderCertificateSource(eaa.getPayload()), getSigningCertificateSource(signatures));
                 keyBindingSignature.setSigningCertificateSource(signingCertificateSource);
                 eaa.keyBindingSignature = keyBindingSignature;
-                keyBindingSignature.setElectronicAttestationOfAttributes(eaa);
+                keyBindingSignature.setEAA(eaa);
                 keyBindingSignature.setKeyBindingSignature(true);
             }
             eaa.filename = filename;

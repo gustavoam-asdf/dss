@@ -86,7 +86,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     protected void verifyDiagnosticData(DiagnosticData diagnosticData) {
         super.verifyDiagnosticData(diagnosticData);
 
-        List<EAAWrapper> eaas = diagnosticData.getElectronicAttestationsOfAttributes();
+        List<EAAWrapper> eaas = diagnosticData.getEAAs();
         assertEquals(1, eaas.size());
 
         EAAWrapper eaaWrappper = eaas.get(0);
@@ -109,11 +109,11 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(eaaPresentationInfo.getEAAPresentationType(), diagnosticData.getEAAPresentationType());
         List<XmlEAADocument> documents = eaaPresentationInfo.getDocuments();
         assertTrue(Utils.isCollectionNotEmpty(documents));
-        assertEquals(documents.size(), diagnosticData.getElectronicAttestationsOfAttributes().size());
+        assertEquals(documents.size(), diagnosticData.getEAAs().size());
     }
 
     protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
-        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             for (XmlDigestMatcher digestMatcher : eaa.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
                     assertFalse(digestMatcher.isDataFound());
@@ -133,7 +133,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     }
 
     protected void checkClaims(DiagnosticData diagnosticData) {
-        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             List<ClaimWrapper> eaaPayloadClaims = new ArrayList<>(eaa.getAllEAAPayloadClaims());
             assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
             checkClaimsRecursively(eaaPayloadClaims, true);
@@ -264,7 +264,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     }
 
     protected void checkDeviceKeyClaim(DiagnosticData diagnosticData) {
-        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             if (keyBindingPresent()) {
                 assertNotNull(eaa.getEAADevicePublicKey());
                 if (eaa.getEAADeviceCertificate() != null) {
@@ -328,7 +328,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     @Override
     protected void checkSignatureScopes(DiagnosticData diagnosticData) {
-        for (EAAWrapper eaa : diagnosticData.getElectronicAttestationsOfAttributes()) {
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             for (SignatureWrapper signatureWrapper : eaa.getEAASignatures()) {
                 if (signatureWrapper.isSignatureValid()) {
                     assertEquals(1, Utils.collectionSize(signatureWrapper.getSignatureScopes()));

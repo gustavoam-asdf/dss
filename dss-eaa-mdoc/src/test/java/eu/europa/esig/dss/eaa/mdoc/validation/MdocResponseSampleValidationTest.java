@@ -38,7 +38,7 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
-        EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertEquals(DSSUtils.parseRFCDate("2024-10-20T00:00:00Z"), eaa.getAdministrativeExpirationDate());
         assertEquals(DSSUtils.parseRFCDate("2019-10-20T00:00:00Z"), eaa.getAdministrativeIssuanceDate());
         assertNotNull(eaa.getEAADevicePublicKey());
