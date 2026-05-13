@@ -151,6 +151,15 @@ public interface ValidationPolicy {
 	LevelRule getSigningTimeInCertRangeConstraint(Context context);
 
 	/**
+	 * Indicates if the signed property: signature type should be checked. If SignatureType element is absent within the
+	 * constraint file then null is returned.
+	 *
+	 * @param context {@link Context}
+	 * @return {@code MultiValuesRule} if SignatureType element is present in the constraint file, null otherwise.
+	 */
+	MultiValuesRule getSignatureTypeConstraint(Context context);
+
+	/**
 	 * Indicates if the signed property: content-type should be checked. If ContentType element is absent within the
 	 * constraint file then null is returned.
 	 *

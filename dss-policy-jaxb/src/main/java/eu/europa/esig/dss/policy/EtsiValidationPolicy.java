@@ -312,6 +312,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public MultiValuesRule getSignatureTypeConstraint(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toRule(signedAttributeConstraints.getSignatureType());
+		}
+		return null;
+	}
+
+	@Override
 	public MultiValuesRule getContentTypeConstraint(Context context) {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
 		if (signedAttributeConstraints != null) {

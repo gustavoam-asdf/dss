@@ -126,6 +126,9 @@
             <KeyIdentifierMatch Level="WARN" />
             <SigningTime Level="FAIL" />
             <SigningTimeInCertRange Level="FAIL" />
+            <SignatureType Level="WARN">
+                <Id>dc+sd-jwt</Id>
+            </SignatureType>
             <EllipticCurveKeySize Level="WARN" />
         </SignedAttributes>
     </SignatureConstraints>

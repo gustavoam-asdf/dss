@@ -54,6 +54,7 @@ import eu.europa.esig.dss.validation.process.bbb.sav.checks.KeyIdentifierMatchCh
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.KeyIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.MessageDigestOrSignedPropertiesCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignatureTimeStampCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignatureTypeCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignerLocationCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SigningTimeCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SigningTimeInCertificateValidityRangeCheck;
@@ -108,6 +109,8 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 	@Override
 	protected void initChain() {
 
+		SignatureForm signatureForm = token.getSignatureFormat().getSignatureForm();
+
 		ChainItem<XmlSAV> item = firstItem = structuralValidation();
 
 		if (token.getSigningCertificate() != null) {
@@ -140,8 +143,7 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 			}
 
 			// verification for JAdES / CB-AdES
-			if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm()) ||
-					SignatureForm.CBAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+			if (SignatureForm.JAdES.equals(signatureForm) || SignatureForm.CBAdES.equals(signatureForm)) {
 
 				item = item.setNextItem(keyIdentifierPresent());
 
@@ -166,6 +168,10 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 			item = item.setNextItem(signingTimeInCertificateValidityRange());
 		}
 
+		if (SignatureForm.JAdES.equals(signatureForm)) {
+			item = item.setNextItem(signatureType());
+		}
+
 		// content-type
 		item = item.setNextItem(contentType());
 
@@ -173,7 +179,6 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		item = item.setNextItem(contentHints());
 		
 		// message-digest for CAdES/PAdES and SignedProperties for XAdES are present
-		SignatureForm signatureForm = token.getSignatureFormat().getSignatureForm();
 		if (!SignatureForm.JAdES.equals(signatureForm) && !SignatureForm.CBAdES.equals(signatureForm)) {
 			item = item.setNextItem(messageDigestOrSignedProperties());
 		}
@@ -229,7 +234,7 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		item = item.setNextItem(archiveTimeStamp());
 
 		// document-time-stamp (PAdES only)
-		if (SignatureForm.PAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+		if (SignatureForm.PAdES.equals(signatureForm)) {
 			item = item.setNextItem(documentTimeStamp());
 		}
 
@@ -270,6 +275,11 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 	private ChainItem<XmlSAV> signingTimeInCertificateValidityRange() {
 		LevelRule constraint = validationPolicy.getSigningTimeInCertRangeConstraint(context);
 		return new SigningTimeInCertificateValidityRangeCheck<>(i18nProvider, result, token, constraint);
+	}
+
+	private ChainItem<XmlSAV> signatureType() {
+		MultiValuesRule constraint = validationPolicy.getSignatureTypeConstraint(context);
+		return new SignatureTypeCheck(i18nProvider, result, token, constraint);
 	}
 
 	private ChainItem<XmlSAV> contentType() {

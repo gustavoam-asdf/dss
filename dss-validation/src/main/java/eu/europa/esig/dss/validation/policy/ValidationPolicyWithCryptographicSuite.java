@@ -167,6 +167,11 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public MultiValuesRule getSignatureTypeConstraint(Context context) {
+        return validationPolicy.getSignatureTypeConstraint(context);
+    }
+
+    @Override
     public MultiValuesRule getContentTypeConstraint(Context context) {
         return validationPolicy.getContentTypeConstraint(context);
     }

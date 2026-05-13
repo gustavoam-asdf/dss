@@ -42,6 +42,7 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.policy.EtsiValidationPolicy;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.SignedAttributesConstraints;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.validation.executor.signature.DefaultSignatureProcessExecutor;
@@ -597,6 +598,103 @@ class JAdESValidationExecutorTest extends AbstractProcessExecutorTest {
         }
         assertTrue(kidPresentCheckFound);
         assertTrue(kidPresentMatchFound);
+    }
+
+    @Test
+    void checkJAdESSigTypeTest() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_jades_valid.xml"));
+        assertNotNull(diagnosticData);
+
+        XmlSignature xmlSignature = diagnosticData.getSignatures().get(0);
+        xmlSignature.setSignatureType("application/jose");
+
+        MultiValuesConstraint levelConstraint = new MultiValuesConstraint();
+        levelConstraint.setLevel(Level.FAIL);
+        levelConstraint.getId().add("jose");
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        SignedAttributesConstraints signedAttributes = validationPolicy.getSignatureConstraints().getSignedAttributes();
+        signedAttributes.setSignatureType(levelConstraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        assertNotNull(reports);
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(signatureBBB);
+
+        XmlSAV sav = signatureBBB.getSAV();
+        assertNotNull(sav);
+        assertEquals(Indication.PASSED, sav.getConclusion().getIndication());
+
+        boolean typPresentCheckFound = false;
+        for (XmlConstraint constraint : sav.getConstraint()) {
+            if (MessageTag.BBB_SAV_ISQPSTYPP.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, constraint.getStatus());
+                typPresentCheckFound = true;
+            }
+        }
+        assertTrue(typPresentCheckFound);
+    }
+
+    @Test
+    void checkJAdESSigTypeInvalidTest() throws Exception {
+        XmlDiagnosticData diagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/diag_data_jades_valid.xml"));
+        assertNotNull(diagnosticData);
+
+        XmlSignature xmlSignature = diagnosticData.getSignatures().get(0);
+        xmlSignature.setSignatureType("application/jose");
+
+        MultiValuesConstraint levelConstraint = new MultiValuesConstraint();
+        levelConstraint.setLevel(Level.FAIL);
+        levelConstraint.getId().add("json");
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+        SignedAttributesConstraints signedAttributes = validationPolicy.getSignatureConstraints().getSignedAttributes();
+        signedAttributes.setSignatureType(levelConstraint);
+
+        DefaultSignatureProcessExecutor executor = new DefaultSignatureProcessExecutor();
+        executor.setDiagnosticData(diagnosticData);
+        executor.setValidationPolicy(validationPolicy);
+        executor.setCurrentTime(diagnosticData.getValidationDate());
+
+        Reports reports = executor.execute();
+        assertNotNull(reports);
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstSignatureId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstSignatureId()),
+                i18nProvider.getMessage(MessageTag.BBB_SAV_ISQPSTYPP_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        XmlBasicBuildingBlocks signatureBBB = detailedReport.getBasicBuildingBlockById(detailedReport.getFirstSignatureId());
+        assertNotNull(signatureBBB);
+
+        XmlSAV sav = signatureBBB.getSAV();
+        assertNotNull(sav);
+        assertEquals(Indication.INDETERMINATE, sav.getConclusion().getIndication());
+        assertEquals(SubIndication.SIG_CONSTRAINTS_FAILURE, sav.getConclusion().getSubIndication());
+
+        boolean typPresentCheckFound = false;
+        for (XmlConstraint constraint : sav.getConstraint()) {
+            if (MessageTag.BBB_SAV_ISQPSTYPP.getId().equals(constraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, constraint.getStatus());
+                assertEquals(MessageTag.BBB_SAV_ISQPSTYPP_ANS.getId(), constraint.getError().getKey());
+                typPresentCheckFound = true;
+            }
+        }
+        assertTrue(typPresentCheckFound);
     }
 
 }

@@ -293,6 +293,11 @@
 					<xsd:documentation>Checks whether the claimed signing-time value is within the signing-certificate validity range, when present</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="SignatureType" type="MultiValuesConstraint" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Checks if the 'typ' (Signature Type) attribute has the expected value (JAdES)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="ContentType" type="MultiValuesConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Checks if the content-type attribute has the expected value</xsd:documentation>
