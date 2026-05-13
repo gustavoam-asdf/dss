@@ -1116,6 +1116,16 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getEAAExpirationPresentConstraint() {
+        return validationPolicy.getEAAExpirationPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAANotExpiredConstraint() {
+        return validationPolicy.getEAANotExpiredConstraint();
+    }
+
+    @Override
     public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
         return validationPolicy.getEAAAdministrativeIssuanceDatePresentConstraint();
     }
@@ -1126,8 +1136,8 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAExpirationPresentConstraint() {
-        return validationPolicy.getEAAExpirationPresentConstraint();
+    public LevelRule getEAAAdministrativePeriodNotExpiredConstraint() {
+        return validationPolicy.getEAAAdministrativePeriodNotExpiredConstraint();
     }
 
     @Override

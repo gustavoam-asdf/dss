@@ -991,7 +991,7 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setIssuer(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIssuer()));
 		xmlEAAPayload.setSubject(getXmlDisclosableClaim(eaaPayloadProxy.getEAASubject()));
 		xmlEAAPayload.setAudience(getXmlDisclosableClaim(eaaPayloadProxy.getEAAAudience()));
-		xmlEAAPayload.setNotAfter(getXmlDisclosableClaim(eaaPayloadProxy.getEAANotAfter()));
+		xmlEAAPayload.setExpiration(getXmlDisclosableClaim(eaaPayloadProxy.getEAAExpiration()));
 		xmlEAAPayload.setNotBefore(getXmlDisclosableClaim(eaaPayloadProxy.getEAANotBefore()));
 		xmlEAAPayload.setIssuedAt(getXmlDisclosableClaim(eaaPayloadProxy.getEAAIssuedAt()));
 		xmlEAAPayload.setUpdatedAt(getXmlDisclosableClaim(eaaPayloadProxy.getEAAUpdatedAt()));

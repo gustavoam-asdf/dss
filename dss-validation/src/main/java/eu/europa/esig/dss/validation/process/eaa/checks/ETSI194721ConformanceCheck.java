@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
@@ -29,7 +28,8 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     /** EAA to check */
     private final EAAWrapper eaa;
 
-    private final Date now = new Date();
+    /** Validation time */
+    private final Date validationTime;
 
     /**
      * Default constructor
@@ -40,13 +40,16 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
      *         {@link XmlValidationProcessEAA}
      * @param eaa
      *         {@link EAAWrapper}
+     * @param validationTime
+     *         {@link Date}
      * @param constraint
      *         {@link LevelRule}
      */
     public ETSI194721ConformanceCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
-                                      EAAWrapper eaa, LevelRule constraint) {
+                                      EAAWrapper eaa, Date validationTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
+        this.validationTime = validationTime;
     }
 
     @Override
@@ -113,7 +116,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
 
     private boolean checkNowAfterAdministrativeDateIssuance() {
         if (eaa.getAdministrativeIssuanceDate() != null) {
-            return now.after(eaa.getAdministrativeIssuanceDate());
+            return !validationTime.before(eaa.getAdministrativeIssuanceDate());
         }
 
         // Administrative date is optional, return true if not present
@@ -122,7 +125,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
 
     private boolean checkNowBeforeAdministrativeDateExpiration() {
         if (eaa.getAdministrativeExpirationDate() != null) {
-            return now.before(eaa.getAdministrativeExpirationDate());
+            return validationTime.before(eaa.getAdministrativeExpirationDate());
         }
 
         // Administrative date is optional, return true if not present
@@ -130,11 +133,11 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     private boolean checkNowAfterNotBefore() {
-        return eaa.getEAANotBefore() != null && now.after(eaa.getEAANotBefore());
+        return eaa.getEAANotBefore() != null && !validationTime.before(eaa.getEAANotBefore());
     }
 
     private boolean checkNowBeforeExpiration() {
-        return eaa.getEAANotAfter() != null && now.before(eaa.getEAANotAfter());
+        return eaa.getEAAExpiration() != null && validationTime.before(eaa.getEAAExpiration());
     }
 
     private boolean checkNoStatusIfShortLived() {
@@ -170,22 +173,22 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
         List<String> errors = new ArrayList<>();
         if (!checkNowAfterNotBefore()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_NBF,
-                    ValidationProcessUtils.getFormattedDate(now),
+                    ValidationProcessUtils.getFormattedDate(validationTime),
                     ValidationProcessUtils.getFormattedDate(eaa.getEAANotBefore())));
         }
         if (!checkNowBeforeExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_EXP,
-                    ValidationProcessUtils.getFormattedDate(now),
-                    ValidationProcessUtils.getFormattedDate(eaa.getEAANotAfter())));
+                    ValidationProcessUtils.getFormattedDate(validationTime),
+                    ValidationProcessUtils.getFormattedDate(eaa.getEAAExpiration())));
         }
         if (!checkNowAfterAdministrativeDateIssuance()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_ADI,
-                    ValidationProcessUtils.getFormattedDate(now),
+                    ValidationProcessUtils.getFormattedDate(validationTime),
                     ValidationProcessUtils.getFormattedDate(eaa.getAdministrativeIssuanceDate())));
         }
         if (!checkNowBeforeAdministrativeDateExpiration()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_AFTER_ADE,
-                    ValidationProcessUtils.getFormattedDate(now),
+                    ValidationProcessUtils.getFormattedDate(validationTime),
                     ValidationProcessUtils.getFormattedDate(eaa.getAdministrativeExpirationDate())));
         }
         if (!checkMDOCDocumentNumberPresent()) {
@@ -219,8 +222,8 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
     }
 
     @Override
-    protected XmlMessage buildErrorMessage() {
-        return buildXmlMessage(MessageTag.EAA_ETSI194721_ANS, buildAdditionalInfo());
+    protected MessageTag getErrorMessageTag() {
+        return MessageTag.EAA_ETSI194721_ANS;
     }
 
     @Override

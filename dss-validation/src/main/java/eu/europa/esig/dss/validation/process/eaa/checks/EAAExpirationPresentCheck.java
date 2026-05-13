@@ -34,7 +34,7 @@ public class EAAExpirationPresentCheck extends ChainItem<XmlValidationProcessEAA
 
     @Override
     protected boolean process() {
-        return eaa.getEAANotAfter() != null;
+        return eaa.getEAAExpiration() != null;
     }
 
     @Override

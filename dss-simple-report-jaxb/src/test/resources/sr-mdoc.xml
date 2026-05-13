@@ -48,7 +48,7 @@
         <EAAPayload>
             <IssuedAt name="validityInfo/signed">2020-10-01T13:30:02Z</IssuedAt>
             <NotBefore name="validityInfo/validFrom">2020-10-01T13:30:02Z</NotBefore>
-            <NotAfter name="validityInfo/validUntil">2021-10-01T13:30:02Z</NotAfter>
+            <Expiration name="validityInfo/validUntil">2021-10-01T13:30:02Z</Expiration>
             <NextUpdate name="validityInfo/signed">2020-10-01T13:30:02Z</NextUpdate>
             <Version name="version">1.0</Version>
             <DocType name="docType">org.iso.18013.5.1.mDL</DocType>

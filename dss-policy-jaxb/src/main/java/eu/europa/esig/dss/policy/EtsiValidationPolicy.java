@@ -2001,7 +2001,16 @@ public class EtsiValidationPolicy implements ValidationPolicy {
         return null;
     }
 
-    @Override
+	@Override
+	public LevelRule getEAANotExpiredConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getEAANotExpired());
+		}
+		return null;
+	}
+
+	@Override
     public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
         EAAConstraints EAAConstraints = getEAAConstraints();
         if (EAAConstraints != null) {
@@ -2019,7 +2028,16 @@ public class EtsiValidationPolicy implements ValidationPolicy {
         return null;
     }
 
-    @Override
+	@Override
+	public LevelRule getEAAAdministrativePeriodNotExpiredConstraint() {
+		EAAConstraints EAAConstraints = getEAAConstraints();
+		if (EAAConstraints != null) {
+			return toLevelRule(EAAConstraints.getEAAAdministrativePeriodNotExpired());
+		}
+		return null;
+	}
+
+	@Override
     public LevelRule getEAAETSI194721ConformanceConstraint() {
         EAAConstraints EAAConstraints = getEAAConstraints();
         if (EAAConstraints != null) {

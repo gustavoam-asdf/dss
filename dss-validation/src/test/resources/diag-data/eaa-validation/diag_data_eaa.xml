@@ -92,9 +92,9 @@
                 <NotBefore name="nbf">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </NotBefore>
-                <NotAfter name="exp">
+                <Expiration name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
-                </NotAfter>
+                </Expiration>
                 <UpdatedAt name="updated_at" disclosure="true">
                     <DateTime>2019-10-02T07:06:40Z</DateTime>
                 </UpdatedAt>
@@ -193,7 +193,7 @@
             <ClaimedSigningTime>2026-04-23T09:28:59Z</ClaimedSigningTime>
             <SignatureFormat>JAdES-BASELINE-B</SignatureFormat>
             <JWSSerializationType>COMPACT_SERIALIZATION</JWSSerializationType>
-            <SignatureType>application/jose</SignatureType>
+            <SignatureType>application/dc+sd-jwt</SignatureType>
             <StructuralValidation valid="true"/>
             <DigestMatchers>
                 <DigestMatcher type="JWS_SIGNING_INPUT">

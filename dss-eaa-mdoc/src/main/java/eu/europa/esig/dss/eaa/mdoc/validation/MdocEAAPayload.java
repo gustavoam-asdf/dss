@@ -104,7 +104,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimDate getNotAfterTime() {
+    public ClaimDate getExpirationTime() {
         // see ValidityInfo
         return null;
     }

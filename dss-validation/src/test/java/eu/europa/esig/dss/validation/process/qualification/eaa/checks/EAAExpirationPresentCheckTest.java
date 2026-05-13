@@ -34,7 +34,7 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date());
-        xmlEAAPayload.setNotAfter(expiration);
+        xmlEAAPayload.setExpiration(expiration);
         xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();

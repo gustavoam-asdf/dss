@@ -219,8 +219,8 @@ public class EAAWrapper {
      *
      * @return {@link Date}
      */
-    public Date getEAANotAfter() {
-        Date expirationTime = getPayloadClaimDateValue(getEAAPayload().getEAANotAfter());
+    public Date getEAAExpiration() {
+        Date expirationTime = getPayloadClaimDateValue(getEAAPayload().getEAAExpiration());
         if (expirationTime != null) {
             return expirationTime;
         }

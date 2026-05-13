@@ -28,10 +28,12 @@ import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustive
 import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
@@ -159,6 +161,8 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
 
         // 4. Other checks (including TS 119 472-1)
 
+        item = item.setNextItem(etsi194721Conformance());
+
         item = item.setNextItem(eaaType());
         if (EAAType.SD_JWT_VC == eaa.getEAAType()) {
             item = item.setNextItem(typeIntegrityPresent());
@@ -167,12 +171,25 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         if (EAAType.ISO_IEC_MDOC == eaa.getEAAType()) {
             item = item.setNextItem(issuanceDatePresent());
         }
+
         item = item.setNextItem(eaaIdentifierPresent());
+
         item = item.setNextItem(notBeforePresent());
+
         item = item.setNextItem(expirationPresent());
+
+        if (eaa.getEAANotBefore() != null && eaa.getEAAExpiration() != null) {
+            item = item.setNextItem(notExpired());
+        }
+
         item = item.setNextItem(administrativeIssuanceDatePresent());
+
         item = item.setNextItem(administrativeExpirationDatePresent());
-        item = item.setNextItem(etsi194721Conformance());
+
+        if (eaa.getAdministrativeIssuanceDate() != null && eaa.getAdministrativeExpirationDate() != null) {
+            item = item.setNextItem(administrativePeriodNotExpired());
+        }
+
         item = item.setNextItem(supportedClaims());
 
         result.setAOV(xmlAOV);
@@ -230,6 +247,11 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
                 xmlSignature.getValidationProcessBasicSignature().getConclusion(), constraint);
     }
 
+    private ChainItem<XmlValidationProcessEAA> etsi194721Conformance() {
+        LevelRule constraint = policy.getEAAETSI194721ConformanceConstraint();
+        return new ETSI194721ConformanceCheck(i18nProvider, result, eaa, currentTime, constraint);
+    }
+
     private ChainItem<XmlValidationProcessEAA> eaaType() {
         MultiValuesRule constraint = policy.getEAATypeConstraint();
         return new EAATypeCheck(i18nProvider, result, eaa, constraint);
@@ -250,6 +272,11 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         return new EAAExpirationPresentCheck(i18nProvider, result, eaa, constraint);
     }
 
+    private ChainItem<XmlValidationProcessEAA> notExpired() {
+        LevelRule constraint = policy.getEAANotExpiredConstraint();
+        return new EAANotExpiredCheck(i18nProvider, result, eaa, currentTime, constraint);
+    }
+
     private ChainItem<XmlValidationProcessEAA> administrativeIssuanceDatePresent() {
         LevelRule constraint = policy.getEAAAdministrativeIssuanceDatePresentConstraint();
         return new EAAAdministrativeIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
@@ -260,6 +287,11 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         return new EAAAdministrativeExpirationDatePresentCheck(i18nProvider, result, eaa, constraint);
     }
 
+    private ChainItem<XmlValidationProcessEAA> administrativePeriodNotExpired() {
+        LevelRule constraint = policy.getEAAAdministrativePeriodNotExpiredConstraint();
+        return new EAAAdministrativePeriodNotExpiredCheck(i18nProvider, result, eaa, currentTime, constraint);
+    }
+
     private ChainItem<XmlValidationProcessEAA> eaaIdentifierPresent() {
         LevelRule constraint = policy.getEAAIdentifierPresentConstraint();
         return new EAAIdentifierPresentCheck(i18nProvider, result, eaa, constraint);
@@ -268,11 +300,6 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     private ChainItem<XmlValidationProcessEAA> issuanceDatePresent() {
         LevelRule constraint = policy.getEAAIssuanceDatePresentConstraint();
         return new EAAIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> etsi194721Conformance() {
-        LevelRule constraint = policy.getEAAETSI194721ConformanceConstraint();
-        return new ETSI194721ConformanceCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> supportedClaims() {

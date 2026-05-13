@@ -41,9 +41,9 @@
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
-                <NotAfter name="exp">
+                <Expiration name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
-                </NotAfter>
+                </Expiration>
                 <MetadataType name="vct">
                     <Text>urn:eudi:pid:1</Text>
                 </MetadataType>
@@ -97,7 +97,7 @@
             <ClaimedSigningTime>2026-04-03T09:58:09Z</ClaimedSigningTime>
             <SignatureFormat>JAdES-BASELINE-B</SignatureFormat>
             <JWSSerializationType>COMPACT_SERIALIZATION</JWSSerializationType>
-            <SignatureType>application/jose</SignatureType>
+            <SignatureType>application/dc+sd-jwt</SignatureType>
             <StructuralValidation valid="true"/>
             <DigestMatchers>
                 <DigestMatcher type="JWS_SIGNING_INPUT">

@@ -18,6 +18,7 @@ import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -52,14 +53,14 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -92,7 +93,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim documentNumber = new XmlClaim();
         documentNumber.setText("test-value");
@@ -107,7 +108,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -140,14 +141,14 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -180,14 +181,14 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(System.currentTimeMillis() - 60000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -220,7 +221,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim administrativeIssuance = new XmlClaim();
         administrativeIssuance.setDateTime(new Date(System.currentTimeMillis() - 600000));
@@ -235,7 +236,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -268,7 +269,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim administrativeIssuance = new XmlClaim();
         administrativeIssuance.setDateTime(new Date(System.currentTimeMillis() + 60000));
@@ -283,7 +284,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -316,7 +317,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim administrativeIssuance = new XmlClaim();
         administrativeIssuance.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -327,7 +328,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -360,7 +361,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim administrativeIssuance = new XmlClaim();
         administrativeIssuance.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -379,7 +380,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -412,7 +413,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim issuingAuthority = new XmlClaim();
         issuingAuthority.setText("issuingAuthority");
@@ -423,7 +424,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -456,7 +457,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim documentNumber = new XmlClaim();
         documentNumber.setText("test-value");
@@ -467,7 +468,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -503,7 +504,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_QEAA.getUrn());
@@ -514,7 +515,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -550,7 +551,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_PUBEAA.getUrn());
@@ -561,7 +562,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -601,7 +602,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_QEAA.getUrn());
@@ -612,7 +613,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -652,7 +653,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_PUBEAA.getUrn());
@@ -663,7 +664,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -707,7 +708,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_QEAA.getUrn());
@@ -718,7 +719,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -762,7 +763,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlClaim category = new XmlClaim();
         category.setText(EAACategory.EU_PUBEAA.getUrn());
@@ -773,7 +774,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -806,7 +807,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         xmlEAAPayload.setShortLived(new XmlClaim());
         xmlEAAPayload.setStatus(new XmlStatusClaim());
@@ -824,7 +825,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -833,6 +834,8 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
 
+    // TODO : disabled until review in ETSI TS 119 472-1
+    @Disabled
     @Test
     void sdjwtStatusConformanceInvalidTest() {
         LevelConstraint constraint = new LevelConstraint();
@@ -857,7 +860,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         xmlEAAPayload.setStatus(new XmlStatusClaim());
 
@@ -866,7 +869,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -899,7 +902,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         XmlClaim notAfter = new XmlClaim();
         notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
-        xmlEAAPayload.setNotAfter(notAfter);
+        xmlEAAPayload.setExpiration(notAfter);
 
         XmlStatusClaim statusClaim = new XmlStatusClaim();
         XmlClaim type = new XmlClaim();
@@ -922,7 +925,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
         etsi194721ConformanceCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -930,4 +933,5 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
     }
+
 }

@@ -1790,6 +1790,13 @@ public interface ValidationPolicy {
      */
     LevelRule getEAAExpirationPresentConstraint();
 
+	/**
+	 * Returns EAANotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAANotExpired element is present
+	 */
+	LevelRule getEAANotExpiredConstraint();
+
     /**
      * Returns EAAAdministrativeIssuanceDatePresent constraint if present in the policy, null otherwise
      *
@@ -1803,6 +1810,13 @@ public interface ValidationPolicy {
      * @return {@code LevelRule} if EAAAdministrativeExpirationDatePresent element is present
      */
     LevelRule getEAAAdministrativeExpirationDatePresentConstraint();
+
+	/**
+	 * Returns EAAAdministrativePeriodNotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAAdministrativePeriodNotExpired element is present
+	 */
+	LevelRule getEAAAdministrativePeriodNotExpiredConstraint();
 
     /**
      * Returns ETSI194721Conformance constraint if present in the policy, null otherwise

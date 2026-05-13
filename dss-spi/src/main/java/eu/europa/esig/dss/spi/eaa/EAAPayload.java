@@ -72,7 +72,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimDate}
      */
-    ClaimDate getNotAfterTime();
+    ClaimDate getExpirationTime();
 
     /**
      * Gets the time at which the information present within the EAA was the last time updated, when present

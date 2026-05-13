@@ -47,7 +47,7 @@ class MdocResponseSampleValidationTest extends AbstractMdocEAAPresentationTestVa
         assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
         assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaa.getEAAIssuedAt());
         assertEquals(DSSUtils.parseRFCDate("2020-10-01T13:30:02Z"), eaa.getEAANotBefore());
-        assertEquals(DSSUtils.parseRFCDate("2021-10-01T13:30:02Z"), eaa.getEAANotAfter());
+        assertEquals(DSSUtils.parseRFCDate("2021-10-01T13:30:02Z"), eaa.getEAAExpiration());
         assertNull(eaa.getEAANextUpdate());
         assertEquals("Doe", eaa.getHolderLastName());
         assertEquals("123456789", eaa.getDocumentNumber());

@@ -59,7 +59,7 @@
             <Issuer name="iss">https://issuer.example.com</Issuer>
             <Subject name="sub">user_42</Subject>
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
-            <NotAfter name="exp">2029-09-01T23:33:20Z</NotAfter>
+            <Expiration name="exp">2029-09-01T23:33:20Z</Expiration>
             <Category name="category">urn:etsi:esi:eaa:eu:qualified</Category>
             <StatusUri name="status/uri">https://nowina.lu/pki-factory/status</StatusUri>
             <StatusType name="status/type">TokenStatusList</StatusType>

@@ -125,9 +125,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getEAANotAfter() {
+    public ClaimWrapper getEAAExpiration() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getNotAfter());
+            return getClaim(xmlEAAPayload.getExpiration());
         }
         return null;
     }
@@ -1354,8 +1354,8 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getNotBefore() != null) {
             claimList.add(getClaim(xmlEAAPayload.getNotBefore()));
         }
-        if (xmlEAAPayload.getNotAfter() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getNotAfter()));
+        if (xmlEAAPayload.getExpiration() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getExpiration()));
         }
         if (xmlEAAPayload.getUpdatedAt() != null) {
             claimList.add(getClaim(xmlEAAPayload.getUpdatedAt()));

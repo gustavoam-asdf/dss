@@ -13,7 +13,6 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 
-import org.jose4j.json.internal.json_simple.JSONValue;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
@@ -71,7 +70,7 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
 
         EAAWrapper eaa = diagnosticData.getElectronicAttestationsOfAttributes().get(0);
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
-        assertEquals(expiration.toInstant().getEpochSecond(), eaa.getEAANotAfter().toInstant().getEpochSecond());
+        assertEquals(expiration.toInstant().getEpochSecond(), eaa.getEAAExpiration().toInstant().getEpochSecond());
         assertEquals(issuanceDate.toInstant().getEpochSecond(), eaa.getEAAIssuedAt().toInstant().getEpochSecond());
 
         List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();

@@ -643,6 +643,11 @@
 							<xsd:documentation>Checks whether the key binding signature is valid (i.e. results to a TOTAL-PASSED validation status)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element name="ETSI194721Conformance" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA token is conformant to the standard ETSI TS 119 472-1</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
                     <xsd:element name="EAAType" type="MultiValuesConstraint" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Checks if the EAA type is part of the acceptable value list. '*' can be used and means any value.</xsd:documentation>
@@ -673,6 +678,11 @@
                             <xsd:documentation>Checks whether the expiration is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
+					<xsd:element name="EAANotExpired" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the validation time is within the EAA technical validity range ('nbf' and 'exp' headers)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
                     <xsd:element name="EAAAdministrativeIssuanceDatePresent" type="LevelConstraint" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Checks whether the administrative issuance date is present within the EAA token</xsd:documentation>
@@ -683,11 +693,11 @@
                             <xsd:documentation>Checks whether the administrative expiration date is present within the EAA token</xsd:documentation>
                         </xsd:annotation>
                     </xsd:element>
-                    <xsd:element name="ETSI194721Conformance" type="LevelConstraint" minOccurs="0">
-                        <xsd:annotation>
-                            <xsd:documentation>Checks whether the EAA token is conformant to the standard ETSI TS 119 472-1</xsd:documentation>
-                        </xsd:annotation>
-                    </xsd:element>
+					<xsd:element name="EAAAdministrativePeriodNotExpired" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the validation time is within the EAA administrative validity range ('adm_nbf' and 'adm_exp' headers)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
                     <xsd:element name="EAASupportedClaims" type="MultiValuesConstraint" minOccurs="0">
                         <xsd:annotation>
                             <xsd:documentation>Checks whether the EAA token contains only claims that are supported. Only the root level of the EAA is checked, not the nested claims.</xsd:documentation>

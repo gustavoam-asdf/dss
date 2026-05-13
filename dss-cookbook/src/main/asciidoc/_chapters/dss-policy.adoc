@@ -2683,6 +2683,20 @@ The `<EvidenceRecord>` block defines rules for validating an evidence record. Th
 </ConstraintsParameters>
 ----
 
+* `EvidenceRecordValid` - this constraint checks whether the validation of the evidence record's timestamp chain returns a PASSED indication.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EvidenceRecordValid usage (with FAIL validation level)
+----
+<EvidenceRecord>
+    ...
+    <EvidenceRecordValid Level="FAIL" />
+    ...
+</EvidenceRecord>
+----
+
 * `DataObjectExistence` - this constraint checks whether the data object provided to the validation has been found within the evidence record's first data object group.
 
 Default: `FAIL`
@@ -2779,6 +2793,310 @@ Default: `FAIL`
     <HashTreeRenewal Level="FAIL" />
     ...
 </EvidenceRecord>
+----
+
+===== Electronic Attestation of Attributes (EAA) constraints
+
+The `<EAA>` block defines rules for validating an Electronic Attestation of Attributes. The `<EAA>` element shall be a child of `ConstraintsParameters`:
+
+[source,xml,indent=0]
+.EAA element definition
+----
+<ConstraintsParameters>
+    ...
+    <EAA>
+       ...
+    </EAA>
+    ...
+</ConstraintsParameters>
+----
+
+* `EAASignatureUnicity` - this constraint checks whether the EAA contains a single signature, excluding the key binding signature.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAASignatureUnicity usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAASignatureUnicity Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `EAASignatureValid` - this constraint checks whether the signature protecting the EAA payload is valid and results in a TOTAL-PASSED validation status.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAASignatureValid usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAASignatureValid Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `DisclosurePresent` - this constraint checks whether the EAA presentation contains attached disclosures.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of DisclosurePresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <DisclosurePresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `DisclosureFound` - this constraint checks whether a selectively disclosable claim hash matching the provided disclosure has been found within the EAA token.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of DisclosureFound usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <DisclosureFound Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `DisclosureIntact` - this constraint checks whether the hash value computed from the provided disclosure matches the selectively disclosable claim hash contained within the EAA token.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of DisclosureIntact usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <DisclosureIntact Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `DisclosureListExhaustive` - this constraint checks whether all selectively disclosable claim hashes defined within the EAA token have a corresponding disclosure attached to the EAA presentation.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of DisclosureListExhaustive usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <DisclosureListExhaustive Level="WARN" />
+    ...
+</EAA>
+----
+
+* `KeyBindingSignaturePresent` - this constraint checks whether a key binding signature is present within the EAA token.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of KeyBindingSignaturePresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <KeyBindingSignaturePresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `KeyBindingSignatureValid` - this constraint checks whether the key binding signature is valid and results in a TOTAL-PASSED validation status.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of KeyBindingSignatureValid usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <KeyBindingSignatureValid Level="WARN" />
+    ...
+</EAA>
+----
+
+* `ETSI194721Conformance` - this constraint checks whether the EAA token is conformant to ETSI TS 119 472-1 (cf. <<R34>>).
+
+Default: `WARN`
+
+NOTE: This constraint aims to enforce all requirements specified in the ETSI TS 119 472-1. For some selective checks, please see the constraints below.
+
+[source,xml,indent=0]
+.Example of ETSI194721Conformance usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <ETSI194721Conformance Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAType` - this constraint checks whether the EAA type is part of the list of accepted values. The wildcard value `*` can be used to accept any EAA type.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of EAAType usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAType Level="WARN">
+         <Id>*</Id>
+    </EAAType>
+    ...
+</EAA>
+----
+
+* `EAATypeIntegrityPresent` - this constraint checks whether the vct#integrity claim is present within an SD-JWT VC EAA token.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of EAATypeIntegrityPresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAATypeIntegrityPresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAIdentifierPresent` - this constraint checks whether an EAA identifier is present within the EAA token.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAIdentifierPresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAIdentifierPresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAIssuanceDatePresent` - this constraint checks whether the issuance date is present within an ISO/IEC-mdoc EAA token.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAAIssuanceDatePresent usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAAIssuanceDatePresent Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `EAANotBeforePresent` - this constraint checks whether the `nbf` (not before) claim is present within the EAA token.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAANotBeforePresent usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <DisclosurePresent Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `EAAExpirationPresent` - this constraint checks whether the `exp` (expiration) claim is present within the EAA token.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAAExpirationPresent usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAAExpirationPresent Level="FAIL" />
+    ...
+</EAA>
+----
+
+* `EAANotExpired` - this constraint checks whether the validation time falls within the EAA technical validity period defined by the `nbf` and `exp` claims.
+
+Default: `FAIL`
+
+[source,xml,indent=0]
+.Example of EAANotExpired usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAANotExpired Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAAdministrativeIssuanceDatePresent` - this constraint checks whether the administrative issuance date is present within the EAA token.
+
+Default: not execute
+
+[source,xml,indent=0]
+.Example of EAAAdministrativeIssuanceDatePresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAAdministrativeIssuanceDatePresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAAdministrativeExpirationDatePresent` - this constraint checks whether the administrative expiration date is present within the EAA token.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAAdministrativeExpirationDatePresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAAdministrativeExpirationDatePresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAAdministrativePeriodNotExpired` - this constraint checks whether the validation time falls within the EAA administrative validity period defined by the `adm_nbf` and `adm_exp` claims.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of EAAAdministrativePeriodNotExpired usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAAdministrativePeriodNotExpired Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAASupportedClaims` - this constraint checks whether the EAA token contains only supported root-level claims. Nested claims are not validated by this constraint.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAASupportedClaims usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAASupportedClaims Level="WARN">
+         <Id>nbf</Id>
+         <Id>exp</Id>
+         ...
+    </EAASupportedClaims>
+    ...
+</EAA>
 ----
 
 ===== Cryptographic Constraints
@@ -3223,6 +3541,27 @@ This table defines the correspondence between the enforced validation policy con
                                   |HashTreeRenewal                 |LevelConstraint                   |INDETERMINATE +
                                                                                                        FAILED                |SIGNED_DATA_NOT_FOUND +
                                                                                                                               HASH_FAILURE
+                                  |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint
+.12+|EAAConstraints               |EAASignatureUnicity             |LevelConstraint                   |FAILED                |FORMAT_FAILURE
+                                  |EAASignatureValid               |LevelConstraint                   |Indication from signature |SubIndication from signature
+                                  |DisclosurePresent               |LevelConstraint                   |INDETERMINATE         |SIGNED_DATA_NOT_FOUND
+                                  |DisclosureFound                 |LevelConstraint                   |INDETERMINATE         |SIGNED_DATA_NOT_FOUND
+                                  |DisclosureIntact                |LevelConstraint                   |FAILED                |HASH_FAILURE
+                                  |DisclosureListExhaustive        |LevelConstraint                   |INDETERMINATE         |SIGNED_DATA_NOT_FOUND
+                                  |KeyBindingSignaturePresent      |LevelConstraint                   |FAILED                |FORMAT_FAILURE
+                                  |KeyBindingSignatureValid        |LevelConstraint                   |Indication from signature |SubIndication from signature
+                                  |ETSI194721Conformance           |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAType                         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAATypeIntegrityPresent         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAIdentifierPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+.9+|EAAConstraints                |EAAIssuanceDatePresent          |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAANotBeforePresent             |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAExpirationPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAANotExpired                   |LevelConstraint                   |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
+                                  |EAAAdministrativeIssuanceDatePresent        |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAAdministrativeExpirationDatePresent      |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAAdministrativePeriodNotExpired           |LevelConstraint       |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
+                                  |EAASupportedClaims              |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint
 .4+|Cryptographic                 |AcceptableEncryptionAlgo        |ListAlgo                          |INDETERMINATE         |CRYPTO_CONSTRAINTS_FAILURE_NO_POE +
                                                                                                                               CRYPTO_CONSTRAINTS_FAILURE

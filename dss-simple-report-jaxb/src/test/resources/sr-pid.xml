@@ -43,7 +43,7 @@
             <Issuer name="iss">https://issuer.example.com</Issuer>
             <Subject name="sub">user_42</Subject>
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
-            <NotAfter name="exp">2029-09-01T23:33:20Z</NotAfter>
+            <Expiration name="exp">2029-09-01T23:33:20Z</Expiration>
             <MetadataType name="vct">urn:eudi:pid:1</MetadataType>
             <FirstName name="given_name">John</FirstName>
             <LastName name="family_name">Doe</LastName>

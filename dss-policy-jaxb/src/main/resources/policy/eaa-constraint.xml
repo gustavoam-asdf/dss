@@ -346,6 +346,7 @@
         <DisclosureIntact Level="FAIL" />
         <KeyBindingSignaturePresent Level="WARN" />
         <KeyBindingSignatureValid Level="FAIL" />
+        <ETSI194721Conformance Level="FAIL" />
         <EAAType Level="FAIL">
             <Id>*</Id>
         </EAAType>
@@ -353,7 +354,8 @@
         <EAAIssuanceDatePresent Level="FAIL" />
         <EAANotBeforePresent Level="FAIL" />
         <EAAExpirationPresent Level="FAIL" />
-        <ETSI194721Conformance Level="FAIL" />
+        <EAANotExpired Level="FAIL" />
+        <EAAAdministrativePeriodNotExpired Level="WARN" />
     </EAA>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>

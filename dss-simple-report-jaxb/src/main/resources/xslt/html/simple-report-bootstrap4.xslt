@@ -573,7 +573,7 @@
 		<xsl:apply-templates />
 	</xsl:template>
 
-	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:NotAfter|dss:UpdatedAt
+	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:Expiration|dss:UpdatedAt
 			|dss:NextUpdate|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
 			|dss:Nonce|dss:Version|dss:DocType|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
 			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
@@ -603,7 +603,7 @@
 				<xsl:when test="name() = 'Audience'">Audience</xsl:when>
 				<xsl:when test="name() = 'IssuedAt'">Issuance time</xsl:when>
 				<xsl:when test="name() = 'NotBefore'">Valid from</xsl:when>
-				<xsl:when test="name() = 'NotAfter'">Valid until</xsl:when>
+				<xsl:when test="name() = 'Expiration'">Valid until</xsl:when>
 				<xsl:when test="name() = 'UpdatedAt'">Update time</xsl:when>
 				<xsl:when test="name() = 'NextUpdate'">Next update time</xsl:when>
 				<xsl:when test="name() = 'Category'">Category</xsl:when>
@@ -740,7 +740,7 @@
 							<xsl:attribute name="alt"><xsl:value-of select="name()"/></xsl:attribute>
 						</img>
 					</xsl:when>
-					<xsl:when test="name() = 'NotAfter' or name() = 'NotBefore' or name() = 'IssuedAt'
+					<xsl:when test="name() = 'Expiration' or name() = 'NotBefore' or name() = 'IssuedAt'
 								 or name() = 'UpdatedAt' or name() = 'NextUpdate' or name() = 'Birthdate'
 								 or name() = 'PortraitCaptureDate' or name() = 'AdministrativeIssuanceDate'
 								 or name() = 'AdministrativeExpirationDate'">
