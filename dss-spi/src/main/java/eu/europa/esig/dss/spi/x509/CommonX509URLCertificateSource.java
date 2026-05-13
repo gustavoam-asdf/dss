@@ -154,23 +154,24 @@ public class CommonX509URLCertificateSource extends CommonCertificateSource impl
      */
     protected Collection<CertificateToken> loadCertificates(String url) {
         if (dataLoader != null) {
-            LOG.trace("--> X509URLCertificateSource queried for {}", url);
-            byte[] content = dataLoader.get(url);
-            if (content != null) {
-                LOG.debug("Content obtained from the 'x5u' protected header with value '{}'", url);
-                try {
+            try {
+                LOG.trace("--> X509URLCertificateSource queried for {}", url);
+                byte[] content = dataLoader.get(url);
+                if (content != null) {
+                    LOG.debug("Content obtained from the 'x5u' protected header with value '{}'", url);
                     return loadCertificates(content);
-                } catch (Exception e) {
-                    String errorMessage = "Unable to load certificates from 'x5u' protected header with value '{}' : {}";
-                    if (LOG.isDebugEnabled()) {
-                        LOG.warn(errorMessage, url, e.getMessage(), e);
-                    } else {
-                        LOG.warn(errorMessage, url, e.getMessage());
-                    }
+                } else {
+                    LOG.warn("No content has been extracted from the 'x5u' protected header with value '{}'", url);
                 }
-            } else {
-                LOG.warn("No content has been extracted from the 'x5u' protected header with value '{}'", url);
+            } catch (Exception e) {
+                String errorMessage = "Unable to load certificates from 'x5u' protected header with value '{}' : {}";
+                if (LOG.isDebugEnabled()) {
+                    LOG.warn(errorMessage, url, e.getMessage(), e);
+                } else {
+                    LOG.warn(errorMessage, url, e.getMessage());
+                }
             }
+
         } else {
             LOG.debug("No DataLoader is configured within the CommonX509URLCertificateSource.");
         }
