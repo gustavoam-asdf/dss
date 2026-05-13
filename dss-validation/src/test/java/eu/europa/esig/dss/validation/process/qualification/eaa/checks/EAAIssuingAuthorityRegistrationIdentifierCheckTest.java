@@ -5,43 +5,41 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
-import eu.europa.esig.dss.policy.LevelConstraintWrapper;
-import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
+import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
+import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
-
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityRegistrationIdentifierCheck;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EAAExpirationPresentCheckTest extends AbstractTestCheck {
+class EAAIssuingAuthorityRegistrationIdentifierCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
-        LevelConstraint constraint = new LevelConstraint();
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("VAT-12345");
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-
-        XmlClaim expiration = new XmlClaim();
-        expiration.setDateTime(new Date());
-        xmlEAAPayload.setExpiration(expiration);
+        XmlClaim xmlClaim = new XmlClaim();
+        xmlClaim.setText("VAT-12345");
+        xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(xmlClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        expirationPresentCheck.execute();
+        EAAIssuingAuthorityRegistrationIdentifierCheck eaaiaric = new EAAIssuingAuthorityRegistrationIdentifierCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        eaaiaric.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -50,22 +48,27 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
     @Test
     void invalidTest() {
-        LevelConstraint constraint = new LevelConstraint();
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("VAT-12345");
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlClaim xmlClaim = new XmlClaim();
+        xmlClaim.setText("VAT-67890");
+        xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(xmlClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
-        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        expirationPresentCheck.execute();
+        EAAIssuingAuthorityRegistrationIdentifierCheck eaaiaric = new EAAIssuingAuthorityRegistrationIdentifierCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        eaaiaric.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
+
 }

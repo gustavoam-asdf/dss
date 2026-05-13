@@ -657,7 +657,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getIssuingRegistrationIdentifier() {
+    public ClaimString getIssuingAuthorityRegistrationIdentifier() {
         return getAsString(forEtsi194721(ETSI194721Headers.ISSUING_REGISTRATION_IDENTIFIER));
     }
 

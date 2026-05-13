@@ -1763,6 +1763,76 @@ public interface ValidationPolicy {
     LevelRule getEAAIssuanceDatePresentConstraint();
 
 	/**
+	 * Returns EAACategory constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAACategory element is present
+	 */
+	MultiValuesRule getEAACategoryConstraint();
+
+	/**
+	 * Returns EAASubject constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAASubject element is present
+	 */
+	MultiValuesRule getEAASubjectConstraint();
+
+	/**
+	 * Returns EAASubjectPseudonym constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAASubjectPseudonym element is present
+	 */
+	MultiValuesRule getEAASubjectPseudonymConstraint();
+
+	/**
+	 * Returns EAAIssuingCountry constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingCountry element is present
+	 */
+	MultiValuesRule getEAAIssuingCountryConstraint();
+
+	/**
+	 * Returns EAAIssuingAuthority constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingAuthority element is present
+	 */
+	MultiValuesRule getEAAIssuingAuthorityConstraint();
+
+	/**
+	 * Returns EAAIssuingAuthorityRegistrationIdentifier constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingAuthorityRegistrationIdentifier element is present
+	 */
+	MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint();
+
+	/**
+	 * Returns EAAStatusPresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAStatusPresent element is present
+	 */
+	LevelRule getEAAStatusPresentConstraint();
+
+	/**
+	 * Returns EAAShortLived constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAShortLived element is present
+	 */
+	LevelRule getEAAShortLivedConstraint();
+
+	/**
+	 * Returns EAAOneTimeUse constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAOneTimeUse element is present
+	 */
+	LevelRule getEAAOneTimeUseConstraint();
+
+	/**
+	 * Returns EAAUsePseudonym constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAUsePseudonym element is present
+	 */
+	LevelRule getEAAUsePseudonymConstraint();
+
+	/**
 	 * Returns EAAClaims constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code MultiValuesRule} if EAAClaims element is present

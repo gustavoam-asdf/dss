@@ -594,7 +594,7 @@
 			|dss:RelationshipBrother|dss:RelationshipSister|dss:RelationshipSibling|dss:RelationshipSpouse|dss:RelationshipFatherInLaw
 			|dss:RelationshipMotherInLaw|dss:RelationshipParentInLaw|dss:RelationshipSonInLaw|dss:RelationshipDaughterInLaw
 			|dss:RelationshipChildInLaw|dss:RelationshipParentalAuthority|dss:RelationshipLegalRepresentative|dss:RelationshipAgent
-			|dss:DocumentType|dss:IssuingRegistrationIdentifier|dss:TrustAnchor|dss:ResidentStreet|dss:ResidentHouseNumber|dss:OtherClaim">
+			|dss:DocumentType|dss:IssuingAuthorityRegistrationIdentifier|dss:TrustAnchor|dss:ResidentStreet|dss:ResidentHouseNumber|dss:OtherClaim">
 		<xsl:variable name="header">
 			<xsl:choose>
 				<xsl:when test="name() = 'Identifier'">Identifier</xsl:when>
@@ -666,7 +666,7 @@
 
 				<xsl:when test="name() = 'IssuingCountry'">Issuing country</xsl:when>
 				<xsl:when test="name() = 'IssuingAuthority'">Issuing authority</xsl:when>
-				<xsl:when test="name() = 'IssuingRegistrationIdentifier'">Issuing registration identifier</xsl:when>
+				<xsl:when test="name() = 'IssuingAuthorityRegistrationIdentifier'">Issuing authority registration identifier</xsl:when>
 				<xsl:when test="name() = 'DocumentNumber'">Document number</xsl:when>
 				<xsl:when test="name() = 'Portrait'">Portrait</xsl:when>
 				<xsl:when test="name() = 'DrivingPrivileges'">Driving privileges</xsl:when>

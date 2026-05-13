@@ -1242,9 +1242,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getIssuingRegistrationIdentifier() {
+    public ClaimWrapper getIssuingAuthorityRegistrationIdentifier() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getIssuingRegistrationIdentifier());
+            return getClaim(xmlEAAPayload.getIssuingAuthorityRegistrationIdentifier());
         }
         return null;
     }
@@ -1631,8 +1631,8 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getResidentHouseNumber() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentHouseNumber()));
         }
-        if (xmlEAAPayload.getIssuingRegistrationIdentifier() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getIssuingRegistrationIdentifier()));
+        if (xmlEAAPayload.getIssuingAuthorityRegistrationIdentifier() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getIssuingAuthorityRegistrationIdentifier()));
         }
         if (xmlEAAPayload.getOneTimeUse() != null) {
             claimList.add(getClaim(xmlEAAPayload.getOneTimeUse()));

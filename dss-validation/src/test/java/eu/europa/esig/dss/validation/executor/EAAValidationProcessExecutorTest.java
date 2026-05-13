@@ -1377,6 +1377,646 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         checkReports(reports);
     }
 
+    @Test
+    void eaaCategoryTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("urn:etsi:esi:eaa:eu:qualified");
+        validationPolicy.getEAAConstraints().setEAACategory(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_CAT_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_CAT.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_CAT_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaSubjectTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("user_xx");
+        validationPolicy.getEAAConstraints().setEAASubject(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_SUB_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_SUB.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_SUB_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaSubjectPseudonymTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("pseudonym");
+        validationPolicy.getEAAConstraints().setEAASubjectPseudonym(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_SUB_PSE_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_SUB_PSE.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_SUB_PSE_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaIssuingCountryTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("LU");
+        validationPolicy.getEAAConstraints().setEAAIssuingCountry(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_ISS_COUN_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_ISS_COUN.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_ISS_COUN_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaIssuingAuthorityTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("Example Authority");
+        validationPolicy.getEAAConstraints().setEAAIssuingAuthority(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_ISS_AUTH_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_ISS_AUTH.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_ISS_AUTH_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaIssuingAuthorityRegistrationIdentifierTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("VAT-12345");
+        validationPolicy.getEAAConstraints().setEAAIssuingAuthorityRegistrationIdentifier(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_ISS_REG_ID_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_ISS_REG_ID.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_ISS_REG_ID_ANS.getId(), xmlConstraint.getError().getKey());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaStatusPresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlEAAPayload eaaPayload = xmlDiagnosticData.getEAAs().get(0).getEAAPayload();
+        eaaPayload.setStatus(null);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        validationPolicy.getEAAConstraints().setEAAStatusPresent(constraint);
+
+        LevelConstraint infoConstraint = new LevelConstraint();
+        infoConstraint.setLevel(Level.INFORM);
+        validationPolicy.getEAAConstraints().setEAAShortLived(infoConstraint);
+        validationPolicy.getEAAConstraints().setEAAOneTimeUse(infoConstraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_STATUS_PR_ANS)));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
+
+        boolean shortLivedCheckFound = false;
+        boolean oneTimeCheckFound = false;
+        boolean statusCheckFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                shortLivedCheckFound = true;
+            } else if (MessageTag.EAA_OTU.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                oneTimeCheckFound = true;
+            } else if (MessageTag.EAA_STATUS_PR.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_STATUS_PR_ANS.getId(), xmlConstraint.getError().getKey());
+                statusCheckFound = true;
+            }
+        }
+        assertFalse(shortLivedCheckFound);
+        assertFalse(oneTimeCheckFound);
+        assertTrue(statusCheckFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaShortLivedTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlEAAPayload eaaPayload = xmlDiagnosticData.getEAAs().get(0).getEAAPayload();
+        eaaPayload.setStatus(null);
+        XmlClaim xmlClaim = new XmlClaim();
+        eaaPayload.setShortLived(xmlClaim);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+        validationPolicy.getEAAConstraints().setEAAStatusPresent(constraint);
+
+        LevelConstraint infoConstraint = new LevelConstraint();
+        infoConstraint.setLevel(Level.INFORM);
+        validationPolicy.getEAAConstraints().setEAAShortLived(infoConstraint);
+        validationPolicy.getEAAConstraints().setEAAOneTimeUse(infoConstraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_SH_LVD_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
+
+        boolean shortLivedCheckFound = false;
+        boolean oneTimeCheckFound = false;
+        boolean statusCheckFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.INFORMATION, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_SH_LVD_ANS.getId(), xmlConstraint.getInfo().getKey());
+                shortLivedCheckFound = true;
+            } else if (MessageTag.EAA_OTU.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                oneTimeCheckFound = true;
+            } else if (MessageTag.EAA_STATUS_PR.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                statusCheckFound = true;
+            }
+        }
+        assertTrue(shortLivedCheckFound);
+        assertFalse(oneTimeCheckFound);
+        assertFalse(statusCheckFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaOneTimeTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlEAAPayload eaaPayload = xmlDiagnosticData.getEAAs().get(0).getEAAPayload();
+        eaaPayload.setStatus(null);
+        XmlClaim xmlClaim = new XmlClaim();
+        eaaPayload.setOneTimeUse(xmlClaim);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.WARN);
+        validationPolicy.getEAAConstraints().setEAAStatusPresent(constraint);
+
+        LevelConstraint infoConstraint = new LevelConstraint();
+        infoConstraint.setLevel(Level.INFORM);
+        validationPolicy.getEAAConstraints().setEAAShortLived(infoConstraint);
+        validationPolicy.getEAAConstraints().setEAAOneTimeUse(infoConstraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_STATUS_PR_ANS)));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_OTU_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
+
+        boolean shortLivedCheckFound = false;
+        boolean oneTimeCheckFound = false;
+        boolean statusCheckFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                shortLivedCheckFound = true;
+            } else if (MessageTag.EAA_OTU.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.INFORMATION, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_OTU_ANS.getId(), xmlConstraint.getInfo().getKey());
+                oneTimeCheckFound = true;
+            } else if (MessageTag.EAA_STATUS_PR.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_STATUS_PR_ANS.getId(), xmlConstraint.getWarning().getKey());
+                statusCheckFound = true;
+            }
+        }
+        assertFalse(shortLivedCheckFound);
+        assertTrue(oneTimeCheckFound);
+        assertTrue(statusCheckFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaNoPseudonymUsePresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.INFORM);
+        validationPolicy.getEAAConstraints().setEAAUsePseudonym(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_PSEUDO_USED.getId().equals(xmlConstraint.getName().getKey())) {
+                checkFound = true;
+            }
+        }
+        assertFalse(checkFound);
+
+        checkReports(reports);
+    }
+
+    @Test
+    void eaaPseudonymUsePresentTest() throws Exception {
+        XmlDiagnosticData xmlDiagnosticData = DiagnosticDataFacade.newFacade().unmarshall(
+                new File("src/test/resources/diag-data/eaa-validation/diag_data_eaa.xml"));
+        assertNotNull(xmlDiagnosticData);
+
+        XmlEAAPayload eaaPayload = xmlDiagnosticData.getEAAs().get(0).getEAAPayload();
+        XmlClaim xmlClaim = new XmlClaim();
+        xmlClaim.setText("pseudonym");
+        eaaPayload.setPseudonym(xmlClaim);
+
+        EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
+
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.INFORM);
+        validationPolicy.getEAAConstraints().setEAAUsePseudonym(constraint);
+
+        EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
+        executor.setDiagnosticData(xmlDiagnosticData);
+        executor.setCurrentTime(xmlDiagnosticData.getValidationDate());
+        executor.setValidationPolicy(validationPolicy);
+
+        Reports reports = executor.execute();
+
+        SimpleReport simpleReport = reports.getSimpleReport();
+        assertNotNull(simpleReport);
+
+        assertEquals(Indication.PASSED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
+        assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationWarnings(simpleReport.getFirstEAAId())));
+        assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_PSEUDO_USED_ANS)));
+
+        DetailedReport detailedReport = reports.getDetailedReport();
+        assertEquals(Indication.PASSED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+
+        XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
+        assertNotNull(xmlEAA);
+
+        XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+        assertNotNull(validationProcessEAA);
+        assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
+
+        boolean checkFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.EAA_PSEUDO_USED.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.INFORMATION, xmlConstraint.getStatus());
+                assertEquals(MessageTag.EAA_PSEUDO_USED_ANS.getId(), xmlConstraint.getInfo().getKey());
+                assertEquals(i18nProvider.getMessage(MessageTag.PSEUDO, "pseudonym"), xmlConstraint.getAdditionalInfo());
+                checkFound = true;
+            }
+        }
+        assertTrue(checkFound);
+
+        checkReports(reports);
+    }
+
     @Override
     protected EtsiValidationPolicy loadDefaultPolicy() throws Exception {
         return (EtsiValidationPolicy) ValidationPolicyLoader.fromValidationPolicy(EAA_POLICY_LOCATION).create();

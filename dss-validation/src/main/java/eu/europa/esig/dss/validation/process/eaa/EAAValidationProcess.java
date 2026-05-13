@@ -29,13 +29,23 @@ import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAACategoryCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityRegistrationIdentifierCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingCountryCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAOneTimeUseCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAPseudonymUsageCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAShortLivedCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectPseudonymCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
@@ -192,6 +202,32 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
             item = item.setNextItem(administrativePeriodNotExpired());
         }
 
+        item = item.setNextItem(category());
+
+        item = item.setNextItem(subject());
+
+        item = item.setNextItem(subjectPseudonym());
+
+        item = item.setNextItem(issuingCountry());
+
+        item = item.setNextItem(issuingAuthority());
+
+        item = item.setNextItem(issuingAuthorityRegistrationIdentifier());
+
+        if (Utils.isTrue(eaa.getShortLived())) {
+            item = item.setNextItem(shortLived());
+        } else {
+            item = item.setNextItem(statusPresent());
+        }
+
+        if (Utils.isTrue(eaa.getOneTimeUse())) {
+            item = item.setNextItem(oneTimeUse());
+        }
+
+        if (eaa.getHolderPseudonym() != null) {
+            item = item.setNextItem(usePseudonym());
+        }
+
         item = item.setNextItem(claims());
 
         item = item.setNextItem(supportedClaims());
@@ -304,6 +340,56 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     private ChainItem<XmlValidationProcessEAA> issuanceDatePresent() {
         LevelRule constraint = policy.getEAAIssuanceDatePresentConstraint();
         return new EAAIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> category() {
+        MultiValuesRule constraint = policy.getEAACategoryConstraint();
+        return new EAACategoryCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> subject() {
+        MultiValuesRule constraint = policy.getEAASubjectConstraint();
+        return new EAASubjectCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> subjectPseudonym() {
+        MultiValuesRule constraint = policy.getEAASubjectPseudonymConstraint();
+        return new EAASubjectPseudonymCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> issuingCountry() {
+        MultiValuesRule constraint = policy.getEAAIssuingCountryConstraint();
+        return new EAAIssuingCountryCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> issuingAuthority() {
+        MultiValuesRule constraint = policy.getEAAIssuingAuthorityConstraint();
+        return new EAAIssuingAuthorityCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> issuingAuthorityRegistrationIdentifier() {
+        MultiValuesRule constraint = policy.getEAAIssuingAuthorityRegistrationIdentifierConstraint();
+        return new EAAIssuingAuthorityRegistrationIdentifierCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> statusPresent() {
+        LevelRule constraint = policy.getEAAStatusPresentConstraint();
+        return new EAAStatusPresentCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> shortLived() {
+        LevelRule constraint = policy.getEAAShortLivedConstraint();
+        return new EAAShortLivedCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> oneTimeUse() {
+        LevelRule constraint = policy.getEAAOneTimeUseConstraint();
+        return new EAAOneTimeUseCheck(i18nProvider, result, eaa, constraint);
+    }
+
+    private ChainItem<XmlValidationProcessEAA> usePseudonym() {
+        LevelRule constraint = policy.getEAAUsePseudonymConstraint();
+        return new EAAPseudonymUsageCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> claims() {

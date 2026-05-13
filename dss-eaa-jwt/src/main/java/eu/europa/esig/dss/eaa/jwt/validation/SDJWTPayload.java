@@ -590,7 +590,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getIssuingRegistrationIdentifier() {
+    public ClaimString getIssuingAuthorityRegistrationIdentifier() {
         return getAsString(SDJWTConstants.ISSUING_REGISTRATION_IDENTIFIER);
     }
 

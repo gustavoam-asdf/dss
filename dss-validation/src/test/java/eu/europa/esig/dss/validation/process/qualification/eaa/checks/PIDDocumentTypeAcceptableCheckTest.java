@@ -26,18 +26,18 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -50,18 +50,18 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1:de");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -74,18 +74,18 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:zzdi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -98,14 +98,14 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
-        xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -118,14 +118,14 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
-        xmlEAAPresentation.setDocumentType("eu.europa.ec.eudi.pid.1");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("eu.europa.ec.eudi.pid.1");
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -138,14 +138,14 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
-        xmlEAAPresentation.setDocumentType("eu.europa.ec.eudi.pid.1.de");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("eu.europa.ec.eudi.pid.1.de");
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -158,18 +158,18 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("eu.europa.ec.eudi.pid.1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
 
         PIDDocumentTypeAcceptableCheck tlscbpsc = new PIDDocumentTypeAcceptableCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         tlscbpsc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

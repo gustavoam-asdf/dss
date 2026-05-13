@@ -29,8 +29,8 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
@@ -39,12 +39,12 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         xmlIntegrityClaim.setDigestValue("test".getBytes());
         xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -57,17 +57,17 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

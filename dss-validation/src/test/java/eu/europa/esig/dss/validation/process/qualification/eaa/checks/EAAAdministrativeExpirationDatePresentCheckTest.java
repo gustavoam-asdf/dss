@@ -28,19 +28,19 @@ class EAAAdministrativeExpirationDatePresentCheckTest extends AbstractTestCheck 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date());
         xmlEAAPayload.setAdministrativeExpirationDate(expiration);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAAdministrativeExpirationDatePresentCheck administrativeExpirationDatePresentCheck = new EAAAdministrativeExpirationDatePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         administrativeExpirationDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -53,15 +53,15 @@ class EAAAdministrativeExpirationDatePresentCheckTest extends AbstractTestCheck 
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAAdministrativeExpirationDatePresentCheck administrativeExpirationDatePresentCheck = new EAAAdministrativeExpirationDatePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         administrativeExpirationDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

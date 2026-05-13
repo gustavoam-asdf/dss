@@ -1287,7 +1287,7 @@ public class EAAWrapper {
      * @return {@link String}
      */
     public String getIssuingRegistrationIdentifier() {
-        return getPayloadClaimTextValue(getEAAPayload().getIssuingRegistrationIdentifier());
+        return getPayloadClaimTextValue(getEAAPayload().getIssuingAuthorityRegistrationIdentifier());
     }
 
     /**
@@ -1489,7 +1489,7 @@ public class EAAWrapper {
         if (xmlDisclosableClaim.isNull()) {
             return true; // handle as a true flag
         }
-        return xmlDisclosableClaim.isBoolean();
+        return xmlDisclosableClaim.isBoolean() && Boolean.TRUE.equals(xmlDisclosableClaim.getBoolean());
     }
 
     private List<String> getPayloadClaimArrayAsStringsValue(ClaimWrapper xmlDisclosableClaim) {

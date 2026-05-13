@@ -520,7 +520,7 @@
 			<xs:element name="DocumentType" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- ETSI TS 119 472-1 other claims -->
-			<xs:element name="IssuingRegistrationIdentifier" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="IssuingAuthorityRegistrationIdentifier" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- PID Rulebook headers -->
 			<xs:element name="TrustAnchor" type="DisclosableClaim" minOccurs="0" />

@@ -28,19 +28,19 @@ class EAANotBeforePresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date());
         xmlEAAPayload.setNotBefore(notBefore);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         notBeforePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -53,15 +53,15 @@ class EAANotBeforePresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         notBeforePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

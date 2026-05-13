@@ -356,6 +356,10 @@
         <EAAExpirationPresent Level="FAIL" />
         <EAANotExpired Level="FAIL" />
         <EAAAdministrativePeriodNotExpired Level="WARN" />
+        <EAAStatusPresent Level="WARN" />
+        <EAAShortLived Level="INFORM" />
+        <EAAOneTimeUse Level="INFORM" />
+        <EAAUsePseudonym Level="INFORM" />
     </EAA>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>

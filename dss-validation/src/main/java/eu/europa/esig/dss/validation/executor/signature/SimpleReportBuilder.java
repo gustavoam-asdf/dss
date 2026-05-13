@@ -1133,7 +1133,7 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setRelationshipAgent(getXmlDisclosableClaim(eaaPayloadProxy.getHolderRelationshipAgent()));
 		xmlEAAPayload.setDocumentType(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentType()));
 
-		xmlEAAPayload.setIssuingRegistrationIdentifier(getXmlDisclosableClaim(eaaPayloadProxy.getIssuingRegistrationIdentifier()));
+		xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(getXmlDisclosableClaim(eaaPayloadProxy.getIssuingAuthorityRegistrationIdentifier()));
 
 		xmlEAAPayload.setTrustAnchor(getXmlDisclosableClaim(eaaPayloadProxy.getTrustAnchor()));
 		xmlEAAPayload.setResidentStreet(getXmlDisclosableClaim(eaaPayloadProxy.getResidentStreet()));

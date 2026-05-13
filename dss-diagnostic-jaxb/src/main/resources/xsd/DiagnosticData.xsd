@@ -1856,7 +1856,7 @@
 			<xs:element name="DocumentType" type="Claim" minOccurs="0" />
 
 			<!-- ETSI TS 119 472-1 other claims -->
-			<xs:element name="IssuingRegistrationIdentifier" type="Claim" minOccurs="0" />
+			<xs:element name="IssuingAuthorityRegistrationIdentifier" type="Claim" minOccurs="0" />
 
 			<!-- PID Rulebook headers -->
 			<xs:element name="TrustAnchor" type="Claim" minOccurs="0" />

@@ -29,19 +29,19 @@ class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
         XmlClaim issuanceDate = new XmlClaim();
         issuanceDate.setDateTime(new Date());
         xmlEAAPayload.setIssuedAt(issuanceDate);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         issuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -54,15 +54,15 @@ class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
         LevelConstraint constraint = new LevelConstraint();
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new LevelConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
         issuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

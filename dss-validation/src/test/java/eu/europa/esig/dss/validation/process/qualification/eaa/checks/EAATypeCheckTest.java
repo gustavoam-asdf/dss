@@ -28,18 +28,18 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("urn:eudi:pid:1");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -53,18 +53,18 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -78,14 +78,14 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("urn:eudi:pid:1");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
-        xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -99,14 +99,14 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
-        xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -120,18 +120,18 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("urn:eudi:pid:2");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -145,14 +145,14 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("urn:eudi:pid:2");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
-        xmlEAAPresentation.setDocumentType("urn:eudi:pid:1");
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -166,13 +166,13 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -186,13 +186,13 @@ class EAATypeCheckTest extends AbstractTestCheck {
         constraint.getId().add("*");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.ISO_IEC_MDOC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         typePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

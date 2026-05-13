@@ -1101,6 +1101,56 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public MultiValuesRule getEAACategoryConstraint() {
+        return validationPolicy.getEAACategoryConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAASubjectConstraint() {
+        return validationPolicy.getEAASubjectConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAASubjectPseudonymConstraint() {
+        return validationPolicy.getEAASubjectPseudonymConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingCountryConstraint() {
+        return validationPolicy.getEAAIssuingCountryConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingAuthorityConstraint() {
+        return validationPolicy.getEAAIssuingAuthorityConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint() {
+        return validationPolicy.getEAAIssuingAuthorityRegistrationIdentifierConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusPresentConstraint() {
+        return validationPolicy.getEAAStatusPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAShortLivedConstraint() {
+        return validationPolicy.getEAAShortLivedConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAOneTimeUseConstraint() {
+        return validationPolicy.getEAAOneTimeUseConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAUsePseudonymConstraint() {
+        return validationPolicy.getEAAUsePseudonymConstraint();
+    }
+
+    @Override
     public MultiValuesRule getEAAClaimsConstraint() {
         return validationPolicy.getEAAClaimsConstraint();
     }

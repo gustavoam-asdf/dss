@@ -28,19 +28,19 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         constraint.getId().add("metadata");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlMetadataTypeClaim.setName("metadata");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         supportedClaimsCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -54,19 +54,19 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         constraint.getId().add("metadata");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlMetadataTypeClaim.setName("metadata-wrong");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         supportedClaimsCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -80,8 +80,8 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         constraint.getId().add("metadata");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
@@ -92,12 +92,12 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         xmlClaim.setName("additional");
         xmlEAAPayload.getOtherClaim().add(xmlClaim);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         supportedClaimsCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
@@ -112,20 +112,20 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         constraint.getId().add("additional");
         constraint.setLevel(Level.FAIL);
 
-        XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
         xmlMetadataTypeClaim.setName("metadata");
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
-        xmlEAAPresentation.setEAAPayload(xmlEAAPayload);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationProcessEAA result = new XmlValidationProcessEAA();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
-                i18nProvider, result, new EAAWrapper(xmlEAAPresentation), new MultiValuesConstraintWrapper(constraint));
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
         supportedClaimsCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();

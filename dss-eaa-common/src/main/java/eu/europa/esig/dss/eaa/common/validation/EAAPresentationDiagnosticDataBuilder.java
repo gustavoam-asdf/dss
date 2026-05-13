@@ -385,7 +385,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setRelationshipAgent(getXmlClaim(eaaPayload.getRelationshipAgent(), supportedClaims));
         xmlEAAPayload.setDocumentType(getXmlClaim(eaaPayload.getDocumentType(), supportedClaims));
 
-        xmlEAAPayload.setIssuingRegistrationIdentifier(getXmlClaim(eaaPayload.getIssuingRegistrationIdentifier(), supportedClaims));
+        xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(getXmlClaim(eaaPayload.getIssuingAuthorityRegistrationIdentifier(), supportedClaims));
         xmlEAAPayload.setTrustAnchor(getXmlClaim(eaaPayload.getTrustAnchor(), supportedClaims));
         xmlEAAPayload.setResidentStreet(getXmlClaim(eaaPayload.getResidentStreet(), supportedClaims));
         xmlEAAPayload.setResidentHouseNumber(getXmlClaim(eaaPayload.getResidentHouseNumber(), supportedClaims));

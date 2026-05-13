@@ -698,6 +698,56 @@
 							<xsd:documentation>Checks whether the validation time is within the EAA administrative validity range ('adm_nbf' and 'adm_exp' headers)</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element name="EAACategory" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA category claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAASubject" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA subject claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAASubjectPseudonym" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA subject pseudonym claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAIssuingCountry" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA issuing country claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAIssuingAuthority" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA issuing authority claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAIssuingAuthorityRegistrationIdentifier" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the registration identifier of the EAA issuer claim corresponds to one of the defined values</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusPresent" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA contains a status claim</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAShortLived" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA contains a short-lived claim</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAOneTimeUse" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA contains a one-time use claim</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAUsePseudonym" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA uses a pseudonym claim</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element name="EAAClaims" type="MultiValuesConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Checks whether the EAA token contains all specified claims (whether as part of the original payload or through selective disclosures). Only the root level of the EAA is checked, not the nested claims.</xsd:documentation>

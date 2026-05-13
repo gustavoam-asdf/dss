@@ -3081,6 +3081,158 @@ Default: `WARN`
 </EAA>
 ----
 
+* `EAACategory` - this constraint checks whether the EAA category claim corresponds to one of the accepted values. The wildcard value `*` can be used to accept any category.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAACategory usage (with FAIL validation level)
+----
+<EAA>
+    ...
+    <EAACategory Level="FAIL">
+        <Id>*</Id>
+    </EAACategory>
+    ...
+</EAA>
+----
+
+* `EAASubject` - this constraint checks whether the EAA subject claim corresponds to one of the accepted values. The wildcard value `*` can be used to accept any subject.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAASubject usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAASubject Level="WARN">
+        <Id>*</Id>
+    </EAASubject>
+    ...
+</EAA>
+----
+
+* `EAASubjectPseudonym` - this constraint checks whether the EAA subject pseudonym claim corresponds to one of the accepted values. The wildcard value `*` can be used to accept any pseudonym.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAASubjectPseudonym usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAASubjectPseudonym Level="WARN">
+        <Id>*</Id>
+    </EAASubjectPseudonym>
+    ...
+</EAA>
+----
+
+* `EAAIssuingCountry` - this constraint checks whether the EAA issuing country claim corresponds to one of the accepted values. The wildcard value `*` can be used to accept any issuing country.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAIssuingCountry usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAIssuingCountry Level="WARN">
+        <Id>*</Id>
+    </EAAIssuingCountry>
+    ...
+</EAA>
+----
+
+* `EAAIssuingAuthority` - this constraint checks whether the EAA issuing authority claim corresponds to one of the accepted values. The wildcard value `*` can be used to accept any issuing authority.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAIssuingAuthority usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAIssuingAuthority Level="WARN">
+        <Id>*</Id>
+    </EAAIssuingAuthority>
+    ...
+</EAA>
+----
+
+* `EAAIssuingAuthorityRegistrationIdentifier` - this constraint checks whether the registration identifier of the EAA issuer corresponds to one of the accepted values. The wildcard value `*` can be used to accept any registration identifier.
+
+Default: not executed
+
+[source,xml,indent=0]
+.Example of EAAIssuingAuthorityRegistrationIdentifier usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAIssuingAuthorityRegistrationIdentifier Level="WARN">
+        <Id>*</Id>
+    </EAAIssuingAuthorityRegistrationIdentifier>
+    ...
+</EAA>
+----
+
+* `EAAStatusPresent` - this constraint checks whether the EAA token contains a status claim.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of EAAStatusPresent usage (with WARN validation level)
+----
+<EAA>
+    ...
+    <EAAStatusPresent Level="WARN" />
+    ...
+</EAA>
+----
+
+* `EAAShortLived` - this constraint checks whether the EAA token contains a short-lived claim.
+
+Default: `INFORM`
+
+[source,xml,indent=0]
+.Example of EAAShortLived usage (with INFORM validation level)
+----
+<EAA>
+    ...
+    <EAAShortLived Level="INFORM" />
+    ...
+</EAA>
+----
+
+* `EAAOneTimeUse` - this constraint checks whether the EAA token contains a one-time use claim.
+
+Default: `INFORM`
+
+[source,xml,indent=0]
+.Example of EAAOneTimeUse usage (with INFORM validation level)
+----
+<EAA>
+    ...
+    <EAAOneTimeUse Level="INFORM" />
+    ...
+</EAA>
+----
+
+* `EAAUsePseudonym` - this constraint checks whether the EAA token uses a pseudonym claim.
+
+Default: `INFORM`
+
+[source,xml,indent=0]
+.Example of EAAUsePseudonym usage (with INFORM validation level)
+----
+<EAA>
+    ...
+    <EAAUsePseudonym Level="INFORM" />
+    ...
+</EAA>
+----
+
 * `EAAClaims` - this constraint checks whether the EAA token contains all claims specified within the list in the constraint. Nested claims are not validated by this constraint.
 
 Default: not executed
@@ -3560,7 +3712,7 @@ This table defines the correspondence between the enforced validation policy con
                                                                                                        FAILED                |SIGNED_DATA_NOT_FOUND +
                                                                                                                               HASH_FAILURE
                                   |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint
-.12+|EAAConstraints               |EAASignatureUnicity             |LevelConstraint                   |FAILED                |FORMAT_FAILURE
+.16+|EAAConstraints               |EAASignatureUnicity             |LevelConstraint                   |FAILED                |FORMAT_FAILURE
                                   |EAASignatureValid               |LevelConstraint                   |Indication from signature |SubIndication from signature
                                   |DisclosurePresent               |LevelConstraint                   |INDETERMINATE         |SIGNED_DATA_NOT_FOUND
                                   |DisclosureFound                 |LevelConstraint                   |INDETERMINATE         |SIGNED_DATA_NOT_FOUND
@@ -3572,13 +3724,23 @@ This table defines the correspondence between the enforced validation policy con
                                   |EAAType                         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAATypeIntegrityPresent         |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAIdentifierPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
-.10+|EAAConstraints                |EAAIssuanceDatePresent          |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAIssuanceDatePresent          |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAANotBeforePresent             |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAExpirationPresent            |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAANotExpired                   |LevelConstraint                   |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
-                                  |EAAAdministrativeIssuanceDatePresent        |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+.16+|EAAConstraints               |EAAAdministrativeIssuanceDatePresent        |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAAdministrativeExpirationDatePresent      |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAAdministrativePeriodNotExpired           |LevelConstraint       |INDETERMINATE         |OUT_OF_BOUNDS_NO_POE
+                                  |EAACategory                     |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAASubject                      |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAASubjectPseudonym             |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAIssuingCountry               |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAIssuingAuthority             |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAIssuingAuthorityRegistrationIdentifier   |LevelConstraint       |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAStatusPresent                |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAShortLived                   |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAOneTimeUse                   |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
+                                  |EAAUsePseudonym                 |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAAClaims                       |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |EAASupportedClaims              |LevelConstraint                   |INDETERMINATE         |EAA_CONSTRAINTS_FAILURE
                                   |Cryptographic                   |CryptographicConstraint         2+|See CryptographicConstraint

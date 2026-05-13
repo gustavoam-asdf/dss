@@ -749,7 +749,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getIssuingRegistrationIdentifier();
+    ClaimString getIssuingAuthorityRegistrationIdentifier();
 
     /**
      * Gets the signal indicating that the EAA shall be used only once, and that it shall not be retained for future use.
