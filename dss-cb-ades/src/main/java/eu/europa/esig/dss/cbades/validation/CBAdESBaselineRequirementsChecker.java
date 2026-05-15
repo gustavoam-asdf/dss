@@ -75,7 +75,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
         if (signatureProtectedHeader.getAsBinaries(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
         if (certHeaders == 0) {
-            LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present for CB-AdES signature (cardinality == 1)!");
+            LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present in the protected headers map for CB-AdES signature (cardinality == 1)!");
             return false;
         }
         return true;
@@ -121,7 +121,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         if (signatureProtectedHeader.getAsArray(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
         if (signatureProtectedHeader.getAsBinaries(COSEHeaderParameter.X5CHAIN.cbor()) != null) ++certHeaders;
         if (certHeaders == 0) {
-            LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
+            LOG.warn("At least one of 'x5t', 'x5ts' or 'x5chain' headers shall be present in the protected headers map for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }
 

@@ -223,6 +223,9 @@ public class CBAdESCertificateSource extends SignatureCertificateSource {
                     LOG.warn("The item of 'x5chain' CBOR array shall be a byte string!");
                 }
             }
+
+        } else {
+            LOG.warn("The 'x5chain' shall be either of a CBOR Byte String or CBOR Array type! Found type : {}", x5chainObject.getClass().getSimpleName());
         }
     }
 
