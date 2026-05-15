@@ -1176,6 +1176,19 @@ public class DiagnosticData {
 	}
 
 	/**
+	 * This method returns all electronic attestation of attributes (EAAs)
+	 *
+	 * @return a set of EAAs
+	 */
+	public Set<EAAWrapper> getAllEAA() {
+		Set<EAAWrapper> eaas = new HashSet<>();
+		for (XmlEAA xmlEAA : wrapped.getEAAs()) {
+			eaas.add(new EAAWrapper(xmlEAA));
+		}
+		return eaas;
+	}
+
+	/**
 	 * Returns {@link CertificateWrapper} with the given {@code id}
 	 * @param id {@link String} identifier to get {@link CertificateWrapper} with
 	 * @return {@link CertificateWrapper}

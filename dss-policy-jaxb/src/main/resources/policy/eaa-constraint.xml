@@ -124,7 +124,7 @@
             <CertDigestMatch Level="FAIL" />
             <IssuerSerialMatch Level="WARN" />
             <KeyIdentifierMatch Level="WARN" />
-            <SigningTime Level="FAIL" />
+            <SigningTime Level="WARN" />
             <SigningTimeInCertRange Level="FAIL" />
             <SignatureType Level="WARN">
                 <Id>dc+sd-jwt</Id>

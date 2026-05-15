@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -13,7 +13,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * This class verifies whether the EAA contains an administrative expiration date
  *
  */
-public class EAAAdministrativeExpirationDatePresentCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAAAdministrativeExpirationDatePresentCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -22,11 +22,11 @@ public class EAAAdministrativeExpirationDatePresentCheck extends ChainItem<XmlVa
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAAAdministrativeExpirationDatePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAAAdministrativeExpirationDatePresentCheck(I18nProvider i18nProvider, XmlSAV result,
                                                        EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

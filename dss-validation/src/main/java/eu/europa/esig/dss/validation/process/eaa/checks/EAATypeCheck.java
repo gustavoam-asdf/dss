@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -13,7 +13,7 @@ import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
  * This class verifies whether the EAA contains an acceptable EAA type
  *
  */
-public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAA> {
+public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -22,11 +22,11 @@ public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProc
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAATypeCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAATypeCheck(I18nProvider i18nProvider, XmlSAV result,
                         EAAWrapper eaa, MultiValuesRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
@@ -38,9 +38,14 @@ public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlValidationProc
             case SD_JWT_VC:
                 return processValueCheck(eaa.getEAAMetadataUri());
             case ISO_IEC_MDOC:
-                return processValueCheck(eaa.getEAADocumentType());
+                String docType = eaa.getEAADocumentType();
+                if (docType == null) {
+                    // Handle IssuerSigned token
+                    docType = eaa.getDocumentType();
+                }
+                return processValueCheck(docType);
             default:
-                return false; // Other EAA types not supported
+                throw new UnsupportedOperationException(String.format("The EAA Type '%s' is not supported!", eaa.getEAAType()));
         }
     }
 

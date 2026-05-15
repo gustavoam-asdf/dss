@@ -518,7 +518,7 @@ public class ValidationPolicyLoader {
                     addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite(), context, subContext);
                     break;
 
-                case EAA_PRESENTATION:
+                case EAA:
                     addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAACryptographicSuite(), context, subContext);
                     break;
 

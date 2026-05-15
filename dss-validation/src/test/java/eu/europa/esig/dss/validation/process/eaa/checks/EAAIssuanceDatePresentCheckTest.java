@@ -1,19 +1,18 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
-
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -21,7 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EAAExpirationPresentCheckTest extends AbstractTestCheck {
+class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -29,19 +28,19 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
-        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
-        XmlClaim expiration = new XmlClaim();
-        expiration.setDateTime(new Date());
-        xmlEAAPayload.setExpiration(expiration);
+        XmlClaim issuanceDate = new XmlClaim();
+        issuanceDate.setDateTime(new Date());
+        xmlEAAPayload.setIssuedAt(issuanceDate);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
+        EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        expirationPresentCheck.execute();
+        issuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -54,15 +53,15 @@ class EAAExpirationPresentCheckTest extends AbstractTestCheck {
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
-        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
+        EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        expirationPresentCheck.execute();
+        issuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

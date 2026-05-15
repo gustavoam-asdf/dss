@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlFC;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -15,7 +15,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * This method verifies whether the signature contains at least one provided disclosure
  *
  */
-public class DisclosurePresentCheck extends ChainItem<XmlValidationProcessEAA> {
+public class DisclosurePresentCheck extends ChainItem<XmlFC> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -24,11 +24,11 @@ public class DisclosurePresentCheck extends ChainItem<XmlValidationProcessEAA> {
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlFC}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public DisclosurePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public DisclosurePresentCheck(I18nProvider i18nProvider, XmlFC result,
                                   EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
@@ -54,12 +54,12 @@ public class DisclosurePresentCheck extends ChainItem<XmlValidationProcessEAA> {
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.INDETERMINATE;
+        return Indication.FAILED;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.SIGNED_DATA_NOT_FOUND;
+        return SubIndication.FORMAT_FAILURE;
     }
 
 }

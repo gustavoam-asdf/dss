@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * This class verifies whether the EAA contains only supported claims
  *
  */
-public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlValidationProcessEAA> {
+public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -26,11 +26,11 @@ public class EAASupportedClaimsCheck extends AbstractMultiValuesCheckItem<XmlVal
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAASupportedClaimsCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAASupportedClaimsCheck(I18nProvider i18nProvider, XmlSAV result,
                                    EAAWrapper eaa, MultiValuesRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

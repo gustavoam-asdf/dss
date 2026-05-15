@@ -103,7 +103,7 @@ public class EAAValidationBlock {
             }
 
             EAAValidationProcess eaapvp = new EAAValidationProcess(
-                    i18nProvider, eaa, signatureValidationMap, policy, currentTime);
+                    i18nProvider, eaa, signatureValidationMap, bbbs, policy);
             XmlValidationProcessEAA validationProcessEAA = eaapvp.execute();
             eaaAnalysis.setValidationProcessEAA(validationProcessEAA);
 

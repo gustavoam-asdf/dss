@@ -1,24 +1,22 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EAATypeCheckTest extends AbstractTestCheck {
 
@@ -36,7 +34,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -61,7 +59,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -82,7 +80,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         xmlEAA.setDocumentType("urn:eudi:pid:1");
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -103,7 +101,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         xmlEAA.setDocumentType("urn:eudi:pid:1");
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -128,7 +126,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -149,7 +147,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         xmlEAA.setDocumentType("urn:eudi:pid:1");
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -169,7 +167,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -189,7 +187,7 @@ class EAATypeCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAATypeCheck typePresentCheck = new EAATypeCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));

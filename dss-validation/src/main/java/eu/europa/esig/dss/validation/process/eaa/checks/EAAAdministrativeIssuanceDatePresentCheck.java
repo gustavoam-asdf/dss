@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -13,7 +13,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * This class verifies whether the EAA contains an administrative issuance date
  *
  */
-public class EAAAdministrativeIssuanceDatePresentCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAAAdministrativeIssuanceDatePresentCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -22,11 +22,11 @@ public class EAAAdministrativeIssuanceDatePresentCheck extends ChainItem<XmlVali
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAAAdministrativeIssuanceDatePresentCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAAAdministrativeIssuanceDatePresentCheck(I18nProvider i18nProvider, XmlSAV result,
                                                      EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

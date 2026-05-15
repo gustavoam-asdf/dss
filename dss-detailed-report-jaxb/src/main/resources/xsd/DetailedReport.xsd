@@ -333,11 +333,7 @@
 
 	<xs:complexType name="ValidationProcessEAA">
 		<xs:complexContent>
-			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
-				<xs:sequence>
-					<xs:element name="AOV" type="AOV" minOccurs="0" />
-				</xs:sequence>
-			</xs:extension>
+			<xs:extension base="ConstraintsConclusionWithProofOfExistence" />
 		</xs:complexContent>
 	</xs:complexType>
 
@@ -712,6 +708,7 @@
 			<xs:enumeration value="TIMESTAMP" />
 			<xs:enumeration value="REVOCATION" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="EAA" />
 			<!-- For Qualification -->
 			<xs:enumeration value="CERTIFICATE" />
 		</xs:restriction>

@@ -1,8 +1,13 @@
 package eu.europa.esig.dss.validation.executor;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlFC;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -40,6 +45,7 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
@@ -84,38 +90,79 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
+                fcCheckFound = true;
+            } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
+                sigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertTrue(cvCheckFound);
+        assertTrue(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
-            } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
-                sigValidationConclusiveCheckFound = true;
             } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
                 disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureIntactCounter;
             } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
                 kbSigPresentCheckFound = true;
-            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
-                kbSigValidationConclusiveCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
         assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
         assertEquals(10, disclosureFoundCounter);
         assertEquals(10, disclosureIntactCounter);
-        assertTrue(kbSigPresentCheckFound);
-        assertTrue(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+
+        assertNull(eaaBBB.getISC());
+        assertNull(eaaBBB.getVCI());
+        assertNull(eaaBBB.getXCV());
 
         checkReports(reports);
     }
@@ -159,38 +206,75 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
+                fcCheckFound = true;
+            } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
+                sigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertTrue(cvCheckFound);
+        assertTrue(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
             assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
             if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
                 sigPresentCheckFound = true;
-            } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
-                sigValidationConclusiveCheckFound = true;
             } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
                 disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureIntactCounter;
             } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
                 kbSigPresentCheckFound = true;
-            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
-                kbSigValidationConclusiveCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
         assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
         assertEquals(10, disclosureFoundCounter);
         assertEquals(10, disclosureIntactCounter);
-        assertTrue(kbSigPresentCheckFound);
-        assertTrue(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
 
         checkReports(reports);
     }
@@ -210,6 +294,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         executor.setValidationPolicy(loadDefaultPolicy());
 
         Reports reports = executor.execute();
+        reports.print();
 
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
@@ -233,24 +318,69 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.HASH_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
-            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                sigPresentCheckFound = true;
+                fcCheckFound = true;
             } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigValidationConclusiveCheckFound = true;
-            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.BSV_ICVRC_ANS.getId(), xmlConstraint.getError().getKey());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertTrue(cvCheckFound);
+        assertFalse(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+                sigPresentCheckFound = true;
+            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
                 disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
+                kbSigPresentCheckFound = true;
+            }
+        }
+        assertTrue(sigPresentCheckFound);
+        assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.FAILED, xmlCV.getConclusion().getIndication());
+        assertEquals(SubIndication.HASH_FAILURE, xmlCV.getConclusion().getSubIndication());
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 ++disclosureFoundCounter;
             } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
@@ -258,19 +388,18 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
                 assertEquals(MessageTag.BBB_CV_EAA_SDCBI_ANS.getId(), xmlConstraint.getError().getKey());
                 assertEquals(i18nProvider.getMessage(MessageTag.REFERENCE, digestMatchers.get(0).getDisclosableClaim().getName()), xmlConstraint.getAdditionalInfo());
                 ++disclosureIntactCounter;
-            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
-                kbSigPresentCheckFound = true;
-            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
-                kbSigValidationConclusiveCheckFound = true;
             }
         }
-        assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
-        assertTrue(disclosuresPresentCheckFound);
         assertEquals(1, disclosureFoundCounter);
         assertEquals(1, disclosureIntactCounter);
-        assertFalse(kbSigPresentCheckFound);
-        assertFalse(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
         checkReports(reports);
     }
@@ -312,46 +441,86 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
-            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                sigPresentCheckFound = true;
+                fcCheckFound = true;
             } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertTrue(cvCheckFound);
+        assertTrue(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
+            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                sigPresentCheckFound = true;
             } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_DPEAAP_ANS.getId(), xmlConstraint.getWarning().getKey());
                 disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureIntactCounter;
             } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 kbSigPresentCheckFound = true;
-            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                kbSigValidationConclusiveCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
         assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
         assertEquals(0, disclosureFoundCounter);
         assertEquals(0, disclosureIntactCounter);
-        assertTrue(kbSigPresentCheckFound);
-        assertTrue(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
         checkReports(reports);
     }
@@ -377,8 +546,8 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);
 
-        assertEquals(Indication.INDETERMINATE, simpleReport.getIndication(simpleReport.getFirstEAAId()));
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
+        assertEquals(Indication.FAILED, simpleReport.getIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, simpleReport.getSubIndication(simpleReport.getFirstEAAId()));
 
         assertFalse(Utils.isCollectionEmpty(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId())));
         assertTrue(checkMessageValuePresence(simpleReport.getAdESValidationErrors(simpleReport.getFirstEAAId()), i18nProvider.getMessage(MessageTag.EAA_DPEAAP_ANS)));
@@ -386,57 +555,99 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertTrue(Utils.isCollectionEmpty(simpleReport.getAdESValidationInfo(simpleReport.getFirstEAAId())));
 
         DetailedReport detailedReport = reports.getDetailedReport();
-        assertEquals(Indication.INDETERMINATE, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
+        assertEquals(Indication.FAILED, detailedReport.getFinalIndication(simpleReport.getFirstEAAId()));
+        assertEquals(SubIndication.FORMAT_FAILURE, detailedReport.getFinalSubIndication(simpleReport.getFirstEAAId()));
 
         XmlEAA xmlEAA = detailedReport.getXmlEAAById(detailedReport.getFirstEAAId());
         assertNotNull(xmlEAA);
 
         XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
         assertNotNull(validationProcessEAA);
-        assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
-        assertEquals(SubIndication.SIGNED_DATA_NOT_FOUND, validationProcessEAA.getConclusion().getSubIndication());
+        assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
+        assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
-
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
-            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                sigPresentCheckFound = true;
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.BSV_IFCRC_ANS.getId(), xmlConstraint.getError().getKey());
+                fcCheckFound = true;
             } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertFalse(sigValidationConclusiveCheckFound);
+        assertFalse(kbSigValidationConclusiveCheckFound);
+        assertFalse(cvCheckFound);
+        assertFalse(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.FAILED, xmlFC.getConclusion().getIndication());
+        assertEquals(SubIndication.FORMAT_FAILURE, xmlFC.getConclusion().getSubIndication());
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
+            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                sigPresentCheckFound = true;
             } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_DPEAAP_ANS.getId(), xmlConstraint.getError().getKey());
                 disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureIntactCounter;
             } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 kbSigPresentCheckFound = true;
-            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                kbSigValidationConclusiveCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
         assertTrue(disclosuresPresentCheckFound);
+        assertFalse(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
         assertEquals(0, disclosureFoundCounter);
         assertEquals(0, disclosureIntactCounter);
-        assertFalse(kbSigPresentCheckFound);
-        assertFalse(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
         checkReports(reports);
     }
@@ -500,40 +711,86 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
-            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                sigPresentCheckFound = true;
+                fcCheckFound = true;
             } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.ADEST_IBSVPSC_ANS.getId(), xmlConstraint.getError().getKey());
                 sigValidationConclusiveCheckFound = true;
-            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
-                disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                ++disclosureIntactCounter;
-            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
-                kbSigPresentCheckFound = true;
             } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertFalse(kbSigValidationConclusiveCheckFound);
+        assertFalse(cvCheckFound);
+        assertFalse(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
+            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                sigPresentCheckFound = true;
+            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                disclosuresPresentCheckFound = true;
+            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigPresentCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
-        assertFalse(disclosuresPresentCheckFound);
-        assertEquals(0, disclosureFoundCounter);
-        assertEquals(0, disclosureIntactCounter);
-        assertFalse(kbSigPresentCheckFound);
-        assertFalse(kbSigValidationConclusiveCheckFound);
+        assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
+        assertEquals(10, disclosureFoundCounter);
+        assertEquals(10, disclosureIntactCounter);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
         checkReports(reports);
     }
@@ -597,45 +854,86 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.FAILED, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.FORMAT_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
-        boolean sigPresentCheckFound = false;
+        boolean fcCheckFound = false;
         boolean sigValidationConclusiveCheckFound = false;
-        boolean disclosuresPresentCheckFound = false;
-        int disclosureFoundCounter = 0;
-        int disclosureIntactCounter = 0;
-        boolean kbSigPresentCheckFound = false;
         boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
         for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
-            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                sigPresentCheckFound = true;
+                fcCheckFound = true;
             } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 sigValidationConclusiveCheckFound = true;
-            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                disclosuresPresentCheckFound = true;
-            } else if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureFoundCounter;
-            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                ++disclosureIntactCounter;
-            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
-                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                kbSigPresentCheckFound = true;
             } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_KBRC_ANS.getId(), xmlConstraint.getError().getKey());
                 kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertFalse(cvCheckFound);
+        assertFalse(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        boolean sigPresentCheckFound = false;
+        boolean disclosuresPresentCheckFound = false;
+        boolean kbSigPresentCheckFound = false;
+        for (XmlConstraint xmlConstraint : xmlFC.getConstraint()) {
+            if (MessageTag.EAA_SIG_PRESENT.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                sigPresentCheckFound = true;
+            } else if (MessageTag.EAA_DPEAAP.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                disclosuresPresentCheckFound = true;
+            } else if (MessageTag.EAA_KBSP.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigPresentCheckFound = true;
             }
         }
         assertTrue(sigPresentCheckFound);
-        assertTrue(sigValidationConclusiveCheckFound);
         assertTrue(disclosuresPresentCheckFound);
+        assertTrue(kbSigPresentCheckFound);
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        int disclosureFoundCounter = 0;
+        int disclosureIntactCounter = 0;
+        for (XmlConstraint xmlConstraint : xmlCV.getConstraint()) {
+            assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+            if (MessageTag.BBB_CV_EAA_SDCBF.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureFoundCounter;
+            } else if (MessageTag.BBB_CV_EAA_SDCBI.getId().equals(xmlConstraint.getName().getKey())) {
+                ++disclosureIntactCounter;
+            }
+        }
         assertEquals(10, disclosureFoundCounter);
         assertEquals(10, disclosureIntactCounter);
-        assertTrue(kbSigPresentCheckFound);
-        assertTrue(kbSigValidationConclusiveCheckFound);
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
         checkReports(reports);
     }
@@ -695,6 +993,56 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.OUT_OF_BOUNDS_NO_POE, validationProcessEAA.getConclusion().getSubIndication());
 
+        boolean fcCheckFound = false;
+        boolean sigValidationConclusiveCheckFound = false;
+        boolean kbSigValidationConclusiveCheckFound = false;
+        boolean cvCheckFound = false;
+        boolean savCheckFound = false;
+        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+            if (MessageTag.BSV_IFCRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                fcCheckFound = true;
+            } else if (MessageTag.ADEST_IBSVPSC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                sigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.EAA_KBRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                kbSigValidationConclusiveCheckFound = true;
+            } else if (MessageTag.BSV_ICVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
+                cvCheckFound = true;
+            } else if (MessageTag.BSV_IEAAAVRC.getId().equals(xmlConstraint.getName().getKey())) {
+                assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
+                assertEquals(MessageTag.BSV_IEAAAVRC_ANS.getId(), xmlConstraint.getError().getKey());
+                savCheckFound = true;
+            }
+        }
+        assertTrue(fcCheckFound);
+        assertTrue(sigValidationConclusiveCheckFound);
+        assertTrue(kbSigValidationConclusiveCheckFound);
+        assertTrue(cvCheckFound);
+        assertTrue(savCheckFound);
+
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.OUT_OF_BOUNDS_NO_POE, xmlSAV.getConclusion().getSubIndication());
+
         boolean etsiConformanceCheckFound = false;
         boolean technicalValidityNotBeforeCheckFound = false;
         boolean technicalValidityExpirationCheckFound = false;
@@ -703,7 +1051,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean administrativeValidityExpirationCheckFound = false;
         boolean administrativeValidityPeriodCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ETSI194721.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ETSI194721_ANS.getId(), xmlConstraint.getWarning().getKey());
@@ -799,6 +1147,25 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean etsiConformanceCheckFound = false;
         boolean technicalValidityNotBeforeCheckFound = false;
         boolean technicalValidityExpirationCheckFound = false;
@@ -807,7 +1174,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean administrativeValidityExpirationCheckFound = false;
         boolean administrativeValidityPeriodCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ETSI194721.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ETSI194721_ANS.getId(), xmlConstraint.getWarning().getKey());
@@ -905,6 +1272,26 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean etsiConformanceCheckFound = false;
         boolean technicalValidityNotBeforeCheckFound = false;
         boolean technicalValidityExpirationCheckFound = false;
@@ -913,7 +1300,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean administrativeValidityExpirationCheckFound = false;
         boolean administrativeValidityPeriodCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ETSI194721.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ETSI194721_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1009,6 +1396,26 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.OUT_OF_BOUNDS_NO_POE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.OUT_OF_BOUNDS_NO_POE, xmlSAV.getConclusion().getSubIndication());
+
         boolean etsiConformanceCheckFound = false;
         boolean technicalValidityNotBeforeCheckFound = false;
         boolean technicalValidityExpirationCheckFound = false;
@@ -1017,7 +1424,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean administrativeValidityExpirationCheckFound = false;
         boolean administrativeValidityPeriodCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ETSI194721.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ETSI194721_ANS.getId(), xmlConstraint.getWarning().getKey());
@@ -1117,6 +1524,25 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean etsiConformanceCheckFound = false;
         boolean technicalValidityNotBeforeCheckFound = false;
         boolean technicalValidityExpirationCheckFound = false;
@@ -1125,7 +1551,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         boolean administrativeValidityExpirationCheckFound = false;
         boolean administrativeValidityPeriodCheckFound = false;
 
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ETSI194721.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ETSI194721_ANS.getId(), xmlConstraint.getWarning().getKey());
@@ -1217,9 +1643,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean claimsCheckFound = false;
         boolean supportedClaimsCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_CLAIMS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 claimsCheckFound = true;
@@ -1286,9 +1731,29 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean claimsCheckFound = false;
         boolean supportedClaimsCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_CLAIMS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_CLAIMS_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1358,9 +1823,29 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean claimsCheckFound = false;
         boolean supportedClaimsCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_CLAIMS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 claimsCheckFound = true;
@@ -1418,8 +1903,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_CAT.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_CAT_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1472,8 +1977,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_SUB_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1526,8 +2051,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_SUB_PSE.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_SUB_PSE_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1580,8 +2125,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ISS_COUN.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ISS_COUN_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1634,8 +2199,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ISS_AUTH.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ISS_AUTH_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1688,8 +2273,28 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_ISS_REG_ID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_ISS_REG_ID_ANS.getId(), xmlConstraint.getError().getKey());
@@ -1749,10 +2354,30 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertEquals(Indication.INDETERMINATE, validationProcessEAA.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, validationProcessEAA.getConclusion().getSubIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
+        assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
+
         boolean shortLivedCheckFound = false;
         boolean oneTimeCheckFound = false;
         boolean statusCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 shortLivedCheckFound = true;
@@ -1819,10 +2444,29 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean shortLivedCheckFound = false;
         boolean oneTimeCheckFound = false;
         boolean statusCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.INFORMATION, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_SH_LVD_ANS.getId(), xmlConstraint.getInfo().getKey());
@@ -1889,10 +2533,29 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean shortLivedCheckFound = false;
         boolean oneTimeCheckFound = false;
         boolean statusCheckFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_SH_LVD.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 shortLivedCheckFound = true;
@@ -1950,8 +2613,27 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_PSEUDO_USED.getId().equals(xmlConstraint.getName().getKey())) {
                 checkFound = true;
             }
@@ -2003,8 +2685,27 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(validationProcessEAA);
         assertEquals(Indication.PASSED, validationProcessEAA.getConclusion().getIndication());
 
+        XmlBasicBuildingBlocks eaaBBB = detailedReport.getBasicBuildingBlockById(xmlEAA.getId());
+        assertNotNull(eaaBBB);
+
+        XmlFC xmlFC = eaaBBB.getFC();
+        assertNotNull(xmlFC);
+        assertEquals(Indication.PASSED, xmlFC.getConclusion().getIndication());
+
+        XmlCV xmlCV = eaaBBB.getCV();
+        assertNotNull(xmlCV);
+        assertEquals(Indication.PASSED, xmlCV.getConclusion().getIndication());
+
+        XmlAOV xmlAOV = eaaBBB.getAOV();
+        assertNotNull(xmlAOV);
+        assertEquals(Indication.PASSED, xmlAOV.getConclusion().getIndication());
+
+        XmlSAV xmlSAV = eaaBBB.getSAV();
+        assertNotNull(xmlSAV);
+        assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
+
         boolean checkFound = false;
-        for (XmlConstraint xmlConstraint : validationProcessEAA.getConstraint()) {
+        for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_PSEUDO_USED.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.INFORMATION, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_PSEUDO_USED_ANS.getId(), xmlConstraint.getInfo().getKey());

@@ -1,8 +1,8 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
@@ -35,7 +35,7 @@ class EAAShortLivedCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAAShortLivedCheck eaaslc = new EAAShortLivedCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
@@ -61,7 +61,7 @@ class EAAShortLivedCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAAShortLivedCheck eaaslc = new EAAShortLivedCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
@@ -86,7 +86,7 @@ class EAAShortLivedCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAAShortLivedCheck eaaslc = new EAAShortLivedCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
@@ -112,7 +112,7 @@ class EAAShortLivedCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAAShortLivedCheck eaaslc = new EAAShortLivedCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));

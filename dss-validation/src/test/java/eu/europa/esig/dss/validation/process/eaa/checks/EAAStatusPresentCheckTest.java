@@ -1,27 +1,27 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusListClaim;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
+import org.junit.jupiter.api.Test;
 
-class EAAAdministrativeIssuanceDatePresentCheckTest extends AbstractTestCheck {
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EAAStatusPresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -32,16 +32,21 @@ class EAAAdministrativeIssuanceDatePresentCheckTest extends AbstractTestCheck {
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
-        XmlClaim issuance = new XmlClaim();
-        issuance.setDateTime(new Date());
-        xmlEAAPayload.setAdministrativeIssuanceDate(issuance);
+        XmlStatusClaim xmlStatusClaim = new XmlStatusClaim();
+        XmlStatusListClaim xmlStatusListClaim = new XmlStatusListClaim();
+        XmlClaim uriClaim = new XmlClaim();
+        uriClaim.setText("https://nowina.lu/pki-factory/eaa/status");
+        xmlStatusListClaim.setUri(uriClaim);
+        xmlStatusClaim.setStatusList(xmlStatusListClaim);
+        xmlEAAPayload.setStatus(xmlStatusClaim);
+
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAAdministrativeIssuanceDatePresentCheck administrativeIssuanceDatePresentCheck = new EAAAdministrativeIssuanceDatePresentCheck(
+        EAAStatusPresentCheck eaaspc = new EAAStatusPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        administrativeIssuanceDatePresentCheck.execute();
+        eaaspc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -56,16 +61,18 @@ class EAAAdministrativeIssuanceDatePresentCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAAdministrativeIssuanceDatePresentCheck administrativeIssuanceDatePresentCheck = new EAAAdministrativeIssuanceDatePresentCheck(
+        EAAStatusPresentCheck eaaspc = new EAAStatusPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        administrativeIssuanceDatePresentCheck.execute();
+        eaaspc.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
+
 }

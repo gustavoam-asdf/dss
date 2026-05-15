@@ -248,6 +248,8 @@ public enum MessageTag {
 	BSV_ISAVRC_ANS,
 	BSV_ICTGTNACCET,
 	BSV_ICTGTNACCET_ANS,
+	BSV_IEAAAVRC,
+	BSV_IEAAAVRC_ANS,
 
 	LTV_ABSV,
 	LTV_ABSV_ANS,
@@ -1140,6 +1142,8 @@ public enum MessageTag {
 	RESULTS,
 
     EEA_TYPE,
+
+	EAA_ACCEPTANCE_VALIDATION,
 
 	/* Validation Process Definitions */
 

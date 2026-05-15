@@ -1,8 +1,8 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
@@ -13,7 +13,6 @@ import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -37,7 +36,7 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -63,7 +62,7 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -94,7 +93,7 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
@@ -122,7 +121,7 @@ class EAASupportedClaimsCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         EAASupportedClaimsCheck supportedClaimsCheck = new EAASupportedClaimsCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));

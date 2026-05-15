@@ -11,9 +11,12 @@ import eu.europa.esig.dss.diagnostic.claim.IntegrityClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlBasicSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlChainItem;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.EAAQualification;
@@ -31,7 +34,7 @@ import java.util.stream.Collectors;
  * Provides a user-friendly interface for information extraction from a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlEAA} JAXB object
  *
  */
-public class EAAWrapper {
+public class EAAWrapper extends AbstractTokenProxy {
 
     /** Wrapped EAA object */
     private final XmlEAA eaa;
@@ -73,11 +76,47 @@ public class EAAWrapper {
         return eaa.getDocumentType();
     }
 
+    @Override
+    protected XmlBasicSignature getCurrentBasicSignature() {
+        SignatureWrapper eaaSignature = getEAASignature();
+        if (eaaSignature != null) {
+            return eaaSignature.getCurrentBasicSignature();
+        }
+        return null;
+    }
+
+    @Override
+    protected List<XmlChainItem> getCurrentCertificateChain() {
+        SignatureWrapper eaaSignature = getEAASignature();
+        if (eaaSignature != null) {
+            return eaaSignature.getCurrentCertificateChain();
+        }
+        return null;
+    }
+
+    @Override
+    protected XmlSigningCertificate getCurrentSigningCertificate() {
+        SignatureWrapper eaaSignature = getEAASignature();
+        if (eaaSignature != null) {
+            return eaaSignature.getCurrentSigningCertificate();
+        }
+        return null;
+    }
+
+    private SignatureWrapper getEAASignature() {
+        List<SignatureWrapper> eaaSignatures = getEAASignatures();
+        if (eaaSignatures != null && eaaSignatures.size() == 1) {
+            return eaaSignatures.get(0);
+        }
+        return null;
+    }
+
     /**
      * Gets a list of digest matchers representing the associated hashes and disclosures validation
      *
      * @return a list of {@link XmlDigestMatcher}
      */
+    @Override
     public List<XmlDigestMatcher> getDigestMatchers() {
         return eaa.getDigestMatchers();
     }
@@ -1534,6 +1573,12 @@ public class EAAWrapper {
      */
     public EAAType getEAAType() {
         return eaa.getEAAType();
+    }
+
+    @Override
+    public byte[] getBinaries() {
+        // TODO : add support
+        return null;
     }
 
 }

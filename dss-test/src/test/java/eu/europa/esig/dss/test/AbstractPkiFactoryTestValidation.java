@@ -2670,6 +2670,10 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 					assertNotNull(validationReport);
 					ValidationStatusType signatureValidationStatus = validationReport.getSignatureValidationStatus();
 					assertNotNull(signatureValidationStatus);
+					if (ObjectType.OTHER == validationObject.getObjectType()) {
+						// skip process for EAA, as may have different validation results than BBB alone
+						continue;
+					}
 					assertEquals(conclusion.getIndication(), signatureValidationStatus.getMainIndication());
 					if (conclusion.getSubIndication() != null) {
 						assertEquals(1, signatureValidationStatus.getSubIndication().size());

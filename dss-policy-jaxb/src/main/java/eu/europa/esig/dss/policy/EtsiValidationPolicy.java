@@ -1682,7 +1682,7 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return revocationConstraints.getBasicSignatureConstraints();
 				}
 				break;
-			case EAA_PRESENTATION:
+			case EAA:
 				return null;
 			default:
 				throw new UnsupportedOperationException(String.format("Unsupported context '%s'", context));

@@ -1,68 +1,35 @@
 package eu.europa.esig.dss.validation.process.eaa;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlFC;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.enumerations.Context;
-import eu.europa.esig.dss.enumerations.DigestMatcherType;
-import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
-import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
-import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.validation.process.Chain;
 import eu.europa.esig.dss.validation.process.ChainItem;
-import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
-import eu.europa.esig.dss.validation.process.bbb.aov.AlgorithmObsolescenceValidation;
-import eu.europa.esig.dss.validation.process.bbb.aov.EAAAlgorithmObsolescenceValidation;
-import eu.europa.esig.dss.validation.process.bbb.aov.checks.AlgorithmObsolescenceValidationCheck;
-import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataExistenceCheck;
-import eu.europa.esig.dss.validation.process.bbb.cv.checks.ReferenceDataIntactCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.DisclosureListExhaustiveCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.DisclosurePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAACategoryCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAClaimsCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIdentifierPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityRegistrationIdentifierCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingCountryCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAOneTimeUseCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAPseudonymUsageCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAShortLivedCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASignatureUnicityCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectPseudonymCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignaturePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.KeyBindingSignatureValidationResultCheck;
 import eu.europa.esig.dss.validation.process.qualification.signature.checks.SignatureValidationResultCheck;
+import eu.europa.esig.dss.validation.process.vpfbs.AbstractBasicValidationProcess;
+import eu.europa.esig.dss.validation.process.vpfbs.checks.SignatureAcceptanceValidationResultCheck;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Performs validation of presentation of Electronic Attestation of Attributes
  *
  */
-public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
+public class EAAValidationProcess extends AbstractBasicValidationProcess<XmlValidationProcessEAA> {
 
     /**
      * EAA being validated
@@ -80,27 +47,20 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     private final ValidationPolicy policy;
 
     /**
-     * Validation time
-     */
-    private final Date currentTime;
-
-    /**
      * Common constructor
      *
      * @param i18nProvider the access to translations
      * @param eaa {@link EAAWrapper} to be validated
      * @param xmlSignatures a map of {@link XmlSignature} validations
      * @param validationPolicy {@link ValidationPolicy} to be used
-     * @param currentTime {@link Date} validation time
      */
-    public EAAValidationProcess(I18nProvider i18nProvider, EAAWrapper eaa,
-                                Map<String, XmlSignature> xmlSignatures, ValidationPolicy validationPolicy, Date currentTime) {
-        super(i18nProvider, new XmlValidationProcessEAA());
-
+    public EAAValidationProcess(final I18nProvider i18nProvider, final EAAWrapper eaa,
+                                final Map<String, XmlSignature> xmlSignatures, final Map<String, XmlBasicBuildingBlocks> bbbs,
+                                final ValidationPolicy validationPolicy) {
+        super(i18nProvider, new XmlValidationProcessEAA(), null, eaa, bbbs);
         this.eaa = eaa;
         this.xmlSignatures = xmlSignatures;
         this.policy = validationPolicy;
-        this.currentTime = currentTime;
     }
 
     @Override
@@ -111,134 +71,42 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
     @Override
     protected void initChain() {
 
-        // Algorithm Obsolescence Validation to be included
-        XmlAOV xmlAOV = null;
+        final XmlBasicBuildingBlocks eaaBBBs = bbbs.get(eaa.getId());
+        if (eaaBBBs == null) {
+            throw new IllegalStateException(
+                    String.format("Missing Basic Building Blocks result for token with Id '%s'", eaa.getId()));
+        }
 
-        // 1. Verify electronic signatures
+        ChainItem<XmlValidationProcessEAA> item = firstItem;
 
-        ChainItem<XmlValidationProcessEAA> item = firstItem = signatureUnicity();
+        // 1. Format checking
+        XmlFC xmlFC = eaaBBBs.getFC();
+        if (xmlFC != null) {
+            item = firstItem = formatChecking(xmlFC);
+        }
 
+        // 2. Verify electronic signatures
         for (SignatureWrapper signatureWrapper : eaa.getEAASignatures()) {
             item = item.setNextItem(signatureValidationConclusive(signatureWrapper));
         }
 
-        if (item == null) {
-            throw new IllegalStateException("EAA shall contain at least one signature!");
-        }
-
-        // 2a. Verify disclosures
-
-        item = item.setNextItem(disclosurePresent());
-
-        List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-
-        if (Utils.isCollectionNotEmpty(digestMatchers)) {
-
-            for (XmlDigestMatcher digestMatcher : digestMatchers) {
-
-                if (DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM != digestMatcher.getType()) {
-
-                    ChainItem<XmlValidationProcessEAA> referenceDataFound = referenceDataFound(digestMatcher);
-
-                    item = item.setNextItem(referenceDataFound);
-
-                    if (digestMatcher.isDataFound()) {
-                        item = item.setNextItem(referenceDataIntact(digestMatcher));
-                    }
-
-                }
-
-            }
-
-            item = item.setNextItem(disclosureListExhaustive());
-
-            // 2b. Validate cryptographic constraints of DigestMatchers
-            AlgorithmObsolescenceValidation<?> algorithmObsolescenceValidation =
-                    new EAAAlgorithmObsolescenceValidation(i18nProvider, eaa, currentTime, policy);
-            XmlAOV erAOV = algorithmObsolescenceValidation.execute();
-
-            item = item.setNextItem(algorithmsObsolescenceValidation(erAOV, currentTime));
-
-            xmlAOV = erAOV;
-
-        }
-
         // 3. Verify Key Binding signature
-
-        item = item.setNextItem(keyBindingSignaturePresent());
-
         if (eaa.getKeyBindingSignature() != null) {
             item = item.setNextItem(keyBindingSignatureValidationConclusive(eaa.getKeyBindingSignature()));
         }
 
-        // 4. Other checks (including TS 119 472-1)
-
-        item = item.setNextItem(etsi194721Conformance());
-
-        item = item.setNextItem(eaaType());
-        if (EAAType.SD_JWT_VC == eaa.getEAAType()) {
-            item = item.setNextItem(typeIntegrityPresent());
+        // 4. Digest (selective disclosures) validation
+        XmlCV xmlCV = eaaBBBs.getCV();
+        if (xmlCV != null) {
+            item = item.setNextItem(cryptographicVerification(xmlCV));
         }
 
-        if (EAAType.ISO_IEC_MDOC == eaa.getEAAType()) {
-            item = item.setNextItem(issuanceDatePresent());
+        // 5. EAA Acceptance Validation
+        XmlSAV xmlSAV = eaaBBBs.getSAV();
+        if (xmlSAV != null) {
+            item = item.setNextItem(signatureAcceptanceValidation(xmlSAV));
         }
 
-        item = item.setNextItem(eaaIdentifierPresent());
-
-        item = item.setNextItem(notBeforePresent());
-
-        item = item.setNextItem(expirationPresent());
-
-        if (eaa.getEAANotBefore() != null && eaa.getEAAExpiration() != null) {
-            item = item.setNextItem(notExpired());
-        }
-
-        item = item.setNextItem(administrativeIssuanceDatePresent());
-
-        item = item.setNextItem(administrativeExpirationDatePresent());
-
-        if (eaa.getAdministrativeIssuanceDate() != null && eaa.getAdministrativeExpirationDate() != null) {
-            item = item.setNextItem(administrativePeriodNotExpired());
-        }
-
-        item = item.setNextItem(category());
-
-        item = item.setNextItem(subject());
-
-        item = item.setNextItem(subjectPseudonym());
-
-        item = item.setNextItem(issuingCountry());
-
-        item = item.setNextItem(issuingAuthority());
-
-        item = item.setNextItem(issuingAuthorityRegistrationIdentifier());
-
-        if (Utils.isTrue(eaa.getShortLived())) {
-            item = item.setNextItem(shortLived());
-        } else {
-            item = item.setNextItem(statusPresent());
-        }
-
-        if (Utils.isTrue(eaa.getOneTimeUse())) {
-            item = item.setNextItem(oneTimeUse());
-        }
-
-        if (eaa.getHolderPseudonym() != null) {
-            item = item.setNextItem(usePseudonym());
-        }
-
-        item = item.setNextItem(claims());
-
-        item = item.setNextItem(supportedClaims());
-
-        result.setAOV(xmlAOV);
-
-    }
-
-    private ChainItem<XmlValidationProcessEAA> signatureUnicity() {
-        LevelRule constraint = policy.getEAASignatureUnicityConstraint();
-        return new EAASignatureUnicityCheck(i18nProvider, result, eaa, constraint);
     }
 
     private ChainItem<XmlValidationProcessEAA> signatureValidationConclusive(SignatureWrapper signatureWrapper) {
@@ -255,31 +123,6 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
         return xmlSignature.getValidationProcessBasicSignature().getConclusion();
     }
 
-    private ChainItem<XmlValidationProcessEAA> disclosurePresent() {
-        LevelRule constraint = policy.getEAADisclosurePresentConstraint();
-        return new DisclosurePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> referenceDataFound(XmlDigestMatcher digestMatcher) {
-        LevelRule constraint = policy.getEAADisclosureFoundConstraint();
-        return new ReferenceDataExistenceCheck<>(i18nProvider, result, digestMatcher, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> referenceDataIntact(XmlDigestMatcher digestMatcher) {
-        LevelRule constraint = policy.getEAADisclosureIntactConstraint();
-        return new ReferenceDataIntactCheck<>(i18nProvider, result, digestMatcher, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> disclosureListExhaustive() {
-        LevelRule constraint = policy.getEAADisclosureListExhaustiveConstraint();
-        return new DisclosureListExhaustiveCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> keyBindingSignaturePresent() {
-        LevelRule constraint = policy.getEAAKeyBindingSignaturePresentConstraint();
-        return new KeyBindingSignaturePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
     private ChainItem<XmlValidationProcessEAA> keyBindingSignatureValidationConclusive(SignatureWrapper signatureWrapper) {
         LevelRule constraint = policy.getEAAKeyBindingSignatureValidConstraint();
         XmlSignature xmlSignature = xmlSignatures.get(signatureWrapper.getId());
@@ -287,124 +130,48 @@ public class EAAValidationProcess extends Chain<XmlValidationProcessEAA> {
                 xmlSignature.getValidationProcessBasicSignature().getConclusion(), constraint);
     }
 
-    private ChainItem<XmlValidationProcessEAA> etsi194721Conformance() {
-        LevelRule constraint = policy.getEAAETSI194721ConformanceConstraint();
-        return new ETSI194721ConformanceCheck(i18nProvider, result, eaa, currentTime, constraint);
+    @Override
+    protected ChainItem<XmlValidationProcessEAA> signatureAcceptanceValidation(final XmlSAV xmlSAV) {
+        return new SignatureAcceptanceValidationResultCheck<>(i18nProvider, result, xmlSAV, token, getFailLevelRule()) {
+
+            @Override
+            protected MessageTag getMessageTag() {
+                return MessageTag.BSV_IEAAAVRC;
+            }
+
+            @Override
+            protected MessageTag getErrorMessageTag() {
+                return MessageTag.BSV_IEAAAVRC_ANS;
+            }
+
+        };
     }
 
-    private ChainItem<XmlValidationProcessEAA> eaaType() {
-        MultiValuesRule constraint = policy.getEAATypeConstraint();
-        return new EAATypeCheck(i18nProvider, result, eaa, constraint);
+    @Override
+    protected void collectAdditionalMessages(XmlConclusion conclusion) {
+        final XmlBasicBuildingBlocks tokenBBBs = bbbs.get(token.getId());
+        if (tokenBBBs != null) {
+            clear(conclusion.getErrors());
+            conclusion.getErrors().addAll(tokenBBBs.getConclusion().getErrors());
+            clear(conclusion.getWarnings());
+            conclusion.getWarnings().addAll(tokenBBBs.getConclusion().getWarnings());
+            clear(conclusion.getInfos());
+            conclusion.getInfos().addAll(tokenBBBs.getConclusion().getInfos());
+
+            for (XmlConstraint constraint : result.getConstraint()) {
+                collectMessages(conclusion, constraint);
+            }
+        }
     }
 
-    private ChainItem<XmlValidationProcessEAA> typeIntegrityPresent() {
-        LevelRule constraint = policy.getEAATypeIntegrityPresentConstraint();
-        return new EAATypeIntegrityPresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> notBeforePresent() {
-        LevelRule constraint = policy.getEAANotBeforePresentConstraint();
-        return new EAANotBeforePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> expirationPresent() {
-        LevelRule constraint = policy.getEAAExpirationPresentConstraint();
-        return new EAAExpirationPresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> notExpired() {
-        LevelRule constraint = policy.getEAANotExpiredConstraint();
-        return new EAANotExpiredCheck(i18nProvider, result, eaa, currentTime, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> administrativeIssuanceDatePresent() {
-        LevelRule constraint = policy.getEAAAdministrativeIssuanceDatePresentConstraint();
-        return new EAAAdministrativeIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> administrativeExpirationDatePresent() {
-        LevelRule constraint = policy.getEAAAdministrativeExpirationDatePresentConstraint();
-        return new EAAAdministrativeExpirationDatePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> administrativePeriodNotExpired() {
-        LevelRule constraint = policy.getEAAAdministrativePeriodNotExpiredConstraint();
-        return new EAAAdministrativePeriodNotExpiredCheck(i18nProvider, result, eaa, currentTime, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> eaaIdentifierPresent() {
-        LevelRule constraint = policy.getEAAIdentifierPresentConstraint();
-        return new EAAIdentifierPresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> issuanceDatePresent() {
-        LevelRule constraint = policy.getEAAIssuanceDatePresentConstraint();
-        return new EAAIssuanceDatePresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> category() {
-        MultiValuesRule constraint = policy.getEAACategoryConstraint();
-        return new EAACategoryCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> subject() {
-        MultiValuesRule constraint = policy.getEAASubjectConstraint();
-        return new EAASubjectCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> subjectPseudonym() {
-        MultiValuesRule constraint = policy.getEAASubjectPseudonymConstraint();
-        return new EAASubjectPseudonymCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> issuingCountry() {
-        MultiValuesRule constraint = policy.getEAAIssuingCountryConstraint();
-        return new EAAIssuingCountryCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> issuingAuthority() {
-        MultiValuesRule constraint = policy.getEAAIssuingAuthorityConstraint();
-        return new EAAIssuingAuthorityCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> issuingAuthorityRegistrationIdentifier() {
-        MultiValuesRule constraint = policy.getEAAIssuingAuthorityRegistrationIdentifierConstraint();
-        return new EAAIssuingAuthorityRegistrationIdentifierCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> statusPresent() {
-        LevelRule constraint = policy.getEAAStatusPresentConstraint();
-        return new EAAStatusPresentCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> shortLived() {
-        LevelRule constraint = policy.getEAAShortLivedConstraint();
-        return new EAAShortLivedCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> oneTimeUse() {
-        LevelRule constraint = policy.getEAAOneTimeUseConstraint();
-        return new EAAOneTimeUseCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> usePseudonym() {
-        LevelRule constraint = policy.getEAAUsePseudonymConstraint();
-        return new EAAPseudonymUsageCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> claims() {
-        MultiValuesRule constraint = policy.getEAAClaimsConstraint();
-        return new EAAClaimsCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> supportedClaims() {
-        MultiValuesRule constraint = policy.getEAASupportedClaimsConstraint();
-        return new EAASupportedClaimsCheck(i18nProvider, result, eaa, constraint);
-    }
-
-    private ChainItem<XmlValidationProcessEAA> algorithmsObsolescenceValidation(XmlAOV aovResult, Date lowestPOETime) {
-        MessageTag position = ValidationProcessUtils.getCryptoPosition(Context.EAA_PRESENTATION);
-        return new AlgorithmObsolescenceValidationCheck<>(i18nProvider, result, aovResult, lowestPOETime, position, eaa.getId());
+    private void clear(List<XmlMessage> messageList) {
+        // clears if not signature validation
+        List<XmlMessage> result = messageList.stream().filter(m ->
+                MessageTag.ADEST_IBSVPSC_ANS.getId().equals(m.getKey()) ||
+                        MessageTag.EAA_KBRC_ANS.getId().equals(m.getKey())
+        ).collect(Collectors.toList());
+        messageList.clear();
+        messageList.addAll(result);
     }
 
 }

@@ -1,8 +1,8 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
@@ -12,7 +12,7 @@ import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class EAAAdministrativePeriodNotExpiredCheckTest extends AbstractTestCheck {
+class EAANotExpiredCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -36,19 +36,19 @@ class EAAAdministrativePeriodNotExpiredCheckTest extends AbstractTestCheck {
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(nowMil - 86400000)); // 24 hours ago
-        xmlEAAPayload.setAdministrativeIssuanceDate(notBefore);
+        xmlEAAPayload.setNotBefore(notBefore);
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date(nowMil + 86400000)); // in 24 hours
-        xmlEAAPayload.setAdministrativeExpirationDate(expiration);
+        xmlEAAPayload.setExpiration(expiration);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAAdministrativePeriodNotExpiredCheck eaaapnec = new EAAAdministrativePeriodNotExpiredCheck(
+        EAANotExpiredCheck eaanec = new EAANotExpiredCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), now, new LevelConstraintWrapper(constraint));
-        eaaapnec.execute();
+        eaanec.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -69,19 +69,19 @@ class EAAAdministrativePeriodNotExpiredCheckTest extends AbstractTestCheck {
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(nowMil - 172800000)); // 48 hours ago
-        xmlEAAPayload.setAdministrativeIssuanceDate(notBefore);
+        xmlEAAPayload.setNotBefore(notBefore);
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date(nowMil - 86400000)); // 24 hours ago
-        xmlEAAPayload.setAdministrativeExpirationDate(expiration);
+        xmlEAAPayload.setExpiration(expiration);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAAdministrativePeriodNotExpiredCheck eaaapnec = new EAAAdministrativePeriodNotExpiredCheck(
+        EAANotExpiredCheck eaanec = new EAANotExpiredCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), now, new LevelConstraintWrapper(constraint));
-        eaaapnec.execute();
+        eaanec.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -102,19 +102,19 @@ class EAAAdministrativePeriodNotExpiredCheckTest extends AbstractTestCheck {
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(nowMil + 86400000)); // 24 hours ago
-        xmlEAAPayload.setAdministrativeIssuanceDate(notBefore);
+        xmlEAAPayload.setNotBefore(notBefore);
 
         XmlClaim expiration = new XmlClaim();
         expiration.setDateTime(new Date(nowMil + 172800000)); // 48 hours after
-        xmlEAAPayload.setAdministrativeExpirationDate(expiration);
+        xmlEAAPayload.setExpiration(expiration);
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAAdministrativePeriodNotExpiredCheck eaaapnec = new EAAAdministrativePeriodNotExpiredCheck(
+        EAANotExpiredCheck eaanec = new EAANotExpiredCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), now, new LevelConstraintWrapper(constraint));
-        eaaapnec.execute();
+        eaanec.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

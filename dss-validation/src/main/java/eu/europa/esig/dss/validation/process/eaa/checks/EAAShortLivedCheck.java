@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -15,7 +15,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * This class verifies whether the EAA is short-lived
  *
  */
-public class EAAShortLivedCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAAShortLivedCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -24,11 +24,11 @@ public class EAAShortLivedCheck extends ChainItem<XmlValidationProcessEAA> {
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAAShortLivedCheck(final I18nProvider i18nProvider, final XmlValidationProcessEAA result,
+    public EAAShortLivedCheck(final I18nProvider i18nProvider, final XmlSAV result,
                               final EAAWrapper eaa, final LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

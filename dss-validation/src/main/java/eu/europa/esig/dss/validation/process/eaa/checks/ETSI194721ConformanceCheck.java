@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * This class verifies whether the issuing authority identifier is valid as per TS 119 472-1
  */
-public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEAA> {
+public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -37,7 +37,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
      * @param i18nProvider
      *         {@link I18nProvider}
      * @param result
-     *         {@link XmlValidationProcessEAA}
+     *         {@link XmlSAV}
      * @param eaa
      *         {@link EAAWrapper}
      * @param validationTime
@@ -45,7 +45,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlValidationProcessEA
      * @param constraint
      *         {@link LevelRule}
      */
-    public ETSI194721ConformanceCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public ETSI194721ConformanceCheck(I18nProvider i18nProvider, XmlSAV result,
                                       EAAWrapper eaa, Date validationTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

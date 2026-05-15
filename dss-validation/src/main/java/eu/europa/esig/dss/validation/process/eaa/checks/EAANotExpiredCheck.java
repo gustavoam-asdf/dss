@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Verified whether the validation time is within EAA technical validity period range
  *
  */
-public class EAANotExpiredCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAANotExpiredCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -28,12 +28,12 @@ public class EAANotExpiredCheck extends ChainItem<XmlValidationProcessEAA> {
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param validationTime {@link Date}
      * @param constraint {@link LevelRule}
      */
-    public EAANotExpiredCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAANotExpiredCheck(I18nProvider i18nProvider, XmlSAV result,
                               EAAWrapper eaa, Date validationTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

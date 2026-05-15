@@ -398,7 +398,7 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_CERT_CHAIN;
 			case EVIDENCE_RECORD:
 				return MessageTag.ACCM_POS_EV_RECORD;
-			case EAA_PRESENTATION:
+			case EAA:
 				return MessageTag.ACCM_POS_EAA;
 			default:
 				throw new IllegalArgumentException("Unsupported context " + context);

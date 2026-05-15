@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlFC;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -16,7 +16,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * present within the EAA's payload
  *
  */
-public class DisclosureListExhaustiveCheck extends ChainItem<XmlValidationProcessEAA> {
+public class DisclosureListExhaustiveCheck extends ChainItem<XmlFC> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -25,11 +25,11 @@ public class DisclosureListExhaustiveCheck extends ChainItem<XmlValidationProces
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlFC}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public DisclosureListExhaustiveCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public DisclosureListExhaustiveCheck(I18nProvider i18nProvider, XmlFC result,
                                          EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
@@ -55,12 +55,12 @@ public class DisclosureListExhaustiveCheck extends ChainItem<XmlValidationProces
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.INDETERMINATE;
+        return Indication.FAILED;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.SIGNED_DATA_NOT_FOUND;
+        return SubIndication.FORMAT_FAILURE;
     }
 
 }

@@ -1,28 +1,27 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAExpirationPresentCheck;
 
-class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
+import org.junit.jupiter.api.Test;
+
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EAAExpirationPresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -32,20 +31,17 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
-        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
-        xmlIntegrityClaim.setDigestValue("test".getBytes());
-        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim expiration = new XmlClaim();
+        expiration.setDateTime(new Date());
+        xmlEAAPayload.setExpiration(expiration);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
+        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        integrityPresentCheck.execute();
+        expirationPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -60,15 +56,13 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
+        EAAExpirationPresentCheck expirationPresentCheck = new EAAExpirationPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        integrityPresentCheck.execute();
+        expirationPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

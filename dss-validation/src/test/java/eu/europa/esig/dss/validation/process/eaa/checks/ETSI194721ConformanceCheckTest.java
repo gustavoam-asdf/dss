@@ -1,8 +1,8 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
@@ -57,7 +57,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -105,7 +105,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -145,7 +145,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -185,7 +185,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -233,7 +233,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -281,7 +281,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -325,7 +325,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -377,7 +377,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -421,7 +421,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -465,7 +465,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -512,7 +512,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -559,7 +559,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -610,7 +610,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -661,7 +661,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -716,7 +716,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -771,7 +771,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -822,7 +822,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -866,7 +866,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
@@ -922,7 +922,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
         ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));

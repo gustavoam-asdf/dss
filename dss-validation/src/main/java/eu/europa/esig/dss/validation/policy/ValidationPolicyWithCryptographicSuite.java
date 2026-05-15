@@ -255,7 +255,7 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
 
     @Override
     public CryptographicSuite getEAACryptographicConstraint() {
-        CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EAA_PRESENTATION, null);
+        CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EAA, null);
         if (cryptographicSuite == null) {
             cryptographicSuite = validationPolicy.getEAACryptographicConstraint();
         }

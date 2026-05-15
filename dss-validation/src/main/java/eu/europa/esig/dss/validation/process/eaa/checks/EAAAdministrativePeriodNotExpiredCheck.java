@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Verified whether the validation time is within EAA administrative validity period range
  *
  */
-public class EAAAdministrativePeriodNotExpiredCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAAAdministrativePeriodNotExpiredCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -28,12 +28,12 @@ public class EAAAdministrativePeriodNotExpiredCheck extends ChainItem<XmlValidat
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlSAV}
      * @param eaa {@link EAAWrapper}
      * @param validationTime {@link Date}
      * @param constraint {@link LevelRule}
      */
-    public EAAAdministrativePeriodNotExpiredCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAAAdministrativePeriodNotExpiredCheck(I18nProvider i18nProvider, XmlSAV result,
                               EAAWrapper eaa, Date validationTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

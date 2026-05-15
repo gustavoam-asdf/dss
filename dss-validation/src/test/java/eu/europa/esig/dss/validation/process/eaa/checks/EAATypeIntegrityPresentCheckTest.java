@@ -1,28 +1,27 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuanceDatePresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
+import org.junit.jupiter.api.Test;
 
-class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -30,19 +29,22 @@ class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
-        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-
-        XmlClaim issuanceDate = new XmlClaim();
-        issuanceDate.setDateTime(new Date());
-        xmlEAAPayload.setIssuedAt(issuanceDate);
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue("test".getBytes());
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
+        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        issuanceDatePresentCheck.execute();
+        integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -55,15 +57,17 @@ class EAAIssuanceDatePresentCheckTest extends AbstractTestCheck {
         constraint.setLevel(Level.FAIL);
 
         XmlEAA xmlEAA = new XmlEAA();
-        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAAIssuanceDatePresentCheck issuanceDatePresentCheck = new EAAIssuanceDatePresentCheck(
+        EAATypeIntegrityPresentCheck integrityPresentCheck = new EAATypeIntegrityPresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        issuanceDatePresentCheck.execute();
+        integrityPresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

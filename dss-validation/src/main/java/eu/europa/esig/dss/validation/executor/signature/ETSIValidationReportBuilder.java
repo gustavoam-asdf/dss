@@ -37,7 +37,6 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlProofOfExistence;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlRevocationInformation;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSubXCV;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
@@ -723,30 +722,6 @@ public class ETSIValidationReportBuilder {
 		return validationStatus;
 	}
 
-	private void addValidationReportData(ValidationStatusType validationStatus, EAAWrapper EAA) {
-		ValidationReportDataType validationReportData = getAssociatedValidationReportData(validationStatus);
-		XmlEAA xmlEAA = detailedReport.getXmlEAAById(EAA.getId());
-		XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
-		XmlAOV xmlAOV = validationProcessEAA.getAOV();
-		XmlCryptographicValidation cryptographicValidation = ValidationProcessUtils.getFinalCryptographicValidation(xmlAOV);
-		if (cryptographicValidation != null) {
-			fillCryptographicInfo(validationReportData, EAA, cryptographicValidation);
-		}
-	}
-
-	private void fillCryptographicInfo(ValidationReportDataType validationReportData, EAAWrapper EAA,
-									   XmlCryptographicValidation cryptographicValidation) {
-		CryptoInformationType cryptoInformationType = objectFactory.createCryptoInformationType();
-		cryptoInformationType.setValidationObjectId(getVOReference(getEAAValidationObject(EAA)));
-		cryptoInformationType.setSecureAlgorithm(Indication.PASSED == cryptographicValidation.getConclusion().getIndication());
-		XmlCryptographicAlgorithm algorithm = cryptographicValidation.getAlgorithm();
-		if (algorithm != null) {
-			cryptoInformationType.setAlgorithm(algorithm.getUri());
-		}
-		cryptoInformationType.setNotAfter(cryptographicValidation.getNotAfter());
-		validationReportData.setCryptoInformation(cryptoInformationType);
-	}
-
 	private ValidationObjectType getTimestampValidationObject(TimestampWrapper timestamp) {
 		ValidationObjectType validationObject = validationObjectMap.get(timestamp.getId());
 		if (validationObject == null) {
@@ -1016,6 +991,8 @@ public class ETSIValidationReportBuilder {
 			cryptoInformationType.setValidationObjectId(getVOReference(getTimestampValidationObject((TimestampWrapper) token)));
 		} else if (token instanceof RevocationWrapper) {
 			cryptoInformationType.setValidationObjectId(getVOReference(getRevocationValidationObject((RevocationWrapper) token)));
+		} else if (token instanceof EAAWrapper) {
+			cryptoInformationType.setValidationObjectId(getVOReference(getEAAValidationObject((EAAWrapper) token)));
 		} else {
 			throw new IllegalArgumentException(String.format("Unsupported class %s", token.getClass()));
 		}

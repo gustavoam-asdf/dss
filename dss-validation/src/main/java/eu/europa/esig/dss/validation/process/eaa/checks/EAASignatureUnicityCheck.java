@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlFC;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -14,7 +14,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
  * Verifies whether the EAA has been created with a single signature
  *
  */
-public class EAASignatureUnicityCheck extends ChainItem<XmlValidationProcessEAA> {
+public class EAASignatureUnicityCheck extends ChainItem<XmlFC> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -23,11 +23,11 @@ public class EAASignatureUnicityCheck extends ChainItem<XmlValidationProcessEAA>
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationProcessEAA}
+     * @param result {@link XmlFC}
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link LevelRule}
      */
-    public EAASignatureUnicityCheck(I18nProvider i18nProvider, XmlValidationProcessEAA result,
+    public EAASignatureUnicityCheck(I18nProvider i18nProvider, XmlFC result,
                                     EAAWrapper eaa, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;

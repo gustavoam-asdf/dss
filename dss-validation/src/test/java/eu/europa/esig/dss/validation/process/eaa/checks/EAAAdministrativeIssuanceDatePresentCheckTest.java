@@ -1,27 +1,26 @@
-package eu.europa.esig.dss.validation.process.qualification.eaa.checks;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Date;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
+package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
+import org.junit.jupiter.api.Test;
 
-class EAANotBeforePresentCheckTest extends AbstractTestCheck {
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EAAAdministrativeIssuanceDatePresentCheckTest extends AbstractTestCheck {
 
     @Test
     void validTest() {
@@ -32,16 +31,16 @@ class EAANotBeforePresentCheckTest extends AbstractTestCheck {
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
 
-        XmlClaim notBefore = new XmlClaim();
-        notBefore.setDateTime(new Date());
-        xmlEAAPayload.setNotBefore(notBefore);
+        XmlClaim issuance = new XmlClaim();
+        issuance.setDateTime(new Date());
+        xmlEAAPayload.setAdministrativeIssuanceDate(issuance);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
+        EAAAdministrativeIssuanceDatePresentCheck administrativeIssuanceDatePresentCheck = new EAAAdministrativeIssuanceDatePresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        notBeforePresentCheck.execute();
+        administrativeIssuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());
@@ -58,11 +57,11 @@ class EAANotBeforePresentCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
-        XmlValidationProcessEAA result = new XmlValidationProcessEAA();
+        XmlSAV result = new XmlSAV();
 
-        EAANotBeforePresentCheck notBeforePresentCheck = new EAANotBeforePresentCheck(
+        EAAAdministrativeIssuanceDatePresentCheck administrativeIssuanceDatePresentCheck = new EAAAdministrativeIssuanceDatePresentCheck(
                 i18nProvider, result, new EAAWrapper(xmlEAA), new LevelConstraintWrapper(constraint));
-        notBeforePresentCheck.execute();
+        administrativeIssuanceDatePresentCheck.execute();
 
         List<XmlConstraint> constraints = result.getConstraint();
         assertEquals(1, constraints.size());

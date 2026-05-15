@@ -48,7 +48,7 @@ import eu.europa.esig.dss.validation.process.bbb.fc.checks.SignerInformationStor
  * to the applicable base format (e.g. CMS [i.8], CAdES [i.2], XML-DSig [i.11],
  * XAdES [i.4], etc.) prior to any subsequent processing.
  */
-public class SignatureFormatChecking extends AbstractFormatChecking<SignatureWrapper> {
+public class SignatureFormatChecking extends AbstractSignatureFormatChecking<SignatureWrapper> {
 
 	/**
 	 * Default constructor

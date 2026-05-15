@@ -26,7 +26,7 @@ public class EAAAlgorithmObsolescenceValidation extends DigestAlgorithmObsolesce
      */
     public EAAAlgorithmObsolescenceValidation(I18nProvider i18nProvider, EAAWrapper token,
                                               Date validationDate, ValidationPolicy validationPolicy) {
-        super(i18nProvider, token, Context.EAA_PRESENTATION, validationDate, validationPolicy);
+        super(i18nProvider, token, Context.EAA, validationDate, validationPolicy);
     }
 
     @Override
