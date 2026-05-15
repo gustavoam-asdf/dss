@@ -117,7 +117,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimDeviceKey getDeviceKey() {
-        ClaimMap deviceKeyInfo = getAsMap(forIso180135Explicit(MdocConstants.DEVICE_KEY_INFO), forIso232202Expicit(MdocConstants.DEVICE_KEY_INFO));
+        ClaimMap deviceKeyInfo = getAsMap(forIso180135Implicit(MdocConstants.DEVICE_KEY_INFO), forIso232202Implicit(MdocConstants.DEVICE_KEY_INFO));
         if (deviceKeyInfo != null) {
             return new MdocClaimDeviceKeyInfo(deviceKeyInfo);
         }
@@ -492,17 +492,17 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getVersion() {
-        return getAsString(forIso180135Explicit(MdocConstants.VERSION), forIso232202Expicit(MdocConstants.VERSION));
+        return getAsString(forIso180135Implicit(MdocConstants.VERSION), forIso232202Implicit(MdocConstants.VERSION));
     }
 
     @Override
     public ClaimString getDocType() {
-        return getAsString(forIso180135Explicit(MdocConstants.DOC_TYPE), forIso232202Expicit(MdocConstants.DOC_TYPE));
+        return getAsString(forIso180135Implicit(MdocConstants.DOC_TYPE), forIso232202Implicit(MdocConstants.DOC_TYPE));
     }
 
     @Override
     public ClaimValidityInfo getValidityInfo() {
-        ClaimMap validityInfo = getAsMap(forIso180135Explicit(MdocConstants.VALIDITY_INFO), forIso232202Expicit(MdocConstants.VALIDITY_INFO));
+        ClaimMap validityInfo = getAsMap(forIso180135Implicit(MdocConstants.VALIDITY_INFO), forIso232202Implicit(MdocConstants.VALIDITY_INFO));
         if (validityInfo != null) {
             return new MdocClaimValidityInfo(validityInfo);
         }
@@ -699,14 +699,11 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      */
     protected Claim get(DataElementReference... references) {
         for (DataElementReference dataElementReference : references) {
-            String documentType = dataElementReference.getDocumentType();
             String namespace = dataElementReference.getNamespace();
-            if (docType == null || docType.equals(documentType)) {
-                for (String headerName : dataElementReference.getHeaderNames()) {
-                    Claim value = super.get(headerName);
-                    if (value != null && (namespace == null || namespace.equals(value.getNamespace()))) {
-                        return value;
-                    }
+            for (String headerName : dataElementReference.getHeaderNames()) {
+                Claim value = super.get(headerName);
+                if (value != null && (namespace == null || namespace.equals(value.getNamespace()))) {
+                    return value;
                 }
             }
         }
@@ -724,15 +721,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
         final List<Claim> result = new ArrayList<>();
         Map<String, Claim> claimMap = super.getMapValue();
         for (DataElementReference dataElementReference : references) {
-            String documentType = dataElementReference.getDocumentType();
             String namespace = dataElementReference.getNamespace();
-            if (docType == null || docType.equals(documentType)) {
-                for (String headerName : dataElementReference.getHeaderNames()) {
-                    for (Map.Entry<String, Claim> claimMapEntry : claimMap.entrySet()) {
-                        if (claimMapEntry.getKey().startsWith(headerName) &&
-                                (namespace == null || namespace.equals(claimMapEntry.getValue().getNamespace()))) {
-                            result.add(claimMapEntry.getValue());
-                        }
+            for (String headerName : dataElementReference.getHeaderNames()) {
+                for (Map.Entry<String, Claim> claimMapEntry : claimMap.entrySet()) {
+                    if (claimMapEntry.getKey().startsWith(headerName) &&
+                            (namespace == null || namespace.equals(claimMapEntry.getValue().getNamespace()))) {
+                        result.add(claimMapEntry.getValue());
                     }
                 }
             }
@@ -846,7 +840,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @return {@link DataElementReference}
      */
     protected DataElementReference forIso180135(final String... headerNames) {
-        return new DataElementReference(MdocConstants.ISO18013_5_MDL_DOC_TYPE, MdocConstants.ISO18013_5_NAMESPACE, headerNames);
+        return new DataElementReference(MdocConstants.ISO18013_5_NAMESPACE, headerNames);
     }
 
     /**
@@ -855,8 +849,8 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @param headerNames array of {@link String}s
      * @return {@link DataElementReference}
      */
-    protected DataElementReference forIso180135Explicit(final String... headerNames) {
-        return new DataElementReference(MdocConstants.ISO18013_5_MDL_DOC_TYPE, null, headerNames);
+    protected DataElementReference forIso180135Implicit(final String... headerNames) {
+        return new DataElementReference(null, headerNames);
     }
 
     /**
@@ -866,7 +860,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @return {@link DataElementReference}
      */
     protected DataElementReference forIso232202(final String... headerNames) {
-        return new DataElementReference(MdocConstants.ISO23220_1_MID_DOC_TYPE, MdocConstants.ISO23220_1_NAMESPACE, headerNames);
+        return new DataElementReference(MdocConstants.ISO23220_1_NAMESPACE, headerNames);
     }
 
     /**
@@ -875,8 +869,8 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @param headerNames array of {@link String}s
      * @return {@link DataElementReference}
      */
-    protected DataElementReference forIso232202Expicit(final String... headerNames) {
-        return new DataElementReference(MdocConstants.ISO23220_1_MID_DOC_TYPE, null, headerNames);
+    protected DataElementReference forIso232202Implicit(final String... headerNames) {
+        return new DataElementReference(null, headerNames);
     }
 
     /**
@@ -887,7 +881,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @return {@link DataElementReference}
      */
     protected DataElementReference forEtsi194721(final String... headerNames) {
-        return new DataElementReference(null, MdocConstants.ETSI_19472_1_NAMESPACE, headerNames);
+        return new DataElementReference(MdocConstants.ETSI_19472_1_NAMESPACE, headerNames);
     }
 
     /**
@@ -897,7 +891,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      * @return {@link DataElementReference}
      */
     protected DataElementReference forEUDIPid(final String... headerNames) {
-        return new DataElementReference(MdocConstants.EUDI_PID_DOC_TYPE, MdocConstants.EUDI_PID_NAMESPACE, headerNames);
+        return new DataElementReference(MdocConstants.EUDI_PID_NAMESPACE, headerNames);
     }
 
     /**
@@ -907,26 +901,37 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
         private static final long serialVersionUID = 8026021615590289170L;
 
-        private final String documentType;
-
+        /** Attribute namespace */
         private final String namespace;
 
+        /** Accepted header names */
         private final String[] headerNames;
 
-        private DataElementReference(final String documentType,  final String namespace, final String... headerNames) {
-            this.documentType = documentType;
+        /**
+         * Default constructor
+         *
+         * @param namespace {@link String}
+         * @param headerNames array of {@link String}s
+         */
+        private DataElementReference(final String namespace, final String... headerNames) {
             this.namespace = namespace;
             this.headerNames = headerNames;
         }
 
-        public String getDocumentType() {
-            return documentType;
-        }
-
+        /**
+         * Gets attribute namespace
+         *
+         * @return {@link String}
+         */
         public String getNamespace() {
             return namespace;
         }
 
+        /**
+         * Gets attribute possible names
+         *
+         * @return {@link String}s
+         */
         public String[] getHeaderNames() {
             return headerNames;
         }
