@@ -1,14 +1,7 @@
-package eu.europa.esig.dss.eaa.jwt.creation.claim;
+package eu.europa.esig.dss.eaa.common.creation.claim;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.jose4j.json.JsonUtil;
-
-import eu.europa.esig.dss.jades.DSSJsonUtils;
 
 /**
  * Represents an array claim. The array claim itself can be disclosable and/or individual elements within the array can be independently disclosable.
@@ -24,14 +17,14 @@ import eu.europa.esig.dss.jades.DSSJsonUtils;
  *   nationalities.addElement(fr);
  * </pre>
  */
-public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
+public class EAAClaimArray extends EAAClaim {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor
      */
-    public SDJWTArrayPresentableClaim() {
+    public EAAClaimArray() {
         this(null, false, null);
     }
 
@@ -40,7 +33,7 @@ public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
      *
      * @param name {@link String} the claim name
      */
-    public SDJWTArrayPresentableClaim(final String name) {
+    public EAAClaimArray(final String name) {
         this(name, false, null);
     }
 
@@ -51,21 +44,21 @@ public class SDJWTArrayPresentableClaim extends SDJWTPresentableClaim {
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
-    public SDJWTArrayPresentableClaim(final String name, final boolean selectivelyDisclosable, final String salt) {
-        super(name, new ArrayList<SDJWTPresentableClaim>(), selectivelyDisclosable, salt);
+    public EAAClaimArray(final String name, final boolean selectivelyDisclosable, final String salt) {
+        super(name, new ArrayList<EAAClaim>(), selectivelyDisclosable, salt);
     }
 
     /**
      * Adds an element to the array
      *
-     * @param element {@link SDJWTPresentableClaim}
+     * @param element {@link EAAClaim}
      */
-    public void addElement(final SDJWTPresentableClaim element) {
+    public void addElement(final EAAClaim element) {
         getElements().add(element);
     }
 
-    public List<SDJWTPresentableClaim> getElements() {
-        return (List<SDJWTPresentableClaim>) getValue();
+    public List<EAAClaim> getElements() {
+        return (List<EAAClaim>) getValue();
     }
 }
 

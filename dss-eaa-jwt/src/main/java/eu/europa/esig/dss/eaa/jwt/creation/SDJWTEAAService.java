@@ -1,17 +1,9 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -30,16 +22,35 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link EAAService} to create SD-JWT EAA
  */
-public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJWTPayloadBuilder, SDJWTPresentableClaim> {
+public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters, SDJWTPayloadBuilder> {
 
-    private final CertificateVerifier certificateVerifier;
+    private static final long serialVersionUID = 6514504397480840459L;
 
+    private static final Logger LOG = LoggerFactory.getLogger(SDJWTEAAService.class);
+
+    /**
+     * Default constructor to instantiate an {@code SDJWTEAAService}
+     *
+     * @param certificateVerifier {@link CertificateVerifier}
+     */
     public SDJWTEAAService(final CertificateVerifier certificateVerifier) {
-        this.certificateVerifier = certificateVerifier;
+        super(certificateVerifier);
+        LOG.debug("+ SDJWTEAAService created");
     }
 
     @Override
@@ -123,7 +134,7 @@ public class SDJWTEAAService implements EAAService<JAdESSignatureParameters, SDJ
     }
 
     @Override
-    public List<String> getDisclosures(final List<SDJWTPresentableClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
+    public List<String> getDisclosures(final List<EAAClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
         DigestAlgorithm digestAlgorithm = payloadBuilder.getDigestAlgorithm() == null ? DigestAlgorithm.SHA256 : payloadBuilder.getDigestAlgorithm();
 
         if (claims == null || claims.isEmpty()) {

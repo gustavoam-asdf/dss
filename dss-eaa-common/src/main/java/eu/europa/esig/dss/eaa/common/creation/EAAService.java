@@ -1,24 +1,28 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
-import java.util.List;
-
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * This interface {@link EAAService} provides operations for the issuance of Electronic Attestations of Attributes (EAA).
+ * This service provides the following functionalities:
+ * - Signing and issuance of Electronic Attestation of Attributes (EAA);
+ * - Generation and extraction of selectively disclosable claims;
+ * - Generation of key binding (device binding) signature;
+ * - Issuance of Electronic Attestation of Attributes EAA Presentation.
  *
  * @param <SP>
  *         implementation of signature parameters corresponding to the supported signature format
  * @param <B>
  *         implementation of EAA payload builder to the EAA format
- * @param <C>
- *         Type of a claim for this implementation
  */
-public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder, C> {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder> extends Serializable {
 
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
@@ -62,12 +66,12 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
      * This method allows to create a list of disclosures for the provided claims based on the provided parameters
      *
      * @param claims
-     *         the list of claims
+     *         the list of {@link EAAClaim}s
      * @param payloadBuilder
      *         the payload builder
      * @return the list of disclosure as {@link String} Base64URL encoded
      */
-    List<String> getDisclosures(List<C> claims, B payloadBuilder);
+    List<String> getDisclosures(List<EAAClaim> claims, B payloadBuilder);
 
     DSSDocument issuePresentation(DSSDocument eaa, List<String> disclosures);
 

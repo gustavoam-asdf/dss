@@ -20,12 +20,6 @@
  */
 package eu.europa.esig.dss.test.signature;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import org.junit.jupiter.api.Test;
-
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -34,9 +28,14 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.signature.AbstractSignatureService;
-import eu.europa.esig.dss.test.PKIFactoryAccess;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
+import eu.europa.esig.dss.test.PKIFactoryAccess;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IsValidSignatureValueTest extends PKIFactoryAccess {
 
@@ -92,7 +91,7 @@ class IsValidSignatureValueTest extends PKIFactoryAccess {
 
 	private static class MockService extends AbstractSignatureService {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 3573674401854916405L;
 
 		protected MockService(CertificateVerifier certificateVerifier) {
 			super(certificateVerifier);

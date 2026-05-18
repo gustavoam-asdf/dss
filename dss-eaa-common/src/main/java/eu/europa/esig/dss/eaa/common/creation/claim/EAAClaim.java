@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.eaa.jwt.creation.claim;
+package eu.europa.esig.dss.eaa.common.creation.claim;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -6,13 +6,13 @@ import java.util.Objects;
 /**
  * Base class for defining an SD-JWT claim
  */
-public class SDJWTPresentableClaim implements Serializable {
+public class EAAClaim implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private final Object value;
 
-    private final String name;
+    private final Object name;
 
     private final boolean selectivelyDisclosable;
 
@@ -23,7 +23,7 @@ public class SDJWTPresentableClaim implements Serializable {
      *
      * @param value {@link Object} the value of the claim
      */
-    public SDJWTPresentableClaim(final Object value) {
+    public EAAClaim(final Object value) {
         this(null, value, false, null);
     }
 
@@ -33,7 +33,7 @@ public class SDJWTPresentableClaim implements Serializable {
      * @param name {@link String} the claim name
      * @param value {@link Object} the value of the claim
      */
-    public SDJWTPresentableClaim(final String name, final Object value) {
+    public EAAClaim(final String name, final Object value) {
         this(name, value, false, null);
     }
 
@@ -45,7 +45,7 @@ public class SDJWTPresentableClaim implements Serializable {
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
-    public SDJWTPresentableClaim(final String name, final Object value, final boolean selectivelyDisclosable, final String salt) {
+    public EAAClaim(final String name, final Object value, final boolean selectivelyDisclosable, final String salt) {
         if (selectivelyDisclosable) {
             Objects.requireNonNull(salt, "The salt cannot be null if selectivelyDisclosable is true");
         }
@@ -59,9 +59,9 @@ public class SDJWTPresentableClaim implements Serializable {
     /**
      * Gets the claim name
      *
-     * @return {@link String}
+     * @return {@link Object}
      */
-    public String getName() {
+    public Object getName() {
         return name;
     }
 

@@ -11,7 +11,7 @@ import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
-import eu.europa.esig.dss.eaa.mdoc.signature.SessionTranscriptBuilder;
+import eu.europa.esig.dss.eaa.mdoc.creation.SessionTranscriptBuilder;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EllipticCurve;

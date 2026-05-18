@@ -8,7 +8,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
-import eu.europa.esig.dss.eaa.mdoc.signature.SessionTranscriptBuilder;
+import eu.europa.esig.dss.eaa.mdoc.creation.SessionTranscriptBuilder;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EllipticCurve;

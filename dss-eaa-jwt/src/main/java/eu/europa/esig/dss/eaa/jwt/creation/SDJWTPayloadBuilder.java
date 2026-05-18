@@ -1,53 +1,48 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.jose4j.base64url.Base64Url;
-import org.jose4j.json.JsonUtil;
-import org.jose4j.json.internal.json_simple.JSONAware;
-import org.jose4j.json.internal.json_simple.JSONStreamAware;
-import org.jose4j.json.internal.json_simple.JSONValue;
-
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTArrayPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
+import org.jose4j.base64url.Base64Url;
+import org.jose4j.json.JsonUtil;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
 
     private DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
     private SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
-    private final Map<String, SDJWTPresentableClaim> claims = new LinkedHashMap<>();
+    private final Map<String, EAAClaim> claims = new LinkedHashMap<>();
 
-    public void addClaim(final SDJWTPresentableClaim claim) {
-        claims.put(claim.getName(), claim);
+    public void addClaim(final EAAClaim claim) {
+        claims.put(getName(claim), claim);
     }
 
-    public SDJWTPresentableClaim addClaim(final String name, final Object value) {
+    public EAAClaim addClaim(final String name, final Object value) {
         return addClaim(name, value, false, null);
     }
 
-    public SDJWTPresentableClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable) {
+    public EAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable) {
         String salt = isSelectivelyDisclosable ? saltGenerator.generateSalt() : null;
         return addClaim(name, value, isSelectivelyDisclosable, salt);
     }
 
-    public SDJWTPresentableClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
-        SDJWTPresentableClaim claim = new SDJWTPresentableClaim(name, value, isSelectivelyDisclosable, salt);
-        claims.put(claim.getName(), claim);
+    public EAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
+        EAAClaim claim = new EAAClaim(name, value, isSelectivelyDisclosable, salt);
+        claims.put(getName(claim), claim);
         return claim;
     }
 
@@ -55,26 +50,26 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
     public DSSDocument buildPayload() {
         final Map<String, Object> map = new LinkedHashMap<>();
 
-        final List<SDJWTPresentableClaim> claimsSelectivelyDisclosable = claims.values()
+        final List<EAAClaim> claimsSelectivelyDisclosable = claims.values()
                 .stream()
-                .filter(SDJWTPresentableClaim::isSelectivelyDisclosable)
+                .filter(EAAClaim::isSelectivelyDisclosable)
                 .collect(Collectors.toList());
 
-        final List<SDJWTPresentableClaim> visibleClaims = claims.values()
+        final List<EAAClaim> visibleClaims = claims.values()
                 .stream()
                 .filter(claim -> !claim.isSelectivelyDisclosable())
                 .collect(Collectors.toList());
 
         if (!claimsSelectivelyDisclosable.isEmpty()) {
             List<String> hashedDisclosures = new ArrayList<>();
-            for (final SDJWTPresentableClaim claim : claimsSelectivelyDisclosable) {
+            for (final EAAClaim claim : claimsSelectivelyDisclosable) {
                 hashedDisclosures.add(getHashedDisclosure(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm));
             }
             map.put(SDJWTConstants._SD, hashedDisclosures);
         }
 
-        for (final SDJWTPresentableClaim claim : visibleClaims) {
-            map.put(claim.getName(), getClaimValue(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm, null));
+        for (final EAAClaim claim : visibleClaims) {
+            map.put(getName(claim), getClaimValue(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm, null));
         }
 
         if (isOneTime()) {
@@ -105,19 +100,19 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         return result;
     }
 
-    private Object getClaimValue(final SDJWTPresentableClaim claim, final DigestAlgorithm digestAlgorithm, SDJWTPresentableClaim parentClaim) {
-        if (parentClaim != null && !(parentClaim instanceof SDJWTArrayPresentableClaim)) {
+    private Object getClaimValue(final EAAClaim claim, final DigestAlgorithm digestAlgorithm, EAAClaim parentClaim) {
+        if (parentClaim != null && !(parentClaim instanceof EAAClaimArray)) {
             Objects.requireNonNull(claim.getName(), "The name of a claim cannot be null");
         }
-        if (claim instanceof SDJWTObjectPresentableClaim) {
-            return getSDJWTObjectPresentableClaimValue((SDJWTObjectPresentableClaim) claim, digestAlgorithm);
-        } else if (claim instanceof SDJWTArrayPresentableClaim) {
-            return getSDJWTArrayPresentableClaimValue((SDJWTArrayPresentableClaim) claim, digestAlgorithm);
+        if (claim instanceof EAAClaimObject) {
+            return getSDJWTObjectPresentableClaimValue((EAAClaimObject) claim, digestAlgorithm);
+        } else if (claim instanceof EAAClaimArray) {
+            return getSDJWTArrayPresentableClaimValue((EAAClaimArray) claim, digestAlgorithm);
         }
         return claim.getValue();
     }
 
-    private Object getSDJWTObjectPresentableClaimValue(final SDJWTObjectPresentableClaim objectClaim, final DigestAlgorithm digestAlgorithm) {
+    private Object getSDJWTObjectPresentableClaimValue(final EAAClaimObject objectClaim, final DigestAlgorithm digestAlgorithm) {
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> selectivelyDisclosableClaims = new ArrayList<>();
 
@@ -125,7 +120,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             if (child.isSelectivelyDisclosable()) {
                 selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm));
             } else {
-                result.put(child.getName(), getClaimValue(child, digestAlgorithm, objectClaim));
+                result.put(getName(objectClaim), getClaimValue(child, digestAlgorithm, objectClaim));
             }
         });
 
@@ -136,7 +131,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         return result;
     }
 
-    private Object getSDJWTArrayPresentableClaimValue(final SDJWTArrayPresentableClaim arrayClaim, final DigestAlgorithm digestAlgorithm) {
+    private Object getSDJWTArrayPresentableClaimValue(final EAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm) {
         List<Object> result = new ArrayList<>();
 
         arrayClaim.getElements().forEach(element -> {
@@ -152,7 +147,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         return result;
     }
 
-    private String getHashedDisclosure(SDJWTPresentableClaim claim, DigestAlgorithm digestAlgorithm) {
+    private String getHashedDisclosure(EAAClaim claim, DigestAlgorithm digestAlgorithm) {
         byte[] digest = DSSUtils.digest(digestAlgorithm, buildDisclosure(claim, digestAlgorithm).getBytes());
         return Base64Url.encode(digest);
     }
@@ -166,7 +161,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
      *         the digest algorithm
      * @return {@link String}
      */
-    public String buildDisclosure(SDJWTPresentableClaim claim, DigestAlgorithm digestAlgorithm) {
+    public String buildDisclosure(EAAClaim claim, DigestAlgorithm digestAlgorithm) {
         List<Object> data = new ArrayList<>();
         data.add(claim.getSalt());
         if (claim.getName() != null) {
@@ -188,4 +183,13 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
     public DigestAlgorithm getDigestAlgorithm() {
         return digestAlgorithm;
     }
+
+    private String getName(EAAClaim eaaClaim) {
+        Object name = eaaClaim.getName();
+        if (name instanceof String) {
+            return (String) name;
+        }
+        throw new IllegalArgumentException("Name of an EAAClaim shall be of String type!");
+    }
+
 }

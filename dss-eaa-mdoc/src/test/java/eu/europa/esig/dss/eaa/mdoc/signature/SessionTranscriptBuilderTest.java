@@ -8,6 +8,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.eaa.mdoc.creation.SessionTranscriptBuilder;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.DSSUtils;

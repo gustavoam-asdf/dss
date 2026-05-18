@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.eaa.mdoc.signature;
+package eu.europa.esig.dss.eaa.mdoc.creation;
 
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;

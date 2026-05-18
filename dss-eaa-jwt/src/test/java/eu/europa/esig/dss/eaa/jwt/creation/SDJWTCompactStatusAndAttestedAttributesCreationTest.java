@@ -2,9 +2,9 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTArrayPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTObjectPresentableClaim;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -36,30 +36,30 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         payloadBuilder.setIssuer("https://issuer.example.com");
         payloadBuilder.setIssuanceDate(issuanceDate);
         payloadBuilder.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("issuing_authority", "Public body"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("given_name", "Alice"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("family_name", "Doe"));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("vct", "https://nowina.lu/eaa/metadata"));
+        payloadBuilder.addClaim(new EAAClaim("issuing_authority", "Public body"));
+        payloadBuilder.addClaim(new EAAClaim("given_name", "Alice"));
+        payloadBuilder.addClaim(new EAAClaim("family_name", "Doe"));
+        payloadBuilder.addClaim(new EAAClaim("vct", "https://nowina.lu/eaa/metadata"));
         String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadBuilder.addClaim(new SDJWTPresentableClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
+        payloadBuilder.addClaim(new EAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
 
-        SDJWTObjectPresentableClaim status = new SDJWTObjectPresentableClaim("status");
-        status.addChild(new SDJWTPresentableClaim("type", "TokenStatusList"));
-        status.addChild(new SDJWTPresentableClaim("purpose", "revocation"));
-        status.addChild(new SDJWTPresentableClaim("index", 0));
-        status.addChild(new SDJWTPresentableClaim("uri", "https://nowina.lu/pki-factory/status"));
+        EAAClaimObject status = new EAAClaimObject("status");
+        status.addChild(new EAAClaim("type", "TokenStatusList"));
+        status.addChild(new EAAClaim("purpose", "revocation"));
+        status.addChild(new EAAClaim("index", 0));
+        status.addChild(new EAAClaim("uri", "https://nowina.lu/pki-factory/status"));
         payloadBuilder.addClaim(status);
 
-        SDJWTObjectPresentableClaim subAttrs = new SDJWTObjectPresentableClaim("subAttrs");
-        subAttrs.addChild(new SDJWTPresentableClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
-        SDJWTArrayPresentableClaim attrs = new SDJWTArrayPresentableClaim("attrs");
-        attrs.addElement(new SDJWTPresentableClaim("given_name"));
-        attrs.addElement(new SDJWTPresentableClaim("family_name"));
+        EAAClaimObject subAttrs = new EAAClaimObject("subAttrs");
+        subAttrs.addChild(new EAAClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
+        EAAClaimArray attrs = new EAAClaimArray("attrs");
+        attrs.addElement(new EAAClaim("given_name"));
+        attrs.addElement(new EAAClaim("family_name"));
         subAttrs.addChild(attrs);
         payloadBuilder.addClaim(subAttrs);
 
-        SDJWTObjectPresentableClaim placeOfBirth = new SDJWTObjectPresentableClaim("place_of_birth");
-        placeOfBirth.addChild(new SDJWTPresentableClaim("country", "LU"));
+        EAAClaimObject placeOfBirth = new EAAClaimObject("place_of_birth");
+        placeOfBirth.addChild(new EAAClaim("country", "LU"));
         payloadBuilder.addClaim(placeOfBirth);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();

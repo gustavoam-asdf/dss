@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
-import eu.europa.esig.dss.eaa.jwt.creation.claim.SDJWTPresentableClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -27,7 +27,7 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
 
     private Date issuanceDate;
     private Date expiration;
-    private SDJWTPresentableClaim claim;
+    private EAAClaim claim;
 
     @BeforeEach
     void init() {
@@ -35,7 +35,7 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
 
         SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
-        claim = new SDJWTPresentableClaim("test-key", "test-value", true, saltGenerator.generateSalt());
+        claim = new EAAClaim("test-key", "test-value", true, saltGenerator.generateSalt());
     }
 
     @Override
