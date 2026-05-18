@@ -105,14 +105,14 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             Objects.requireNonNull(claim.getName(), "The name of a claim cannot be null");
         }
         if (claim instanceof EAAClaimObject) {
-            return getSDJWTObjectPresentableClaimValue((EAAClaimObject) claim, digestAlgorithm);
+            return getEAAClaimObjectValue((EAAClaimObject) claim, digestAlgorithm);
         } else if (claim instanceof EAAClaimArray) {
-            return getSDJWTArrayPresentableClaimValue((EAAClaimArray) claim, digestAlgorithm);
+            return getEAAClaimArrayValue((EAAClaimArray) claim, digestAlgorithm);
         }
         return claim.getValue();
     }
 
-    private Object getSDJWTObjectPresentableClaimValue(final EAAClaimObject objectClaim, final DigestAlgorithm digestAlgorithm) {
+    private Object getEAAClaimObjectValue(final EAAClaimObject objectClaim, final DigestAlgorithm digestAlgorithm) {
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> selectivelyDisclosableClaims = new ArrayList<>();
 
@@ -120,7 +120,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             if (child.isSelectivelyDisclosable()) {
                 selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm));
             } else {
-                result.put(getName(objectClaim), getClaimValue(child, digestAlgorithm, objectClaim));
+                result.put(getName(child), getClaimValue(child, digestAlgorithm, objectClaim));
             }
         });
 
@@ -131,7 +131,7 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         return result;
     }
 
-    private Object getSDJWTArrayPresentableClaimValue(final EAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm) {
+    private Object getEAAClaimArrayValue(final EAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm) {
         List<Object> result = new ArrayList<>();
 
         arrayClaim.getElements().forEach(element -> {
