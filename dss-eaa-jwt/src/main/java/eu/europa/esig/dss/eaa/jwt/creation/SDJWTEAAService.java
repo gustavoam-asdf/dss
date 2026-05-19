@@ -3,7 +3,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Implementation of {@link EAAService} to create SD-JWT EAA
  */
-public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters, SDJWTPayloadBuilder, SDJWTEAAClaim> {
+public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters, SDJWTPayloadBuilder, SDJWTEAAClaim, SDJWTEAADisclosure> {
 
     private static final long serialVersionUID = 6514504397480840459L;
 
@@ -114,7 +113,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public ToBeSigned getDataToSignForKeybindingSignature(final DSSDocument eaa, final List<String> disclosures, final JAdESSignatureParameters signatureParameters) {
+    public ToBeSigned getDataToSignForKeybindingSignature(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final JAdESSignatureParameters signatureParameters) {
         return null;
     }
 
@@ -124,7 +123,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public DSSDocument createKeybindingSignature(final DSSDocument eea, final List<String> disclosures, final JAdESSignatureParameters signatureParameters,
+    public DSSDocument createKeybindingSignature(final DSSDocument eea, final List<SDJWTEAADisclosure> disclosures, final JAdESSignatureParameters signatureParameters,
                                                  final SignatureValue signatureValue) {
         return null;
     }
@@ -134,7 +133,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public List<String> getDisclosures(final List<SDJWTEAAClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
+    public List<SDJWTEAADisclosure> getDisclosures(final List<SDJWTEAAClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
         DigestAlgorithm digestAlgorithm = payloadBuilder.getDigestAlgorithm() == null ? DigestAlgorithm.SHA256 : payloadBuilder.getDigestAlgorithm();
 
         if (claims == null || claims.isEmpty()) {
@@ -147,7 +146,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public DSSDocument issuePresentation(final DSSDocument eaa, final List<String> disclosures, final DSSDocument keyBinding) {
+    public DSSDocument issuePresentation(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final DSSDocument keyBinding) {
         Objects.requireNonNull(eaa, "The EAA cannot be null!");
         JWSCompactSerializationParser compactParser = new JWSCompactSerializationParser(eaa);
         if (compactParser.isSupported()) {
@@ -163,7 +162,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public DSSDocument issuePresentation(final DSSDocument eaa, final List<String> disclosures) {
+    public DSSDocument issuePresentation(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures) {
         return issuePresentation(eaa, disclosures, null);
     }
 
@@ -172,22 +171,24 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         return issuePresentation(eaa, Collections.emptyList(), keybinding);
     }
 
-    private DSSDocument issueJWSCompactPresentation(final DSSDocument eaa, final List<String> disclosures, final DSSDocument keyBinding) {
+    private DSSDocument issueJWSCompactPresentation(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final DSSDocument keyBinding) {
         String signedEaa = transformToString(eaa);
 
-        String issuedEaa = signedEaa + "~";
+        StringBuilder issuedEaa = new StringBuilder(signedEaa).append("~");
         if (disclosures != null && !disclosures.isEmpty()) {
-            issuedEaa = issuedEaa + String.join("~", disclosures) + "~";
+            for (SDJWTEAADisclosure disclosure : disclosures) {
+                issuedEaa.append(disclosure.getDisclosure()).append("~");
+            }
         }
 
         if (keyBinding != null) {
-            issuedEaa = issuedEaa + transformToString(keyBinding);
+            issuedEaa.append(transformToString(keyBinding));
         }
 
-        return new InMemoryDocument(issuedEaa.getBytes());
+        return new InMemoryDocument(issuedEaa.toString().getBytes());
     }
 
-    private DSSDocument issueJWSJsonSerializationPresentation(JWSJsonSerializationObject jwsJsonSerializationObject, final List<String> disclosures, final DSSDocument keyBinding) {
+    private DSSDocument issueJWSJsonSerializationPresentation(JWSJsonSerializationObject jwsJsonSerializationObject, final List<SDJWTEAADisclosure> disclosures, final DSSDocument keyBinding) {
         if (jwsJsonSerializationObject.getSignatures().size() != 1) {
             throw new DSSException("The signed EAA can only contain one signature");
         }
@@ -201,7 +202,8 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         }
 
         if (disclosures != null && !disclosures.isEmpty()) {
-            unprotected.put(SDJWTConstants.DISCLOSURES, disclosures);
+            List<String> disclosureList = disclosures.stream().map(SDJWTEAADisclosure::getDisclosure).collect(Collectors.toList());
+            unprotected.put(SDJWTConstants.DISCLOSURES, disclosureList);
         }
 
         if (keyBinding != null) {

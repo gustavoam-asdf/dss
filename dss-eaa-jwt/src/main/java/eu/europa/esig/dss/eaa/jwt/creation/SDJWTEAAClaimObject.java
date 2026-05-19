@@ -1,14 +1,14 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
-
 public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject<SDJWTEAAClaim> {
+
+    private static final long serialVersionUID = 3602569321684484970L;
 
     private final List<String> decoyDigests = new ArrayList<>();
 
@@ -56,4 +56,5 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
     public List<String> getDecoyDigests() {
         return Collections.unmodifiableList(decoyDigests);
     }
+
 }

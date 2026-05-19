@@ -107,5 +107,21 @@ public class MdocConstants {
     /** Purpose of the status entry claim */
     public static final String STATUS_PURPOSE = "purpose";
 
+    // status_list and identifier_list elements currently defined in the draft of amendments to EU Implementing Acts
+
+    /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
+    public static final String STATUS_CERTIFICATE = "certificate";
+
+    /** Specifies a CBOR Object that contains a reference to an Identifier List */
+    public static final String IDENTIFIER_LIST = "identifier_list";
+
+    /** Unique identifier of the token */
+    public static final String IDENTIFIER_ID = "id";
+
+    /** String value that identifies the Identifier List containing the status information for the Token */
+    public static final String IDENTIFIER_URI = "uri";
+
+    /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
+    public static final String IDENTIFIER_CERTIFICATE = "certificate";
 
 }

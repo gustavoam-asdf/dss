@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
@@ -46,15 +47,15 @@ public class CBORArray extends AbstractCBORObject<Array> {
     }
 
     /**
-     * Constructor to create a CBORArray from a List of objects
+     * Constructor to create a CBORArray from a Collection of objects
      *
-     * @param list {@link List}
+     * @param collection {@link Collection}
      */
-    public CBORArray(final List<?> list) {
-        this(toArray(list));
+    public CBORArray(final Collection<?> collection) {
+        this(toArray(collection));
     }
 
-    private static Array toArray(final List<?> list) {
+    private static Array toArray(final Collection<?> list) {
         Array array = new Array(list.size());
         list.forEach(l -> array.add(CBORObjectFactory.toDataItem(l)));
         return array;

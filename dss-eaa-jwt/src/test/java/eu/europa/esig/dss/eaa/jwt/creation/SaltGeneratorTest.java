@@ -1,19 +1,20 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import eu.europa.esig.dss.eaa.common.creation.DefaultEAASaltGenerator;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jose4j.base64url.Base64Url;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SaltGeneratorTest {
+
     @Test
     void testDefaultSaltGenerator() {
-        SDJWTDefaultSaltGenerator defaultSaltGenerator = new SDJWTDefaultSaltGenerator();
+        DefaultEAASaltGenerator defaultSaltGenerator = new DefaultEAASaltGenerator();
 
-        final List<String> salts = new ArrayList<>();
+        final List<byte[]> salts = new ArrayList<>();
         for (int i = 0; i<1000; i++) {
             salts.add(defaultSaltGenerator.generateSalt());
         }
@@ -24,10 +25,11 @@ class SaltGeneratorTest {
 
     @Test
     void testSaltLength() {
-        SDJWTDefaultSaltGenerator defaultSaltGenerator = new SDJWTDefaultSaltGenerator();
-        assertEquals(SDJWTDefaultSaltGenerator.DEFAULT_SALT_LENGTH, Base64Url.decode(defaultSaltGenerator.generateSalt()).length);
+        DefaultEAASaltGenerator defaultSaltGenerator = new DefaultEAASaltGenerator();
+        assertEquals(DefaultEAASaltGenerator.DEFAULT_SALT_LENGTH, defaultSaltGenerator.generateSalt().length);
 
-        SDJWTDefaultSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator(20);
-        assertEquals(20, Base64Url.decode(saltGenerator.generateSalt()).length);
+        DefaultEAASaltGenerator saltGenerator = new DefaultEAASaltGenerator(20);
+        assertEquals(20, saltGenerator.generateSalt().length);
     }
+
 }

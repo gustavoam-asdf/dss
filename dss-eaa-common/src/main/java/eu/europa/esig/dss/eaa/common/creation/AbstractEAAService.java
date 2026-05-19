@@ -10,7 +10,7 @@ import java.util.Objects;
  * Abstract implementation of an EAA creation service.
  *
  */
-public abstract class AbstractEAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder, C extends EAAClaim> implements EAAService<SP, B, C> {
+public abstract class AbstractEAAService<SP extends SerializableSignatureParameters, B extends AbstractEAAPayloadBuilder, C extends EAAClaim, D extends EAADisclosure> implements EAAService<SP, B, C, D> {
 
     private static final long serialVersionUID = -8272997238108493534L;
 

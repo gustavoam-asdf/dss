@@ -1,8 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
+import eu.europa.esig.dss.eaa.common.creation.DefaultEAASaltGenerator;
+import eu.europa.esig.dss.eaa.common.creation.EAASaltGenerator;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
@@ -23,35 +22,35 @@ class SDJWTPayloadBuilderTest {
 
     @Test
     void buildSDJWTEAAPayload() throws JoseException {
-        SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
+        EAASaltGenerator saltGenerator = new DefaultEAASaltGenerator();
         final SDJWTPayloadBuilder builder = new SDJWTPayloadBuilder();
 
         final SDJWTEAAClaimObject addressClaim = new SDJWTEAAClaimObject("address");
         addressClaim.addChild(new SDJWTEAAClaim("country", "LU"));
         addressClaim.addChild(new SDJWTEAAClaim("street", "Test street"));
-        addressClaim.addChild(new SDJWTEAAClaim("city", "Luxembourg", true, saltGenerator.generateSalt()));
-        addressClaim.addChild(new SDJWTEAAClaim("postal-code", "4000", true, saltGenerator.generateSalt()));
+        addressClaim.addChild(new SDJWTEAAClaim("city", "Luxembourg", true, saltGenerator.generateSaltString()));
+        addressClaim.addChild(new SDJWTEAAClaim("postal-code", "4000", true, saltGenerator.generateSaltString()));
 
         final SDJWTEAAClaimObject subObject = new SDJWTEAAClaimObject("sub-addressClaim");
         subObject.addChild(new SDJWTEAAClaim("sub-key", "sub-value"));
-        subObject.addChild(new SDJWTEAAClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSalt()));
+        subObject.addChild(new SDJWTEAAClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSaltString()));
         addressClaim.addChild(subObject);
 
         final SDJWTEAAClaimArray pets = new SDJWTEAAClaimArray("pets");
-        pets.addElement(new SDJWTEAAClaim(null, "dog", true, saltGenerator.generateSalt()));
-        pets.addElement(new SDJWTEAAClaim(null, "cat", true, saltGenerator.generateSalt()));
+        pets.addElement(new SDJWTEAAClaim(null, "dog", true, saltGenerator.generateSaltString()));
+        pets.addElement(new SDJWTEAAClaim(null, "cat", true, saltGenerator.generateSaltString()));
         addressClaim.addChild(pets);
 
         final SDJWTEAAClaimArray nationalities = new SDJWTEAAClaimArray("nationalities");
         nationalities.addElement(new SDJWTEAAClaim("DE"));
         nationalities.addElement(new SDJWTEAAClaim("EN"));
         nationalities.addElement(new SDJWTEAAClaim("FR"));
-        nationalities.addElement(new SDJWTEAAClaim(null, "LU", true, saltGenerator.generateSalt()));
+        nationalities.addElement(new SDJWTEAAClaim(null, "LU", true, saltGenerator.generateSaltString()));
 
-        final SDJWTEAAClaimArray nationalities2 = new SDJWTEAAClaimArray("nationalities2", true, saltGenerator.generateSalt());
-        nationalities2.addElement(new SDJWTEAAClaim(null, "DE", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new SDJWTEAAClaim(null, "EN", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new SDJWTEAAClaim(null, "FR", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimArray nationalities2 = new SDJWTEAAClaimArray("nationalities2", true, saltGenerator.generateSaltString());
+        nationalities2.addElement(new SDJWTEAAClaim(null, "DE", true, saltGenerator.generateSaltString()));
+        nationalities2.addElement(new SDJWTEAAClaim(null, "EN", true, saltGenerator.generateSaltString()));
+        nationalities2.addElement(new SDJWTEAAClaim(null, "FR", true, saltGenerator.generateSaltString()));
 
         builder.addClaim(addressClaim);
         builder.addClaim(nationalities);
@@ -60,7 +59,7 @@ class SDJWTPayloadBuilderTest {
         final SDJWTEAAClaim nonSelectivelyDisclosableClaim = new SDJWTEAAClaim("visible-claim", "visible-value");
         builder.addClaim(nonSelectivelyDisclosableClaim);
 
-        final SDJWTEAAClaim selectivelyDisclosableClaim = new SDJWTEAAClaim("test-name", "test-value", true, saltGenerator.generateSalt());
+        final SDJWTEAAClaim selectivelyDisclosableClaim = new SDJWTEAAClaim("test-name", "test-value", true, saltGenerator.generateSaltString());
         builder.addClaim(selectivelyDisclosableClaim);
 
         final Date now = new Date();

@@ -1,28 +1,32 @@
-package eu.europa.esig.dss.eaa.jwt.creation;
+package eu.europa.esig.dss.eaa.common.creation;
 
 import java.security.SecureRandom;
 
-import org.jose4j.base64url.Base64Url;
-
-public class SDJWTDefaultSaltGenerator implements SDJWTSaltGenerator {
+public class DefaultEAASaltGenerator implements EAASaltGenerator {
 
     public static final int DEFAULT_SALT_LENGTH = 16;
 
     private final int saltLength;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    public SDJWTDefaultSaltGenerator() {
+    public DefaultEAASaltGenerator() {
         this(DEFAULT_SALT_LENGTH);
     }
 
-    public SDJWTDefaultSaltGenerator(int saltLength) {
+    public DefaultEAASaltGenerator(int saltLength) {
         this.saltLength = saltLength;
     }
 
     @Override
-    public String generateSalt() {
+    public byte[] generateSalt() {
         byte[] bytes = new byte[saltLength];
         secureRandom.nextBytes(bytes);
-        return Base64Url.encode(bytes);
+        return bytes;
     }
+
+    @Override
+    public String generateSaltString() {
+        return new String(generateSalt());
+    }
+
 }

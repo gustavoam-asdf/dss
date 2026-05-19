@@ -1,13 +1,14 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
-
 public class SDJWTEAAClaimArray extends SDJWTEAAClaim implements EAAClaimArray<SDJWTEAAClaim> {
+
+    private static final long serialVersionUID = -8747676551662684772L;
 
     private final List<String> decoyDigests = new ArrayList<>();
 

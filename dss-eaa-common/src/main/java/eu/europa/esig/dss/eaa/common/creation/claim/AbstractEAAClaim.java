@@ -1,26 +1,25 @@
 package eu.europa.esig.dss.eaa.common.creation.claim;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 /**
  * Abstract implementation of an EAA Claim
  */
 public abstract class AbstractEAAClaim implements EAAClaim {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1092016241135884116L;
 
+    /** Name of the claim element */
+    private final String name;
+
+    /** Value of the claim element */
     private final Object value;
-
-    private final Object name;
 
     /**
      * Constructor with the value and claim name
      *
-     * @param name {@link Object} the claim name
+     * @param name {@link String} the claim name
      * @param value {@link Object} the value of the claim
      */
-    protected AbstractEAAClaim(final Object name, final Object value) {
+    protected AbstractEAAClaim(final String name, final Object value) {
         this.name = name;
         this.value = value;
     }
@@ -28,10 +27,10 @@ public abstract class AbstractEAAClaim implements EAAClaim {
     /**
      * Gets the claim name
      *
-     * @return {@link Object}
+     * @return {@link String}
      */
     @Override
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
@@ -44,5 +43,6 @@ public abstract class AbstractEAAClaim implements EAAClaim {
     public Object getValue() {
         return value;
     }
+
 }
 

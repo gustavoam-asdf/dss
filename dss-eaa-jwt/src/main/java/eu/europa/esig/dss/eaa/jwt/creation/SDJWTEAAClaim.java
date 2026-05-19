@@ -1,16 +1,20 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.util.Objects;
-
 import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
+
+import java.util.Objects;
 
 /**
  * Implementation of an EAA SD-JWT Claim
  */
 public class SDJWTEAAClaim extends AbstractEAAClaim {
 
+    private static final long serialVersionUID = 4900197826207151947L;
+
+    /** Identifies whether the claim is selectively disclosable */
     private final boolean selectivelyDisclosable;
 
+    /** Salt of the selectively disclosable claim, when applicable */
     private final String salt;
 
     /**
@@ -68,7 +72,4 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
         return salt;
     }
 
-    public String getNameAsString() {
-        return (String) this.getName();
-    }
 }

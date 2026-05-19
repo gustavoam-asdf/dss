@@ -1,64 +1,18 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
-import java.util.Date;
-
 import eu.europa.esig.dss.model.DSSDocument;
 
-public abstract class EAAPayloadBuilder {
-    private Date issuanceDate;
-    private Date expirationDate;
-    private String issuer;
-    private String subject;
-    private boolean shortLived;
-    private boolean oneTime;
+/**
+ * Builds the EAA payload according to the provided configuration
+ *
+ */
+public interface EAAPayloadBuilder {
 
-    public Date getExpirationDate() {
-        return expirationDate;
-    }
+    /**
+     * Builds the EAA payload to be signed
+     *
+     * @return {@link DSSDocument}
+     */
+    DSSDocument buildPayload();
 
-    public void setExpirationDate(final Date expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
-    public Date getIssuanceDate() {
-        return issuanceDate;
-    }
-
-    public void setIssuanceDate(final Date issuanceDate) {
-        this.issuanceDate = issuanceDate;
-    }
-
-    public String getIssuer() {
-        return issuer;
-    }
-
-    public void setIssuer(final String issuer) {
-        this.issuer = issuer;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(final String subject) {
-        this.subject = subject;
-    }
-
-    public boolean isShortLived() {
-        return shortLived;
-    }
-
-    public void setShortLived(final boolean shortLived) {
-        this.shortLived = shortLived;
-    }
-
-    public boolean isOneTime() {
-        return oneTime;
-    }
-
-    public void setOneTime(final boolean oneTime) {
-        this.oneTime = oneTime;
-    }
-
-    public abstract DSSDocument buildPayload();
 }

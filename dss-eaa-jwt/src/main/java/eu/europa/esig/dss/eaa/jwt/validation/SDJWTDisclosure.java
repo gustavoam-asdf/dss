@@ -5,7 +5,6 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.eaa.Disclosure;
-import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 
@@ -52,11 +51,8 @@ public class SDJWTDisclosure extends Disclosure {
         if (!(saltObject instanceof String)) {
             throw new IllegalInputException("Invalid disclosure format! The first element of the array (salt) shall be of String type!");
         }
-        String saltB64Url = (String) saltObject;
-        if (!DSSJsonUtils.isBase64UrlEncoded(saltB64Url)) {
-            throw new IllegalInputException("Invalid disclosure format! The first element of the array (salt) shall be base64url encoded!");
-        }
-        this.salt = DSSJsonUtils.fromBase64Url(saltB64Url);
+        String saltString = (String) saltObject;
+        this.salt = saltString.getBytes();
 
         String claimName = null;
         Object claimValue;

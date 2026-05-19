@@ -3,6 +3,8 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.eaa.common.creation.DefaultEAASaltGenerator;
+import eu.europa.esig.dss.eaa.common.creation.EAASaltGenerator;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -33,8 +35,8 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
         issuanceDate = new Date();
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
 
-        SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
-        claim = new SDJWTEAAClaim("test-key", "test-value", true, saltGenerator.generateSalt());
+        EAASaltGenerator saltGenerator = new DefaultEAASaltGenerator();
+        claim = new SDJWTEAAClaim("test-key", "test-value", true, saltGenerator.generateSaltString());
     }
 
     @Override
@@ -59,7 +61,7 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
         ToBeSigned dataToSign = service.getDataToBeSigned(payloadBuilder, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
         DSSDocument signedDocument = service.signEAA(payloadBuilder, signatureParameters, signatureValue);
-        List<String> disclosures = service.getDisclosures(Collections.singletonList(claim), payloadBuilder);
+        List<SDJWTEAADisclosure> disclosures = service.getDisclosures(Collections.singletonList(claim), payloadBuilder);
         return service.issuePresentation(signedDocument, disclosures);
     }
 
