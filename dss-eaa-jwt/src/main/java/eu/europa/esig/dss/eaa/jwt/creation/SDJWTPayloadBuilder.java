@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
-import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -11,6 +11,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.utils.Utils;
 
 import org.jose4j.base64url.Base64Url;
@@ -18,6 +19,7 @@ import org.jose4j.json.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +31,22 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
     private DigestAlgorithm digestAlgorithm = DigestAlgorithm.SHA256;
     private SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
     private final Map<String, SDJWTEAAClaim> claims = new LinkedHashMap<>();
+    private final List<String> decoyDigests = new ArrayList<>();
 
     public void addClaim(final SDJWTEAAClaim claim) {
         claims.put(getName(claim), claim);
     }
 
-    public AbstractEAAClaim addClaim(final String name, final Object value) {
+    public SDJWTEAAClaim addClaim(final String name, final Object value) {
         return addClaim(name, value, false, null);
     }
 
-    public AbstractEAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable) {
+    public SDJWTEAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable) {
         String salt = isSelectivelyDisclosable ? saltGenerator.generateSalt() : null;
         return addClaim(name, value, isSelectivelyDisclosable, salt);
     }
 
-    public AbstractEAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
+    public SDJWTEAAClaim addClaim(final String name, final Object value, final boolean isSelectivelyDisclosable, final String salt) {
         SDJWTEAAClaim claim = new SDJWTEAAClaim(name, value, isSelectivelyDisclosable, salt);
         claims.put(getName(claim), claim);
         return claim;
@@ -63,11 +66,13 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
                 .filter(claim -> !claim.isSelectivelyDisclosable())
                 .collect(Collectors.toList());
 
-        if (!claimsSelectivelyDisclosable.isEmpty()) {
-            List<String> hashedDisclosures = new ArrayList<>();
-            for (final SDJWTEAAClaim claim : claimsSelectivelyDisclosable) {
-                hashedDisclosures.add(getHashedDisclosure(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm));
-            }
+        List<String> hashedDisclosures = new ArrayList<>();
+        for (final SDJWTEAAClaim claim : claimsSelectivelyDisclosable) {
+            hashedDisclosures.add(getHashedDisclosure(claim, digestAlgorithm == null ? DigestAlgorithm.SHA256 : digestAlgorithm));
+        }
+        hashedDisclosures.addAll(decoyDigests);
+        if (!hashedDisclosures.isEmpty()) {
+            Collections.shuffle(hashedDisclosures);
             map.put(SDJWTConstants._SD, hashedDisclosures);
         }
 
@@ -117,18 +122,39 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             return getEAAClaimArrayValue((SDJWTEAAClaimArray) claim, digestAlgorithm);
         } else if (claim.getValue() instanceof Map) {
             return getMapClaimValue(claim, (Map<?, ?>) claim.getValue(), digestAlgorithm, parentClaim);
-        } else if (claim.getValue() != null
-                && (claim.getValue().getClass().isArray() || claim.getValue() instanceof Collection)) {
-            // TODO
-            return null;
+        } else if (claim.getValue() instanceof Object[]) {
+            return this.getArrayClaimValue(claim, (Object[]) claim.getValue(), digestAlgorithm, parentClaim);
         }
 
         return claim.getValue();
     }
 
+    private Object getArrayClaimValue(final SDJWTEAAClaim claim, final Object[] array, final DigestAlgorithm digestAlgorithm, final SDJWTEAAClaim parentClaim) {
+        SDJWTEAAClaimArray claimArray = new SDJWTEAAClaimArray(claim.getNameAsString(), claim.isSelectivelyDisclosable(), claim.getSalt());
+
+        for (final Object item : array) {
+            if (item instanceof SDJWTEAAClaim) {
+                SDJWTEAAClaim sdjwteaaClaim = (SDJWTEAAClaim) item;
+                if (sdjwteaaClaim.getName() != null) {
+                    throw new DSSException("The name of an SD-JWT claim must be null in an array");
+                }
+                claimArray.addElement(sdjwteaaClaim);
+            } else if (item instanceof EAAClaim) {
+                EAAClaim eaaClaim = (EAAClaim) item;
+                if (eaaClaim.getName() != null) {
+                    throw new DSSException("The name of an SD-JWT claim must be null in an array");
+                }
+                claimArray.addElement(new SDJWTEAAClaim(eaaClaim.getValue()));
+            } else {
+                claimArray.addElement(new SDJWTEAAClaim(item));
+            }
+        }
+
+        return getClaimValue(claimArray, digestAlgorithm, parentClaim);
+    }
+
     private Object getMapClaimValue(final SDJWTEAAClaim claim, final Map<?, ?> map, final DigestAlgorithm digestAlgorithm, final SDJWTEAAClaim parentClaim) {
-        String claimName = (String) claim.getName();
-        SDJWTEAAClaimObject claimObject = new SDJWTEAAClaimObject(claimName, claim.isSelectivelyDisclosable(), claim.getSalt());
+        SDJWTEAAClaimObject claimObject = new SDJWTEAAClaimObject(claim.getNameAsString(), claim.isSelectivelyDisclosable(), claim.getSalt());
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof String)) {
                 throw new DSSException("The name of an SD-JWT claim must be of type String");
@@ -137,15 +163,18 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             String entryName = (String) entry.getKey();
             Object value = entry.getValue();
 
-            if (value instanceof AbstractEAAClaim) {
-                AbstractEAAClaim eaaClaim = (AbstractEAAClaim) value;
-                if (!(eaaClaim.getName() instanceof String)) {
-                    throw new DSSException("The name of an SD-JWT claim must be of type String");
-                }
-                if (Utils.areStringsEqual(entryName, (String) eaaClaim.getName())) {
+            if (value instanceof SDJWTEAAClaim) {
+                SDJWTEAAClaim sdjwteaaClaim = (SDJWTEAAClaim) value;
+                if (Utils.areStringsEqual(entryName, sdjwteaaClaim.getNameAsString())) {
                     throw new DSSException("For a Map, the key of the entry is expected to have the same value as the name of the claim");
                 }
-                claimObject.addChild((SDJWTEAAClaim) value);
+                claimObject.addChild(sdjwteaaClaim);
+            } else if (value instanceof EAAClaim) {
+                EAAClaim eaaClaim = (EAAClaim) value;
+                if (Utils.areStringsEqual(entryName, getName(eaaClaim))) {
+                    throw new DSSException("For a Map, the key of the entry is expected to have the same value as the name of the claim");
+                }
+                claimObject.addChild(new SDJWTEAAClaim(entryName, value, false, null));
             } else {
                 claimObject.addChild(new SDJWTEAAClaim(entryName, value, false, null));
             }
@@ -166,7 +195,9 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             }
         });
 
+        selectivelyDisclosableClaims.addAll(objectClaim.getDecoyDigests());
         if (!selectivelyDisclosableClaims.isEmpty()) {
+            Collections.shuffle(selectivelyDisclosableClaims);
             result.put(SDJWTConstants._SD, selectivelyDisclosableClaims);
         }
 
@@ -184,6 +215,12 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
             } else {
                 result.add(getClaimValue(element, digestAlgorithm, arrayClaim));
             }
+        });
+
+        arrayClaim.getDecoyDigests().forEach(decoyDigest -> {
+            Map<String, String> decoyElement = new LinkedHashMap<>();
+            decoyElement.put(SDJWTConstants.HASH, decoyDigest);
+            result.add(decoyElement);
         });
 
         return result;
@@ -226,12 +263,20 @@ public class SDJWTPayloadBuilder extends EAAPayloadBuilder {
         return digestAlgorithm;
     }
 
-    private String getName(SDJWTEAAClaim eaaClaim) {
+    public void addDecoyDigest(String digest) {
+        decoyDigests.add(digest);
+    }
+
+    public void addDecoyDigests(Collection<String> digests) {
+        decoyDigests.addAll(digests);
+    }
+
+    private String getName(EAAClaim eaaClaim) {
         Object name = eaaClaim.getName();
         if (name instanceof String) {
             return (String) name;
         }
-        throw new IllegalArgumentException("Name of an EAAClaim shall be of String type!");
+        throw new IllegalArgumentException("Name of an SD-JWT EAAClaim shall be of String type!");
     }
 
 }

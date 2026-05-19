@@ -67,4 +67,8 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
     public String getSalt() {
         return salt;
     }
+
+    public String getNameAsString() {
+        return (String) this.getName();
+    }
 }
