@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
+import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 
@@ -9,7 +10,7 @@ import java.util.Objects;
  * Abstract implementation of an EAA creation service.
  *
  */
-public abstract class AbstractEAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder> implements EAAService<SP, B> {
+public abstract class AbstractEAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder, C extends EAAClaim> implements EAAService<SP, B, C> {
 
     private static final long serialVersionUID = -8272997238108493534L;
 

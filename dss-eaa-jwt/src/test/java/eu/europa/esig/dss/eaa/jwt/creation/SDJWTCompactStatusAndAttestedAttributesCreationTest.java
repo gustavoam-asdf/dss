@@ -2,9 +2,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -36,30 +33,30 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         payloadBuilder.setIssuer("https://issuer.example.com");
         payloadBuilder.setIssuanceDate(issuanceDate);
         payloadBuilder.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
-        payloadBuilder.addClaim(new EAAClaim("issuing_authority", "Public body"));
-        payloadBuilder.addClaim(new EAAClaim("given_name", "Alice"));
-        payloadBuilder.addClaim(new EAAClaim("family_name", "Doe"));
-        payloadBuilder.addClaim(new EAAClaim("vct", "https://nowina.lu/eaa/metadata"));
+        payloadBuilder.addClaim(new SDJWTEAAClaim("issuing_authority", "Public body"));
+        payloadBuilder.addClaim(new SDJWTEAAClaim("given_name", "Alice"));
+        payloadBuilder.addClaim(new SDJWTEAAClaim("family_name", "Doe"));
+        payloadBuilder.addClaim(new SDJWTEAAClaim("vct", "https://nowina.lu/eaa/metadata"));
         String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadBuilder.addClaim(new EAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
+        payloadBuilder.addClaim(new SDJWTEAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
 
-        EAAClaimObject status = new EAAClaimObject("status");
-        status.addChild(new EAAClaim("type", "TokenStatusList"));
-        status.addChild(new EAAClaim("purpose", "revocation"));
-        status.addChild(new EAAClaim("index", 0));
-        status.addChild(new EAAClaim("uri", "https://nowina.lu/pki-factory/status"));
+        SDJWTEAAClaimObject status = new SDJWTEAAClaimObject("status");
+        status.addChild(new SDJWTEAAClaim("type", "TokenStatusList"));
+        status.addChild(new SDJWTEAAClaim("purpose", "revocation"));
+        status.addChild(new SDJWTEAAClaim("index", 0));
+        status.addChild(new SDJWTEAAClaim("uri", "https://nowina.lu/pki-factory/status"));
         payloadBuilder.addClaim(status);
 
-        EAAClaimObject subAttrs = new EAAClaimObject("subAttrs");
-        subAttrs.addChild(new EAAClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
-        EAAClaimArray attrs = new EAAClaimArray("attrs");
-        attrs.addElement(new EAAClaim("given_name"));
-        attrs.addElement(new EAAClaim("family_name"));
+        SDJWTEAAClaimObject subAttrs = new SDJWTEAAClaimObject("subAttrs");
+        subAttrs.addChild(new SDJWTEAAClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
+        SDJWTEAAClaimArray attrs = new SDJWTEAAClaimArray("attrs");
+        attrs.addElement(new SDJWTEAAClaim("given_name"));
+        attrs.addElement(new SDJWTEAAClaim("family_name"));
         subAttrs.addChild(attrs);
         payloadBuilder.addClaim(subAttrs);
 
-        EAAClaimObject placeOfBirth = new EAAClaimObject("place_of_birth");
-        placeOfBirth.addChild(new EAAClaim("country", "LU"));
+        SDJWTEAAClaimObject placeOfBirth = new SDJWTEAAClaimObject("place_of_birth");
+        placeOfBirth.addChild(new SDJWTEAAClaim("country", "LU"));
         payloadBuilder.addClaim(placeOfBirth);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();

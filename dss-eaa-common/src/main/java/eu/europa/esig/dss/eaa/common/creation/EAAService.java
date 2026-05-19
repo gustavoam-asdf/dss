@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
+import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
@@ -22,7 +23,7 @@ import java.util.List;
  * @param <B>
  *         implementation of EAA payload builder to the EAA format
  */
-public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder> extends Serializable {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadBuilder, C extends EAAClaim> extends Serializable {
 
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
@@ -66,12 +67,12 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
      * This method allows to create a list of disclosures for the provided claims based on the provided parameters
      *
      * @param claims
-     *         the list of {@link EAAClaim}s
+     *         the list of {@link C}s
      * @param payloadBuilder
      *         the payload builder
      * @return the list of disclosure as {@link String} Base64URL encoded
      */
-    List<String> getDisclosures(List<EAAClaim> claims, B payloadBuilder);
+    List<String> getDisclosures(List<C> claims, B payloadBuilder);
 
     DSSDocument issuePresentation(DSSDocument eaa, List<String> disclosures);
 

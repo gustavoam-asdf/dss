@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimArray;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
@@ -26,41 +26,41 @@ class SDJWTPayloadBuilderTest {
         SDJWTSaltGenerator saltGenerator = new SDJWTDefaultSaltGenerator();
         final SDJWTPayloadBuilder builder = new SDJWTPayloadBuilder();
 
-        final EAAClaimObject addressClaim = new EAAClaimObject("address");
-        addressClaim.addChild(new EAAClaim("country", "LU"));
-        addressClaim.addChild(new EAAClaim("street", "Test street"));
-        addressClaim.addChild(new EAAClaim("city", "Luxembourg", true, saltGenerator.generateSalt()));
-        addressClaim.addChild(new EAAClaim("postal-code", "4000", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimObject addressClaim = new SDJWTEAAClaimObject("address");
+        addressClaim.addChild(new SDJWTEAAClaim("country", "LU"));
+        addressClaim.addChild(new SDJWTEAAClaim("street", "Test street"));
+        addressClaim.addChild(new SDJWTEAAClaim("city", "Luxembourg", true, saltGenerator.generateSalt()));
+        addressClaim.addChild(new SDJWTEAAClaim("postal-code", "4000", true, saltGenerator.generateSalt()));
 
-        final EAAClaimObject subObject = new EAAClaimObject("sub-addressClaim");
-        subObject.addChild(new EAAClaim("sub-key", "sub-value"));
-        subObject.addChild(new EAAClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimObject subObject = new SDJWTEAAClaimObject("sub-addressClaim");
+        subObject.addChild(new SDJWTEAAClaim("sub-key", "sub-value"));
+        subObject.addChild(new SDJWTEAAClaim("sub-key-hidden", "sub-value-hidden", true, saltGenerator.generateSalt()));
         addressClaim.addChild(subObject);
 
-        final EAAClaimArray pets = new EAAClaimArray("pets");
-        pets.addElement(new EAAClaim(null, "dog", true, saltGenerator.generateSalt()));
-        pets.addElement(new EAAClaim(null, "cat", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimArray pets = new SDJWTEAAClaimArray("pets");
+        pets.addElement(new SDJWTEAAClaim(null, "dog", true, saltGenerator.generateSalt()));
+        pets.addElement(new SDJWTEAAClaim(null, "cat", true, saltGenerator.generateSalt()));
         addressClaim.addChild(pets);
 
-        final EAAClaimArray nationalities = new EAAClaimArray("nationalities");
-        nationalities.addElement(new EAAClaim("DE"));
-        nationalities.addElement(new EAAClaim("EN"));
-        nationalities.addElement(new EAAClaim("FR"));
-        nationalities.addElement(new EAAClaim(null, "LU", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimArray nationalities = new SDJWTEAAClaimArray("nationalities");
+        nationalities.addElement(new SDJWTEAAClaim("DE"));
+        nationalities.addElement(new SDJWTEAAClaim("EN"));
+        nationalities.addElement(new SDJWTEAAClaim("FR"));
+        nationalities.addElement(new SDJWTEAAClaim(null, "LU", true, saltGenerator.generateSalt()));
 
-        final EAAClaimArray nationalities2 = new EAAClaimArray("nationalities2", true, saltGenerator.generateSalt());
-        nationalities2.addElement(new EAAClaim(null, "DE", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new EAAClaim(null, "EN", true, saltGenerator.generateSalt()));
-        nationalities2.addElement(new EAAClaim(null, "FR", true, saltGenerator.generateSalt()));
+        final SDJWTEAAClaimArray nationalities2 = new SDJWTEAAClaimArray("nationalities2", true, saltGenerator.generateSalt());
+        nationalities2.addElement(new SDJWTEAAClaim(null, "DE", true, saltGenerator.generateSalt()));
+        nationalities2.addElement(new SDJWTEAAClaim(null, "EN", true, saltGenerator.generateSalt()));
+        nationalities2.addElement(new SDJWTEAAClaim(null, "FR", true, saltGenerator.generateSalt()));
 
         builder.addClaim(addressClaim);
         builder.addClaim(nationalities);
         builder.addClaim(nationalities2);
 
-        final EAAClaim nonSelectivelyDisclosableClaim = new EAAClaim("visible-claim", "visible-value");
+        final SDJWTEAAClaim nonSelectivelyDisclosableClaim = new SDJWTEAAClaim("visible-claim", "visible-value");
         builder.addClaim(nonSelectivelyDisclosableClaim);
 
-        final EAAClaim selectivelyDisclosableClaim = new EAAClaim("test-name", "test-value", true, saltGenerator.generateSalt());
+        final SDJWTEAAClaim selectivelyDisclosableClaim = new SDJWTEAAClaim("test-name", "test-value", true, saltGenerator.generateSalt());
         builder.addClaim(selectivelyDisclosableClaim);
 
         final Date now = new Date();

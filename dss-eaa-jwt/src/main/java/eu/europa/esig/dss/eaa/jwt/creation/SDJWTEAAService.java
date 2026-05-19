@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Implementation of {@link EAAService} to create SD-JWT EAA
  */
-public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters, SDJWTPayloadBuilder> {
+public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters, SDJWTPayloadBuilder, SDJWTEAAClaim> {
 
     private static final long serialVersionUID = 6514504397480840459L;
 
@@ -134,7 +134,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public List<String> getDisclosures(final List<EAAClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
+    public List<String> getDisclosures(final List<SDJWTEAAClaim> claims, final SDJWTPayloadBuilder payloadBuilder) {
         DigestAlgorithm digestAlgorithm = payloadBuilder.getDigestAlgorithm() == null ? DigestAlgorithm.SHA256 : payloadBuilder.getDigestAlgorithm();
 
         if (claims == null || claims.isEmpty()) {

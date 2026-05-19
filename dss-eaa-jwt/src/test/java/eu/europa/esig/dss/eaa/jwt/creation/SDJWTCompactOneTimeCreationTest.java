@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
+import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -40,12 +40,12 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
 
         payloadBuilder.setOneTime(true);
 
-        EAAClaimObject cnf = new EAAClaimObject("cnf");
-        EAAClaimObject jwk = new EAAClaimObject("jwk");
-        jwk.addChild(new EAAClaim("kty", "EC"));
-        jwk.addChild(new EAAClaim("crv", "P-256"));
-        jwk.addChild(new EAAClaim("x",  toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineX(), 32)));
-        jwk.addChild(new EAAClaim("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
+        SDJWTEAAClaimObject cnf = new SDJWTEAAClaimObject("cnf");
+        SDJWTEAAClaimObject jwk = new SDJWTEAAClaimObject("jwk");
+        jwk.addChild(new SDJWTEAAClaim("kty", "EC"));
+        jwk.addChild(new SDJWTEAAClaim("crv", "P-256"));
+        jwk.addChild(new SDJWTEAAClaim("x",  toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineX(), 32)));
+        jwk.addChild(new SDJWTEAAClaim("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
         cnf.addChild(jwk);
 
         payloadBuilder.addClaim(cnf);
