@@ -12,6 +12,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import org.jose4j.json.JsonUtil;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Creates a payload for an RFC 9901 SD-JWT VC token based on the provided parameters
+ *
+ */
 public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPayloadParameters, SDJWTEAAClaim, SDJWTEAADisclosure> {
 
     /** Builds disclosures */
@@ -44,8 +49,9 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
                 payloadParameters.getDigestAlgorithm() : DigestAlgorithm.SHA256;
         map.put(SDJWTConstants._SD_ALG, digestAlgorithm.getSDJWTId()); // TODO : ignore if no selectively disclosable claims present ?
 
+        final SecureRandom secureRandom = initSecureRandom(payloadParameters);
         final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters);
-        map.putAll(getEAAClaimObjectValue(payload, digestAlgorithm));
+        map.putAll(getEAAClaimObjectValue(payload, digestAlgorithm, secureRandom));
 
         InMemoryDocument result = new InMemoryDocument(JsonUtil.toJson(map).getBytes());
         result.setMimeType(MimeTypeEnum.JSON);
@@ -83,21 +89,31 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return payload;
     }
 
-    private Object getClaimValue(final SDJWTEAAClaim claim, final DigestAlgorithm digestAlgorithm) {
+    /**
+     * Instantiates a secure random required for the salt generation
+     *
+     * @param payloadParameters {@link SDJWTEAAPayloadParameters}
+     * @return {@link SecureRandom}
+     */
+    protected SecureRandom initSecureRandom(SDJWTEAAPayloadParameters payloadParameters) {
+        return secureRandomProvider.getSecureRandom(payloadParameters.toString().getBytes()); // TODO : to be improved
+    }
+
+    private Object getClaimValue(final SDJWTEAAClaim claim, final DigestAlgorithm digestAlgorithm, final SecureRandom secureRandom) {
         if (claim instanceof SDJWTEAAClaimObject) {
-            return getEAAClaimObjectValue((SDJWTEAAClaimObject) claim, digestAlgorithm);
+            return getEAAClaimObjectValue((SDJWTEAAClaimObject) claim, digestAlgorithm, secureRandom);
 
         } else if (claim instanceof SDJWTEAAClaimArray) {
-            return getEAAClaimArrayValue((SDJWTEAAClaimArray) claim, digestAlgorithm);
+            return getEAAClaimArrayValue((SDJWTEAAClaimArray) claim, digestAlgorithm, secureRandom);
 
         } else if (claim.getValue() instanceof Map) {
-            return getClaimValue(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm);
+            return getClaimValue(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, secureRandom);
 
         } else if (claim.getValue() instanceof Collection) {
-            return getClaimValue(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm);
+            return getClaimValue(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, secureRandom);
 
         } else if (claim.getValue() instanceof Object[]) {
-            return getClaimValue(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm);
+            return getClaimValue(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, secureRandom);
         }
 
         return claim.getValue();
@@ -146,37 +162,37 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return result;
     }
 
-    private Map<String, Object> getEAAClaimObjectValue(final SDJWTEAAClaimObject objectClaim, final DigestAlgorithm digestAlgorithm) {
+    private Map<String, Object> getEAAClaimObjectValue(final SDJWTEAAClaimObject objectClaim, final DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> selectivelyDisclosableClaims = new ArrayList<>();
 
         objectClaim.getChildren().forEach(child -> {
             if (child.isSelectivelyDisclosable()) {
-                selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm));
+                selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm, secureRandom));
             } else {
-                result.put(child.getName(), getClaimValue(child, digestAlgorithm));
+                result.put(child.getName(), getClaimValue(child, digestAlgorithm, secureRandom));
             }
         });
 
         selectivelyDisclosableClaims.addAll(objectClaim.getDecoyDigests());
         if (!selectivelyDisclosableClaims.isEmpty()) {
-            Collections.shuffle(selectivelyDisclosableClaims);
+            Collections.shuffle(selectivelyDisclosableClaims, secureRandom);
             result.put(SDJWTConstants._SD, selectivelyDisclosableClaims);
         }
 
         return result;
     }
 
-    private List<Object> getEAAClaimArrayValue(final SDJWTEAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm) {
+    private List<Object> getEAAClaimArrayValue(final SDJWTEAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
         List<Object> result = new ArrayList<>();
 
         arrayClaim.getElements().forEach(element -> {
             if (element.isSelectivelyDisclosable()) {
                 Map<String, String> hashedElement = new LinkedHashMap<>();
-                hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(element, digestAlgorithm));
+                hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(element, digestAlgorithm, secureRandom));
                 result.add(hashedElement);
             } else {
-                result.add(getClaimValue(element, digestAlgorithm));
+                result.add(getClaimValue(element, digestAlgorithm, secureRandom));
             }
         });
 
@@ -189,8 +205,8 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return result;
     }
 
-    private String getHashedDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm) {
-        byte[] digest = DSSUtils.digest(digestAlgorithm, buildDisclosure(claim, digestAlgorithm).getBytesToBeSigned());
+    private String getHashedDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
+        byte[] digest = DSSUtils.digest(digestAlgorithm, buildDisclosure(claim, digestAlgorithm, secureRandom).getBytesToBeSigned());
         return DSSJsonUtils.toBase64Url(digest);
     }
 
@@ -203,8 +219,13 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
      *         the digest algorithm
      * @return {@link String}
      */
-    public SDJWTEAADisclosure buildDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm) {
-        return disclosureBuilder.build(claim.getName(), getClaimValue(claim, digestAlgorithm), claim.getSalt());
+    public SDJWTEAADisclosure buildDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
+        String salt = claim.getSalt();
+        if (Utils.isStringEmpty(salt)) {
+            byte[] bytes = secureRandom.generateSeed(16); // 16 * 8 = 128 bits
+            salt = DSSJsonUtils.toBase64Url(bytes);
+        }
+        return disclosureBuilder.build(claim.getName(), getClaimValue(claim, digestAlgorithm, secureRandom), salt);
     }
 
     @Override
@@ -212,20 +233,21 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         DigestAlgorithm digestAlgorithm = payloadParameters.getDigestAlgorithm() != null ?
                 payloadParameters.getDigestAlgorithm() : DigestAlgorithm.SHA256;
 
-        SDJWTEAAClaimObject root = getRootPayloadObject(payloadParameters);
+        final List<SDJWTEAADisclosure> disclosures = new ArrayList<>();
 
-        List<SDJWTEAADisclosure> disclosures = new ArrayList<>();
-        collectDisclosures(root, digestAlgorithm, disclosures);
+        SecureRandom secureRandom = initSecureRandom(payloadParameters);
+        SDJWTEAAClaimObject root = getRootPayloadObject(payloadParameters);
+        collectDisclosures(root, digestAlgorithm, disclosures, secureRandom);
 
         return disclosures;
     }
 
     private void collectDisclosures(final SDJWTEAAClaim claim,
                                     final DigestAlgorithm digestAlgorithm,
-                                    final List<SDJWTEAADisclosure> disclosures) {
+                                    final List<SDJWTEAADisclosure> disclosures, SecureRandom secureRandom) {
 
         if (claim.isSelectivelyDisclosable()) {
-            disclosures.add(buildDisclosure(claim, digestAlgorithm));
+            disclosures.add(buildDisclosure(claim, digestAlgorithm, secureRandom));
         }
 
         // TODO : improve ?
@@ -234,7 +256,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             SDJWTEAAClaimObject objectClaim = (SDJWTEAAClaimObject) claim;
 
             for (SDJWTEAAClaim child : objectClaim.getChildren()) {
-                collectDisclosures(child, digestAlgorithm, disclosures);
+                collectDisclosures(child, digestAlgorithm, disclosures, secureRandom);
             }
 
         } else if (claim instanceof SDJWTEAAClaimArray) {
@@ -242,17 +264,17 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             SDJWTEAAClaimArray arrayClaim = (SDJWTEAAClaimArray) claim;
 
             for (SDJWTEAAClaim element : arrayClaim.getElements()) {
-                collectDisclosures(element, digestAlgorithm, disclosures);
+                collectDisclosures(element, digestAlgorithm, disclosures, secureRandom);
             }
 
         } else if (claim.getValue() instanceof Map) {
-            collectDisclosures(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, disclosures);
+            collectDisclosures(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, disclosures, secureRandom);
 
         } else if (claim.getValue() instanceof Collection) {
-            collectDisclosures(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, disclosures);
+            collectDisclosures(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, disclosures, secureRandom);
 
         } else if (claim.getValue() instanceof Object[]) {
-            collectDisclosures(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, disclosures);
+            collectDisclosures(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, disclosures, secureRandom);
         }
     }
 

@@ -60,6 +60,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
     @Override
     public ToBeSigned getDataToBeSigned(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters) {
+        ensurePayloadParameters(payloadParameters, signatureParameters);
         return getDataToBeSigned(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
     }
 
@@ -71,6 +72,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
     @Override
     public DSSDocument signEAA(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        ensurePayloadParameters(payloadParameters, signatureParameters);
         return signEAA(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
 
@@ -104,6 +106,19 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
         if (!Utils.areStringsEqual(SDJWTConstants.SIGNATURE_TYPE, signatureParameters.getSignatureType())) {
             throw new DSSException("Signature type must be " + SDJWTConstants.SIGNATURE_TYPE);
+        }
+    }
+
+    /**
+     * This method verifies validity and/or provides some mandatory payload parameters for EAA creation
+     *
+     * @param payloadParameters {@link SDJWTEAAPayloadParameters}
+     * @param signatureParameters {@link JAdESSignatureParameters}
+     */
+    protected void ensurePayloadParameters(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters) {
+        if (payloadParameters.getIssuanceDate() == null) {
+            payloadParameters.setIssuanceDate(signatureParameters.bLevel().getSigningDate());
+            LOG.debug("EAA issuance date is absent and was set to {}", signatureParameters.bLevel().getSigningDate());
         }
     }
 

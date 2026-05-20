@@ -2,8 +2,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 
-import java.util.Objects;
-
 /**
  * Implementation of an EAA SD-JWT Claim
  */
@@ -23,7 +21,7 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
      * @param value {@link Object} the value of the claim
      */
     public SDJWTEAAClaim(final Object value) {
-        this(null, value, false, null);
+        this(null, value);
     }
 
     /**
@@ -33,7 +31,20 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
      * @param value {@link Object} the value of the claim
      */
     public SDJWTEAAClaim(final String name, final Object value) {
-        this(name, value, false, null);
+        this(name, value, false);
+    }
+
+    /**
+     * Constructor with the claim name, value, selectively disclosable status.
+     * When the selectivelyDisclosable status is enabled but no salt is provided,
+     * the salt will be generated during the EAA Payload computation.
+     *
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the value of the claim
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     */
+    public SDJWTEAAClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
+        this(name, value, selectivelyDisclosable, null);
     }
 
     /**
@@ -46,10 +57,6 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
      */
     public SDJWTEAAClaim(final String name, final Object value, final boolean selectivelyDisclosable, final String salt) {
         super(name, value);
-
-        if (selectivelyDisclosable) {
-            Objects.requireNonNull(salt, "The salt cannot be null if selectivelyDisclosable is true");
-        }
         this.selectivelyDisclosable = selectivelyDisclosable;
         this.salt = salt;
     }
@@ -70,6 +77,16 @@ public class SDJWTEAAClaim extends AbstractEAAClaim {
      */
     public String getSalt() {
         return salt;
+    }
+
+    @Override
+    public String toString() {
+        return "SDJWTEAAClaim [" +
+                "name='" + getName() + '\'' +
+                ", value=" + getValue() +
+                ", selectivelyDisclosable=" + selectivelyDisclosable +
+                ", salt='" + salt + '\'' +
+                "]";
     }
 
 }

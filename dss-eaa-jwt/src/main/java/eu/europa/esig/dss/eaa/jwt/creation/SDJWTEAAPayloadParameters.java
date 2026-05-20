@@ -49,6 +49,20 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
+     * Adds a custom claim with the given name and a value.
+     * This method allows specifying whether the claim is to be made selectively disclosable.
+     * The claim will be added to the root level of the payload.
+     *
+     * @param name {@link String}
+     * @param value {@link Object}
+     * @param selectivelyDisclosable whether the claim is to be made selectively disclosable
+     */
+    public void addClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
+        Objects.requireNonNull(name, "Name cannot be null!");
+        addClaim(new SDJWTEAAClaim(name, value, selectivelyDisclosable));
+    }
+
+    /**
      * Gets arbitrary provided claims
      *
      * @return a list of {@link SDJWTEAAClaim}s
@@ -67,6 +81,14 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
 
     public List<String> getDecoyDigests() {
         return decoyDigests;
+    }
+
+    @Override
+    public String toString() {
+        return "SDJWTEAAPayloadParameters [" +
+                "claims=" + claims +
+                ", decoyDigests=" + decoyDigests +
+                "] " + super.toString();
     }
 
 }

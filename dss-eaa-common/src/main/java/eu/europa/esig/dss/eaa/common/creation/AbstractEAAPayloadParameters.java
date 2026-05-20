@@ -161,4 +161,17 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.oneTime = oneTime;
     }
 
+    @Override
+    public String toString() {
+        return "AbstractEAAPayloadParameters [" +
+                "digestAlgorithm=" + digestAlgorithm +
+                ", issuanceDate=" + issuanceDate +
+                ", expirationDate=" + expirationDate +
+                ", issuer='" + issuer + '\'' +
+                ", subject='" + subject + '\'' +
+                ", shortLived=" + shortLived +
+                ", oneTime=" + oneTime +
+                ']';
+    }
+
 }
