@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaimObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +43,10 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
     @Override
     public void addChild(final SDJWTEAAClaim child) {
         getChildren().add(child);
+    }
+
+    public void addChildren(final Collection<SDJWTEAAClaim> children) {
+        getChildren().addAll(children);
     }
 
     @Override

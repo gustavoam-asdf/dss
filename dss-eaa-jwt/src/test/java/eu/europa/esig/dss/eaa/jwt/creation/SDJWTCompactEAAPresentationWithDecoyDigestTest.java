@@ -1,15 +1,5 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.jose4j.base64url.Base64Url;
-import org.junit.jupiter.api.BeforeEach;
-
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
@@ -25,6 +15,15 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSUtils;
+import org.jose4j.base64url.Base64Url;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPresentationTestValidation {
 
@@ -42,12 +41,12 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
 
     @Override
     protected DSSDocument getSignedDocument() {
-        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
-        payloadBuilder.setIssuanceDate(issuanceDate);
-        payloadBuilder.setExpirationDate(expiration);
-        payloadBuilder.setIssuer("https://issuer.example.com");
+        SDJWTEAAPayloadParameters payloadParameters = new SDJWTEAAPayloadParameters();
+        payloadParameters.setIssuanceDate(issuanceDate);
+        payloadParameters.setExpirationDate(expiration);
+        payloadParameters.setIssuer("https://issuer.example.com");
 
-        payloadBuilder.addDecoyDigest(decoyDigest);
+        payloadParameters.addDecoyDigest(decoyDigest);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -59,9 +58,9 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        ToBeSigned dataToSign = service.getDataToBeSigned(payloadBuilder, signatureParameters);
+        ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-        DSSDocument signedDocument = service.signEAA(payloadBuilder, signatureParameters, signatureValue);
+        DSSDocument signedDocument = service.signEAA(payloadParameters, signatureParameters, signatureValue);
         return service.issuePresentation(signedDocument, Collections.emptyList());
     }
 

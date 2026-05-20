@@ -13,10 +13,8 @@ import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
-
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -41,12 +39,12 @@ class SDJWTCompactEAAPresentationSimpleTest extends AbstractSDJWTEAAPresentation
 
     @Override
     protected DSSDocument getSignedDocument() {
-        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
-        payloadBuilder.setIssuanceDate(issuanceDate);
-        payloadBuilder.setExpirationDate(expiration);
-        payloadBuilder.setIssuer("https://issuer.example.com");
+        SDJWTEAAPayloadParameters payloadParameters = new SDJWTEAAPayloadParameters();
+        payloadParameters.setIssuanceDate(issuanceDate);
+        payloadParameters.setExpirationDate(expiration);
+        payloadParameters.setIssuer("https://issuer.example.com");
 
-        payloadBuilder.addClaim(claim);
+        payloadParameters.addClaim(claim);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -58,10 +56,10 @@ class SDJWTCompactEAAPresentationSimpleTest extends AbstractSDJWTEAAPresentation
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        ToBeSigned dataToSign = service.getDataToBeSigned(payloadBuilder, signatureParameters);
+        ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-        DSSDocument signedDocument = service.signEAA(payloadBuilder, signatureParameters, signatureValue);
-        List<SDJWTEAADisclosure> disclosures = service.getDisclosures(Collections.singletonList(claim), payloadBuilder);
+        DSSDocument signedDocument = service.signEAA(payloadParameters, signatureParameters, signatureValue);
+        List<SDJWTEAADisclosure> disclosures = service.getDisclosures(payloadParameters);
         return service.issuePresentation(signedDocument, disclosures);
     }
 

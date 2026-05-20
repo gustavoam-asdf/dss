@@ -23,7 +23,7 @@ class SDJWTPayloadBuilderTest {
     @Test
     void buildSDJWTEAAPayload() throws JoseException {
         EAASaltGenerator saltGenerator = new DefaultEAASaltGenerator();
-        final SDJWTPayloadBuilder builder = new SDJWTPayloadBuilder();
+        final SDJWTEAAPayloadParameters parameters = new SDJWTEAAPayloadParameters();
 
         final SDJWTEAAClaimObject addressClaim = new SDJWTEAAClaimObject("address");
         addressClaim.addChild(new SDJWTEAAClaim("country", "LU"));
@@ -52,24 +52,25 @@ class SDJWTPayloadBuilderTest {
         nationalities2.addElement(new SDJWTEAAClaim(null, "EN", true, saltGenerator.generateSaltString()));
         nationalities2.addElement(new SDJWTEAAClaim(null, "FR", true, saltGenerator.generateSaltString()));
 
-        builder.addClaim(addressClaim);
-        builder.addClaim(nationalities);
-        builder.addClaim(nationalities2);
+        parameters.addClaim(addressClaim);
+        parameters.addClaim(nationalities);
+        parameters.addClaim(nationalities2);
 
         final SDJWTEAAClaim nonSelectivelyDisclosableClaim = new SDJWTEAAClaim("visible-claim", "visible-value");
-        builder.addClaim(nonSelectivelyDisclosableClaim);
+        parameters.addClaim(nonSelectivelyDisclosableClaim);
 
         final SDJWTEAAClaim selectivelyDisclosableClaim = new SDJWTEAAClaim("test-name", "test-value", true, saltGenerator.generateSaltString());
-        builder.addClaim(selectivelyDisclosableClaim);
+        parameters.addClaim(selectivelyDisclosableClaim);
 
         final Date now = new Date();
         final Date expiration = new Date(now.getTime() + 3600 * 1000);
-        builder.setIssuanceDate(now);
-        builder.setExpirationDate(expiration);
-        builder.setSubject("test-subject");
-        builder.setIssuer("test-issuer");
+        parameters.setIssuanceDate(now);
+        parameters.setExpirationDate(expiration);
+        parameters.setSubject("test-subject");
+        parameters.setIssuer("test-issuer");
 
-        final InMemoryDocument payload = (InMemoryDocument) builder.buildPayload();
+        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
+        final InMemoryDocument payload = (InMemoryDocument) payloadBuilder.buildPayload(parameters);
 
         assertTrue(DSSJsonUtils.isJsonDocument(payload));
 

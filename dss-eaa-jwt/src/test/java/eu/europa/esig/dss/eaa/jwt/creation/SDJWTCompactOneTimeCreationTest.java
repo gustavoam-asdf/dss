@@ -29,16 +29,16 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         signer = ECDSA_USER;
 
         // TODO : refactor the claims building
-        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
-        payloadBuilder.setIssuer("https://issuer.example.com");
-        payloadBuilder.addClaim("issuing_authority", "Public body");
-        payloadBuilder.addClaim("issuing_country", "LU");
-        payloadBuilder.addClaim("iss_reg_id", "XX12345");
-        payloadBuilder.addClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253());
-        payloadBuilder.addClaim("given_name", "Alice");
-        payloadBuilder.addClaim("family_name", "Doe");
+        SDJWTEAAPayloadParameters parameters = new SDJWTEAAPayloadParameters();
+        parameters.setIssuer("https://issuer.example.com");
+        parameters.addClaim("issuing_authority", "Public body");
+        parameters.addClaim("issuing_country", "LU");
+        parameters.addClaim("iss_reg_id", "XX12345");
+        parameters.addClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253());
+        parameters.addClaim("given_name", "Alice");
+        parameters.addClaim("family_name", "Doe");
 
-        payloadBuilder.setOneTime(true);
+        parameters.setOneTime(true);
 
         SDJWTEAAClaimObject cnf = new SDJWTEAAClaimObject("cnf");
         SDJWTEAAClaimObject jwk = new SDJWTEAAClaimObject("jwk");
@@ -48,7 +48,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         jwk.addChild(new SDJWTEAAClaim("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
         cnf.addChild(jwk);
 
-        payloadBuilder.addClaim(cnf);
+        parameters.addClaim(cnf);
 
         signer = GOOD_USER;
 
@@ -63,7 +63,8 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        DSSDocument payload = payloadBuilder.buildPayload();
+        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
+        DSSDocument payload = payloadBuilder.buildPayload(parameters);
         payload.setMimeType(null); // avoid cty
 
         ToBeSigned dataToSign = service.getDataToBeSigned(payload, signatureParameters);

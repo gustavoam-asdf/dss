@@ -7,20 +7,17 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.cose.COSEKeyFactory;
 import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadBuilder;
+import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
-import java.io.Serializable;
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,70 +26,7 @@ import java.util.Objects;
  * This class provides access to a configuration to build a payload for an ISO/IEC 18013-5 mdoc EAA.
  *
  */
-public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
-
-    /**
-     * Version of the "MobileSecurityObject" structure.
-     * Default : "1.0"
-     */
-    private String version = "1.0";
-
-    /**
-     * Contains the public part of the key pair used for mdoc authentication.
-     */
-    private PublicKey deviceKey;
-
-    /**
-     * (Optional) A map between namespaces and corresponding data element identifiers, the device key may sign.
-     */
-    private Map<String, List<String>> keyAuthorizationsMap;
-
-    /**
-     * (Optional) May contain extra info about the key. Positive integers for KeyInfo labels are RFU.
-     * If application specific extensions are present, they shall use negative integers for the labels.
-     */
-    private Map<Integer, Object> keyInfoMap;
-
-    /**
-     * The document type of the document and shall be identical to the DocType element in the mdoc response.
-     * Example: "org.iso.18013.5.1.mDL" for a document conformant to ISO/IEC 18013-5; or
-     *          "org.iso.23220.1.mID" for a document conformant to ISO/IEC 23220-2.
-     */
-    private String docType;
-
-    /**
-     * Defined when the signature of the MSO is created.
-     * NOTE: the value is taken from the corresponding signature parameters, if not provided explicitly.
-     */
-    private Date signed;
-
-    /**
-     * Contains a date before which the MSO is not yet valid.
-     * NOTE: the value is taken from the corresponding signature parameters, if not provided explicitly.
-     */
-    private Date validFrom;
-
-    /**
-     * Contains a date after which the MSO is no longer valid.
-     * NOTE: the value is taken from the "notAfter" of the signing certificate, if applicable and not provided explicitly.
-     */
-    private Date validUntil;
-
-    /**
-     * (Optional) Contains a date at which the issuing authority expects to re-sign the MSO
-     * (and potentially update the elements).
-     */
-    private Date expectedUpdate;
-
-    /**
-     * (Optional) Contains an "identifier_list".
-     */
-    private RevocationList identifierList;
-
-    /**
-     * (Optional) Contains a "status_list" as defined in IETF draft-ietf-oauth-status-list-20.
-     */
-    private RevocationList statusList;
+public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
 
     /**
      * The factory is used to build a representation of a COSE_Key from a {@code java.security.PublicKey}
@@ -106,84 +40,10 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
     private MdocDisclosureBuilder disclosureBuilder = new DefaultMdocDisclosureBuilder();
 
     /**
-     * Contains a map between element namespaces and corresponding selectively disclosable claims
-     */
-    private final Map<String, List<MdocEAAClaim>> claimsMap = new HashMap<>();
-
-    /**
      * Empty constructor
      */
     public MdocPayloadBuilder() {
         // empty
-    }
-
-    /**
-     * Sets version of the "MobileSecurityObject" structure.
-     * Default : "1.0" (structure conformant to ISO/IEC 18013-5:2021)
-     *
-     * @param version {@link String}
-     */
-    public void setVersion(String version) {
-        Objects.requireNonNull(version, "Version cannot be null!");
-        this.version = version;
-    }
-
-    /**
-     * Sets the digest algorithm used for a hash calculation of the selectively disclosable claims
-     * Default : DigestAlgorithm.SHA512
-     *
-     * @param digestAlgorithm {@link DigestAlgorithm}
-     */
-    public void setDigestAlgorithm(DigestAlgorithm digestAlgorithm) {
-        Objects.requireNonNull(digestAlgorithm, "DigestAlgorithm cannot be null!");
-        if (digestAlgorithm.getMSOId() == null) {
-            throw new IllegalArgumentException(String.format(
-                    "DigestAlgorithm '%s' is not supported for the ISO/IEC 18013-5 mdoc!", digestAlgorithm));
-        }
-        this.digestAlgorithm = digestAlgorithm;
-    }
-
-    /**
-     * Sets the public part of the key pair used for mdoc authentication.
-     *
-     * @param deviceKey {@link PublicKey}
-     */
-    public void setDeviceKey(PublicKey deviceKey) {
-        this.deviceKey = deviceKey;
-    }
-
-    /**
-     * Sets the certificate token used for mdoc authentication.
-     * NOTE: only the public key part of the token will be represented within the MSO object.
-     *
-     * @param certificateToken {@link CertificateToken}
-     */
-    public void setDeviceKey(CertificateToken certificateToken) {
-        if (certificateToken != null) {
-            setDeviceKey(certificateToken.getPublicKey());
-        }
-    }
-
-    /**
-     * (Optional) Sets a map between namespaces and corresponding data element identifiers, the device key may sign.
-     *
-     * @param keyAuthorizationsMap a map between namespaces and data element identifiers
-     */
-    public void setKeyAuthorizations(Map<String, List<String>> keyAuthorizationsMap) {
-        this.keyAuthorizationsMap = keyAuthorizationsMap;
-    }
-
-    /**
-     * (Optional) Sets a map containing extra information about the device key.
-     * Positive integers for KeyInfo labels are RFU. If application
-     * specific extensions are present, they shall use negative integers for the labels.
-     * NOTE: value of {@code Object} type is a subject to support by the implementation.
-     * It is recommended to use an implementation of a {@code eu.europa.esig.dss.cbades.cbor.CBORObject} if applicable.
-     *
-     * @param keyInfoMap a map between information identifiers and the corresponding data elements
-     */
-    public void setKeyInfo(Map<Integer, Object> keyInfoMap) {
-        this.keyInfoMap = keyInfoMap;
     }
 
     /**
@@ -208,43 +68,10 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
         this.disclosureBuilder = disclosureBuilder;
     }
 
-    /**
-     * Adds a new selectively disclosable claim.
-     * A hash will be computed for the claim.
-     *
-     * @param claim {@link MdocEAAClaim} to add
-     * @return {@link MdocEAAClaim} this added claim
-     */
-    public MdocEAAClaim addClaim(MdocEAAClaim claim) {
-        if (claim == null) {
-            return null;
-        }
-        final List<MdocEAAClaim> claims = claimsMap.computeIfAbsent(claim.getNamespace(), k -> new ArrayList<>());
-        if (claim.getDigestId() == null) {
-            claim.setDigestId(getNextDigestId(claims));
-        }
-        if (claim.getSalt() == null) {
-            claim.setSalt(saltGenerator.generateSalt());
-        }
-        claims.add(claim);
-        return claim;
-    }
-
-    private int getNextDigestId(List<MdocEAAClaim> claims) {
-        int digestId = claims.size() + 1;
-        while (isDigestIdUsed(digestId, claims)) {
-            ++digestId;
-        }
-        return digestId;
-    }
-
-    private boolean isDigestIdUsed(int digestId, List<MdocEAAClaim> claims) {
-        return claims.stream().anyMatch(c -> digestId == c.getDigestId());
-    }
-
     @Override
-    public DSSDocument buildPayload() {
-        CBORMap mso = buildMobileSecurityObject();
+    public DSSDocument buildPayload(MdocEAAPayloadParameters payloadParameters) {
+        Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
+        CBORMap mso = buildMobileSecurityObject(payloadParameters);
         CBORByteString msoBytes = CBORUtils.toCborBtsrWrappedTagged(mso);
         return new InMemoryDocument(CBORUtils.serializeCborObject(msoBytes));
     }
@@ -264,19 +91,19 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildMobileSecurityObject() {
-        Objects.requireNonNull(version, "Version cannot be null!");
-        Objects.requireNonNull(digestAlgorithm, "DigestAlgorithm cannot be null!");
-        Objects.requireNonNull(docType, "DocType cannot be null!");
+    protected CBORMap buildMobileSecurityObject(MdocEAAPayloadParameters payloadParameters) {
+        Objects.requireNonNull(payloadParameters.getVersion(), "Version cannot be null!");
+        Objects.requireNonNull(payloadParameters.getDigestAlgorithm(), "DigestAlgorithm cannot be null!");
+        Objects.requireNonNull(payloadParameters.getDocType(), "DocType cannot be null!");
 
         final CBORMap mso = new CBORMap();
-        mso.put(MdocConstants.VERSION, version);
-        mso.put(MdocConstants.DIGEST_ALGORITHM, digestAlgorithm.getMSOId());
-        mso.put(MdocConstants.VALUE_DIGEST, buildValueDigests());
-        mso.put(MdocConstants.DEVICE_KEY_INFO, buildDeviceKeyInfo());
-        mso.put(MdocConstants.DOC_TYPE, docType);
-        mso.put(MdocConstants.VALIDITY_INFO, buildValidityInfo());
-        CBORMap status = buildStatus();
+        mso.put(MdocConstants.VERSION, payloadParameters.getVersion());
+        mso.put(MdocConstants.DIGEST_ALGORITHM, payloadParameters.getDigestAlgorithm().getMSOId());
+        mso.put(MdocConstants.VALUE_DIGEST, buildValueDigests(payloadParameters.getClaimsMap(), payloadParameters.getDigestAlgorithm()));
+        mso.put(MdocConstants.DEVICE_KEY_INFO, buildDeviceKeyInfo(payloadParameters.getDeviceKey(), payloadParameters.getKeyAuthorizationsMap(), payloadParameters.getKeyInfoMap()));
+        mso.put(MdocConstants.DOC_TYPE, payloadParameters.getDocType());
+        mso.put(MdocConstants.VALIDITY_INFO, buildValidityInfo(payloadParameters));
+        CBORMap status = buildStatus(payloadParameters.getIdentifierList(), payloadParameters.getStatusList());
         if (status != null) {
             mso.put(MdocConstants.STATUS, status);
         }
@@ -293,7 +120,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildValueDigests() {
+    protected CBORMap buildValueDigests(Map<String, List<MdocEAAClaim>> claimsMap, DigestAlgorithm digestAlgorithm) {
         if (Utils.isMapEmpty(claimsMap)) {
             throw new IllegalArgumentException("No claims has been provided! Please use method #addClaim to enrich the list.");
         }
@@ -301,7 +128,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
         for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : claimsMap.entrySet()) {
             String namespace = claimsEntry.getKey();
             List<MdocEAAClaim> claims = claimsEntry.getValue();
-            valueDigests.put(namespace, buildDigestIDs(claims));
+            valueDigests.put(namespace, buildDigestIDs(claims, digestAlgorithm));
         }
         return valueDigests;
     }
@@ -316,7 +143,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims) {
+    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims, DigestAlgorithm digestAlgorithm) {
         if (Utils.isCollectionEmpty(claims)) {
             throw new IllegalStateException("The list of claims is empty!");
         }
@@ -339,15 +166,15 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildDeviceKeyInfo() {
+    protected CBORMap buildDeviceKeyInfo(PublicKey deviceKey, Map<String, List<String>> keyAuthorizationsMap, Map<Integer, Object> keyInfoMap) {
         Objects.requireNonNull(deviceKey, "DeviceKey shall be provided for an mdoc payload building!");
         final CBORMap deviceKeyInfo = new CBORMap();
         deviceKeyInfo.put(MdocConstants.DEVICE_KEY, coseKeyFactory.create(deviceKey));
-        CBORMap keyAuthorizations = buildKeyAuthorizations();
+        CBORMap keyAuthorizations = buildKeyAuthorizations(keyAuthorizationsMap);
         if (keyAuthorizations != null && !keyAuthorizations.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_AUTHORIZATIONS, keyAuthorizations);
         }
-        CBORMap keyInfo = buildKeyInfo();
+        CBORMap keyInfo = buildKeyInfo(keyInfoMap);
         if (keyInfo != null && !keyInfo.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_INFO, keyInfo);
         }
@@ -368,7 +195,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildKeyAuthorizations() {
+    protected CBORMap buildKeyAuthorizations(Map<String, List<String>> keyAuthorizationsMap) {
         if (Utils.isMapEmpty(keyAuthorizationsMap)) {
             return null;
         }
@@ -389,7 +216,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildKeyInfo() {
+    protected CBORMap buildKeyInfo(Map<Integer, Object> keyInfoMap) {
         if (Utils.isMapEmpty(keyInfoMap)) {
             return null;
         }
@@ -411,17 +238,17 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildValidityInfo() {
-        Objects.requireNonNull(signed, "signed date cannot be null!");
-        Objects.requireNonNull(validFrom, "validFrom date cannot be null!");
-        Objects.requireNonNull(validUntil, "validUntil date cannot be null!");
+    protected CBORMap buildValidityInfo(MdocEAAPayloadParameters payloadParameters) {
+        Objects.requireNonNull(payloadParameters.getSigned(), "signed date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getValidFrom(), "validFrom date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getValidUntil(), "validUntil date cannot be null!");
 
         final CBORMap validityInfo = new CBORMap();
-        validityInfo.put(MdocConstants.SIGNED, signed);
-        validityInfo.put(MdocConstants.VALID_FROM, validFrom);
-        validityInfo.put(MdocConstants.VALID_UNTIL, validUntil);
-        if (expectedUpdate != null) {
-            validityInfo.put(MdocConstants.EXPECTED_UPDATE, expectedUpdate);
+        validityInfo.put(MdocConstants.SIGNED, payloadParameters.getSigned());
+        validityInfo.put(MdocConstants.VALID_FROM, payloadParameters.getValidFrom());
+        validityInfo.put(MdocConstants.VALID_UNTIL, payloadParameters.getValidUntil());
+        if (payloadParameters.getExpectedUpdate() != null) {
+            validityInfo.put(MdocConstants.EXPECTED_UPDATE, payloadParameters.getExpectedUpdate());
         }
         return validityInfo;
     }
@@ -440,17 +267,17 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildStatus() {
+    protected CBORMap buildStatus(EAARevocationList identifierList, EAARevocationList statusList) {
         // TODO : review with the new revision of ISO/IEC 18013-5
         if (identifierList == null && statusList == null) {
             return null;
         }
         final CBORMap status = new CBORMap();
-        CBORMap identifierListInfo = buildIdentifierListInfo();
+        CBORMap identifierListInfo = buildIdentifierListInfo(identifierList);
         if (identifierListInfo != null) {
             status.put(MdocConstants.IDENTIFIER_LIST, identifierListInfo);
         }
-        CBORMap statusListInfo = buildStatusListInfo();
+        CBORMap statusListInfo = buildStatusListInfo(statusList);
         if (statusListInfo != null) {
             status.put(MdocConstants.STATUS_LIST, statusListInfo);
         }
@@ -470,7 +297,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildIdentifierListInfo() {
+    protected CBORMap buildIdentifierListInfo(EAARevocationList identifierList) {
         if (identifierList == null) {
             return null;
         }
@@ -496,7 +323,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildStatusListInfo() {
+    protected CBORMap buildStatusListInfo(EAARevocationList statusList) {
         if (statusList == null) {
             return null;
         }
@@ -509,75 +336,10 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder {
         return statusListInfo;
     }
 
-    /**
-     * Represents a status_list structure as specified in clause 6 of IETF draft-ietf-oauth-status-list-13.
-     */
-    protected class RevocationList implements Serializable {
-
-        private static final long serialVersionUID = -8538801549100678146L;
-
-        /** Non-negative integer representing the index check for status information in the Status List */
-        private final int index;
-
-        /** String value that identifies the Status List Token containing the status information */
-        private final String uri;
-
-        /** (Optional) Certificate containing the public key that signed or sealed the top-level certificate in the MSO revocation list structure */
-        private final CertificateToken certificate;
-
-        /**
-         * Default constructor
-         *
-         * @param index integer
-         * @param uri {@link String}
-         */
-        protected RevocationList(final int index, final String uri) {
-            this(index, uri, null);
-        }
-
-        /**
-         * Constructor with a certificate
-         *
-         * @param index integer
-         * @param uri {@link String}
-         */
-        protected RevocationList(final int index, final String uri, final CertificateToken certificate) {
-            Objects.requireNonNull(uri, "Uri cannot be null!");
-            if (index < 0) {
-                throw new IllegalArgumentException("Index shall be a non-negative integer!");
-            }
-            this.index = index;
-            this.uri = uri;
-            this.certificate = certificate;
-        }
-
-        /**
-         * Gets index of the token within a status list
-         *
-         * @return non-negative integer
-         */
-        public int getIndex() {
-            return index;
-        }
-
-        /**
-         * Gets URI of the status list
-         *
-         * @return {@link String}
-         */
-        public String getUri() {
-            return uri;
-        }
-
-        /**
-         * Gets a certificate
-         *
-         * @return {@link CertificateToken}
-         */
-        public CertificateToken getCertificate() {
-            return certificate;
-        }
-
+    @Override
+    public List<MdocEAADisclosure> buildDisclosures(MdocEAAPayloadParameters payloadParameters) {
+        // TODO : implement
+        return Collections.emptyList();
     }
 
 }

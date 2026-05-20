@@ -29,23 +29,23 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         Date issuanceDate = new Date();
 
         // TODO : refactor the claims building
-        SDJWTPayloadBuilder payloadBuilder = new SDJWTPayloadBuilder();
-        payloadBuilder.setIssuer("https://issuer.example.com");
-        payloadBuilder.setIssuanceDate(issuanceDate);
-        payloadBuilder.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
-        payloadBuilder.addClaim(new SDJWTEAAClaim("issuing_authority", "Public body"));
-        payloadBuilder.addClaim(new SDJWTEAAClaim("given_name", "Alice"));
-        payloadBuilder.addClaim(new SDJWTEAAClaim("family_name", "Doe"));
-        payloadBuilder.addClaim(new SDJWTEAAClaim("vct", "https://nowina.lu/eaa/metadata"));
+        SDJWTEAAPayloadParameters payloadParameters = new SDJWTEAAPayloadParameters();
+        payloadParameters.setIssuer("https://issuer.example.com");
+        payloadParameters.setIssuanceDate(issuanceDate);
+        payloadParameters.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
+        payloadParameters.addClaim(new SDJWTEAAClaim("issuing_authority", "Public body"));
+        payloadParameters.addClaim(new SDJWTEAAClaim("given_name", "Alice"));
+        payloadParameters.addClaim(new SDJWTEAAClaim("family_name", "Doe"));
+        payloadParameters.addClaim(new SDJWTEAAClaim("vct", "https://nowina.lu/eaa/metadata"));
         String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadBuilder.addClaim(new SDJWTEAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
+        payloadParameters.addClaim(new SDJWTEAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
 
         SDJWTEAAClaimObject status = new SDJWTEAAClaimObject("status");
         status.addChild(new SDJWTEAAClaim("type", "TokenStatusList"));
         status.addChild(new SDJWTEAAClaim("purpose", "revocation"));
         status.addChild(new SDJWTEAAClaim("index", 0));
         status.addChild(new SDJWTEAAClaim("uri", "https://nowina.lu/pki-factory/status"));
-        payloadBuilder.addClaim(status);
+        payloadParameters.addClaim(status);
 
         SDJWTEAAClaimObject subAttrs = new SDJWTEAAClaimObject("subAttrs");
         subAttrs.addChild(new SDJWTEAAClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
@@ -53,11 +53,11 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         attrs.addElement(new SDJWTEAAClaim("given_name"));
         attrs.addElement(new SDJWTEAAClaim("family_name"));
         subAttrs.addChild(attrs);
-        payloadBuilder.addClaim(subAttrs);
+        payloadParameters.addClaim(subAttrs);
 
         SDJWTEAAClaimObject placeOfBirth = new SDJWTEAAClaimObject("place_of_birth");
         placeOfBirth.addChild(new SDJWTEAAClaim("country", "LU"));
-        payloadBuilder.addClaim(placeOfBirth);
+        payloadParameters.addClaim(placeOfBirth);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(issuanceDate);
@@ -71,9 +71,9 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
 
         SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
 
-        ToBeSigned dataToSign = service.getDataToBeSigned(payloadBuilder, signatureParameters);
+        ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, signatureParameters);
         SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-        DSSDocument signedDocument = service.signEAA(payloadBuilder, signatureParameters, signatureValue);
+        DSSDocument signedDocument = service.signEAA(payloadParameters, signatureParameters, signatureValue);
         DSSDocument eaaPresentation = service.issuePresentation(signedDocument, Collections.emptyList());
         return eaaPresentation;
     }

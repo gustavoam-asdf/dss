@@ -22,11 +22,11 @@ import java.util.List;
  * @param <B>
  *         implementation of EAA payload builder to the EAA format
  */
-public interface EAAService<SP extends SerializableSignatureParameters, B extends AbstractEAAPayloadBuilder, C extends EAAClaim, D extends EAADisclosure> extends Serializable {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure> extends Serializable {
 
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
-    ToBeSigned getDataToBeSigned(B payloadBuilder, SP signatureParameters);
+    ToBeSigned getDataToBeSigned(B payloadParameters, SP signatureParameters);
 
     /**
      * Signs an EAA with the provided signatureValue.
@@ -44,7 +44,7 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
     /**
      * Signs the payload with the provided signatureValue.
      *
-     * @param payloadBuilder
+     * @param payloadParameters
      *            the payload builder
      * @param signatureParameters
      *            set of the driving signing parameters
@@ -52,7 +52,15 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
      *            the signature value to incorporate
      * @return the signed EAA
      */
-    DSSDocument signEAA(B payloadBuilder, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument signEAA(B payloadParameters, SP signatureParameters, SignatureValue signatureValue);
+
+    /**
+     * Gets a list of disclosures for all selectively disclosable claims defined within the parameters
+     *
+     * @param payloadParameters {@link EAAPayloadParameters}
+     * @return a list of {@link EAADisclosure}s
+     */
+    List<D> getDisclosures(final B payloadParameters);
 
     ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, SP signatureParameters);
 
@@ -61,17 +69,6 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
     DSSDocument createKeybindingSignature(DSSDocument eea, SP signatureParameters, SignatureValue signatureValue);
 
     DSSDocument createKeybindingSignature(DSSDocument eea, List<D> disclosures, SP signatureParameters, SignatureValue signatureValue);
-
-    /**
-     * This method allows to create a list of disclosures for the provided claims based on the provided parameters
-     *
-     * @param claims
-     *         the list of {@link C}s
-     * @param payloadBuilder
-     *         the payload builder
-     * @return the list of {@link EAADisclosure}s
-     */
-    List<D> getDisclosures(List<C> claims, B payloadBuilder);
 
     DSSDocument issuePresentation(DSSDocument eaa, List<D> disclosures);
 

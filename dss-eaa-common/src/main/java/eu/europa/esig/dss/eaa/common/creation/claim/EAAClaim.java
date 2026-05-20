@@ -7,6 +7,6 @@ import java.io.Serializable;
  */
 public interface EAAClaim extends Serializable {
 
-    Object getName();
+    String getName();
     Object getValue();
 }

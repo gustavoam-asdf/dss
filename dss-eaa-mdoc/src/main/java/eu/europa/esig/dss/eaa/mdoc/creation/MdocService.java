@@ -4,6 +4,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
+import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -16,6 +17,7 @@ import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +25,7 @@ import java.util.Objects;
  * This service is used to handle creation and issuance workflow for ISO/IEC 18013-5 mdoc EAAs and presentations
  *
  */
-public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, MdocPayloadBuilder, MdocEAAClaim, MdocEAADisclosure> {
+public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
 
     private static final long serialVersionUID = 6514504397480840459L;
 
@@ -47,10 +49,10 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     }
 
     @Override
-    public ToBeSigned getDataToBeSigned(MdocPayloadBuilder payloadBuilder, CBAdESSignatureParameters signatureParameters) {
-        Objects.requireNonNull(payloadBuilder, "PayloadBuilder cannot be null!");
+    public ToBeSigned getDataToBeSigned(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters) {
+        Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
-        return getDataToBeSignedNoCheck(payloadBuilder.buildPayload(), signatureParameters);
+        return getDataToBeSignedNoCheck(payloadBuilder.buildPayload(payloadParameters), signatureParameters);
     }
 
     /**
@@ -73,10 +75,10 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     }
 
     @Override
-    public DSSDocument signEAA(MdocPayloadBuilder payloadBuilder, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
-        Objects.requireNonNull(payloadBuilder, "PayloadBuilder cannot be null!");
+    public DSSDocument signEAA(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
+        Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
-        return signDocumentNoCheck(payloadBuilder.buildPayload(), signatureParameters, signatureValue);
+        return signDocumentNoCheck(payloadBuilder.buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
 
     /**
@@ -138,6 +140,12 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     }
 
     @Override
+    public List<MdocEAADisclosure> getDisclosures(MdocEAAPayloadParameters payloadParameters) {
+        // TODO : implement
+        return Collections.emptyList();
+    }
+
+    @Override
     public ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, CBAdESSignatureParameters signatureParameters) {
         return null;
     }
@@ -158,8 +166,8 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     }
 
     @Override
-    public List<MdocEAADisclosure> getDisclosures(List<MdocEAAClaim> claims, MdocPayloadBuilder payloadBuilder) {
-        return List.of();
+    protected EAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> initDefaultPayloadBuilder() {
+        return new MdocPayloadBuilder();
     }
 
     @Override
