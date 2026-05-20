@@ -14,19 +14,74 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
     private final List<String> decoyDigests = new ArrayList<>();
 
     /**
-     * Default constructor
+     * Create a {@link SDJWTEAAClaimObject}. The name of the claim will be null.
+     *
+     * @return the created {@link SDJWTEAAClaim}
      */
-    public SDJWTEAAClaimObject() {
-        this(null, false, null);
+    public static SDJWTEAAClaimObject create() {
+        return new SDJWTEAAClaimObject(null, false);
     }
 
     /**
-     * Constructor with the claim name
+     * Create a {@link SDJWTEAAClaim} with the provided name
      *
-     * @param name {@link String} the claim name
+     * @param name {@link String} the name of the claim
+     * @return the created {@link SDJWTEAAClaim}
      */
-    public SDJWTEAAClaimObject(final String name) {
-        this(name, false, null);
+    public static SDJWTEAAClaimObject create(final String name) {
+        return new SDJWTEAAClaimObject(name, false);
+    }
+
+    /**
+     * Create a selectively disclosable {@link SDJWTEAAClaimObject}. The name of the claim will be null.
+     *
+     * @return the created {@link SDJWTEAAClaim}
+     */
+    public static SDJWTEAAClaimObject createSelectivelyDisclosable() {
+        return new SDJWTEAAClaimObject(null, true);
+    }
+
+    /**
+     * Create a selectively disclosable {@link SDJWTEAAClaimObject} with the provided salt. The name of the claim will be null.
+     *
+     * @param salt {@link String} the salt value
+     * @return the created {@link SDJWTEAAClaim}
+     */
+    public static SDJWTEAAClaimObject createSelectivelyDisclosableWithSalt(final String salt) {
+        return new SDJWTEAAClaimObject(null, true, salt);
+    }
+
+    /**
+     * Create a selectively disclosable {@link SDJWTEAAClaim} with the provided name
+     *
+     * @param name {@link String} the name of the claim
+     * @return the created {@link SDJWTEAAClaim}
+     */
+    public static SDJWTEAAClaimObject createSelectivelyDisclosable(final String name) {
+        return new SDJWTEAAClaimObject(name, true);
+    }
+
+    /**
+     * Create a selectively disclosable {@link SDJWTEAAClaim} with the provided name and salt
+     *
+     * @param name {@link String} the name of the claim
+     * @param salt {@link String} the salt value
+     * @return the created {@link SDJWTEAAClaim}
+     */
+    public static SDJWTEAAClaimObject createSelectivelyDisclosableWithSalt(final String name, final String salt) {
+        return new SDJWTEAAClaimObject(name, true, salt);
+    }
+
+    /**
+     * Constructor with the claim name and selectively disclosable status.
+     * When the selectivelyDisclosable status is enabled but no salt is provided,
+     * the salt will be generated during the EAA Payload computation.
+     *
+     * @param name  {@link String} the claim name
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     */
+    protected SDJWTEAAClaimObject(final String name, final boolean selectivelyDisclosable) {
+        super(name, new ArrayList<SDJWTEAAClaim>(), selectivelyDisclosable, null);
     }
 
     /**
@@ -36,7 +91,7 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
      */
-    public SDJWTEAAClaimObject(final String name, final boolean selectivelyDisclosable, final String salt) {
+    protected SDJWTEAAClaimObject(final String name, final boolean selectivelyDisclosable, final String salt) {
         super(name, new ArrayList<SDJWTEAAClaim>(), selectivelyDisclosable, salt);
     }
 

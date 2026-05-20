@@ -14,7 +14,7 @@ import java.util.Objects;
 public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
 
     /** Map of custom claims */
-    private final SDJWTEAAClaimObject claims = new SDJWTEAAClaimObject();
+    private final List<SDJWTEAAClaim> claims = new ArrayList<>();
 
     /** Decoy digest used to obscure amount of actually disclosed data claims */
     private final List<String> decoyDigests = new ArrayList<>(); // TODO : review
@@ -33,7 +33,7 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
      */
     public void addClaim(final SDJWTEAAClaim claim) {
         Objects.requireNonNull(claim, "Claim cannot be null!");
-        claims.addChild(claim);
+        claims.add(claim);
     }
 
     /**
@@ -44,8 +44,18 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
      * @param value {@link Object}
      */
     public void addClaim(final String name, final Object value) {
-        Objects.requireNonNull(name, "Name cannot be null!");
-        addClaim(new SDJWTEAAClaim(name, value));
+        addClaim(SDJWTEAAClaim.create(name, value));
+    }
+
+    /**
+     * Adds a selectively disclosable custom claim with the given name and a value.
+     * The claim will be added to the root level of the payload.
+     *
+     * @param name {@link String}
+     * @param value {@link Object}
+     */
+    public void addSelectivelyDisclosableClaim(final String name, final Object value) {
+        addClaim(SDJWTEAAClaim.createSelectivelyDisclosable(name, value));
     }
 
     /**
@@ -58,7 +68,6 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
      * @param selectivelyDisclosable whether the claim is to be made selectively disclosable
      */
     public void addClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
-        Objects.requireNonNull(name, "Name cannot be null!");
         addClaim(new SDJWTEAAClaim(name, value, selectivelyDisclosable));
     }
 
@@ -68,7 +77,7 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
      * @return a list of {@link SDJWTEAAClaim}s
      */
     public List<SDJWTEAAClaim> getClaims() {
-        return claims.getChildren();
+        return claims;
     }
 
     public void addDecoyDigest(String digest) {

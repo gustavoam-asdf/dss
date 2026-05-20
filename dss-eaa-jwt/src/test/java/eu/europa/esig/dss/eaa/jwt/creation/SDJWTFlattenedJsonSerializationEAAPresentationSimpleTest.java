@@ -34,7 +34,7 @@ class SDJWTFlattenedJsonSerializationEAAPresentationSimpleTest extends AbstractS
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
 
         EAASaltGenerator saltGenerator = new DefaultEAASaltGenerator();
-        claim = new SDJWTEAAClaim("test-key", "test-value", true, saltGenerator.generateSaltString());
+        claim = SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("test-key", "test-value", saltGenerator.generateSaltString());
     }
 
     @Override

@@ -19,6 +19,7 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
@@ -86,25 +87,19 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
         if (signatureParameters.getSignatureLevel() == null) {
             signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
-        }
-
-        if (SignatureLevel.JAdES_BASELINE_B != signatureParameters.getSignatureLevel()) {
+        } else if (SignatureLevel.JAdES_BASELINE_B != signatureParameters.getSignatureLevel()) {
             throw new DSSException("Signature level must be JAdES_BASELINE_B");
         }
 
         if (signatureParameters.getSignaturePackaging() == null) {
             signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        }
-
-        if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
+        } else if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
             throw new DSSException("Signature packaging must be ENVELOPING");
         }
 
         if (signatureParameters.getSignatureType() == null) {
             signatureParameters.setSignatureType(SDJWTConstants.SIGNATURE_TYPE);
-        }
-
-        if (!Utils.areStringsEqual(SDJWTConstants.SIGNATURE_TYPE, signatureParameters.getSignatureType())) {
+        } else if (!Utils.areStringsEqual(SDJWTConstants.SIGNATURE_TYPE, signatureParameters.getSignatureType())) {
             throw new DSSException("Signature type must be " + SDJWTConstants.SIGNATURE_TYPE);
         }
     }
@@ -190,7 +185,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     private DSSDocument issueJWSCompactPresentation(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final DSSDocument keyBinding) {
-        String signedEaa = transformToString(eaa);
+        String signedEaa = new String(DSSUtils.toByteArray(eaa));
 
         StringBuilder issuedEaa = new StringBuilder(signedEaa).append("~");
         if (disclosures != null && !disclosures.isEmpty()) {
@@ -200,7 +195,8 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         }
 
         if (keyBinding != null) {
-            issuedEaa.append(transformToString(keyBinding));
+            String keyBindingValue = new String(DSSUtils.toByteArray(keyBinding));
+            issuedEaa.append(keyBindingValue);
         }
 
         return new InMemoryDocument(issuedEaa.toString().getBytes());
@@ -225,7 +221,8 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         }
 
         if (keyBinding != null) {
-            unprotected.put(SDJWTConstants.KB_JWT, transformToString(keyBinding));
+            String keyBindingValue = new String(DSSUtils.toByteArray(keyBinding));
+            unprotected.put(SDJWTConstants.KB_JWT, keyBindingValue);
         }
 
         jws.setUnprotected(unprotected);
@@ -233,19 +230,5 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         JWSJsonSerializationGenerator generator = new JWSJsonSerializationGenerator(jwsJsonSerializationObject,
                 jwsJsonSerializationObject.getJWSSerializationType());
         return generator.generate();
-    }
-
-    private String transformToString(final DSSDocument dssDocument) {
-        if (dssDocument instanceof InMemoryDocument) {
-            final InMemoryDocument document = (InMemoryDocument) dssDocument;
-            return new String(document.getBytes());
-        } else {
-            try (final InputStream is = dssDocument.openStream()) {
-                final InMemoryDocument inMemoryDocument = new InMemoryDocument(is);
-                return new String(inMemoryDocument.getBytes());
-            } catch (IOException e) {
-                throw new DSSException((e));
-            }
-        }
     }
 }

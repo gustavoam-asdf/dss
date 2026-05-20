@@ -33,30 +33,30 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.setIssuanceDate(issuanceDate);
         payloadParameters.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
-        payloadParameters.addClaim(new SDJWTEAAClaim("issuing_authority", "Public body"));
-        payloadParameters.addClaim(new SDJWTEAAClaim("given_name", "Alice"));
-        payloadParameters.addClaim(new SDJWTEAAClaim("family_name", "Doe"));
-        payloadParameters.addClaim(new SDJWTEAAClaim("vct", "https://nowina.lu/eaa/metadata"));
+        payloadParameters.addClaim(SDJWTEAAClaim.create("issuing_authority", "Public body"));
+        payloadParameters.addClaim(SDJWTEAAClaim.create("given_name", "Alice"));
+        payloadParameters.addClaim(SDJWTEAAClaim.create("family_name", "Doe"));
+        payloadParameters.addClaim(SDJWTEAAClaim.create("vct", "https://nowina.lu/eaa/metadata"));
         String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadParameters.addClaim(new SDJWTEAAClaim("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
+        payloadParameters.addClaim(SDJWTEAAClaim.create("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
 
-        SDJWTEAAClaimObject status = new SDJWTEAAClaimObject("status");
-        status.addChild(new SDJWTEAAClaim("type", "TokenStatusList"));
-        status.addChild(new SDJWTEAAClaim("purpose", "revocation"));
-        status.addChild(new SDJWTEAAClaim("index", 0));
-        status.addChild(new SDJWTEAAClaim("uri", "https://nowina.lu/pki-factory/status"));
+        SDJWTEAAClaimObject status = SDJWTEAAClaim.createObject("status");
+        status.addChild(SDJWTEAAClaim.create("type", "TokenStatusList"));
+        status.addChild(SDJWTEAAClaim.create("purpose", "revocation"));
+        status.addChild(SDJWTEAAClaim.create("index", 0));
+        status.addChild(SDJWTEAAClaim.create("uri", "https://nowina.lu/pki-factory/status"));
         payloadParameters.addClaim(status);
 
-        SDJWTEAAClaimObject subAttrs = new SDJWTEAAClaimObject("subAttrs");
-        subAttrs.addChild(new SDJWTEAAClaim("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
-        SDJWTEAAClaimArray attrs = new SDJWTEAAClaimArray("attrs");
-        attrs.addElement(new SDJWTEAAClaim("given_name"));
-        attrs.addElement(new SDJWTEAAClaim("family_name"));
+        SDJWTEAAClaimObject subAttrs = SDJWTEAAClaim.createObject("subAttrs");
+        subAttrs.addChild(SDJWTEAAClaim.create("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
+        SDJWTEAAClaimArray attrs = SDJWTEAAClaimArray.create("attrs");
+        attrs.addElement(SDJWTEAAClaim.create("given_name"));
+        attrs.addElement(SDJWTEAAClaim.create("family_name"));
         subAttrs.addChild(attrs);
         payloadParameters.addClaim(subAttrs);
 
-        SDJWTEAAClaimObject placeOfBirth = new SDJWTEAAClaimObject("place_of_birth");
-        placeOfBirth.addChild(new SDJWTEAAClaim("country", "LU"));
+        SDJWTEAAClaimObject placeOfBirth = SDJWTEAAClaim.createObject("place_of_birth");
+        placeOfBirth.addChild(SDJWTEAAClaim.create("country", "LU"));
         payloadParameters.addClaim(placeOfBirth);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();

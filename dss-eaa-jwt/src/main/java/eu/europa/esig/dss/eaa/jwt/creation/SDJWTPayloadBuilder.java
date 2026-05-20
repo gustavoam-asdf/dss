@@ -47,7 +47,9 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
 
         DigestAlgorithm digestAlgorithm = payloadParameters.getDigestAlgorithm() != null ?
                 payloadParameters.getDigestAlgorithm() : DigestAlgorithm.SHA256;
-        map.put(SDJWTConstants._SD_ALG, digestAlgorithm.getSDJWTId()); // TODO : ignore if no selectively disclosable claims present ?
+        if (payloadParameters.getDigestAlgorithm() != null) {
+            map.put(SDJWTConstants._SD_ALG, digestAlgorithm.getSDJWTId());
+        }
 
         final SecureRandom secureRandom = initSecureRandom(payloadParameters);
         final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters);
@@ -59,25 +61,25 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     }
 
     private SDJWTEAAClaimObject getRootPayloadObject(SDJWTEAAPayloadParameters payloadParameters) {
-        final SDJWTEAAClaimObject payload = new SDJWTEAAClaimObject();
+        final SDJWTEAAClaimObject payload = SDJWTEAAClaimObject.create();
 
         if (payloadParameters.getIssuer() != null) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.ISSUER, payloadParameters.getIssuer()));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.ISSUER, payloadParameters.getIssuer()));
         }
         if (payloadParameters.getIssuanceDate() != null) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.ISSUED_AT, DSSUtils.getTimeValueInSeconds(payloadParameters.getIssuanceDate().getTime())));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.ISSUED_AT, DSSUtils.getTimeValueInSeconds(payloadParameters.getIssuanceDate().getTime())));
         }
         if (payloadParameters.getExpirationDate() != null) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.EXPIRATION_TIME, DSSUtils.getTimeValueInSeconds(payloadParameters.getExpirationDate().getTime())));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.EXPIRATION_TIME, DSSUtils.getTimeValueInSeconds(payloadParameters.getExpirationDate().getTime())));
         }
         if (payloadParameters.getSubject() != null) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.SUBJECT, payloadParameters.getSubject()));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.SUBJECT, payloadParameters.getSubject()));
         }
         if (payloadParameters.isOneTime()) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.ONE_TIME, null));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.ONE_TIME, null));
         }
         if (payloadParameters.isShortLived()) {
-            payload.addChild(new SDJWTEAAClaim(SDJWTConstants.SHORT_LIVED, null));
+            payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.SHORT_LIVED, null));
         }
 
         payload.addChildren(payloadParameters.getClaims());
@@ -120,7 +122,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     }
 
     private SDJWTEAAClaimObject toEAAClaimObject(Map<?, ?> map) {
-        final SDJWTEAAClaimObject result = new SDJWTEAAClaimObject();
+        final SDJWTEAAClaimObject result = SDJWTEAAClaimObject.create();
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             if (!(entry.getKey() instanceof String)) {
                 throw new DSSException("Map key must be String");
@@ -132,31 +134,31 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             if (value instanceof SDJWTEAAClaim) {
                 result.addChild((SDJWTEAAClaim) value);
             } else {
-                result.addChild(new SDJWTEAAClaim(name, value, false, null));
+                result.addChild(SDJWTEAAClaim.create(name, value));
             }
         }
         return result;
     }
 
     private SDJWTEAAClaimArray toEAAClaimArray(Object[] array) {
-        final SDJWTEAAClaimArray result = new SDJWTEAAClaimArray();
+        final SDJWTEAAClaimArray result = SDJWTEAAClaimArray.create();
         for (Object item : array) {
             if (item instanceof SDJWTEAAClaim) {
                 result.addElement((SDJWTEAAClaim) item);
             } else {
-                result.addElement(new SDJWTEAAClaim(item));
+                result.addElement(SDJWTEAAClaim.create(item));
             }
         }
         return result;
     }
 
     private SDJWTEAAClaimArray toEAAClaimArray(Collection<?> collection) {
-        final SDJWTEAAClaimArray result = new SDJWTEAAClaimArray();
+        final SDJWTEAAClaimArray result = SDJWTEAAClaimArray.create();
         for (Object item : collection) {
             if (item instanceof SDJWTEAAClaim) {
                 result.addElement((SDJWTEAAClaim) item);
             } else {
-                result.addElement(new SDJWTEAAClaim(item));
+                result.addElement(SDJWTEAAClaim.create(item));
             }
         }
         return result;
