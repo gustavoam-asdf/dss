@@ -24,8 +24,8 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
     void init() {
         payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("https://issuer.example.com");
-        payloadParameters.addClaim("given_name", "John", true);
-        payloadParameters.addClaim("family_name", "Doe", true);
+        payloadParameters.addSelectivelyDisclosableClaim("given_name", "John");
+        payloadParameters.addSelectivelyDisclosableClaim("family_name", "Doe");
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());

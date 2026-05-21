@@ -223,15 +223,15 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
-     * Adds a custom claim with the given name and a value.
-     * The claim will be added to the root level of the payload.
+     * Adds a new selectively disclosable claim.
+     * A hash will be computed for the claim.
      *
      * @param name {@link String}
      * @param value {@link Object}
      */
     public void addClaim(final String namespace, final String name, final Object value) {
         Objects.requireNonNull(name, "Name cannot be null!");
-        addClaim(new MdocEAAClaim(namespace, name, value));
+        addClaim(MdocEAAClaim.create(namespace, name, value));
     }
 
     public Map<String, List<MdocEAAClaim>> getClaimsMap() {

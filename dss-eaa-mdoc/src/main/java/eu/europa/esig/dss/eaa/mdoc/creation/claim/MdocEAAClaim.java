@@ -20,13 +20,68 @@ public class MdocEAAClaim extends AbstractEAAClaim {
     private byte[] salt;
 
     /**
+     * Create a {@link MdocEAAClaim} with the provided namespace, name and value.
+     * NOTE: digestId and salt will be computed during EAA payload computation.
+     *
+     * @param namespace {@link String} the claim namespace
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the claim value
+     * @return the created {@link MdocEAAClaim}
+     */
+    public static MdocEAAClaim create(final String namespace, final String name, final Object value) {
+        return new MdocEAAClaim(namespace, name, value);
+    }
+
+    /**
+     * Create a {@link MdocEAAClaim} with the provided namespace, digestId, name and value.
+     * NOTE: salt will be computed during EAA payload computation.
+     *
+     * @param namespace {@link String} the claim namespace
+     * @param digestId integer representing a unique identifier of the claim within the namespace in EAA
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the claim value
+     * @return the created {@link MdocEAAClaim}
+     */
+    public static MdocEAAClaim create(final String namespace, final int digestId, final String name, final Object value) {
+        return new MdocEAAClaim(namespace, digestId, name, value);
+    }
+
+    /**
+     * Create a {@link MdocEAAClaim} with the provided namespace, name, value and salt.
+     * NOTE: digestId will be computed during EAA payload computation.
+     *
+     * @param namespace {@link String} the claim namespace
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the claim value
+     * @param salt byte array containing a high entropy value to prevent a hash collision
+     * @return the created {@link MdocEAAClaim}
+     */
+    public static MdocEAAClaim create(final String namespace, final String name, final Object value, final byte[] salt) {
+        return new MdocEAAClaim(namespace, name, value, salt);
+    }
+
+    /**
+     * Create a {@link MdocEAAClaim} with the provided namespace, digestId, name, value and salt.
+     *
+     * @param namespace {@link String} the claim namespace
+     * @param digestId integer representing a unique identifier of the claim within the namespace in EAA
+     * @param name {@link String} the claim name
+     * @param value {@link Object} the claim value
+     * @param salt byte array containing a high entropy value to prevent a hash collision
+     * @return the created {@link MdocEAAClaim}
+     */
+    public static MdocEAAClaim create(final String namespace, final int digestId, final String name, final Object value, final byte[] salt) {
+        return new MdocEAAClaim(namespace, digestId, name, value);
+    }
+
+    /**
      * Constructor with the claim namespace, name and value
      *
      * @param namespace {@link String}
      * @param name  {@link String} the claim name
      * @param value {@link Object} the value of the claim
      */
-    public MdocEAAClaim(String namespace, String name, Object value) {
+    protected MdocEAAClaim(String namespace, String name, Object value) {
         this(namespace, name, value, null);
     }
 
@@ -38,7 +93,7 @@ public class MdocEAAClaim extends AbstractEAAClaim {
      * @param name  {@link String} the claim name
      * @param value {@link Object} the value of the claim
      */
-    public MdocEAAClaim(String namespace, int digestId, String name, Object value) {
+    protected MdocEAAClaim(String namespace, int digestId, String name, Object value) {
         this(namespace, digestId, name, value, null);
     }
 
@@ -50,7 +105,7 @@ public class MdocEAAClaim extends AbstractEAAClaim {
      * @param value {@link Object} the value of the claim
      * @param salt byte array containing a salt with a high entropy used for a digest computation
      */
-    public MdocEAAClaim(String namespace, String name, Object value, byte[] salt) {
+    protected MdocEAAClaim(String namespace, String name, Object value, byte[] salt) {
         super(name, value);
         this.namespace = namespace;
         this.salt = salt;
@@ -65,7 +120,7 @@ public class MdocEAAClaim extends AbstractEAAClaim {
      * @param value {@link Object} the value of the claim
      * @param salt byte array containing a salt with a high entropy used for a digest computation
      */
-    public MdocEAAClaim(String namespace, int digestId, String name, Object value, byte[] salt) {
+    protected MdocEAAClaim(String namespace, int digestId, String name, Object value, byte[] salt) {
         super(name, value);
         this.namespace = namespace;
         this.digestId = digestId;
