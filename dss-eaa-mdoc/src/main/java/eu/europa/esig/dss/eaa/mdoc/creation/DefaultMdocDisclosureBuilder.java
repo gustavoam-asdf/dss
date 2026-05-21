@@ -29,12 +29,12 @@ public class DefaultMdocDisclosureBuilder implements MdocDisclosureBuilder {
         Objects.requireNonNull(claim, "MdocEAAClaim cannot be null!");
 
         final CBORMap issuerSignedItem = new CBORMap();
-        issuerSignedItem.put(MdocHeaderParameter.DIGEST_ID, claim.getDigestId());
-        issuerSignedItem.put(MdocHeaderParameter.RANDOM, claim.getSalt());
-        issuerSignedItem.put(MdocHeaderParameter.ELEMENT_IDENTIFIER, claim.getName());
-        issuerSignedItem.put(MdocHeaderParameter.ELEMENT_VALUE, claim.getValue());
+        issuerSignedItem.put(MdocHeaderParameter.DIGEST_ID.toString(), claim.getDigestId());
+        issuerSignedItem.put(MdocHeaderParameter.RANDOM.toString(), claim.getSalt());
+        issuerSignedItem.put(MdocHeaderParameter.ELEMENT_IDENTIFIER.toString(), claim.getName());
+        issuerSignedItem.put(MdocHeaderParameter.ELEMENT_VALUE.toString(), claim.getValue());
 
-        return new MdocEAADisclosure(claim.getNamespace(), CBORUtils.toCborBtsrWrappedTagged(issuerSignedItem));
+        return new MdocEAADisclosure(claim.getNamespace(), claim.getDigestId(), CBORUtils.toCborBtsrWrappedTagged(issuerSignedItem));
     }
 
 }

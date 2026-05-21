@@ -5,7 +5,7 @@ import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -71,7 +71,7 @@ public class SDJWTEAA extends DefaultEAA {
         }
 
         @Override
-        public SDJWTEAABuilder setDisclosures(List<Disclosure> disclosures) {
+        public SDJWTEAABuilder setDisclosures(List<ValidationDisclosure> disclosures) {
             return (SDJWTEAABuilder) super.setDisclosures(disclosures);
         }
 

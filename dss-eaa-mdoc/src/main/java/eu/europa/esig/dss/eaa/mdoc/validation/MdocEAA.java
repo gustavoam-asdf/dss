@@ -5,7 +5,7 @@ import eu.europa.esig.dss.eaa.common.validation.DefaultEAA;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocument;
 import eu.europa.esig.dss.enumerations.EAAType;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -95,7 +95,7 @@ public class MdocEAA extends DefaultEAA {
         }
 
         @Override
-        public MdocEAABuilder setDisclosures(List<Disclosure> disclosures) {
+        public MdocEAABuilder setDisclosures(List<ValidationDisclosure> disclosures) {
             return (MdocEAABuilder) super.setDisclosures(disclosures);
         }
 

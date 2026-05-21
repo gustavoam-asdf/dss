@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt;
 
-import eu.europa.esig.dss.eaa.jwt.validation.SDJWTDisclosure;
+import eu.europa.esig.dss.eaa.jwt.validation.SDJWTValidationDisclosure;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JWSCompactSerializationParser;
@@ -9,7 +9,7 @@ import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.slf4j.Logger;
@@ -144,7 +144,7 @@ public class SDJWTCompactSerializationParser {
             }
             sdJwt.setKeyBindingSignature(keyBinding);
 
-            List<Disclosure> disclosures = getDisclosures(parts, keyBinding != null);
+            List<ValidationDisclosure> disclosures = getDisclosures(parts, keyBinding != null);
             sdJwt.setDisclosures(disclosures);
 
             return sdJwt;
@@ -172,19 +172,19 @@ public class SDJWTCompactSerializationParser {
         return getJWSJsonSerializationObject(jwsDocument);
     }
 
-    private List<Disclosure> getDisclosures(String[] parts, boolean keyBindingPresent) {
+    private List<ValidationDisclosure> getDisclosures(String[] parts, boolean keyBindingPresent) {
         int disclosuresAmount = parts.length - 1 - (keyBindingPresent ? 1 :0);
         if (disclosuresAmount == 0) {
             return Collections.emptyList();
         }
 
-        final List<Disclosure> disclosures = new ArrayList<>();
+        final List<ValidationDisclosure> disclosures = new ArrayList<>();
 
         // NOTE: skip the JWS signature
         for (int i = 1; i < disclosuresAmount + 1; i++) {
             String disclosureB64Url = parts[i];
             try {
-                final SDJWTDisclosure disclosure = new SDJWTDisclosure(disclosureB64Url);
+                final SDJWTValidationDisclosure disclosure = new SDJWTValidationDisclosure(disclosureB64Url);
                 disclosures.add(disclosure);
 
             } catch (Exception e) {

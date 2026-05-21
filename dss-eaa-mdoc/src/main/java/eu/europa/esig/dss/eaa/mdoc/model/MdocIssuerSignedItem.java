@@ -8,7 +8,7 @@ import eu.europa.esig.dss.eaa.mdoc.MdocHeaderParameter;
 import eu.europa.esig.dss.eaa.mdoc.MdocUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.Digest;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -24,7 +24,7 @@ import eu.europa.esig.dss.spi.exception.IllegalInputException;
  *      }
  * }
  */
-public class MdocIssuerSignedItem extends Disclosure {
+public class MdocIssuerSignedItem extends ValidationDisclosure {
 
     private static final long serialVersionUID = -1844558182130817388L;
 

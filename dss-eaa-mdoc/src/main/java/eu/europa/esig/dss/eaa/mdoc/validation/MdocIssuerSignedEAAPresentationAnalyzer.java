@@ -7,7 +7,7 @@ import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSigned;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSignedItem;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.ArrayList;
@@ -90,14 +90,14 @@ public class MdocIssuerSignedEAAPresentationAnalyzer extends AbstractMdocEAAPres
     /**
      * Returns a list of disclosures extracted for every namespace from a Document structure
      *
-     * @return a list of {@link Disclosure}s
+     * @return a list of {@link ValidationDisclosure}s
      */
-    protected List<Disclosure> getSignedItems() {
+    protected List<ValidationDisclosure> getSignedItems() {
         Map<String, List<MdocIssuerSignedItem>> namespaces = issuerSigned.getNamespaces();
         if (Utils.isMapEmpty(namespaces)) {
             return Collections.emptyList();
         }
-        final List<Disclosure> result = new ArrayList<>();
+        final List<ValidationDisclosure> result = new ArrayList<>();
         for (List<MdocIssuerSignedItem> signedItems : namespaces.values()) {
             result.addAll(signedItems);
         }

@@ -97,7 +97,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(getEAAType(), eaaWrappper.getEAAType());
 
         checkEAAPresentationInfo(diagnosticData);
-        checkEAAPresentationDigestMatchers(diagnosticData);
+        checkEAADigestMatchers(diagnosticData);
         checkClaims(diagnosticData);
         checkDeviceKeyClaim(diagnosticData);
     }
@@ -112,7 +112,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         assertEquals(documents.size(), diagnosticData.getEAAs().size());
     }
 
-    protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
+    protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
         for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             for (XmlDigestMatcher digestMatcher : eaa.getDigestMatchers()) {
                 if (orphanSelectivelyDisclosableClaimsPresent() && DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {

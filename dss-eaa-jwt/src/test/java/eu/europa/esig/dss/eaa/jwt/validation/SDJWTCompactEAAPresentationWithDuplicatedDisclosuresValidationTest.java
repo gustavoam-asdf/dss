@@ -123,7 +123,7 @@ class SDJWTCompactEAAPresentationWithDuplicatedDisclosuresValidationTest extends
     }
 
     @Override
-    protected void checkEAAPresentationDigestMatchers(DiagnosticData diagnosticData) {
+    protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
         EAAWrapper eaaWrapper = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertNotNull(eaaWrapper);
 

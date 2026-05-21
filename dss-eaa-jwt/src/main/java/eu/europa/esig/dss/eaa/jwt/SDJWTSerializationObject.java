@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt;
 
 import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +18,7 @@ public class SDJWTSerializationObject implements Serializable {
     private JWSJsonSerializationObject signature;
 
     /** List of disclosures attached to the presentation */
-    private List<Disclosure> disclosures;
+    private List<ValidationDisclosure> disclosures;
 
     /** Key binding signature attached to the presentation */
     private JWSJsonSerializationObject keyBindingSignature;
@@ -51,18 +51,18 @@ public class SDJWTSerializationObject implements Serializable {
     /**
      * Gets a list of disclosures supplied with the presentation of Electronic Attestation of Attributes
      *
-     * @return a list of {@link Disclosure}s
+     * @return a list of {@link ValidationDisclosure}s
      */
-    public List<Disclosure> getDisclosures() {
+    public List<ValidationDisclosure> getDisclosures() {
         return disclosures;
     }
 
     /**
      * Sets a list of disclosures supplied with the presentation of Electronic Attestation of Attributes
      *
-     * @param disclosures a list of {@link Disclosure}s
+     * @param disclosures a list of {@link ValidationDisclosure}s
      */
-    public void setDisclosures(List<Disclosure> disclosures) {
+    public void setDisclosures(List<ValidationDisclosure> disclosures) {
         this.disclosures = disclosures;
     }
 

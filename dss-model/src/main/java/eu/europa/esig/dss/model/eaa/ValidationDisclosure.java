@@ -10,10 +10,10 @@ import java.util.EnumMap;
 import java.util.Objects;
 
 /**
- * Generic implementation of an EAA Disclosure
+ * Generic implementation of an EAA Disclosure on validation
  *
  */
-public abstract class Disclosure implements Serializable {
+public abstract class ValidationDisclosure implements Serializable {
 
     private static final long serialVersionUID = -6025755119813037143L;
 
@@ -29,7 +29,7 @@ public abstract class Disclosure implements Serializable {
     /**
      * Default constructor
      */
-    protected Disclosure() {
+    protected ValidationDisclosure() {
         // empty
     }
 
@@ -104,7 +104,7 @@ public abstract class Disclosure implements Serializable {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
 
-        Disclosure that = (Disclosure) object;
+        ValidationDisclosure that = (ValidationDisclosure) object;
         return Arrays.equals(salt, that.salt)
                 && Objects.equals(claim, that.claim);
     }

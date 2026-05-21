@@ -249,6 +249,17 @@ public class CBORMap extends AbstractCBORObject<co.nstant.in.cbor.model.Map> {
     }
 
     /**
+     * Adds all entries from the {@code map}
+     *
+     * @param map {@link Map} to add values from
+     */
+    public void putAll(Map<?, ?> map) {
+        if (Utils.isMapNotEmpty(map)) {
+            map.forEach(this::put);
+        }
+    }
+
+    /**
      * Checks if the current map object is empty
      *
      * @return TRUE if the map is empty, FALSE otherwise

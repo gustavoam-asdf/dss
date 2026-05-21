@@ -6,7 +6,7 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
@@ -123,7 +123,7 @@ public class SDJWTPayloadVerifier extends EAAPayloadVerifier {
     }
 
     @Override
-    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures) {
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<ValidationDisclosure> disclosures) {
         Claim claim = super.buildSelectivelyDisclosableClaim(hashClaim, disclosures);
         if (claim != null) {
             return buildClaimWithDisclosures(claim); // process recursively

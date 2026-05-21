@@ -16,7 +16,7 @@ import eu.europa.esig.dss.eaa.mdoc.model.MdocIssuerSigned;
 import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import org.slf4j.Logger;
@@ -112,9 +112,9 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
      * Returns a list of disclosures extracted for every namespace from a Document structure
      *
      * @param issuerSigned {@link MdocIssuerSigned}
-     * @return a list of {@link Disclosure}s
+     * @return a list of {@link ValidationDisclosure}s
      */
-    protected List<Disclosure> getSignedItems(MdocIssuerSigned issuerSigned) {
+    protected List<ValidationDisclosure> getSignedItems(MdocIssuerSigned issuerSigned) {
         return new MdocIssuerSignedEAAPresentationAnalyzer(document, issuerSigned).getSignedItems();
     }
 

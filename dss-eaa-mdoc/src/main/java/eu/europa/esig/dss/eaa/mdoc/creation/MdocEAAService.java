@@ -7,6 +7,8 @@ import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -17,7 +19,6 @@ import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,18 +26,18 @@ import java.util.Objects;
  * This service is used to handle creation and issuance workflow for ISO/IEC 18013-5 mdoc EAAs and presentations
  *
  */
-public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
 
     private static final long serialVersionUID = 6514504397480840459L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdocService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MdocEAAService.class);
 
     /**
      * Default constructor to instantiate an {@code SDJWTEAAService}
      *
      * @param certificateVerifier {@link CertificateVerifier}
      */
-    public MdocService(final CertificateVerifier certificateVerifier) {
+    public MdocEAAService(final CertificateVerifier certificateVerifier) {
         super(certificateVerifier);
         LOG.debug("+ MdocService created");
     }
@@ -52,7 +53,8 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     public ToBeSigned getDataToBeSigned(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
-        return getDataToBeSignedNoCheck(payloadBuilder.buildPayload(payloadParameters), signatureParameters);
+        ensurePayloadParameters(payloadParameters, signatureParameters);
+        return getDataToBeSignedNoCheck(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
     }
 
     /**
@@ -78,7 +80,8 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
     public DSSDocument signEAA(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
-        return signDocumentNoCheck(payloadBuilder.buildPayload(payloadParameters), signatureParameters, signatureValue);
+        ensurePayloadParameters(payloadParameters, signatureParameters);
+        return signDocumentNoCheck(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
 
     /**
@@ -118,13 +121,32 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
             throw new IllegalArgumentException("Signature packaging must be ENVELOPING");
         }
 
-        if (signatureParameters.getCoseStructureType() == null) {
+        if (COSEStructureType.COSE_SIGN1 != signatureParameters.getCoseStructureType()) {
             signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
-            LOG.debug("COSEStructureType is absent and was set to {}", COSEStructureType.COSE_SIGN1);
-
-        } else if (COSEStructureType.COSE_SIGN1 != signatureParameters.getCoseStructureType()) {
-            throw new IllegalArgumentException("COSE Structure type must be COSE_SIGN1");
+            LOG.debug("COSEStructureType was enforced to {}", COSEStructureType.COSE_SIGN1);
         }
+    }
+
+    /**
+     * This method verifies validity and/or provides some mandatory payload parameters for EAA creation
+     *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
+     * @param signatureParameters {@link CBAdESSignatureParameters}
+     */
+    protected void ensurePayloadParameters(final MdocEAAPayloadParameters payloadParameters, final CBAdESSignatureParameters signatureParameters) {
+        if (payloadParameters.getSigned() == null) {
+            payloadParameters.setSigned(signatureParameters.bLevel().getSigningDate());
+            LOG.debug("EAA 'signed' date is absent and was set to {}", signatureParameters.bLevel().getSigningDate());
+        }
+        if (payloadParameters.getValidFrom() == null) {
+            payloadParameters.setValidFrom(signatureParameters.bLevel().getSigningDate());
+            LOG.debug("EAA 'validFrom' date is absent and was set to {}", signatureParameters.bLevel().getSigningDate());
+        }
+        if (payloadParameters.getValidUntil() == null && signatureParameters.getSigningCertificate() != null) {
+            payloadParameters.setValidUntil(signatureParameters.getSigningCertificate().getNotAfter());
+            LOG.debug("EAA 'validUntil' date is absent and was set to {}", signatureParameters.getSigningCertificate().getNotAfter());
+        }
+        // TODO : continue
     }
 
     /**
@@ -141,8 +163,7 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
 
     @Override
     public List<MdocEAADisclosure> getDisclosures(MdocEAAPayloadParameters payloadParameters) {
-        // TODO : implement
-        return Collections.emptyList();
+        return getPayloadBuilder().buildDisclosures(payloadParameters);
     }
 
     @Override
@@ -165,14 +186,25 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
         return null;
     }
 
-    @Override
-    protected EAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> initDefaultPayloadBuilder() {
-        return new MdocPayloadBuilder();
+    /**
+     * Creates IssuerSigned structure, incorporating the signed EAA and provided selectively disclosable claims.
+     * For an EAA Presentation (DeviceResponse structure for the mdoc), please use one of the {@code #issuePresentation} methods.
+     *
+     * @param eaa {@link DSSDocument} containing the signed EAA
+     * @param disclosures a list of {@link MdocEAADisclosure}s to be incorporated within the namespaces
+     * @return {@link DSSDocument}
+     */
+    public DSSDocument createIssuerSigned(DSSDocument eaa, List<MdocEAADisclosure> disclosures) {
+        DSSDocument issuerSigned = new MdocEAAPresentationBuilder().buildIssuerSignedDocument(eaa, disclosures);
+        issuerSigned.setName(getFinalDocumentName(eaa));
+        issuerSigned.setMimeType(getEAAPresentationMimeType());
+        return issuerSigned;
     }
 
     @Override
     public DSSDocument issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures) {
-        return null;
+        throw new UnsupportedOperationException("#issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures) method is not supported for the MdocService. " +
+                "Please provide a key binding signature or use the method #issuerSigned(DSSDocument eaa, List<MdocEAADisclosure> disclosures) instead.");
     }
 
     @Override
@@ -192,6 +224,16 @@ public class MdocService extends AbstractEAAService<CBAdESSignatureParameters, M
      */
     protected CBAdESService getCBAdESService() {
         return new CBAdESService(certificateVerifier);
+    }
+
+    @Override
+    protected EAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> initDefaultPayloadBuilder() {
+        return new MdocPayloadBuilder();
+    }
+
+    @Override
+    protected MimeType getEAAPresentationMimeType() {
+        return MimeTypeEnum.CBOR;
     }
 
 }

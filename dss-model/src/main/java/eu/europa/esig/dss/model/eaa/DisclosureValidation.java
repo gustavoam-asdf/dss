@@ -15,7 +15,7 @@ public class DisclosureValidation extends ReferenceValidation {
     private static final long serialVersionUID = -191049727174569696L;
 
     /** Disclosure object, when applicable */
-    private Disclosure disclosure;
+    private ValidationDisclosure disclosure;
 
     /** Namespace of the selective disclosure (mdoc) */
     private String namespace;
@@ -33,7 +33,7 @@ public class DisclosureValidation extends ReferenceValidation {
     /**
      * Constructor with a provided disclosure
      */
-    public DisclosureValidation(Disclosure disclosure) {
+    public DisclosureValidation(ValidationDisclosure disclosure) {
         Objects.requireNonNull(disclosure, "Disclosure cannot be null!");
         this.disclosure = disclosure;
     }
@@ -41,9 +41,9 @@ public class DisclosureValidation extends ReferenceValidation {
     /**
      * Gets disclosure when applicable
      *
-     * @return {@link Disclosure}
+     * @return {@link ValidationDisclosure}
      */
-    public Disclosure getDisclosure() {
+    public ValidationDisclosure getDisclosure() {
         return disclosure;
     }
 

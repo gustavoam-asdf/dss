@@ -181,6 +181,34 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
         this.keyInfoMap = keyInfoMap;
     }
 
+    public void setDocType(String docType) {
+        this.docType = docType;
+    }
+
+    public void setSigned(Date signed) {
+        this.signed = signed;
+    }
+
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    public void setExpectedUpdate(Date expectedUpdate) {
+        this.expectedUpdate = expectedUpdate;
+    }
+
+    public void setIdentifierList(EAARevocationList identifierList) {
+        this.identifierList = identifierList;
+    }
+
+    public void setStatusList(EAARevocationList statusList) {
+        this.statusList = statusList;
+    }
+
     /**
      * Adds a new selectively disclosable claim.
      * A hash will be computed for the claim.
@@ -192,6 +220,18 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
             final List<MdocEAAClaim> claims = claimsMap.computeIfAbsent(claim.getNamespace(), k -> new ArrayList<>());
             claims.add(claim);
         }
+    }
+
+    /**
+     * Adds a custom claim with the given name and a value.
+     * The claim will be added to the root level of the payload.
+     *
+     * @param name {@link String}
+     * @param value {@link Object}
+     */
+    public void addClaim(final String namespace, final String name, final Object value) {
+        Objects.requireNonNull(name, "Name cannot be null!");
+        addClaim(new MdocEAAClaim(namespace, name, value));
     }
 
     public Map<String, List<MdocEAAClaim>> getClaimsMap() {

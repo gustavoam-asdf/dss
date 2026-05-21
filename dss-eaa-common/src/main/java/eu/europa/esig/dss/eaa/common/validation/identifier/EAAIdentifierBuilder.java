@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.common.validation.identifier;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAA;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
@@ -44,7 +44,7 @@ public class EAAIdentifierBuilder {
                 baos.write(signature.getId().getBytes());
             }
             if (Utils.isCollectionNotEmpty(eaa.getDisclosures())) {
-                for (Disclosure disclosure : eaa.getDisclosures()) {
+                for (ValidationDisclosure disclosure : eaa.getDisclosures()) {
                     baos.write(disclosure.getSalt());
                     if (disclosure.getName() != null) {
                         baos.write(disclosure.getName().getBytes());

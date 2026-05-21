@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.identifier.EAAIdentifierBuilder;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.identifier.Identifier;
@@ -26,7 +26,7 @@ public abstract class DefaultEAA implements EAA {
     private List<AdvancedSignature> signatures;
 
     /** List of disclosures attached to the EAA Presentation */
-    private List<Disclosure> disclosures;
+    private List<ValidationDisclosure> disclosures;
 
     /** Key binding signature (optional) */
     private AdvancedSignature keyBindingSignature;
@@ -60,9 +60,9 @@ public abstract class DefaultEAA implements EAA {
     /**
      * Gets a list of disclosures
      *
-     * @return a list of {@link Disclosure}s
+     * @return a list of {@link ValidationDisclosure}s
      */
-    public List<Disclosure> getDisclosures() {
+    public List<ValidationDisclosure> getDisclosures() {
         return disclosures;
     }
 
@@ -127,7 +127,7 @@ public abstract class DefaultEAA implements EAA {
         private List<AdvancedSignature> signatures;
 
         /** List of disclosures attached to the EAA Presentation */
-        private List<Disclosure> disclosures;
+        private List<ValidationDisclosure> disclosures;
 
         /** Key binding signature (optional) */
         private AdvancedSignature keyBindingSignature;
@@ -156,10 +156,10 @@ public abstract class DefaultEAA implements EAA {
         /**
          * Sets a list of disclosures provided with the SD-JWT VC token
          *
-         * @param disclosures a list of {@link Disclosure}s
+         * @param disclosures a list of {@link ValidationDisclosure}s
          * @return this builder
          */
-        public DefaultEAABuilder setDisclosures(List<Disclosure> disclosures) {
+        public DefaultEAABuilder setDisclosures(List<ValidationDisclosure> disclosures) {
             this.disclosures = disclosures;
             return this;
         }

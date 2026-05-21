@@ -4,7 +4,7 @@ import eu.europa.esig.dss.eaa.jwt.SDJWTUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.Digest;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * Represents an EAA Disclosure extracted from an SD-JWT VC token
  *
  */
-public class SDJWTDisclosure extends Disclosure {
+public class SDJWTValidationDisclosure extends ValidationDisclosure {
 
     private static final long serialVersionUID = -5284795899819648729L;
 
@@ -27,7 +27,7 @@ public class SDJWTDisclosure extends Disclosure {
      * @param disclosureB64Url {@link String} base64url encoded,
      *                         representing the original provided value of the disclosure
      */
-    public SDJWTDisclosure(final String disclosureB64Url) {
+    public SDJWTValidationDisclosure(final String disclosureB64Url) {
         this.disclosureB64Url = disclosureB64Url;
         parseDisclosure(disclosureB64Url);
     }

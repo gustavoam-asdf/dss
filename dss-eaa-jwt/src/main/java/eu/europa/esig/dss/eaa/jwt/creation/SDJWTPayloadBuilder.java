@@ -7,6 +7,7 @@ import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
@@ -51,7 +52,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             map.put(SDJWTConstants._SD_ALG, digestAlgorithm.getSDJWTId());
         }
 
-        final SecureRandom secureRandom = initSecureRandom(payloadParameters);
+        final SecureRandom secureRandom = secureRandom(payloadParameters);
         final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters);
         map.putAll(getEAAClaimObjectValue(payload, digestAlgorithm, secureRandom));
 
@@ -89,16 +90,6 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         }
 
         return payload;
-    }
-
-    /**
-     * Instantiates a secure random required for the salt generation
-     *
-     * @param payloadParameters {@link SDJWTEAAPayloadParameters}
-     * @return {@link SecureRandom}
-     */
-    protected SecureRandom initSecureRandom(SDJWTEAAPayloadParameters payloadParameters) {
-        return secureRandomProvider.getSecureRandom(payloadParameters.toString().getBytes()); // TODO : to be improved
     }
 
     private Object getClaimValue(final SDJWTEAAClaim claim, final DigestAlgorithm digestAlgorithm, final SecureRandom secureRandom) {
@@ -208,8 +199,9 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     }
 
     private String getHashedDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
-        byte[] digest = DSSUtils.digest(digestAlgorithm, buildDisclosure(claim, digestAlgorithm, secureRandom).getBytesToBeSigned());
-        return DSSJsonUtils.toBase64Url(digest);
+        SDJWTEAADisclosure disclosure = buildDisclosure(claim, digestAlgorithm, secureRandom);
+        Digest digest = disclosure.computeDigest(digestAlgorithm);
+        return DSSJsonUtils.toBase64Url(digest.getValue());
     }
 
     /**
@@ -224,7 +216,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     public SDJWTEAADisclosure buildDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
         String salt = claim.getSalt();
         if (Utils.isStringEmpty(salt)) {
-            byte[] bytes = secureRandom.generateSeed(16); // 16 * 8 = 128 bits
+            byte[] bytes = nextRandomSalt(secureRandom); // 16 * 8 = 128 bits
             salt = DSSJsonUtils.toBase64Url(bytes);
         }
         return disclosureBuilder.build(claim.getName(), getClaimValue(claim, digestAlgorithm, secureRandom), salt);
@@ -237,7 +229,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
 
         final List<SDJWTEAADisclosure> disclosures = new ArrayList<>();
 
-        SecureRandom secureRandom = initSecureRandom(payloadParameters);
+        SecureRandom secureRandom = secureRandom(payloadParameters);
         SDJWTEAAClaimObject root = getRootPayloadObject(payloadParameters);
         collectDisclosures(root, digestAlgorithm, disclosures, secureRandom);
 

@@ -4,6 +4,8 @@ import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.enumerations.MimeType;
+import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
@@ -163,12 +165,18 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         Objects.requireNonNull(eaa, "The EAA cannot be null!");
         JWSCompactSerializationParser compactParser = new JWSCompactSerializationParser(eaa);
         if (compactParser.isSupported()) {
-            return issueJWSCompactPresentation(eaa, disclosures, keyBinding);
+            DSSDocument eaaPresentation = issueJWSCompactPresentation(eaa, disclosures, keyBinding);
+            eaaPresentation.setName(getFinalDocumentName(eaa));
+            eaaPresentation.setMimeType(getEAAPresentationMimeType());
+            return eaaPresentation;
         }
 
         JWSJsonSerializationParser jwsJsonSerializationParser = new JWSJsonSerializationParser(eaa);
         if (jwsJsonSerializationParser.isSupported()) {
-            return issueJWSJsonSerializationPresentation(jwsJsonSerializationParser.parse(), disclosures, keyBinding);
+            DSSDocument eaaPresentation =  issueJWSJsonSerializationPresentation(jwsJsonSerializationParser.parse(), disclosures, keyBinding);
+            eaaPresentation.setName(getFinalDocumentName(eaa));
+            eaaPresentation.setMimeType(getEAAPresentationMimeType());
+            return eaaPresentation;
         }
 
         throw new DSSException("The signed EAA must be a JWS Signature");
@@ -231,4 +239,10 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
                 jwsJsonSerializationObject.getJWSSerializationType());
         return generator.generate();
     }
+
+    @Override
+    protected MimeType getEAAPresentationMimeType() {
+        return MimeTypeEnum.JSON; // TODO : improve
+    }
+
 }

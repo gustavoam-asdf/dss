@@ -1,5 +1,8 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.model.Digest;
+
 import java.io.Serializable;
 
 /**
@@ -9,10 +12,11 @@ import java.io.Serializable;
 public interface EAADisclosure extends Serializable {
 
     /**
-     * Gets binaries representing the disclosure for which the hash is going to be computed
+     * Gets digest value of the for the {@code DigestAlgorithm}
      *
-     * @return disclosure representation binaries
+     * @param digestAlgorithm {@link DigestAlgorithm} to be used to compute digest with
+     * @return {@link Digest}
      */
-    byte[] getBytesToBeSigned();
+    Digest getDigest(DigestAlgorithm digestAlgorithm);
 
 }

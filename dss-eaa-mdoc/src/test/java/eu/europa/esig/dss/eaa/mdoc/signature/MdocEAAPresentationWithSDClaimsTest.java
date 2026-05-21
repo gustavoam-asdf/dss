@@ -1,12 +1,11 @@
-package eu.europa.esig.dss.eaa.jwt.creation;
+package eu.europa.esig.dss.eaa.mdoc.signature;
 
+import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.enumerations.JWSSerializationType;
-import eu.europa.esig.dss.enumerations.SignatureLevel;
-import eu.europa.esig.dss.enumerations.SignaturePackaging;
-import eu.europa.esig.dss.jades.JAdESSignatureParameters;
+import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
@@ -15,39 +14,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class MdocEAAPresentationWithSDClaimsTest extends AbstractMdocEAAPresentationTestIssuance {
 
-    private SDJWTEAAPayloadParameters payloadParameters;
-    private JAdESSignatureParameters signatureParameters;
+    private MdocEAAPayloadParameters payloadParameters;
+    private CBAdESSignatureParameters signatureParameters;
 
     @BeforeEach
     void init() {
-        payloadParameters = new SDJWTEAAPayloadParameters();
-        payloadParameters.setIssuer("https://issuer.example.com");
-        payloadParameters.addClaim("given_name", "John", true);
-        payloadParameters.addClaim("family_name", "Doe", true);
+        payloadParameters = new MdocEAAPayloadParameters();
+        payloadParameters.setDocType(MdocConstants.ISO18013_5_MDL_DOC_TYPE);
+        payloadParameters.setDeviceKey(getSigningCert());
+        payloadParameters.addClaim("org.iso.18013.5.1", "given_name", "John");
+        payloadParameters.addClaim("org.iso.18013.5.1", "family_name", "Doe");
 
-        signatureParameters = new JAdESSignatureParameters();
+        signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
-        signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
-        signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
         signatureParameters.setX509Url("http://nowina.lu/pki-factory/good-cert");
     }
 
     @Override
-    protected SDJWTEAAPayloadParameters getPayloadParameters() {
+    protected MdocEAAPayloadParameters getPayloadParameters() {
         return payloadParameters;
     }
 
     @Override
-    protected JAdESSignatureParameters getSignatureParameters() {
+    protected CBAdESSignatureParameters getSignatureParameters() {
         return signatureParameters;
     }
 
     @Override
-    protected JAdESSignatureParameters getKeyBindingSignatureParameters() {
+    protected CBAdESSignatureParameters getKeyBindingSignatureParameters() {
         return null;
     }
 
@@ -78,7 +75,6 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         super.checkClaims(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
-        assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
         assertEquals("John", eaa.getHolderFirstName());
         assertEquals("Doe", eaa.getHolderLastName());
     }

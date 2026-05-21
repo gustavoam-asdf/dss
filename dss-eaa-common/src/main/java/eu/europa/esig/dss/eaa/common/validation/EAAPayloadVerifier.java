@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.model.Digest;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
@@ -30,7 +30,7 @@ public abstract class EAAPayloadVerifier {
     /**
      * List of disclosures attached to the EAA Presentation
      */
-    protected List<Disclosure> disclosures;
+    protected List<ValidationDisclosure> disclosures;
 
     /**
      * Extracted Digest Algorithm value to be used on hash of disclosures computation
@@ -57,10 +57,10 @@ public abstract class EAAPayloadVerifier {
     /**
      * Sets the disclosures, requiring for EAA Payload selectively disclosable claims validation
      *
-     * @param disclosures a list of {@link Disclosure}s
+     * @param disclosures a list of {@link ValidationDisclosure}s
      * @return this {@link EAAPayloadVerifier}
      */
-    public EAAPayloadVerifier setDisclosures(List<Disclosure> disclosures) {
+    public EAAPayloadVerifier setDisclosures(List<ValidationDisclosure> disclosures) {
         this.disclosures = disclosures;
         return this;
     }
@@ -222,10 +222,10 @@ public abstract class EAAPayloadVerifier {
      * Builds a claim based on the provided selectively disclosable value
      *
      * @param hashClaim {@link Claim} representing the hash value of the item
-     * @param disclosures a list of {@link Disclosure}s to look for a matching value from
+     * @param disclosures a list of {@link ValidationDisclosure}s to look for a matching value from
      * @return {@link Claim} resulting in a processing of disclosable claims
      */
-    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures) {
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<ValidationDisclosure> disclosures) {
         DisclosureValidation disclosureValidation = validateHashClaim(hashClaim, disclosures);
         return getDisclosedClaim(disclosureValidation);
     }
@@ -250,10 +250,10 @@ public abstract class EAAPayloadVerifier {
      * returns the corresponding validation result.
      *
      * @param hashClaim {@link Claim} to verify
-     * @param disclosures a list of {@link Disclosure}s to look for a matching value from
+     * @param disclosures a list of {@link ValidationDisclosure}s to look for a matching value from
      * @return {@link DisclosureValidation}
      */
-    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures) {
+    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<ValidationDisclosure> disclosures) {
         if (hashClaim == null) {
             return null;
         }
@@ -263,7 +263,7 @@ public abstract class EAAPayloadVerifier {
         }
 
         DisclosureValidation disclosureValidation;
-        Disclosure disclosure = getDisclosureForClaimHash(hashBytes, disclosures);
+        ValidationDisclosure disclosure = getDisclosureForClaimHash(hashBytes, disclosures);
         if (disclosure != null) {
             disclosureValidation = new DisclosureValidation(disclosure);
             disclosureValidation.setType(DigestMatcherType.EAA_DISCLOSURE);
@@ -288,12 +288,12 @@ public abstract class EAAPayloadVerifier {
      */
     protected abstract byte[] getHashBytes(Claim hashClaim);
 
-    private Disclosure getDisclosureForClaimHash(byte[] sdHash, List<Disclosure> disclosures) {
+    private ValidationDisclosure getDisclosureForClaimHash(byte[] sdHash, List<ValidationDisclosure> disclosures) {
         if (Utils.isCollectionEmpty(disclosures)) {
             LOG.debug("No disclosures has been provided. Unable to validate a selectively disclosable claim.");
             return null;
         }
-        for (Disclosure disclosure : disclosures) {
+        for (ValidationDisclosure disclosure : disclosures) {
             Digest disclosureDigest = disclosure.getDigest(digestAlgorithm);
             if (disclosureDigest != null && !disclosureDigest.isEmpty() && Arrays.equals(sdHash, disclosureDigest.getValue())) {
                 return disclosure;
@@ -310,7 +310,7 @@ public abstract class EAAPayloadVerifier {
         if (disclosureValidations == null) {
             throw new IllegalStateException("Disclosure validations have not yet been build! The method #verify shall be called first!");
         }
-        for (Disclosure disclosure : disclosures) {
+        for (ValidationDisclosure disclosure : disclosures) {
             if (disclosure == null) {
                 continue;
             }

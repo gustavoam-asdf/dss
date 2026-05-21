@@ -75,7 +75,7 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     protected abstract EAAPresentation buildEAAPresentation();
 
     @Override
-    protected List<AdvancedSignature> getAllSignatures() {
+    protected List<AdvancedSignature> buildSignatures() {
         EAAPresentation presentation = getEAAPresentation();
 
         final List<AdvancedSignature> result = new ArrayList<>();

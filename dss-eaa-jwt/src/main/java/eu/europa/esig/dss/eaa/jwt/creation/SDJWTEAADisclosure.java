@@ -1,6 +1,9 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import eu.europa.esig.dss.eaa.common.creation.EAADisclosure;
+import eu.europa.esig.dss.eaa.common.creation.AbstractEAADisclosure;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.spi.DSSUtils;
 
 import java.util.Objects;
 
@@ -8,7 +11,7 @@ import java.util.Objects;
  * Implementation of a disclosure for an SD-JWT VC token
  *
  */
-public class SDJWTEAADisclosure implements EAADisclosure {
+public class SDJWTEAADisclosure extends AbstractEAADisclosure {
 
     private static final long serialVersionUID = -1978354313189364987L;
 
@@ -36,8 +39,15 @@ public class SDJWTEAADisclosure implements EAADisclosure {
     }
 
     @Override
-    public byte[] getBytesToBeSigned() {
-        return disclosure.getBytes();
+    protected Digest computeDigest(DigestAlgorithm digestAlgorithm) {
+        /*
+         * 4.2.3. Hashing Disclosures (draft-ietf-oauth-selective-disclosure-jwt-22)
+         *
+         * The input to the hash function MUST be the base64url-encoded Disclosure,
+         * not the bytes encoded by the base64url string.
+         */
+        byte[] digestValue = DSSUtils.digest(digestAlgorithm, disclosure.getBytes());
+        return new Digest(digestAlgorithm, digestValue);
     }
 
 }

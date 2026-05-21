@@ -53,6 +53,9 @@ public enum MimeTypeEnum implements MimeType {
     /** pkcs7-signature */
     PKCS7("application/pkcs7-signature", "pkcs7", "p7m", "p7s"),
 
+    /** cbor */
+    CBOR("application/cbor", "cbor"),
+
     /** cose-sign or cose-sign1 */
     COSE("application/cose", "cose"),
 

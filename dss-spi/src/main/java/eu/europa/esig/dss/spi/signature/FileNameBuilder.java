@@ -18,7 +18,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.signature;
+package eu.europa.esig.dss.spi.signature;
 
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -40,6 +40,9 @@ public class FileNameBuilder {
     /** Represents a container prefix string */
     private static final String CONTAINER_PREFIX = "container";
 
+    /** Represents an EAA prefix string */
+    private static final String EAA_PREFIX = "eaa";
+
     /** Represents a document prefix string */
     private static final String DOCUMENT_PREFIX = "document";
 
@@ -60,6 +63,9 @@ public class FileNameBuilder {
 
     /** Represents a document with added evidence-record suffix string */
     private static final String EVIDENCE_RECORD_SUFFIX = "-preserved";
+
+    /** Represents an issued EAA presentation document */
+    private static final String EAA_PRESENTATION_SUFFIX = "-presentation";
 
     /** Filename extension for an enveloping CMS signature */
     private static final String P7M_EXTENSION = "p7m";
@@ -170,6 +176,8 @@ public class FileNameBuilder {
 
             finalName.append(originalName);
 
+        } else if (isEAA()) {
+            finalName.append(EAA_PREFIX);
         } else {
             finalName.append(DOCUMENT_PREFIX);
         }
@@ -194,6 +202,9 @@ public class FileNameBuilder {
                 case ADD_EVIDENCE_RECORD:
                     finalName.append(EVIDENCE_RECORD_SUFFIX);
                     break;
+                case EAA_PRESENTATION:
+                    finalName.append(EAA_PRESENTATION_SUFFIX);
+                    break;
                 default:
                     throw new DSSException(String.format("The following operation '%s' is not supported!", signingOperation));
             }
@@ -216,6 +227,10 @@ public class FileNameBuilder {
 
     private boolean isContainerMimeType(MimeType mimeType) {
         return MimeTypeEnum.ASICS.equals(mimeType) || MimeTypeEnum.ASICE.equals(mimeType);
+    }
+
+    private boolean isEAA() {
+        return SigningOperation.EAA_PRESENTATION == signingOperation;
     }
 
     private String getFileExtensionString(SignatureLevel level, SignaturePackaging packaging, MimeType mimeType) {

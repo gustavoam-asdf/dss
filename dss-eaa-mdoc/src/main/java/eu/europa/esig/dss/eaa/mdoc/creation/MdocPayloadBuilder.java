@@ -12,12 +12,16 @@ import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.PublicKey;
-import java.util.Collections;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +31,8 @@ import java.util.Objects;
  *
  */
 public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MdocPayloadBuilder.class);
 
     /**
      * The factory is used to build a representation of a COSE_Key from a {@code java.security.PublicKey}
@@ -99,7 +105,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         final CBORMap mso = new CBORMap();
         mso.put(MdocConstants.VERSION, payloadParameters.getVersion());
         mso.put(MdocConstants.DIGEST_ALGORITHM, payloadParameters.getDigestAlgorithm().getMSOId());
-        mso.put(MdocConstants.VALUE_DIGEST, buildValueDigests(payloadParameters.getClaimsMap(), payloadParameters.getDigestAlgorithm()));
+        mso.put(MdocConstants.VALUE_DIGEST, buildValueDigests(payloadParameters));
         mso.put(MdocConstants.DEVICE_KEY_INFO, buildDeviceKeyInfo(payloadParameters.getDeviceKey(), payloadParameters.getKeyAuthorizationsMap(), payloadParameters.getKeyInfoMap()));
         mso.put(MdocConstants.DOC_TYPE, payloadParameters.getDocType());
         mso.put(MdocConstants.VALIDITY_INFO, buildValidityInfo(payloadParameters));
@@ -120,15 +126,13 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildValueDigests(Map<String, List<MdocEAAClaim>> claimsMap, DigestAlgorithm digestAlgorithm) {
-        if (Utils.isMapEmpty(claimsMap)) {
-            throw new IllegalArgumentException("No claims has been provided! Please use method #addClaim to enrich the list.");
-        }
+    protected CBORMap buildValueDigests(MdocEAAPayloadParameters payloadParameters) {
         final CBORMap valueDigests = new CBORMap();
-        for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : claimsMap.entrySet()) {
+        SecureRandom secureRandom = secureRandom(payloadParameters);
+        for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : payloadParameters.getClaimsMap().entrySet()) {
             String namespace = claimsEntry.getKey();
             List<MdocEAAClaim> claims = claimsEntry.getValue();
-            valueDigests.put(namespace, buildDigestIDs(claims, digestAlgorithm));
+            valueDigests.put(namespace, buildDigestIDs(claims, payloadParameters.getDigestAlgorithm(), secureRandom));
         }
         return valueDigests;
     }
@@ -143,13 +147,17 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims, DigestAlgorithm digestAlgorithm) {
+    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
         if (Utils.isCollectionEmpty(claims)) {
             throw new IllegalStateException("The list of claims is empty!");
         }
+
         final CBORMap digestIDs = new CBORMap();
-        claims.forEach(c -> digestIDs.put(c.getDigestId(),
-                DSSUtils.digest(digestAlgorithm, disclosureBuilder.build(c).getBytesToBeSigned())));
+        List<MdocEAADisclosure> disclosures = buildDisclosures(claims, secureRandom);
+        disclosures.forEach(d -> {
+            Digest digest = d.getDigest(digestAlgorithm);
+            digestIDs.put(d.getDigestId(), digest.getValue());
+        });
         return digestIDs;
     }
 
@@ -244,11 +252,11 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         Objects.requireNonNull(payloadParameters.getValidUntil(), "validUntil date cannot be null!");
 
         final CBORMap validityInfo = new CBORMap();
-        validityInfo.put(MdocConstants.SIGNED, payloadParameters.getSigned());
-        validityInfo.put(MdocConstants.VALID_FROM, payloadParameters.getValidFrom());
-        validityInfo.put(MdocConstants.VALID_UNTIL, payloadParameters.getValidUntil());
+        validityInfo.put(MdocConstants.SIGNED, DSSUtils.getTimeValueInSeconds(payloadParameters.getSigned().getTime()));
+        validityInfo.put(MdocConstants.VALID_FROM, DSSUtils.getTimeValueInSeconds(payloadParameters.getValidFrom().getTime()));
+        validityInfo.put(MdocConstants.VALID_UNTIL, DSSUtils.getTimeValueInSeconds(payloadParameters.getValidUntil().getTime()));
         if (payloadParameters.getExpectedUpdate() != null) {
-            validityInfo.put(MdocConstants.EXPECTED_UPDATE, payloadParameters.getExpectedUpdate());
+            validityInfo.put(MdocConstants.EXPECTED_UPDATE, DSSUtils.getTimeValueInSeconds(payloadParameters.getExpectedUpdate().getTime()));
         }
         return validityInfo;
     }
@@ -338,8 +346,78 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
 
     @Override
     public List<MdocEAADisclosure> buildDisclosures(MdocEAAPayloadParameters payloadParameters) {
-        // TODO : implement
-        return Collections.emptyList();
+        Objects.requireNonNull(payloadParameters, "Payload parameters cannot be null!");
+        if (Utils.isMapEmpty(payloadParameters.getClaimsMap())) {
+            throw new IllegalArgumentException("No claims has been provided! Please use method #addClaim to enrich the list.");
+        }
+        Objects.requireNonNull(payloadParameters.getDigestAlgorithm(), "Digest algorithm cannot be null!");
+
+        SecureRandom secureRandom = secureRandom(payloadParameters);
+        final List<MdocEAADisclosure> result = new ArrayList<>();
+        payloadParameters.getClaimsMap().values().forEach(c -> result.addAll(buildDisclosures(c, secureRandom)));
+        return result;
+    }
+
+    /**
+     * Builds disclosures for the given list of {@code claims} using the provided {@code secureRandom}
+     *
+     * @param claims a list of {@link MdocEAAClaim}s to build disclosures for
+     * @param secureRandom {@link SecureRandom} to be used for salt generation, where applicable
+     * @return a list of {@link MdocEAADisclosure}s
+     */
+    protected List<MdocEAADisclosure> buildDisclosures(List<MdocEAAClaim> claims, SecureRandom secureRandom) {
+        if (Utils.isCollectionEmpty(claims)) {
+            throw new IllegalStateException("The list of claims is empty!");
+        }
+        final List<MdocEAADisclosure> result = new ArrayList<>();
+
+        for (int i = 0; i < claims.size(); i++) {
+            MdocEAAClaim claim = claims.get(i);
+            ensureDigestId(claim, i + 1, claims);
+            ensureSalt(claim, secureRandom);
+
+            result.add(disclosureBuilder.build(claim));
+        }
+        return result;
+    }
+
+    /**
+     * This method ensures the digestId value within the claim for a disclosure building, if not defined
+     *
+     * @param claim {@link MdocEAAClaim}
+     * @param index current index of the claim in the list
+     * @param claims a list of all {@link MdocEAAClaim}s within the current namespace
+     */
+    protected void ensureDigestId(MdocEAAClaim claim, int index, List<MdocEAAClaim> claims) {
+        if (claim.getDigestId() == null) {
+            while (isDigestIdUsed(index, claims)) {
+                ++index;
+            }
+            claim.setDigestId(index);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("DigestId has been added for a claim");
+            }
+        }
+    }
+
+    private boolean isDigestIdUsed(int digestId, List<MdocEAAClaim> claims) {
+        return claims.stream().anyMatch(c -> c.getDigestId() != null && digestId == c.getDigestId());
+    }
+
+    /**
+     * This method ensures the salt value within the claim for a disclosure building, if not defined.
+     * This method uses a {@code secureRandomProvider} for the deterministic salt generation
+     *
+     * @param claim {@link MdocEAAClaim}
+     * @param secureRandom {@link SecureRandom}
+     */
+    protected void ensureSalt(MdocEAAClaim claim, SecureRandom secureRandom) {
+        if (claim.getSalt() == null) {
+            claim.setSalt(nextRandomSalt(secureRandom));
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Salt has been added for a claim");
+            }
+        }
     }
 
 }

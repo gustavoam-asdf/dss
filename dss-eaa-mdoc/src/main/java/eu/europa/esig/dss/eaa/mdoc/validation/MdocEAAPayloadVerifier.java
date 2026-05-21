@@ -8,7 +8,7 @@ import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.MdocUtils;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.model.eaa.Disclosure;
+import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
@@ -155,7 +155,7 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
                 Claim digest = digestIDsEntry.getValue();
 
                 long digestIdLong = Long.parseLong(digestId);
-                List<Disclosure> disclosureCandidates = getDisclosureByNamespaceAndId(namespace, digestIdLong);
+                List<ValidationDisclosure> disclosureCandidates = getDisclosureByNamespaceAndId(namespace, digestIdLong);
                 Claim claim = buildSelectivelyDisclosableClaim(digest, disclosureCandidates, namespace, digestIdLong);
                 if (claim != null) {
                     if (claim.getName() != null) {
@@ -170,7 +170,7 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
         return result;
     }
 
-    private List<Disclosure> getDisclosureByNamespaceAndId(String namespace, Long digestId) {
+    private List<ValidationDisclosure> getDisclosureByNamespaceAndId(String namespace, Long digestId) {
         return disclosures.stream()
                 .filter(d -> namespace.equals((d).getNamespace()) && digestId.equals((d).getDigestId()))
                 .collect(Collectors.toList());
@@ -180,12 +180,12 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
      * Validates the disclosure and returns the extracted value
      *
      * @param hashClaim {@link Claim}
-     * @param disclosures a list of {@link Disclosure}s
+     * @param disclosures a list of {@link ValidationDisclosure}s
      * @param namespace {@link String}
      * @param digestId {@link Long}
      * @return {@link Claim}
      */
-    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<Disclosure> disclosures, String namespace, Long digestId) {
+    protected Claim buildSelectivelyDisclosableClaim(Claim hashClaim, List<ValidationDisclosure> disclosures, String namespace, Long digestId) {
         DisclosureValidation disclosureValidation = validateHashClaim(hashClaim, disclosures, namespace, digestId);
         return getDisclosedClaim(disclosureValidation);
     }
@@ -194,12 +194,12 @@ public class MdocEAAPayloadVerifier extends EAAPayloadVerifier {
      * Validates the {@code hashClaim} against a list of {@code disclosures} and returns the resulted {@code DisclosureValidation}
      *
      * @param hashClaim {@link Claim}
-     * @param disclosures a list of {@link Disclosure}s
+     * @param disclosures a list of {@link ValidationDisclosure}s
      * @param namespace {@link String}
      * @param digestId {@link Long}
      * @return {@link DisclosureValidation}
      */
-    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<Disclosure> disclosures, String namespace, Long digestId) {
+    protected DisclosureValidation validateHashClaim(Claim hashClaim, List<ValidationDisclosure> disclosures, String namespace, Long digestId) {
         DisclosureValidation disclosureValidation = super.validateHashClaim(hashClaim, disclosures);
         disclosureValidation.setId(hashClaim.getName());
         disclosureValidation.setNamespace(namespace);
