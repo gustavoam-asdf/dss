@@ -9,6 +9,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,6 +58,9 @@ public final class CBORUtils {
 
     /** The binary content encoding (RFC 2045) */
     public static final String CONTENT_ENCODING_BINARY = "binary";
+
+    /** Tag for the CBOR "full-date" object */
+    public static final long CBOR_FULL_DATE_TAG = 1004;
 
     /**
      * Contains protected header names that are supported and can be present in the critical ('crit') attribute
@@ -343,6 +348,22 @@ public final class CBORUtils {
             return null;
         }
         return uHeadersEntryMap;
+    }
+
+    /**
+     * Generates a CBOR 'full-date' object for the {@code Date}
+     *
+     * @param date {@link Date}
+     * @return {@link CBORObject}
+     */
+    public static CBORObject toFullDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+        String dateString = DSSUtils.formatDateToISO8601(date);
+        CBORObject cborObject = CBORObjectFactory.toCBORObject(dateString);
+        cborObject.setTag(CBOR_FULL_DATE_TAG);
+        return cborObject;
     }
 
 }

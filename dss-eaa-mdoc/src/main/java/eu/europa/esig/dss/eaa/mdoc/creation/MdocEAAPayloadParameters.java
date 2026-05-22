@@ -2,23 +2,21 @@ package eu.europa.esig.dss.eaa.mdoc.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
-import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Provides a payload configuration for the ISO/IEC 18013-5 mdoc
+ *
+ */
 public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
 
-    /**
-     * Contains a map between element namespaces and corresponding selectively disclosable claims
-     */
-    private final Map<String, List<MdocEAAClaim>> claimsMap = new HashMap<>();
+    /* MobileSecurityObject claims */
 
     /**
      * Version of the "MobileSecurityObject" structure.
@@ -56,18 +54,6 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private Date signed;
 
     /**
-     * Contains a date before which the MSO is not yet valid.
-     * NOTE: the value is taken from the corresponding signature parameters, if not provided explicitly.
-     */
-    private Date validFrom;
-
-    /**
-     * Contains a date after which the MSO is no longer valid.
-     * NOTE: the value is taken from the "notAfter" of the signing certificate, if applicable and not provided explicitly.
-     */
-    private Date validUntil;
-
-    /**
      * (Optional) Contains a date at which the issuing authority expects to re-sign the MSO
      * (and potentially update the elements).
      */
@@ -83,48 +69,35 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
      */
     private EAARevocationList statusList;
 
+    /* ETSI technical claims */
+
+    /**
+     * Category of the EAA (e.g. QEAA, Pub-EAA, or other)
+     */
+    private String category;
+
+    /**
+     * Whether the EAA is short-lived
+     */
+    private boolean shortLived;
+
+    /**
+     * Whether the EAA is issued for a one time use
+     */
+    private boolean oneTime;
+
+    /**
+     * Contains other optional selectively disclosable parameters
+     */
+    private MdocSelectivelyDisclosableParameters selectivelyDisclosableParameters;
+
+    /**
+     * Gets version of the "MobileSecurityObject" structure.
+     *
+     * @return {@link String}
+     */
     public String getVersion() {
         return version;
-    }
-
-    public PublicKey getDeviceKey() {
-        return deviceKey;
-    }
-
-    public Map<String, List<String>> getKeyAuthorizationsMap() {
-        return keyAuthorizationsMap;
-    }
-
-    public Map<Integer, Object> getKeyInfoMap() {
-        return keyInfoMap;
-    }
-
-    public String getDocType() {
-        return docType;
-    }
-
-    public Date getSigned() {
-        return signed;
-    }
-
-    public Date getValidFrom() {
-        return validFrom;
-    }
-
-    public Date getValidUntil() {
-        return validUntil;
-    }
-
-    public Date getExpectedUpdate() {
-        return expectedUpdate;
-    }
-
-    public EAARevocationList getIdentifierList() {
-        return identifierList;
-    }
-
-    public EAARevocationList getStatusList() {
-        return statusList;
     }
 
     /**
@@ -136,6 +109,15 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     public void setVersion(String version) {
         Objects.requireNonNull(version, "Version cannot be null!");
         this.version = version;
+    }
+
+    /**
+     * Gets the public part of the key pair used for mdoc authentication.
+     *
+     * @return {@link PublicKey}
+     */
+    public PublicKey getDeviceKey() {
+        return deviceKey;
     }
 
     /**
@@ -160,12 +142,30 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
+     * Gets a map between namespaces and corresponding data element identifiers, the device key may sign.
+     *
+     * @return a map between namespaces and data element identifiers
+     */
+    public Map<String, List<String>> getKeyAuthorizationsMap() {
+        return keyAuthorizationsMap;
+    }
+
+    /**
      * (Optional) Sets a map between namespaces and corresponding data element identifiers, the device key may sign.
      *
      * @param keyAuthorizationsMap a map between namespaces and data element identifiers
      */
     public void setKeyAuthorizations(Map<String, List<String>> keyAuthorizationsMap) {
         this.keyAuthorizationsMap = keyAuthorizationsMap;
+    }
+
+    /**
+     * Gets a map containing extra information about the device key.
+     *
+     * @return a map between information identifiers and the corresponding data elements
+     */
+    public Map<Integer, Object> getKeyInfoMap() {
+        return keyInfoMap;
     }
 
     /**
@@ -181,61 +181,229 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
         this.keyInfoMap = keyInfoMap;
     }
 
+    /**
+     * Gets the document type.
+     *
+     * @return {@link String}
+     */
+    public String getDocType() {
+        return docType;
+    }
+
+    /**
+     * Sets the document type.
+     * If not defined, the docType will be derived from the list of provided claims, if applicable.
+     *
+     * @param docType {@link String}
+     */
     public void setDocType(String docType) {
         this.docType = docType;
     }
 
+    /**
+     * Gets the date when the EAA was signed
+     *
+     * @return {@link Date}
+     */
+    public Date getSigned() {
+        return signed;
+    }
+
+    /**
+     * Sets the date when the EAA was signed.
+     * For the ISO/IEC 18013-5 mdoc this value corresponds to the ValidityInfo.signed date.
+     *
+     * @param signed {@link Date}
+     */
     public void setSigned(Date signed) {
         this.signed = signed;
     }
 
+    /**
+     * Gets the date from which the EAA is valid
+     *
+     * @return {@link Date}
+     */
+    public Date getValidFrom() {
+        return getNotBeforeDate();
+    }
+
+    /**
+     * Sets the EAA notBefore date (technical validity start date).
+     * For the ISO/IEC 18013-5 mdoc this value corresponds to the ValidityInfo.validFrom date.
+     *
+     * @param validFrom {@link Date}
+     */
     public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
+        setNotBeforeDate(validFrom);
     }
 
-    public void setValidUntil(Date validUntil) {
-        this.validUntil = validUntil;
+    /**
+     * Gets the date after which the EAA is no longer valid
+     *
+     * @return {@link Date}
+     */
+    public Date getValidUntil() {
+        return getExpirationDate();
     }
 
+    /**
+     * Sets the EAA expiration date (technical validity end date).
+     * For the ISO/IEC 18013-5 mdoc this value corresponds to the ValidityInfo.validFrom date.
+     *
+     * @param expirationDate {@link Date}
+     */
+    public void setValidUntil(Date expirationDate) {
+        setExpirationDate(expirationDate);
+    }
+
+    /**
+     * Gets the expected update date.
+     *
+     * @return {@link Date}
+     */
+    public Date getExpectedUpdate() {
+        return expectedUpdate;
+    }
+
+    /**
+     * Sets the date when EAA issuer expects the EAA or associated data to be updated.
+     * For the ISO/IEC 18013-5 mdoc this value corresponds to the ValidityInfo.expectedUpdate date.
+     *
+     * @param expectedUpdate {@link Date}
+     */
     public void setExpectedUpdate(Date expectedUpdate) {
         this.expectedUpdate = expectedUpdate;
     }
 
+    /**
+     * Gets the identifier_list
+     *
+     * @return {@link EAARevocationList}
+     */
+    public EAARevocationList getIdentifierList() {
+        return identifierList;
+    }
+
+    /**
+     * Sets the identifier_list
+     *
+     * @param identifierList {@link EAARevocationList}
+     */
     public void setIdentifierList(EAARevocationList identifierList) {
         this.identifierList = identifierList;
     }
 
+    /**
+     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
+     *
+     * @param index integer representing an EAA identifier within the identifier_list
+     * @param url {@link String} where the identifier_list can be accessed from
+     */
+    public void setIdentifierList(int index, String url) {
+        this.identifierList = new EAARevocationList(index, url);
+    }
+
+    /**
+     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
+     *
+     * @param index integer representing an EAA identifier within the identifier_list
+     * @param url {@link String} where the identifier_list can be accessed from
+     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
+     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
+     */
+    public void setIdentifierList(int index, String url, CertificateToken certificateToken) {
+        this.identifierList = new EAARevocationList(index, url, certificateToken);
+    }
+
+    /**
+     * Gets the status_list
+     *
+     * @return {@link EAARevocationList}
+     */
+    public EAARevocationList getStatusList() {
+        return statusList;
+    }
+
+    /**
+     * Sets the status_list
+     *
+     * @param statusList {@link EAARevocationList}
+     */
     public void setStatusList(EAARevocationList statusList) {
         this.statusList = statusList;
     }
 
     /**
-     * Adds a new selectively disclosable claim.
-     * A hash will be computed for the claim.
+     * Sets the status_list, by specifying an index of the EAA and a status distribution URL
      *
-     * @param claim {@link MdocEAAClaim} to add
+     * @param index integer representing an EAA identifier within the status_list
+     * @param url {@link String} where the status_list can be accessed from
      */
-    public void addClaim(MdocEAAClaim claim) {
-        if (claim != null) {
-            final List<MdocEAAClaim> claims = claimsMap.computeIfAbsent(claim.getNamespace(), k -> new ArrayList<>());
-            claims.add(claim);
-        }
+    public void setStatusList(int index, String url) {
+        this.identifierList = new EAARevocationList(index, url);
     }
 
     /**
-     * Adds a new selectively disclosable claim.
-     * A hash will be computed for the claim.
+     * Sets the status_list, by specifying an index of the EAA and a status distribution URL
      *
-     * @param name {@link String}
-     * @param value {@link Object}
+     * @param index integer representing an EAA identifier within the status_list
+     * @param url {@link String} where the status_list can be accessed from
+     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
+     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
      */
-    public void addClaim(final String namespace, final String name, final Object value) {
-        Objects.requireNonNull(name, "Name cannot be null!");
-        addClaim(MdocEAAClaim.create(namespace, name, value));
+    public void setStatusList(int index, String url, CertificateToken certificateToken) {
+        this.identifierList = new EAARevocationList(index, url, certificateToken);
     }
 
-    public Map<String, List<MdocEAAClaim>> getClaimsMap() {
-        return claimsMap;
+    @Override
+    public boolean isOneTime() {
+        return oneTime;
+    }
+
+    @Override
+    public void setOneTime(boolean oneTime) {
+        this.oneTime = oneTime;
+    }
+
+    @Override
+    public boolean isShortLived() {
+        return shortLived;
+    }
+
+    @Override
+    public void setShortLived(boolean shortLived) {
+        this.shortLived = shortLived;
+    }
+    /**
+     * Gets the EAA category URN
+     *
+     * @return {@link String}
+     */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     * Sets the EAA category URN.
+     * Example: "urn:etsi:esi:eaa:eu:qualified" for QEAA, "urn:etsi:esi:eaa:eu:pub" for Pub-EAA
+     *
+     * @param category {@link String}
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    /**
+     * Gets parameters containing configuration of selectively disclosable claims
+     *
+     * @return {@link MdocSelectivelyDisclosableParameters}
+     */
+    public MdocSelectivelyDisclosableParameters selectivelyDisclosable() {
+        if (selectivelyDisclosableParameters == null) {
+            selectivelyDisclosableParameters = new MdocSelectivelyDisclosableParameters();
+        }
+        return selectivelyDisclosableParameters;
     }
     
 }

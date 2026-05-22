@@ -195,6 +195,18 @@ public final class DSSUtils {
 	}
 
 	/**
+	 * Formats a date to use according to ISO/IEC 8601-1 date pattern "yyyy-MM-dd".
+	 * Example: "2019-11-19"
+	 *
+	 * @param date
+	 *            the date to be converted
+	 * @return the textual representation (a null date will result in "N/A")
+	 */
+	public static String formatDateToISO8601(final Date date) {
+		return formatDateWithCustomFormat(date, ISO8601_DATE_FORMAT);
+	}
+
+	/**
 	 * This method checks silently whether the date is conformant to the ISO/IEC 8601-1 date
 	 * pattern "yyyy-MM-dd".
 	 *

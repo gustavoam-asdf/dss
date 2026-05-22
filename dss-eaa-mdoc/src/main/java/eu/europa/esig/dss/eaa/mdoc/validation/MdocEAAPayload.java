@@ -49,12 +49,9 @@ import java.util.Map;
  */
 public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MdocEAAPayload.class);
+    private static final long serialVersionUID = -5947789662835061427L;
 
-    /**
-     * Document type
-     */
-    private String docType;
+    private static final Logger LOG = LoggerFactory.getLogger(MdocEAAPayload.class);
 
     /**
      * Default constructor
@@ -64,7 +61,6 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
      */
     public MdocEAAPayload(final ClaimMap verifiedPayloadMap, final String docType) {
         super(verifiedPayloadMap.getMapValue());
-        this.docType = docType != null ? docType : getDocType() != null ? getDocType().getStringValue() : null;
     }
 
     @Override
@@ -631,7 +627,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimDate getAdministrativeExpirationDate() {
-        return  getAsDateOrDateTime(forIso180135(ISO180135Headers.EXPIRY_DATE), forIso232202(ISO232202Headers.EXPIRY_DATE),
+        return getAsDateOrDateTime(forIso180135(ISO180135Headers.EXPIRY_DATE), forIso232202(ISO232202Headers.EXPIRY_DATE),
                 forEUDIPid(EUDIPIDHeaders.EXPIRY_DATE));
     }
 

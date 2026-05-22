@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.cbades.cbor;
 
+import co.nstant.in.cbor.model.Array;
 import co.nstant.in.cbor.model.ByteString;
 import co.nstant.in.cbor.model.DataItem;
 import co.nstant.in.cbor.model.DoublePrecisionFloat;
@@ -9,6 +10,9 @@ import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.SinglePrecisionFloat;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Factory to create a {@code eu.europa.esig.dss.cbades.cbor.CBORObject} from a value
@@ -107,6 +111,18 @@ public class CBORObjectFactory {
             boolean value = (boolean) object;
             SimpleValueType simpleValueType = value ? SimpleValueType.TRUE : SimpleValueType.FALSE;
             return new SimpleValue(simpleValueType);
+
+        } else if (object instanceof Collection<?>) {
+            Collection<?> collection = (Collection<?>) object;
+            Array cborArray = new Array(collection.size());
+            collection.forEach(l -> cborArray.add(CBORObjectFactory.toDataItem(l)));
+            return cborArray;
+
+        } else if (object instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) object;
+            co.nstant.in.cbor.model.Map cborMap = new co.nstant.in.cbor.model.Map(map.size());
+            map.forEach((k, v) -> cborMap.put(toDataItem(k), toDataItem(v)));
+            return cborMap;
 
         } else {
             throw new UnsupportedOperationException(

@@ -19,12 +19,13 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * This class provides access to a configuration to build a payload for an ISO/IEC 18013-5 mdoc EAA.
@@ -44,6 +45,11 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      * Builds disclosures
      */
     private MdocDisclosureBuilder disclosureBuilder = new DefaultMdocDisclosureBuilder();
+
+    /**
+     * Provides MdocEAAClaimsBuilder to build claims
+     */
+    private MdocEAAClaimsBuilderFactory mdocEAAClaimsBuilderFactory;
 
     /**
      * Empty constructor
@@ -72,6 +78,31 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     public void setDisclosureBuilder(MdocDisclosureBuilder disclosureBuilder) {
         Objects.requireNonNull(disclosureBuilder, "Disclosure builder cannot be null!");
         this.disclosureBuilder = disclosureBuilder;
+    }
+
+    /**
+     * Gets the MdocEAAClaimsBuilderFactory
+     * Default : {@code DefaultMdocEAAClaimsBuilderFactory}
+     *
+     * @return {@link MdocEAAClaimsBuilderFactory}
+     */
+    protected MdocEAAClaimsBuilderFactory getMdocClaimProviderFactory() {
+        if (mdocEAAClaimsBuilderFactory == null) {
+            mdocEAAClaimsBuilderFactory = new DefaultMdocEAAClaimsBuilderFactory();
+        }
+        return mdocEAAClaimsBuilderFactory;
+    }
+
+    /**
+     * Sets MdocEAAClaimsBuilderFactory, providing definition of the claims for the given document type.
+     * Default : {@code DefaultMdocEAAClaimsBuilderFactory}. Supported docType's are:
+     *           "org.iso.18013.5.1.mDL", "org.iso.23220.1.mID", "eu.europa.ec.eudi.pid.1".
+     *           For other types it is recommended to provide a custom implementation.
+     *
+     * @param mdocEAAClaimsBuilderFactory {@link MdocEAAClaimsBuilderFactory}
+     */
+    public void setMdocClaimProviderFactory(MdocEAAClaimsBuilderFactory mdocEAAClaimsBuilderFactory) {
+        this.mdocEAAClaimsBuilderFactory = mdocEAAClaimsBuilderFactory;
     }
 
     @Override
@@ -106,7 +137,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         mso.put(MdocConstants.VERSION, payloadParameters.getVersion());
         mso.put(MdocConstants.DIGEST_ALGORITHM, payloadParameters.getDigestAlgorithm().getMSOId());
         mso.put(MdocConstants.VALUE_DIGEST, buildValueDigests(payloadParameters));
-        mso.put(MdocConstants.DEVICE_KEY_INFO, buildDeviceKeyInfo(payloadParameters.getDeviceKey(), payloadParameters.getKeyAuthorizationsMap(), payloadParameters.getKeyInfoMap()));
+        mso.put(MdocConstants.DEVICE_KEY_INFO, buildDeviceKeyInfo(payloadParameters));
         mso.put(MdocConstants.DOC_TYPE, payloadParameters.getDocType());
         mso.put(MdocConstants.VALIDITY_INFO, buildValidityInfo(payloadParameters));
         CBORMap status = buildStatus(payloadParameters.getIdentifierList(), payloadParameters.getStatusList());
@@ -129,12 +160,25 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     protected CBORMap buildValueDigests(MdocEAAPayloadParameters payloadParameters) {
         final CBORMap valueDigests = new CBORMap();
         SecureRandom secureRandom = secureRandom(payloadParameters);
-        for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : payloadParameters.getClaimsMap().entrySet()) {
+        for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : getRootPayloadClaims(payloadParameters).entrySet()) {
             String namespace = claimsEntry.getKey();
             List<MdocEAAClaim> claims = claimsEntry.getValue();
             valueDigests.put(namespace, buildDigestIDs(claims, payloadParameters.getDigestAlgorithm(), secureRandom));
         }
         return valueDigests;
+    }
+
+    /**
+     * Builds a map of elements for each namespace
+     *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
+     * @return a map between namespaces and corresponding list of claims
+     */
+    protected Map<String, List<MdocEAAClaim>> getRootPayloadClaims(MdocEAAPayloadParameters payloadParameters) {
+        MdocEAAClaimsBuilder mdocEAAClaimsBuilder = getMdocClaimProviderFactory().create(payloadParameters);
+        List<MdocEAAClaim> claims = mdocEAAClaimsBuilder.build(payloadParameters);
+        return claims.stream().collect(Collectors.groupingBy(
+                MdocEAAClaim::getNamespace, LinkedHashMap::new, Collectors.toList()));
     }
 
     /**
@@ -172,17 +216,18 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   DeviceKey = COSE_Key
      * }
      *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
      * @return {@link CBORMap}
      */
-    protected CBORMap buildDeviceKeyInfo(PublicKey deviceKey, Map<String, List<String>> keyAuthorizationsMap, Map<Integer, Object> keyInfoMap) {
-        Objects.requireNonNull(deviceKey, "DeviceKey shall be provided for an mdoc payload building!");
+    protected CBORMap buildDeviceKeyInfo(MdocEAAPayloadParameters payloadParameters) {
+        Objects.requireNonNull(payloadParameters.getDeviceKey(), "DeviceKey shall be provided for an mdoc payload building!");
         final CBORMap deviceKeyInfo = new CBORMap();
-        deviceKeyInfo.put(MdocConstants.DEVICE_KEY, coseKeyFactory.create(deviceKey));
-        CBORMap keyAuthorizations = buildKeyAuthorizations(keyAuthorizationsMap);
+        deviceKeyInfo.put(MdocConstants.DEVICE_KEY, coseKeyFactory.create(payloadParameters.getDeviceKey()));
+        CBORMap keyAuthorizations = buildKeyAuthorizations(payloadParameters.getKeyAuthorizationsMap());
         if (keyAuthorizations != null && !keyAuthorizations.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_AUTHORIZATIONS, keyAuthorizations);
         }
-        CBORMap keyInfo = buildKeyInfo(keyInfoMap);
+        CBORMap keyInfo = buildKeyInfo(payloadParameters.getKeyInfoMap());
         if (keyInfo != null && !keyInfo.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_INFO, keyInfo);
         }
@@ -347,14 +392,11 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     @Override
     public List<MdocEAADisclosure> buildDisclosures(MdocEAAPayloadParameters payloadParameters) {
         Objects.requireNonNull(payloadParameters, "Payload parameters cannot be null!");
-        if (Utils.isMapEmpty(payloadParameters.getClaimsMap())) {
-            throw new IllegalArgumentException("No claims has been provided! Please use method #addClaim to enrich the list.");
-        }
         Objects.requireNonNull(payloadParameters.getDigestAlgorithm(), "Digest algorithm cannot be null!");
 
-        SecureRandom secureRandom = secureRandom(payloadParameters);
         final List<MdocEAADisclosure> result = new ArrayList<>();
-        payloadParameters.getClaimsMap().values().forEach(c -> result.addAll(buildDisclosures(c, secureRandom)));
+        SecureRandom secureRandom = secureRandom(payloadParameters);
+        getRootPayloadClaims(payloadParameters).values().forEach(c -> result.addAll(buildDisclosures(c, secureRandom)));
         return result;
     }
 

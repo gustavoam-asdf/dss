@@ -5,6 +5,7 @@ import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
+import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.MimeType;
@@ -16,11 +17,14 @@ import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This service is used to handle creation and issuance workflow for ISO/IEC 18013-5 mdoc EAAs and presentations
@@ -46,7 +50,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     public ToBeSigned getDataToBeSigned(DSSDocument payload, CBAdESSignatureParameters signatureParameters) {
         validatePayload(payload);
         validateSignatureParameters(signatureParameters);
-        return getDataToBeSignedNoCheck(payload, signatureParameters);
+        return dataToBeSigned(payload, signatureParameters);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
-        return getDataToBeSignedNoCheck(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
+        return dataToBeSigned(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
     }
 
     /**
@@ -65,7 +69,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
      * @param signatureParameters {@link CBAdESSignatureParameters}
      * @return {@link ToBeSigned}
      */
-    protected ToBeSigned getDataToBeSignedNoCheck(DSSDocument payload, CBAdESSignatureParameters signatureParameters) {
+    protected ToBeSigned dataToBeSigned(DSSDocument payload, CBAdESSignatureParameters signatureParameters) {
         return getCBAdESService().getDataToSign(payload, signatureParameters);
     }
 
@@ -73,7 +77,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     public DSSDocument signEAA(DSSDocument payload, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
         validatePayload(payload);
         validateSignatureParameters(signatureParameters);
-        return signDocumentNoCheck(payload, signatureParameters, signatureValue);
+        return signDocument(payload, signatureParameters, signatureValue);
     }
 
     @Override
@@ -81,7 +85,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
         validateSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
-        return signDocumentNoCheck(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
+        return signDocument(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
 
     /**
@@ -93,7 +97,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
      * @param signatureValue {@link SignatureValue}
      * @return {@link DSSDocument}
      */
-    protected DSSDocument signDocumentNoCheck(DSSDocument payload, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
+    protected DSSDocument signDocument(DSSDocument payload, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
         return getCBAdESService().signDocument(payload, signatureParameters, signatureValue);
     }
 
@@ -146,7 +150,38 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
             payloadParameters.setValidUntil(signatureParameters.getSigningCertificate().getNotAfter());
             LOG.debug("EAA 'validUntil' date is absent and was set to {}", signatureParameters.getSigningCertificate().getNotAfter());
         }
-        // TODO : continue
+        if (payloadParameters.getDocType() == null) {
+            String docType = computeDocType(payloadParameters);
+            payloadParameters.setDocType(docType);
+            LOG.debug("EAA 'docType' is absent and was set to {}", docType);
+        }
+    }
+
+    /**
+     * Derives the docType based on the provided payload parameters.
+     * This method iterates over the provided claims and tries to find the best matching document type.
+     *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
+     * @return {@link String} docType
+     */
+    protected String computeDocType(final MdocEAAPayloadParameters payloadParameters) {
+        MdocSelectivelyDisclosableParameters selectivelyDisclosable = payloadParameters.selectivelyDisclosable();
+        if (Utils.isCollectionNotEmpty(selectivelyDisclosable.getDrivingPrivileges())) {
+            return MdocConstants.ISO18013_5_MDL_DOC_TYPE;
+        }
+        if (Utils.isCollectionNotEmpty(selectivelyDisclosable.getOtherClaims())) {
+            Set<String> namespaceSet = selectivelyDisclosable.getOtherClaims().stream()
+                    .map(MdocEAAClaim::getNamespace).collect(Collectors.toSet());
+            if (namespaceSet.contains(MdocConstants.EUDI_PID_NAMESPACE)) {
+                return MdocConstants.EUDI_PID_DOC_TYPE;
+            } else if (namespaceSet.contains(MdocConstants.ISO23220_1_NAMESPACE)) {
+                return MdocConstants.ISO23220_1_MID_DOC_TYPE;
+            } else if (namespaceSet.contains(MdocConstants.ISO18013_5_NAMESPACE)) {
+                return MdocConstants.ISO18013_5_MDL_DOC_TYPE;
+            }
+        }
+        // TODO : processing of other claims is not yet implemented
+        return MdocConstants.ISO23220_1_MID_DOC_TYPE; // default
     }
 
     /**

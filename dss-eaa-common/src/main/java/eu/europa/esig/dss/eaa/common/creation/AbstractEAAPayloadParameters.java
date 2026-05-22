@@ -16,7 +16,10 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     /** Date of the EAA issuance */
     private Date issuanceDate;
 
-    /** Date of the EAA expiration */
+    /** Date of the EAA technical validity start */
+    private Date notBeforeDate;
+
+    /** Date of the EAA technical validity end */
     private Date expirationDate;
 
     /** EAA issuer subject */
@@ -72,6 +75,24 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     }
 
     /**
+     * Gets the EAA notBefore date
+     *
+     * @return {@link Date}
+     */
+    public Date getNotBeforeDate() {
+        return notBeforeDate;
+    }
+
+    /**
+     * Sets the EAA notBefore date (technical validity start date)
+     *
+     * @param notBeforeDate {@link Date}
+     */
+    public void setNotBeforeDate(Date notBeforeDate) {
+        this.notBeforeDate = notBeforeDate;
+    }
+
+    /**
      * Gets the EAA expiration date
      *
      * @return {@link Date}
@@ -81,7 +102,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     }
 
     /**
-     * Sets the EAA expiration date
+     * Sets the EAA expiration date (technical validity end date)
      *
      * @param expirationDate {@link Date}
      */
