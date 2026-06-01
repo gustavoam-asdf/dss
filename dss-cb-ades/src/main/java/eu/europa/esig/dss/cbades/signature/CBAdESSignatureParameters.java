@@ -16,12 +16,40 @@ import java.util.Objects;
  */
 public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdESTimestampParameters> {
 
+    private static final long serialVersionUID = 4741826099908546457L;
+
     /**
-     * Defines if certificate chain binaries must be included into the signed header ('x5chain' signed header)
+     * Enumeration defining ways to embed the 'x5chain' header into a COSE signature
+     */
+    public enum X5ChainHeaderPlacement {
+
+        /**
+         * Insert the 'x5chain' header within the protected headers map (signed)
+         */
+        protectedHeader,
+        /**
+         * Insert the 'x5chain' header within the unprotected headers map (unsigned)
+         */
+        unprotectedHeader,
+        /**
+         * Insert the 'x5chain' header within the 'uHeaders' unprotected header (unsigned)
+         */
+        uHeaders,
+    }
+
+    /**
+     * Defines if certificate chain binaries must be included in the signature ('x5chain' header)
      * <p>
-     * DEFAULT: TRUE (the certificate chain header will be included into the signed header)
+     * DEFAULT: TRUE (the certificate chain header will be included into the signature)
      */
     private boolean includeCertificateChain = true;
+
+    /**
+     * Defines the element within COSE signature to embed the 'x5chain' header parameter.
+     * Applies when the {@code includeCertificateChain} parameter is enabled.
+     * DEFAULT: X5ChainHeaderPlacement.protectedHeader ('x5chain' is to be included within the protected header)
+     */
+    private X5ChainHeaderPlacement x5ChainHeaderPlacement;
 
     /**
      * Defines whether the thumbprints of the whole X.509 certificate chain should be included, using a 'x5ts' signed header.
@@ -133,7 +161,7 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     }
 
     /**
-     * Defines if complete certificate chain binaries must be included into the signed header ('x5chain' signed header)
+     * Defines if complete certificate chain binaries must be included into the COSE signature ('x5chain' header)
      *
      * @return TRUE if the certificate chain must be included, FALSE otherwise
      */
@@ -142,13 +170,34 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     }
 
     /**
-     * Sets if complete certificate chain binaries must be included into the 'x5chain' signed header
-     * Default: TRUE (the complete binaries will be included into the signed header)
+     * Sets if complete certificate chain binaries must be included into the 'x5chain' header.
+     * NOTE: for a corresponding placement position, please see the {@code x5ChainHeaderPlacement} parameter.
+     * Default: TRUE (the complete binaries will be included into the COSE signature)
      *
-     * @param includeCertificateChain if the certificate chain binaries must be included into the signed header
+     * @param includeCertificateChain if the certificate chain binaries must be included into the COSE signature
      */
     public void setIncludeCertificateChain(boolean includeCertificateChain) {
         this.includeCertificateChain = includeCertificateChain;
+    }
+
+    /**
+     * Gets the placement of the 'x5chain' header parameter
+     *
+     * @return {@link X5ChainHeaderPlacement}
+     */
+    public X5ChainHeaderPlacement getX5ChainHeaderPlacement() {
+        return x5ChainHeaderPlacement;
+    }
+
+    /**
+     * Sets the placement of the 'x5chain' header parameter within the COSE signature structure.
+     * Applies when the {@code includeCertificateChain} parameter is enabled.
+     * DEFAULT: X5ChainHeaderPlacement.protectedHeader ('x5chain' is to be included within the protected header)
+     *
+     * @param x5ChainHeaderPlacement {@link X5ChainHeaderPlacement}
+     */
+    public void setX5ChainHeaderPlacement(X5ChainHeaderPlacement x5ChainHeaderPlacement) {
+        this.x5ChainHeaderPlacement = x5ChainHeaderPlacement;
     }
 
     /**

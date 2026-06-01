@@ -4,7 +4,9 @@ import co.nstant.in.cbor.CborException;
 import eu.europa.esig.dss.cbades.CBAdESUtils;
 import eu.europa.esig.dss.cbades.COSEHeaderParameter;
 import eu.europa.esig.dss.cbades.COSEProtectedHeader;
+import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
@@ -58,6 +60,9 @@ public class CBAdESLevelBaselineB {
 
     /** COSE Protected Header map representation */
     private COSEProtectedHeader signedProperties = new COSEProtectedHeader();
+
+    /** COSE Unprotected Header map representation */
+    private COSEUnprotectedHeader unsignedProperties = new COSEUnprotectedHeader();
 
     /**
      * The default constructor
@@ -118,6 +123,18 @@ public class CBAdESLevelBaselineB {
         incorporateCritical();
 
         return signedProperties;
+    }
+
+    /**
+     * Returns a map representing the unsigned header of a signature
+     *
+     * @return a map representing the unsigned header
+     */
+    public COSEUnprotectedHeader getUnsignedProperties() {
+        // RFC 9360 headers
+        incorporateUnsignedCertificateChain();
+
+        return unsignedProperties;
     }
 
     /**
@@ -225,22 +242,67 @@ public class CBAdESLevelBaselineB {
      * Incorporates 5.1.8 The x5chain CBOR array member
      */
     protected void incorporateCertificateChain() {
-        if (!parameters.isIncludeCertificateChain() || parameters.getSigningCertificate() == null) {
+        if (!parameters.isIncludeCertificateChain() || parameters.getSigningCertificate() == null || !isCertificateChainSigned()) {
             return;
         }
 
+        CBORObject x5Chain = getX5Chain();
+        if (x5Chain != null) {
+            addHeader(COSEHeaderParameter.X5CHAIN.cbor(), x5Chain);
+        }
+    }
+
+    private CBORObject getX5Chain() {
         List<CertificateToken> certificates = getBaselineBCertificates();
         if (Utils.collectionSize(certificates) == 0) {
-            LOG.debug("No certificate chain found to be incorporated within 'x5chain' signed header");
+            LOG.debug("No certificate chain found to be incorporated within 'x5chain' header");
+            return null;
+
         } else if (Utils.collectionSize(certificates) == 1) {
-            addHeader(COSEHeaderParameter.X5CHAIN.cbor(), certificates.get(0).getEncoded()); // bstr
+            return new CBORByteString(certificates.get(0).getEncoded()); // bstr
+
         } else {
             CBORArray certificateByteStrings = new CBORArray();
             for (CertificateToken certificateToken : certificates) {
                 certificateByteStrings.add(certificateToken.getEncoded());
             }
-            addHeader(COSEHeaderParameter.X5CHAIN.cbor(), certificateByteStrings); // [ 2*certs: bstr ]
+            return certificateByteStrings; // [ 2*certs: bstr ]
         }
+    }
+
+    /**
+     * Incorporates 5.1.8 The x5chain CBOR array member as an unsigned property
+     */
+    protected void incorporateUnsignedCertificateChain() {
+        if (!parameters.isIncludeCertificateChain() || parameters.getSigningCertificate() == null || isCertificateChainSigned()) {
+            return;
+        }
+
+        CBORObject x5Chain = getX5Chain();
+        if (x5Chain != null) {
+            switch (parameters.getX5ChainHeaderPlacement()) {
+                case unprotectedHeader:
+                    addUnsignedHeader(COSEHeaderParameter.X5CHAIN.cbor(), getX5Chain());
+                    break;
+                case uHeaders:
+                    CBORArray uHeaders = new CBORArray();
+                    CBORMap x5ChainEntry = new CBORMap();
+                    x5ChainEntry.put(COSEHeaderParameter.X5CHAIN.cbor(), x5Chain);
+                    uHeaders.add(CBORUtils.toCborBtsrWrapped(x5ChainEntry));
+                    addUnsignedHeader(COSEHeaderParameter.U_HEADERS.cbor(), uHeaders);
+                    break;
+                default:
+                    throw new UnsupportedOperationException(String.format(
+                            "The 'x5chain' placement '%s' is not supported for the unsigned certificate chain!",
+                            parameters.getX5ChainHeaderPlacement()));
+            }
+        }
+    }
+
+    private boolean isCertificateChainSigned() {
+        // Signed is default behavior (when NULL)
+        return parameters.getX5ChainHeaderPlacement() == null ||
+                CBAdESSignatureParameters.X5ChainHeaderPlacement.protectedHeader == parameters.getX5ChainHeaderPlacement();
     }
 
     /**
@@ -720,6 +782,16 @@ public class CBAdESLevelBaselineB {
      */
     protected void addHeader(CBORObject headerLabel, Object value) {
         signedProperties.put(headerLabel, value);
+    }
+
+    /**
+     * Adds a new header to the {@code unsignedProperties} map
+     *
+     * @param headerLabel unique identifier of the header
+     * @param value {@link Object} to add
+     */
+    protected void addUnsignedHeader(CBORObject headerLabel, Object value) {
+        unsignedProperties.put(headerLabel, value);
     }
 
     /**

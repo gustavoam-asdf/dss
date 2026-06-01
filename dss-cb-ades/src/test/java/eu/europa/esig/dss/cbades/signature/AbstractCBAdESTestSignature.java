@@ -118,7 +118,8 @@ public abstract class AbstractCBAdESTestSignature
             CBORSignature cose = cbadesSignature.getCoseSignature();
 
             CBAdESUHeaders cbAdESUHeaders = new CBAdESUHeaders(cose);
-            assertEquals(cbAdESUHeaders.isExist(), !SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel()));
+            assertEquals(cbAdESUHeaders.isExist(), !SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel()) ||
+                    (getSignatureParameters().isIncludeCertificateChain() && CBAdESSignatureParameters.X5ChainHeaderPlacement.uHeaders == getSignatureParameters().getX5ChainHeaderPlacement()));
 
             assertNotNull(cose.getContext());
             assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
@@ -151,7 +152,7 @@ public abstract class AbstractCBAdESTestSignature
                 assertNotNull(bodyUnprotectedHeader);
                 assertTrue(bodyUnprotectedHeader.isEmpty());
                 assertNotNull(signerUnprotectedHeader);
-                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), signerUnprotectedHeader.isEmpty());
+                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel() && !isIncludeX5ChainUnsigned(), signerUnprotectedHeader.isEmpty());
 
                 protectedHeader = signerProtectedHeader;
                 unprotectedHeader = signerUnprotectedHeader;
@@ -162,7 +163,7 @@ public abstract class AbstractCBAdESTestSignature
                 assertNull(signerProtectedHeader);
 
                 assertNotNull(bodyUnprotectedHeader);
-                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), bodyUnprotectedHeader.isEmpty());
+                assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel() && !isIncludeX5ChainUnsigned(), bodyUnprotectedHeader.isEmpty());
                 assertNull(signerUnprotectedHeader);
 
                 protectedHeader = bodyProtectedHeader;
@@ -197,8 +198,29 @@ public abstract class AbstractCBAdESTestSignature
                 }
             }
 
+            int unsignedPropertiesExpected = !SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel()) ? 1 : 0;
+            if (isIncludeX5ChainUnsigned()) {
+                switch (getSignatureParameters().getX5ChainHeaderPlacement()) {
+                    case unprotectedHeader:
+                        ++unsignedPropertiesExpected;
+                        break;
+                    case uHeaders:
+                        if (unsignedPropertiesExpected == 0) {
+                            ++unsignedPropertiesExpected;
+                        }
+                        break;
+                    default:
+                        fail(String.format("Not supported '%s'", getSignatureParameters().getX5ChainHeaderPlacement()));
+                }
+            }
+
+            assertEquals(unsignedPropertiesExpected, unprotectedHeader.getSize());
+            assertEquals(unsignedPropertiesExpected == 0, unprotectedHeader.isEmpty());
+
             CBORArray uHeaders = unprotectedHeader.getAsArray(COSEHeaderParameter.U_HEADERS.cbor());
-            if (SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel())) {
+            if (SignatureLevel.CB_AdES_BASELINE_B.equals(getSignatureParameters().getSignatureLevel()) &&
+                    (!getSignatureParameters().isIncludeCertificateChain() ||
+                            CBAdESSignatureParameters.X5ChainHeaderPlacement.uHeaders != getSignatureParameters().getX5ChainHeaderPlacement())) {
                 assertNull(uHeaders);
 
             } else {
@@ -216,6 +238,13 @@ public abstract class AbstractCBAdESTestSignature
             }
 
         }
+    }
+
+    private boolean isIncludeX5ChainUnsigned() {
+        CBAdESSignatureParameters signatureParameters = getSignatureParameters();
+        return signatureParameters.isIncludeCertificateChain() &&
+                (CBAdESSignatureParameters.X5ChainHeaderPlacement.unprotectedHeader == signatureParameters.getX5ChainHeaderPlacement() ||
+                CBAdESSignatureParameters.X5ChainHeaderPlacement.uHeaders == signatureParameters.getX5ChainHeaderPlacement());
     }
 
     @Override

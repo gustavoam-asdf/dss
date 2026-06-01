@@ -16,6 +16,7 @@ import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
 import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
@@ -26,11 +27,11 @@ import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
-import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.BaselineBCertificateSelector;
@@ -46,8 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEAAPresentationTestIssuance<
-        CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEAAPresentationTestIssuance
+        <CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
 
     @Override
     protected MdocEAAService getService() {
@@ -107,7 +108,7 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             assertNull(signerProtectedHeader);
 
             assertNotNull(bodyUnprotectedHeader);
-            assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), bodyUnprotectedHeader.isEmpty());
+            assertFalse(bodyUnprotectedHeader.isEmpty());
             assertNull(signerUnprotectedHeader);
 
             Set<CBORObject> keySet = bodyProtectedHeader.getKeys();
@@ -235,6 +236,17 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
                     assertNotNull(certificateRef.getCertificateId());
                     assertNotNull(certificateRef.getX509Url());
                 }
+            }
+        }
+    }
+
+    @Override
+    protected void checkCertificates(DiagnosticData diagnosticData) {
+        super.checkCertificates(diagnosticData);
+
+        for (EAAWrapper eaaWrapper : diagnosticData.getEAAs()) {
+            for (SignatureWrapper signature : eaaWrapper.getEAASignatures()) {
+                assertFalse(signature.foundCertificates().getRelatedCertificatesByOrigin(CertificateOrigin.UNPROTECTED_HEADER).isEmpty());
             }
         }
     }

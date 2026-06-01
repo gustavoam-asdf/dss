@@ -8,6 +8,7 @@ import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -49,14 +50,14 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     @Override
     public ToBeSigned getDataToBeSigned(DSSDocument payload, CBAdESSignatureParameters signatureParameters) {
         validatePayload(payload);
-        validateSignatureParameters(signatureParameters);
+        ensureSignatureParameters(signatureParameters);
         return dataToBeSigned(payload, signatureParameters);
     }
 
     @Override
     public ToBeSigned getDataToBeSigned(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
-        validateSignatureParameters(signatureParameters);
+        ensureSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
         return dataToBeSigned(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
     }
@@ -76,14 +77,14 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     @Override
     public DSSDocument signEAA(DSSDocument payload, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
         validatePayload(payload);
-        validateSignatureParameters(signatureParameters);
+        ensureSignatureParameters(signatureParameters);
         return signDocument(payload, signatureParameters, signatureValue);
     }
 
     @Override
     public DSSDocument signEAA(MdocEAAPayloadParameters payloadParameters, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
         Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
-        validateSignatureParameters(signatureParameters);
+        ensureSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
         return signDocument(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
@@ -106,7 +107,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
      *
      * @param signatureParameters {@link CBAdESSignatureParameters}
      */
-    protected void validateSignatureParameters(final CBAdESSignatureParameters signatureParameters) {
+    protected void ensureSignatureParameters(final CBAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
 
         if (signatureParameters.getSignatureLevel() == null) {
@@ -134,6 +135,26 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
             signatureParameters.setTagged(false);
             LOG.debug("COSE_Sign1 structure shall be untagged. The value was set to 'false'.");
         }
+
+        if (!signatureParameters.isIncludeCertificateChain()) {
+            throw new IllegalArgumentException("Certificate chain must be included within the mdoc EAA signature!");
+        }
+
+        if (signatureParameters.getX5ChainHeaderPlacement() == null) {
+            signatureParameters.setX5ChainHeaderPlacement(CBAdESSignatureParameters.X5ChainHeaderPlacement.unprotectedHeader);
+            LOG.debug("'x5chain' shall be placed within the unsigned header map. The value was set to 'unprotectedHeader'.");
+
+        } else if (CBAdESSignatureParameters.X5ChainHeaderPlacement.unprotectedHeader != signatureParameters.getX5ChainHeaderPlacement()) {
+            throw new IllegalArgumentException(String.format("'x5chain' shall be placed within the unsigned header map! " +
+                    "Obtained value : '%s'", signatureParameters.getX5ChainHeaderPlacement()));
+        }
+
+        if (EncryptionAlgorithm.ECDSA != signatureParameters.getEncryptionAlgorithm() &&
+                EncryptionAlgorithm.EDDSA != signatureParameters.getEncryptionAlgorithm()) {
+            throw new IllegalArgumentException(String.format("MSO shall be signed by ECDSA or EDDSA algortihm! " +
+                    "Obtained value : '%s'", signatureParameters.getEncryptionAlgorithm()));
+        }
+
     }
 
     /**

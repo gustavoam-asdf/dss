@@ -86,7 +86,7 @@ class MdocEAAPresentationWithSDClaimsTest extends AbstractMdocEAAPresentationTes
 
     @Override
     protected String getSigningAlias() {
-        return GOOD_USER;
+        return ECDSA_521_USER;
     }
 
 }

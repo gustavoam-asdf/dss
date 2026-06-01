@@ -6,6 +6,7 @@ import eu.europa.esig.dss.cbades.COSESign1;
 import eu.europa.esig.dss.cbades.COSESignStructure;
 import eu.europa.esig.dss.cbades.COSESignature;
 import eu.europa.esig.dss.cbades.COSEStructure;
+import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
@@ -162,6 +163,7 @@ public class CBAdESBuilder {
             case COSE_SIGN:
                 COSESignature coseSignature = new COSESignature();
                 coseSignature.setProtectedHeader(getProtectedHeader());
+                coseSignature.setUnprotectedHeader(getUnprotectedHeader());
                 coseSignature.setSignature(getSignature(signatureValue));
 
                 COSESign coseSign;
@@ -182,6 +184,7 @@ public class CBAdESBuilder {
                 COSESign1 coseSign1 = new COSESign1();
                 coseSign1.setTagged(parameters.isTagged());
                 coseSign1.setProtectedHeader(getProtectedHeader());
+                coseSign1.setUnprotectedHeader(getUnprotectedHeader());
                 coseSign1.setPayload(getPayload(isDataToSignComputation));
                 coseSign1.setSignature(getSignature(signatureValue));
                 return coseSign1;
@@ -200,6 +203,16 @@ public class CBAdESBuilder {
      */
     protected COSEProtectedHeader getProtectedHeader() {
         return cbadesLevelBaselineB.getSignedProperties();
+    }
+
+
+    /**
+     * Generated an Unsigned Header
+     *
+     * @return {@link COSEUnprotectedHeader}
+     */
+    protected COSEUnprotectedHeader getUnprotectedHeader() {
+        return cbadesLevelBaselineB.getUnsignedProperties();
     }
 
     /**
