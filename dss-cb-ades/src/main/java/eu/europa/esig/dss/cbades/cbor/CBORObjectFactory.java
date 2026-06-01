@@ -10,8 +10,10 @@ import co.nstant.in.cbor.model.SimpleValueType;
 import co.nstant.in.cbor.model.SinglePrecisionFloat;
 import co.nstant.in.cbor.model.UnicodeString;
 import co.nstant.in.cbor.model.UnsignedInteger;
+import eu.europa.esig.dss.spi.DSSUtils;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -111,6 +113,12 @@ public class CBORObjectFactory {
             boolean value = (boolean) object;
             SimpleValueType simpleValueType = value ? SimpleValueType.TRUE : SimpleValueType.FALSE;
             return new SimpleValue(simpleValueType);
+
+        } else if (object instanceof Date) {
+            Date date = (Date) object;
+            UnicodeString unicodeString = new UnicodeString(DSSUtils.formatDateToRFC(date));
+            unicodeString.setTag(0);
+            return unicodeString;
 
         } else if (object instanceof Collection<?>) {
             Collection<?> collection = (Collection<?>) object;

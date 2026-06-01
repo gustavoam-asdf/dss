@@ -14,7 +14,6 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,11 +296,11 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         Objects.requireNonNull(payloadParameters.getValidUntil(), "validUntil date cannot be null!");
 
         final CBORMap validityInfo = new CBORMap();
-        validityInfo.put(MdocConstants.SIGNED, DSSUtils.getTimeValueInSeconds(payloadParameters.getSigned().getTime()));
-        validityInfo.put(MdocConstants.VALID_FROM, DSSUtils.getTimeValueInSeconds(payloadParameters.getValidFrom().getTime()));
-        validityInfo.put(MdocConstants.VALID_UNTIL, DSSUtils.getTimeValueInSeconds(payloadParameters.getValidUntil().getTime()));
+        validityInfo.put(MdocConstants.SIGNED, payloadParameters.getSigned());
+        validityInfo.put(MdocConstants.VALID_FROM, payloadParameters.getValidFrom());
+        validityInfo.put(MdocConstants.VALID_UNTIL, payloadParameters.getValidUntil());
         if (payloadParameters.getExpectedUpdate() != null) {
-            validityInfo.put(MdocConstants.EXPECTED_UPDATE, DSSUtils.getTimeValueInSeconds(payloadParameters.getExpectedUpdate().getTime()));
+            validityInfo.put(MdocConstants.EXPECTED_UPDATE, payloadParameters.getExpectedUpdate());
         }
         return validityInfo;
     }
