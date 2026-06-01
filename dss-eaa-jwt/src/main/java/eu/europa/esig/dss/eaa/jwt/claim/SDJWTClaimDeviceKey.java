@@ -11,7 +11,6 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.utils.Utils;
 import org.jose4j.jwk.PublicJsonWebKey;
-import org.jose4j.lang.JoseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,8 +126,13 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
     protected PublicJsonWebKey getPublicJsonWebKey() {
         if (publicJsonWebKey == null) {
             try {
+                ClaimMap jwk = getJWK();
+                if (jwk == null) {
+                    return null;
+                }
                 publicJsonWebKey = PublicJsonWebKey.Factory.newPublicJwk((Map<String, Object>) toJavaObject(getJWK()));
-            } catch (JoseException e) {
+
+            } catch (Exception e) {
                 LOG.warn("Unable to parse JWK confirmation claim. Reason : {}", e.getMessage(), e);
             }
         }
@@ -141,18 +145,31 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
 
         } else if (claim.isArrayValueType()) {
             final List<Object> javaList = new ArrayList<>();
-            claim.getListValue().forEach(v -> javaList.add(toJavaObject(v)));
+            claim.getListValue().forEach(v -> {
+                Object javaObject = toJavaObject(v);
+                if (javaObject != null) {
+                    javaList.add(javaObject);
+                }
+            });
             return javaList;
 
         } else if (claim.isMapValueType()) {
             final Map<String, Object> javaMap = new HashMap<>();
             for (Map.Entry<String, Claim> claimEntry : claim.getMapValue().entrySet()) {
-                javaMap.put(claimEntry.getKey(), toJavaObject(claimEntry.getValue()));
+                Object javaObject = toJavaObject(claimEntry.getValue());
+                if (javaObject != null) {
+                    javaMap.put(claimEntry.getKey(), javaObject);
+                }
             }
             return javaMap;
 
         } else {
-            throw new UnsupportedOperationException(String.format("The object of type '%s' is not supported!", claim.getClass().getSimpleName()));
+            if (claim.getName() != null) {
+                LOG.warn("The entry '{}' with value of type '{}' is not supported!", claim.getName(), claim.getClass().getSimpleName());
+            } else {
+                LOG.warn("The entry of type '{}' is not supported!", claim.getClass().getSimpleName());
+            }
+            return null;
         }
     }
 
