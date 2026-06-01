@@ -493,7 +493,22 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	 * @return {@link COSESignatureType}
 	 */
 	public COSESignatureType getCOSESignatureType() {
-		return signature.getCOSESignatureType();
+		if (signature.getCOSESignatureType() != null) {
+			return signature.getCOSESignatureType().getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * Gets whether the COSE signature structure is tagged
+	 *
+	 * @return TRUE if the COSE signature structure is tagged, FALSE otherwise
+	 */
+	public boolean isCOSETagged() {
+		if (signature.getCOSESignatureType() != null) {
+			return signature.getCOSESignatureType().isTagged();
+		}
+		return false;
 	}
 
 	/**

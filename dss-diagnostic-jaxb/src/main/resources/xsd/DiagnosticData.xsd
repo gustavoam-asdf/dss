@@ -221,7 +221,7 @@
 					<xs:element name="SignatureFormat" type="SignatureFormat" />
 					<xs:element name="JWSSerializationType" type="JWSSerializationType" minOccurs="0" /> <!-- JAdES only -->
 					<xs:element name="SignatureType" type="xs:string" minOccurs="0" /> <!-- JAdES only -->
-					<xs:element name="COSESignatureType" type="COSESignatureType" minOccurs="0" /> <!-- JAdES only -->
+					<xs:element name="COSESignatureType" type="COSESignatureType" minOccurs="0" /> <!-- CB-AdES only -->
 		
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 					
@@ -1008,7 +1008,15 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="COSESignatureType" final="restriction">
+	<xs:complexType name="COSESignatureType">
+		<xs:simpleContent>
+			<xs:extension base="COSESignatureTypeEnum">
+				<xs:attribute name="tagged" type="xs:boolean" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="COSESignatureTypeEnum" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="COSE_Sign" />
 			<xs:enumeration value="COSE_Sign1" />

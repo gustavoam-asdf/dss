@@ -810,7 +810,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
+        return EUDIPIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
     }
 
     /**

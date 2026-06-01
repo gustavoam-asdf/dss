@@ -132,6 +132,8 @@ public abstract class AbstractCBAdESTestSignature
             assertEquals(COSEStructureType.COSE_SIGN1 == getSignatureParameters().getCoseStructureType(),
                     cose.getCoseSignStructure() instanceof COSESign1);
 
+            assertEquals(getSignatureParameters().isTagged(), cose.isTagged());
+
             COSEProtectedHeader bodyProtectedHeader = cose.getBodyProtectedHeader();
             COSEProtectedHeader signerProtectedHeader = cose.getSignerProtectedHeader();
 
@@ -287,6 +289,7 @@ public abstract class AbstractCBAdESTestSignature
             } else {
                 fail("COSE structure type is not defined!");
             }
+            assertEquals(getSignatureParameters().isTagged(), signature.isCOSETagged());
         }
     }
 

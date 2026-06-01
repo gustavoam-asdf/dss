@@ -1,6 +1,18 @@
 package eu.europa.esig.dss.eaa.mdoc.signature;
 
+import eu.europa.esig.dss.cbades.COSEHeaderParameter;
+import eu.europa.esig.dss.cbades.COSEProtectedHeader;
+import eu.europa.esig.dss.cbades.COSESign;
+import eu.europa.esig.dss.cbades.COSESign1;
+import eu.europa.esig.dss.cbades.COSEUnprotectedHeader;
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
+import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
+import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.cbades.validation.CBAdESUHeaders;
+import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -12,17 +24,24 @@ import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAADisclosure;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.BaselineBCertificateSelector;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,6 +71,84 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
     @Override
     protected EAAType getEAAType() {
         return EAAType.ISO_IEC_MDOC;
+    }
+
+    @Override
+    protected void checkAdvancedSignatures(List<AdvancedSignature> signatures) {
+        super.checkAdvancedSignatures(signatures);
+
+        for (AdvancedSignature signature : signatures) {
+            assertInstanceOf(CBAdESSignature.class, signature);
+            CBAdESSignature cbadesSignature = (CBAdESSignature) signature;
+
+            CBORSignature cose = cbadesSignature.getCoseSignature();
+
+            CBAdESUHeaders cbAdESUHeaders = new CBAdESUHeaders(cose);
+            assertFalse(cbAdESUHeaders.isExist());
+
+            assertNotNull(cose.getContext());
+            assertEquals(COSESignatureType.COSE_SIGN1, cose.getContext());
+
+            assertNotNull(cose.getCoseSignStructure());
+            assertEquals(COSEStructureType.COSE_SIGN == getSignatureParameters().getCoseStructureType(),
+                    cose.getCoseSignStructure() instanceof COSESign);
+            assertInstanceOf(COSESign1.class, cose.getCoseSignStructure());
+
+            assertFalse(cose.isTagged());
+
+            COSEProtectedHeader bodyProtectedHeader = cose.getBodyProtectedHeader();
+            COSEProtectedHeader signerProtectedHeader = cose.getSignerProtectedHeader();
+
+            COSEUnprotectedHeader bodyUnprotectedHeader = cose.getBodyUnprotectedHeader();
+            COSEUnprotectedHeader signerUnprotectedHeader = cose.getSignerUnprotectedHeader();
+
+            assertNotNull(bodyProtectedHeader);
+            assertFalse(bodyProtectedHeader.isEmpty());
+            assertNull(signerProtectedHeader);
+
+            assertNotNull(bodyUnprotectedHeader);
+            assertEquals(SignatureLevel.CB_AdES_BASELINE_B == getSignatureParameters().getSignatureLevel(), bodyUnprotectedHeader.isEmpty());
+            assertNull(signerUnprotectedHeader);
+
+            Set<CBORObject> keySet = bodyProtectedHeader.getKeys();
+            assertTrue(Utils.isCollectionNotEmpty(keySet));
+            for (CBORObject signedPropertyKey : keySet) {
+                assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyKey));
+            }
+
+            CBORObject crit = bodyProtectedHeader.getHeader(COSEHeaderParameter.CRIT.cbor());
+            if (crit != null) {
+                assertTrue(crit.isArray());
+                assertInstanceOf(CBORArray.class, crit);
+
+                CBORArray critArray = (CBORArray) crit;
+                assertFalse(critArray.isEmpty());
+                for (CBORObject critItem : critArray.getValueAsList()) {
+                    assertTrue(critItem.isUnsignedInteger() || critItem.isNegativeInteger());
+                    assertInstanceOf(CBORSimpleObject.class, critItem);
+
+                    Long labelId = critItem.getValueAsLong();
+                    assertNotNull(labelId);
+
+                    assertTrue(CBORUtils.getSupportedProtectedCriticalHeaders().contains(critItem));
+                    assertTrue(CBORUtils.isRequiredCriticalHeader(critItem));
+                }
+            }
+
+        }
+    }
+
+    @Override
+    protected void checkStructureValidation(DiagnosticData diagnosticData) {
+        super.checkStructureValidation(diagnosticData);
+
+        for (SignatureWrapper signature : diagnosticData.getSignatures()) {
+            COSESignatureType coseSignatureType = signature.getCOSESignatureType();
+            assertNotNull(coseSignatureType);
+            assertEquals(COSESignatureType.COSE_SIGN1, coseSignatureType);
+            assertFalse(signature.isCOSETagged());
+            assertFalse(signature.isCounterSignature());
+        }
     }
 
     @Override

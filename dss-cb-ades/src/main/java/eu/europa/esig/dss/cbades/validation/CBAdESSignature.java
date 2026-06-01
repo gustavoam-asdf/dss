@@ -129,6 +129,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
         return cose.getContext();
     }
 
+    /**
+     * Gets whether the COSE signature structure is tagged
+     *
+     * @return whether the COSE signature structure is tagged
+     */
+    public boolean isTagged() {
+        return cose.isTagged();
+    }
+
     @Override
     public SignatureForm getSignatureForm() {
         return SignatureForm.CBAdES;

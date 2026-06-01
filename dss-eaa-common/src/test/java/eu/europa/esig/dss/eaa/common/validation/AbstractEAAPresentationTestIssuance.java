@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -56,11 +55,7 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
         assertNotNull(eaaPresentation.getName());
         assertNotNull(eaaPresentation.getMimeType());
 
-        try {
-            eaaPresentation.save("target/" + eaaPresentation.getName());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // eaaPresentation.save("target/" + eaaPresentation.getName());
 
         byte[] byteArray = DSSUtils.toByteArray(eaaPresentation);
         onDocumentSigned(byteArray);

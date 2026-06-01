@@ -111,7 +111,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
         if (signatureParameters.getSignatureLevel() == null) {
             signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
-            LOG.debug("SignatureLevel is absent and was set to {}", SignatureLevel.CB_AdES_BASELINE_B);
+            LOG.debug("SignatureLevel is absent and was set to '{}'", SignatureLevel.CB_AdES_BASELINE_B);
 
         } else if (SignatureLevel.CB_AdES_BASELINE_B != signatureParameters.getSignatureLevel()) {
             throw new IllegalArgumentException("Signature level must be CB-AdES-BASELINE-B!");
@@ -119,7 +119,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
         if (signatureParameters.getSignaturePackaging() == null) {
             signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-            LOG.debug("SignaturePackaging is absent and was set to {}", SignaturePackaging.ENVELOPING);
+            LOG.debug("SignaturePackaging is absent and was set to '{}'", SignaturePackaging.ENVELOPING);
 
         } else if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
             throw new IllegalArgumentException("Signature packaging must be ENVELOPING");
@@ -127,7 +127,12 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
         if (COSEStructureType.COSE_SIGN1 != signatureParameters.getCoseStructureType()) {
             signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
-            LOG.debug("COSEStructureType was enforced to {}", COSEStructureType.COSE_SIGN1);
+            LOG.debug("COSEStructureType was set to '{}'", COSEStructureType.COSE_SIGN1);
+        }
+
+        if (signatureParameters.isTagged()) {
+            signatureParameters.setTagged(false);
+            LOG.debug("COSE_Sign1 structure shall be untagged. The value was set to 'false'.");
         }
     }
 
