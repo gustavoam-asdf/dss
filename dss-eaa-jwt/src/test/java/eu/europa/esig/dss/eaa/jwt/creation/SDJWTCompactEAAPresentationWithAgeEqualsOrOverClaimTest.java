@@ -1,21 +1,26 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import org.junit.jupiter.api.BeforeEach;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationWithAgeEqualsOrOverClaimTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -24,8 +29,9 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
     void init() {
         payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("https://issuer.example.com");
-        payloadParameters.selectivelyDisclosable().setGivenName("John");
-        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(18, true);
+        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(30, true);
+        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(40, false);
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -52,35 +58,34 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
     }
 
     @Override
-    protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
-        super.checkEAADigestMatchers(diagnosticData);
-
-        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
-        List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(2, digestMatchers.size());
-
-        boolean givenNameSDFound = false;
-        boolean familyNameSDFound = false;
-        for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
-            assertNotNull(xmlDigestMatcher.getDisclosableClaim());
-            if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                givenNameSDFound = true;
-            } else if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                familyNameSDFound = true;
-            }
-        }
-        assertTrue(givenNameSDFound);
-        assertTrue(familyNameSDFound);
-    }
-
-    @Override
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
-        assertEquals("John", eaa.getHolderFirstName());
-        assertEquals("Doe", eaa.getHolderLastName());
+
+        boolean claimAgeEqualOrOverFound = false;
+        for (ClaimWrapper claimWrapper : eaa.getEAAPayload().getOtherClaims()) {
+            if (claimWrapper.getName().equals(SDJWTConstants.AGE_EQUAL_OR_OVER)) {
+                claimAgeEqualOrOverFound = true;
+                Map<String, ClaimWrapper> map = claimWrapper.getMap();
+                assertEquals(3, map.size());
+
+                ClaimWrapper equalOrOver18Claim = map.get("18");
+                assertNotNull(equalOrOver18Claim);
+                assertTrue(equalOrOver18Claim.getBoolean());
+
+                ClaimWrapper equalOrOver30Claim = map.get("30");
+                assertNotNull(equalOrOver30Claim);
+                assertTrue(equalOrOver30Claim.getBoolean());
+
+                ClaimWrapper equalOrOver40Claim = map.get("40");
+                assertNotNull(equalOrOver40Claim);
+                assertFalse(equalOrOver40Claim.getBoolean());
+            }
+        }
+
+        assertTrue(claimAgeEqualOrOverFound);
     }
 
     @Override

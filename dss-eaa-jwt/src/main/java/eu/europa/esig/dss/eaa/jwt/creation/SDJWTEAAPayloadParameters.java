@@ -16,6 +16,9 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
     /** Map of custom claims */
     private final List<SDJWTEAAClaim> claims = new ArrayList<>();
 
+    private final SDJWTClaimParameters selectivelyDisclosableParameters = new SDJWTClaimParameters();
+    private final SDJWTClaimParameters nonSelectivelyDisclosableParameters = new SDJWTClaimParameters();
+
     /** Decoy digest used to obscure amount of actually disclosed data claims */
     private final List<String> decoyDigests = new ArrayList<>(); // TODO : review
 
@@ -24,6 +27,14 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
      */
     public SDJWTEAAPayloadParameters() {
         // empty
+    }
+
+    public SDJWTClaimParameters selectivelyDisclosable() {
+        return selectivelyDisclosableParameters;
+    }
+
+    public SDJWTClaimParameters nonSelectivelyDisclosable() {
+        return nonSelectivelyDisclosableParameters;
     }
 
     /**

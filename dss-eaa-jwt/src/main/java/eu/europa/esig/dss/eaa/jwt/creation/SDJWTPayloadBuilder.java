@@ -31,6 +31,9 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     /** Builds disclosures */
     private SDJWTDisclosureBuilder disclosureBuilder = new DefaultSDJWTDisclosureBuilder();
 
+    /** Builds known and custom claims */
+    private SDJWTEAAClaimBuilder claimBuilder = new DefaultSDJWTEAAClaimBuilder();
+
     /**
      * Sets a disclosure builder.
      * Default : {@code eu.europa.esig.dss.eaa.jwt.creation.DefaultSDJWTDisclosureBuilder}
@@ -40,6 +43,17 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     public void setDisclosureBuilder(SDJWTDisclosureBuilder disclosureBuilder) {
         Objects.requireNonNull(disclosureBuilder, "Disclosure builder cannot be null!");
         this.disclosureBuilder = disclosureBuilder;
+    }
+
+    /**
+     * Sets a claim builder.
+     * Default : {@code eu.europa.esig.dss.eaa.jwt.creation.DefaultSDJWTEAAClaimBuilder}
+     *
+     * @param claimBuilder {@link SDJWTEAAClaimBuilder}
+     */
+    public void setClaimBuilder(final SDJWTEAAClaimBuilder claimBuilder) {
+        Objects.requireNonNull(claimBuilder, "Claim builder cannot be null!");
+        this.claimBuilder = claimBuilder;
     }
 
     @Override
@@ -83,7 +97,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             payload.addChild(SDJWTEAAClaim.create(SDJWTConstants.SHORT_LIVED, null));
         }
 
-        payload.addChildren(payloadParameters.getClaims());
+        payload.addChildren(claimBuilder.buildClaims(payloadParameters));
 
         if (Utils.isCollectionNotEmpty(payloadParameters.getDecoyDigests())) {
             payloadParameters.getDecoyDigests().forEach(payload::addDecoyDigest);

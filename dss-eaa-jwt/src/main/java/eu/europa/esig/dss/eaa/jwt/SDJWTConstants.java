@@ -256,7 +256,7 @@ public class SDJWTConstants {
     /** SD-JWT payload "credentialSubject" header */
     public static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
-    // PID Rulebook clams (last synchronized with ARF v2.8.0)
+    // PID Rulebook claims (last synchronized with ARF v2.8.0)
     // {@see https://github.com/eu-digital-identity-wallet/eudi-doc-attestation-rulebooks-catalog/blob/main/rulebooks/pid/pid-rulebook.md}
 
     /** SD-JWT payload "date_of_expiry" header */
@@ -274,6 +274,9 @@ public class SDJWTConstants {
     /** End-User's address's house number component */
     public static final String USER_ADDRESS_HOUSE_NUMBER = "house_number";
 
+    /** SD-JWT payload "document_number" header */
+    public static final String DOCUMENT_NUMBER = "document_number";
+
     /** SD-JWT payload "issuing_authority" header */
     public static final String ISSUING_AUTHORITY = "issuing_authority";
 
@@ -282,6 +285,15 @@ public class SDJWTConstants {
 
     /** SD-JWT payload "issuing_jurisdiction" header */
     public static final String ISSUING_JURISDICTION = "issuing_jurisdiction";
+
+    /** SD-JWT payload "age_in_years" header */
+    public static final String AGE_IN_YEARS = "age_in_years";
+
+    /** SD-JWT payload "age_birth_year" header */
+    public static final String AGE_BIRTH_YEAR = "age_birth_year";
+
+    /** SD-JWT payload "age_equal_or_over" header */
+    public static final String AGE_EQUAL_OR_OVER = "age_equal_or_over";
 
     /** SD-JWT payload "trust_anchor" header */
     public static final String TRUST_ANCHOR = "trust_anchor";
