@@ -1824,8 +1824,8 @@
 			<xs:element name="AdministrativeNumber" type="Claim" minOccurs="0" />
 			<xs:element name="Height" type="Claim" minOccurs="0" />
 			<xs:element name="Weight" type="Claim" minOccurs="0" />
-			<xs:element name="EyeColor" type="Claim" minOccurs="0" />
-			<xs:element name="HairColor" type="Claim" minOccurs="0" />
+			<xs:element name="EyeColour" type="Claim" minOccurs="0" />
+			<xs:element name="HairColour" type="Claim" minOccurs="0" />
 			<xs:element name="ResidentAddress" type="Claim" minOccurs="0" />
 			<xs:element name="PortraitCaptureDate" type="Claim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="Claim" minOccurs="0" />
@@ -1942,6 +1942,7 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="StatusList" type="StatusListClaim" minOccurs="0" />
+					<xs:element name="IdentifierList" type="StatusListClaim" minOccurs="0" />
 					<xs:element name="Index" type="Claim" minOccurs="0" />
 					<xs:element name="Uri" type="Claim" minOccurs="0" />
 					<xs:element name="Type" type="Claim" minOccurs="0" />
@@ -1957,6 +1958,7 @@
 				<xs:sequence>
 					<xs:element name="Index" type="Claim" minOccurs="0" />
 					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Certificate" type="Claim" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -1975,9 +1977,24 @@
 					<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element name="KID" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element name="X509Url" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="KeyAuthorizations" type="KeyAuthorizations" minOccurs="0" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="KeyAuthorizations">
+		<xs:sequence>
+			<xs:element name="AuthorizedNamespace" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="AuthorizedDataElements" type="AuthorizedDataElements" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="AuthorizedDataElements">
+		<xs:sequence>
+			<xs:element name="DataElement" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="namespace" type="xs:string" use="required" />
 	</xs:complexType>
 
 	<xs:complexType name="AddressClaim">

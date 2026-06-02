@@ -1,0 +1,62 @@
+package eu.europa.esig.dss.eaa.mdoc.claim;
+
+import eu.europa.esig.dss.model.eaa.claim.Claim;
+import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
+import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Contains all the data elements the key may sign or MAC.
+ *
+ */
+public class MdocClaimAuthorizedDataElements extends MdocClaimMap {
+
+    private static final long serialVersionUID = -6858102371478589502L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MdocClaimAuthorizedDataElements.class);
+
+    /**
+     * Constructor to initialize MdocClaimAuthorizedDataElements from a ClaimMap
+     *
+     * @param value {@link ClaimMap}
+     */
+    public MdocClaimAuthorizedDataElements(ClaimMap value) {
+        super(value.getName(), value.getNamespace(), value.getMapValue(), value.isSelectivelyDisclosable(), value.getParent());
+    }
+
+    /**
+     * Gets the map of namespaces and applicable data elements the key is allowed to sign or MAC
+     *
+     * @return a map of {@link String} namespaces and lists of {@link String} data elements
+     */
+    public Map<String, List<String>> getDataElements() {
+        Map<String, Claim> claimMap = getMapValue();
+        if (Utils.isMapEmpty(claimMap)) {
+            return Collections.emptyMap();
+        }
+        final Map<String, List<String>> result = new LinkedHashMap<>();
+        for (Map.Entry<String, Claim> mapEntry : claimMap.entrySet()) {
+            List<String> dataElements = result.computeIfAbsent(mapEntry.getKey(), v -> new ArrayList<>());
+            if (mapEntry.getValue().isArrayValueType()) {
+                mapEntry.getValue().getListValue().forEach(v -> {
+                    if (v.isStringValueType()) {
+                        dataElements.add(v.getValueAsString());
+                    } else {
+                        LOG.warn("The entry of DataElementsArray shall be a type of CBOR String!");
+                    }
+                });
+            } else {
+                LOG.warn("The value of entry of AuthorizedDataElements shall be a type of CBOR Array!");
+            }
+        }
+        return result;
+    }
+
+}

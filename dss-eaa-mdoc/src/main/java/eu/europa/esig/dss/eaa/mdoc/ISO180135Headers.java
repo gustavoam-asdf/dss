@@ -46,7 +46,7 @@ public final class ISO180135Headers {
     public static final String EXPIRY_DATE = "expiry_date";
 
     /** mDL holder’s eye colour */
-    public static final String EYE_COLOR = "eye_colour";
+    public static final String EYE_COLOUR = "eye_colour";
 
     /** Last name, surname, or primary identifier, of the mDL holder */
     public static final String FAMILY_NAME = "family_name";
@@ -61,7 +61,7 @@ public final class ISO180135Headers {
     public static final String GIVEN_NAME_NATIONAL_CHARACTER = "given_name_national_character";
 
     /** mDL holder’s hair colour */
-    public static final String HAIR_COLOR = "hair_colour";
+    public static final String HAIR_COLOUR = "hair_colour";
 
     /** mDL holder’s height in centimetres */
     public static final String HEIGHT = "height";

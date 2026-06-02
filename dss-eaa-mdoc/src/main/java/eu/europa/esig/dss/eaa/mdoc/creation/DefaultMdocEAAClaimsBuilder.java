@@ -68,12 +68,12 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         addClaim(result, getDocumentNumber(selectivelyDisclosable));
         addClaim(result, getPortrait(selectivelyDisclosable));
         addClaim(result, getDrivingPrivileges(selectivelyDisclosable));
-        addClaim(result, getUNDistinguishingSign(selectivelyDisclosable));
+        addClaim(result, getDistinguishingSign(selectivelyDisclosable));
         addClaim(result, getAdministrativeNumber(selectivelyDisclosable));
         addClaim(result, getHeight(selectivelyDisclosable));
         addClaim(result, getWeight(selectivelyDisclosable));
-        addClaim(result, getEyeColor(selectivelyDisclosable));
-        addClaim(result, getHairColor(selectivelyDisclosable));
+        addClaim(result, getEyeColour(selectivelyDisclosable));
+        addClaim(result, getHairColour(selectivelyDisclosable));
         addClaim(result, getResidentAddress(selectivelyDisclosable));
         addClaim(result, getPortraitCaptureDate(selectivelyDisclosable));
         addClaim(result, getAgeInYears(selectivelyDisclosable));
@@ -231,7 +231,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getPlaceOfBirth(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getPlaceOfBirth(selectivelyDisclosable);
+        if (selectivelyDisclosable.getPlaceOfBirth() != null) {
+            return ISO232201MIDEAAClaimsBuilder.getInstance().getPlaceOfBirth(selectivelyDisclosable);
+        }
+        if (selectivelyDisclosable.getPlaceOfBirthCountry() != null ||
+                selectivelyDisclosable.getPlaceOfBirthLocality() != null ||
+                selectivelyDisclosable.getPlaceOfBirthRegion() != null) {
+            return EUDIPIDEAAClaimsBuilder.getInstance().getPlaceOfBirth(selectivelyDisclosable);
+        }
+        return null;
     }
 
     /**
@@ -359,8 +367,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getUNDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO180135MDLEAAClaimsBuilder.getInstance().getUNDistinguishingSign(selectivelyDisclosable);
+    protected MdocEAAClaim getDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        return ISO180135MDLEAAClaimsBuilder.getInstance().getDistinguishingSign(selectivelyDisclosable);
     }
 
     /**
@@ -399,8 +407,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getEyeColor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO180135MDLEAAClaimsBuilder.getInstance().getEyeColor(selectivelyDisclosable);
+    protected MdocEAAClaim getEyeColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        return ISO180135MDLEAAClaimsBuilder.getInstance().getEyeColour(selectivelyDisclosable);
     }
 
     /**
@@ -409,8 +417,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getHairColor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO180135MDLEAAClaimsBuilder.getInstance().getHairColor(selectivelyDisclosable);
+    protected MdocEAAClaim getHairColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        return ISO180135MDLEAAClaimsBuilder.getInstance().getHairColour(selectivelyDisclosable);
     }
 
     /**
@@ -972,7 +980,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
             if (selectivelyDisclosable.getPlaceOfBirth() != null) {
                 return create(ISO180135Headers.BIRTH_PLACE, selectivelyDisclosable.getPlaceOfBirth());
             }
-            return null;
+            return super.getPlaceOfBirth(selectivelyDisclosable);
         }
 
         @Override
@@ -1050,9 +1058,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getUNDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getUNDistinguishingSign() != null) {
-                return create(ISO180135Headers.UN_DISTINGUISHING_SIGN, selectivelyDisclosable.getUNDistinguishingSign());
+        protected MdocEAAClaim getDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getDistinguishingSign() != null) {
+                return create(ISO180135Headers.UN_DISTINGUISHING_SIGN, selectivelyDisclosable.getDistinguishingSign());
             }
             return null;
         }
@@ -1082,17 +1090,17 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getEyeColor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getEyeColor() != null) {
-                return create(ISO180135Headers.EYE_COLOR, selectivelyDisclosable.getEyeColor());
+        protected MdocEAAClaim getEyeColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getEyeColour() != null) {
+                return create(ISO180135Headers.EYE_COLOUR, selectivelyDisclosable.getEyeColour());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getHairColor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getHairColor() != null) {
-                return create(ISO180135Headers.HAIR_COLOR, selectivelyDisclosable.getHairColor());
+        protected MdocEAAClaim getHairColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getHairColour() != null) {
+                return create(ISO180135Headers.HAIR_COLOUR, selectivelyDisclosable.getHairColour());
             }
             return null;
         }
@@ -1176,7 +1184,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(ISO180135Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentPostalCode());
+                return create(ISO180135Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
             }
             return null;
         }
@@ -1320,7 +1328,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
             if (selectivelyDisclosable.getPlaceOfBirth() != null) {
                 return create(ISO232202Headers.BIRTHPLACE, selectivelyDisclosable.getPlaceOfBirth());
             }
-            return null;
+            return super.getPlaceOfBirth(selectivelyDisclosable);
         }
 
         @Override
@@ -1459,7 +1467,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentPostalCode());
+                return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
             }
             return null;
         }
@@ -1475,7 +1483,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getFingerprint(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getSignatureUsualMark() != null) {
-                return create(ISO232202Headers.FINGERPRINT, selectivelyDisclosable.getSignatureUsualMark());
+                return create(ISO232202Headers.FINGERPRINT, selectivelyDisclosable.getFingerprint());
             }
             return null;
         }
@@ -1667,7 +1675,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getAdministrativeIssuanceDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeIssuanceDate() != null) {
-                return create(ISO232202Headers.ISSUE_DATE, selectivelyDisclosable.getAdministrativeIssuanceDate());
+                return create(ISO232202Headers.ISSUE_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getAdministrativeIssuanceDate()));
             }
             return null;
         }
@@ -1675,7 +1683,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getAdministrativeExpirationDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeExpirationDate() != null) {
-                return create(ISO232202Headers.EXPIRY_DATE, selectivelyDisclosable.getAdministrativeExpirationDate());
+                return create(ISO232202Headers.EXPIRY_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getAdministrativeExpirationDate()));
             }
             return null;
         }
@@ -1771,7 +1779,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
                 }
                 return create(EUDIPIDHeaders.PLACE_OF_BIRTH, placeOfBirth);
             }
-            return null;
+            return super.getPlaceOfBirth(selectivelyDisclosable);
         }
 
         @Override
@@ -1889,7 +1897,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentPostalCode());
+                return create(EUDIPIDHeaders.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
             }
             return null;
         }

@@ -726,9 +726,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderEyeColor() {
+    public ClaimWrapper getHolderEyeColour() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getEyeColor());
+            return getClaim(xmlEAAPayload.getEyeColour());
         }
         return null;
     }
@@ -739,9 +739,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderHairColor() {
+    public ClaimWrapper getHolderHairColour() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getHairColor());
+            return getClaim(xmlEAAPayload.getHairColour());
         }
         return null;
     }
@@ -1498,11 +1498,11 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getWeight() != null) {
             claimList.add(getClaim(xmlEAAPayload.getWeight()));
         }
-        if (xmlEAAPayload.getEyeColor() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getEyeColor()));
+        if (xmlEAAPayload.getEyeColour() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getEyeColour()));
         }
-        if (xmlEAAPayload.getHairColor() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getHairColor()));
+        if (xmlEAAPayload.getHairColour() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getHairColour()));
         }
         if (xmlEAAPayload.getResidentAddress() != null) {
             claimList.add(getClaim(xmlEAAPayload.getResidentAddress()));

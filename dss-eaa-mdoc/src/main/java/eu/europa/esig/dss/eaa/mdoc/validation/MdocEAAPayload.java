@@ -376,13 +376,13 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getEyeColor() {
-        return getAsString(forIso180135(ISO180135Headers.EYE_COLOR));
+    public ClaimString getEyeColour() {
+        return getAsString(forIso180135(ISO180135Headers.EYE_COLOUR));
     }
 
     @Override
-    public ClaimString getHairColor() {
-        return getAsString(forIso180135(ISO180135Headers.HAIR_COLOR));
+    public ClaimString getHairColour() {
+        return getAsString(forIso180135(ISO180135Headers.HAIR_COLOUR));
     }
 
     @Override

@@ -1072,6 +1072,7 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setPhoneNumberVerified(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPhoneNumberVerified()));
 		PlaceOfBirthClaimWrapper userPlaceOfBirth = eaaPayloadProxy.getHolderPlaceOfBirth();
 		if (userPlaceOfBirth != null) {
+			xmlEAAPayload.setPlaceOfBirth(getXmlDisclosableClaim(userPlaceOfBirth, userPlaceOfBirth.isSelectivelyDisclosable()));
 			xmlEAAPayload.setPlaceOfBirthCity(getXmlDisclosableClaim(userPlaceOfBirth.getCity(), userPlaceOfBirth.isSelectivelyDisclosable()));
 			xmlEAAPayload.setPlaceOfBirthCountry(getXmlDisclosableClaim(userPlaceOfBirth.getCountry(), userPlaceOfBirth.isSelectivelyDisclosable()));
 			xmlEAAPayload.setPlaceOfBirthRegion(getXmlDisclosableClaim(userPlaceOfBirth.getRegion(), userPlaceOfBirth.isSelectivelyDisclosable()));
@@ -1094,8 +1095,8 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setAdministrativeNumber(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityAdministrativeNumber()));
 		xmlEAAPayload.setHeight(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHeight()));
 		xmlEAAPayload.setWeight(getXmlDisclosableClaim(eaaPayloadProxy.getHolderWeight()));
-		xmlEAAPayload.setEyeColor(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEyeColor()));
-		xmlEAAPayload.setHairColor(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHairColor()));
+		xmlEAAPayload.setEyeColour(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEyeColour()));
+		xmlEAAPayload.setHairColour(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHairColour()));
 		xmlEAAPayload.setResidentAddress(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddress()));
 		xmlEAAPayload.setPortraitCaptureDate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortraitCaptureDate()));
 		xmlEAAPayload.setAgeInYears(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeInYears()));

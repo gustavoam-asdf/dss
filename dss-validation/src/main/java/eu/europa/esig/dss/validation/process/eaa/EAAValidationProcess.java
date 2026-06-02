@@ -132,7 +132,7 @@ public class EAAValidationProcess extends AbstractBasicValidationProcess<XmlVali
 
     @Override
     protected ChainItem<XmlValidationProcessEAA> signatureAcceptanceValidation(final XmlSAV xmlSAV) {
-        return new SignatureAcceptanceValidationResultCheck<>(i18nProvider, result, xmlSAV, token, getFailLevelRule()) {
+        return new SignatureAcceptanceValidationResultCheck<XmlValidationProcessEAA>(i18nProvider, result, xmlSAV, token, getFailLevelRule()) {
 
             @Override
             protected MessageTag getMessageTag() {

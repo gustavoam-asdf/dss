@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.claim;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
@@ -31,6 +32,12 @@ public class SDJWTClaimStatusList extends SDJWTClaimMap implements ClaimStatusLi
     @Override
     public ClaimString getUri() {
         return getAsString(SDJWTConstants.STATUS_URI);
+    }
+
+    @Override
+    public ClaimByteString getCertificate() {
+        // not defined (updated with draft-ietf-oauth-status-list-20)
+        return null;
     }
 
 }

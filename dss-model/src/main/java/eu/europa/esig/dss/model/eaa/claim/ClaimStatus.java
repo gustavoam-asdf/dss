@@ -15,6 +15,13 @@ public interface ClaimStatus extends Claim {
      */
     ClaimStatusList getStatusList();
 
+    /**
+     * Gets the embedded identifier_list claim value
+     *
+     * @return {@link ClaimStatusList}
+     */
+    ClaimStatusList getIdentifierList();
+
     /* ETSI TS 119 472-1 status definition */
 
     /**

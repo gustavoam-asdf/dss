@@ -20,4 +20,12 @@ public interface ClaimStatusList extends Claim {
      */
     ClaimString getUri();
 
+    /**
+     * Gets a certificate containing the public key that signed or sealed the top-level
+     * certificate in the x5chain element in the MSO revocation list structure
+     *
+     * @return {@link ClaimByteString}
+     */
+    ClaimByteString getCertificate();
+
 }

@@ -396,7 +396,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimNumber}
      */
-    ClaimString getEyeColor();
+    ClaimString getEyeColour();
 
     /**
      * Gets the mDL holder’s hair colour. The value shall be one of the following: “bald”, “black”,
@@ -404,7 +404,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimNumber}
      */
-    ClaimString getHairColor();
+    ClaimString getHairColour();
 
     /**
      * Gets the place where the mDL holder resides and/or may be contacted (street/house number, municipality etc.).

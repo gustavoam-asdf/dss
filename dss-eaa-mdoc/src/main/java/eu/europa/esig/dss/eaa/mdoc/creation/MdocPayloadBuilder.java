@@ -222,7 +222,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         Objects.requireNonNull(payloadParameters.getDeviceKey(), "DeviceKey shall be provided for an mdoc payload building!");
         final CBORMap deviceKeyInfo = new CBORMap();
         deviceKeyInfo.put(MdocConstants.DEVICE_KEY, coseKeyFactory.create(payloadParameters.getDeviceKey()));
-        CBORMap keyAuthorizations = buildKeyAuthorizations(payloadParameters.getKeyAuthorizationsMap());
+        CBORMap keyAuthorizations = buildKeyAuthorizations(payloadParameters.getKeyAuthorizationsNamespaces(), payloadParameters.getKeyAuthorizationsDataElements());
         if (keyAuthorizations != null && !keyAuthorizations.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_AUTHORIZATIONS, keyAuthorizations);
         }
@@ -245,17 +245,23 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   DataElementsArray = [+ DataElementIdentifier]
      * }
      *
+     * @param keyAuthorizationsNamespaces a list of {@link String}s
+     * @param keyAuthorizationsDataElements a map of {@link String} namespaces and corresponding {@link String} data elements
      * @return {@link CBORMap}
      */
-    protected CBORMap buildKeyAuthorizations(Map<String, List<String>> keyAuthorizationsMap) {
-        if (Utils.isMapEmpty(keyAuthorizationsMap)) {
+    protected CBORMap buildKeyAuthorizations(List<String> keyAuthorizationsNamespaces, Map<String, List<String>> keyAuthorizationsDataElements) {
+        if (Utils.isCollectionEmpty(keyAuthorizationsNamespaces) && Utils.isMapEmpty(keyAuthorizationsDataElements)) {
             return null;
         }
         final CBORMap keyAuthorizations = new CBORMap();
-        keyAuthorizations.put(MdocConstants.NAMESPACES, new CBORArray(keyAuthorizationsMap.keySet()));
-        CBORMap authorizedDataElements = new CBORMap();
-        keyAuthorizationsMap.forEach((k, v) -> authorizedDataElements.put(k, new CBORArray(v)));
-        keyAuthorizations.put(MdocConstants.DATA_ELEMENTS, authorizedDataElements);
+        if (Utils.isCollectionNotEmpty(keyAuthorizationsNamespaces)) {
+            keyAuthorizations.put(MdocConstants.NAMESPACES, new CBORArray(keyAuthorizationsNamespaces));
+        }
+        if (Utils.isMapNotEmpty(keyAuthorizationsDataElements)) {
+            CBORMap authorizedDataElements = new CBORMap();
+            keyAuthorizationsDataElements.forEach((k, v) -> authorizedDataElements.put(k, new CBORArray(v)));
+            keyAuthorizations.put(MdocConstants.DATA_ELEMENTS, authorizedDataElements);
+        }
         return keyAuthorizations;
     }
 

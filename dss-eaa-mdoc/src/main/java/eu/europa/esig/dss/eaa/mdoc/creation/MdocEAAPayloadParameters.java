@@ -30,9 +30,14 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private PublicKey deviceKey;
 
     /**
+     * (Optional) A list of namespaces the device key may sign.
+     */
+    private List<String> keyAuthorizationsNamespaces;
+
+    /**
      * (Optional) A map between namespaces and corresponding data element identifiers, the device key may sign.
      */
-    private Map<String, List<String>> keyAuthorizationsMap;
+    private Map<String, List<String>> keyAuthorizationsDataElements;
 
     /**
      * (Optional) May contain extra info about the key. Positive integers for KeyInfo labels are RFU.
@@ -142,21 +147,39 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
+     * Gets a list of namespaces the device key may sign.
+     *
+     * @return a list of namespaces
+     */
+    public List<String> getKeyAuthorizationsNamespaces() {
+        return keyAuthorizationsNamespaces;
+    }
+
+    /**
+     * Sets a list of namespaces the device key may sign.
+     *
+     * @param keyAuthorizationsNamespaces a list of {@link String} namespaces
+     */
+    public void setKeyAuthorizationsNamespaces(List<String> keyAuthorizationsNamespaces) {
+        this.keyAuthorizationsNamespaces = keyAuthorizationsNamespaces;
+    }
+
+    /**
      * Gets a map between namespaces and corresponding data element identifiers, the device key may sign.
      *
      * @return a map between namespaces and data element identifiers
      */
-    public Map<String, List<String>> getKeyAuthorizationsMap() {
-        return keyAuthorizationsMap;
+    public Map<String, List<String>> getKeyAuthorizationsDataElements() {
+        return keyAuthorizationsDataElements;
     }
 
     /**
      * (Optional) Sets a map between namespaces and corresponding data element identifiers, the device key may sign.
      *
-     * @param keyAuthorizationsMap a map between namespaces and data element identifiers
+     * @param keyAuthorizationsDataElements a map between namespaces and data element identifiers
      */
-    public void setKeyAuthorizations(Map<String, List<String>> keyAuthorizationsMap) {
-        this.keyAuthorizationsMap = keyAuthorizationsMap;
+    public void setKeyAuthorizationsDataElements(Map<String, List<String>> keyAuthorizationsDataElements) {
+        this.keyAuthorizationsDataElements = keyAuthorizationsDataElements;
     }
 
     /**
@@ -341,7 +364,7 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
      * @param url {@link String} where the status_list can be accessed from
      */
     public void setStatusList(int index, String url) {
-        this.identifierList = new EAARevocationList(index, url);
+        this.statusList = new EAARevocationList(index, url);
     }
 
     /**
@@ -353,7 +376,7 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
      *                         the top-level certificate in the x5chain element in the MSO revocation list structure
      */
     public void setStatusList(int index, String url, CertificateToken certificateToken) {
-        this.identifierList = new EAARevocationList(index, url, certificateToken);
+        this.statusList = new EAARevocationList(index, url, certificateToken);
     }
 
     @Override

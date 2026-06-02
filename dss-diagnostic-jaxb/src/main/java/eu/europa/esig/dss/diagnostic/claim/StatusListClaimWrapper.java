@@ -57,6 +57,20 @@ public class StatusListClaimWrapper extends ClaimWrapper {
         return null;
     }
 
+    /**
+     * Gets the certificate containing the public key that signed or sealed the top-level
+     * certificate in the x5chain element in the MSO revocation list structure
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public ClaimWrapper getCertificate() {
+        XmlClaim certificate = getWrapped().getCertificate();
+        if (certificate != null) {
+            return new ClaimWrapper(certificate, this);
+        }
+        return null;
+    }
+
     @Override
     public boolean isMap() {
         return true;
@@ -72,6 +86,10 @@ public class StatusListClaimWrapper extends ClaimWrapper {
         ClaimWrapper uri = getUri();
         if (uri != null) {
             result.put(uri.getName(), uri);
+        }
+        ClaimWrapper certificate = getCertificate();
+        if (certificate != null) {
+            result.put(certificate.getName(), certificate);
         }
         return result;
     }

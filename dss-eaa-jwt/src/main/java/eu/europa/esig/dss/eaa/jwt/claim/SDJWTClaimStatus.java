@@ -34,6 +34,12 @@ public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
     }
 
     @Override
+    public ClaimStatusList getIdentifierList() {
+        // not defined
+        return null;
+    }
+
+    @Override
     public ClaimNumber getIndex() {
         return getAsNumber(SDJWTConstants.STATUS_INDEX);
     }

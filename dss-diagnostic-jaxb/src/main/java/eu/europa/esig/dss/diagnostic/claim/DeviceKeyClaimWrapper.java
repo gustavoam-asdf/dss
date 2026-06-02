@@ -1,12 +1,15 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAuthorizedDataElements;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDeviceKeyClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlX509Certificate;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -81,6 +84,34 @@ public class DeviceKeyClaimWrapper extends ClaimWrapper {
      */
     public List<String> getX509URLs() {
         return getWrapped().getX509Url();
+    }
+
+    /**
+     * Gets a list namespaces the key is authorized to sign or MAC
+     *
+     * @return a list of {@link String}s
+     */
+    public List<String> getAuthorizedNamespaces() {
+        if (getWrapped().getKeyAuthorizations() != null && getWrapped().getKeyAuthorizations().getAuthorizedNamespace() != null) {
+            return getWrapped().getKeyAuthorizations().getAuthorizedNamespace();
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Gets a map of namespaces and corresponding data elements the key is authorized to sign or MAC
+     *
+     * @return a map of {@link String} namespaces of lists of {@link String} data elements
+     */
+    public Map<String, List<String>> getAuthorizedDataElements() {
+        if (getWrapped().getKeyAuthorizations() != null && getWrapped().getKeyAuthorizations().getAuthorizedDataElements() != null) {
+            final Map<String, List<String>> result = new LinkedHashMap<>();
+            for (XmlAuthorizedDataElements xmlAuthorizedDataElements : getWrapped().getKeyAuthorizations().getAuthorizedDataElements()) {
+                result.put(xmlAuthorizedDataElements.getNamespace(), xmlAuthorizedDataElements.getDataElement());
+            }
+            return result;
+        }
+        return Collections.emptyMap();
     }
 
     @Override

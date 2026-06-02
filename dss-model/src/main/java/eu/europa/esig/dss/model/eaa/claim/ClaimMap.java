@@ -54,7 +54,7 @@ public abstract class ClaimMap extends AbstractClaim {
      */
     public ClaimMap(final String name, final String namespace, final Map<?,?> value,
                     final boolean selectivelyDisclosable, final Claim parent) {
-        super(name, selectivelyDisclosable, parent);
+        super(name, namespace, selectivelyDisclosable, parent);
         this.value = value;
     }
 

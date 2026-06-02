@@ -4,6 +4,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectIdClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAuthorizedDataElements;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
@@ -15,12 +16,13 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegeCodesClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDrivingPrivilegesClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAADocument;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
@@ -51,9 +53,9 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
@@ -346,8 +348,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setAdministrativeNumber(getXmlClaim(eaaPayload.getAdministrativeNumber(), supportedClaims));
         xmlEAAPayload.setHeight(getXmlClaim(eaaPayload.getHeight(), supportedClaims));
         xmlEAAPayload.setWeight(getXmlClaim(eaaPayload.getWeight(), supportedClaims));
-        xmlEAAPayload.setEyeColor(getXmlClaim(eaaPayload.getEyeColor(), supportedClaims));
-        xmlEAAPayload.setHairColor(getXmlClaim(eaaPayload.getHairColor(), supportedClaims));
+        xmlEAAPayload.setEyeColour(getXmlClaim(eaaPayload.getEyeColour(), supportedClaims));
+        xmlEAAPayload.setHairColour(getXmlClaim(eaaPayload.getHairColour(), supportedClaims));
         xmlEAAPayload.setResidentAddress(getXmlClaim(eaaPayload.getResidentAddress(), supportedClaims));
         xmlEAAPayload.setPortraitCaptureDate(getXmlClaim(eaaPayload.getPortraitCaptureDate(), supportedClaims));
         xmlEAAPayload.setAgeInYears(getXmlClaim(eaaPayload.getAgeInYears(), supportedClaims));
@@ -461,6 +463,9 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claimStatus.getStatusList() != null) {
             xmlStatus.setStatusList(getXmlStatusList(claimStatus.getStatusList(), claimSupportedClaims));
         }
+        if (claimStatus.getIdentifierList() != null) {
+            xmlStatus.setIdentifierList(getXmlStatusList(claimStatus.getIdentifierList(), claimSupportedClaims));
+        }
         if (claimStatus.getIndex() != null) {
             xmlStatus.setIndex(getXmlClaim(claimStatus.getIndex(), claimSupportedClaims));
         }
@@ -490,6 +495,9 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         }
         if (claimStatusList.getUri() != null) {
             xmlStatusList.setUri(getXmlClaim(claimStatusList.getUri(), claimSupportedClaims));
+        }
+        if (claimStatusList.getCertificate() != null) {
+            xmlStatusList.setCertificate(getXmlClaim(claimStatusList.getCertificate(), claimSupportedClaims));
         }
         xmlStatusList.getEntry().addAll(getOtherClaims(claimStatusList, claimSupportedClaims));
         return xmlStatusList;
@@ -530,7 +538,30 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 xmlDeviceKeyClaim.getX509Url().add(url);
             }
         }
+        xmlDeviceKeyClaim.setKeyAuthorizations(getXmlKeyAuthorizations(deviceKey.getAuthorizedNamespaces(), deviceKey.getAuthorizedDataElements()));
         return xmlDeviceKeyClaim;
+    }
+
+    private XmlKeyAuthorizations getXmlKeyAuthorizations(List<String> authorizedNamespaces, Map<String, List<String>> authorizedDataElements) {
+        if (Utils.isCollectionEmpty(authorizedNamespaces) && Utils.isMapEmpty(authorizedDataElements)) {
+            return null;
+        }
+
+        final XmlKeyAuthorizations xmlKeyAuthorizations = new XmlKeyAuthorizations();
+        if (Utils.isCollectionNotEmpty(authorizedNamespaces)) {
+            xmlKeyAuthorizations.getAuthorizedNamespace().addAll(authorizedNamespaces);
+        }
+        if (Utils.isMapNotEmpty(authorizedDataElements)) {
+            authorizedDataElements.forEach((k, v) -> xmlKeyAuthorizations.getAuthorizedDataElements().add(getXmlAuthorizedDataElements(k, v)));
+        }
+        return xmlKeyAuthorizations;
+    }
+
+    private XmlAuthorizedDataElements getXmlAuthorizedDataElements(String namespace, List<String> dataElements) {
+        XmlAuthorizedDataElements xmlAuthorizedDataElement = new XmlAuthorizedDataElements();
+        xmlAuthorizedDataElement.setNamespace(namespace);
+        xmlAuthorizedDataElement.getDataElement().addAll(dataElements);
+        return xmlAuthorizedDataElement;
     }
 
     private XmlValidityInfoClaim getXmlValidityInfoClaim(ClaimValidityInfo validityInfo, List<XmlClaim> supportedClaims) {
@@ -766,8 +797,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claimAgeOverNN == null) {
             return null;
         }
-        XmlAgeOverNNClaim xmlAgeOverNNClaim = new XmlAgeOverNNClaim();
-        appendGenericInfo(xmlAgeOverNNClaim, claimAgeOverNN, supportedClaims);
+        XmlAgeOverNNClaim xmlAgeOverNNClaim = getXmlClaim(claimAgeOverNN, new XmlAgeOverNNClaim(), supportedClaims);
         if (claimAgeOverNN.getAge() != null) {
             xmlAgeOverNNClaim.setAge(claimAgeOverNN.getAge());
         }
@@ -792,8 +822,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (claimBiometricTemplateXX == null) {
             return null;
         }
-        XmlBiometricTemplateXXClaim xmlBiometricTemplateXXClaim = new XmlBiometricTemplateXXClaim();
-        appendGenericInfo(xmlBiometricTemplateXXClaim, claimBiometricTemplateXX, supportedClaims);
+        XmlBiometricTemplateXXClaim xmlBiometricTemplateXXClaim = getXmlClaim(claimBiometricTemplateXX, new XmlBiometricTemplateXXClaim(), supportedClaims);
         if (claimBiometricTemplateXX.getType() != null) {
             xmlBiometricTemplateXXClaim.setType(claimBiometricTemplateXX.getType());
         }

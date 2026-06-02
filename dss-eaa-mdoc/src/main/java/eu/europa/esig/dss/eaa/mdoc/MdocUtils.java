@@ -134,7 +134,7 @@ public final class MdocUtils {
             } else if (cborObject.isMap()) {
                 return new MdocClaimMap(claimName, namespace, cborObject.getValueAsMap(), selectivelyDisclosable, parent);
             } else if (cborObject.isNull()) {
-                return new ClaimNull(claimName, selectivelyDisclosable, parent);
+                return new ClaimNull(claimName, namespace, selectivelyDisclosable, parent);
             } else if (cborObject.isUnicodeString()) {
                 return new ClaimString(claimName, namespace, cborObject.getValueAsString(), selectivelyDisclosable, parent);
             }

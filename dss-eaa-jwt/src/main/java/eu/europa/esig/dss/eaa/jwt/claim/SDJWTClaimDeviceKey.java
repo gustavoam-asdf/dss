@@ -210,4 +210,16 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
         return getAsString(SDJWTConstants.JKU);
     }
 
+    @Override
+    public List<String> getAuthorizedNamespaces() {
+        // not applicable
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Map<String, List<String>> getAuthorizedDataElements() {
+        // not applicable
+        return Collections.emptyMap();
+    }
+
 }

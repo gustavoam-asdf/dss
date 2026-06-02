@@ -35,6 +35,15 @@ public class MdocClaimStatus extends MdocClaimMap implements ClaimStatus {
     }
 
     @Override
+    public ClaimStatusList getIdentifierList() {
+        ClaimMap statusList = getAsMap(MdocConstants.IDENTIFIER_LIST);
+        if (statusList != null) {
+            return new MdocClaimIdentifierList(statusList);
+        }
+        return null;
+    }
+
+    @Override
     public ClaimNumber getIndex() {
         return getAsNumber(MdocConstants.STATUS_INDEX);
     }

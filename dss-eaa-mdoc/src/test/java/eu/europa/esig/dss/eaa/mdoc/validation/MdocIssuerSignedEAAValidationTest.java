@@ -128,7 +128,7 @@ class MdocIssuerSignedEAAValidationTest extends AbstractMdocEAAPresentationTestV
 
         assertNotNull(eaa.getEAADevicePublicKey());
         assertEquals("1.0", eaa.getEAAVersion());
-        assertEquals("org.iso.18013.5.1.mDL", eaa.getDocumentType());
+        assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
 
         assertEquals("John", eaa.getHolderFirstName());
         assertEquals("Doe", eaa.getHolderLastName());

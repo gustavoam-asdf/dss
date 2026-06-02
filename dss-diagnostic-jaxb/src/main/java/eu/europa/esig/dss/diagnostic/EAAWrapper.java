@@ -14,8 +14,8 @@ import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBasicSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlChainItem;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,10 @@ public class EAAWrapper extends AbstractTokenProxy {
      * @return {@link String}
      */
     public String getEAADocumentType() {
+        String docType = getPayloadClaimTextValue(getEAAPayload().getEAADocType());
+        if (docType != null) {
+            return docType;
+        }
         return eaa.getDocumentType();
     }
 
@@ -356,15 +361,15 @@ public class EAAWrapper extends AbstractTokenProxy {
     /**
      * Gets EAA status index as defined in the EAA payload
      *
-     * @return {@link BigInteger}
+     * @return {@link Integer}
      */
-    public BigInteger getEAAStatusIndex() {
+    public Integer getEAAStatusIndex() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
         if (eaaStatus != null) {
             if (eaaStatus.getIndex() != null) {
-                return getPayloadClaimNumberValue(eaaStatus.getIndex());
+                return getPayloadClaimIntegerValue(eaaStatus.getIndex());
             } else if (eaaStatus.getStatusList() != null) {
-                return getPayloadClaimNumberValue(eaaStatus.getStatusList().getIndex());
+                return getPayloadClaimIntegerValue(eaaStatus.getStatusList().getIndex());
             }
         }
         return null;
@@ -383,6 +388,20 @@ public class EAAWrapper extends AbstractTokenProxy {
             } else if (eaaStatus.getStatusList() != null) {
                 return getPayloadClaimTextValue(eaaStatus.getStatusList().getUri());
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a certificate containing the public key that signed or sealed the top-level
+     * certificate in the x5chain element in the MSO revocation list structure
+     *
+     * @return {@link String}
+     */
+    public byte[] getEAAStatusCertificate() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null && eaaStatus.getStatusList() != null) {
+            return getPayloadClaimByteValue(eaaStatus.getStatusList().getCertificate());
         }
         return null;
     }
@@ -409,6 +428,50 @@ public class EAAWrapper extends AbstractTokenProxy {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
         if (eaaStatus != null) {
             return getPayloadClaimTextValue(eaaStatus.getPurpose());
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA identifier list index as defined in the EAA payload
+     *
+     * @return {@link Integer}
+     */
+    public Integer getEAAIdentifierListId() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            if (eaaStatus.getIdentifierList() != null) {
+                return getPayloadClaimIntegerValue(eaaStatus.getIdentifierList().getIndex());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA status URI as defined in the EAA payload
+     *
+     * @return {@link String}
+     */
+    public String getEAAIdentifierListUri() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null) {
+            if (eaaStatus.getIdentifierList() != null) {
+                return getPayloadClaimTextValue(eaaStatus.getIdentifierList().getUri());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a certificate containing the public key that signed or sealed the top-level
+     * certificate in the x5chain element in the MSO revocation list structure
+     *
+     * @return {@link String}
+     */
+    public byte[] getEAAIdentifierListCertificate() {
+        StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
+        if (eaaStatus != null && eaaStatus.getIdentifierList() != null) {
+            return getPayloadClaimByteValue(eaaStatus.getIdentifierList().getCertificate());
         }
         return null;
     }
@@ -460,6 +523,32 @@ public class EAAWrapper extends AbstractTokenProxy {
         DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
         if (eaaDeviceKey != null) {
             return eaaDeviceKey.getCertificates();
+        }
+        return null;
+    }
+
+    /**
+     * Gets a list of namespaces authorized for the device key to sign or MAC
+     *
+     * @return a list of {@link String}s
+     */
+    public List<String> getEAADeviceKeyAuthorizedNamespaces() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getAuthorizedNamespaces();
+        }
+        return null;
+    }
+
+    /**
+     * Gets a map of namespaces and corresponding data elements the key is authorized to sign or MAC
+     *
+     * @return a map of {@link String} namespaces of lists of {@link String} data elements
+     */
+    public Map<String, List<String>> getEAADeviceKeyAuthorizedDataElements() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getAuthorizedDataElements();
         }
         return null;
     }
@@ -575,10 +664,10 @@ public class EAAWrapper extends AbstractTokenProxy {
     /**
      * Gets user's gender when defined within EAA Payload claims
      *
-     * @return {@link String}
+     * @return {@link Integer}
      */
-    public String getHolderGender() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderGender());
+    public Integer getHolderGender() {
+        return getPayloadClaimIntegerValue(getEAAPayload().getHolderGender());
     }
 
     /**
@@ -723,6 +812,19 @@ public class EAAWrapper extends AbstractTokenProxy {
      */
     public Boolean getHolderPhoneNumberVerified() {
         return getPayloadClaimBooleanValue(getEAAPayload().getHolderPhoneNumberVerified());
+    }
+
+    /**
+     * Gets user's complete place of birth when defined within EAA Payload claims
+     *
+     * @return {@link String}
+     */
+    public String getHolderPlaceOfBirth() {
+        PlaceOfBirthClaimWrapper userPlaceOfBirth = getEAAPayload().getHolderPlaceOfBirth();
+        if (userPlaceOfBirth != null && userPlaceOfBirth.isText()) {
+            return getPayloadClaimTextValue(userPlaceOfBirth);
+        }
+        return null;
     }
 
     /**
@@ -915,11 +1017,6 @@ public class EAAWrapper extends AbstractTokenProxy {
      * @return {@link String}
      */
     public String getDocumentType() {
-        // TODO : see if to use a single getter or two separate ones
-        String docType = getPayloadClaimTextValue(getEAAPayload().getEAADocType());
-        if (docType != null) {
-            return docType;
-        }
         return getPayloadClaimTextValue(getEAAPayload().getDocumentType());
     }
 
@@ -966,8 +1063,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderEyeColor() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderEyeColor());
+    public String getHolderEyeColour() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderEyeColour());
     }
 
     /**
@@ -976,8 +1073,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderHairColor() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderHairColor());
+    public String getHolderHairColour() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderHairColour());
     }
 
     /**
@@ -1318,6 +1415,51 @@ public class EAAWrapper extends AbstractTokenProxy {
         return getPayloadClaimTextValue(getEAAPayload().getResidentHouseNumber());
     }
 
+    /**
+     * Gets the name of the city where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentCity() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentCity());
+    }
+
+    /**
+     * Gets the name of the state where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentState() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentState());
+    }
+
+    /**
+     * Gets the postal code of the address where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentPostalCode() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentPostalCode());
+    }
+
+    /**
+     * Gets the name of the country where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentCountry() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentCountry());
+    }
+
+    /**
+     * Gets the full address where the user to whom the person identification data relates currently resides.
+     *
+     * @return {@link String}
+     */
+    public String getResidentAddress() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddress());
+    }
+
     /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */
 
     /**
@@ -1535,8 +1677,13 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (xmlDisclosableClaim == null) {
             return null;
         }
-        return xmlDisclosableClaim.getList().stream().map(ClaimWrapper::getText)
-                .filter(Objects::nonNull).collect(Collectors.toList());
+        if (xmlDisclosableClaim.isText()) {
+            return Collections.singletonList(xmlDisclosableClaim.getText());
+        } else if (xmlDisclosableClaim.isList()) {
+            return xmlDisclosableClaim.getList().stream().map(ClaimWrapper::getText).filter(Objects::nonNull).collect(Collectors.toList());
+        } else {
+            throw new IllegalStateException(String.format("Unsupported type '%s'!", xmlDisclosableClaim.getClass().getSimpleName()));
+        }
     }
 
     private byte[] getPayloadClaimByteValue(ClaimWrapper xmlDisclosableClaim) {

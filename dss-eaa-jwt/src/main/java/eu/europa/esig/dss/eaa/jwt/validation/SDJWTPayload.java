@@ -350,12 +350,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getEyeColor() {
+    public ClaimString getEyeColour() {
         return null;
     }
 
     @Override
-    public ClaimString getHairColor() {
+    public ClaimString getHairColour() {
         return null;
     }
 

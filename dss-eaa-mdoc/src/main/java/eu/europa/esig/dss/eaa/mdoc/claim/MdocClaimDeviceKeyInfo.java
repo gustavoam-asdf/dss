@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mdoc representartion of the wallet holder's key, as defined in "9.1.2.4 Signing method and structure for MSO" of
@@ -90,6 +91,37 @@ public class MdocClaimDeviceKeyInfo extends MdocClaimMap implements ClaimDeviceK
         ClaimMap deviceKey = getAsMap(MdocConstants.DEVICE_KEY);
         if (deviceKey != null) {
             return new MdocClaimDeviceKey(deviceKey);
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAuthorizedNamespaces() {
+        MdocClaimKeyAuthorizations keyAuthorizations = getKeyAuthorizations();
+        if (keyAuthorizations != null && keyAuthorizations.getAuthorizedNamespaces() != null) {
+            return keyAuthorizations.getAuthorizedNamespaces().getNamespaces();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Map<String, List<String>> getAuthorizedDataElements() {
+        MdocClaimKeyAuthorizations keyAuthorizations = getKeyAuthorizations();
+        if (keyAuthorizations != null && keyAuthorizations.getAuthorizedDataElements() != null) {
+            return keyAuthorizations.getAuthorizedDataElements().getDataElements();
+        }
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Gets namespaces and data elements the key is authorized to sign or MAC
+     *
+     * @return {@link MdocClaimKeyAuthorizations}
+     */
+    public MdocClaimKeyAuthorizations getKeyAuthorizations() {
+        ClaimMap keyAuthorizations = getAsMap(MdocConstants.KEY_AUTHORIZATIONS);
+        if (keyAuthorizations != null) {
+            return new MdocClaimKeyAuthorizations(keyAuthorizations);
         }
         return null;
     }

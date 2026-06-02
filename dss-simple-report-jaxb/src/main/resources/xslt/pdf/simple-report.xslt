@@ -769,7 +769,7 @@
 			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
 			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:Timezone|dss:Locale|dss:AddressPostalAddress
 			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
-			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirthCountry
+			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirth|dss:PlaceOfBirthCountry
 			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName
 			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry
 			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
@@ -839,6 +839,7 @@
 				<xsl:when test="name() = 'AddressStreetAddress'">Street address</xsl:when>
 				<xsl:when test="name() = 'PhoneNumber'">Phone number</xsl:when>
 				<xsl:when test="name() = 'PhoneNumberVerified'">Phone number verified</xsl:when>
+				<xsl:when test="name() = 'PlaceOfBirth'">Place of birth</xsl:when>
 				<xsl:when test="name() = 'PlaceOfBirthCountry'">Country of birth</xsl:when>
 				<xsl:when test="name() = 'PlaceOfBirthRegion'">Region of birth</xsl:when>
 				<xsl:when test="name() = 'PlaceOfBirthCity'">City of birth</xsl:when>

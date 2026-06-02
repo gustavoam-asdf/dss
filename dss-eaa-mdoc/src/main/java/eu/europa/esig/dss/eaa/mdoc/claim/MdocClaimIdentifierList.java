@@ -8,36 +8,35 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatusList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 
 /**
- * Mdoc implementation of a status_list structure as defined in
- * https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-19.html
+ * Represents an IdentifierListInfo object as defined in ETSI TS 119 472-1 (currently in IA draft only)
  * 
  */
-public class MdocClaimStatusList extends MdocClaimMap implements ClaimStatusList {
+public class MdocClaimIdentifierList extends MdocClaimMap implements ClaimStatusList {
 
-    private static final long serialVersionUID = 8267815192474246983L;
+    private static final long serialVersionUID = -8431629611618058461L;
 
     /**
-     * Constructor to initialize MdocClaimStatus from a ClaimMap
+     * Constructor to initialize MdocClaimIdentifierList from a ClaimMap
      *
      * @param value {@link ClaimMap}
      */
-    public MdocClaimStatusList(ClaimMap value) {
+    public MdocClaimIdentifierList(ClaimMap value) {
         super(value.getName(), value.getNamespace(), value.getMapValue(), value.isSelectivelyDisclosable(), value.getParent());
     }
 
     @Override
     public ClaimNumber getIndex() {
-        return getAsNumber(MdocConstants.STATUS_IDX);
+        return getAsNumber(MdocConstants.IDENTIFIER_ID);
     }
 
     @Override
     public ClaimString getUri() {
-        return getAsString(MdocConstants.STATUS_URI);
+        return getAsString(MdocConstants.IDENTIFIER_URI);
     }
 
     @Override
     public ClaimByteString getCertificate() {
-        return getAsByteString(MdocConstants.STATUS_CERTIFICATE);
+        return getAsByteString(MdocConstants.IDENTIFIER_CERTIFICATE);
     }
 
 }

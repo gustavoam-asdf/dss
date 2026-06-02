@@ -459,6 +459,7 @@
 			<xs:element name="AddressStreetAddress" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PhoneNumber" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PhoneNumberVerified" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PlaceOfBirth" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PlaceOfBirthCountry" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PlaceOfBirthRegion" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PlaceOfBirthCity" type="DisclosableClaim" minOccurs="0" />
@@ -480,8 +481,8 @@
 			<xs:element name="AdministrativeNumber" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Height" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Weight" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="EyeColor" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="HairColor" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="EyeColour" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="HairColour" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ResidentAddress" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PortraitCaptureDate" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="DisclosableClaim" minOccurs="0" />

@@ -13,7 +13,7 @@ import java.util.Map;
 public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
 
     /**
-     * Default constuctor
+     * Default constructor
      *
      * @param wrapped {@link XmlClaim}
      */
@@ -82,7 +82,7 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
     @Override
     public boolean isMap() {
         XmlClaim wrapped = getWrapped();
-        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+        if (wrapped instanceof XmlPlaceOfBirthClaim && wrapped.getText() == null) {
             return true;
         }
         return super.isMap();
@@ -90,8 +90,7 @@ public class PlaceOfBirthClaimWrapper extends ClaimWrapper {
 
     @Override
     public Map<String, ClaimWrapper> getMap() {
-        XmlClaim wrapped = getWrapped();
-        if (wrapped instanceof XmlPlaceOfBirthClaim) {
+        if (isMap()) {
             final Map<String, ClaimWrapper> result = new HashMap<>(super.getMap());
             ClaimWrapper city = getCity();
             if (city != null) {

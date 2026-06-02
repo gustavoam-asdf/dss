@@ -131,7 +131,7 @@ public class MdocSelectivelyDisclosableParameters {
     /**
      * The distinguishing sign of the issuing country according to ISO/IEC 18013-1:2018, Annex F
      */
-    private String UNDistinguishingSign;
+    private String distinguishingSign;
 
     /**
      * An audit control number assigned by the issuing authority
@@ -151,12 +151,12 @@ public class MdocSelectivelyDisclosableParameters {
     /**
      * The mDL holder’s eye colour
      */
-    private String eyeColor;
+    private String eyeColour;
 
     /**
      * The mDL holder’s hair colour
      */
-    private String hairColor;
+    private String hairColour;
 
     /**
      * The place where the mDL holder resides and/or may be contacted
@@ -843,8 +843,8 @@ public class MdocSelectivelyDisclosableParameters {
      *
      * @return {@link String}
      */
-    public String getUNDistinguishingSign() {
-        return UNDistinguishingSign;
+    public String getDistinguishingSign() {
+        return distinguishingSign;
     }
 
     /**
@@ -853,10 +853,10 @@ public class MdocSelectivelyDisclosableParameters {
      * use an empty identifier or another identifier by which it is internationally recognized.
      * In this case the IA should ensure there is no collision with other IA’s.
      *
-     * @param UNDistinguishingSign {@link String}
+     * @param distinguishingSign {@link String}
      */
-    public void setUNDistinguishingSign(String UNDistinguishingSign) {
-        this.UNDistinguishingSign = UNDistinguishingSign;
+    public void setDistinguishingSign(String distinguishingSign) {
+        this.distinguishingSign = distinguishingSign;
     }
 
     /**
@@ -921,18 +921,18 @@ public class MdocSelectivelyDisclosableParameters {
      *
      * @return {@link String}
      */
-    public String getEyeColor() {
-        return eyeColor;
+    public String getEyeColour() {
+        return eyeColour;
     }
 
     /**
      * Sets the mDL holder’s eye colour. The value shall be one of the following: “black”, “blue”,
      * “brown”, “dichromatic”, “grey”, “green”, “hazel”, “maroon”, “pink”, “unknown”.
      *
-     * @param eyeColor {@link String}
+     * @param eyeColour {@link String}
      */
-    public void setEyeColor(String eyeColor) {
-        this.eyeColor = eyeColor;
+    public void setEyeColour(String eyeColour) {
+        this.eyeColour = eyeColour;
     }
 
     /**
@@ -941,18 +941,18 @@ public class MdocSelectivelyDisclosableParameters {
      *
      * @return {@link String}
      */
-    public String getHairColor() {
-        return hairColor;
+    public String getHairColour() {
+        return hairColour;
     }
 
     /**
      * Sets the mDL holder’s hair colour. The value shall be one of the following: “bald”, “black”,
      * “blond”, “brown”, “grey”, “red”, “auburn”, “sandy”, “white”, “unknown”.
      *
-     * @param hairColor {@link String}
+     * @param hairColour {@link String}
      */
-    public void setHairColor(String hairColor) {
-        this.hairColor = hairColor;
+    public void setHairColour(String hairColour) {
+        this.hairColour = hairColour;
     }
 
     /**

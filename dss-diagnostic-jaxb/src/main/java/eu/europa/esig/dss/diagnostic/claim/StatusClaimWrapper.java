@@ -36,6 +36,19 @@ public class StatusClaimWrapper extends ClaimWrapper {
     }
 
     /**
+     * Gets the identifier list
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public StatusListClaimWrapper getIdentifierList() {
+        XmlStatusListClaim identifierList = getWrapped().getIdentifierList();
+        if (identifierList != null) {
+            return new StatusListClaimWrapper(identifierList, this);
+        }
+        return null;
+    }
+
+    /**
      * Gets the status's unique index identifier
      *
      * @return {@link ClaimWrapper}
@@ -98,6 +111,10 @@ public class StatusClaimWrapper extends ClaimWrapper {
         StatusListClaimWrapper statusList = getStatusList();
         if (statusList != null) {
             result.put(statusList.getName(), statusList);
+        }
+        StatusListClaimWrapper identifierList = getIdentifierList();
+        if (identifierList != null) {
+            result.put(identifierList.getName(), identifierList);
         }
         ClaimWrapper index = getIndex();
         if (index != null) {
