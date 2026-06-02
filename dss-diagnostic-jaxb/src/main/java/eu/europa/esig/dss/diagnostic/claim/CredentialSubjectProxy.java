@@ -207,9 +207,9 @@ public class CredentialSubjectProxy {
     /**
      * Gets 's birthdate when defined within the first Credential Subject claim
      *
-     * @return {@link ClaimWrapper}
+     * @return {@link BirthdateClaimWrapper}
      */
-    public ClaimWrapper getBirthdate() {
+    public BirthdateClaimWrapper getBirthdate() {
         CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
             return credentialSubject.getBirthdate();

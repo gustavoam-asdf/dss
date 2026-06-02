@@ -498,7 +498,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO180135MDLEAAClaimsBuilder.getInstance().getResidentState(selectivelyDisclosable);
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentState(selectivelyDisclosable);
     }
 
     /**
@@ -818,7 +818,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return EUDIPIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
     }
 
     /**
@@ -970,6 +970,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
+                if (selectivelyDisclosable.getBirthdateApproximateMask() != null) {
+                    return super.getBirthdate(selectivelyDisclosable);
+                }
                 return create(ISO180135Headers.BIRTH_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getBirthdate()));
             }
             return null;
@@ -1278,7 +1281,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getFirstName() != null) {
-                return create(ISO232202Headers.GIVEN_NAME_UNICODE, selectivelyDisclosable.getFirstName());
+                return create(ISO232202Headers.GIVEN_NAME, selectivelyDisclosable.getFirstName());
             }
             return null;
         }
@@ -1286,7 +1289,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getLastName() != null) {
-                return create(ISO232202Headers.FAMILY_NAME_UNICODE, selectivelyDisclosable.getLastName());
+                return create(ISO232202Headers.FAMILY_NAME, selectivelyDisclosable.getLastName());
             }
             return null;
         }
@@ -1310,7 +1313,12 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
-                return create(ISO232202Headers.BIRTH_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getBirthdate()));
+                final CBORMap birthdate = new CBORMap();
+                birthdate.put(ISO232202Headers.BIRTH_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getBirthdate()));
+                if (selectivelyDisclosable.getBirthdateApproximateMask() != null) {
+                    birthdate.put(ISO232202Headers.APPROXIMATE_MASK, selectivelyDisclosable.getBirthdateApproximateMask());
+                }
+                return create(ISO232202Headers.BIRTH_DATE, birthdate);
             }
             return null;
         }
@@ -1358,8 +1366,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getIssuingAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingAuthority() != null) {
-                // TODO : review in ISO 23220-2:2026
-                return create(ISO232202Headers.ISSUING_AUTHORITY_UNICODE, selectivelyDisclosable.getIssuingAuthority());
+                return create(ISO232202Headers.ISSUING_AUTHORITY, selectivelyDisclosable.getIssuingAuthority());
             }
             return null;
         }
@@ -1399,7 +1406,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getResidentAddress(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentAddress() != null) {
-                return create(ISO232202Headers.RESIDENT_ADDRESS_UNICODE, selectivelyDisclosable.getResidentAddress());
+                return create(ISO232202Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getResidentAddress());
             }
             return null;
         }
@@ -1451,7 +1458,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getResidentCity(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentCity() != null) {
-                return create(ISO232202Headers.RESIDENT_CITY_UNICODE, selectivelyDisclosable.getResidentCity());
+                return create(ISO232202Headers.RESIDENT_CITY, selectivelyDisclosable.getResidentCity());
             }
             return null;
         }
@@ -1468,6 +1475,22 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getResidentPostalCode() != null) {
                 return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
+            }
+            return null;
+        }
+
+        @Override
+        protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getResidentState() != null) {
+                return create(ISO232202Headers.RESIDENT_STATE, selectivelyDisclosable.getResidentState());
+            }
+            return null;
+        }
+
+        @Override
+        protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getResidentState() != null) {
+                return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getResidentState());
             }
             return null;
         }
@@ -1491,7 +1514,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getBusinessName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBusinessName() != null) {
-                return create(ISO232202Headers.BUSINESS_NAME_UNICODE, selectivelyDisclosable.getBusinessName());
+                return create(ISO232202Headers.BUSINESS_NAME, selectivelyDisclosable.getBusinessName());
             }
             return null;
         }
@@ -1499,7 +1522,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getOrganizationName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getOrganizationName() != null) {
-                return create(ISO232202Headers.ORGANIZATION_NAME_UNICODE, selectivelyDisclosable.getOrganizationName());
+                return create(ISO232202Headers.ORGANIZATION_NAME, selectivelyDisclosable.getOrganizationName());
             }
             return null;
         }
@@ -1757,6 +1780,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
+                if (selectivelyDisclosable.getBirthdateApproximateMask() != null) {
+                    return super.getBirthdate(selectivelyDisclosable);
+                }
                 return create(EUDIPIDHeaders.BIRTH_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getBirthdate()));
             }
             return null;

@@ -4,6 +4,7 @@ import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.BirthdateClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.CredentialSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.CredentialSubjectProxy;
@@ -400,11 +401,11 @@ public class EAAPayloadProxy {
     /**
      * Gets holder's birthdate when defined within EAA Payload claims
      *
-     * @return {@link ClaimWrapper}
+     * @return {@link BirthdateClaimWrapper}
      */
-    public ClaimWrapper getHolderBirthdate() {
+    public BirthdateClaimWrapper getHolderBirthdate() {
         if (xmlEAAPayload != null) {
-            return get(getClaim(xmlEAAPayload.getBirthdate()), getCredentialSubject().getBirthdate());
+            return get(getBirthdateClaim(xmlEAAPayload.getBirthdate()), getCredentialSubject().getBirthdate());
         }
         return null;
     }
@@ -1424,7 +1425,7 @@ public class EAAPayloadProxy {
             claimList.add(getClaim(xmlEAAPayload.getGender()));
         }
         if (xmlEAAPayload.getBirthdate() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getBirthdate()));
+            claimList.add(getBirthdateClaim(xmlEAAPayload.getBirthdate()));
         }
         if (xmlEAAPayload.getTimezone() != null) {
             claimList.add(getClaim(xmlEAAPayload.getTimezone()));
@@ -1697,6 +1698,13 @@ public class EAAPayloadProxy {
             return null;
         }
         return new AddressClaimWrapper(xmlAddressClaim);
+    }
+
+    private BirthdateClaimWrapper getBirthdateClaim(XmlClaim xmlBirthdateClaim) {
+        if (xmlBirthdateClaim == null) {
+            return null;
+        }
+        return new BirthdateClaimWrapper(xmlBirthdateClaim);
     }
 
     private PlaceOfBirthClaimWrapper getPlaceOfBirthClaim(XmlClaim xmlPlaceOfBirthClaim) {

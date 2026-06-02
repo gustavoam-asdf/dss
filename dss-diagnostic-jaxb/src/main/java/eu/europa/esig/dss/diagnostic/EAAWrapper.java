@@ -676,7 +676,22 @@ public class EAAWrapper extends AbstractTokenProxy {
      * @return {@link Date}
      */
     public Date getHolderBirthdate() {
-        return getPayloadClaimDateValue(getEAAPayload().getHolderBirthdate());
+        if (getEAAPayload().getHolderBirthdate() != null) {
+            return getPayloadClaimDateValue(getEAAPayload().getHolderBirthdate().getBirthdate());
+        }
+        return null;
+    }
+
+    /**
+     * Gets an 8 digit flag to denote the location of the mask in YYYYMMDD format within the user's birthdate.
+     *
+     * @return {@link String}
+     */
+    public String getHolderBirthdateApproximateMask() {
+        if (getEAAPayload().getHolderBirthdate() != null) {
+            return getPayloadClaimTextValue(getEAAPayload().getHolderBirthdate().getApproximateMask());
+        }
+        return null;
     }
 
     /**

@@ -8,6 +8,7 @@ import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocBiometricTemplateXX;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimAgeOverNN;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimAttestedAttributesSubject;
+import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimBirthDate;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDeviceKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimDrivingPrivileges;
 import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimMap;
@@ -161,14 +162,14 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getFullName() {
-        return null;
+        return getAsString(forIso232202(ISO232202Headers.FULL_NAME, ISO232202Headers.FULL_NAME_LATIN1));
     }
 
     @Override
     public ClaimString getFirstName() {
         return getAsString(
                 forIso180135(ISO180135Headers.GIVEN_NAME, ISO180135Headers.GIVEN_NAME_NATIONAL_CHARACTER),
-                forIso232202(ISO232202Headers.GIVEN_NAME_UNICODE, ISO232202Headers.GIVEN_NAME_LATIN1),
+                forIso232202(ISO232202Headers.GIVEN_NAME, ISO232202Headers.GIVEN_NAME_UNICODE, ISO232202Headers.GIVEN_NAME_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.GIVEN_NAME)
         );
     }
@@ -177,7 +178,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     public ClaimString getLastName() {
         return getAsString(
                 forIso180135(ISO180135Headers.FAMILY_NAME, ISO180135Headers.FAMILY_NAME_NATIONAL_CHARACTER),
-                forIso232202(ISO232202Headers.FAMILY_NAME_UNICODE, ISO232202Headers.FAMILY_NAME_LATIN1),
+                forIso232202(ISO232202Headers.FAMILY_NAME, ISO232202Headers.FAMILY_NAME_UNICODE, ISO232202Headers.FAMILY_NAME_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.FAMILY_NAME)
         );
     }
@@ -228,8 +229,16 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimDate getBirthdate() {
-        return getAsDate(forIso180135(ISO180135Headers.BIRTH_DATE), forIso232202(ISO232202Headers.BIRTH_DATE), forEUDIPid(EUDIPIDHeaders.BIRTH_DATE));
+    public Claim getBirthdate() {
+        ClaimDate birthdate = getAsDate(forIso180135(ISO180135Headers.BIRTH_DATE), forEUDIPid(EUDIPIDHeaders.BIRTH_DATE));
+        if (birthdate != null) {
+            return birthdate;
+        }
+        ClaimMap birthdateMap = getAsMap(forIso232202(ISO232202Headers.BIRTH_DATE));
+        if (birthdateMap != null) {
+            return new MdocClaimBirthDate(birthdateMap);
+        }
+        return null;
     }
 
     @Override
@@ -330,7 +339,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     public ClaimString getIssuingAuthority() {
         return getAsString(
                 forIso180135(ISO180135Headers.ISSUING_AUTHORITY),
-                forIso232202(ISO232202Headers.ISSUING_AUTHORITY_UNICODE, ISO232202Headers.ISSUING_AUTHORITY_LATIN1),
+                forIso232202(ISO232202Headers.ISSUING_AUTHORITY, ISO232202Headers.ISSUING_AUTHORITY_UNICODE, ISO232202Headers.ISSUING_AUTHORITY_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.ISSUING_AUTHORITY)
         );
     }
@@ -389,7 +398,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     public ClaimString getResidentAddress() {
         return getAsString(
                 forIso180135(ISO180135Headers.RESIDENT_ADDRESS),
-                forIso232202(ISO232202Headers.RESIDENT_ADDRESS_UNICODE, ISO232202Headers.RESIDENT_ADDRESS_LATIN1),
+                forIso232202(ISO232202Headers.RESIDENT_ADDRESS, ISO232202Headers.RESIDENT_ADDRESS_UNICODE, ISO232202Headers.RESIDENT_ADDRESS_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_ADDRESS)
         );
     }
@@ -436,14 +445,16 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     public ClaimString getResidentCity() {
         return getAsString(
                 forIso180135(ISO180135Headers.RESIDENT_CITY),
-                forIso232202(ISO232202Headers.RESIDENT_CITY_UNICODE, ISO232202Headers.RESIDENT_CITY_LATIN1),
+                forIso232202(ISO232202Headers.RESIDENT_CITY, ISO232202Headers.RESIDENT_CITY_UNICODE, ISO232202Headers.RESIDENT_CITY_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_CITY)
         );
     }
 
     @Override
     public ClaimString getResidentState() {
-        return getAsString(forIso180135(ISO180135Headers.RESIDENT_STATE), forEUDIPid(EUDIPIDHeaders.RESIDENT_STATE));
+        return getAsString(forIso180135(ISO180135Headers.RESIDENT_STATE),
+                forIso232202(ISO232202Headers.RESIDENT_STATE, ISO232202Headers.RESIDENT_STATE_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_STATE));
     }
 
     @Override
@@ -512,12 +523,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getBusinessName() {
-        return getAsString(forIso232202(ISO232202Headers.BUSINESS_NAME_UNICODE, ISO232202Headers.BUSINESS_NAME_LATIN1));
+        return getAsString(forIso232202(ISO232202Headers.BUSINESS_NAME, ISO232202Headers.BUSINESS_NAME_UNICODE, ISO232202Headers.BUSINESS_NAME_LATIN1));
     }
 
     @Override
     public ClaimString getOrganizationName() {
-        return getAsString(forIso232202(ISO232202Headers.ORGANIZATION_NAME_UNICODE, ISO232202Headers.ORGANIZATION_NAME_LATIN1));
+        return getAsString(forIso232202(ISO232202Headers.ORGANIZATION_NAME, ISO232202Headers.ORGANIZATION_NAME_UNICODE, ISO232202Headers.ORGANIZATION_NAME_LATIN1));
     }
 
     @Override
@@ -639,7 +650,8 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getResidentStreet() {
-        return getAsString(forEUDIPid(EUDIPIDHeaders.RESIDENT_STREET));
+        return getAsString(forIso232202(ISO232202Headers.RESIDENT_STREET, ISO232202Headers.RESIDENT_STREET_LATIN1),
+                forEUDIPid(EUDIPIDHeaders.RESIDENT_STREET));
     }
 
     @Override

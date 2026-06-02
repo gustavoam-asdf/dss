@@ -1056,7 +1056,10 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setEmail(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEmail()));
 		xmlEAAPayload.setEmailVerified(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEmailVerified()));
 		xmlEAAPayload.setGender(getXmlDisclosableClaim(eaaPayloadProxy.getHolderGender()));
-		xmlEAAPayload.setBirthdate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthdate()));
+		if (eaaPayloadProxy.getHolderBirthdate() != null) {
+			xmlEAAPayload.setBirthdate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthdate().getBirthdate()));
+			xmlEAAPayload.setBirthdateApproximateMask(getXmlDisclosableClaim(eaaPayloadProxy.getHolderBirthdate().getApproximateMask()));
+		}
 		xmlEAAPayload.setTimezone(getXmlDisclosableClaim(eaaPayloadProxy.getHolderTimezone()));
 		xmlEAAPayload.setLocale(getXmlDisclosableClaim(eaaPayloadProxy.getHolderLocale()));
 		AddressClaimWrapper userAddress = eaaPayloadProxy.getHolderAddress();

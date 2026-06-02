@@ -1796,7 +1796,7 @@
 			<xs:element name="Email" type="Claim" minOccurs="0" />
 			<xs:element name="EmailVerified" type="Claim" minOccurs="0" />
 			<xs:element name="Gender" type="Claim" minOccurs="0" />
-			<xs:element name="Birthdate" type="Claim" minOccurs="0" />
+			<xs:element name="Birthdate" type="BirthdateClaim" minOccurs="0" />
 			<xs:element name="Timezone" type="Claim" minOccurs="0" />
 			<xs:element name="Locale" type="Claim" minOccurs="0" />
 			<xs:element name="Address" type="AddressClaim" minOccurs="0" />
@@ -1892,7 +1892,7 @@
 					<xs:element name="Email" type="Claim" minOccurs="0" />
 					<xs:element name="EmailVerified" type="Claim" minOccurs="0" />
 					<xs:element name="Gender" type="Claim" minOccurs="0" />
-					<xs:element name="Birthdate" type="Claim" minOccurs="0" />
+					<xs:element name="Birthdate" type="BirthdateClaim" minOccurs="0" />
 					<xs:element name="Timezone" type="Claim" minOccurs="0" />
 					<xs:element name="Locale" type="Claim" minOccurs="0" />
 					<xs:element name="Address" type="AddressClaim" minOccurs="0" />
@@ -2007,6 +2007,17 @@
 					<xs:element name="PostalCode" type="Claim" minOccurs="0" />
 					<xs:element name="CountryName" type="Claim" minOccurs="0" />
 					<xs:element name="StreetAddress" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BirthdateClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Birthdate" type="Claim" minOccurs="0"/>
+					<xs:element name="ApproximateMask" type="Claim" minOccurs="0"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

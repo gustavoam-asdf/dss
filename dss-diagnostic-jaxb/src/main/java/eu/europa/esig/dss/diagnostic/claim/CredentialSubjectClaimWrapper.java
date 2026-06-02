@@ -6,7 +6,6 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,12 +185,12 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
     /**
      * Gets user's birthdate when defined within Credential Subject claim
      *
-     * @return {@link Date}
+     * @return {@link BirthdateClaimWrapper}
      */
-    public ClaimWrapper getBirthdate() {
+    public BirthdateClaimWrapper getBirthdate() {
         XmlClaim xmlClaim = getWrapped().getBirthdate();
         if (xmlClaim != null) {
-            return new ClaimWrapper(xmlClaim, this);
+            return new BirthdateClaimWrapper(xmlClaim, this);
         }
         return null;
     }

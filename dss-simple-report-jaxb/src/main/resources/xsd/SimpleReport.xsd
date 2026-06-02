@@ -449,6 +449,7 @@
 			<xs:element name="EmailVerified" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Gender" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Birthdate" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthdateApproximateMask" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Timezone" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Locale" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AddressPostalAddress" type="DisclosableClaim" minOccurs="0" />

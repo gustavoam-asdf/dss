@@ -767,7 +767,7 @@
 			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
 			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:FirstName|dss:LastName
 			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
-			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:Timezone|dss:Locale|dss:AddressPostalAddress
+			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:BirthdateApproximateMask|dss:Timezone|dss:Locale|dss:AddressPostalAddress
 			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
 			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirth|dss:PlaceOfBirthCountry
 			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName
@@ -829,6 +829,7 @@
 				<xsl:when test="name() = 'EmailVerified'">Email verified</xsl:when>
 				<xsl:when test="name() = 'Gender'">Gender</xsl:when>
 				<xsl:when test="name() = 'Birthdate'">Birthdate</xsl:when>
+				<xsl:when test="name() = 'BirthdateApproximateMask'">Birthdate approximate mask</xsl:when>
 				<xsl:when test="name() = 'Timezone'">Timezone</xsl:when>
 				<xsl:when test="name() = 'Locale'">Locale</xsl:when>
 				<xsl:when test="name() = 'AddressPostalAddress'">Postal address</xsl:when>

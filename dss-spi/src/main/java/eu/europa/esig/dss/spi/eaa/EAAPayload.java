@@ -210,9 +210,9 @@ public interface EAAPayload extends Claim {
     /**
      * Gets the user's birthdate, when present
      *
-     * @return {@link ClaimDate}
+     * @return {@link Claim}
      */
-    ClaimDate getBirthdate();
+    Claim getBirthdate();
 
     /**
      * Gets the user's TimeZone, when present

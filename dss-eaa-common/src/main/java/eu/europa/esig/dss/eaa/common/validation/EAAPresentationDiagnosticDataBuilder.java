@@ -6,6 +6,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectIdClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAuthorizedDataElements;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlBirthdateClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCredentialSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDeviceKeyClaim;
@@ -40,6 +41,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubjectId;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
+import eu.europa.esig.dss.model.eaa.claim.ClaimBirthDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimCredentialSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilege;
@@ -322,7 +324,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setEmail(getXmlClaim(eaaPayload.getEmail(), supportedClaims));
         xmlEAAPayload.setEmailVerified(getXmlClaim(eaaPayload.getEmailVerified(), supportedClaims));
         xmlEAAPayload.setGender(getXmlClaim(eaaPayload.getGender(), supportedClaims));
-        xmlEAAPayload.setBirthdate(getXmlClaim(eaaPayload.getBirthdate(), supportedClaims));
+        xmlEAAPayload.setBirthdate(getXmlBirthdateClaim(eaaPayload.getBirthdate(), supportedClaims));
         xmlEAAPayload.setTimezone(getXmlClaim(eaaPayload.getTimezone(), supportedClaims));
         xmlEAAPayload.setLocale(getXmlClaim(eaaPayload.getLocale(), supportedClaims));
         xmlEAAPayload.setAddress(getXmlAddressClaim(eaaPayload.getAddress(), supportedClaims));
@@ -618,6 +620,28 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return xmlAddress;
     }
 
+    private XmlBirthdateClaim getXmlBirthdateClaim(Claim claim, List<XmlClaim> supportedClaims) {
+        if (claim == null) {
+            return null;
+        }
+        if (claim instanceof ClaimBirthDate) {
+            ClaimBirthDate claimBirthDate = (ClaimBirthDate) claim;
+            XmlBirthdateClaim xmlBirthdateClaim = new XmlBirthdateClaim();
+            appendGenericInfo(xmlBirthdateClaim, claimBirthDate, supportedClaims);
+
+            List<XmlClaim> claimSupportedClaims = new ArrayList<>();
+            if (claimBirthDate.getBirthDate() != null) {
+                xmlBirthdateClaim.setBirthdate(getXmlClaim(claimBirthDate.getBirthDate(), claimSupportedClaims));
+            }
+            if (claimBirthDate.getApproximateMask() != null) {
+                xmlBirthdateClaim.setApproximateMask(getXmlClaim(claimBirthDate.getApproximateMask(), claimSupportedClaims));
+            }
+            xmlBirthdateClaim.getEntry().addAll(getOtherClaims(claimBirthDate, claimSupportedClaims));
+            return xmlBirthdateClaim;
+        }
+        return getXmlClaim(claim, new XmlBirthdateClaim(), supportedClaims);
+    }
+
     private XmlPlaceOfBirthClaim getXmlPlaceOfBirthClaim(Claim claim, List<XmlClaim> supportedClaims) {
         if (claim == null) {
             return null;
@@ -680,7 +704,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlCredentialSubjectClaim.setEmail(getXmlClaim(credentialSubject.getEmail(), supportedClaims));
         xmlCredentialSubjectClaim.setEmailVerified(getXmlClaim(credentialSubject.getEmailVerified(), supportedClaims));
         xmlCredentialSubjectClaim.setGender(getXmlClaim(credentialSubject.getGender(), supportedClaims));
-        xmlCredentialSubjectClaim.setBirthdate(getXmlClaim(credentialSubject.getBirthdate(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthdate(getXmlBirthdateClaim(credentialSubject.getBirthdate(), supportedClaims));
         xmlCredentialSubjectClaim.setTimezone(getXmlClaim(credentialSubject.getTimezone(), supportedClaims));
         xmlCredentialSubjectClaim.setLocale(getXmlClaim(credentialSubject.getLocale(), supportedClaims));
         xmlCredentialSubjectClaim.setAddress(getXmlAddressClaim(credentialSubject.getAddress(), supportedClaims));

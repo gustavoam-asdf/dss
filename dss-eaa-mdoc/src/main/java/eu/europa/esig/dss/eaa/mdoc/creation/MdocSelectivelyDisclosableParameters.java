@@ -44,6 +44,11 @@ public class MdocSelectivelyDisclosableParameters {
     private Date birthdate;
 
     /**
+     * The user's birthdate approximate mask
+     */
+    private String birthdateApproximateMask;
+
+    /**
      * The user's preferred telephone number
      */
     private String phoneNumber;
@@ -494,6 +499,25 @@ public class MdocSelectivelyDisclosableParameters {
      */
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    /**
+     * Gets the user's birthday approximate mask
+     *
+     * @return {@link String}
+     */
+    public String getBirthdateApproximateMask() {
+        return birthdateApproximateMask;
+    }
+
+    /**
+     * Sets the user's birthday approximate mask. An 8 digit flag to denote the location of the mask
+     * in YYYYMMDD format. 1 denotes mask. Issuing authority should pick one exact date to be used for full-date value.
+     *
+     * @param birthdateApproximateMask {@link String}
+     */
+    public void setBirthdateApproximateMask(String birthdateApproximateMask) {
+        this.birthdateApproximateMask = birthdateApproximateMask;
     }
 
     /**
