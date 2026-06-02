@@ -62,6 +62,11 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildPlaceOfBirthClaim(parameters.getPlaceOfBirthCountry(), parameters.getPlaceOfBirthRegion(), parameters.getPlaceOfBirthLocality(), selectivelyDisclosable));
         addIfNotNull(claims, buildBirthFamilyNameClaim(parameters.getBirthFamilyName(), selectivelyDisclosable));
         addIfNotNull(claims, buildBirthGivenNameClaim(parameters.getBirthGivenName(), selectivelyDisclosable));
+        addIfNotNull(claims, buildBirthMiddleNameClaim(parameters.getBirthMiddleName(), selectivelyDisclosable));
+        addIfNotNull(claims, buildSalutationClaim(parameters.getSalutation(), selectivelyDisclosable));
+        addIfNotNull(claims, buildTitleClaim(parameters.getTitle(), selectivelyDisclosable));
+        addIfNotNull(claims, buildMobilePhoneNumberClaim(parameters.getMobilePhoneNumber(), selectivelyDisclosable));
+        addIfNotNull(claims, buildPseudonymClaim(parameters.getPseudonym(), selectivelyDisclosable));
         addIfNotNull(claims, buildDateOfExpiryClaim(parameters.getDateOfExpiry(), selectivelyDisclosable));
         addIfNotNull(claims, buildDateOfIssuanceClaim(parameters.getDateOfIssuance(), selectivelyDisclosable));
         addIfNotNull(claims, buildPersonalAdministrativeNumberClaim(parameters.getPersonalAdministrativeNumber(), selectivelyDisclosable));
@@ -74,6 +79,12 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildAgeBirthYearClaim(parameters.getAgeBirthYear(), selectivelyDisclosable));
         addIfNotNull(claims, buildTrustAnchorClaim(parameters.getTrustAnchor(), selectivelyDisclosable));
         addIfNotNull(claims, buildAgeEqualOrOverClaim(parameters.getAgeEqualOrOver(), selectivelyDisclosable));
+        addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(parameters.getVerifiableCredentialsType(), selectivelyDisclosable));
+        addIfNotNull(claims, buildVerifiableCredentialsIntegrityClaim(parameters.getVerifiableCredentialsIntegrity(), selectivelyDisclosable));
+        addIfNotNull(claims, buildCategoryClaim(parameters.getCategory(), selectivelyDisclosable));
+        addIfNotNull(claims, buildIssuingRegistrationIdentifierClaim(parameters.getIssuingRegistrationIdentifier(), selectivelyDisclosable));
+        addIfNotNull(claims, buildAdministrativeValidityNotBeforeClaim(parameters.getAdministrativeValidityNotBefore(), selectivelyDisclosable));
+        addIfNotNull(claims, buildAdministrativeValidityExpiryClaim(parameters.getAdministrativeValidityExpiry(), selectivelyDisclosable));
         return claims;
     }
 
@@ -98,21 +109,21 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         if (familyName == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_FAMILY_NAME, familyName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_FAMILY_NAME, familyName, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildGivenNameClaim(final String givenName, final boolean selectivelyDisclosable) {
         if (givenName == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_GIVEN_NAME, givenName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_GIVEN_NAME, givenName, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildBirthDateClaim(final Date birthDate, final boolean selectivelyDisclosable) {
         if (birthDate == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_BIRTHDATE, DSSUtils.formatDateToISO8601(birthDate), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTHDATE, DSSUtils.formatDateToISO8601(birthDate), selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaimArray buildNationalitiesClaim(final List<String> nationalities, final boolean selectivelyDisclosable) {
@@ -160,105 +171,105 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         if (email == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_EMAIL, email, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_EMAIL, email, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildPhoneNumberClaim(final String phoneNumber, final boolean selectivelyDisclosable) {
         if (phoneNumber == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_PHONE_NUMBER, phoneNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER, phoneNumber, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildPictureClaim(final String picture, final boolean selectivelyDisclosable) {
         if (picture == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_PICTURE, picture, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PICTURE, picture, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildNicknameClaim(final String nickname, final boolean selectivelyDisclosable) {
         if (nickname == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_NICKNAME, nickname, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_NICKNAME, nickname, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildPreferredNicknameClaim(final String preferredNickname, final boolean selectivelyDisclosable) {
         if (preferredNickname == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_PREFERRED_NICKNAME, preferredNickname, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PREFERRED_NICKNAME, preferredNickname, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildNameClaim(final String name, final boolean selectivelyDisclosable) {
         if (name == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_NAME, name, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_NAME, name, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildMiddleNameClaim(final String middleName, final boolean selectivelyDisclosable) {
         if (middleName == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_MIDDLE_NAME, middleName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_MIDDLE_NAME, middleName, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildProfileClaim(final String profile, final boolean selectivelyDisclosable) {
         if (profile == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_PROFILE, profile, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PROFILE, profile, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildWebsiteClaim(final String website, final boolean selectivelyDisclosable) {
         if (website == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_WEBSITE, website, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_WEBSITE, website, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildEmailVerifiedClaim(final Boolean emailVerified, final boolean selectivelyDisclosable) {
         if (emailVerified == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_EMAIL_VERIFIED, emailVerified, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_EMAIL_VERIFIED, emailVerified, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildGenderClaim(final String gender, final boolean selectivelyDisclosable) {
         if (gender == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_GENDER, gender, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_GENDER, gender, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildZoneinfoClaim(final String zoneinfo, final boolean selectivelyDisclosable) {
         if (zoneinfo == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_ZONEINFO, zoneinfo, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_ZONEINFO, zoneinfo, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildLocaleClaim(final String locale, final boolean selectivelyDisclosable) {
         if (locale == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_LOCALE, locale, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_LOCALE, locale, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildPhoneNumberVerifiedClaim(final Boolean phoneNumberVerified, final boolean selectivelyDisclosable) {
         if (phoneNumberVerified == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_PHONE_NUMBER_VERIFIED, phoneNumberVerified, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER_VERIFIED, phoneNumberVerified, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildUpdatedAtClaim(final Date updatedAt, final boolean selectivelyDisclosable) {
         if (updatedAt == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.UPDATED_AT, DSSUtils.getTimeValueInSeconds(updatedAt.getTime()), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.UPDATED_AT, DSSUtils.getTimeValueInSeconds(updatedAt.getTime()), selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaimObject buildPlaceOfBirthClaim(final String country, final String region, final String locality,
@@ -284,91 +295,144 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         if (birthFamilyName == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_BIRTH_FAMILY_NAME, birthFamilyName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTH_FAMILY_NAME, birthFamilyName, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildBirthGivenNameClaim(final String birthGivenName, final boolean selectivelyDisclosable) {
         if (birthGivenName == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.USER_BIRTH_GIVEN_NAME, birthGivenName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTH_GIVEN_NAME, birthGivenName, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildBirthMiddleNameClaim(final String birthMiddleName, final boolean selectivelyDisclosable) {
+        if (birthMiddleName == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_BIRTH_MIDDLE_NAME, birthMiddleName, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildSalutationClaim(final String salutation, final boolean selectivelyDisclosable) {
+        if (salutation == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_SALUTATION, salutation, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildTitleClaim(final String title, final boolean selectivelyDisclosable) {
+        if (title == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_TITLE, title, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildMobilePhoneNumberClaim(final String mobilePhoneNumber, final boolean selectivelyDisclosable) {
+        if (mobilePhoneNumber == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_MOBILE_PHONE_NUMBER, mobilePhoneNumber, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildPseudonymClaim(final String pseudonym, final boolean selectivelyDisclosable) {
+        if (pseudonym == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PSEUDONYM, pseudonym, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildAdministrativeValidityNotBeforeClaim(final Date administrativeValidityNotBefore,
+                                                                      final boolean selectivelyDisclosable) {
+        if (administrativeValidityNotBefore == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_NOT_BEFORE,
+                DSSUtils.formatDateToISO8601(administrativeValidityNotBefore), selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildAdministrativeValidityExpiryClaim(final Date administrativeValidityExpiry,
+                                                                   final boolean selectivelyDisclosable) {
+        if (administrativeValidityExpiry == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_EXPIRY,
+                DSSUtils.formatDateToISO8601(administrativeValidityExpiry), selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildDateOfExpiryClaim(final Date dateOfExpiry, final boolean selectivelyDisclosable) {
         if (dateOfExpiry == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.EXPIRY_DATE, DSSUtils.formatDateToISO8601(dateOfExpiry), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.EXPIRY_DATE, DSSUtils.formatDateToISO8601(dateOfExpiry), selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildDateOfIssuanceClaim(final Date dateOfIssuance, final boolean selectivelyDisclosable) {
         if (dateOfIssuance == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.ISSUANCE_DATE, DSSUtils.formatDateToISO8601(dateOfIssuance), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUANCE_DATE, DSSUtils.formatDateToISO8601(dateOfIssuance), selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildPersonalAdministrativeNumberClaim(final String personalAdministrativeNumber, final boolean selectivelyDisclosable) {
         if (personalAdministrativeNumber == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER, personalAdministrativeNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER, personalAdministrativeNumber, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildSexClaim(final Number sex, final boolean selectivelyDisclosable) {
         if (sex == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.SEX, sex, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.SEX, sex, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildIssuingAuthorityClaim(final String issuingAuthority, final boolean selectivelyDisclosable) {
         if (issuingAuthority == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.ISSUING_AUTHORITY, issuingAuthority, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_AUTHORITY, issuingAuthority, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildIssuingCountryClaim(final String issuingCountry, final boolean selectivelyDisclosable) {
         if (issuingCountry == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.ISSUING_COUNTRY, issuingCountry, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_COUNTRY, issuingCountry, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildDocumentNumberClaim(final String documentNumber, final boolean selectivelyDisclosable) {
         if (documentNumber == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.DOCUMENT_NUMBER, documentNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.DOCUMENT_NUMBER, documentNumber, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildIssuingJurisdictionClaim(final String issuingJurisdiction, final boolean selectivelyDisclosable) {
         if (issuingJurisdiction == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.ISSUING_JURISDICTION, issuingJurisdiction, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_JURISDICTION, issuingJurisdiction, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildAgeInYearsClaim(final Number ageInYears, final boolean selectivelyDisclosable) {
         if (ageInYears == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.AGE_IN_YEARS, ageInYears, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.AGE_IN_YEARS, ageInYears, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildAgeBirthYearClaim(final Number ageBirthYear, final boolean selectivelyDisclosable) {
         if (ageBirthYear == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.AGE_BIRTH_YEAR, ageBirthYear, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.AGE_BIRTH_YEAR, ageBirthYear, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaim buildTrustAnchorClaim(final String trustAnchor, final boolean selectivelyDisclosable) {
         if (trustAnchor == null) {
             return null;
         }
-        return buildSimpleClaim(SDJWTConstants.TRUST_ANCHOR, trustAnchor, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.TRUST_ANCHOR, trustAnchor, selectivelyDisclosable);
     }
 
     protected SDJWTEAAClaimObject buildAgeEqualOrOverClaim(final Map<Integer, Boolean> ageEqualOrOver, final boolean selectivelyDisclosable) {
@@ -384,7 +448,40 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         return claim;
     }
 
-    protected SDJWTEAAClaim buildSimpleClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
+    protected SDJWTEAAClaim buildVerifiableCredentialsTypeClaim(final String verifiableCredentialsType,
+                                                                final boolean selectivelyDisclosable) {
+        if (verifiableCredentialsType == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE, verifiableCredentialsType, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildVerifiableCredentialsIntegrityClaim(final String verifiableCredentialsIntegrity,
+                                                                     final boolean selectivelyDisclosable) {
+        if (verifiableCredentialsIntegrity == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, verifiableCredentialsIntegrity,
+                selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildCategoryClaim(final String category, final boolean selectivelyDisclosable) {
+        if (category == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.CATEGORY, category, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildIssuingRegistrationIdentifierClaim(final String issuingRegistrationIdentifier,
+                                                                    final boolean selectivelyDisclosable) {
+        if (issuingRegistrationIdentifier == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ISSUING_REGISTRATION_IDENTIFIER,
+                issuingRegistrationIdentifier, selectivelyDisclosable);
+    }
+
+    protected SDJWTEAAClaim buildClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
         return selectivelyDisclosable ? SDJWTEAAClaim.createSelectivelyDisclosable(name, value) : SDJWTEAAClaim.create(name, value);
     }
 

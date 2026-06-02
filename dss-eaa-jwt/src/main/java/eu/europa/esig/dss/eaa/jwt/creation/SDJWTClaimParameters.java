@@ -48,6 +48,11 @@ public class SDJWTClaimParameters {
 
     private String birthFamilyName;
     private String birthGivenName;
+    private String birthMiddleName;
+    private String salutation;
+    private String title;
+    private String mobilePhoneNumber;
+    private String pseudonym;
 
     // PID Rulebook claims
 
@@ -63,6 +68,16 @@ public class SDJWTClaimParameters {
     private Integer ageBirthYear;
     private String trustAnchor;
     private Map<Integer, Boolean> ageEqualOrOver;
+
+    // draft-ietf-oauth-sd-jwt-vc-13
+    private String verifiableCredentialsType;
+    private String verifiableCredentialsIntegrity;
+
+    // ETSI TS 119 472-1 qualified claims
+    private String category;
+    private String issuingRegistrationIdentifier;
+    private Date administrativeValidityNotBefore;
+    private Date administrativeValidityExpiry;
 
     /**
      * Gets a "family_name" claim value as defined by OpenID Connect Core 1.0
@@ -629,6 +644,96 @@ public class SDJWTClaimParameters {
     }
 
     /**
+     * Gets a "birth_middle_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @return {@link String} value of the birth middle name
+     */
+    public String getBirthMiddleName() {
+        return birthMiddleName;
+    }
+
+    /**
+     * Sets a "birth_middle_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @param birthMiddleName {@link String} value of the birth middle name
+     */
+    public void setBirthMiddleName(final String birthMiddleName) {
+        this.birthMiddleName = birthMiddleName;
+    }
+
+    /**
+     * Gets a "salutation" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @return {@link String} the end-user's salutation
+     */
+    public String getSalutation() {
+        return salutation;
+    }
+
+    /**
+     * Sets a "salutation" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @param salutation {@link String} the end-user's salutation
+     */
+    public void setSalutation(final String salutation) {
+        this.salutation = salutation;
+    }
+
+    /**
+     * Gets a "title" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @return {@link String} the end-user's title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Sets a "title" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @param title {@link String} the end-user's title
+     */
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
+    /**
+     * Gets a "msisdn" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @return {@link String} the end-user's mobile phone number
+     */
+    public String getMobilePhoneNumber() {
+        return mobilePhoneNumber;
+    }
+
+    /**
+     * Sets a "msisdn" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @param mobilePhoneNumber {@link String} the end-user's mobile phone number
+     */
+    public void setMobilePhoneNumber(final String mobilePhoneNumber) {
+        this.mobilePhoneNumber = mobilePhoneNumber;
+    }
+
+    /**
+     * Gets an "also_known_as" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @return {@link String} the stage name, religious name or any other type of alias/pseudonym
+     */
+    public String getPseudonym() {
+        return pseudonym;
+    }
+
+    /**
+     * Sets an "also_known_as" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
+     *
+     * @param pseudonym {@link String} the stage name, religious name or any other type of alias/pseudonym
+     */
+    public void setPseudonym(final String pseudonym) {
+        this.pseudonym = pseudonym;
+    }
+
+    /**
      * Gets a "date_of_expiry" claim value as defined by the PID Rulebook
      *
      * @return {@link Date} the date of expiry
@@ -783,6 +888,7 @@ public class SDJWTClaimParameters {
 
     /**
      * Sets an "age_in_years" claim value as defined by the PID Rulebook
+     * This attribute has been removed in version 1.1 of the Rulebook.
      *
      * @param ageInYears {@link Integer} the age in years
      */
@@ -801,11 +907,35 @@ public class SDJWTClaimParameters {
 
     /**
      * Sets an "age_birth_year" claim value as defined by the PID Rulebook
+     * This attribute has been removed in version 1.1 of the Rulebook.
      *
      * @param ageBirthYear {@link Integer} the birth year
      */
     public void setAgeBirthYear(final Integer ageBirthYear) {
         this.ageBirthYear = ageBirthYear;
+    }
+
+    /**
+     * Gets an "age_equal_or_over" claim value as defined by the PID Rulebook
+     *
+     * @return {@link Map} age threshold map where key is age and value indicates whether subject is equal or over
+     */
+    public Map<Integer, Boolean> getAgeEqualOrOver() {
+        return ageEqualOrOver;
+    }
+
+    /**
+     * Adds a threshold entry to an "age_equal_or_over" claim as defined by the PID Rulebook.
+     * This attribute has been removed in version 1.1 of the Rulebook.
+     *
+     * @param ageThreshold {@code int} the age threshold (e.g., 13, 18, 21)
+     * @param verified {@code boolean} whether the age threshold is verified
+     */
+    public void addAgeEqualOrOverEntry(final int ageThreshold, final boolean verified) {
+        if (ageEqualOrOver == null) {
+            ageEqualOrOver = new HashMap<>();
+        }
+        ageEqualOrOver.put(ageThreshold, verified);
     }
 
     /**
@@ -827,25 +957,111 @@ public class SDJWTClaimParameters {
     }
 
     /**
-     * Gets an "age_equal_or_over" claim value as defined by the PID Rulebook
+     * Gets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
      *
-     * @return {@link Map} age threshold map where key is age and value indicates whether subject is equal or over
+     * @return {@link String} the verifiable credentials type
      */
-    public Map<Integer, Boolean> getAgeEqualOrOver() {
-        return ageEqualOrOver;
+    public String getVerifiableCredentialsType() {
+        return verifiableCredentialsType;
     }
 
     /**
-     * Adds a threshold entry to an "age_equal_or_over" claim as defined by the PID Rulebook
+     * Sets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
      *
-     * @param ageThreshold {@code int} the age threshold (e.g., 13, 18, 21)
-     * @param verified {@code boolean} whether the age threshold is verified
+     * @param verifiableCredentialsType {@link String} the verifiable credentials type
      */
-    public void addAgeEqualOrOverEntry(final int ageThreshold, final boolean verified) {
-        if (ageEqualOrOver == null) {
-            ageEqualOrOver = new HashMap<>();
-        }
-        ageEqualOrOver.put(ageThreshold, verified);
+    public void setVerifiableCredentialsType(final String verifiableCredentialsType) {
+        this.verifiableCredentialsType = verifiableCredentialsType;
+    }
+
+    /**
+     * Gets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @return {@link String} the verifiable credentials metadata integrity
+     */
+    public String getVerifiableCredentialsIntegrity() {
+        return verifiableCredentialsIntegrity;
+    }
+
+    /**
+     * Sets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @param verifiableCredentialsIntegrity {@link String} the verifiable credentials metadata integrity
+     */
+    public void setVerifiableCredentialsIntegrity(final String verifiableCredentialsIntegrity) {
+        this.verifiableCredentialsIntegrity = verifiableCredentialsIntegrity;
+    }
+
+    /**
+     * Gets a "category" claim value as defined by ETSI TS 119 472-1
+     *
+     * @return {@link String} the category
+     */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     * Sets a "category" claim value as defined by ETSI TS 119 472-1
+     *
+     * @param category {@link String} the category
+     */
+    public void setCategory(final String category) {
+        this.category = category;
+    }
+
+    /**
+     * Gets an "iss_reg_id" claim value as defined by ETSI TS 119 472-1
+     *
+     * @return {@link String} the issuing registration identifier
+     */
+    public String getIssuingRegistrationIdentifier() {
+        return issuingRegistrationIdentifier;
+    }
+
+    /**
+     * Sets an "iss_reg_id" claim value as defined by ETSI TS 119 472-1
+     *
+     * @param issuingRegistrationIdentifier {@link String} the issuing registration identifier
+     */
+    public void setIssuingRegistrationIdentifier(final String issuingRegistrationIdentifier) {
+        this.issuingRegistrationIdentifier = issuingRegistrationIdentifier;
+    }
+
+    /**
+     * Gets an "adm_nbf" claim value as defined by ETSI TS 119 472-1
+     *
+     * @return {@link Date} the administrative validity not-before date-time
+     */
+    public Date getAdministrativeValidityNotBefore() {
+        return administrativeValidityNotBefore;
+    }
+
+    /**
+     * Sets an "adm_nbf" claim value as defined by ETSI TS 119 472-1
+     *
+     * @param administrativeValidityNotBefore {@link Date} the administrative validity not-before date-time
+     */
+    public void setAdministrativeValidityNotBefore(final Date administrativeValidityNotBefore) {
+        this.administrativeValidityNotBefore = administrativeValidityNotBefore;
+    }
+
+    /**
+     * Gets an "adm_exp" claim value as defined by ETSI TS 119 472-1
+     *
+     * @return {@link Date} the administrative validity expiry date-time
+     */
+    public Date getAdministrativeValidityExpiry() {
+        return administrativeValidityExpiry;
+    }
+
+    /**
+     * Sets an "adm_exp" claim value as defined by ETSI TS 119 472-1
+     *
+     * @param administrativeValidityExpiry {@link Date} the administrative validity expiry date-time
+     */
+    public void setAdministrativeValidityExpiry(final Date administrativeValidityExpiry) {
+        this.administrativeValidityExpiry = administrativeValidityExpiry;
     }
 
 }

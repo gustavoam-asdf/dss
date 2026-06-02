@@ -9,6 +9,7 @@ import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,6 +27,8 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.selectivelyDisclosable().setAdministrativeValidityNotBefore(new Date());
+        payloadParameters.selectivelyDisclosable().setAdministrativeValidityExpiry(new Date(System.currentTimeMillis() + 3600L * 1000L));
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -57,20 +60,28 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(2, digestMatchers.size());
+        assertEquals(4, digestMatchers.size());
 
         boolean givenNameSDFound = false;
         boolean familyNameSDFound = false;
+        boolean administrativeValidityNotBeforeSDFound = false;
+        boolean administrativeValidityExpirySDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 givenNameSDFound = true;
             } else if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 familyNameSDFound = true;
+            } else if ("adm_nbf".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                administrativeValidityNotBeforeSDFound = true;
+            } else if ("adm_exp".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                administrativeValidityExpirySDFound = true;
             }
         }
         assertTrue(givenNameSDFound);
         assertTrue(familyNameSDFound);
+        assertTrue(administrativeValidityNotBeforeSDFound);
+        assertTrue(administrativeValidityExpirySDFound);
     }
 
     @Override
