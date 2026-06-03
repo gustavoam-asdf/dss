@@ -3,7 +3,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadParameters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,9 +17,6 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
 
     private final SDJWTClaimParameters selectivelyDisclosableParameters = new SDJWTClaimParameters();
     private final SDJWTClaimParameters nonSelectivelyDisclosableParameters = new SDJWTClaimParameters();
-
-    /** Decoy digest used to obscure amount of actually disclosed data claims */
-    private final List<String> decoyDigests = new ArrayList<>(); // TODO : review
 
     /**
      * Default constructor to instantiate SD-JWT VC Payload parameters
@@ -78,23 +74,10 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
         return claims;
     }
 
-    public void addDecoyDigest(String digest) {
-        decoyDigests.add(digest);
-    }
-
-    public void addDecoyDigests(Collection<String> digests) {
-        decoyDigests.addAll(digests);
-    }
-
-    public List<String> getDecoyDigests() {
-        return decoyDigests;
-    }
-
     @Override
     public String toString() {
         return "SDJWTEAAPayloadParameters [" +
                 "claims=" + claims +
-                ", decoyDigests=" + decoyDigests +
                 "] " + super.toString();
     }
 

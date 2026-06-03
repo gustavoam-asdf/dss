@@ -5,7 +5,6 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -14,8 +13,6 @@ import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
-import eu.europa.esig.dss.spi.DSSUtils;
-import org.jose4j.base64url.Base64Url;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Collections;
@@ -29,14 +26,11 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
 
     private Date issuanceDate;
     private Date expiration;
-    private String decoyDigest;
 
     @BeforeEach
     void init() {
         issuanceDate = new Date();
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
-
-        decoyDigest = Base64Url.encode(DSSUtils.digest(DigestAlgorithm.SHA256, "test".getBytes()));
     }
 
     @Override
@@ -46,7 +40,8 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
         payloadParameters.setExpirationDate(expiration);
         payloadParameters.setIssuer("https://issuer.example.com");
 
-        payloadParameters.addDecoyDigest(decoyDigest);
+        payloadParameters.setDecoyDigestNumber(1);
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -77,11 +72,16 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
         assertNotNull(payloadClaims);
 
         final List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(1, digestMatchers.size());
+        assertEquals(2, digestMatchers.size());
 
-        final XmlDigestMatcher xmlDigestMatcher = digestMatchers.get(0);
-        assertEquals(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM, xmlDigestMatcher.getType());
-        assertEquals(decoyDigest, Base64Url.encode(xmlDigestMatcher.getDigestValue()));
+        final XmlDigestMatcher xmlDigestMatcher1 = digestMatchers.get(0);
+        assertEquals(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM, xmlDigestMatcher1.getType());
+
+        final XmlDigestMatcher xmlDigestMatcher2 = digestMatchers.get(0);
+        assertEquals(DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM, xmlDigestMatcher2.getType());
+
+        // The auto generated one should be the same length as the length of the hash of the claim
+        assertEquals(xmlDigestMatcher1.getDigestValue().length, xmlDigestMatcher2.getDigestValue().length);
     }
 
     @Override

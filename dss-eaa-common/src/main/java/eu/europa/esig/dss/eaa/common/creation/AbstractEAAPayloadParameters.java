@@ -34,6 +34,12 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     /** Whether the EAA is issued for a one time use */
     private boolean oneTime;
 
+    /** The number of decoy digests that will be added */
+    private int decoyDigestNumber;
+
+    /** If the hashes in the EAA should be shuffled */
+    private boolean shuffleHashes = true;
+
     /**
      * Default constructor
      */
@@ -182,6 +188,32 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.oneTime = oneTime;
     }
 
+    /**
+     * Gets the number of decoy digest to generate
+     *
+     * @return the number of decoy digest to generate
+     */
+    public int getDecoyDigestNumber() {
+        return decoyDigestNumber;
+    }
+
+    /**
+     * Sets the number of decoy digest to generate
+     *
+     * @param decoyDigestNumber the number of decoy digest to generate
+     */
+    public void setDecoyDigestNumber(final int decoyDigestNumber) {
+        this.decoyDigestNumber = decoyDigestNumber;
+    }
+
+    public boolean isShuffleHashes() {
+        return shuffleHashes;
+    }
+
+    public void setShuffleHashes(final boolean shuffleHashes) {
+        this.shuffleHashes = shuffleHashes;
+    }
+
     @Override
     public String toString() {
         return "AbstractEAAPayloadParameters [" +
@@ -192,6 +224,8 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
                 ", subject='" + subject + '\'' +
                 ", shortLived=" + shortLived +
                 ", oneTime=" + oneTime +
+                ", decoyDigestNumber=" + decoyDigestNumber +
+                ", shuffleHashes=" + shuffleHashes +
                 ']';
     }
 

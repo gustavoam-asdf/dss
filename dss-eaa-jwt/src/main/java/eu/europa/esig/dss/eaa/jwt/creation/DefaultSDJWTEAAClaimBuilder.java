@@ -28,9 +28,24 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         ensureNoDuplicateClaimNames(nonSelectivelyDisclosableClaims, selectivelyDisclosableClaims);
 
         final List<SDJWTEAAClaim> claims = new ArrayList<>();
+        claims.addAll(buildTechnicalClaims(payloadParameters));
         claims.addAll(payloadParameters.getClaims());
         claims.addAll(nonSelectivelyDisclosableClaims);
         claims.addAll(selectivelyDisclosableClaims);
+
+        return claims;
+    }
+
+    protected List<SDJWTEAAClaim> buildTechnicalClaims(final SDJWTEAAPayloadParameters payloadParameters) {
+        final List<SDJWTEAAClaim> claims = new ArrayList<>();
+
+        addIfNotNull(claims, buildIssuerClaim(payloadParameters.getIssuer()));
+        addIfNotNull(claims, buildIssuedAtClaim(payloadParameters.getIssuanceDate()));
+        addIfNotNull(claims, buildNotBeforeClaim(payloadParameters.getNotBeforeDate()));
+        addIfNotNull(claims, buildExpirationTimeClaim(payloadParameters.getExpirationDate()));
+        addIfNotNull(claims, buildSubjectClaim(payloadParameters.getSubject()));
+        addIfNotNull(claims, buildOneTimeClaim(payloadParameters.isOneTime()));
+        addIfNotNull(claims, buildShortLivedClaim(payloadParameters.isShortLived()));
 
         return claims;
     }
@@ -103,6 +118,55 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
                 throw new DSSException(String.format("The claim '%s' cannot be both selectively disclosable and non-selectively disclosable", claimName));
             }
         }
+    }
+
+    protected SDJWTEAAClaim buildIssuerClaim(final String issuer) {
+        if (issuer == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ISSUER, issuer, false);
+    }
+
+    protected SDJWTEAAClaim buildIssuedAtClaim(final Date issuanceDate) {
+        if (issuanceDate == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ISSUED_AT, DSSUtils.getTimeValueInSeconds(issuanceDate.getTime()), false);
+    }
+
+    protected SDJWTEAAClaim buildNotBeforeClaim(final Date notBeforeDate) {
+        if (notBeforeDate == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.NOT_BEFORE, DSSUtils.getTimeValueInSeconds(notBeforeDate.getTime()), false);
+    }
+
+    protected SDJWTEAAClaim buildExpirationTimeClaim(final Date expirationDate) {
+        if (expirationDate == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.EXPIRATION_TIME, DSSUtils.getTimeValueInSeconds(expirationDate.getTime()), false);
+    }
+
+    protected SDJWTEAAClaim buildSubjectClaim(final String subject) {
+        if (subject == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.SUBJECT, subject, false);
+    }
+
+    protected SDJWTEAAClaim buildOneTimeClaim(final boolean oneTime) {
+        if (!oneTime) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.ONE_TIME, null, false);
+    }
+
+    protected SDJWTEAAClaim buildShortLivedClaim(final boolean shortLived) {
+        if (!shortLived) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.SHORT_LIVED, null, false);
     }
 
     protected SDJWTEAAClaim buildFamilyNameClaim(final String familyName, final boolean selectivelyDisclosable) {
