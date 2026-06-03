@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLWithRegIdTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,6 +27,11 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, 1);
+        payloadParameters.setExpectedUpdate(calendar.getTime());
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -35,6 +40,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters.selectivelyDisclosable().setIssuingCountry("LU");
 
         payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
+        payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("VATLU-123456789");
         payloadParameters.selectivelyDisclosable().setDocumentNumber("123456789");
 
         signatureParameters = new CBAdESSignatureParameters();
@@ -64,7 +70,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(8, digestMatchers.size());
+        assertEquals(9, digestMatchers.size());
 
         boolean familyNameSDFound = false;
         boolean givenNameSDFound = false;
@@ -74,6 +80,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         boolean issuingCountrySDFound = false;
         boolean issuingAuthoritySDFound = false;
         boolean documentNumberSDFound = false;
+        boolean registrationIdSDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
@@ -108,6 +115,10 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
                 documentNumberSDFound = true;
+            } else if ("iss_reg_id".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("VATLU-123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
+                registrationIdSDFound = true;
             }
         }
         assertTrue(familyNameSDFound);
@@ -118,6 +129,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         assertTrue(issuingCountrySDFound);
         assertTrue(issuingAuthoritySDFound);
         assertTrue(documentNumberSDFound);
+        assertTrue(registrationIdSDFound);
     }
 
     @Override
@@ -127,6 +139,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+        assertNotNull(eaa.getEAANextUpdate());
     }
 
     @Override

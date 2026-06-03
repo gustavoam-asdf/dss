@@ -15,9 +15,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLStatusListTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,6 +28,9 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
+        payloadParameters.setStatusList(1, "https://pki.nowina.lu/eaa/status_list");
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -127,6 +131,10 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+
+        assertEquals(1, eaa.getEAAStatusIndex());
+        assertEquals("https://pki.nowina.lu/eaa/status_list", eaa.getEAAStatusUri());
+        assertNull(eaa.getEAAStatusCertificate());
     }
 
     @Override

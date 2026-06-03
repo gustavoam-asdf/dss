@@ -6,13 +6,9 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
-import eu.europa.esig.dss.eaa.mdoc.model.MdocDrivingPrivilege;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -29,7 +25,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
     @BeforeEach
     void init() {
         payloadParameters = new MdocEAAPayloadParameters();
-        payloadParameters.setDocType(MdocConstants.ISO18013_5_MDL_DOC_TYPE);
+        payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
 
         payloadParameters.selectivelyDisclosable().setFirstName("John");
@@ -38,7 +34,9 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
         payloadParameters.selectivelyDisclosable().setGender(1);
         payloadParameters.selectivelyDisclosable().setBirthdate(new Date(946684800000L)); // 2000-01-01
         payloadParameters.selectivelyDisclosable().setPhoneNumber("+352123456789");
-        payloadParameters.selectivelyDisclosable().setPlaceOfBirth("Luxembourg City");
+        payloadParameters.selectivelyDisclosable().setPlaceOfBirthCountry("Luxembourg");
+        payloadParameters.selectivelyDisclosable().setPlaceOfBirthLocality("Kehlen");
+        payloadParameters.selectivelyDisclosable().setPlaceOfBirthRegion("Capellen");
         payloadParameters.selectivelyDisclosable().setNationality("LU");
         payloadParameters.selectivelyDisclosable().setBirthFirstName("Johnny");
         payloadParameters.selectivelyDisclosable().setBirthLastName("Doe");
@@ -99,12 +97,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
         payloadParameters.selectivelyDisclosable().setResidentHouseNumber("1");
         payloadParameters.selectivelyDisclosable().setTrustAnchor("https://example.com/trust-anchor");
         payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("REG-123456");
-        payloadParameters.selectivelyDisclosable().setAttestedAttributesSubject("Doe", "John", "SUBJ-123456");
-
-        MdocDrivingPrivilege mdocDrivingPrivilege = new MdocDrivingPrivilege("B");
-        mdocDrivingPrivilege.setIssueDate(DSSUtils.getUtcDate(2020, Calendar.JANUARY, 1));
-        mdocDrivingPrivilege.setExpiryDate(DSSUtils.getUtcDate(2030, Calendar.JANUARY, 1));
-        payloadParameters.selectivelyDisclosable().setDrivingPrivileges(mdocDrivingPrivilege);
+        payloadParameters.selectivelyDisclosable().setAttestedAttributesSubjectPseudonym("X Man");
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
@@ -133,7 +126,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(69, digestMatchers.size());
+        assertEquals(68, digestMatchers.size());
 
         boolean firstNameFound = false;
         boolean lastNameFound = false;
@@ -202,8 +195,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
         boolean residentHouseNumberFound = false;
         boolean trustAnchorFound = false;
         boolean issuingAuthorityRegistrationIdentifierFound = false;
-        boolean attestedAttributesSubjectFound = false;
-        boolean drivingPrivilegesFound = false;
+        boolean attestedAttributesPseudonymFound = false;
 
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
@@ -227,15 +219,15 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
                 genderFound = true;
 
             } else if ("birth_date".equals(name)) {
-                assertEquals("2000-01-01", xmlDigestMatcher.getDisclosableClaim().getValue());
+                assertEquals("{\"birth_date\": \"2000-01-01\"}", xmlDigestMatcher.getDisclosableClaim().getValue());
                 birthdateFound = true;
 
             } else if ("telephone_number".equals(name)) {
                 assertEquals("+352123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
                 phoneNumberFound = true;
 
-            } else if ("birth_place".equals(name)) {
-                assertEquals("Luxembourg City", xmlDigestMatcher.getDisclosableClaim().getValue());
+            } else if ("place_of_birth".equals(name)) {
+                assertEquals("{\"country\": \"Luxembourg\", \"locality\": \"Kehlen\", \"region\": \"Capellen\"}", xmlDigestMatcher.getDisclosableClaim().getValue());
                 placeOfBirthFound = true;
 
             } else if ("nationality".equals(name)) {
@@ -326,7 +318,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
                 assertEquals("true", xmlDigestMatcher.getDisclosableClaim().getValue());
                 ageOver21Found = true;
 
-            } else if ("issuing_jurisdiction".equals(name)) {
+            } else if ("issuing_subdivision".equals(name)) {
                 assertEquals("LU-LU", xmlDigestMatcher.getDisclosableClaim().getValue());
                 issuingJurisdictionFound = true;
 
@@ -455,11 +447,11 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
                 documentTypeFound = true;
 
             } else if ("issue_date".equals(name)) {
-                assertEquals("2024-01-01T00:00:00Z", xmlDigestMatcher.getDisclosableClaim().getValue());
+                assertEquals("2024-01-01", xmlDigestMatcher.getDisclosableClaim().getValue());
                 administrativeIssuanceDateFound = true;
 
             } else if ("expiry_date".equals(name)) {
-                assertEquals("2025-01-01T00:00:00Z", xmlDigestMatcher.getDisclosableClaim().getValue());
+                assertEquals("2025-01-01", xmlDigestMatcher.getDisclosableClaim().getValue());
                 administrativeExpirationDateFound = true;
 
             } else if ("resident_street".equals(name)) {
@@ -479,13 +471,8 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
                 issuingAuthorityRegistrationIdentifierFound = true;
 
             } else if ("SubAttr".equals(name)) {
-                assertEquals("{\"subId\": {\"document_number\": \"SUBJ-123456\", \"given_name\": \"John\", \"family_name\": \"Doe\"}}", xmlDigestMatcher.getDisclosableClaim().getValue());
-                attestedAttributesSubjectFound = true;
-
-            } else if ("driving_privileges".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                assertEquals("org.iso.18013.5.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
-                assertTrue(Utils.isStringNotEmpty(xmlDigestMatcher.getDisclosableClaim().getValue()));
-                drivingPrivilegesFound = true;
+                assertEquals("{\"subAka\": \"X Man\"}", xmlDigestMatcher.getDisclosableClaim().getValue());
+                attestedAttributesPseudonymFound = true;
 
             } else {
                 fail(String.format("Unexpected claim : '%s'", xmlDigestMatcher.getDisclosableClaim().getName()));
@@ -559,9 +546,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
         assertTrue(residentHouseNumberFound);
         assertTrue(trustAnchorFound);
         assertTrue(issuingAuthorityRegistrationIdentifierFound);
-        assertTrue(attestedAttributesSubjectFound);
-        assertTrue(drivingPrivilegesFound);
-
+        assertTrue(attestedAttributesPseudonymFound);
     }
 
     @Override
@@ -570,7 +555,7 @@ class MdocEAAISOMdLAllOptionalElementsTest extends AbstractMdocEAAPresentationTe
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
-        assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
+        assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
     }
 
     @Override

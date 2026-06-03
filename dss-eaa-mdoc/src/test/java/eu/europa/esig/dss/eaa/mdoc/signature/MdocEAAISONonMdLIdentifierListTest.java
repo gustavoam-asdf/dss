@@ -13,11 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.Calendar;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,6 +29,9 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
+        payloadParameters.setIdentifierList(1, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -127,6 +132,14 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+
+        assertEquals(1, eaa.getEAAIdentifierListId());
+        assertEquals("https://pki.nowina.lu/eaa/identifier_list", eaa.getEAAIdentifierListUri());
+        assertArrayEquals(getCertificate("ocsp-responder").getEncoded(), eaa.getEAAIdentifierListCertificate());
+
+        assertNull(eaa.getEAAStatusIndex());
+        assertNull(eaa.getEAAStatusUri());
+        assertNull(eaa.getEAAStatusCertificate());
     }
 
     @Override

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLOneTimeUseTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -36,6 +36,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
         payloadParameters.selectivelyDisclosable().setDocumentNumber("123456789");
+        payloadParameters.setOneTime(true);
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
@@ -64,7 +65,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(8, digestMatchers.size());
+        assertEquals(9, digestMatchers.size());
 
         boolean familyNameSDFound = false;
         boolean givenNameSDFound = false;
@@ -74,6 +75,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         boolean issuingCountrySDFound = false;
         boolean issuingAuthoritySDFound = false;
         boolean documentNumberSDFound = false;
+        boolean oneTimeSDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
@@ -108,6 +110,10 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
                 documentNumberSDFound = true;
+            } else if ("oneTime".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("true", xmlDigestMatcher.getDisclosableClaim().getValue());
+                oneTimeSDFound = true;
             }
         }
         assertTrue(familyNameSDFound);
@@ -118,6 +124,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         assertTrue(issuingCountrySDFound);
         assertTrue(issuingAuthoritySDFound);
         assertTrue(documentNumberSDFound);
+        assertTrue(oneTimeSDFound);
     }
 
     @Override

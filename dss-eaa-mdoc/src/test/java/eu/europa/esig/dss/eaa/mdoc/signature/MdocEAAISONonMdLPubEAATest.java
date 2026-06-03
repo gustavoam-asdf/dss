@@ -15,9 +15,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLPubEAATest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,6 +28,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -36,6 +38,9 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
         payloadParameters.selectivelyDisclosable().setDocumentNumber("123456789");
+
+        payloadParameters.setStatusList(1, "https://pki.nowina.lu/eaa/status_list");
+        payloadParameters.setCategory("urn:etsi:esi:eaa:eu:pub");
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
@@ -64,7 +69,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(8, digestMatchers.size());
+        assertEquals(9, digestMatchers.size());
 
         boolean familyNameSDFound = false;
         boolean givenNameSDFound = false;
@@ -74,6 +79,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         boolean issuingCountrySDFound = false;
         boolean issuingAuthoritySDFound = false;
         boolean documentNumberSDFound = false;
+        boolean categorySDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
@@ -108,6 +114,10 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
                 documentNumberSDFound = true;
+            } else if ("category".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("urn:etsi:esi:eaa:eu:pub", xmlDigestMatcher.getDisclosableClaim().getValue());
+                categorySDFound = true;
             }
         }
         assertTrue(familyNameSDFound);
@@ -118,6 +128,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         assertTrue(issuingCountrySDFound);
         assertTrue(issuingAuthoritySDFound);
         assertTrue(documentNumberSDFound);
+        assertTrue(categorySDFound);
     }
 
     @Override
@@ -127,6 +138,12 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+
+        assertEquals(1, eaa.getEAAStatusIndex());
+        assertEquals("https://pki.nowina.lu/eaa/status_list", eaa.getEAAStatusUri());
+        assertNull(eaa.getEAAStatusCertificate());
+
+        assertEquals("urn:etsi:esi:eaa:eu:pub", eaa.getEAACategory());
     }
 
     @Override

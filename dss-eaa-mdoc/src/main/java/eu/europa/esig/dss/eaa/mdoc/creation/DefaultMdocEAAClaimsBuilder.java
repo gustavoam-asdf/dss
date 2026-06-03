@@ -1473,7 +1473,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
 
         @Override
         protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
+            if (selectivelyDisclosable.getResidentCountry() != null) {
                 return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
             }
             return null;
@@ -1489,8 +1489,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
 
         @Override
         protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentState() != null) {
-                return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getResidentState());
+            if (selectivelyDisclosable.getResidentStreet() != null) {
+                return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getResidentStreet());
             }
             return null;
         }
@@ -2014,7 +2014,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         @Override
         protected MdocEAAClaim getOneTime(MdocEAAPayloadParameters payloadParameters) {
             if (payloadParameters.isOneTime()) {
-                return create(ETSI194721Headers.SHORT_LIVED, payloadParameters.isOneTime());
+                return create(ETSI194721Headers.ONE_TIME, payloadParameters.isOneTime());
             }
             return null;
         }

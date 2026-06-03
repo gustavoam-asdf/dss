@@ -10,14 +10,17 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.spi.DSSUtils;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLKeyAuthorizationsNamespacesAndDataElementsTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,6 +30,13 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
+        payloadParameters.setKeyAuthorizationsNamespaces(Arrays.asList(MdocConstants.ISO23220_1_NAMESPACE, MdocConstants.ETSI_19472_1_NAMESPACE));
+
+        Map<String, List<String>> dataElementsMap = new HashMap<>();
+        dataElementsMap.put(MdocConstants.ISO23220_1_NAMESPACE, Arrays.asList("family_name", "given_name", "birth_date", "issuing_country", "issuing_authority", "document_number"));
+        payloadParameters.setKeyAuthorizationsDataElements(dataElementsMap);
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -127,6 +137,11 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+        assertEquals(Arrays.asList("org.iso.23220.1", "org.etsi.01947201.010101"), eaa.getEAADeviceKeyAuthorizedNamespaces());
+
+        Map<String, List<String>> dataElementsMap = new HashMap<>();
+        dataElementsMap.put("org.iso.23220.1", Arrays.asList("family_name", "given_name", "birth_date", "issuing_country", "issuing_authority", "document_number"));
+        assertEquals(dataElementsMap, eaa.getEAADeviceKeyAuthorizedDataElements());
     }
 
     @Override

@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLWithPseudonymTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
@@ -27,15 +27,12 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
-        payloadParameters.selectivelyDisclosable().setLastName("Doe");
-        payloadParameters.selectivelyDisclosable().setFirstName("John");
+        payloadParameters.selectivelyDisclosable().setPseudonym("X Man");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(DSSUtils.getUtcDate(2026, Calendar.JUNE, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(DSSUtils.getUtcDate(2026, Calendar.AUGUST, 31));
         payloadParameters.selectivelyDisclosable().setIssuingCountry("LU");
-
         payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
-        payloadParameters.selectivelyDisclosable().setDocumentNumber("123456789");
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
@@ -64,26 +61,20 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(8, digestMatchers.size());
+        assertEquals(6, digestMatchers.size());
 
-        boolean familyNameSDFound = false;
-        boolean givenNameSDFound = false;
+        boolean pseudonymSDFound = false;
         boolean birthdateSDFound = false;
         boolean issueDateSDFound = false;
         boolean expiryDateSDFound = false;
         boolean issuingCountrySDFound = false;
         boolean issuingAuthoritySDFound = false;
-        boolean documentNumberSDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
-            if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
-                assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
-                familyNameSDFound = true;
-            } else if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
-                assertEquals("John", xmlDigestMatcher.getDisclosableClaim().getValue());
-                givenNameSDFound = true;
+            if ("also_known_as".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("X Man", xmlDigestMatcher.getDisclosableClaim().getValue());
+                pseudonymSDFound = true;
             } else if ("birth_date".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("{\"birth_date\": \"2001-01-01\"}", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -104,20 +95,14 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("TEST Authority", xmlDigestMatcher.getDisclosableClaim().getValue());
                 issuingAuthoritySDFound = true;
-            } else if ("document_number".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
-                assertEquals("123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
-                documentNumberSDFound = true;
             }
         }
-        assertTrue(familyNameSDFound);
-        assertTrue(givenNameSDFound);
+        assertTrue(pseudonymSDFound);
         assertTrue(birthdateSDFound);
         assertTrue(issueDateSDFound);
         assertTrue(expiryDateSDFound);
         assertTrue(issuingCountrySDFound);
         assertTrue(issuingAuthoritySDFound);
-        assertTrue(documentNumberSDFound);
     }
 
     @Override

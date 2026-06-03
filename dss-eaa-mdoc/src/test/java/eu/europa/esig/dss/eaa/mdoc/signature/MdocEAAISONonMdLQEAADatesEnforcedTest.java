@@ -11,22 +11,47 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
+class MdocEAAISONonMdLQEAADatesEnforcedTest extends AbstractMdocEAAPresentationTestIssuance {
 
     private MdocEAAPayloadParameters payloadParameters;
     private CBAdESSignatureParameters signatureParameters;
+
+    private Date signingDate;
+    private Date validFrom;
+    private Date validUntil;
+    private Date nextUpdate;
 
     @BeforeEach
     void init() {
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
+
+        Calendar calendar = Calendar.getInstance();
+        signingDate = calendar.getTime();
+
+        calendar.set(Calendar.DATE, -1);
+        validFrom = calendar.getTime();
+
+        calendar.set(Calendar.MONTH, 3);
+        validUntil = calendar.getTime();
+
+        calendar.set(Calendar.MONTH, -2);
+        nextUpdate = calendar.getTime();
+
+        payloadParameters.setSigned(signingDate);
+        payloadParameters.setValidFrom(validFrom);
+        payloadParameters.setValidUntil(validUntil);
+        payloadParameters.setExpectedUpdate(nextUpdate);
+
         payloadParameters.selectivelyDisclosable().setLastName("Doe");
         payloadParameters.selectivelyDisclosable().setFirstName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
@@ -35,9 +60,14 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         payloadParameters.selectivelyDisclosable().setIssuingCountry("LU");
 
         payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
+        payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("VATLU-123456789");
         payloadParameters.selectivelyDisclosable().setDocumentNumber("123456789");
 
+        payloadParameters.setStatusList(1, "https://pki.nowina.lu/eaa/status_list");
+        payloadParameters.setCategory("urn:etsi:esi:eaa:eu:qualified");
+
         signatureParameters = new CBAdESSignatureParameters();
+        signatureParameters.bLevel().setSigningDate(signingDate);
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
@@ -64,7 +94,7 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(8, digestMatchers.size());
+        assertEquals(10, digestMatchers.size());
 
         boolean familyNameSDFound = false;
         boolean givenNameSDFound = false;
@@ -74,6 +104,8 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         boolean issuingCountrySDFound = false;
         boolean issuingAuthoritySDFound = false;
         boolean documentNumberSDFound = false;
+        boolean registrationIdSDFound = false;
+        boolean categorySDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
@@ -108,6 +140,14 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
                 assertEquals("org.iso.23220.1", xmlDigestMatcher.getDisclosableClaim().getNamespace());
                 assertEquals("123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
                 documentNumberSDFound = true;
+            } else if ("iss_reg_id".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("VATLU-123456789", xmlDigestMatcher.getDisclosableClaim().getValue());
+                registrationIdSDFound = true;
+            } else if ("category".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("org.etsi.01947201.010101", xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                assertEquals("urn:etsi:esi:eaa:eu:qualified", xmlDigestMatcher.getDisclosableClaim().getValue());
+                categorySDFound = true;
             }
         }
         assertTrue(familyNameSDFound);
@@ -118,6 +158,8 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         assertTrue(issuingCountrySDFound);
         assertTrue(issuingAuthoritySDFound);
         assertTrue(documentNumberSDFound);
+        assertTrue(registrationIdSDFound);
+        assertTrue(categorySDFound);
     }
 
     @Override
@@ -127,6 +169,16 @@ class MdocEAAISONonMdLTest extends AbstractMdocEAAPresentationTestIssuance {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+
+        assertEquals(DSSUtils.formatDateToRFC(signingDate), DSSUtils.formatDateToRFC(eaa.getEAAIssuedAt()));
+        assertEquals(DSSUtils.formatDateToRFC(validFrom), DSSUtils.formatDateToRFC(eaa.getEAANotBefore()));
+        assertEquals(DSSUtils.formatDateToRFC(validUntil), DSSUtils.formatDateToRFC(eaa.getEAAExpiration()));
+        assertEquals(DSSUtils.formatDateToRFC(nextUpdate), DSSUtils.formatDateToRFC(eaa.getEAANextUpdate()));
+
+        assertEquals(1, eaa.getEAAStatusIndex());
+        assertEquals("https://pki.nowina.lu/eaa/status_list", eaa.getEAAStatusUri());
+        assertNull(eaa.getEAAStatusCertificate());
+        assertEquals("urn:etsi:esi:eaa:eu:qualified", eaa.getEAACategory());
     }
 
     @Override
