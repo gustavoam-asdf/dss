@@ -16,4 +16,18 @@ public interface EAAPayloadParameters {
      */
     DigestAlgorithm getDigestAlgorithm();
 
+    /**
+     * Gets the number of decoy digest to generate
+     *
+     * @return the number of decoy digest to generate
+     */
+    int getDecoyDigestNumber();
+
+    /**
+     * Gets whether the digests of the selectively disclosable claims are to be shuffled
+     *
+     * @return TRUE if the hashes of the selectively disclosable claims are to be shuffled, FALSE otherwise
+     */
+    boolean isShuffleHashes();
+
 }

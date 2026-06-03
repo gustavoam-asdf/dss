@@ -8,6 +8,7 @@ import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -139,6 +140,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
         if (!signatureParameters.isIncludeCertificateChain()) {
             throw new IllegalArgumentException("Certificate chain must be included within the mdoc EAA signature!");
         }
+        ensureSigningCertificateDigestAlgorithm(signatureParameters);
 
         if (signatureParameters.getX5ChainHeaderPlacement() == null) {
             signatureParameters.setX5ChainHeaderPlacement(CBAdESSignatureParameters.X5ChainHeaderPlacement.unprotectedHeader);
@@ -155,6 +157,21 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
                     "Obtained value : '%s'", signatureParameters.getEncryptionAlgorithm()));
         }
 
+    }
+
+    /**
+     * This method ensures compliance of the used digest algorithm for signing-certificate signed attribute definition
+     *
+     * @param signatureParameters {@link CBAdESSignatureParameters}
+     */
+    protected void ensureSigningCertificateDigestAlgorithm(final CBAdESSignatureParameters signatureParameters) {
+        // TODO : remove the method should the ETSI TS 119 472-1 be updated
+        if (DigestAlgorithm.SHA256 != signatureParameters.getSigningCertificateDigestMethod()) {
+            LOG.info("ETSI TS 119 472-1 v1.2.1 requires SHA256 to be used for the signing-certificate signed attribute definition. " +
+                    "The value is enforced to DigestAlgorithm.SHA256. Should you need to use a different algorithm, " +
+                    "please override the MdocEAAService#ensureSigningCertificateDigestAlgorithm method.");
+            signatureParameters.setSigningCertificateDigestMethod(DigestAlgorithm.SHA256);
+        }
     }
 
     /**

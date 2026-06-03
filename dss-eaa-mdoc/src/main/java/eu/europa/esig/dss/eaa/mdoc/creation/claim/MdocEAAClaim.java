@@ -75,6 +75,26 @@ public class MdocEAAClaim extends AbstractEAAClaim {
     }
 
     /**
+     * Create a {@link MdocEAAClaim} with the value only.
+     * Used for decoy digests definition within the implementation
+     *
+     * @param value {@link Object} the claim value
+     * @return the created {@link MdocEAAClaim}
+     */
+    public static MdocEAAClaim createVoidClaim(final Object value) {
+        return new MdocEAAClaim(value);
+    }
+
+    /**
+     * Constructor with the value
+     *
+     * @param value {@link Object} the value of the claim
+     */
+    protected MdocEAAClaim(Object value) {
+        this(null, null, value, null);
+    }
+
+    /**
      * Constructor with the claim namespace, name and value
      *
      * @param namespace {@link String}
@@ -170,6 +190,15 @@ public class MdocEAAClaim extends AbstractEAAClaim {
      */
     public void setSalt(byte[] salt) {
         this.salt = salt;
+    }
+
+    /**
+     * Gets whether the claim is void (no element identifier or namespace is included)
+     *
+     * @return whether the claim is void
+     */
+    public boolean isVoid() {
+        return getNamespace() == null && getName() == null;
     }
 
 }

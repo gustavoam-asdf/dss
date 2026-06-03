@@ -10,7 +10,6 @@ import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
-import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,7 +162,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
         for (Map.Entry<String, List<MdocEAAClaim>> claimsEntry : getRootPayloadClaims(payloadParameters).entrySet()) {
             String namespace = claimsEntry.getKey();
             List<MdocEAAClaim> claims = claimsEntry.getValue();
-            valueDigests.put(namespace, buildDigestIDs(claims, payloadParameters.getDigestAlgorithm(), secureRandom));
+            valueDigests.put(namespace, buildDigestIDs(claims, payloadParameters, secureRandom));
         }
         return valueDigests;
     }
@@ -181,6 +181,26 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     }
 
     /**
+     * Gets the claims, including the decoy values and/randomized, when applicable
+     *
+     * @param claims a list of {@link MdocEAAClaim}s
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
+     * @param secureRandom {@link SecureRandom} to generate salt
+     * @return a list of {@link Digest}s
+     */
+    protected List<MdocEAAClaim> randomize(List<MdocEAAClaim> claims, MdocEAAPayloadParameters payloadParameters, SecureRandom secureRandom) {
+        claims = new ArrayList<>(claims);
+        for (int i = 0; i < payloadParameters.getDecoyDigestNumber(); i++) {
+            byte[] bytes = nextRandomSalt(secureRandom);
+            claims.add(MdocEAAClaim.createVoidClaim(bytes));
+        }
+        if (payloadParameters.isShuffleHashes()) {
+            Collections.shuffle(claims, secureRandom);
+        }
+        return claims;
+    }
+
+    /**
      * Builds a DigestIDs structure.
      * {@code
      *   DigestIDs = {
@@ -188,17 +208,20 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param claims a list of {@link MdocEAAClaim}s
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
+     * @param secureRandom {@link SecureRandom}
      * @return {@link CBORMap}
      */
-    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom) {
+    protected CBORMap buildDigestIDs(List<MdocEAAClaim> claims, MdocEAAPayloadParameters payloadParameters, SecureRandom secureRandom) {
         if (Utils.isCollectionEmpty(claims)) {
             throw new IllegalStateException("The list of claims is empty!");
         }
 
         final CBORMap digestIDs = new CBORMap();
-        List<MdocEAADisclosure> disclosures = buildDisclosures(claims, secureRandom);
+        List<MdocEAADisclosure> disclosures = buildDisclosures(claims, payloadParameters, secureRandom, true);
         disclosures.forEach(d -> {
-            Digest digest = d.getDigest(digestAlgorithm);
+            Digest digest = d.getDigest(payloadParameters.getDigestAlgorithm());
             digestIDs.put(d.getDigestId(), digest.getValue());
         });
         return digestIDs;
@@ -401,7 +424,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
 
         final List<MdocEAADisclosure> result = new ArrayList<>();
         SecureRandom secureRandom = secureRandom(payloadParameters);
-        getRootPayloadClaims(payloadParameters).values().forEach(c -> result.addAll(buildDisclosures(c, secureRandom)));
+        getRootPayloadClaims(payloadParameters).values().forEach(c -> result.addAll(buildDisclosures(c, payloadParameters, secureRandom, false)));
         return result;
     }
 
@@ -409,19 +432,27 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      * Builds disclosures for the given list of {@code claims} using the provided {@code secureRandom}
      *
      * @param claims a list of {@link MdocEAAClaim}s to build disclosures for
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
      * @param secureRandom {@link SecureRandom} to be used for salt generation, where applicable
+     * @param includeVoid whether the void claims are to be included in the final result
      * @return a list of {@link MdocEAADisclosure}s
      */
-    protected List<MdocEAADisclosure> buildDisclosures(List<MdocEAAClaim> claims, SecureRandom secureRandom) {
+    protected List<MdocEAADisclosure> buildDisclosures(List<MdocEAAClaim> claims, MdocEAAPayloadParameters payloadParameters,
+                                                       SecureRandom secureRandom, boolean includeVoid) {
         if (Utils.isCollectionEmpty(claims)) {
             throw new IllegalStateException("The list of claims is empty!");
         }
+        claims = randomize(claims, payloadParameters, secureRandom);
+
         final List<MdocEAADisclosure> result = new ArrayList<>();
 
         for (int i = 0; i < claims.size(); i++) {
             MdocEAAClaim claim = claims.get(i);
             ensureDigestId(claim, i + 1, claims);
             ensureSalt(claim, secureRandom);
+            if (claim.isVoid() && !includeVoid) {
+                continue;
+            }
 
             result.add(disclosureBuilder.build(claim));
         }

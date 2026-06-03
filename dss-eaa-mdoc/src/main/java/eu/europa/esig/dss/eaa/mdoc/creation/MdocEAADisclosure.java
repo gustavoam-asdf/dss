@@ -29,6 +29,18 @@ public class MdocEAADisclosure extends AbstractEAADisclosure {
     private final CBORByteString issuerSignedItemBytes;
 
     /**
+     * Constructor to instantiate a void
+     *
+     * @param issuerSignedItemBytes serialized IssuerSignedItemBytes object
+     */
+    protected MdocEAADisclosure(final int digestId, final CBORByteString issuerSignedItemBytes) {
+        Objects.requireNonNull(issuerSignedItemBytes, "IssuerSignedItemBytes cannot be null!");
+        this.namespace = null;
+        this.digestId = digestId;
+        this.issuerSignedItemBytes = issuerSignedItemBytes;
+    }
+
+    /**
      * Constructor to instantiate the mdoc disclosure from a serialized IssuerSignedItemBytes object
      *
      * @param namespace {@link String} namespace of the element claim
@@ -103,6 +115,25 @@ public class MdocEAADisclosure extends AbstractEAADisclosure {
         byte[] serialized = CBORUtils.serializeCborObject(issuerSignedItemBytes);
         byte[] digestValue = DSSUtils.digest(digestAlgorithm, serialized);
         return new Digest(digestAlgorithm, digestValue);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        MdocEAADisclosure that = (MdocEAADisclosure) object;
+        return digestId == that.digestId
+                && namespace.equals(that.namespace)
+                && Objects.equals(issuerSignedItemBytes, that.issuerSignedItemBytes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = namespace.hashCode();
+        result = 31 * result + digestId;
+        result = 31 * result + Objects.hashCode(issuerSignedItemBytes);
+        return result;
     }
 
 }

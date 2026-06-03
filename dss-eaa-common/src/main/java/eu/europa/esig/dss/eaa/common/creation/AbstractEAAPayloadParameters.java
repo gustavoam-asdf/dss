@@ -188,11 +188,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.oneTime = oneTime;
     }
 
-    /**
-     * Gets the number of decoy digest to generate
-     *
-     * @return the number of decoy digest to generate
-     */
+    @Override
     public int getDecoyDigestNumber() {
         return decoyDigestNumber;
     }
@@ -206,10 +202,16 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.decoyDigestNumber = decoyDigestNumber;
     }
 
+    @Override
     public boolean isShuffleHashes() {
         return shuffleHashes;
     }
 
+    /**
+     * Sets whether the digests of the selectively disclosable claims are to be shuffled
+     *
+     * @param shuffleHashes whether the digests of the selectively disclosable claims are to be shuffled
+     */
     public void setShuffleHashes(final boolean shuffleHashes) {
         this.shuffleHashes = shuffleHashes;
     }

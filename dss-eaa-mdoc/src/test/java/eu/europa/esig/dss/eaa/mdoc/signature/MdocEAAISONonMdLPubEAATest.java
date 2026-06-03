@@ -1,13 +1,20 @@
 package eu.europa.esig.dss.eaa.mdoc.signature;
 
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
+import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
+import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.x509.CommonX509URLCertificateSource;
+import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Calendar;
@@ -44,8 +51,21 @@ class MdocEAAISONonMdLPubEAATest extends AbstractMdocEAAPresentationTestIssuance
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        signatureParameters.setSigningCertificateDigestMethod(DigestAlgorithm.SHA256);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
+
+        signatureParameters.setIncludeKeyIdentifier(false);
+        signatureParameters.setX509Url("https://pki.nowina.lu/eaa/qeaa.crt");
+    }
+
+    @Override
+    protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
+        SignedDocumentValidator documentValidator = super.getValidator(signedDocument);
+        CommonX509URLCertificateSource x509URLCertificateSource = new CommonX509URLCertificateSource();
+        x509URLCertificateSource.addCertificate("https://pki.nowina.lu/eaa/qeaa.crt", getSigningCert());
+        documentValidator.setSigningCertificateSource(x509URLCertificateSource);
+        return documentValidator;
     }
 
     @Override
@@ -144,6 +164,34 @@ class MdocEAAISONonMdLPubEAATest extends AbstractMdocEAAPresentationTestIssuance
         assertNull(eaa.getEAAStatusCertificate());
 
         assertEquals("urn:etsi:esi:eaa:eu:pub", eaa.getEAACategory());
+    }
+
+    @Override
+    protected void checkCertificates(DiagnosticData diagnosticData) {
+        super.checkCertificates(diagnosticData);
+
+        EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
+        SignatureWrapper signatureWrapper = eaa.getEAASignatures().get(0);
+        List<RelatedCertificateWrapper> relatedCertificatesByRefOrigin = signatureWrapper.foundCertificates().getRelatedCertificatesByRefOrigin(CertificateRefOrigin.X509_URL);
+        assertEquals(1, relatedCertificatesByRefOrigin.size());
+
+        List<CertificateRefWrapper> references = relatedCertificatesByRefOrigin.get(0).getReferences();
+        assertEquals(2, references.size());
+
+        boolean signCertRefFound = false;
+        boolean x5uRefFound = false;
+        for (CertificateRefWrapper certificateRefWrapper : references) {
+            if (CertificateRefOrigin.SIGNING_CERTIFICATE == certificateRefWrapper.getOrigin()) {
+                assertNotNull(certificateRefWrapper.getDigestAlgoAndValue());
+                assertEquals(DigestAlgorithm.SHA256, certificateRefWrapper.getDigestMethod());
+                signCertRefFound = true;
+            } else if (CertificateRefOrigin.X509_URL == certificateRefWrapper.getOrigin()) {
+                assertEquals("https://pki.nowina.lu/eaa/qeaa.crt", certificateRefWrapper.getX509Url());
+                x5uRefFound = true;
+            }
+        }
+        assertTrue(signCertRefFound);
+        assertTrue(x5uRefFound);
     }
 
     @Override
