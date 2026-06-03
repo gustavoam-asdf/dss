@@ -2,20 +2,22 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadParameters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * Provides configuration for the SD-JWT VC payload creation
  *
  */
 public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
 
-    /** Map of custom claims */
-    private final List<SDJWTEAAClaim> claims = new ArrayList<>();
+    /** EAA issuer subject */
+    private String issuer;
 
+    /** EAA subject */
+    private String subject;
+
+    /** Catalogue of parameters to be made selectively disclosable */
     private final SDJWTClaimParameters selectivelyDisclosableParameters = new SDJWTClaimParameters();
+
+    /** Catalogue of parameters to be made non-selectively disclosable */
     private final SDJWTClaimParameters nonSelectivelyDisclosableParameters = new SDJWTClaimParameters();
 
     /**
@@ -25,59 +27,71 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
         // empty
     }
 
+    /**
+     * Gets the EAA issuer subject
+     *
+     * @return {@link String}
+     */
+    public String getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * Sets the EAA issue subject
+     *
+     * @param issuer {@link String}
+     */
+    public void setIssuer(final String issuer) {
+        this.issuer = issuer;
+    }
+
+    /**
+     * Gets the EAA subject
+     *
+     * @return {@link String}
+     */
+    public String getSubject() {
+        return subject;
+    }
+
+    /**
+     * Sets the EAA subject
+     *
+     * @param subject {@link String}
+     */
+    public void setSubject(final String subject) {
+        this.subject = subject;
+    }
+
+    /**
+     * Gets a catalogue of claims to be made selectively disclosable within the produced SD-JWT VC EAA.
+     * When parameters are defined within the object, the computed hashes will be computed and
+     * incorporated within "_sd" header parameter of the EAA Payload.
+     * To provide the plain values on presentation, the disclosures shall be generated.
+     *
+     * @return {@link SDJWTClaimParameters}
+     */
     public SDJWTClaimParameters selectivelyDisclosable() {
         return selectivelyDisclosableParameters;
     }
 
+    /**
+     * Gets a catalogue of claims to be mase non-selectively disclosable and
+     * thus to be included within the SD-JWT VC EAA Payload in the plain form.
+     *
+     * @return {@link SDJWTClaimParameters}
+     */
     public SDJWTClaimParameters nonSelectivelyDisclosable() {
         return nonSelectivelyDisclosableParameters;
-    }
-
-    /**
-     * Adds a custom claim to the list
-     *
-     * @param claim {@link SDJWTEAAClaim}
-     */
-    public void addClaim(final SDJWTEAAClaim claim) {
-        Objects.requireNonNull(claim, "Claim cannot be null!");
-        claims.add(claim);
-    }
-
-    /**
-     * Adds a custom claim with the given name and a value.
-     * The claim will be added to the root level of the payload.
-     *
-     * @param name {@link String}
-     * @param value {@link Object}
-     */
-    public void addClaim(final String name, final Object value) {
-        addClaim(SDJWTEAAClaim.create(name, value));
-    }
-
-    /**
-     * Adds a selectively disclosable custom claim with the given name and a value.
-     * The claim will be added to the root level of the payload.
-     *
-     * @param name {@link String}
-     * @param value {@link Object}
-     */
-    public void addSelectivelyDisclosableClaim(final String name, final Object value) {
-        addClaim(SDJWTEAAClaim.createSelectivelyDisclosable(name, value));
-    }
-
-    /**
-     * Gets arbitrary provided claims
-     *
-     * @return a list of {@link SDJWTEAAClaim}s
-     */
-    public List<SDJWTEAAClaim> getClaims() {
-        return claims;
     }
 
     @Override
     public String toString() {
         return "SDJWTEAAPayloadParameters [" +
-                "claims=" + claims +
+                "issuer='" + issuer + '\'' +
+                ", subject='" + subject + '\'' +
+                ", selectivelyDisclosableParameters=" + selectivelyDisclosableParameters +
+                ", nonSelectivelyDisclosableParameters=" + nonSelectivelyDisclosableParameters +
                 "] " + super.toString();
     }
 

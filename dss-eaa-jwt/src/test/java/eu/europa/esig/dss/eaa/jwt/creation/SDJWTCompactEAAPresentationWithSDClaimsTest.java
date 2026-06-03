@@ -27,8 +27,8 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
-        payloadParameters.selectivelyDisclosable().setAdministrativeValidityNotBefore(new Date());
-        payloadParameters.selectivelyDisclosable().setAdministrativeValidityExpiry(new Date(System.currentTimeMillis() + 3600L * 1000L));
+        payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(new Date());
+        payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(new Date(System.currentTimeMillis() + 3600L * 1000L));
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());

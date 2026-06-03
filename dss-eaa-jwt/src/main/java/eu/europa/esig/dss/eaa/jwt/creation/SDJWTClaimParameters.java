@@ -1,316 +1,85 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import eu.europa.esig.dss.eaa.common.creation.AbstractEAAClaimParameters;
 
-public class SDJWTClaimParameters {
+import java.util.Date;
+
+/**
+ * Contains parameters for SD-JWT VC creation which may or may not be made selectively disclosable
+ *
+ */
+public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAAClaim> {
 
     // OpenID Connect Core 1.0
 
-    private String familyName;
-    private String givenName;
-    private Date birthDate;
-    private List<String> nationalities;
-
-    // address
-    private String addressFormatted;
-    private String addressStreetAddress;
-    private String addressLocality;
-    private String addressRegion;
-    private String addressPostalCode;
-    private String addressCountry;
-    private String addressHouseNumber;
-
-    private String email;
-    private String phoneNumber;
+    /** URL of the End-User's profile picture. */
     private String picture;
+
+    /** Casual or informal name by which the End-User wishes to be referred to. */
     private String nickname;
+
+    /** Preferred shorthand name or nickname of the End-User. */
     private String preferredNickname;
+
+    /** Full name of the End-User in displayable form. */
     private String name;
+
+    /** Middle name(s) of the End-User. */
     private String middleName;
+
+    /** URL of the End-User's profile page. */
     private String profile;
+
+    /** URL of the End-User's personal website or blog. */
     private String website;
+
+    /** Indicates whether the End-User's email address has been verified. */
     private Boolean emailVerified;
+
+    /** End-User's gender. */
     private String gender;
+
+    /** End-User's time zone, represented as an IANA time zone identifier. */
     private String zoneinfo;
+
+    /** End-User's locale, represented as a BCP47 language tag. */
     private String locale;
+
+    /** Indicates whether the End-User's phone number has been verified. */
     private Boolean phoneNumberVerified;
+
+    /** Time when the End-User's information was last updated. */
     private Date updatedAt;
 
-    // OpenID Connect for Identity Assurance Claims Registration 1.0
+        // OpenID Connect for Identity Assurance Claims Registration 1.0
 
-    // place_of_birth
-    private String placeOfBirthCountry;
-    private String placeOfBirthRegion;
-    private String placeOfBirthLocality;
-
-    private String birthFamilyName;
-    private String birthGivenName;
+    /** Middle name(s) assigned to the End-User at birth. */
     private String birthMiddleName;
+
+    /** Salutation or honorific used when addressing the End-User (e.g. Mr., Ms., Dr.). */
     private String salutation;
-    private String title;
-    private String mobilePhoneNumber;
-    private String pseudonym;
 
     // PID Rulebook claims
 
+    /** Expiration date of the identity document or credential. */
     private Date dateOfExpiry;
+
+    /** Issuance date of the identity document or credential. */
     private Date dateOfIssuance;
-    private String personalAdministrativeNumber;
-    private Integer sex;
-    private String issuingAuthority;
-    private String issuingCountry;
-    private String documentNumber;
-    private String issuingJurisdiction;
-    private Integer ageInYears;
-    private Integer ageBirthYear;
-    private String trustAnchor;
-    private Map<Integer, Boolean> ageEqualOrOver;
 
     // draft-ietf-oauth-sd-jwt-vc-13
+
+    /** Type identifier of the embedded Verifiable Credential. */
     private String verifiableCredentialsType;
+
+    /** Integrity metadata or cryptographic binding associated with the Verifiable Credential. */
     private String verifiableCredentialsIntegrity;
 
-    // ETSI TS 119 472-1 qualified claims
-    private String category;
-    private String issuingRegistrationIdentifier;
-    private Date administrativeValidityNotBefore;
-    private Date administrativeValidityExpiry;
-
     /**
-     * Gets a "family_name" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link String} value of the family name
+     * Default constructor
      */
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    /**
-     * Sets a "family_name" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param familyName {@link String} value of the family name
-     */
-    public void setFamilyName(final String familyName) {
-        this.familyName = familyName;
-    }
-
-    /**
-     * Gets a "given_name" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link String} value of the given name
-     */
-    public String getGivenName() {
-        return givenName;
-    }
-
-    /**
-     * Sets a "given_name" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param givenName {@link String} value of the given name
-     */
-    public void setGivenName(final String givenName) {
-        this.givenName = givenName;
-    }
-
-    /**
-     * Gets a "birth_date" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link Date} the birthdate
-     */
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    /**
-     * Sets a "birth_date" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param birthDate {@link Date} the birthdate
-     */
-    public void setBirthDate(final Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    /**
-     * Gets a "nationalities" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link List} list of alpha-2 country codes of nationalities
-     */
-    public List<String> getNationalities() {
-        return nationalities;
-    }
-
-    /**
-     * Sets a "nationalities" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param nationalities {@link List} list of alpha-2 country codes of nationalities
-     */
-    public void setNationalities(final List<String> nationalities) {
-        this.nationalities = nationalities;
-    }
-
-    /**
-     * Gets the "formatted" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the full mailing address
-     */
-    public String getAddressFormatted() {
-        return addressFormatted;
-    }
-
-    /**
-     * Sets the "formatted" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressFormatted {@link String} the full mailing address
-     */
-    public void setAddressFormatted(final String addressFormatted) {
-        this.addressFormatted = addressFormatted;
-    }
-
-    /**
-     * Gets the "street_address" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the full street address component
-     */
-    public String getAddressStreetAddress() {
-        return addressStreetAddress;
-    }
-
-    /**
-     * Sets the "street_address" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressStreetAddress {@link String} the full street address component
-     */
-    public void setAddressStreetAddress(final String addressStreetAddress) {
-        this.addressStreetAddress = addressStreetAddress;
-    }
-
-    /**
-     * Gets the "locality" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the city or locality component
-     */
-    public String getAddressLocality() {
-        return addressLocality;
-    }
-
-    /**
-     * Sets the "locality" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressLocality {@link String} the city or locality component
-     */
-    public void setAddressLocality(final String addressLocality) {
-        this.addressLocality = addressLocality;
-    }
-
-    /**
-     * Gets the "region" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the state, province, prefecture, or region component
-     */
-    public String getAddressRegion() {
-        return addressRegion;
-    }
-
-    /**
-     * Sets the "region" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressRegion {@link String} the state, province, prefecture, or region component
-     */
-    public void setAddressRegion(final String addressRegion) {
-        this.addressRegion = addressRegion;
-    }
-
-    /**
-     * Gets the "postal_code" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the zip code or postal code component
-     */
-    public String getAddressPostalCode() {
-        return addressPostalCode;
-    }
-
-    /**
-     * Sets the "postal_code" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressPostalCode {@link String} the zip code or postal code component
-     */
-    public void setAddressPostalCode(final String addressPostalCode) {
-        this.addressPostalCode = addressPostalCode;
-    }
-
-    /**
-     * Gets the "country" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the country name component
-     */
-    public String getAddressCountry() {
-        return addressCountry;
-    }
-
-    /**
-     * Sets the "country" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressCountry {@link String} the country name component
-     */
-    public void setAddressCountry(final String addressCountry) {
-        this.addressCountry = addressCountry;
-    }
-
-    /**
-     * Gets the "house_number" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the house number component
-     */
-    public String getAddressHouseNumber() {
-        return addressHouseNumber;
-    }
-
-    /**
-     * Sets the "house_number" value of the "address" claim as described by OpenID Connect Core 1.0
-     *
-     * @param addressHouseNumber {@link String} the house number component
-     */
-    public void setAddressHouseNumber(final String addressHouseNumber) {
-        this.addressHouseNumber = addressHouseNumber;
-    }
-
-    /**
-     * Gets an "email" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the email address
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Sets an "email" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param email {@link String} the email address
-     */
-    public void setEmail(final String email) {
-        this.email = email;
-    }
-
-    /**
-     * Gets a "phone_number" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @return {@link String} the phone number
-     */
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    /**
-     * Sets a "phone_number" claim value as defined by OpenID Connect Core 1.0
-     *
-     * @param phoneNumber {@link String} the phone number
-     */
-    public void setPhoneNumber(final String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public SDJWTClaimParameters() {
+        // empty
     }
 
     /**
@@ -548,102 +317,6 @@ public class SDJWTClaimParameters {
     }
 
     /**
-     * Gets the "country" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @return {@link String} the alpha-2 country code
-     */
-    public String getPlaceOfBirthCountry() {
-        return placeOfBirthCountry;
-    }
-
-    /**
-     * Sets the "country" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @param placeOfBirthCountry {@link String} the alpha-2 country code
-     */
-    public void setPlaceOfBirthCountry(final String placeOfBirthCountry) {
-        this.placeOfBirthCountry = placeOfBirthCountry;
-    }
-
-    /**
-     * Gets the "region" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @return {@link String} the name of a state, province, district, or local area
-     */
-    public String getPlaceOfBirthRegion() {
-        return placeOfBirthRegion;
-    }
-
-    /**
-     * Sets the "region" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @param placeOfBirthRegion {@link String} the name of a state, province, district, or local area
-     */
-    public void setPlaceOfBirthRegion(final String placeOfBirthRegion) {
-        this.placeOfBirthRegion = placeOfBirthRegion;
-    }
-
-    /**
-     * Gets the "locality" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @return {@link String} the name of a municipality, city, town, or village
-     */
-    public String getPlaceOfBirthLocality() {
-        return placeOfBirthLocality;
-    }
-
-    /**
-     * Sets the "locality" value of the "place_of_birth" claim as defined by OpenID Connect for Identity Assurance
-     * Claims Registration 1.0
-     *
-     * @param placeOfBirthLocality {@link String} the name of a municipality, city, town, or village
-     */
-    public void setPlaceOfBirthLocality(final String placeOfBirthLocality) {
-        this.placeOfBirthLocality = placeOfBirthLocality;
-    }
-
-    /**
-     * Gets a "birth_family_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @return {@link String} value of the birth family name
-     */
-    public String getBirthFamilyName() {
-        return birthFamilyName;
-    }
-
-    /**
-     * Sets a "birth_family_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @param birthFamilyName {@link String} value of the birth family name
-     */
-    public void setBirthFamilyName(final String birthFamilyName) {
-        this.birthFamilyName = birthFamilyName;
-    }
-
-    /**
-     * Gets a "birth_given_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @return {@link String} value of the birth given name
-     */
-    public String getBirthGivenName() {
-        return birthGivenName;
-    }
-
-    /**
-     * Sets a "birth_given_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @param birthGivenName {@link String} value of the birth given name
-     */
-    public void setBirthGivenName(final String birthGivenName) {
-        this.birthGivenName = birthGivenName;
-    }
-
-    /**
      * Gets a "birth_middle_name" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
      *
      * @return {@link String} value of the birth middle name
@@ -677,60 +350,6 @@ public class SDJWTClaimParameters {
      */
     public void setSalutation(final String salutation) {
         this.salutation = salutation;
-    }
-
-    /**
-     * Gets a "title" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @return {@link String} the end-user's title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets a "title" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @param title {@link String} the end-user's title
-     */
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    /**
-     * Gets a "msisdn" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @return {@link String} the end-user's mobile phone number
-     */
-    public String getMobilePhoneNumber() {
-        return mobilePhoneNumber;
-    }
-
-    /**
-     * Sets a "msisdn" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @param mobilePhoneNumber {@link String} the end-user's mobile phone number
-     */
-    public void setMobilePhoneNumber(final String mobilePhoneNumber) {
-        this.mobilePhoneNumber = mobilePhoneNumber;
-    }
-
-    /**
-     * Gets an "also_known_as" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @return {@link String} the stage name, religious name or any other type of alias/pseudonym
-     */
-    public String getPseudonym() {
-        return pseudonym;
-    }
-
-    /**
-     * Sets an "also_known_as" claim value as defined by OpenID Connect for Identity Assurance Claims Registration 1.0
-     *
-     * @param pseudonym {@link String} the stage name, religious name or any other type of alias/pseudonym
-     */
-    public void setPseudonym(final String pseudonym) {
-        this.pseudonym = pseudonym;
     }
 
     /**
@@ -770,193 +389,6 @@ public class SDJWTClaimParameters {
     }
 
     /**
-     * Gets a "personal_administrative_number" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the personal administrative number
-     */
-    public String getPersonalAdministrativeNumber() {
-        return personalAdministrativeNumber;
-    }
-
-    /**
-     * Sets a "personal_administrative_number" claim value as defined by the PID Rulebook
-     *
-     * @param personalAdministrativeNumber {@link String} the personal administrative number
-     */
-    public void setPersonalAdministrativeNumber(final String personalAdministrativeNumber) {
-        this.personalAdministrativeNumber = personalAdministrativeNumber;
-    }
-
-    /**
-     * Gets a "sex" claim value as defined by the PID Rulebook
-     *
-     * @return {@link Integer} the sex value
-     */
-    public Integer getSex() {
-        return sex;
-    }
-
-    /**
-     * Sets a "sex" claim value as defined by the PID Rulebook
-     *
-     * @param sex {@link Integer} the sex value
-     */
-    public void setSex(final Integer sex) {
-        this.sex = sex;
-    }
-
-    /**
-     * Gets an "issuing_authority" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the issuing authority
-     */
-    public String getIssuingAuthority() {
-        return issuingAuthority;
-    }
-
-    /**
-     * Sets an "issuing_authority" claim value as defined by the PID Rulebook
-     *
-     * @param issuingAuthority {@link String} the issuing authority
-     */
-    public void setIssuingAuthority(final String issuingAuthority) {
-        this.issuingAuthority = issuingAuthority;
-    }
-
-    /**
-     * Gets an "issuing_country" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the alpha-2 issuing country code
-     */
-    public String getIssuingCountry() {
-        return issuingCountry;
-    }
-
-    /**
-     * Sets an "issuing_country" claim value as defined by the PID Rulebook
-     *
-     * @param issuingCountry {@link String} the alpha-2 issuing country code
-     */
-    public void setIssuingCountry(final String issuingCountry) {
-        this.issuingCountry = issuingCountry;
-    }
-
-    /**
-     * Gets a "document_number" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the document number
-     */
-    public String getDocumentNumber() {
-        return documentNumber;
-    }
-
-    /**
-     * Sets a "document_number" claim value as defined by the PID Rulebook
-     *
-     * @param documentNumber {@link String} the document number
-     */
-    public void setDocumentNumber(final String documentNumber) {
-        this.documentNumber = documentNumber;
-    }
-
-    /**
-     * Gets an "issuing_jurisdiction" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the issuing jurisdiction
-     */
-    public String getIssuingJurisdiction() {
-        return issuingJurisdiction;
-    }
-
-    /**
-     * Sets an "issuing_jurisdiction" claim value as defined by the PID Rulebook
-     *
-     * @param issuingJurisdiction {@link String} the issuing jurisdiction
-     */
-    public void setIssuingJurisdiction(final String issuingJurisdiction) {
-        this.issuingJurisdiction = issuingJurisdiction;
-    }
-
-    /**
-     * Gets an "age_in_years" claim value as defined by the PID Rulebook
-     *
-     * @return {@link Integer} the age in years
-     */
-    public Integer getAgeInYears() {
-        return ageInYears;
-    }
-
-    /**
-     * Sets an "age_in_years" claim value as defined by the PID Rulebook
-     * This attribute has been removed in version 1.1 of the Rulebook.
-     *
-     * @param ageInYears {@link Integer} the age in years
-     */
-    public void setAgeInYears(final Integer ageInYears) {
-        this.ageInYears = ageInYears;
-    }
-
-    /**
-     * Gets an "age_birth_year" claim value as defined by the PID Rulebook
-     *
-     * @return {@link Integer} the birth year
-     */
-    public Integer getAgeBirthYear() {
-        return ageBirthYear;
-    }
-
-    /**
-     * Sets an "age_birth_year" claim value as defined by the PID Rulebook
-     * This attribute has been removed in version 1.1 of the Rulebook.
-     *
-     * @param ageBirthYear {@link Integer} the birth year
-     */
-    public void setAgeBirthYear(final Integer ageBirthYear) {
-        this.ageBirthYear = ageBirthYear;
-    }
-
-    /**
-     * Gets an "age_equal_or_over" claim value as defined by the PID Rulebook
-     *
-     * @return {@link Map} age threshold map where key is age and value indicates whether subject is equal or over
-     */
-    public Map<Integer, Boolean> getAgeEqualOrOver() {
-        return ageEqualOrOver;
-    }
-
-    /**
-     * Adds a threshold entry to an "age_equal_or_over" claim as defined by the PID Rulebook.
-     * This attribute has been removed in version 1.1 of the Rulebook.
-     *
-     * @param ageThreshold {@code int} the age threshold (e.g., 13, 18, 21)
-     * @param verified {@code boolean} whether the age threshold is verified
-     */
-    public void addAgeEqualOrOverEntry(final int ageThreshold, final boolean verified) {
-        if (ageEqualOrOver == null) {
-            ageEqualOrOver = new HashMap<>();
-        }
-        ageEqualOrOver.put(ageThreshold, verified);
-    }
-
-    /**
-     * Gets a "trust_anchor" claim value as defined by the PID Rulebook
-     *
-     * @return {@link String} the trust anchor
-     */
-    public String getTrustAnchor() {
-        return trustAnchor;
-    }
-
-    /**
-     * Sets a "trust_anchor" claim value as defined by the PID Rulebook
-     *
-     * @param trustAnchor {@link String} the trust anchor
-     */
-    public void setTrustAnchor(final String trustAnchor) {
-        this.trustAnchor = trustAnchor;
-    }
-
-    /**
      * Gets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
      *
      * @return {@link String} the verifiable credentials type
@@ -993,75 +425,39 @@ public class SDJWTClaimParameters {
     }
 
     /**
-     * Gets a "category" claim value as defined by ETSI TS 119 472-1
+     * Adds a custom claim with the given name and a value.
+     * The claim will be added to the root level of the payload.
      *
-     * @return {@link String} the category
+     * @param name {@link String}
+     * @param value {@link Object}
      */
-    public String getCategory() {
-        return category;
+    public void addClaim(final String name, final Object value) {
+        addClaim(SDJWTEAAClaim.create(name, value));
     }
 
-    /**
-     * Sets a "category" claim value as defined by ETSI TS 119 472-1
-     *
-     * @param category {@link String} the category
-     */
-    public void setCategory(final String category) {
-        this.category = category;
-    }
-
-    /**
-     * Gets an "iss_reg_id" claim value as defined by ETSI TS 119 472-1
-     *
-     * @return {@link String} the issuing registration identifier
-     */
-    public String getIssuingRegistrationIdentifier() {
-        return issuingRegistrationIdentifier;
-    }
-
-    /**
-     * Sets an "iss_reg_id" claim value as defined by ETSI TS 119 472-1
-     *
-     * @param issuingRegistrationIdentifier {@link String} the issuing registration identifier
-     */
-    public void setIssuingRegistrationIdentifier(final String issuingRegistrationIdentifier) {
-        this.issuingRegistrationIdentifier = issuingRegistrationIdentifier;
-    }
-
-    /**
-     * Gets an "adm_nbf" claim value as defined by ETSI TS 119 472-1
-     *
-     * @return {@link Date} the administrative validity not-before date-time
-     */
-    public Date getAdministrativeValidityNotBefore() {
-        return administrativeValidityNotBefore;
-    }
-
-    /**
-     * Sets an "adm_nbf" claim value as defined by ETSI TS 119 472-1
-     *
-     * @param administrativeValidityNotBefore {@link Date} the administrative validity not-before date-time
-     */
-    public void setAdministrativeValidityNotBefore(final Date administrativeValidityNotBefore) {
-        this.administrativeValidityNotBefore = administrativeValidityNotBefore;
-    }
-
-    /**
-     * Gets an "adm_exp" claim value as defined by ETSI TS 119 472-1
-     *
-     * @return {@link Date} the administrative validity expiry date-time
-     */
-    public Date getAdministrativeValidityExpiry() {
-        return administrativeValidityExpiry;
-    }
-
-    /**
-     * Sets an "adm_exp" claim value as defined by ETSI TS 119 472-1
-     *
-     * @param administrativeValidityExpiry {@link Date} the administrative validity expiry date-time
-     */
-    public void setAdministrativeValidityExpiry(final Date administrativeValidityExpiry) {
-        this.administrativeValidityExpiry = administrativeValidityExpiry;
+    @Override
+    public String toString() {
+        return "SDJWTClaimParameters [" +
+                "picture='" + picture + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", preferredNickname='" + preferredNickname + '\'' +
+                ", name='" + name + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", profile='" + profile + '\'' +
+                ", website='" + website + '\'' +
+                ", emailVerified=" + emailVerified +
+                ", gender='" + gender + '\'' +
+                ", zoneinfo='" + zoneinfo + '\'' +
+                ", locale='" + locale + '\'' +
+                ", phoneNumberVerified=" + phoneNumberVerified +
+                ", updatedAt=" + updatedAt +
+                ", birthMiddleName='" + birthMiddleName + '\'' +
+                ", salutation='" + salutation + '\'' +
+                ", dateOfExpiry=" + dateOfExpiry +
+                ", dateOfIssuance=" + dateOfIssuance +
+                ", verifiableCredentialsType='" + verifiableCredentialsType + '\'' +
+                ", verifiableCredentialsIntegrity='" + verifiableCredentialsIntegrity + '\'' +
+                "] " + super.toString();
     }
 
 }

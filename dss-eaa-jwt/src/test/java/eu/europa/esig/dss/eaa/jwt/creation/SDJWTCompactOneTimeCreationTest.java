@@ -26,15 +26,14 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
     protected DSSDocument getSignedDocument() {
         signer = ECDSA_USER;
 
-        // TODO : refactor the claims building
         SDJWTEAAPayloadParameters parameters = new SDJWTEAAPayloadParameters();
         parameters.setIssuer("https://issuer.example.com");
-        parameters.addClaim("issuing_authority", "Public body");
-        parameters.addClaim("issuing_country", "LU");
-        parameters.addClaim("iss_reg_id", "XX12345");
-        parameters.addClaim("sub", getSigningCert().getSubject().getPrettyPrintRFC2253());
-        parameters.addClaim("given_name", "Alice");
-        parameters.addClaim("family_name", "Doe");
+        parameters.setSubject(getSigningCert().getSubject().getPrettyPrintRFC2253());
+        parameters.nonSelectivelyDisclosable().setIssuingAuthority("Public body");
+        parameters.nonSelectivelyDisclosable().setIssuingCountry("LU");
+        parameters.nonSelectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("XX12345");
+        parameters.nonSelectivelyDisclosable().setGivenName("Alice");
+        parameters.nonSelectivelyDisclosable().setFamilyName("Doe");
 
         parameters.setOneTime(true);
 
@@ -46,7 +45,7 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestVa
         jwk.addChild(SDJWTEAAClaim.create("y", toBase64Url(((ECPublicKey) getSigningCert().getPublicKey()).getW().getAffineY(), 32)));
         cnf.addChild(jwk);
 
-        parameters.addClaim(cnf);
+        parameters.nonSelectivelyDisclosable().addClaim(cnf); // TODO : replace the method with setDeviceKey
 
         signer = GOOD_USER;
 

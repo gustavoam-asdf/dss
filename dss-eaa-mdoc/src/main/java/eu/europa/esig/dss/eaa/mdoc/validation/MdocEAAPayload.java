@@ -166,7 +166,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getFirstName() {
+    public ClaimString getGivenName() {
         return getAsString(
                 forIso180135(ISO180135Headers.GIVEN_NAME, ISO180135Headers.GIVEN_NAME_NATIONAL_CHARACTER),
                 forIso232202(ISO232202Headers.GIVEN_NAME, ISO232202Headers.GIVEN_NAME_UNICODE, ISO232202Headers.GIVEN_NAME_LATIN1),
@@ -175,7 +175,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getLastName() {
+    public ClaimString getFamilyName() {
         return getAsString(
                 forIso180135(ISO180135Headers.FAMILY_NAME, ISO180135Headers.FAMILY_NAME_NATIONAL_CHARACTER),
                 forIso232202(ISO232202Headers.FAMILY_NAME, ISO232202Headers.FAMILY_NAME_UNICODE, ISO232202Headers.FAMILY_NAME_LATIN1),
@@ -290,12 +290,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getBirthFirstName() {
+    public ClaimString getBirthGivenName() {
         return getAsString(forEUDIPid(EUDIPIDHeaders.GIVEN_NAME_BIRTH));
     }
 
     @Override
-    public ClaimString getBirthLastName() {
+    public ClaimString getBirthFamilyName() {
         return getAsString(forEUDIPid(EUDIPIDHeaders.FAMILY_NAME_BIRTH));
     }
 
@@ -370,7 +370,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getAdministrativeNumber() {
+    public ClaimString getPersonalAdministrativeNumber() {
         return getAsString(forIso180135(ISO180135Headers.ADMINISTRATIVE_NUMBER), forEUDIPid(EUDIPIDHeaders.PERSONAL_ADMINISTRATIVE_NUMBER));
     }
 

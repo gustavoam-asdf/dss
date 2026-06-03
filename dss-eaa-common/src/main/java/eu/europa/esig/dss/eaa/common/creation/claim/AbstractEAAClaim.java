@@ -44,5 +44,13 @@ public abstract class AbstractEAAClaim implements EAAClaim {
         return value;
     }
 
+    @Override
+    public String toString() {
+        return "AbstractEAAClaim [" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                ']';
+    }
+
 }
 

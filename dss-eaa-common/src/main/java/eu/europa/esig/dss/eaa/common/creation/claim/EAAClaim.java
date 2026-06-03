@@ -7,6 +7,18 @@ import java.io.Serializable;
  */
 public interface EAAClaim extends Serializable {
 
+    /**
+     * Gets the name of the EAA claim
+     *
+     * @return {@link String}
+     */
     String getName();
+
+    /**
+     * Gets the value of the EAA claim
+     *
+     * @return {@link Object}
+     */
     Object getValue();
+
 }

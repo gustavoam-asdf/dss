@@ -28,18 +28,18 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
 
-        payloadParameters.selectivelyDisclosable().setFirstName("John");
-        payloadParameters.selectivelyDisclosable().setLastName("Doe");
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
+        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
         payloadParameters.selectivelyDisclosable().setEmail("john.doe@example.com");
-        payloadParameters.selectivelyDisclosable().setGender(1);
+        payloadParameters.selectivelyDisclosable().setSex(1);
         payloadParameters.selectivelyDisclosable().setBirthdate(new Date(946684800000L)); // 2000-01-01
         payloadParameters.selectivelyDisclosable().setPhoneNumber("+352123456789");
         payloadParameters.selectivelyDisclosable().setPlaceOfBirthCountry("Luxembourg");
         payloadParameters.selectivelyDisclosable().setPlaceOfBirthLocality("Kehlen");
         payloadParameters.selectivelyDisclosable().setPlaceOfBirthRegion("Capellen");
         payloadParameters.selectivelyDisclosable().setNationality("LU");
-        payloadParameters.selectivelyDisclosable().setBirthFirstName("Johnny");
-        payloadParameters.selectivelyDisclosable().setBirthLastName("Doe");
+        payloadParameters.selectivelyDisclosable().setBirthGivenName("Johnny");
+        payloadParameters.selectivelyDisclosable().setBirthFamilyName("Doe");
         payloadParameters.selectivelyDisclosable().setTitle("Dr");
         payloadParameters.selectivelyDisclosable().setMobilePhoneNumber("+352987654321");
         payloadParameters.selectivelyDisclosable().setPseudonym("JD");
@@ -48,22 +48,22 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         payloadParameters.selectivelyDisclosable().setDocumentNumber("DOC123456");
         payloadParameters.selectivelyDisclosable().setPortrait(new byte[] {1, 2, 3});
         payloadParameters.selectivelyDisclosable().setDistinguishingSign("L");
-        payloadParameters.selectivelyDisclosable().setAdministrativeNumber("ADM987654");
+        payloadParameters.selectivelyDisclosable().setPersonalAdministrativeNumber("ADM987654");
         payloadParameters.selectivelyDisclosable().setHeight(180);
         payloadParameters.selectivelyDisclosable().setWeight(75);
         payloadParameters.selectivelyDisclosable().setEyeColour("Brown");
         payloadParameters.selectivelyDisclosable().setHairColour("Black");
-        payloadParameters.selectivelyDisclosable().setResidentAddress("1 Main Street");
+        payloadParameters.selectivelyDisclosable().setAddressFull("1 Main Street");
         payloadParameters.selectivelyDisclosable().setPortraitCaptureDate(new Date(1704067200000L)); // 2024-01-01
         payloadParameters.selectivelyDisclosable().setAgeInYears(25);
         payloadParameters.selectivelyDisclosable().setAgeBirthYear(2000);
         payloadParameters.selectivelyDisclosable().setAgeOverNN(18 ,true);
         payloadParameters.selectivelyDisclosable().setAgeOverNN(21 ,true);
         payloadParameters.selectivelyDisclosable().setIssuingJurisdiction("LU-LU");
-        payloadParameters.selectivelyDisclosable().setResidentCity("Luxembourg");
-        payloadParameters.selectivelyDisclosable().setResidentState("Luxembourg");
-        payloadParameters.selectivelyDisclosable().setResidentPostalCode("L-1234");
-        payloadParameters.selectivelyDisclosable().setResidentCountry("LU");
+        payloadParameters.selectivelyDisclosable().setAddressCity("Luxembourg");
+        payloadParameters.selectivelyDisclosable().setAddressState("Luxembourg");
+        payloadParameters.selectivelyDisclosable().setAddressPostalCode("L-1234");
+        payloadParameters.selectivelyDisclosable().setAddressCountry("LU");
         payloadParameters.selectivelyDisclosable().setBiometricTemplate("signature_sign", new byte[] {1, 2});
         payloadParameters.selectivelyDisclosable().setBiometricTemplateFace(new byte[] {4, 5, 6});
         payloadParameters.selectivelyDisclosable().setSignatureUsualMark(new byte[] {7, 8, 9});
@@ -93,8 +93,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         payloadParameters.selectivelyDisclosable().setDocumentType("mDL");
         payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(new Date(1704067200000L));
         payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(new Date(1735689600000L));
-        payloadParameters.selectivelyDisclosable().setResidentStreet("Main Street");
-        payloadParameters.selectivelyDisclosable().setResidentHouseNumber("1");
+        payloadParameters.selectivelyDisclosable().setAddressStreet("Main Street");
+        payloadParameters.selectivelyDisclosable().setAddressHouseNumber("1");
         payloadParameters.selectivelyDisclosable().setTrustAnchor("https://example.com/trust-anchor");
         payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("REG-123456");
         payloadParameters.selectivelyDisclosable().setAttestedAttributesSubjectPseudonym("X Man");
@@ -128,16 +128,16 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
         assertEquals(68, digestMatchers.size());
 
-        boolean firstNameFound = false;
-        boolean lastNameFound = false;
+        boolean GivenNameFound = false;
+        boolean FamilyNameFound = false;
         boolean emailFound = false;
         boolean genderFound = false;
         boolean birthdateFound = false;
         boolean phoneNumberFound = false;
         boolean placeOfBirthFound = false;
         boolean nationalityFound = false;
-        boolean birthFirstNameFound = false;
-        boolean birthLastNameFound = false;
+        boolean birthGivenNameFound = false;
+        boolean birthFamilyNameFound = false;
         boolean titleFound = false;
         boolean mobilePhoneNumberFound = false;
         boolean pseudonymFound = false;
@@ -204,11 +204,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             if ("given_name".equals(name)) {
                 assertEquals("John", xmlDigestMatcher.getDisclosableClaim().getValue());
-                firstNameFound = true;
+                GivenNameFound = true;
 
             } else if ("family_name".equals(name)) {
                 assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
-                lastNameFound = true;
+                FamilyNameFound = true;
 
             } else if ("email_address".equals(name)) {
                 assertEquals("john.doe@example.com", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -236,11 +236,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             } else if ("given_name_birth".equals(name)) {
                 assertEquals("Johnny", xmlDigestMatcher.getDisclosableClaim().getValue());
-                birthFirstNameFound = true;
+                birthGivenNameFound = true;
 
             } else if ("family_name_birth".equals(name)) {
                 assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
-                birthLastNameFound = true;
+                birthFamilyNameFound = true;
 
             } else if ("title".equals(name)) {
                 assertEquals("Dr", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -479,16 +479,16 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
             }
         }
 
-        assertTrue(firstNameFound);
-        assertTrue(lastNameFound);
+        assertTrue(GivenNameFound);
+        assertTrue(FamilyNameFound);
         assertTrue(emailFound);
         assertTrue(genderFound);
         assertTrue(birthdateFound);
         assertTrue(phoneNumberFound);
         assertTrue(placeOfBirthFound);
         assertTrue(nationalityFound);
-        assertTrue(birthFirstNameFound);
-        assertTrue(birthLastNameFound);
+        assertTrue(birthGivenNameFound);
+        assertTrue(birthFamilyNameFound);
         assertTrue(titleFound);
         assertTrue(mobilePhoneNumberFound);
         assertTrue(pseudonymFound);

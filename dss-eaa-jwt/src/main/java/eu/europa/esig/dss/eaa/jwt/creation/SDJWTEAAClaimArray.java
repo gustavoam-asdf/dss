@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a JSON array to be incorporated as an SD-JWT VC claim
+ *
+ */
 public class SDJWTEAAClaimArray extends SDJWTEAAClaim implements EAAClaimArray<SDJWTEAAClaim> {
 
     private static final long serialVersionUID = -8747676551662684772L;
@@ -96,6 +100,18 @@ public class SDJWTEAAClaimArray extends SDJWTEAAClaim implements EAAClaimArray<S
      */
     protected SDJWTEAAClaimArray(final String name, final boolean selectivelyDisclosable, final String salt) {
         super(name, new ArrayList<SDJWTEAAClaim>(), selectivelyDisclosable, salt);
+    }
+
+    /**
+     * Constructor with the claim name, value, selectively disclosable status and salt provided
+     *
+     * @param name  {@link String} the claim name
+     * @param value {@link List} value
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
+     */
+    protected SDJWTEAAClaimArray(final String name, final List<?> value, final boolean selectivelyDisclosable, final String salt) {
+        super(name, value, selectivelyDisclosable, salt);
     }
 
     @Override

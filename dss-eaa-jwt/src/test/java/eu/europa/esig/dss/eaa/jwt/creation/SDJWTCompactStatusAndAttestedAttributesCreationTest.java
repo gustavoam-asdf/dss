@@ -28,24 +28,23 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
     protected DSSDocument getSignedDocument() {
         Date issuanceDate = new Date();
 
-        // TODO : refactor the claims building
         SDJWTEAAPayloadParameters payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.setIssuanceDate(issuanceDate);
         payloadParameters.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
-        payloadParameters.addClaim(SDJWTEAAClaim.create("issuing_authority", "Public body"));
-        payloadParameters.addClaim(SDJWTEAAClaim.create("given_name", "Alice"));
-        payloadParameters.addClaim(SDJWTEAAClaim.create("family_name", "Doe"));
-        payloadParameters.addClaim(SDJWTEAAClaim.create("vct", "https://nowina.lu/eaa/metadata"));
+        payloadParameters.nonSelectivelyDisclosable().setIssuingAuthority("Public body");
+        payloadParameters.nonSelectivelyDisclosable().setGivenName("Alice");
+        payloadParameters.nonSelectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.nonSelectivelyDisclosable().setVerifiableCredentialsType("https://nowina.lu/eaa/metadata");
         String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadParameters.addClaim(SDJWTEAAClaim.create("vct#integrity", DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest));
+        payloadParameters.nonSelectivelyDisclosable().setVerifiableCredentialsIntegrity(DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest);
 
         SDJWTEAAClaimObject status = SDJWTEAAClaim.createObject("status");
         status.addChild(SDJWTEAAClaim.create("type", "TokenStatusList"));
         status.addChild(SDJWTEAAClaim.create("purpose", "revocation"));
         status.addChild(SDJWTEAAClaim.create("index", 0));
         status.addChild(SDJWTEAAClaim.create("uri", "https://nowina.lu/pki-factory/status"));
-        payloadParameters.addClaim(status);
+        payloadParameters.nonSelectivelyDisclosable().addClaim(status);
 
         SDJWTEAAClaimObject subAttrs = SDJWTEAAClaim.createObject("subAttrs");
         subAttrs.addChild(SDJWTEAAClaim.create("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
@@ -53,11 +52,9 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         attrs.addElement(SDJWTEAAClaim.create("given_name"));
         attrs.addElement(SDJWTEAAClaim.create("family_name"));
         subAttrs.addChild(attrs);
-        payloadParameters.addClaim(subAttrs);
+        payloadParameters.nonSelectivelyDisclosable().addClaim(subAttrs);
 
-        SDJWTEAAClaimObject placeOfBirth = SDJWTEAAClaim.createObject("place_of_birth");
-        placeOfBirth.addChild(SDJWTEAAClaim.create("country", "LU"));
-        payloadParameters.addClaim(placeOfBirth);
+        payloadParameters.nonSelectivelyDisclosable().setPlaceOfBirthCountry("LU");
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(issuanceDate);

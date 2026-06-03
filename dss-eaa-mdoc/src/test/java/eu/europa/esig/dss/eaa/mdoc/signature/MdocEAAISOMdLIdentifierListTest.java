@@ -33,8 +33,8 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
         payloadParameters.setDeviceKey(getSigningCert());
         payloadParameters.setIdentifierList(1, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
 
-        payloadParameters.selectivelyDisclosable().setLastName("Doe");
-        payloadParameters.selectivelyDisclosable().setFirstName("John");
+        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(DSSUtils.getUtcDate(2026, Calendar.JUNE, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(DSSUtils.getUtcDate(2026, Calendar.AUGUST, 31));

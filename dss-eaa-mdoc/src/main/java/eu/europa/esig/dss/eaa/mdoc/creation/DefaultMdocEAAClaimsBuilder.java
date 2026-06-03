@@ -48,18 +48,18 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
 
         /* Other selectively disclosable claims */
 
-        MdocSelectivelyDisclosableParameters selectivelyDisclosable = payloadParameters.selectivelyDisclosable();
-        addClaim(result, getFirstName(selectivelyDisclosable));
-        addClaim(result, getLastName(selectivelyDisclosable));
+        MdocEAAClaimParameters selectivelyDisclosable = payloadParameters.selectivelyDisclosable();
+        addClaim(result, getGivenName(selectivelyDisclosable));
+        addClaim(result, getFamilyName(selectivelyDisclosable));
         addClaim(result, getEmail(selectivelyDisclosable));
-        addClaim(result, getGender(selectivelyDisclosable));
+        addClaim(result, getSex(selectivelyDisclosable));
         addClaim(result, getBirthdate(selectivelyDisclosable));
         addClaim(result, getPhoneNumber(selectivelyDisclosable));
         addClaim(result, getPlaceOfBirth(selectivelyDisclosable));
         addClaim(result, getNationality(selectivelyDisclosable));
         addClaim(result, getNationalities(selectivelyDisclosable));
-        addClaim(result, getBirthFirstName(selectivelyDisclosable));
-        addClaim(result, getBirthLastName(selectivelyDisclosable));
+        addClaim(result, getBirthGivenName(selectivelyDisclosable));
+        addClaim(result, getBirthFamilyName(selectivelyDisclosable));
         addClaim(result, getTitle(selectivelyDisclosable));
         addClaim(result, getMobilePhoneNumber(selectivelyDisclosable));
         addClaim(result, getPseudonym(selectivelyDisclosable));
@@ -69,7 +69,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         addClaim(result, getPortrait(selectivelyDisclosable));
         addClaim(result, getDrivingPrivileges(selectivelyDisclosable));
         addClaim(result, getDistinguishingSign(selectivelyDisclosable));
-        addClaim(result, getAdministrativeNumber(selectivelyDisclosable));
+        addClaim(result, getPersonalAdministrativeNumber(selectivelyDisclosable));
         addClaim(result, getHeight(selectivelyDisclosable));
         addClaim(result, getWeight(selectivelyDisclosable));
         addClaim(result, getEyeColour(selectivelyDisclosable));
@@ -167,70 +167,70 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
     /**
      * Gets mdoc claim generated for the first name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getFirstName(selectivelyDisclosable);
+    protected MdocEAAClaim getGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getGivenName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the last name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getLastName(selectivelyDisclosable);
+    protected MdocEAAClaim getFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getFamilyName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the email parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getEmail(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getEmail(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getEmail(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the gender parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getGender(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getGender(selectivelyDisclosable);
+    protected MdocEAAClaim getSex(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getSex(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the birthdate parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getBirthdate(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getBirthdate(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the phone number parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getPhoneNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getPhoneNumber(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getPhoneNumber(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the place of birth parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getPlaceOfBirth(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getPlaceOfBirth(MdocEAAClaimParameters selectivelyDisclosable) {
         if (selectivelyDisclosable.getPlaceOfBirth() != null) {
             return ISO232201MIDEAAClaimsBuilder.getInstance().getPlaceOfBirth(selectivelyDisclosable);
         }
@@ -245,31 +245,31 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
     /**
      * Gets mdoc claim generated for the nationality parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getNationality(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getNationality(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getNationality(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the nationalities parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getNationalities(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getNationalities(MdocEAAClaimParameters selectivelyDisclosable) {
         return EUDIPIDEAAClaimsBuilder.getInstance().getNationalities(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the birth first name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getBirthFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return EUDIPIDEAAClaimsBuilder.getInstance().getBirthFirstName(selectivelyDisclosable);
+    protected MdocEAAClaim getBirthGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+        return EUDIPIDEAAClaimsBuilder.getInstance().getBirthGivenName(selectivelyDisclosable);
     }
 
     /**
@@ -277,587 +277,587 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      *v
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getBirthLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return EUDIPIDEAAClaimsBuilder.getInstance().getBirthLastName(selectivelyDisclosable);
+    protected MdocEAAClaim getBirthFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+        return EUDIPIDEAAClaimsBuilder.getInstance().getBirthFamilyName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the title parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getTitle(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getTitle(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getTitle(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the mobile phone number parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getMobilePhoneNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getMobilePhoneNumber(MdocEAAClaimParameters selectivelyDisclosable) {
         return EUDIPIDEAAClaimsBuilder.getInstance().getMobilePhoneNumber(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the pseudonym parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getPseudonym(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getPseudonym(MdocEAAClaimParameters selectivelyDisclosable) {
         return ETSI194721EAAClaimsBuilder.getInstance().getPseudonym(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the issuing country parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getIssuingCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getIssuingCountry(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getIssuingCountry(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the issuing authority parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getIssuingAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getIssuingAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getIssuingAuthority(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the document number parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getDocumentNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getDocumentNumber(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getDocumentNumber(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the portrait parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getPortrait(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getPortrait(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getPortrait(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the driving privileges parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getDrivingPrivileges(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getDrivingPrivileges(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getDrivingPrivileges(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the UN distinguishing sign parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getDistinguishingSign(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getDistinguishingSign(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the administrative number parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAdministrativeNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-        return ISO180135MDLEAAClaimsBuilder.getInstance().getAdministrativeNumber(selectivelyDisclosable);
+    protected MdocEAAClaim getPersonalAdministrativeNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO180135MDLEAAClaimsBuilder.getInstance().getPersonalAdministrativeNumber(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the height parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getHeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getHeight(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getHeight(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the weight parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getWeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getWeight(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getWeight(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the eye color parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getEyeColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getEyeColour(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getEyeColour(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the hair color parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getHairColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getHairColour(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getHairColour(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident address parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentAddress(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddress(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the portrait capture date parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getPortraitCaptureDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getPortraitCaptureDate(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getPortraitCaptureDate(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the age in years parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAgeInYears(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getAgeInYears(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getAgeInYears(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the age birth year parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAgeBirthYear(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getAgeBirthYear(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getAgeBirthYear(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claims generated for the age over NN parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return a list of {@link MdocEAAClaim}s
      */
-    protected List<MdocEAAClaim> getAgeOverNN(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected List<MdocEAAClaim> getAgeOverNN(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getAgeOverNN(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the issuing jurisdiction parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getIssuingJurisdiction(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getIssuingJurisdiction(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getIssuingJurisdiction(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident city parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentCity(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentCity(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident state parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentState(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident postal code parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentPostalCode(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentPostalCode(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident country parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentCountry(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claims generated for the biometric template parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return a list of {@link MdocEAAClaim}s
      */
-    protected List<MdocEAAClaim> getBiometricTemplate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected List<MdocEAAClaim> getBiometricTemplate(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getBiometricTemplate(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the biometric template face
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim
      */
-    protected MdocEAAClaim getBiometricTemplateFace(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getBiometricTemplateFace(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getBiometricTemplateFace(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the signature usual mark parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getSignatureUsualMark(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getSignatureUsualMark(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO180135MDLEAAClaimsBuilder.getInstance().getSignatureUsualMark(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the fingerprint parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getFingerprint(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getFingerprint(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getFingerprint(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the business name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getBusinessName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getBusinessName(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getBusinessName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the organization name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getOrganizationName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getOrganizationName(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getOrganizationName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the birth full name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getBirthFullName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getBirthFullName(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getBirthFullName(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the profession parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getProfession(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getProfession(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getProfession(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship father parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipFather(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipFather(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipFather(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship mother parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipMother(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipMother(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipMother(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship parent parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipParent(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipParent(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipParent(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship son parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipSon(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipSon(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipSon(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship daughter parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipDaughter(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipDaughter(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipDaughter(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship brother parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipBrother(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipBrother(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipBrother(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship sister parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipSister(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipSister(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipSister(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship sibling parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipSibling(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipSibling(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipSibling(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship spouse parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipSpouse(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipSpouse(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipSpouse(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship father in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipFatherInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipFatherInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipFatherInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship mother in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipMotherInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipMotherInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipMotherInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship parent in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipParentInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipParentInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipParentInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship son in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipSonInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipSonInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipSonInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship daughter in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipDaughterInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipDaughterInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipDaughterInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship child in law parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipChildInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipChildInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipChildInLaw(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship parental authority parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipParentalAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipParentalAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipParentalAuthority(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship legal representative parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipLegalRepresentative(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipLegalRepresentative(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipLegalRepresentative(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the relationship agent parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getRelationshipAgent(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getRelationshipAgent(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getRelationshipAgent(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the document type parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getDocumentType(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getDocumentType(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getDocumentType(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the administrative issuance date parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAdministrativeIssuanceDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getAdministrativeIssuanceDate(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getAdministrativeIssuanceDate(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the administrative expiration date parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAdministrativeExpirationDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getAdministrativeExpirationDate(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getAdministrativeExpirationDate(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident street parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the resident house number parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentHouseNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getResidentHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
         return EUDIPIDEAAClaimsBuilder.getInstance().getResidentHouseNumber(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the trust anchor parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getTrustAnchor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getTrustAnchor(MdocEAAClaimParameters selectivelyDisclosable) {
         return EUDIPIDEAAClaimsBuilder.getInstance().getTrustAnchor(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the issuing authority registration identifier parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getIssuingAuthorityRegistrationIdentifier(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getIssuingAuthorityRegistrationIdentifier(MdocEAAClaimParameters selectivelyDisclosable) {
         return ETSI194721EAAClaimsBuilder.getInstance().getIssuingAuthorityRegistrationIdentifier(selectivelyDisclosable);
     }
 
     /**
      * Gets mdoc claim generated for the attested attributes subject family name parameter
      *
-     * @param selectivelyDisclosable {@link MdocSelectivelyDisclosableParameters}
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getAttestedAttributesSubject(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+    protected MdocEAAClaim getAttestedAttributesSubject(MdocEAAClaimParameters selectivelyDisclosable) {
         return ETSI194721EAAClaimsBuilder.getInstance().getAttestedAttributesSubject(selectivelyDisclosable);
     }
 
@@ -944,31 +944,31 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getFirstName() != null) {
-                return create(ISO180135Headers.GIVEN_NAME, selectivelyDisclosable.getFirstName());
+        protected MdocEAAClaim getGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getGivenName() != null) {
+                return create(ISO180135Headers.GIVEN_NAME, selectivelyDisclosable.getGivenName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getLastName() != null) {
-                return create(ISO180135Headers.FAMILY_NAME, selectivelyDisclosable.getLastName());
+        protected MdocEAAClaim getFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getFamilyName() != null) {
+                return create(ISO180135Headers.FAMILY_NAME, selectivelyDisclosable.getFamilyName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getGender(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getGender() != null) {
-                return create(ISO180135Headers.SEX, selectivelyDisclosable.getGender());
+        protected MdocEAAClaim getSex(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getSex() != null) {
+                return create(ISO180135Headers.SEX, selectivelyDisclosable.getSex());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBirthdate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
                 if (selectivelyDisclosable.getBirthdateApproximateMask() != null) {
                     return super.getBirthdate(selectivelyDisclosable);
@@ -979,7 +979,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPlaceOfBirth(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPlaceOfBirth(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPlaceOfBirth() != null) {
                 return create(ISO180135Headers.BIRTH_PLACE, selectivelyDisclosable.getPlaceOfBirth());
             }
@@ -987,7 +987,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getNationality(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getNationality(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getNationality() != null) {
                 return create(ISO180135Headers.NATIONALITY, selectivelyDisclosable.getNationality());
             }
@@ -995,7 +995,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingCountry() != null) {
                 return create(ISO180135Headers.ISSUING_COUNTRY, selectivelyDisclosable.getIssuingCountry());
             }
@@ -1003,7 +1003,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingAuthority() != null) {
                 return create(ISO180135Headers.ISSUING_AUTHORITY, selectivelyDisclosable.getIssuingAuthority());
             }
@@ -1011,7 +1011,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDocumentNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDocumentNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getDocumentNumber() != null) {
                 return create(ISO180135Headers.LICENCE_NUMBER, selectivelyDisclosable.getDocumentNumber());
             }
@@ -1019,7 +1019,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPortrait(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPortrait(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPortrait() != null) {
                 return create(ISO180135Headers.PORTRAIT, selectivelyDisclosable.getPortrait());
             }
@@ -1027,7 +1027,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDrivingPrivileges(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDrivingPrivileges(MdocEAAClaimParameters selectivelyDisclosable) {
             if (Utils.isCollectionNotEmpty(selectivelyDisclosable.getDrivingPrivileges())) {
                 final CBORArray drivingPrivileges = new CBORArray();
                 for (MdocDrivingPrivilege mdocDrivingPrivilege : selectivelyDisclosable.getDrivingPrivileges()) {
@@ -1061,7 +1061,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDistinguishingSign(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDistinguishingSign(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getDistinguishingSign() != null) {
                 return create(ISO180135Headers.UN_DISTINGUISHING_SIGN, selectivelyDisclosable.getDistinguishingSign());
             }
@@ -1069,15 +1069,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getAdministrativeNumber() != null) {
-                return create(ISO180135Headers.ADMINISTRATIVE_NUMBER, selectivelyDisclosable.getAdministrativeNumber());
+        protected MdocEAAClaim getPersonalAdministrativeNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getPersonalAdministrativeNumber() != null) {
+                return create(ISO180135Headers.ADMINISTRATIVE_NUMBER, selectivelyDisclosable.getPersonalAdministrativeNumber());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getHeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getHeight(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getHeight() != null) {
                 return create(ISO180135Headers.HEIGHT, selectivelyDisclosable.getHeight());
             }
@@ -1085,7 +1085,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getWeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getWeight(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getWeight() != null) {
                 return create(ISO180135Headers.WEIGHT, selectivelyDisclosable.getWeight());
             }
@@ -1093,7 +1093,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getEyeColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getEyeColour(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getEyeColour() != null) {
                 return create(ISO180135Headers.EYE_COLOUR, selectivelyDisclosable.getEyeColour());
             }
@@ -1101,7 +1101,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getHairColour(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getHairColour(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getHairColour() != null) {
                 return create(ISO180135Headers.HAIR_COLOUR, selectivelyDisclosable.getHairColour());
             }
@@ -1109,15 +1109,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentAddress() != null) {
-                return create(ISO180135Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getResidentAddress());
+        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressFull() != null) {
+                return create(ISO180135Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getPortraitCaptureDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPortraitCaptureDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPortraitCaptureDate() != null) {
                 return create(ISO180135Headers.PORTRAIT_CAPTURE_DATE, selectivelyDisclosable.getPortraitCaptureDate());
             }
@@ -1125,7 +1125,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAgeInYears(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAgeInYears(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAgeInYears() != null) {
                 return create(ISO180135Headers.AGE_IN_YEARS, selectivelyDisclosable.getAgeInYears());
             }
@@ -1133,7 +1133,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAgeBirthYear(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAgeBirthYear(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAgeBirthYear() != null) {
                 return create(ISO180135Headers.AGE_BIRTH_YEAR, selectivelyDisclosable.getAgeBirthYear());
             }
@@ -1141,7 +1141,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected List<MdocEAAClaim> getAgeOverNN(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected List<MdocEAAClaim> getAgeOverNN(MdocEAAClaimParameters selectivelyDisclosable) {
             if (Utils.isMapNotEmpty(selectivelyDisclosable.getAgeOverNN())) {
                 final List<MdocEAAClaim> result = new ArrayList<>();
                 for (Map.Entry<Integer, Boolean> entry : selectivelyDisclosable.getAgeOverNN().entrySet()) {
@@ -1153,7 +1153,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingJurisdiction(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingJurisdiction(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingJurisdiction() != null) {
                 return create(ISO180135Headers.ISSUING_JURISDICTION, selectivelyDisclosable.getIssuingJurisdiction());
             }
@@ -1161,39 +1161,39 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentCity() != null) {
-                return create(ISO180135Headers.RESIDENT_CITY, selectivelyDisclosable.getResidentCity());
+        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCity() != null) {
+                return create(ISO180135Headers.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentState() != null) {
-                return create(ISO180135Headers.RESIDENT_STATE, selectivelyDisclosable.getResidentState());
+        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressState() != null) {
+                return create(ISO180135Headers.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(ISO180135Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getResidentPostalCode());
+        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressPostalCode() != null) {
+                return create(ISO180135Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(ISO180135Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
+        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCountry() != null) {
+                return create(ISO180135Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
             return null;
         }
 
         @Override
-        protected List<MdocEAAClaim> getBiometricTemplate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected List<MdocEAAClaim> getBiometricTemplate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (Utils.isMapNotEmpty(selectivelyDisclosable.getBiometricTemplate())) {
                 final List<MdocEAAClaim> result = new ArrayList<>();
                 for (Map.Entry<String, byte[]> entry : selectivelyDisclosable.getBiometricTemplate().entrySet()) {
@@ -1205,7 +1205,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getBiometricTemplateFace(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBiometricTemplateFace(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBiometricTemplateFace() != null) {
                 return create(ISO180135Headers.BIOMETRIC_TEMPLATE_FACE, selectivelyDisclosable.getBiometricTemplateFace());
             }
@@ -1213,7 +1213,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getSignatureUsualMark(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getSignatureUsualMark(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getSignatureUsualMark() != null) {
                 return create(ISO180135Headers.SIGNATURE, selectivelyDisclosable.getSignatureUsualMark());
             }
@@ -1221,7 +1221,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeIssuanceDate() != null) {
                 return create(ISO180135Headers.ISSUE_DATE, selectivelyDisclosable.getAdministrativeIssuanceDate());
             }
@@ -1229,7 +1229,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeExpirationDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeExpirationDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeExpirationDate() != null) {
                 return create(ISO180135Headers.EXPIRY_DATE, selectivelyDisclosable.getAdministrativeExpirationDate());
             }
@@ -1279,23 +1279,23 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getFirstName() != null) {
-                return create(ISO232202Headers.GIVEN_NAME, selectivelyDisclosable.getFirstName());
+        protected MdocEAAClaim getGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getGivenName() != null) {
+                return create(ISO232202Headers.GIVEN_NAME, selectivelyDisclosable.getGivenName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getLastName() != null) {
-                return create(ISO232202Headers.FAMILY_NAME, selectivelyDisclosable.getLastName());
+        protected MdocEAAClaim getFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getFamilyName() != null) {
+                return create(ISO232202Headers.FAMILY_NAME, selectivelyDisclosable.getFamilyName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getEmail(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getEmail(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getEmail() != null) {
                 return create(ISO232202Headers.EMAIL_ADDRESS, selectivelyDisclosable.getEmail());
             }
@@ -1303,15 +1303,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getGender(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getGender() != null) {
-                return create(ISO232202Headers.SEX, selectivelyDisclosable.getGender());
+        protected MdocEAAClaim getSex(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getSex() != null) {
+                return create(ISO232202Headers.SEX, selectivelyDisclosable.getSex());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBirthdate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
                 final CBORMap birthdate = new CBORMap();
                 birthdate.put(ISO232202Headers.BIRTH_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getBirthdate()));
@@ -1324,7 +1324,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPhoneNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPhoneNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPhoneNumber() != null) {
                 return create(ISO232202Headers.TELEPHONE_NUMBER, selectivelyDisclosable.getPhoneNumber());
             }
@@ -1332,7 +1332,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPlaceOfBirth(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPlaceOfBirth(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPlaceOfBirth() != null) {
                 return create(ISO232202Headers.BIRTHPLACE, selectivelyDisclosable.getPlaceOfBirth());
             }
@@ -1340,7 +1340,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getNationality(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getNationality(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getNationality() != null) {
                 return create(ISO232202Headers.NATIONALITY, selectivelyDisclosable.getNationality());
             }
@@ -1348,7 +1348,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getTitle(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getTitle(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getTitle() != null) {
                 return create(ISO232202Headers.TITLE, selectivelyDisclosable.getTitle());
             }
@@ -1356,7 +1356,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingCountry() != null) {
                 return create(ISO232202Headers.ISSUING_COUNTRY, selectivelyDisclosable.getIssuingCountry());
             }
@@ -1364,7 +1364,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingAuthority() != null) {
                 return create(ISO232202Headers.ISSUING_AUTHORITY, selectivelyDisclosable.getIssuingAuthority());
             }
@@ -1372,7 +1372,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDocumentNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDocumentNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getDocumentNumber() != null) {
                 return create(ISO232202Headers.DOCUMENT_NUMBER, selectivelyDisclosable.getDocumentNumber());
             }
@@ -1380,7 +1380,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPortrait(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPortrait(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPortrait() != null) {
                 return create(ISO232202Headers.PORTRAIT, selectivelyDisclosable.getPortrait());
             }
@@ -1388,7 +1388,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getHeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getHeight(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getHeight() != null) {
                 return create(ISO232202Headers.HEIGHT, selectivelyDisclosable.getHeight());
             }
@@ -1396,7 +1396,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getWeight(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getWeight(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getWeight() != null) {
                 return create(ISO232202Headers.WEIGHT, selectivelyDisclosable.getWeight());
             }
@@ -1404,15 +1404,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentAddress() != null) {
-                return create(ISO232202Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getResidentAddress());
+        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressFull() != null) {
+                return create(ISO232202Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getPortraitCaptureDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPortraitCaptureDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPortraitCaptureDate() != null) {
                 return create(ISO232202Headers.PORTRAIT_CAPTURE_DATE, selectivelyDisclosable.getPortraitCaptureDate());
             }
@@ -1420,7 +1420,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAgeInYears(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAgeInYears(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAgeInYears() != null) {
                 return create(ISO232202Headers.AGE_IN_YEARS, selectivelyDisclosable.getAgeInYears());
             }
@@ -1428,7 +1428,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAgeBirthYear(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAgeBirthYear(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAgeBirthYear() != null) {
                 return create(ISO232202Headers.AGE_BIRTH_YEAR, selectivelyDisclosable.getAgeBirthYear());
             }
@@ -1436,7 +1436,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected List<MdocEAAClaim> getAgeOverNN(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected List<MdocEAAClaim> getAgeOverNN(MdocEAAClaimParameters selectivelyDisclosable) {
             if (Utils.isMapNotEmpty(selectivelyDisclosable.getAgeOverNN())) {
                 final List<MdocEAAClaim> result = new ArrayList<>();
                 for (Map.Entry<Integer, Boolean> entry : selectivelyDisclosable.getAgeOverNN().entrySet()) {
@@ -1448,7 +1448,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingJurisdiction(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingJurisdiction(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingJurisdiction() != null) {
                 return create(ISO232202Headers.ISSUING_SUBDIVISION, selectivelyDisclosable.getIssuingJurisdiction());
             }
@@ -1456,47 +1456,47 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentCity() != null) {
-                return create(ISO232202Headers.RESIDENT_CITY, selectivelyDisclosable.getResidentCity());
+        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCity() != null) {
+                return create(ISO232202Headers.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(ISO232202Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getResidentPostalCode());
+        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressPostalCode() != null) {
+                return create(ISO232202Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentCountry() != null) {
-                return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
+        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCountry() != null) {
+                return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentState() != null) {
-                return create(ISO232202Headers.RESIDENT_STATE, selectivelyDisclosable.getResidentState());
+        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressState() != null) {
+                return create(ISO232202Headers.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentStreet() != null) {
-                return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getResidentStreet());
+        protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressStreet() != null) {
+                return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getAddressStreet());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getBiometricTemplateFace(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBiometricTemplateFace(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBiometricTemplateFace() != null) {
                 return create(ISO232202Headers.BIOMETRIC_TEMPLATE_FACE, selectivelyDisclosable.getBiometricTemplateFace());
             }
@@ -1504,7 +1504,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getFingerprint(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getFingerprint(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getSignatureUsualMark() != null) {
                 return create(ISO232202Headers.FINGERPRINT, selectivelyDisclosable.getFingerprint());
             }
@@ -1512,7 +1512,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getBusinessName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBusinessName(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBusinessName() != null) {
                 return create(ISO232202Headers.BUSINESS_NAME, selectivelyDisclosable.getBusinessName());
             }
@@ -1520,7 +1520,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getOrganizationName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getOrganizationName(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getOrganizationName() != null) {
                 return create(ISO232202Headers.ORGANIZATION_NAME, selectivelyDisclosable.getOrganizationName());
             }
@@ -1528,7 +1528,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getBirthFullName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBirthFullName(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthFullName() != null) {
                 return create(ISO232202Headers.NAME_AT_BIRTH, selectivelyDisclosable.getBirthFullName());
             }
@@ -1536,7 +1536,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getProfession(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getProfession(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getProfession() != null) {
                 return create(ISO232202Headers.PROFESSION, selectivelyDisclosable.getProfession());
             }
@@ -1544,7 +1544,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipFather(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipFather(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipFather() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_FATHER, selectivelyDisclosable.getRelationshipFather());
             }
@@ -1552,7 +1552,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipMother(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipMother(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipMother() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_MOTHER, selectivelyDisclosable.getRelationshipMother());
             }
@@ -1560,7 +1560,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipParent(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipParent(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipParent() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_PARENT, selectivelyDisclosable.getRelationshipParent());
             }
@@ -1568,7 +1568,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipSon(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipSon(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipSon() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_SON, selectivelyDisclosable.getRelationshipSon());
             }
@@ -1576,7 +1576,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipDaughter(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipDaughter(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipDaughter() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_DAUGHTER, selectivelyDisclosable.getRelationshipDaughter());
             }
@@ -1584,7 +1584,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipBrother(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipBrother(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipBrother() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_BROTHER, selectivelyDisclosable.getRelationshipBrother());
             }
@@ -1592,7 +1592,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipSister(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipSister(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipSister() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_SISTER, selectivelyDisclosable.getRelationshipSister());
             }
@@ -1600,7 +1600,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipSibling(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipSibling(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipSibling() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_SIBLING, selectivelyDisclosable.getRelationshipSibling());
             }
@@ -1608,7 +1608,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipSpouse(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipSpouse(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipSpouse() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_SPOUSE, selectivelyDisclosable.getRelationshipSpouse());
             }
@@ -1616,7 +1616,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipFatherInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipFatherInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipFatherInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_FATHER_IN_LAW, selectivelyDisclosable.getRelationshipFatherInLaw());
             }
@@ -1624,7 +1624,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipMotherInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipMotherInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipMotherInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_MOTHER_IN_LAW, selectivelyDisclosable.getRelationshipMotherInLaw());
             }
@@ -1632,7 +1632,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipParentInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipParentInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipParentInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_PARENT_IN_LAW, selectivelyDisclosable.getRelationshipParentInLaw());
             }
@@ -1640,7 +1640,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipSonInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipSonInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipSonInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_SON_IN_LAW, selectivelyDisclosable.getRelationshipSonInLaw());
             }
@@ -1648,7 +1648,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipDaughterInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipDaughterInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipDaughterInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_DAUGHTER_IN_LAW, selectivelyDisclosable.getRelationshipDaughterInLaw());
             }
@@ -1656,7 +1656,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipChildInLaw(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipChildInLaw(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipChildInLaw() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_CHILD_IN_LAW, selectivelyDisclosable.getRelationshipChildInLaw());
             }
@@ -1664,7 +1664,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipParentalAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipParentalAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipParentalAuthority() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_PARENTAL_AUTHORITY, selectivelyDisclosable.getRelationshipParentalAuthority());
             }
@@ -1672,7 +1672,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipLegalRepresentative(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipLegalRepresentative(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipLegalRepresentative() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_LEGAL_REPRESENTATIVE, selectivelyDisclosable.getRelationshipLegalRepresentative());
             }
@@ -1680,7 +1680,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getRelationshipAgent(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getRelationshipAgent(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getRelationshipAgent() != null) {
                 return create(ISO232202Headers.RELATIONSHIP_AGENT, selectivelyDisclosable.getRelationshipAgent());
             }
@@ -1688,7 +1688,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDocumentType(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDocumentType(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getDocumentType() != null) {
                 return create(ISO232202Headers.DOCUMENT_TYPE, selectivelyDisclosable.getDocumentType());
             }
@@ -1696,7 +1696,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeIssuanceDate() != null) {
                 return create(ISO232202Headers.ISSUE_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getAdministrativeIssuanceDate()));
             }
@@ -1704,7 +1704,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeExpirationDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeExpirationDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeExpirationDate() != null) {
                 return create(ISO232202Headers.EXPIRY_DATE, CBORUtils.toFullDate(selectivelyDisclosable.getAdministrativeExpirationDate()));
             }
@@ -1746,23 +1746,23 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getFirstName() != null) {
-                return create(EUDIPIDHeaders.GIVEN_NAME, selectivelyDisclosable.getFirstName());
+        protected MdocEAAClaim getGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getGivenName() != null) {
+                return create(EUDIPIDHeaders.GIVEN_NAME, selectivelyDisclosable.getGivenName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getLastName() != null) {
-                return create(EUDIPIDHeaders.FAMILY_NAME, selectivelyDisclosable.getLastName());
+        protected MdocEAAClaim getFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getFamilyName() != null) {
+                return create(EUDIPIDHeaders.FAMILY_NAME, selectivelyDisclosable.getFamilyName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getEmail(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getEmail(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getEmail() != null) {
                 return create(EUDIPIDHeaders.EMAIL_ADDRESS, selectivelyDisclosable.getEmail());
             }
@@ -1770,15 +1770,15 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getGender(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getGender() != null) {
-                return create(EUDIPIDHeaders.SEX, selectivelyDisclosable.getGender());
+        protected MdocEAAClaim getSex(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getSex() != null) {
+                return create(EUDIPIDHeaders.SEX, selectivelyDisclosable.getSex());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getBirthdate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getBirthdate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getBirthdate() != null) {
                 if (selectivelyDisclosable.getBirthdateApproximateMask() != null) {
                     return super.getBirthdate(selectivelyDisclosable);
@@ -1789,7 +1789,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPlaceOfBirth(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPlaceOfBirth(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPlaceOfBirthCountry() != null ||
                     selectivelyDisclosable.getPlaceOfBirthRegion() != null ||
                     selectivelyDisclosable.getPlaceOfBirthLocality() != null) {
@@ -1809,7 +1809,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getNationalities(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getNationalities(MdocEAAClaimParameters selectivelyDisclosable) {
             if (Utils.isCollectionNotEmpty(selectivelyDisclosable.getNationalities())) {
                 return create(EUDIPIDHeaders.NATIONALITY, selectivelyDisclosable.getNationalities());
             }
@@ -1817,23 +1817,23 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getBirthFirstName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getBirthFirstName() != null) {
-                return create(EUDIPIDHeaders.GIVEN_NAME_BIRTH, selectivelyDisclosable.getBirthFirstName());
+        protected MdocEAAClaim getBirthGivenName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getBirthGivenName() != null) {
+                return create(EUDIPIDHeaders.GIVEN_NAME_BIRTH, selectivelyDisclosable.getBirthGivenName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getBirthLastName(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getBirthLastName() != null) {
-                return create(EUDIPIDHeaders.FAMILY_NAME_BIRTH, selectivelyDisclosable.getBirthLastName());
+        protected MdocEAAClaim getBirthFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getBirthFamilyName() != null) {
+                return create(EUDIPIDHeaders.FAMILY_NAME_BIRTH, selectivelyDisclosable.getBirthFamilyName());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getMobilePhoneNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getMobilePhoneNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getMobilePhoneNumber() != null) {
                 return create(EUDIPIDHeaders.MOBILE_PHONE_NUMBER, selectivelyDisclosable.getMobilePhoneNumber());
             }
@@ -1841,7 +1841,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingCountry() != null) {
                 return create(EUDIPIDHeaders.ISSUING_COUNTRY, selectivelyDisclosable.getIssuingCountry());
             }
@@ -1849,7 +1849,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingAuthority(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingAuthority(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingAuthority() != null) {
                 return create(EUDIPIDHeaders.ISSUING_AUTHORITY, selectivelyDisclosable.getIssuingAuthority());
             }
@@ -1857,7 +1857,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getDocumentNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getDocumentNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getDocumentNumber() != null) {
                 return create(EUDIPIDHeaders.DOCUMENT_NUMBER, selectivelyDisclosable.getDocumentNumber());
             }
@@ -1865,7 +1865,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPortrait(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPortrait(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPortrait() != null) {
                 return create(EUDIPIDHeaders.PORTRAIT, selectivelyDisclosable.getPortrait());
             }
@@ -1873,23 +1873,23 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getAdministrativeNumber() != null) {
-                return create(EUDIPIDHeaders.PERSONAL_ADMINISTRATIVE_NUMBER, selectivelyDisclosable.getAdministrativeNumber());
+        protected MdocEAAClaim getPersonalAdministrativeNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getPersonalAdministrativeNumber() != null) {
+                return create(EUDIPIDHeaders.PERSONAL_ADMINISTRATIVE_NUMBER, selectivelyDisclosable.getPersonalAdministrativeNumber());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentAddress() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_ADDRESS, selectivelyDisclosable.getResidentAddress());
+        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressFull() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getIssuingJurisdiction(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingJurisdiction(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingJurisdiction() != null) {
                 return create(EUDIPIDHeaders.ISSUING_JURISDICTION, selectivelyDisclosable.getIssuingJurisdiction());
             }
@@ -1897,39 +1897,39 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentCity() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_CITY, selectivelyDisclosable.getResidentCity());
+        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCity() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentState() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_STATE, selectivelyDisclosable.getResidentState());
+        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressState() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getResidentPostalCode());
+        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressPostalCode() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentPostalCode() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_COUNTRY, selectivelyDisclosable.getResidentCountry());
+        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressCountry() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeIssuanceDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeIssuanceDate() != null) {
                 return create(EUDIPIDHeaders.ISSUANCE_DATE, selectivelyDisclosable.getAdministrativeIssuanceDate());
             }
@@ -1937,7 +1937,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAdministrativeExpirationDate(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAdministrativeExpirationDate(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAdministrativeExpirationDate() != null) {
                 return create(EUDIPIDHeaders.EXPIRY_DATE, selectivelyDisclosable.getAdministrativeExpirationDate());
             }
@@ -1945,23 +1945,23 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentStreet(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentStreet() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_STREET, selectivelyDisclosable.getResidentStreet());
+        protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressStreet() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_STREET, selectivelyDisclosable.getAddressStreet());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getResidentHouseNumber(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getResidentHouseNumber() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_HOUSE_NUMBER, selectivelyDisclosable.getResidentHouseNumber());
+        protected MdocEAAClaim getResidentHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getAddressHouseNumber() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_HOUSE_NUMBER, selectivelyDisclosable.getAddressHouseNumber());
             }
             return null;
         }
 
         @Override
-        protected MdocEAAClaim getTrustAnchor(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getTrustAnchor(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getTrustAnchor() != null) {
                 return create(EUDIPIDHeaders.TRUST_ANCHOR, selectivelyDisclosable.getTrustAnchor());
             }
@@ -2028,7 +2028,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getPseudonym(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getPseudonym(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getPseudonym() != null) {
                 return create(ETSI194721Headers.ALSO_KNOWN_AS, selectivelyDisclosable.getPseudonym());
             }
@@ -2036,7 +2036,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getIssuingAuthorityRegistrationIdentifier(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getIssuingAuthorityRegistrationIdentifier(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getIssuingAuthorityRegistrationIdentifier() != null) {
                 return create(ETSI194721Headers.ISSUING_REGISTRATION_IDENTIFIER, selectivelyDisclosable.getIssuingAuthorityRegistrationIdentifier());
             }
@@ -2044,7 +2044,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getAttestedAttributesSubject(MdocSelectivelyDisclosableParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getAttestedAttributesSubject(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAttestedAttributesSubjectFamilyName() != null &&
                     selectivelyDisclosable.getAttestedAttributesSubjectGivenName() != null &&
                     selectivelyDisclosable.getAttestedAttributesSubjectDocumentNumber() != null) {

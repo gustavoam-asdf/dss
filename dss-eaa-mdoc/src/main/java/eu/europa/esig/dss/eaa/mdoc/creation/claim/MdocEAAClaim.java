@@ -2,6 +2,8 @@ package eu.europa.esig.dss.eaa.mdoc.creation.claim;
 
 import eu.europa.esig.dss.eaa.common.creation.claim.AbstractEAAClaim;
 
+import java.util.Arrays;
+
 /**
  * Represents an ISO/IEC 18013-5 implementation of a selectively disclosable claim
  *
@@ -199,6 +201,17 @@ public class MdocEAAClaim extends AbstractEAAClaim {
      */
     public boolean isVoid() {
         return getNamespace() == null && getName() == null;
+    }
+
+    @Override
+    public String toString() {
+        return "MdocEAAClaim [" +
+                "name='" + getName() + '\'' +
+                ", value=" + getValue() +
+                ", namespace='" + namespace + '\'' +
+                ", digestId=" + digestId +
+                ", salt=" + Arrays.toString(salt) +
+                "] " + super.toString();
     }
 
 }

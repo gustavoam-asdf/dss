@@ -313,8 +313,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setAttestedAttributesSubject(getXmlAttestedAttributesSubjectClaim(eaaPayload.getAttestedAttributesSubject(), supportedClaims)); // TODO : enhance with AttestedAttributesSubjectWrapper
 
         xmlEAAPayload.setFullName(getXmlClaim(eaaPayload.getFullName(), supportedClaims));
-        xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getFirstName(), supportedClaims));
-        xmlEAAPayload.setLastName(getXmlClaim(eaaPayload.getLastName(), supportedClaims));
+        xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getGivenName(), supportedClaims));
+        xmlEAAPayload.setLastName(getXmlClaim(eaaPayload.getFamilyName(), supportedClaims));
         xmlEAAPayload.setMiddleName(getXmlClaim(eaaPayload.getMiddleName(), supportedClaims));
         xmlEAAPayload.setNickname(getXmlClaim(eaaPayload.getNickname(), supportedClaims));
         xmlEAAPayload.setShortName(getXmlClaim(eaaPayload.getShortName(), supportedClaims));
@@ -332,8 +332,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setPhoneNumberVerified(getXmlClaim(eaaPayload.getPhoneNumberVerified(), supportedClaims));
         xmlEAAPayload.setPlaceOfBirth(getXmlPlaceOfBirthClaim(eaaPayload.getPlaceOfBirth(), supportedClaims));
         xmlEAAPayload.setNationalities(getXmlClaim(eaaPayload.getNationalities(), supportedClaims));
-        xmlEAAPayload.setBirthLastName(getXmlClaim(eaaPayload.getBirthLastName(), supportedClaims));
-        xmlEAAPayload.setBirthFirstName(getXmlClaim(eaaPayload.getBirthFirstName(), supportedClaims));
+        xmlEAAPayload.setBirthLastName(getXmlClaim(eaaPayload.getBirthFamilyName(), supportedClaims));
+        xmlEAAPayload.setBirthFirstName(getXmlClaim(eaaPayload.getBirthGivenName(), supportedClaims));
         xmlEAAPayload.setBirthMiddleName(getXmlClaim(eaaPayload.getBirthMiddleName(), supportedClaims));
         xmlEAAPayload.setSalutation(getXmlClaim(eaaPayload.getSalutation(), supportedClaims));
         xmlEAAPayload.setTitle(getXmlClaim(eaaPayload.getTitle(), supportedClaims));
@@ -347,7 +347,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setPortrait(getXmlClaim(eaaPayload.getPortrait(), supportedClaims));
         xmlEAAPayload.setDrivingPrivileges(getXmlDrivingPrivilegesClaim(eaaPayload.getDrivingPrivileges(), supportedClaims));
         xmlEAAPayload.setUNDistinguishingSign(getXmlClaim(eaaPayload.getUNDistinguishingSign(), supportedClaims));
-        xmlEAAPayload.setAdministrativeNumber(getXmlClaim(eaaPayload.getAdministrativeNumber(), supportedClaims));
+        xmlEAAPayload.setAdministrativeNumber(getXmlClaim(eaaPayload.getPersonalAdministrativeNumber(), supportedClaims));
         xmlEAAPayload.setHeight(getXmlClaim(eaaPayload.getHeight(), supportedClaims));
         xmlEAAPayload.setWeight(getXmlClaim(eaaPayload.getWeight(), supportedClaims));
         xmlEAAPayload.setEyeColour(getXmlClaim(eaaPayload.getEyeColour(), supportedClaims));

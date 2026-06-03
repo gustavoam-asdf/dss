@@ -1,21 +1,26 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
-import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link SDJWTEAAClaimBuilder}
  */
 public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
+
+    /**
+     * Default constructor
+     */
+    public DefaultSDJWTEAAClaimBuilder() {
+        // empty
+    }
 
     @Override
     public List<SDJWTEAAClaim> buildClaims(final SDJWTEAAPayloadParameters payloadParameters) {
@@ -29,80 +34,111 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
 
         final List<SDJWTEAAClaim> claims = new ArrayList<>();
         claims.addAll(buildTechnicalClaims(payloadParameters));
-        claims.addAll(payloadParameters.getClaims());
         claims.addAll(nonSelectivelyDisclosableClaims);
         claims.addAll(selectivelyDisclosableClaims);
 
         return claims;
     }
 
+    /**
+     * Builds technical claims (non-selectively disclosable)
+     *
+     * @param payloadParameters {@link SDJWTEAAPayloadParameters}
+     * @return a list of {@link SDJWTEAAClaim}s
+     */
     protected List<SDJWTEAAClaim> buildTechnicalClaims(final SDJWTEAAPayloadParameters payloadParameters) {
         final List<SDJWTEAAClaim> claims = new ArrayList<>();
 
-        addIfNotNull(claims, buildIssuerClaim(payloadParameters.getIssuer()));
-        addIfNotNull(claims, buildIssuedAtClaim(payloadParameters.getIssuanceDate()));
-        addIfNotNull(claims, buildNotBeforeClaim(payloadParameters.getNotBeforeDate()));
-        addIfNotNull(claims, buildExpirationTimeClaim(payloadParameters.getExpirationDate()));
-        addIfNotNull(claims, buildSubjectClaim(payloadParameters.getSubject()));
-        addIfNotNull(claims, buildOneTimeClaim(payloadParameters.isOneTime()));
-        addIfNotNull(claims, buildShortLivedClaim(payloadParameters.isShortLived()));
+        addIfNotNull(claims, buildIssuerClaim(payloadParameters));
+        addIfNotNull(claims, buildIssuedAtClaim(payloadParameters));
+        addIfNotNull(claims, buildNotBeforeClaim(payloadParameters));
+        addIfNotNull(claims, buildExpirationTimeClaim(payloadParameters));
+        addIfNotNull(claims, buildSubjectClaim(payloadParameters));
+        addIfNotNull(claims, buildOneTimeClaim(payloadParameters));
+        addIfNotNull(claims, buildShortLivedClaim(payloadParameters));
 
         return claims;
     }
 
+    /**
+     * Builds claims for the parameters configuration
+     *
+     * @param parameters {@link SDJWTClaimParameters}
+     * @param selectivelyDisclosable whether the claims are to be made selectively disclosable
+     * @return a list of {@link SDJWTEAAClaim}s
+     */
     protected List<SDJWTEAAClaim> buildClaims(final SDJWTClaimParameters parameters,
                                               final boolean selectivelyDisclosable) {
         final List<SDJWTEAAClaim> claims = new ArrayList<>();
-        addIfNotNull(claims, buildFamilyNameClaim(parameters.getFamilyName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildGivenNameClaim(parameters.getGivenName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildBirthDateClaim(parameters.getBirthDate(), selectivelyDisclosable));
-        addIfNotNull(claims, buildNationalitiesClaim(parameters.getNationalities(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAddressClaim(parameters.getAddressFormatted(), parameters.getAddressStreetAddress(), parameters.getAddressLocality(),
-                parameters.getAddressRegion(), parameters.getAddressPostalCode(), parameters.getAddressCountry(), parameters.getAddressHouseNumber(), selectivelyDisclosable));
-        addIfNotNull(claims, buildEmailClaim(parameters.getEmail(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPhoneNumberClaim(parameters.getPhoneNumber(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPictureClaim(parameters.getPicture(), selectivelyDisclosable));
-        addIfNotNull(claims, buildNicknameClaim(parameters.getNickname(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPreferredNicknameClaim(parameters.getPreferredNickname(), selectivelyDisclosable));
-        addIfNotNull(claims, buildNameClaim(parameters.getName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildMiddleNameClaim(parameters.getMiddleName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildProfileClaim(parameters.getProfile(), selectivelyDisclosable));
-        addIfNotNull(claims, buildWebsiteClaim(parameters.getWebsite(), selectivelyDisclosable));
-        addIfNotNull(claims, buildEmailVerifiedClaim(parameters.getEmailVerified(), selectivelyDisclosable));
-        addIfNotNull(claims, buildGenderClaim(parameters.getGender(), selectivelyDisclosable));
-        addIfNotNull(claims, buildZoneinfoClaim(parameters.getZoneinfo(), selectivelyDisclosable));
-        addIfNotNull(claims, buildLocaleClaim(parameters.getLocale(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPhoneNumberVerifiedClaim(parameters.getPhoneNumberVerified(), selectivelyDisclosable));
-        addIfNotNull(claims, buildUpdatedAtClaim(parameters.getUpdatedAt(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPlaceOfBirthClaim(parameters.getPlaceOfBirthCountry(), parameters.getPlaceOfBirthRegion(), parameters.getPlaceOfBirthLocality(), selectivelyDisclosable));
-        addIfNotNull(claims, buildBirthFamilyNameClaim(parameters.getBirthFamilyName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildBirthGivenNameClaim(parameters.getBirthGivenName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildBirthMiddleNameClaim(parameters.getBirthMiddleName(), selectivelyDisclosable));
-        addIfNotNull(claims, buildSalutationClaim(parameters.getSalutation(), selectivelyDisclosable));
-        addIfNotNull(claims, buildTitleClaim(parameters.getTitle(), selectivelyDisclosable));
-        addIfNotNull(claims, buildMobilePhoneNumberClaim(parameters.getMobilePhoneNumber(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPseudonymClaim(parameters.getPseudonym(), selectivelyDisclosable));
-        addIfNotNull(claims, buildDateOfExpiryClaim(parameters.getDateOfExpiry(), selectivelyDisclosable));
-        addIfNotNull(claims, buildDateOfIssuanceClaim(parameters.getDateOfIssuance(), selectivelyDisclosable));
-        addIfNotNull(claims, buildPersonalAdministrativeNumberClaim(parameters.getPersonalAdministrativeNumber(), selectivelyDisclosable));
-        addIfNotNull(claims, buildSexClaim(parameters.getSex(), selectivelyDisclosable));
-        addIfNotNull(claims, buildIssuingAuthorityClaim(parameters.getIssuingAuthority(), selectivelyDisclosable));
-        addIfNotNull(claims, buildIssuingCountryClaim(parameters.getIssuingCountry(), selectivelyDisclosable));
-        addIfNotNull(claims, buildDocumentNumberClaim(parameters.getDocumentNumber(), selectivelyDisclosable));
-        addIfNotNull(claims, buildIssuingJurisdictionClaim(parameters.getIssuingJurisdiction(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAgeInYearsClaim(parameters.getAgeInYears(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAgeBirthYearClaim(parameters.getAgeBirthYear(), selectivelyDisclosable));
-        addIfNotNull(claims, buildTrustAnchorClaim(parameters.getTrustAnchor(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAgeEqualOrOverClaim(parameters.getAgeEqualOrOver(), selectivelyDisclosable));
-        addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(parameters.getVerifiableCredentialsType(), selectivelyDisclosable));
-        addIfNotNull(claims, buildVerifiableCredentialsIntegrityClaim(parameters.getVerifiableCredentialsIntegrity(), selectivelyDisclosable));
-        addIfNotNull(claims, buildCategoryClaim(parameters.getCategory(), selectivelyDisclosable));
-        addIfNotNull(claims, buildIssuingRegistrationIdentifierClaim(parameters.getIssuingRegistrationIdentifier(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAdministrativeValidityNotBeforeClaim(parameters.getAdministrativeValidityNotBefore(), selectivelyDisclosable));
-        addIfNotNull(claims, buildAdministrativeValidityExpiryClaim(parameters.getAdministrativeValidityExpiry(), selectivelyDisclosable));
+        addIfNotNull(claims, buildFamilyNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildGivenNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildBirthDateClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildNationalitiesClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAddressClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildEmailClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPhoneNumberClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPictureClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildNicknameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPreferredNicknameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildMiddleNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildProfileClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildWebsiteClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildEmailVerifiedClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildGenderClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildZoneinfoClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildLocaleClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPhoneNumberVerifiedClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildUpdatedAtClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPlaceOfBirthClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildBirthFamilyNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildBirthGivenNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildBirthMiddleNameClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildSalutationClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildTitleClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildMobilePhoneNumberClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPseudonymClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildDateOfExpiryClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildDateOfIssuanceClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildPersonalAdministrativeNumberClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildSexClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildIssuingAuthorityClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildIssuingCountryClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildDocumentNumberClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildIssuingJurisdictionClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAgeInYearsClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAgeBirthYearClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildTrustAnchorClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAgeEqualOrOverClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildVerifiableCredentialsIntegrityClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildIssuingRegistrationIdentifierClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAdministrativeValidityNotBeforeClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAdministrativeValidityExpiryClaim(parameters, selectivelyDisclosable));
+        if (Utils.isCollectionNotEmpty(parameters.getOtherClaims())) {
+            // selectively discloseness is to be chosen based on the upper parameters
+            claims.addAll(parameters.getOtherClaims().stream()
+                    .map(c -> ensureSelectedSelectiveDisclosureType(c, selectivelyDisclosable)).collect(Collectors.toList()));
+        }
         return claims;
     }
 
+    private SDJWTEAAClaim ensureSelectedSelectiveDisclosureType(SDJWTEAAClaim claim, boolean selectiveDisclosure) {
+        if (claim instanceof SDJWTEAAClaimArray) {
+            return new SDJWTEAAClaimArray(claim.getName(), ((SDJWTEAAClaimArray) claim).getElements(), selectiveDisclosure, claim.getSalt());
+        } else if (claim instanceof SDJWTEAAClaimObject) {
+            return new SDJWTEAAClaimObject(claim.getName(), ((SDJWTEAAClaimObject) claim).getChildren(), selectiveDisclosure, claim.getSalt());
+        } else {
+            return new SDJWTEAAClaim(claim.getName(), claim.getValue(), selectiveDisclosure, claim.getSalt());
+        }
+    }
+
+    /**
+     * Verifies whether the configuration does not contain duplicated claim names
+     *
+     * @param nonSelectivelyDisclosableClaims a list of non-selectively disclosable {@link SDJWTEAAClaim}s
+     * @param selectivelyDisclosableClaims a list of selectively disclosable {@link SDJWTEAAClaim}s
+     */
     protected void ensureNoDuplicateClaimNames(final List<SDJWTEAAClaim> nonSelectivelyDisclosableClaims,
                                                final List<SDJWTEAAClaim> selectivelyDisclosableClaims) {
         final Set<String> nonSelectivelyDisclosableClaimNames = new HashSet<>();
@@ -115,443 +151,896 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         for (SDJWTEAAClaim claim : selectivelyDisclosableClaims) {
             final String claimName = claim.getName();
             if (claimName != null && nonSelectivelyDisclosableClaimNames.contains(claimName)) {
-                throw new DSSException(String.format("The claim '%s' cannot be both selectively disclosable and non-selectively disclosable", claimName));
+                throw new IllegalArgumentException(String.format("The claim '%s' cannot be both selectively disclosable and non-selectively disclosable", claimName));
             }
         }
     }
 
-    protected SDJWTEAAClaim buildIssuerClaim(final String issuer) {
-        if (issuer == null) {
+    /**
+     * Builds the issuer claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuerClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getIssuer() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUER, issuer, false);
+        return buildClaim(SDJWTConstants.ISSUER, payloadParameters.getIssuer(), false);
     }
 
-    protected SDJWTEAAClaim buildIssuedAtClaim(final Date issuanceDate) {
-        if (issuanceDate == null) {
+    /**
+     * Builds the issued at claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuedAtClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getIssuanceDate() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUED_AT, DSSUtils.getTimeValueInSeconds(issuanceDate.getTime()), false);
+        return buildClaim(SDJWTConstants.ISSUED_AT,
+                DSSUtils.getTimeValueInSeconds(payloadParameters.getIssuanceDate().getTime()), false);
     }
 
-    protected SDJWTEAAClaim buildNotBeforeClaim(final Date notBeforeDate) {
-        if (notBeforeDate == null) {
+    /**
+     * Builds the not before claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildNotBeforeClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getNotBeforeDate() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.NOT_BEFORE, DSSUtils.getTimeValueInSeconds(notBeforeDate.getTime()), false);
+        return buildClaim(SDJWTConstants.NOT_BEFORE,
+                DSSUtils.getTimeValueInSeconds(payloadParameters.getNotBeforeDate().getTime()), false);
     }
 
-    protected SDJWTEAAClaim buildExpirationTimeClaim(final Date expirationDate) {
-        if (expirationDate == null) {
+    /**
+     * Builds the expiration time claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildExpirationTimeClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getExpirationDate() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.EXPIRATION_TIME, DSSUtils.getTimeValueInSeconds(expirationDate.getTime()), false);
+        return buildClaim(SDJWTConstants.EXPIRATION_TIME,
+                DSSUtils.getTimeValueInSeconds(payloadParameters.getExpirationDate().getTime()), false);
     }
 
-    protected SDJWTEAAClaim buildSubjectClaim(final String subject) {
-        if (subject == null) {
+    /**
+     * Builds the subject claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildSubjectClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getSubject() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.SUBJECT, subject, false);
+        return buildClaim(SDJWTConstants.SUBJECT, payloadParameters.getSubject(), false);
     }
 
-    protected SDJWTEAAClaim buildOneTimeClaim(final boolean oneTime) {
-        if (!oneTime) {
+    /**
+     * Builds the one time claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildOneTimeClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (!payloadParameters.isOneTime()) {
             return null;
         }
         return buildClaim(SDJWTConstants.ONE_TIME, null, false);
     }
 
-    protected SDJWTEAAClaim buildShortLivedClaim(final boolean shortLived) {
-        if (!shortLived) {
+    /**
+     * Builds the short lived claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildShortLivedClaim(final SDJWTEAAPayloadParameters payloadParameters) {
+        if (!payloadParameters.isShortLived()) {
             return null;
         }
         return buildClaim(SDJWTConstants.SHORT_LIVED, null, false);
     }
 
-    protected SDJWTEAAClaim buildFamilyNameClaim(final String familyName, final boolean selectivelyDisclosable) {
-        if (familyName == null) {
+    /**
+     * Builds the family name claim.
+     *
+     * @param parameters the parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildFamilyNameClaim(final SDJWTClaimParameters parameters,
+                                                 final boolean selectivelyDisclosable) {
+        if (parameters.getFamilyName() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_FAMILY_NAME, familyName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_FAMILY_NAME, parameters.getFamilyName(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildGivenNameClaim(final String givenName, final boolean selectivelyDisclosable) {
-        if (givenName == null) {
+    /**
+     * Builds the given name claim.
+     *
+     * @param parameters the parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildGivenNameClaim(final SDJWTClaimParameters parameters,
+                                                final boolean selectivelyDisclosable) {
+        if (parameters.getGivenName() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_GIVEN_NAME, givenName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_GIVEN_NAME, parameters.getGivenName(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildBirthDateClaim(final Date birthDate, final boolean selectivelyDisclosable) {
-        if (birthDate == null) {
+    /**
+     * Builds the birth date claim.
+     *
+     * @param parameters the parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildBirthDateClaim(final SDJWTClaimParameters parameters,
+                                                final boolean selectivelyDisclosable) {
+        if (parameters.getBirthdate() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_BIRTHDATE, DSSUtils.formatDateToISO8601(birthDate), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTHDATE,
+                DSSUtils.formatDateToISO8601(parameters.getBirthdate()), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaimArray buildNationalitiesClaim(final List<String> nationalities, final boolean selectivelyDisclosable) {
-        if (nationalities == null) {
-            return null;
-        }
-        SDJWTEAAClaimArray claim = new SDJWTEAAClaimArray(SDJWTConstants.USER_NATIONALITIES, selectivelyDisclosable, null);
-        nationalities.forEach(nationality -> claim.addElement(SDJWTEAAClaim.create(nationality)));
-        return claim;
-    }
-
-    protected SDJWTEAAClaimObject buildAddressClaim(final String formatted, final String streetAddress, final String locality,
-                                                    final String region, final String postalCode, final String country,
-                                                    final String houseNumber, final boolean selectivelyDisclosable) {
-        if (Utils.areAllStringsEmpty(formatted, streetAddress, locality, region, postalCode, country, houseNumber)) {
-            return null;
-        }
-
-        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.USER_ADDRESS, selectivelyDisclosable);
-        if (Utils.isStringNotBlank(formatted)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_FORMATTED, formatted));
-        }
-        if (Utils.isStringNotBlank(streetAddress)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_STREET_ADDRESS, streetAddress));
-        }
-        if (Utils.isStringNotBlank(locality)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_LOCALITY, locality));
-        }
-        if (Utils.isStringNotBlank(region)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_REGION, region));
-        }
-        if (Utils.isStringNotBlank(postalCode)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_POSTAL_CODE, postalCode));
-        }
-        if (Utils.isStringNotBlank(country)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_COUNTRY, country));
-        }
-        if (Utils.isStringNotBlank(houseNumber)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_HOUSE_NUMBER, houseNumber));
-        }
-        return claim;
-    }
-
-    protected SDJWTEAAClaim buildEmailClaim(final String email, final boolean selectivelyDisclosable) {
-        if (email == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_EMAIL, email, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildPhoneNumberClaim(final String phoneNumber, final boolean selectivelyDisclosable) {
-        if (phoneNumber == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER, phoneNumber, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildPictureClaim(final String picture, final boolean selectivelyDisclosable) {
-        if (picture == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_PICTURE, picture, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildNicknameClaim(final String nickname, final boolean selectivelyDisclosable) {
-        if (nickname == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_NICKNAME, nickname, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildPreferredNicknameClaim(final String preferredNickname, final boolean selectivelyDisclosable) {
-        if (preferredNickname == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_PREFERRED_NICKNAME, preferredNickname, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildNameClaim(final String name, final boolean selectivelyDisclosable) {
-        if (name == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_NAME, name, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildMiddleNameClaim(final String middleName, final boolean selectivelyDisclosable) {
-        if (middleName == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_MIDDLE_NAME, middleName, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildProfileClaim(final String profile, final boolean selectivelyDisclosable) {
-        if (profile == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_PROFILE, profile, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildWebsiteClaim(final String website, final boolean selectivelyDisclosable) {
-        if (website == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_WEBSITE, website, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildEmailVerifiedClaim(final Boolean emailVerified, final boolean selectivelyDisclosable) {
-        if (emailVerified == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_EMAIL_VERIFIED, emailVerified, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildGenderClaim(final String gender, final boolean selectivelyDisclosable) {
-        if (gender == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_GENDER, gender, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildZoneinfoClaim(final String zoneinfo, final boolean selectivelyDisclosable) {
-        if (zoneinfo == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_ZONEINFO, zoneinfo, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildLocaleClaim(final String locale, final boolean selectivelyDisclosable) {
-        if (locale == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_LOCALE, locale, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildPhoneNumberVerifiedClaim(final Boolean phoneNumberVerified, final boolean selectivelyDisclosable) {
-        if (phoneNumberVerified == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER_VERIFIED, phoneNumberVerified, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildUpdatedAtClaim(final Date updatedAt, final boolean selectivelyDisclosable) {
-        if (updatedAt == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.UPDATED_AT, DSSUtils.getTimeValueInSeconds(updatedAt.getTime()), selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaimObject buildPlaceOfBirthClaim(final String country, final String region, final String locality,
+    /**
+     * Builds the nationalities claim.
+     *
+     * @param parameters the parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaimArray buildNationalitiesClaim(final SDJWTClaimParameters parameters,
                                                          final boolean selectivelyDisclosable) {
-        if (Utils.areAllStringsEmpty(country, region, locality)) {
+        if (parameters.getNationalities() == null) {
+            return null;
+        }
+        SDJWTEAAClaimArray claim = new SDJWTEAAClaimArray(
+                SDJWTConstants.USER_NATIONALITIES, selectivelyDisclosable, null);
+        parameters.getNationalities().forEach(
+                nationality -> claim.addElement(SDJWTEAAClaim.create(nationality)));
+        return claim;
+    }
+
+    /**
+     * Builds the address claim.
+     *
+     * @param parameters the parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaimObject buildAddressClaim(final SDJWTClaimParameters parameters,
+                                                    final boolean selectivelyDisclosable) {
+        if (Utils.areAllStringsEmpty(
+                parameters.getAddressFull(),
+                parameters.getAddressStreet(),
+                parameters.getAddressCity(),
+                parameters.getAddressState(),
+                parameters.getAddressPostalCode(),
+                parameters.getAddressCountry(),
+                parameters.getAddressHouseNumber())) {
             return null;
         }
 
-        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.USER_PLACE_OF_BIRTH, selectivelyDisclosable);
-        if (Utils.isStringNotBlank(country)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_PLACE_OF_BIRTH_COUNTRY, country));
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(
+                SDJWTConstants.USER_ADDRESS, selectivelyDisclosable);
+
+        if (Utils.isStringNotBlank(parameters.getAddressFull())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_FORMATTED, parameters.getAddressFull()));
         }
-        if (Utils.isStringNotBlank(region)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_PLACE_OF_BIRTH_REGION, region));
+        if (Utils.isStringNotBlank(parameters.getAddressStreet())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_STREET_ADDRESS, parameters.getAddressStreet()));
         }
-        if (Utils.isStringNotBlank(locality)) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_PLACE_OF_BIRTH_LOCALITY, locality));
+        if (Utils.isStringNotBlank(parameters.getAddressCity())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_LOCALITY, parameters.getAddressCity()));
+        }
+        if (Utils.isStringNotBlank(parameters.getAddressState())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_REGION, parameters.getAddressState()));
+        }
+        if (Utils.isStringNotBlank(parameters.getAddressPostalCode())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_POSTAL_CODE, parameters.getAddressPostalCode()));
+        }
+        if (Utils.isStringNotBlank(parameters.getAddressCountry())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_COUNTRY, parameters.getAddressCountry()));
+        }
+        if (Utils.isStringNotBlank(parameters.getAddressHouseNumber())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_HOUSE_NUMBER, parameters.getAddressHouseNumber()));
+        }
+        return claim;
+    }/**
+     * Builds the email claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildEmailClaim(final SDJWTClaimParameters parameters,
+                                            final boolean selectivelyDisclosable) {
+        if (parameters.getEmail() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_EMAIL, parameters.getEmail(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the phone number claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPhoneNumberClaim(final SDJWTClaimParameters parameters,
+                                                  final boolean selectivelyDisclosable) {
+        if (parameters.getPhoneNumber() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER, parameters.getPhoneNumber(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the picture claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPictureClaim(final SDJWTClaimParameters parameters,
+                                              final boolean selectivelyDisclosable) {
+        if (parameters.getPicture() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PICTURE, parameters.getPicture(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the nickname claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildNicknameClaim(final SDJWTClaimParameters parameters,
+                                               final boolean selectivelyDisclosable) {
+        if (parameters.getNickname() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_NICKNAME, parameters.getNickname(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the preferred nickname claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPreferredNicknameClaim(final SDJWTClaimParameters parameters,
+                                                        final boolean selectivelyDisclosable) {
+        if (parameters.getPreferredNickname() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PREFERRED_NICKNAME,
+                parameters.getPreferredNickname(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the name claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildNameClaim(final SDJWTClaimParameters parameters,
+                                           final boolean selectivelyDisclosable) {
+        if (parameters.getName() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_NAME, parameters.getName(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the middle name claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildMiddleNameClaim(final SDJWTClaimParameters parameters,
+                                                 final boolean selectivelyDisclosable) {
+        if (parameters.getMiddleName() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_MIDDLE_NAME,
+                parameters.getMiddleName(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the profile claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildProfileClaim(final SDJWTClaimParameters parameters,
+                                              final boolean selectivelyDisclosable) {
+        if (parameters.getProfile() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PROFILE, parameters.getProfile(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the website claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildWebsiteClaim(final SDJWTClaimParameters parameters,
+                                              final boolean selectivelyDisclosable) {
+        if (parameters.getWebsite() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_WEBSITE, parameters.getWebsite(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the email verified claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildEmailVerifiedClaim(final SDJWTClaimParameters parameters,
+                                                    final boolean selectivelyDisclosable) {
+        if (parameters.getEmailVerified() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_EMAIL_VERIFIED,
+                parameters.getEmailVerified(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the gender claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildGenderClaim(final SDJWTClaimParameters parameters,
+                                             final boolean selectivelyDisclosable) {
+        if (parameters.getGender() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_GENDER, parameters.getGender(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the zoneinfo claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildZoneinfoClaim(final SDJWTClaimParameters parameters,
+                                               final boolean selectivelyDisclosable) {
+        if (parameters.getZoneinfo() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_ZONEINFO, parameters.getZoneinfo(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the locale claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildLocaleClaim(final SDJWTClaimParameters parameters,
+                                             final boolean selectivelyDisclosable) {
+        if (parameters.getLocale() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_LOCALE, parameters.getLocale(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the phone number verified claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPhoneNumberVerifiedClaim(final SDJWTClaimParameters parameters,
+                                                          final boolean selectivelyDisclosable) {
+        if (parameters.getPhoneNumberVerified() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.USER_PHONE_NUMBER_VERIFIED,
+                parameters.getPhoneNumberVerified(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the updated at claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildUpdatedAtClaim(final SDJWTClaimParameters parameters,
+                                                final boolean selectivelyDisclosable) {
+        if (parameters.getUpdatedAt() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.UPDATED_AT,
+                DSSUtils.getTimeValueInSeconds(parameters.getUpdatedAt().getTime()),
+                selectivelyDisclosable);
+    }/**
+     * Builds the place of birth claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaimObject buildPlaceOfBirthClaim(final SDJWTClaimParameters parameters,
+                                                         final boolean selectivelyDisclosable) {
+        if (Utils.areAllStringsEmpty(
+                parameters.getPlaceOfBirthCountry(),
+                parameters.getPlaceOfBirthRegion(),
+                parameters.getPlaceOfBirthLocality())) {
+            return null;
+        }
+
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(
+                SDJWTConstants.USER_PLACE_OF_BIRTH, selectivelyDisclosable);
+
+        if (Utils.isStringNotBlank(parameters.getPlaceOfBirthCountry())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.USER_PLACE_OF_BIRTH_COUNTRY,
+                    parameters.getPlaceOfBirthCountry()));
+        }
+        if (Utils.isStringNotBlank(parameters.getPlaceOfBirthRegion())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.USER_PLACE_OF_BIRTH_REGION,
+                    parameters.getPlaceOfBirthRegion()));
+        }
+        if (Utils.isStringNotBlank(parameters.getPlaceOfBirthLocality())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.USER_PLACE_OF_BIRTH_LOCALITY,
+                    parameters.getPlaceOfBirthLocality()));
         }
         return claim;
     }
 
-    protected SDJWTEAAClaim buildBirthFamilyNameClaim(final String birthFamilyName, final boolean selectivelyDisclosable) {
-        if (birthFamilyName == null) {
+    /**
+     * Builds the birth family name claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildBirthFamilyNameClaim(final SDJWTClaimParameters parameters,
+                                                      final boolean selectivelyDisclosable) {
+        if (parameters.getBirthFamilyName() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_BIRTH_FAMILY_NAME, birthFamilyName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTH_FAMILY_NAME,
+                parameters.getBirthFamilyName(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildBirthGivenNameClaim(final String birthGivenName, final boolean selectivelyDisclosable) {
-        if (birthGivenName == null) {
+    /**
+     * Builds the birth given name claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildBirthGivenNameClaim(final SDJWTClaimParameters parameters,
+                                                     final boolean selectivelyDisclosable) {
+        if (parameters.getBirthGivenName() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_BIRTH_GIVEN_NAME, birthGivenName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTH_GIVEN_NAME,
+                parameters.getBirthGivenName(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildBirthMiddleNameClaim(final String birthMiddleName, final boolean selectivelyDisclosable) {
-        if (birthMiddleName == null) {
+    /**
+     * Builds the birth middle name claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildBirthMiddleNameClaim(final SDJWTClaimParameters parameters,
+                                                      final boolean selectivelyDisclosable) {
+        if (parameters.getBirthMiddleName() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_BIRTH_MIDDLE_NAME, birthMiddleName, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_BIRTH_MIDDLE_NAME,
+                parameters.getBirthMiddleName(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildSalutationClaim(final String salutation, final boolean selectivelyDisclosable) {
-        if (salutation == null) {
+    /**
+     * Builds the salutation claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildSalutationClaim(final SDJWTClaimParameters parameters,
+                                                 final boolean selectivelyDisclosable) {
+        if (parameters.getSalutation() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_SALUTATION, salutation, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_SALUTATION,
+                parameters.getSalutation(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildTitleClaim(final String title, final boolean selectivelyDisclosable) {
-        if (title == null) {
+    /**
+     * Builds the title claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildTitleClaim(final SDJWTClaimParameters parameters,
+                                            final boolean selectivelyDisclosable) {
+        if (parameters.getTitle() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_TITLE, title, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_TITLE,
+                parameters.getTitle(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildMobilePhoneNumberClaim(final String mobilePhoneNumber, final boolean selectivelyDisclosable) {
-        if (mobilePhoneNumber == null) {
+    /**
+     * Builds the mobile phone number claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildMobilePhoneNumberClaim(final SDJWTClaimParameters parameters,
+                                                        final boolean selectivelyDisclosable) {
+        if (parameters.getMobilePhoneNumber() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_MOBILE_PHONE_NUMBER, mobilePhoneNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_MOBILE_PHONE_NUMBER,
+                parameters.getMobilePhoneNumber(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildPseudonymClaim(final String pseudonym, final boolean selectivelyDisclosable) {
-        if (pseudonym == null) {
+    /**
+     * Builds the pseudonym claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPseudonymClaim(final SDJWTClaimParameters parameters,
+                                                final boolean selectivelyDisclosable) {
+        if (parameters.getPseudonym() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.USER_PSEUDONYM, pseudonym, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.USER_PSEUDONYM,
+                parameters.getPseudonym(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildAdministrativeValidityNotBeforeClaim(final Date administrativeValidityNotBefore,
+    /**
+     * Builds the administrative validity not before claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildAdministrativeValidityNotBeforeClaim(final SDJWTClaimParameters parameters,
                                                                       final boolean selectivelyDisclosable) {
-        if (administrativeValidityNotBefore == null) {
+        if (parameters.getAdministrativeIssuanceDate() == null) {
             return null;
         }
         return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_NOT_BEFORE,
-                DSSUtils.formatDateToISO8601(administrativeValidityNotBefore), selectivelyDisclosable);
+                DSSUtils.formatDateToISO8601(parameters.getAdministrativeIssuanceDate()),
+                selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildAdministrativeValidityExpiryClaim(final Date administrativeValidityExpiry,
+    /**
+     * Builds the administrative validity expiry claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildAdministrativeValidityExpiryClaim(final SDJWTClaimParameters parameters,
                                                                    final boolean selectivelyDisclosable) {
-        if (administrativeValidityExpiry == null) {
+        if (parameters.getAdministrativeExpirationDate() == null) {
             return null;
         }
         return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_EXPIRY,
-                DSSUtils.formatDateToISO8601(administrativeValidityExpiry), selectivelyDisclosable);
+                DSSUtils.formatDateToISO8601(parameters.getAdministrativeExpirationDate()),
+                selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildDateOfExpiryClaim(final Date dateOfExpiry, final boolean selectivelyDisclosable) {
-        if (dateOfExpiry == null) {
+    /**
+     * Builds the date of expiry claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildDateOfExpiryClaim(final SDJWTClaimParameters parameters,
+                                                   final boolean selectivelyDisclosable) {
+        if (parameters.getDateOfExpiry() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.EXPIRY_DATE, DSSUtils.formatDateToISO8601(dateOfExpiry), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.EXPIRY_DATE,
+                DSSUtils.formatDateToISO8601(parameters.getDateOfExpiry()),
+                selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildDateOfIssuanceClaim(final Date dateOfIssuance, final boolean selectivelyDisclosable) {
-        if (dateOfIssuance == null) {
+    /**
+     * Builds the date of issuance claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildDateOfIssuanceClaim(final SDJWTClaimParameters parameters,
+                                                     final boolean selectivelyDisclosable) {
+        if (parameters.getDateOfIssuance() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUANCE_DATE, DSSUtils.formatDateToISO8601(dateOfIssuance), selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUANCE_DATE,
+                DSSUtils.formatDateToISO8601(parameters.getDateOfIssuance()),
+                selectivelyDisclosable);
+    }/**
+     * Builds the personal administrative number claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildPersonalAdministrativeNumberClaim(final SDJWTClaimParameters parameters,
+                                                                   final boolean selectivelyDisclosable) {
+        if (parameters.getPersonalAdministrativeNumber() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER,
+                parameters.getPersonalAdministrativeNumber(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildPersonalAdministrativeNumberClaim(final String personalAdministrativeNumber, final boolean selectivelyDisclosable) {
-        if (personalAdministrativeNumber == null) {
+    /**
+     * Builds the sex claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildSexClaim(final SDJWTClaimParameters parameters,
+                                          final boolean selectivelyDisclosable) {
+        if (parameters.getSex() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER, personalAdministrativeNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.SEX,
+                parameters.getSex(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildSexClaim(final Number sex, final boolean selectivelyDisclosable) {
-        if (sex == null) {
+    /**
+     * Builds the issuing authority claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuingAuthorityClaim(final SDJWTClaimParameters parameters,
+                                                       final boolean selectivelyDisclosable) {
+        if (parameters.getIssuingAuthority() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.SEX, sex, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_AUTHORITY,
+                parameters.getIssuingAuthority(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildIssuingAuthorityClaim(final String issuingAuthority, final boolean selectivelyDisclosable) {
-        if (issuingAuthority == null) {
+    /**
+     * Builds the issuing country claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuingCountryClaim(final SDJWTClaimParameters parameters,
+                                                     final boolean selectivelyDisclosable) {
+        if (parameters.getIssuingCountry() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUING_AUTHORITY, issuingAuthority, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_COUNTRY,
+                parameters.getIssuingCountry(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildIssuingCountryClaim(final String issuingCountry, final boolean selectivelyDisclosable) {
-        if (issuingCountry == null) {
+    /**
+     * Builds the document number claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildDocumentNumberClaim(final SDJWTClaimParameters parameters,
+                                                     final boolean selectivelyDisclosable) {
+        if (parameters.getDocumentNumber() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUING_COUNTRY, issuingCountry, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.DOCUMENT_NUMBER,
+                parameters.getDocumentNumber(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildDocumentNumberClaim(final String documentNumber, final boolean selectivelyDisclosable) {
-        if (documentNumber == null) {
+    /**
+     * Builds the issuing jurisdiction claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuingJurisdictionClaim(final SDJWTClaimParameters parameters,
+                                                          final boolean selectivelyDisclosable) {
+        if (parameters.getIssuingJurisdiction() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.DOCUMENT_NUMBER, documentNumber, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.ISSUING_JURISDICTION,
+                parameters.getIssuingJurisdiction(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildIssuingJurisdictionClaim(final String issuingJurisdiction, final boolean selectivelyDisclosable) {
-        if (issuingJurisdiction == null) {
+    /**
+     * Builds the age in years claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildAgeInYearsClaim(final SDJWTClaimParameters parameters,
+                                                 final boolean selectivelyDisclosable) {
+        if (parameters.getAgeInYears() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.ISSUING_JURISDICTION, issuingJurisdiction, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.AGE_IN_YEARS,
+                parameters.getAgeInYears(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildAgeInYearsClaim(final Number ageInYears, final boolean selectivelyDisclosable) {
-        if (ageInYears == null) {
+    /**
+     * Builds the age birth year claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildAgeBirthYearClaim(final SDJWTClaimParameters parameters,
+                                                   final boolean selectivelyDisclosable) {
+        if (parameters.getAgeBirthYear() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.AGE_IN_YEARS, ageInYears, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.AGE_BIRTH_YEAR,
+                parameters.getAgeBirthYear(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildAgeBirthYearClaim(final Number ageBirthYear, final boolean selectivelyDisclosable) {
-        if (ageBirthYear == null) {
+    /**
+     * Builds the trust anchor claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildTrustAnchorClaim(final SDJWTClaimParameters parameters,
+                                                  final boolean selectivelyDisclosable) {
+        if (parameters.getTrustAnchor() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.AGE_BIRTH_YEAR, ageBirthYear, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.TRUST_ANCHOR,
+                parameters.getTrustAnchor(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildTrustAnchorClaim(final String trustAnchor, final boolean selectivelyDisclosable) {
-        if (trustAnchor == null) {
+    /**
+     * Builds the age equal or over claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaimObject buildAgeEqualOrOverClaim(final SDJWTClaimParameters parameters,
+                                                           final boolean selectivelyDisclosable) {
+        if (parameters.getAgeOverNN() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.TRUST_ANCHOR, trustAnchor, selectivelyDisclosable);
-    }
 
-    protected SDJWTEAAClaimObject buildAgeEqualOrOverClaim(final Map<Integer, Boolean> ageEqualOrOver, final boolean selectivelyDisclosable) {
-        if (ageEqualOrOver == null) {
-            return null;
-        }
-        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.AGE_EQUAL_OR_OVER, selectivelyDisclosable);
-        ageEqualOrOver.forEach((age, verified) -> {
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(
+                SDJWTConstants.AGE_EQUAL_OR_OVER, selectivelyDisclosable);
+
+        parameters.getAgeOverNN().forEach((age, verified) -> {
             if (age != null && verified != null) {
                 claim.addChild(SDJWTEAAClaim.create(Integer.toString(age), verified));
             }
         });
+
         return claim;
     }
 
-    protected SDJWTEAAClaim buildVerifiableCredentialsTypeClaim(final String verifiableCredentialsType,
+    /**
+     * Builds the verifiable credentials type claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildVerifiableCredentialsTypeClaim(final SDJWTClaimParameters parameters,
                                                                 final boolean selectivelyDisclosable) {
-        if (verifiableCredentialsType == null) {
+        if (parameters.getVerifiableCredentialsType() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE, verifiableCredentialsType, selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE, parameters.getVerifiableCredentialsType(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildVerifiableCredentialsIntegrityClaim(final String verifiableCredentialsIntegrity,
+    /**
+     * Builds the verifiable credentials integrity claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildVerifiableCredentialsIntegrityClaim(final SDJWTClaimParameters parameters,
                                                                      final boolean selectivelyDisclosable) {
-        if (verifiableCredentialsIntegrity == null) {
+        if (parameters.getVerifiableCredentialsIntegrity() == null) {
             return null;
         }
-        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, verifiableCredentialsIntegrity,
-                selectivelyDisclosable);
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, parameters.getVerifiableCredentialsIntegrity(), selectivelyDisclosable);
     }
 
-    protected SDJWTEAAClaim buildCategoryClaim(final String category, final boolean selectivelyDisclosable) {
-        if (category == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.CATEGORY, category, selectivelyDisclosable);
-    }
-
-    protected SDJWTEAAClaim buildIssuingRegistrationIdentifierClaim(final String issuingRegistrationIdentifier,
+    /**
+     * Builds the issuing registration identifier claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildIssuingRegistrationIdentifierClaim(final SDJWTClaimParameters parameters,
                                                                     final boolean selectivelyDisclosable) {
-        if (issuingRegistrationIdentifier == null) {
+        if (parameters.getIssuingAuthorityRegistrationIdentifier() == null) {
             return null;
         }
         return buildClaim(SDJWTConstants.ISSUING_REGISTRATION_IDENTIFIER,
-                issuingRegistrationIdentifier, selectivelyDisclosable);
+                parameters.getIssuingAuthorityRegistrationIdentifier(), selectivelyDisclosable);
     }
 
+    /**
+     * Builds a claim for the given configuration
+     *
+     * @param name {@link String}
+     * @param value {@link Object}
+     * @param selectivelyDisclosable whether the claim is to be made selectively disclosable
+     * @return {@link SDJWTEAAClaim}
+     */
     protected SDJWTEAAClaim buildClaim(final String name, final Object value, final boolean selectivelyDisclosable) {
         return selectivelyDisclosable ? SDJWTEAAClaim.createSelectivelyDisclosable(name, value) : SDJWTEAAClaim.create(name, value);
     }
 
+    /**
+     * Utility method to add a claim if not null
+     *
+     * @param claims a list of {@link SDJWTEAAClaim}s to be populated
+     * @param claim {@link SDJWTEAAClaim} to add if not null
+     */
     protected void addIfNotNull(final List<SDJWTEAAClaim> claims, final SDJWTEAAClaim claim) {
         if (claim != null) {
             claims.add(claim);
         }
     }
+
 }

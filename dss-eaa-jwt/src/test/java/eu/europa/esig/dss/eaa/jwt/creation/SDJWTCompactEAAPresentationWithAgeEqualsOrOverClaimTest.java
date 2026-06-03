@@ -1,24 +1,21 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
-
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SDJWTCompactEAAPresentationWithAgeEqualsOrOverClaimTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
@@ -29,9 +26,9 @@ class SDJWTCompactEAAPresentationWithAgeEqualsOrOverClaimTest extends AbstractSD
     void init() {
         payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("https://issuer.example.com");
-        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(18, true);
-        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(30, true);
-        payloadParameters.selectivelyDisclosable().addAgeEqualOrOverEntry(40, false);
+        payloadParameters.selectivelyDisclosable().setAgeOverNN(18, true);
+        payloadParameters.selectivelyDisclosable().setAgeOverNN(30, true);
+        payloadParameters.selectivelyDisclosable().setAgeOverNN(40, false);
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());

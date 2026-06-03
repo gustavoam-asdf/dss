@@ -1,10 +1,8 @@
 package eu.europa.esig.dss.eaa.mdoc.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadParameters;
-import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
-import java.security.PublicKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +21,6 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
      * Default : "1.0"
      */
     private String version = "1.0";
-
-    /**
-     * Contains the public part of the key pair used for mdoc authentication.
-     */
-    private PublicKey deviceKey;
 
     /**
      * (Optional) A list of namespaces the device key may sign.
@@ -65,36 +58,9 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private Date expectedUpdate;
 
     /**
-     * (Optional) Contains an "identifier_list".
-     */
-    private EAARevocationList identifierList;
-
-    /**
-     * (Optional) Contains a "status_list" as defined in IETF draft-ietf-oauth-status-list-20.
-     */
-    private EAARevocationList statusList;
-
-    /* ETSI technical claims */
-
-    /**
-     * Category of the EAA (e.g. QEAA, Pub-EAA, or other)
-     */
-    private String category;
-
-    /**
-     * Whether the EAA is short-lived
-     */
-    private boolean shortLived;
-
-    /**
-     * Whether the EAA is issued for a one time use
-     */
-    private boolean oneTime;
-
-    /**
      * Contains other optional selectively disclosable parameters
      */
-    private MdocSelectivelyDisclosableParameters selectivelyDisclosableParameters;
+    private MdocEAAClaimParameters selectivelyDisclosableParameters;
 
     /**
      * Gets version of the "MobileSecurityObject" structure.
@@ -114,24 +80,6 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     public void setVersion(String version) {
         Objects.requireNonNull(version, "Version cannot be null!");
         this.version = version;
-    }
-
-    /**
-     * Gets the public part of the key pair used for mdoc authentication.
-     *
-     * @return {@link PublicKey}
-     */
-    public PublicKey getDeviceKey() {
-        return deviceKey;
-    }
-
-    /**
-     * Sets the public part of the key pair used for mdoc authentication.
-     *
-     * @param deviceKey {@link PublicKey}
-     */
-    public void setDeviceKey(PublicKey deviceKey) {
-        this.deviceKey = deviceKey;
     }
 
     /**
@@ -300,133 +248,29 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
-     * Gets the identifier_list
-     *
-     * @return {@link EAARevocationList}
-     */
-    public EAARevocationList getIdentifierList() {
-        return identifierList;
-    }
-
-    /**
-     * Sets the identifier_list
-     *
-     * @param identifierList {@link EAARevocationList}
-     */
-    public void setIdentifierList(EAARevocationList identifierList) {
-        this.identifierList = identifierList;
-    }
-
-    /**
-     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the identifier_list
-     * @param url {@link String} where the identifier_list can be accessed from
-     */
-    public void setIdentifierList(int index, String url) {
-        this.identifierList = new EAARevocationList(index, url);
-    }
-
-    /**
-     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the identifier_list
-     * @param url {@link String} where the identifier_list can be accessed from
-     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
-     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
-     */
-    public void setIdentifierList(int index, String url, CertificateToken certificateToken) {
-        this.identifierList = new EAARevocationList(index, url, certificateToken);
-    }
-
-    /**
-     * Gets the status_list
-     *
-     * @return {@link EAARevocationList}
-     */
-    public EAARevocationList getStatusList() {
-        return statusList;
-    }
-
-    /**
-     * Sets the status_list
-     *
-     * @param statusList {@link EAARevocationList}
-     */
-    public void setStatusList(EAARevocationList statusList) {
-        this.statusList = statusList;
-    }
-
-    /**
-     * Sets the status_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the status_list
-     * @param url {@link String} where the status_list can be accessed from
-     */
-    public void setStatusList(int index, String url) {
-        this.statusList = new EAARevocationList(index, url);
-    }
-
-    /**
-     * Sets the status_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the status_list
-     * @param url {@link String} where the status_list can be accessed from
-     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
-     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
-     */
-    public void setStatusList(int index, String url, CertificateToken certificateToken) {
-        this.statusList = new EAARevocationList(index, url, certificateToken);
-    }
-
-    @Override
-    public boolean isOneTime() {
-        return oneTime;
-    }
-
-    @Override
-    public void setOneTime(boolean oneTime) {
-        this.oneTime = oneTime;
-    }
-
-    @Override
-    public boolean isShortLived() {
-        return shortLived;
-    }
-
-    @Override
-    public void setShortLived(boolean shortLived) {
-        this.shortLived = shortLived;
-    }
-    /**
-     * Gets the EAA category URN
-     *
-     * @return {@link String}
-     */
-    public String getCategory() {
-        return category;
-    }
-
-    /**
-     * Sets the EAA category URN.
-     * Example: "urn:etsi:esi:eaa:eu:qualified" for QEAA, "urn:etsi:esi:eaa:eu:pub" for Pub-EAA
-     *
-     * @param category {@link String}
-     */
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    /**
      * Gets parameters containing configuration of selectively disclosable claims
      *
-     * @return {@link MdocSelectivelyDisclosableParameters}
+     * @return {@link MdocEAAClaimParameters}
      */
-    public MdocSelectivelyDisclosableParameters selectivelyDisclosable() {
+    public MdocEAAClaimParameters selectivelyDisclosable() {
         if (selectivelyDisclosableParameters == null) {
-            selectivelyDisclosableParameters = new MdocSelectivelyDisclosableParameters();
+            selectivelyDisclosableParameters = new MdocEAAClaimParameters();
         }
         return selectivelyDisclosableParameters;
     }
-    
+
+    @Override
+    public String toString() {
+        return "MdocEAAPayloadParameters [" +
+                "version='" + version + '\'' +
+                ", keyAuthorizationsNamespaces=" + keyAuthorizationsNamespaces +
+                ", keyAuthorizationsDataElements=" + keyAuthorizationsDataElements +
+                ", keyInfoMap=" + keyInfoMap +
+                ", docType='" + docType + '\'' +
+                ", signed=" + signed +
+                ", expectedUpdate=" + expectedUpdate +
+                ", selectivelyDisclosableParameters=" + selectivelyDisclosableParameters +
+                "] " + super.toString();
+    }
+
 }

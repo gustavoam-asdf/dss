@@ -3,8 +3,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
-import eu.europa.esig.dss.eaa.common.creation.DefaultEAASaltGenerator;
-import eu.europa.esig.dss.eaa.common.creation.EAASaltGenerator;
 import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -33,8 +31,7 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
         issuanceDate = new Date();
         expiration = new Date(issuanceDate.getTime() + 3600 * 1000);
 
-        EAASaltGenerator saltGenerator = new DefaultEAASaltGenerator();
-        claim = SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("test-key", "test-value", saltGenerator.generateSaltString());
+        claim = SDJWTEAAClaim.create("test-key", "test-value");
     }
 
     @Override
@@ -44,7 +41,7 @@ class SDJWTJsonSerializationEAAPresentationSimpleTest extends AbstractSDJWTEAAPr
         payloadParameters.setExpirationDate(expiration);
         payloadParameters.setIssuer("https://issuer.example.com");
 
-        payloadParameters.addClaim(claim);
+        payloadParameters.selectivelyDisclosable().addClaim(claim);
 
         JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());

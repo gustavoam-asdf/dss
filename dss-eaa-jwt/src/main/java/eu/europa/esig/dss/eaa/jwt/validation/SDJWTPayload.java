@@ -144,12 +144,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getFirstName() {
+    public ClaimString getGivenName() {
         return getAsString(SDJWTConstants.USER_GIVEN_NAME);
     }
 
     @Override
-    public ClaimString getLastName() {
+    public ClaimString getFamilyName() {
         return getAsString(SDJWTConstants.USER_FAMILY_NAME);
     }
 
@@ -251,12 +251,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getBirthFirstName() {
+    public ClaimString getBirthGivenName() {
         return getAsString(SDJWTConstants.USER_BIRTH_GIVEN_NAME);
     }
 
     @Override
-    public ClaimString getBirthLastName() {
+    public ClaimString getBirthFamilyName() {
         return getAsString(SDJWTConstants.USER_BIRTH_FAMILY_NAME);
     }
 
@@ -335,7 +335,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getAdministrativeNumber() {
+    public ClaimString getPersonalAdministrativeNumber() {
         return getAsString(SDJWTConstants.PERSONAL_ADMINISTRATIVE_NUMBER);
     }
 

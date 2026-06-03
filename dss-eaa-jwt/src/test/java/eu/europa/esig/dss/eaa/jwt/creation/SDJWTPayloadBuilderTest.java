@@ -58,15 +58,15 @@ class SDJWTPayloadBuilderTest {
         nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("EN", saltGenerator.generateSaltString()));
         nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("FR", saltGenerator.generateSaltString()));
 
-        parameters.addClaim(addressClaim);
-        parameters.addClaim(nationalities);
-        parameters.addClaim(nationalities2);
+        parameters.nonSelectivelyDisclosable().addClaim(addressClaim);
+        parameters.nonSelectivelyDisclosable().addClaim(nationalities);
+        parameters.selectivelyDisclosable().addClaim(nationalities2);
 
         final SDJWTEAAClaim nonSdClaim = SDJWTEAAClaim.create("visible-claim", "visible-value");
-        parameters.addClaim(nonSdClaim);
+        parameters.nonSelectivelyDisclosable().addClaim(nonSdClaim);
 
-        final SDJWTEAAClaim sdClaim = SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("test-name", "test-value", saltGenerator.generateSaltString());
-        parameters.addClaim(sdClaim);
+        final SDJWTEAAClaim sdClaim = SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("test-name", "test-value");
+        parameters.selectivelyDisclosable().addClaim(sdClaim);
 
         final Date now = new Date();
         final Date expiration = new Date(now.getTime() + 3600 * 1000);
@@ -212,8 +212,8 @@ class SDJWTPayloadBuilderTest {
     @Test
     void nonSelectivelyDisclosableObject() throws JoseException {
         SDJWTEAAPayloadParameters params = new SDJWTEAAPayloadParameters();
-        params.nonSelectivelyDisclosable().setAddressStreetAddress("123 Main St");
-        params.nonSelectivelyDisclosable().setAddressLocality("Anytown");
+        params.nonSelectivelyDisclosable().setAddressStreet("123 Main St");
+        params.nonSelectivelyDisclosable().setAddressCity("Anytown");
         params.nonSelectivelyDisclosable().setAddressCountry("LU");
 
         Map<String, Object> map = parsePayload(params);
@@ -229,8 +229,8 @@ class SDJWTPayloadBuilderTest {
     @Test
     void selectivelyDisclosableObject() throws JoseException {
         SDJWTEAAPayloadParameters params = new SDJWTEAAPayloadParameters();
-        params.selectivelyDisclosable().setAddressStreetAddress("123 Main St");
-        params.selectivelyDisclosable().setAddressLocality("Anytown");
+        params.selectivelyDisclosable().setAddressStreet("123 Main St");
+        params.selectivelyDisclosable().setAddressCity("Anytown");
         params.selectivelyDisclosable().setAddressCountry("LU");
 
         Map<String, Object> map = parsePayload(params);
@@ -247,7 +247,7 @@ class SDJWTPayloadBuilderTest {
         SDJWTEAAClaimArray nationalities = SDJWTEAAClaimArray.create("nationalities");
         nationalities.addElement(SDJWTEAAClaim.create("LU"));
         nationalities.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("DE"));
-        params.addClaim(nationalities);
+        params.nonSelectivelyDisclosable().addClaim(nationalities);
 
         Map<String, Object> map = parsePayload(params);
 
@@ -266,7 +266,7 @@ class SDJWTPayloadBuilderTest {
         Map<String, Object> rawMap = new LinkedHashMap<>();
         rawMap.put("key1", "val1");
         rawMap.put("key2", 42);
-        params.addClaim(SDJWTEAAClaim.create("nested", rawMap));
+        params.nonSelectivelyDisclosable().addClaim(SDJWTEAAClaim.create("nested", rawMap));
 
         Map<String, Object> map = parsePayload(params);
 
@@ -279,7 +279,7 @@ class SDJWTPayloadBuilderTest {
     @Test
     void rawListValueConvertedToJsonArray() throws JoseException {
         SDJWTEAAPayloadParameters params = new SDJWTEAAPayloadParameters();
-        params.addClaim(SDJWTEAAClaim.create("items", Arrays.asList("a", "b", "c")));
+        params.nonSelectivelyDisclosable().addClaim(SDJWTEAAClaim.create("items", Arrays.asList("a", "b", "c")));
 
         Map<String, Object> map = parsePayload(params);
 
@@ -371,7 +371,7 @@ class SDJWTPayloadBuilderTest {
 
         // 1 SD claim with a fixed salt → fully deterministic hash
         String fixedSalt = "fixed-salt-for-test";
-        params.addClaim(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("claim-name", "claim-value", fixedSalt));
+        params.selectivelyDisclosable().addClaim(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("claim-name", "claim-value", fixedSalt));
 
         SDJWTEAADisclosure expectedDisclosure = new DefaultSDJWTDisclosureBuilder()
                 .build("claim-name", "claim-value", fixedSalt);

@@ -24,8 +24,8 @@ class MdocEAAPresentationWithSDClaimsTest extends AbstractMdocEAAPresentationTes
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO18013_5_MDL_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
-        payloadParameters.selectivelyDisclosable().setFirstName("John");
-        payloadParameters.selectivelyDisclosable().setLastName("Doe");
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
+        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
 
         signatureParameters = new CBAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());

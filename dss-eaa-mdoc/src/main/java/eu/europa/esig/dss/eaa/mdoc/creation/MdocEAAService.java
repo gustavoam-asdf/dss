@@ -208,7 +208,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
      * @return {@link String} docType
      */
     protected String computeDocType(final MdocEAAPayloadParameters payloadParameters) {
-        MdocSelectivelyDisclosableParameters selectivelyDisclosable = payloadParameters.selectivelyDisclosable();
+        MdocEAAClaimParameters selectivelyDisclosable = payloadParameters.selectivelyDisclosable();
         if (Utils.isCollectionNotEmpty(selectivelyDisclosable.getDrivingPrivileges())) {
             return MdocConstants.ISO18013_5_MDL_DOC_TYPE;
         }

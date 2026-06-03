@@ -27,8 +27,8 @@ class MdocEAAISONonMdLShortLivedTest extends AbstractMdocEAAPresentationTestIssu
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
-        payloadParameters.selectivelyDisclosable().setLastName("Doe");
-        payloadParameters.selectivelyDisclosable().setFirstName("John");
+        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
         payloadParameters.selectivelyDisclosable().setBirthdate(DSSUtils.getUtcDate(2001, Calendar.JANUARY, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(DSSUtils.getUtcDate(2026, Calendar.JUNE, 1));
         payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(DSSUtils.getUtcDate(2026, Calendar.AUGUST, 31));

@@ -7,6 +7,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents a JSON object to be incorporated as an SD-JWT VC claim
+ *
+ */
 public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject<SDJWTEAAClaim> {
 
     private static final long serialVersionUID = 3602569321684484970L;
@@ -95,11 +99,28 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
         super(name, new ArrayList<SDJWTEAAClaim>(), selectivelyDisclosable, salt);
     }
 
+    /**
+     * Constructor with the claim name, value, selectively disclosable status and salt provided
+     *
+     * @param name  {@link String} the claim name
+     * @param children a list of children
+     * @param selectivelyDisclosable whether the claim is selectively disclosable
+     * @param salt {@link String} the salt (mandatory if the claim is selectively disclosable)
+     */
+    protected SDJWTEAAClaimObject(final String name, List<?> children, final boolean selectivelyDisclosable, final String salt) {
+        super(name, children, selectivelyDisclosable, salt);
+    }
+
     @Override
     public void addChild(final SDJWTEAAClaim child) {
         getChildren().add(child);
     }
 
+    /**
+     * Adds a collection of children to the object
+     *
+     * @param children a collection of {@link SDJWTEAAClaim}
+     */
     public void addChildren(final Collection<SDJWTEAAClaim> children) {
         getChildren().addAll(children);
     }

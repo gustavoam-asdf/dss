@@ -189,10 +189,10 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             assertStatusListEqual(getPayloadParameters().getStatusList(), eaa);
             assertIdentifierListEqual(getPayloadParameters().getIdentifierList(), eaa);
 
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getFirstName(), eaa.getHolderFirstName());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getLastName(), eaa.getHolderLastName());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getGivenName(), eaa.getHolderFirstName());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getFamilyName(), eaa.getHolderLastName());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getEmail(), eaa.getHolderEmail());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getGender(), eaa.getHolderGender());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getSex(), eaa.getHolderGender());
             assertEquals(DSSUtils.formatDateToRFC(getPayloadParameters().selectivelyDisclosable().getBirthdate()), DSSUtils.formatDateToRFC(eaa.getHolderBirthdate()));
             assertEquals(getPayloadParameters().selectivelyDisclosable().getPhoneNumber(), eaa.getHolderPhoneNumber());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getPlaceOfBirth(), eaa.getHolderPlaceOfBirth());
@@ -208,8 +208,8 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             } else {
                 assertFalse(Utils.isCollectionNotEmpty(eaa.getHolderNationalities()));
             }
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getBirthFirstName(), eaa.getHolderBirthFirstName());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getBirthLastName(), eaa.getHolderBirthLastName());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getBirthGivenName(), eaa.getHolderBirthFirstName());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getBirthFamilyName(), eaa.getHolderBirthLastName());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getTitle(), eaa.getHolderTitle());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getMobilePhoneNumber(), eaa.getHolderMobilePhoneNumber());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getPseudonym(), eaa.getHolderPseudonym());
@@ -219,12 +219,12 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             assertArrayEquals(getPayloadParameters().selectivelyDisclosable().getPortrait(), eaa.getHolderPortrait());
             assertDrivingPrivilegesEquals(getPayloadParameters().selectivelyDisclosable().getDrivingPrivileges(), eaa.getHolderDrivingPrivileges());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getDistinguishingSign(), eaa.getDocumentIssuingAuthorityCountryUNDistinguishingSign());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getAdministrativeNumber(), eaa.getDocumentIssuingAuthorityAdministrativeNumber());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getPersonalAdministrativeNumber(), eaa.getDocumentIssuingAuthorityAdministrativeNumber());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getHeight(), eaa.getHolderHeight());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getWeight(), eaa.getHolderWeight());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getEyeColour(), eaa.getHolderEyeColour());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getHairColour(), eaa.getHolderHairColour());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentAddress(), eaa.getResidentAddress());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressFull(), eaa.getResidentAddress());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getPortraitCaptureDate(), eaa.getHolderPortraitCaptureDate());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getAgeInYears(), eaa.getHolderAgeInYears());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getAgeBirthYear(), eaa.getHolderAgeBirthYear());
@@ -234,10 +234,10 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
                 }
             }
             assertEquals(getPayloadParameters().selectivelyDisclosable().getIssuingJurisdiction(), eaa.getDocumentIssuingAuthorityJurisdiction());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentCity(), eaa.getResidentCity());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentState(), eaa.getResidentState());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentPostalCode(), eaa.getResidentPostalCode());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentCountry(), eaa.getResidentCountry());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressCity(), eaa.getResidentCity());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressState(), eaa.getResidentState());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressPostalCode(), eaa.getResidentPostalCode());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressCountry(), eaa.getResidentCountry());
             if (Utils.isMapNotEmpty(getPayloadParameters().selectivelyDisclosable().getBiometricTemplate())) {
                 for (Map.Entry<String, byte[]> bioEntry : getPayloadParameters().selectivelyDisclosable().getBiometricTemplate().entrySet()) {
                     assertArrayEquals(bioEntry.getValue(), eaa.getHolderBiometricTemplate(bioEntry.getKey()));
@@ -270,8 +270,8 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             assertEquals(getPayloadParameters().selectivelyDisclosable().getRelationshipAgent(), eaa.getHolderRelationshipAgent());
             assertEquals(DSSUtils.formatDateToRFC(getPayloadParameters().selectivelyDisclosable().getAdministrativeIssuanceDate()), DSSUtils.formatDateToRFC(eaa.getAdministrativeIssuanceDate()));
             assertEquals(DSSUtils.formatDateToRFC(getPayloadParameters().selectivelyDisclosable().getAdministrativeExpirationDate()), DSSUtils.formatDateToRFC(eaa.getAdministrativeExpirationDate()));
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentStreet(), eaa.getResidentStreet());
-            assertEquals(getPayloadParameters().selectivelyDisclosable().getResidentHouseNumber(), eaa.getResidentHouseNumber());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressStreet(), eaa.getResidentStreet());
+            assertEquals(getPayloadParameters().selectivelyDisclosable().getAddressHouseNumber(), eaa.getResidentHouseNumber());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getTrustAnchor(), eaa.getTrustAnchor());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getIssuingAuthorityRegistrationIdentifier(), eaa.getIssuingRegistrationIdentifier());
             assertEquals(getPayloadParameters().selectivelyDisclosable().getAttestedAttributesSubjectGivenName(), eaa.getAttestedAttributesSubjectGivenName());
