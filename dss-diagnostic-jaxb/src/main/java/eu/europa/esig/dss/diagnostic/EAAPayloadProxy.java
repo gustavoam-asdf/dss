@@ -271,9 +271,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderFirstName() {
+    public ClaimWrapper getHolderGivenName() {
         if (xmlEAAPayload != null) {
-            return get(getClaim(xmlEAAPayload.getFirstName()), getCredentialSubject().getFirstName());
+            return get(getClaim(xmlEAAPayload.getGivenName()), getCredentialSubject().getGivenName());
         }
         return null;
     }
@@ -283,9 +283,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderLastName() {
+    public ClaimWrapper getHolderFamilyName() {
         if (xmlEAAPayload != null) {
-            return get(getClaim(xmlEAAPayload.getLastName()), getCredentialSubject().getLastName());
+            return get(getClaim(xmlEAAPayload.getFamilyName()), getCredentialSubject().getFamilyName());
         }
         return null;
     }
@@ -500,9 +500,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderBirthLastName() {
+    public ClaimWrapper getHolderBirthFamilyName() {
         if (xmlEAAPayload != null) {
-            return get(getClaim(xmlEAAPayload.getBirthLastName()), getCredentialSubject().getBirthLastName());
+            return get(getClaim(xmlEAAPayload.getBirthFamilyName()), getCredentialSubject().getBirthFamilyName());
         }
         return null;
     }
@@ -512,9 +512,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderBirthFirstName() {
+    public ClaimWrapper getHolderBirthGivenName() {
         if (xmlEAAPayload != null) {
-            return get(getClaim(xmlEAAPayload.getBirthFirstName()), getCredentialSubject().getBirthFirstName());
+            return get(getClaim(xmlEAAPayload.getBirthGivenName()), getCredentialSubject().getBirthGivenName());
         }
         return null;
     }
@@ -652,9 +652,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getDocumentIssuingAuthorityAdministrativeNumber() {
+    public ClaimWrapper getPersonalAdministrativeNumber() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getAdministrativeNumber());
+            return getClaim(xmlEAAPayload.getPersonalAdministrativeNumber());
         }
         return null;
     }
@@ -1391,11 +1391,11 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getFullName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getFullName()));
         }
-        if (xmlEAAPayload.getFirstName() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getFirstName()));
+        if (xmlEAAPayload.getGivenName() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getGivenName()));
         }
-        if (xmlEAAPayload.getLastName() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getLastName()));
+        if (xmlEAAPayload.getFamilyName() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getFamilyName()));
         }
         if (xmlEAAPayload.getMiddleName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getMiddleName()));
@@ -1448,11 +1448,11 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getNationalities() != null) {
             claimList.add(getClaim(xmlEAAPayload.getNationalities()));
         }
-        if (xmlEAAPayload.getBirthLastName() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getBirthLastName()));
+        if (xmlEAAPayload.getBirthFamilyName() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getBirthFamilyName()));
         }
-        if (xmlEAAPayload.getBirthFirstName() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getBirthFirstName()));
+        if (xmlEAAPayload.getBirthGivenName() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getBirthGivenName()));
         }
         if (xmlEAAPayload.getBirthMiddleName() != null) {
             claimList.add(getClaim(xmlEAAPayload.getBirthMiddleName()));
@@ -1490,8 +1490,8 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getUNDistinguishingSign() != null) {
             claimList.add(getClaim(xmlEAAPayload.getUNDistinguishingSign()));
         }
-        if (xmlEAAPayload.getAdministrativeNumber() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getAdministrativeNumber()));
+        if (xmlEAAPayload.getPersonalAdministrativeNumber() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getPersonalAdministrativeNumber()));
         }
         if (xmlEAAPayload.getHeight() != null) {
             claimList.add(getClaim(xmlEAAPayload.getHeight()));

@@ -45,8 +45,8 @@
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
             <Expiration name="exp">2029-09-01T23:33:20Z</Expiration>
             <MetadataType name="vct">urn:eudi:pid:1</MetadataType>
-            <FirstName name="given_name">John</FirstName>
-            <LastName name="family_name">Doe</LastName>
+            <GivenName name="given_name">John</GivenName>
+            <FamilyName name="family_name">Doe</FamilyName>
             <AddressCity name="address/locality">Anytown</AddressCity>
             <AddressStateOrProvince name="address/region">Anystate</AddressStateOrProvince>
             <AddressCountryName name="address/country">US</AddressCountryName>

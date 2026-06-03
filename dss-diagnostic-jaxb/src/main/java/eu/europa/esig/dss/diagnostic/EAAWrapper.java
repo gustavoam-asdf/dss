@@ -576,8 +576,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderFirstName() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderFirstName());
+    public String getHolderGivenName() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderGivenName());
     }
 
     /**
@@ -585,8 +585,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderLastName() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderLastName());
+    public String getHolderFamilyName() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderFamilyName());
     }
 
     /**
@@ -896,8 +896,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderBirthLastName() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderBirthLastName());
+    public String getHolderBirthFamilyName() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderBirthFamilyName());
     }
 
     /**
@@ -905,8 +905,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getHolderBirthFirstName() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderBirthFirstName());
+    public String getHolderBirthGivenName() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderBirthGivenName());
     }
 
     /**
@@ -1000,8 +1000,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getDocumentIssuingAuthorityAdministrativeNumber() {
-        return getPayloadClaimTextValue(getEAAPayload().getDocumentIssuingAuthorityAdministrativeNumber());
+    public String getPersonalAdministrativeNumber() {
+        return getPayloadClaimTextValue(getEAAPayload().getPersonalAdministrativeNumber());
     }
 
     /**

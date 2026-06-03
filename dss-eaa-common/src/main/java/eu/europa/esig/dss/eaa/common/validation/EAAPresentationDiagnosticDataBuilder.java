@@ -313,8 +313,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setAttestedAttributesSubject(getXmlAttestedAttributesSubjectClaim(eaaPayload.getAttestedAttributesSubject(), supportedClaims)); // TODO : enhance with AttestedAttributesSubjectWrapper
 
         xmlEAAPayload.setFullName(getXmlClaim(eaaPayload.getFullName(), supportedClaims));
-        xmlEAAPayload.setFirstName(getXmlClaim(eaaPayload.getGivenName(), supportedClaims));
-        xmlEAAPayload.setLastName(getXmlClaim(eaaPayload.getFamilyName(), supportedClaims));
+        xmlEAAPayload.setGivenName(getXmlClaim(eaaPayload.getGivenName(), supportedClaims));
+        xmlEAAPayload.setFamilyName(getXmlClaim(eaaPayload.getFamilyName(), supportedClaims));
         xmlEAAPayload.setMiddleName(getXmlClaim(eaaPayload.getMiddleName(), supportedClaims));
         xmlEAAPayload.setNickname(getXmlClaim(eaaPayload.getNickname(), supportedClaims));
         xmlEAAPayload.setShortName(getXmlClaim(eaaPayload.getShortName(), supportedClaims));
@@ -332,8 +332,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setPhoneNumberVerified(getXmlClaim(eaaPayload.getPhoneNumberVerified(), supportedClaims));
         xmlEAAPayload.setPlaceOfBirth(getXmlPlaceOfBirthClaim(eaaPayload.getPlaceOfBirth(), supportedClaims));
         xmlEAAPayload.setNationalities(getXmlClaim(eaaPayload.getNationalities(), supportedClaims));
-        xmlEAAPayload.setBirthLastName(getXmlClaim(eaaPayload.getBirthFamilyName(), supportedClaims));
-        xmlEAAPayload.setBirthFirstName(getXmlClaim(eaaPayload.getBirthGivenName(), supportedClaims));
+        xmlEAAPayload.setBirthFamilyName(getXmlClaim(eaaPayload.getBirthFamilyName(), supportedClaims));
+        xmlEAAPayload.setBirthGivenName(getXmlClaim(eaaPayload.getBirthGivenName(), supportedClaims));
         xmlEAAPayload.setBirthMiddleName(getXmlClaim(eaaPayload.getBirthMiddleName(), supportedClaims));
         xmlEAAPayload.setSalutation(getXmlClaim(eaaPayload.getSalutation(), supportedClaims));
         xmlEAAPayload.setTitle(getXmlClaim(eaaPayload.getTitle(), supportedClaims));
@@ -347,7 +347,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setPortrait(getXmlClaim(eaaPayload.getPortrait(), supportedClaims));
         xmlEAAPayload.setDrivingPrivileges(getXmlDrivingPrivilegesClaim(eaaPayload.getDrivingPrivileges(), supportedClaims));
         xmlEAAPayload.setUNDistinguishingSign(getXmlClaim(eaaPayload.getUNDistinguishingSign(), supportedClaims));
-        xmlEAAPayload.setAdministrativeNumber(getXmlClaim(eaaPayload.getPersonalAdministrativeNumber(), supportedClaims));
+        xmlEAAPayload.setPersonalAdministrativeNumber(getXmlClaim(eaaPayload.getPersonalAdministrativeNumber(), supportedClaims));
         xmlEAAPayload.setHeight(getXmlClaim(eaaPayload.getHeight(), supportedClaims));
         xmlEAAPayload.setWeight(getXmlClaim(eaaPayload.getWeight(), supportedClaims));
         xmlEAAPayload.setEyeColour(getXmlClaim(eaaPayload.getEyeColour(), supportedClaims));
@@ -693,8 +693,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         XmlCredentialSubjectClaim xmlCredentialSubjectClaim = new XmlCredentialSubjectClaim();
         appendGenericInfo(xmlCredentialSubjectClaim, credentialSubject, supportedClaims);
         xmlCredentialSubjectClaim.setFullName(getXmlClaim(credentialSubject.getFullName(), supportedClaims));
-        xmlCredentialSubjectClaim.setFirstName(getXmlClaim(credentialSubject.getFirstName(), supportedClaims));
-        xmlCredentialSubjectClaim.setLastName(getXmlClaim(credentialSubject.getLastName(), supportedClaims));
+        xmlCredentialSubjectClaim.setGivenName(getXmlClaim(credentialSubject.getGivenName(), supportedClaims));
+        xmlCredentialSubjectClaim.setFamilyName(getXmlClaim(credentialSubject.getFamilyName(), supportedClaims));
         xmlCredentialSubjectClaim.setMiddleName(getXmlClaim(credentialSubject.getMiddleName(), supportedClaims));
         xmlCredentialSubjectClaim.setNickname(getXmlClaim(credentialSubject.getNickname(), supportedClaims));
         xmlCredentialSubjectClaim.setShortName(getXmlClaim(credentialSubject.getShortName(), supportedClaims));
@@ -712,8 +712,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlCredentialSubjectClaim.setPhoneNumberVerified(getXmlClaim(credentialSubject.getPhoneNumberVerified(), supportedClaims));
         xmlCredentialSubjectClaim.setPlaceOfBirth(getXmlPlaceOfBirthClaim(credentialSubject.getPlaceOfBirth(), supportedClaims));
         xmlCredentialSubjectClaim.setNationalities(getXmlClaim(credentialSubject.getNationalities(), supportedClaims));
-        xmlCredentialSubjectClaim.setBirthLastName(getXmlClaim(credentialSubject.getBirthLastName(), supportedClaims));
-        xmlCredentialSubjectClaim.setBirthFirstName(getXmlClaim(credentialSubject.getBirthFirstName(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthFamilyName(getXmlClaim(credentialSubject.getBirthFamilyName(), supportedClaims));
+        xmlCredentialSubjectClaim.setBirthGivenName(getXmlClaim(credentialSubject.getBirthGivenName(), supportedClaims));
         xmlCredentialSubjectClaim.setBirthMiddleName(getXmlClaim(credentialSubject.getBirthMiddleName(), supportedClaims));
         xmlCredentialSubjectClaim.setSalutation(getXmlClaim(credentialSubject.getSalutation(), supportedClaims));
         xmlCredentialSubjectClaim.setTitle(getXmlClaim(credentialSubject.getTitle(), supportedClaims));

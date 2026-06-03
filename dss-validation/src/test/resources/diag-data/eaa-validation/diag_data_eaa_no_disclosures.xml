@@ -76,12 +76,12 @@
                     <PublicKey>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMkRlAwxnKvS33zwxt7zQUJJnBZibfg9Bhy6wCviSodOVr1qhVtKMTP/hO9MDRlkrpyMt2pZvcEgUiR+dUm6HvA==</PublicKey>
                     <X509Certificate Certificate="C-DDBA071DD36989E94195A848A8085231D922E6AA1193B8111A9BC56EF51F1302"/>
                 </DeviceKey>
-                <FirstName name="given_name">
+                <GivenName name="given_name">
                     <Text>John</Text>
-                </FirstName>
-                <LastName name="family_name">
+                </GivenName>
+                <FamilyName name="family_name">
                     <Text>Doe</Text>
-                </LastName>
+                </FamilyName>
                 <Address name="address">
                     <City name="locality">
                         <Text>Anytown</Text>

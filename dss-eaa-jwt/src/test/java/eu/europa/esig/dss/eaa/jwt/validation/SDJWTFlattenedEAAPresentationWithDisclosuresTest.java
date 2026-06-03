@@ -93,8 +93,8 @@ class SDJWTFlattenedEAAPresentationWithDisclosuresTest extends AbstractSDJWTEAAP
         assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAAExpiration());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
 
-        assertEquals("John", eaa.getHolderFirstName());
-        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals("John", eaa.getHolderGivenName());
+        assertEquals("Doe", eaa.getHolderFamilyName());
         assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaa.getHolderBirthdate());
 
         assertNull(eaa.getHolderEmail());

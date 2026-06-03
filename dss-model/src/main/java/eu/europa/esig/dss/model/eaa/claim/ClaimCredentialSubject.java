@@ -18,14 +18,14 @@ public interface ClaimCredentialSubject extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getFirstName();
+    ClaimString getGivenName();
 
     /**
      * Gets the user's last name or surname information, when present
      *
      * @return {@link ClaimString}
      */
-    ClaimString getLastName();
+    ClaimString getFamilyName();
 
     /**
      * Gets the user's middle name information, when present
@@ -151,14 +151,14 @@ public interface ClaimCredentialSubject extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getBirthFirstName();
+    ClaimString getBirthGivenName();
 
     /**
      * Gets user's family or last name when they were born, when present
      *
      * @return {@link ClaimString}
      */
-    ClaimString getBirthLastName();
+    ClaimString getBirthFamilyName();
 
     /**
      * Gets user's middle name when they were born, when present

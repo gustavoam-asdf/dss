@@ -63,12 +63,12 @@
                         </Entry>
                     </Entry>
                 </DeviceKey>
-                <FirstName name="given_name">
+                <GivenName name="given_name">
                     <Text>John</Text>
-                </FirstName>
-                <LastName name="family_name">
+                </GivenName>
+                <FamilyName name="family_name">
                     <Text>Doe</Text>
-                </LastName>
+                </FamilyName>
                 <Address name="address">
                     <City name="locality">
                         <Text>Anytown</Text>

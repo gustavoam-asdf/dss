@@ -51,7 +51,7 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
     /** Time when the End-User's information was last updated. */
     private Date updatedAt;
 
-        // OpenID Connect for Identity Assurance Claims Registration 1.0
+    // OpenID Connect for Identity Assurance Claims Registration 1.0
 
     /** Middle name(s) assigned to the End-User at birth. */
     private String birthMiddleName;

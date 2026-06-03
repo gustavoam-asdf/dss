@@ -44,8 +44,8 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getFirstName() {
-        XmlClaim xmlClaim = getWrapped().getFirstName();
+    public ClaimWrapper getGivenName() {
+        XmlClaim xmlClaim = getWrapped().getGivenName();
         if (xmlClaim != null) {
             return new ClaimWrapper(xmlClaim, this);
         }
@@ -57,8 +57,8 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getLastName() {
-        XmlClaim xmlClaim = getWrapped().getLastName();
+    public ClaimWrapper getFamilyName() {
+        XmlClaim xmlClaim = getWrapped().getFamilyName();
         if (xmlClaim != null) {
             return new ClaimWrapper(xmlClaim, this);
         }
@@ -292,8 +292,8 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getBirthLastName() {
-        XmlClaim xmlClaim = getWrapped().getBirthLastName();
+    public ClaimWrapper getBirthFamilyName() {
+        XmlClaim xmlClaim = getWrapped().getBirthFamilyName();
         if (xmlClaim != null) {
             return new ClaimWrapper(xmlClaim, this);
         }
@@ -305,8 +305,8 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getBirthFirstName() {
-        XmlClaim xmlClaim = getWrapped().getBirthFirstName();
+    public ClaimWrapper getBirthGivenName() {
+        XmlClaim xmlClaim = getWrapped().getBirthGivenName();
         if (xmlClaim != null) {
             return new ClaimWrapper(xmlClaim, this);
         }
@@ -394,13 +394,13 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
         if (fullName != null) {
             claimList.add(fullName);
         }
-        ClaimWrapper firstName = getFirstName();
-        if (firstName != null) {
-            claimList.add(firstName);
+        ClaimWrapper GivenName = getGivenName();
+        if (GivenName != null) {
+            claimList.add(GivenName);
         }
-        ClaimWrapper lastName = getLastName();
-        if (lastName != null) {
-            claimList.add(lastName);
+        ClaimWrapper FamilyName = getFamilyName();
+        if (FamilyName != null) {
+            claimList.add(FamilyName);
         }
         ClaimWrapper middleName = getMiddleName();
         if (middleName != null) {
@@ -470,13 +470,13 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
         if (nationalities != null) {
             claimList.add(nationalities);
         }
-        ClaimWrapper birthLastName = getBirthLastName();
-        if (birthLastName != null) {
-            claimList.add(birthLastName);
+        ClaimWrapper birthFamilyName = getBirthFamilyName();
+        if (birthFamilyName != null) {
+            claimList.add(birthFamilyName);
         }
-        ClaimWrapper birthFirstName = getBirthFirstName();
-        if (birthFirstName != null) {
-            claimList.add(birthFirstName);
+        ClaimWrapper birthGivenName = getBirthGivenName();
+        if (birthGivenName != null) {
+            claimList.add(birthGivenName);
         }
         ClaimWrapper birthMiddleName = getBirthMiddleName();
         if (birthMiddleName != null) {
@@ -530,13 +530,13 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
         if (fullName != null) {
             result.put(fullName.getName(), fullName);
         }
-        ClaimWrapper firstName = getFirstName();
-        if (firstName != null) {
-            result.put(firstName.getName(), firstName);
+        ClaimWrapper GivenName = getGivenName();
+        if (GivenName != null) {
+            result.put(GivenName.getName(), GivenName);
         }
-        ClaimWrapper lastName = getLastName();
-        if (lastName != null) {
-            result.put(lastName.getName(), lastName);
+        ClaimWrapper FamilyName = getFamilyName();
+        if (FamilyName != null) {
+            result.put(FamilyName.getName(), FamilyName);
         }
         ClaimWrapper middleName = getMiddleName();
         if (middleName != null) {
@@ -606,13 +606,13 @@ public class CredentialSubjectClaimWrapper extends ClaimWrapper {
         if (nationalities != null) {
             result.put(nationalities.getName(), nationalities);
         }
-        ClaimWrapper birthLastName = getBirthLastName();
-        if (birthLastName != null) {
-            result.put(birthLastName.getName(), birthLastName);
+        ClaimWrapper birthFamilyName = getBirthFamilyName();
+        if (birthFamilyName != null) {
+            result.put(birthFamilyName.getName(), birthFamilyName);
         }
-        ClaimWrapper birthFirstName = getBirthFirstName();
-        if (birthFirstName != null) {
-            result.put(birthFirstName.getName(), birthFirstName);
+        ClaimWrapper birthGivenName = getBirthGivenName();
+        if (birthGivenName != null) {
+            result.put(birthGivenName.getName(), birthGivenName);
         }
         ClaimWrapper birthMiddleName = getBirthMiddleName();
         if (birthMiddleName != null) {

@@ -67,8 +67,8 @@
             <OneTimeUse name="oneTime">null</OneTimeUse>
             <AttestedAttributesSubjectId name="subAttrs/sub_id">good-user</AttestedAttributesSubjectId>
             <AttestedAttributes name="subAttrs/attrs">given_name, family_name</AttestedAttributes>
-            <FirstName name="given_name" disclosure="true">John</FirstName>
-            <LastName name="family_name" disclosure="true">Doe</LastName>
+            <GivenName name="given_name" disclosure="true">John</GivenName>
+            <FamilyName name="family_name" disclosure="true">Doe</FamilyName>
             <AddressCity name="locality">Anytown</AddressCity>
             <AddressStateOrProvince name="region">Anystate</AddressStateOrProvince>
             <AddressCountryName name="country">US</AddressCountryName>

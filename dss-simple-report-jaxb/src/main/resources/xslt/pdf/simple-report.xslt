@@ -765,15 +765,15 @@
 			|dss:Nonce|dss:Version|dss:DocType|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
 			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
 			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
-			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:FirstName|dss:LastName
+			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:GivenName|dss:FamilyName
 			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
 			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:BirthdateApproximateMask|dss:Timezone|dss:Locale|dss:AddressPostalAddress
 			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
 			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirth|dss:PlaceOfBirthCountry
-			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthLastName|dss:BirthFirstName
+			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthFamilyName|dss:BirthGivenName
 			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry
 			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
-			|dss:AdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentAddress
+			|dss:PersonalAdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentAddress
 			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentCity
 			|dss:ResidentState|dss:ResidentPostalCode|dss:ResidentCountry|dss:BiometricTemplate|dss:SignatureUsualMark
 			|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession|dss:RelationshipFather
@@ -817,8 +817,8 @@
 				<xsl:when test="name() = 'AttestedAttributes'">Attested attributes</xsl:when>
 
 				<xsl:when test="name() = 'FullName'">Full name</xsl:when>
-				<xsl:when test="name() = 'FirstName'">Firstname</xsl:when>
-				<xsl:when test="name() = 'LastName'">Lastname</xsl:when>
+				<xsl:when test="name() = 'GivenName'">GivenName</xsl:when>
+				<xsl:when test="name() = 'FamilyName'">FamilyName</xsl:when>
 				<xsl:when test="name() = 'MiddleName'">Middle name</xsl:when>
 				<xsl:when test="name() = 'Nickname'">Nickname</xsl:when>
 				<xsl:when test="name() = 'ShortName'">Short name</xsl:when>
@@ -845,8 +845,8 @@
 				<xsl:when test="name() = 'PlaceOfBirthRegion'">Region of birth</xsl:when>
 				<xsl:when test="name() = 'PlaceOfBirthCity'">City of birth</xsl:when>
 				<xsl:when test="name() = 'Nationalities'">Nationalities</xsl:when>
-				<xsl:when test="name() = 'BirthLastName'">Birth lastname</xsl:when>
-				<xsl:when test="name() = 'BirthFirstName'">Birth firstname</xsl:when>
+				<xsl:when test="name() = 'BirthFamilyName'">Birth FamilyName</xsl:when>
+				<xsl:when test="name() = 'BirthGivenName'">Birth GivenName</xsl:when>
 				<xsl:when test="name() = 'BirthMiddleName'">Birth middle name</xsl:when>
 				<xsl:when test="name() = 'Salutation'">Salutation</xsl:when>
 				<xsl:when test="name() = 'Title'">Title</xsl:when>
@@ -860,7 +860,7 @@
 				<xsl:when test="name() = 'Portrait'">Portrait</xsl:when>
 				<xsl:when test="name() = 'DrivingPrivileges'">Driving privileges</xsl:when>
 				<xsl:when test="name() = 'UNDistinguishingSign'">UN distinguishing sign</xsl:when>
-				<xsl:when test="name() = 'AdministrativeNumber'">Administrative number</xsl:when>
+				<xsl:when test="name() = 'PersonalAdministrativeNumber'">Personal administrative number</xsl:when>
 				<xsl:when test="name() = 'Height'">Height</xsl:when>
 				<xsl:when test="name() = 'Weight'">Weight</xsl:when>
 				<xsl:when test="name() = 'EyeColor'">Eye color</xsl:when>

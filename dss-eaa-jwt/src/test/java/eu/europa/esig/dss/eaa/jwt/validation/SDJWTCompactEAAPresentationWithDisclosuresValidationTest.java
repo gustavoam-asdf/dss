@@ -133,8 +133,8 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
         assertEquals(DSSUtils.parseRFCDate("2019-10-02T07:06:40Z"), eaa.getEAAUpdatedAt());
 
-        assertEquals("John", eaa.getHolderFirstName());
-        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals("John", eaa.getHolderGivenName());
+        assertEquals("Doe", eaa.getHolderFamilyName());
         assertEquals("johndoe@example.com", eaa.getHolderEmail());
         assertNull(eaa.getHolderEmailVerified());
         assertEquals(DSSUtils.parseRFCDate("1940-01-01T00:00:00Z"), eaa.getHolderBirthdate());

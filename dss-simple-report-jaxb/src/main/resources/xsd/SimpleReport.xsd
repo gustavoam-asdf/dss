@@ -437,8 +437,8 @@
 
 			<!-- user info -->
 			<xs:element name="FullName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="FirstName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="LastName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="GivenName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="FamilyName" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="MiddleName" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Nickname" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="ShortName" type="DisclosableClaim" minOccurs="0" />
@@ -465,8 +465,8 @@
 			<xs:element name="PlaceOfBirthRegion" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PlaceOfBirthCity" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Nationalities" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BirthLastName" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="BirthFirstName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthFamilyName" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="BirthGivenName" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="BirthMiddleName" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Salutation" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Title" type="DisclosableClaim" minOccurs="0" />
@@ -479,7 +479,7 @@
 			<xs:element name="Portrait" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="DrivingPrivileges" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="UNDistinguishingSign" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="AdministrativeNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="PersonalAdministrativeNumber" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Height" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Weight" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="EyeColour" type="DisclosableClaim" minOccurs="0" />

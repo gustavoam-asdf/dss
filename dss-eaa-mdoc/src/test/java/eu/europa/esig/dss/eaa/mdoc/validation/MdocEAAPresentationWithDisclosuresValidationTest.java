@@ -149,8 +149,8 @@ class MdocEAAPresentationWithDisclosuresValidationTest extends AbstractMdocEAAPr
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
 
-        assertEquals("John", eaa.getHolderFirstName());
-        assertEquals("Doe", eaa.getHolderLastName());
+        assertEquals("John", eaa.getHolderGivenName());
+        assertEquals("Doe", eaa.getHolderFamilyName());
         assertEquals(DSSUtils.parseRFCDate("2000-01-01T00:00:00Z"), eaa.getHolderBirthdate());
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();

@@ -1785,8 +1785,8 @@
 
 			<!-- holder info -->
 			<xs:element name="FullName" type="Claim" minOccurs="0" />
-			<xs:element name="FirstName" type="Claim" minOccurs="0" />
-			<xs:element name="LastName" type="Claim" minOccurs="0" />
+			<xs:element name="GivenName" type="Claim" minOccurs="0" />
+			<xs:element name="FamilyName" type="Claim" minOccurs="0" />
 			<xs:element name="MiddleName" type="Claim" minOccurs="0" />
 			<xs:element name="Nickname" type="Claim" minOccurs="0" />
 			<xs:element name="ShortName" type="Claim" minOccurs="0" />
@@ -1804,8 +1804,8 @@
 			<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
 			<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
 			<xs:element name="Nationalities" type="Claim" minOccurs="0" />
-			<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
-			<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthFamilyName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthGivenName" type="Claim" minOccurs="0" />
 			<xs:element name="BirthMiddleName" type="Claim" minOccurs="0" />
 			<xs:element name="Salutation" type="Claim" minOccurs="0" />
 			<xs:element name="Title" type="Claim" minOccurs="0" />
@@ -1821,7 +1821,7 @@
 			<xs:element name="Portrait" type="Claim" minOccurs="0" />
 			<xs:element name="DrivingPrivileges" type="DrivingPrivilegesClaim" minOccurs="0" />
 			<xs:element name="UNDistinguishingSign" type="Claim" minOccurs="0" />
-			<xs:element name="AdministrativeNumber" type="Claim" minOccurs="0" />
+			<xs:element name="PersonalAdministrativeNumber" type="Claim" minOccurs="0" />
 			<xs:element name="Height" type="Claim" minOccurs="0" />
 			<xs:element name="Weight" type="Claim" minOccurs="0" />
 			<xs:element name="EyeColour" type="Claim" minOccurs="0" />
@@ -1881,8 +1881,8 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="FullName" type="Claim" minOccurs="0" />
-					<xs:element name="FirstName" type="Claim" minOccurs="0" />
-					<xs:element name="LastName" type="Claim" minOccurs="0" />
+					<xs:element name="GivenName" type="Claim" minOccurs="0" />
+					<xs:element name="FamilyName" type="Claim" minOccurs="0" />
 					<xs:element name="MiddleName" type="Claim" minOccurs="0" />
 					<xs:element name="Nickname" type="Claim" minOccurs="0" />
 					<xs:element name="ShortName" type="Claim" minOccurs="0" />
@@ -1900,8 +1900,8 @@
 					<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
 					<xs:element name="PlaceOfBirth" type="Claim" minOccurs="0" />
 					<xs:element name="Nationalities" type="Claim" minOccurs="0" />
-					<xs:element name="BirthLastName" type="Claim" minOccurs="0" />
-					<xs:element name="BirthFirstName" type="Claim" minOccurs="0" />
+					<xs:element name="BirthFamilyName" type="Claim" minOccurs="0" />
+					<xs:element name="BirthGivenName" type="Claim" minOccurs="0" />
 					<xs:element name="BirthMiddleName" type="Claim" minOccurs="0" />
 					<xs:element name="Salutation" type="Claim" minOccurs="0" />
 					<xs:element name="Title" type="Claim" minOccurs="0" />

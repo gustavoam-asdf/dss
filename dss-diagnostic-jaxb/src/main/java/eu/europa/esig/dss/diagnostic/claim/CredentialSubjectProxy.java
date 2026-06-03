@@ -66,10 +66,10 @@ public class CredentialSubjectProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getFirstName() {
+    public ClaimWrapper getGivenName() {
         CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
-            return credentialSubject.getFirstName();
+            return credentialSubject.getGivenName();
         }
         return null;
     }
@@ -79,10 +79,10 @@ public class CredentialSubjectProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getLastName() {
+    public ClaimWrapper getFamilyName() {
         CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
-            return credentialSubject.getLastName();
+            return credentialSubject.getFamilyName();
         }
         return null;
     }
@@ -380,10 +380,10 @@ public class CredentialSubjectProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getBirthLastName() {
+    public ClaimWrapper getBirthFamilyName() {
         CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
-            return credentialSubject.getBirthLastName();
+            return credentialSubject.getBirthFamilyName();
         }
         return null;
     }
@@ -393,10 +393,10 @@ public class CredentialSubjectProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getBirthFirstName() {
+    public ClaimWrapper getBirthGivenName() {
         CredentialSubjectClaimWrapper credentialSubject = getFirstCredentialSubject();
         if (credentialSubject != null) {
-            return credentialSubject.getBirthFirstName();
+            return credentialSubject.getBirthGivenName();
         }
         return null;
     }

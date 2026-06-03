@@ -144,12 +144,12 @@
                     </Entry>
                     <PublicKey>MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1xBLRNWo4SbwDpY2Hd841AB4NlbtGyk4MOuaByhV805KCIsPkc+zs8m20TqmP/IY56rbVpAt0EYCnzFBYvl9DA==</PublicKey>
                 </DeviceKey>
-                <FirstName name="given_name" disclosure="true">
+                <GivenName name="given_name" disclosure="true">
                     <Text>John</Text>
-                </FirstName>
-                <LastName name="family_name" disclosure="true">
+                </GivenName>
+                <FamilyName name="family_name" disclosure="true">
                     <Text>Doe</Text>
-                </LastName>
+                </FamilyName>
                 <Email name="email" disclosure="true">
                     <Text>johndoe@example.com</Text>
                 </Email>
