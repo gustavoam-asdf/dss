@@ -1100,16 +1100,16 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setWeight(getXmlDisclosableClaim(eaaPayloadProxy.getHolderWeight()));
 		xmlEAAPayload.setEyeColour(getXmlDisclosableClaim(eaaPayloadProxy.getHolderEyeColour()));
 		xmlEAAPayload.setHairColour(getXmlDisclosableClaim(eaaPayloadProxy.getHolderHairColour()));
-		xmlEAAPayload.setResidentAddress(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddress()));
+		xmlEAAPayload.setResidentPostalAddress(getXmlDisclosableClaim(eaaPayloadProxy.getResidentPostalAddress()));
 		xmlEAAPayload.setPortraitCaptureDate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortraitCaptureDate()));
 		xmlEAAPayload.setAgeInYears(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeInYears()));
 		xmlEAAPayload.setAgeBirthYear(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeBirthYear()));
 		xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayloadProxy.getHolderAgeOverList()));
 		xmlEAAPayload.setIssuingJurisdiction(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityJurisdiction()));
-		xmlEAAPayload.setResidentCity(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCity()));
-		xmlEAAPayload.setResidentState(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentState()));
-		xmlEAAPayload.setResidentPostalCode(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentPostalCode()));
-		xmlEAAPayload.setResidentCountry(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentCountry()));
+		xmlEAAPayload.setResidentAddressCity(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddressCity()));
+		xmlEAAPayload.setResidentAddressState(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddressState()));
+		xmlEAAPayload.setResidentAddressPostalCode(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddressPostalCode()));
+		xmlEAAPayload.setResidentAddressCountry(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddressCountry()));
 		xmlEAAPayload.getBiometricTemplate().addAll(getBiometricTemplateXXClaims(eaaPayloadProxy.getHolderBiometricTemplateList()));
 		xmlEAAPayload.setSignatureUsualMark(getXmlDisclosableClaim(eaaPayloadProxy.getHolderSignatureUsualMark()));
 		xmlEAAPayload.setFingerprint(getXmlDisclosableClaim(eaaPayloadProxy.getHolderFingerprint()));
@@ -1140,8 +1140,8 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(getXmlDisclosableClaim(eaaPayloadProxy.getIssuingAuthorityRegistrationIdentifier()));
 
 		xmlEAAPayload.setTrustAnchor(getXmlDisclosableClaim(eaaPayloadProxy.getTrustAnchor()));
-		xmlEAAPayload.setResidentStreet(getXmlDisclosableClaim(eaaPayloadProxy.getResidentStreet()));
-		xmlEAAPayload.setResidentHouseNumber(getXmlDisclosableClaim(eaaPayloadProxy.getResidentHouseNumber()));
+		xmlEAAPayload.setResidentAddressStreet(getXmlDisclosableClaim(eaaPayloadProxy.getResidentAddressStreet()));
+		xmlEAAPayload.setResidentAddressHouseNumber(getXmlDisclosableClaim(eaaPayloadProxy.getResidentAddressHouseNumber()));
 
 		List<ClaimWrapper> otherClaims = eaaWrapper.getOtherClaims();
 		if (Utils.isCollectionNotEmpty(otherClaims)) {

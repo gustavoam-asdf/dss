@@ -360,7 +360,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentAddress() {
+    public ClaimString getPostalAddress() {
         return null;
     }
 
@@ -390,22 +390,22 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentCity() {
+    public ClaimString getResidentAddressCity() {
         return null;
     }
 
     @Override
-    public ClaimString getResidentState() {
+    public ClaimString getResidentAddressState() {
         return null;
     }
 
     @Override
-    public ClaimString getResidentPostalCode() {
+    public ClaimString getResidentAddressPostalCode() {
         return null;
     }
 
     @Override
-    public ClaimString getResidentCountry() {
+    public ClaimString getResidentAddressCountry() {
         return null;
     }
 
@@ -580,12 +580,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentStreet() {
+    public ClaimString getResidentAddressStreet() {
         return null;
     }
 
     @Override
-    public ClaimString getResidentHouseNumber() {
+    public ClaimString getResidentAddressHouseNumber() {
         return null;
     }
 

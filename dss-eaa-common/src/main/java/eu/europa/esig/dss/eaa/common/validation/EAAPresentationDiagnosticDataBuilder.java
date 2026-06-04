@@ -184,6 +184,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         for (AdvancedSignature signature : eaa.getSignatures()) {
             xmlEAAPresentation.getEAASignature().add(getXmlEAASignature(signature));
         }
+        xmlEAAPresentation.setDigestMethod(eaa.getSelectiveDisclosuresDigestAlgorithm());
         xmlEAAPresentation.setDigestMatchers(buildXmlDigestMatchers(eaa.getDisclosureValidations()));
         if (eaa.getKeyBindingSignature() != null) {
             xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaa.getKeyBindingSignature()));
@@ -352,16 +353,16 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setWeight(getXmlClaim(eaaPayload.getWeight(), supportedClaims));
         xmlEAAPayload.setEyeColour(getXmlClaim(eaaPayload.getEyeColour(), supportedClaims));
         xmlEAAPayload.setHairColour(getXmlClaim(eaaPayload.getHairColour(), supportedClaims));
-        xmlEAAPayload.setResidentAddress(getXmlClaim(eaaPayload.getResidentAddress(), supportedClaims));
+        xmlEAAPayload.setResidentPostalAddress(getXmlClaim(eaaPayload.getPostalAddress(), supportedClaims));
         xmlEAAPayload.setPortraitCaptureDate(getXmlClaim(eaaPayload.getPortraitCaptureDate(), supportedClaims));
         xmlEAAPayload.setAgeInYears(getXmlClaim(eaaPayload.getAgeInYears(), supportedClaims));
         xmlEAAPayload.setAgeBirthYear(getXmlClaim(eaaPayload.getAgeBirthYear(), supportedClaims));
         xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayload.getAgeOverNN(), supportedClaims));
         xmlEAAPayload.setIssuingJurisdiction(getXmlClaim(eaaPayload.getIssuingJurisdiction(), supportedClaims));
-        xmlEAAPayload.setResidentCity(getXmlClaim(eaaPayload.getResidentCity(), supportedClaims));
-        xmlEAAPayload.setResidentState(getXmlClaim(eaaPayload.getResidentState(), supportedClaims));
-        xmlEAAPayload.setResidentPostalCode(getXmlClaim(eaaPayload.getResidentPostalCode(), supportedClaims));
-        xmlEAAPayload.setResidentCountry(getXmlClaim(eaaPayload.getResidentCountry(), supportedClaims));
+        xmlEAAPayload.setResidentAddressCity(getXmlClaim(eaaPayload.getResidentAddressCity(), supportedClaims));
+        xmlEAAPayload.setResidentAddressState(getXmlClaim(eaaPayload.getResidentAddressState(), supportedClaims));
+        xmlEAAPayload.setResidentAddressPostalCode(getXmlClaim(eaaPayload.getResidentAddressPostalCode(), supportedClaims));
+        xmlEAAPayload.setResidentAddressCountry(getXmlClaim(eaaPayload.getResidentAddressCountry(), supportedClaims));
         xmlEAAPayload.getBiometricTemplate().addAll(getXmlBiometricTemplateXXClaim(eaaPayload.getBiometricTemplate(), supportedClaims));
         xmlEAAPayload.setSignatureUsualMark(getXmlClaim(eaaPayload.getSignatureUsualMark(), supportedClaims));
         xmlEAAPayload.setFingerprint(getXmlClaim(eaaPayload.getFingerprint(), supportedClaims));
@@ -391,8 +392,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
 
         xmlEAAPayload.setIssuingAuthorityRegistrationIdentifier(getXmlClaim(eaaPayload.getIssuingAuthorityRegistrationIdentifier(), supportedClaims));
         xmlEAAPayload.setTrustAnchor(getXmlClaim(eaaPayload.getTrustAnchor(), supportedClaims));
-        xmlEAAPayload.setResidentStreet(getXmlClaim(eaaPayload.getResidentStreet(), supportedClaims));
-        xmlEAAPayload.setResidentHouseNumber(getXmlClaim(eaaPayload.getResidentHouseNumber(), supportedClaims));
+        xmlEAAPayload.setResidentAddressStreet(getXmlClaim(eaaPayload.getResidentAddressStreet(), supportedClaims));
+        xmlEAAPayload.setResidentAddressHouseNumber(getXmlClaim(eaaPayload.getResidentAddressHouseNumber(), supportedClaims));
 
         xmlEAAPayload.getOtherClaim().addAll(getOtherClaims(eaaPayload, supportedClaims));
 

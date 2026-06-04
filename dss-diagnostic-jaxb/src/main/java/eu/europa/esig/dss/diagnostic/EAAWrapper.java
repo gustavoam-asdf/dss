@@ -13,6 +13,7 @@ import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBasicSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlChainItem;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
@@ -114,6 +115,15 @@ public class EAAWrapper extends AbstractTokenProxy {
             return eaaSignatures.get(0);
         }
         return null;
+    }
+
+    /**
+     * Gets digest algorithm used on hashes computation for selectively disclosable claims
+     *
+     * @return {@link DigestAlgorithm}
+     */
+    public DigestAlgorithm getSelectiveDisclosuresDigestAlgorithm() {
+        return eaa.getDigestMethod();
     }
 
     /**
@@ -528,6 +538,45 @@ public class EAAWrapper extends AbstractTokenProxy {
     }
 
     /**
+     * Gets EAA device certificate chain digests when defined in the EAA payload
+     *
+     * @return a list of {@link XmlDigestAlgoAndValue}s
+     */
+    public List<XmlDigestAlgoAndValue> getEAADeviceCertificateChainDigests() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getCertificateDigests();
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA device certificate chain KIDs when defined in the EAA payload
+     *
+     * @return a list of {@link String}s
+     */
+    public List<String> getEAADeviceCertificateKIDs() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getKIDs();
+        }
+        return null;
+    }
+
+    /**
+     * Gets EAA device certificate chain location URLs when defined in the EAA payload
+     *
+     * @return a list of {@link String}s
+     */
+    public List<String> getEAADeviceCertificateUrls() {
+        DeviceKeyClaimWrapper eaaDeviceKey = getEAAPayload().getEAADeviceKey();
+        if (eaaDeviceKey != null) {
+            return eaaDeviceKey.getX509URLs();
+        }
+        return null;
+    }
+
+    /**
      * Gets a list of namespaces authorized for the device key to sign or MAC
      *
      * @return a list of {@link String}s
@@ -735,9 +784,9 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (userAddress != null) {
             return getPayloadClaimTextValue(userAddress.getCity());
         }
-        ClaimWrapper residentCity = getEAAPayload().getHolderResidentCity();
-        if (residentCity != null) {
-            return getPayloadClaimTextValue(residentCity);
+        ClaimWrapper residentAddressCity = getEAAPayload().getHolderResidentAddressCity();
+        if (residentAddressCity != null) {
+            return getPayloadClaimTextValue(residentAddressCity);
         }
         return null;
     }
@@ -752,9 +801,9 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (userAddress != null) {
             return getPayloadClaimTextValue(userAddress.getStateOrProvince());
         }
-        ClaimWrapper residentState = getEAAPayload().getHolderResidentState();
-        if (residentState != null) {
-            return getPayloadClaimTextValue(residentState);
+        ClaimWrapper residentAddressState = getEAAPayload().getHolderResidentAddressState();
+        if (residentAddressState != null) {
+            return getPayloadClaimTextValue(residentAddressState);
         }
         return null;
     }
@@ -769,9 +818,9 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (userAddress != null) {
             return getPayloadClaimTextValue(userAddress.getPostalCode());
         }
-        ClaimWrapper residentPostalCode = getEAAPayload().getHolderResidentPostalCode();
-        if (residentPostalCode != null) {
-            return getPayloadClaimTextValue(residentPostalCode);
+        ClaimWrapper residentAddressPostalCode = getEAAPayload().getHolderResidentAddressPostalCode();
+        if (residentAddressPostalCode != null) {
+            return getPayloadClaimTextValue(residentAddressPostalCode);
         }
         return null;
     }
@@ -787,9 +836,9 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (userAddress != null) {
             return getPayloadClaimTextValue(userAddress.getCountry());
         }
-        ClaimWrapper residentCountry = getEAAPayload().getHolderResidentCountry();
-        if (residentCountry != null) {
-            return getPayloadClaimTextValue(residentCountry);
+        ClaimWrapper residentAddressCountry = getEAAPayload().getHolderResidentAddressCountry();
+        if (residentAddressCountry != null) {
+            return getPayloadClaimTextValue(residentAddressCountry);
         }
         return null;
     }
@@ -804,9 +853,9 @@ public class EAAWrapper extends AbstractTokenProxy {
         if (userAddress != null) {
             return getPayloadClaimTextValue(userAddress.getStreetAddress());
         }
-        ClaimWrapper residentAddress = getEAAPayload().getHolderResidentAddress();
-        if (residentAddress != null) {
-            return getPayloadClaimTextValue(residentAddress);
+        ClaimWrapper postalAddress = getEAAPayload().getResidentPostalAddress();
+        if (postalAddress != null) {
+            return getPayloadClaimTextValue(postalAddress);
         }
         return null;
     }
@@ -1416,8 +1465,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentStreet() {
-        return getPayloadClaimTextValue(getEAAPayload().getResidentStreet());
+    public String getResidentAddressStreet() {
+        return getPayloadClaimTextValue(getEAAPayload().getResidentAddressStreet());
     }
 
     /**
@@ -1426,8 +1475,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentHouseNumber() {
-        return getPayloadClaimTextValue(getEAAPayload().getResidentHouseNumber());
+    public String getResidentAddressHouseNumber() {
+        return getPayloadClaimTextValue(getEAAPayload().getResidentAddressHouseNumber());
     }
 
     /**
@@ -1435,8 +1484,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentCity() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentCity());
+    public String getResidentAddressCity() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddressCity());
     }
 
     /**
@@ -1444,8 +1493,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentState() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentState());
+    public String getResidentAddressState() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddressState());
     }
 
     /**
@@ -1453,8 +1502,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentPostalCode() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentPostalCode());
+    public String getResidentAddressPostalCode() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddressPostalCode());
     }
 
     /**
@@ -1462,8 +1511,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentCountry() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentCountry());
+    public String getResidentAddressCountry() {
+        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddressCountry());
     }
 
     /**
@@ -1471,8 +1520,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getResidentAddress() {
-        return getPayloadClaimTextValue(getEAAPayload().getHolderResidentAddress());
+    public String getResidentPostalAddress() {
+        return getPayloadClaimTextValue(getEAAPayload().getResidentPostalAddress());
     }
 
     /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */

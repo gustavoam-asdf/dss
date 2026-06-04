@@ -179,7 +179,7 @@ class DefaultPublicKeyInfoFactoryTest {
         };
 
         Exception exception = assertThrows(UnsupportedOperationException.class, () -> factory.create(fakeKey));
-        assertEquals("The key of type '' is not supported! Provide a custom COSEKeyFactory should you need to support the key.", exception.getMessage());
+        assertEquals("The key of type '' is not supported! Provide a custom PublicKeyInfoFactory should you need to support the key.", exception.getMessage());
     }
 
     private KeyPair generateEC(String curve) throws Exception {

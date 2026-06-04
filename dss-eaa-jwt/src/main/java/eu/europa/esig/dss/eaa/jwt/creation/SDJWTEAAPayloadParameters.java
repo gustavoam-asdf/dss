@@ -33,6 +33,14 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
     /** Contains the location where the certificate used for device authentication can be accessed from. */
     private String deviceX509CertificateUrl;
 
+    // draft-ietf-oauth-sd-jwt-vc-13
+
+    /** Type identifier of the embedded Verifiable Credential. */
+    private String verifiableCredentialsType;
+
+    /** Integrity metadata or cryptographic binding associated with the Verifiable Credential. */
+    private Digest verifiableCredentialsTypeIntegrity;
+
     /** Catalogue of parameters to be made selectively disclosable */
     private final SDJWTClaimParameters selectivelyDisclosableParameters = new SDJWTClaimParameters();
 
@@ -182,6 +190,42 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
+     * Gets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @return {@link String} the verifiable credentials type
+     */
+    public String getVerifiableCredentialsType() {
+        return verifiableCredentialsType;
+    }
+
+    /**
+     * Sets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @param verifiableCredentialsType {@link String} the verifiable credentials type
+     */
+    public void setVerifiableCredentialsType(final String verifiableCredentialsType) {
+        this.verifiableCredentialsType = verifiableCredentialsType;
+    }
+
+    /**
+     * Gets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @return {@link Digest} the verifiable credentials metadata integrity
+     */
+    public Digest getVerifiableCredentialsTypeIntegrity() {
+        return verifiableCredentialsTypeIntegrity;
+    }
+
+    /**
+     * Sets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
+     *
+     * @param verifiableCredentialsTypeIntegrity {@link Digest} the verifiable credentials metadata integrity
+     */
+    public void setVerifiableCredentialsTypeIntegrity(final Digest verifiableCredentialsTypeIntegrity) {
+        this.verifiableCredentialsTypeIntegrity = verifiableCredentialsTypeIntegrity;
+    }
+
+    /**
      * Gets a catalogue of claims to be made selectively disclosable within the produced SD-JWT VC EAA.
      * When parameters are defined within the object, the computed hashes will be computed and
      * incorporated within "_sd" header parameter of the EAA Payload.
@@ -210,6 +254,8 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
                 ", subject='" + subject + '\'' +
                 ", selectivelyDisclosableParameters=" + selectivelyDisclosableParameters +
                 ", nonSelectivelyDisclosableParameters=" + nonSelectivelyDisclosableParameters +
+                ", verifiableCredentialsType='" + verifiableCredentialsType + '\'' +
+                ", verifiableCredentialsIntegrity='" + verifiableCredentialsTypeIntegrity + '\'' +
                 "] " + super.toString();
     }
 

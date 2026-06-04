@@ -13,12 +13,4 @@ public interface EAASaltGenerator {
      */
     byte[] generateSalt();
 
-    // TODO : temporary method for a smoother SD-JWT migration, to be removed
-    /**
-     * Generates next salt as String
-     *
-     * @return {@link String} containing the salt value
-     */
-    String generateSaltString();
-
 }

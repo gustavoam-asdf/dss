@@ -412,7 +412,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimNumber}
      */
-    ClaimString getResidentAddress();
+    ClaimString getPostalAddress();
 
     /**
      * Gets the date when portrait was taken.
@@ -459,7 +459,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentCity();
+    ClaimString getResidentAddressCity();
 
     /**
      * Gets the state/province/district where the mDL holder lives.
@@ -467,7 +467,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentState();
+    ClaimString getResidentAddressState();
 
     /**
      * Gets the postal code of the mDL holder. The value shall only use latin1b characters
@@ -475,7 +475,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentPostalCode();
+    ClaimString getResidentAddressPostalCode();
 
     /**
      * Gets the country where the mDL holder lives as a two letter country code (alpha-2 code)
@@ -483,7 +483,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentCountry();
+    ClaimString getResidentAddressCountry();
 
     /**
      * Gets a list of elements contains optional facial, fingerprint, iris, or other biometric information of the mDL
@@ -732,7 +732,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentStreet();
+    ClaimString getResidentAddressStreet();
 
     /**
      * Gets the house number where the user to whom the person identification data relates currently resides,
@@ -740,7 +740,7 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getResidentHouseNumber();
+    ClaimString getResidentAddressHouseNumber();
 
     /* ETSI TS 119 472-1 "5 Implementation of EAA based on SD-JWT VC" header parameters */
 

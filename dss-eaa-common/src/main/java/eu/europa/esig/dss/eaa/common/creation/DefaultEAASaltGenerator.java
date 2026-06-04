@@ -24,9 +24,4 @@ public class DefaultEAASaltGenerator implements EAASaltGenerator {
         return bytes;
     }
 
-    @Override
-    public String generateSaltString() {
-        return new String(generateSalt());
-    }
-
 }

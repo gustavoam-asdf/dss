@@ -253,7 +253,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
 
     @Override
     public ClaimAddress getAddress() {
-        // see #getResidentAddress, #getResidentCity, etc.
+        // see #getPostalAddress, #getResidentAddressCity, etc.
         return null;
     }
 
@@ -395,7 +395,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentAddress() {
+    public ClaimString getPostalAddress() {
         return getAsString(
                 forIso180135(ISO180135Headers.RESIDENT_ADDRESS),
                 forIso232202(ISO232202Headers.RESIDENT_ADDRESS, ISO232202Headers.RESIDENT_ADDRESS_UNICODE, ISO232202Headers.RESIDENT_ADDRESS_LATIN1),
@@ -442,7 +442,7 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentCity() {
+    public ClaimString getResidentAddressCity() {
         return getAsString(
                 forIso180135(ISO180135Headers.RESIDENT_CITY),
                 forIso232202(ISO232202Headers.RESIDENT_CITY, ISO232202Headers.RESIDENT_CITY_UNICODE, ISO232202Headers.RESIDENT_CITY_LATIN1),
@@ -451,21 +451,21 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentState() {
+    public ClaimString getResidentAddressState() {
         return getAsString(forIso180135(ISO180135Headers.RESIDENT_STATE),
                 forIso232202(ISO232202Headers.RESIDENT_STATE, ISO232202Headers.RESIDENT_STATE_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_STATE));
     }
 
     @Override
-    public ClaimString getResidentPostalCode() {
+    public ClaimString getResidentAddressPostalCode() {
         return getAsString(forIso180135(ISO180135Headers.RESIDENT_POSTAL_CODE), forIso232202(ISO232202Headers.RESIDENT_POSTAL_CODE),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_POSTAL_CODE)
         );
     }
 
     @Override
-    public ClaimString getResidentCountry() {
+    public ClaimString getResidentAddressCountry() {
         return getAsString(forIso180135(ISO180135Headers.RESIDENT_COUNTRY), forIso232202(ISO232202Headers.RESIDENT_COUNTRY),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_COUNTRY));
     }
@@ -649,13 +649,13 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getResidentStreet() {
+    public ClaimString getResidentAddressStreet() {
         return getAsString(forIso232202(ISO232202Headers.RESIDENT_STREET, ISO232202Headers.RESIDENT_STREET_LATIN1),
                 forEUDIPid(EUDIPIDHeaders.RESIDENT_STREET));
     }
 
     @Override
-    public ClaimString getResidentHouseNumber() {
+    public ClaimString getResidentAddressHouseNumber() {
         return getAsString(forEUDIPid(EUDIPIDHeaders.RESIDENT_HOUSE_NUMBER));
     }
 

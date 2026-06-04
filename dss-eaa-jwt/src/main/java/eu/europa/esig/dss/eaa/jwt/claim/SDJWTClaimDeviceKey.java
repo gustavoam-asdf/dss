@@ -76,11 +76,11 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
         PublicJsonWebKey jwk = getPublicJsonWebKey();
         if (jwk != null) {
             final List<Digest> result = new ArrayList<>();
-            String x509CertificateSha1Thumbprint = publicJsonWebKey.getX509CertificateSha1Thumbprint();
+            String x509CertificateSha1Thumbprint = jwk.getX509CertificateSha1Thumbprint();
             if (Utils.isStringNotEmpty(x509CertificateSha1Thumbprint)) {
                 result.add(new Digest(DigestAlgorithm.SHA1, DSSJsonUtils.fromBase64Url(x509CertificateSha1Thumbprint)));
             }
-            String base64UrlSHA256Certificate = publicJsonWebKey.getX509CertificateSha256Thumbprint();
+            String base64UrlSHA256Certificate = jwk.getX509CertificateSha256Thumbprint();
             if (Utils.isStringNotEmpty(base64UrlSHA256Certificate)) {
                 result.add(new Digest(DigestAlgorithm.SHA256, DSSJsonUtils.fromBase64Url(base64UrlSHA256Certificate)));
             }
@@ -93,8 +93,8 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
     public List<String> getCertificateKeyIdentifiers() {
         final List<String> result = new ArrayList<>();
         PublicJsonWebKey jwk = getPublicJsonWebKey();
-        if (jwk != null) {
-            result.add(publicJsonWebKey.getKeyId());
+        if (jwk != null && jwk.getKeyId() != null) {
+            result.add(jwk.getKeyId());
         }
         ClaimString kid = getKID();
         if (kid != null) {
@@ -107,8 +107,8 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
     public List<String> getCertificateUrls() {
         final List<String> result = new ArrayList<>();
         PublicJsonWebKey jwk = getPublicJsonWebKey();
-        if (jwk != null) {
-            result.add(publicJsonWebKey.getX509Url());
+        if (jwk != null && jwk.getX509Url() != null) {
+            result.add(jwk.getX509Url());
         }
         ClaimString jku = getJKU();
         if (jku != null) {

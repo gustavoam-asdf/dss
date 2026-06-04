@@ -129,6 +129,18 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.deviceKey = deviceKey;
     }
 
+    /**
+     * Sets the certificate token used for mdoc authentication.
+     * NOTE: only the public key part of the token will be represented within the payload.
+     *
+     * @param certificateToken {@link CertificateToken}
+     */
+    public void setDeviceKey(CertificateToken certificateToken) {
+        if (certificateToken != null) {
+            setDeviceKey(certificateToken.getPublicKey());
+        }
+    }
+
     @Override
     public EAARevocationList getIdentifierList() {
         return identifierList;

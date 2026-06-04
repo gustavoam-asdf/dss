@@ -773,15 +773,15 @@
 			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthFamilyName|dss:BirthGivenName
 			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry
 			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
-			|dss:PersonalAdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentAddress
-			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentCity
-			|dss:ResidentState|dss:ResidentPostalCode|dss:ResidentCountry|dss:BiometricTemplate|dss:SignatureUsualMark
+			|dss:PersonalAdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentPostalAddress
+			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentAddressCity
+			|dss:ResidentAddressState|dss:ResidentAddressPostalCode|dss:ResidentAddressCountry|dss:BiometricTemplate|dss:SignatureUsualMark
 			|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession|dss:RelationshipFather
 			|dss:RelationshipMother|dss:RelationshipParent|dss:RelationshipSon|dss:RelationshipDaughter
 			|dss:RelationshipBrother|dss:RelationshipSister|dss:RelationshipSibling|dss:RelationshipSpouse|dss:RelationshipFatherInLaw
 			|dss:RelationshipMotherInLaw|dss:RelationshipParentInLaw|dss:RelationshipSonInLaw|dss:RelationshipDaughterInLaw
 			|dss:RelationshipChildInLaw|dss:RelationshipParentalAuthority|dss:RelationshipLegalRepresentative|dss:RelationshipAgent
-			|dss:DocumentType|dss:IssuingAuthorityRegistrationIdentifier|dss:TrustAnchor|dss:ResidentStreet|dss:ResidentHouseNumber|dss:OtherClaim">
+			|dss:DocumentType|dss:IssuingAuthorityRegistrationIdentifier|dss:TrustAnchor|dss:ResidentAddressStreet|dss:ResidentAddressHouseNumber|dss:OtherClaim">
 		<xsl:variable name="header">
 			<xsl:choose>
 				<xsl:when test="name() = 'Identifier'">Identifier</xsl:when>
@@ -865,18 +865,18 @@
 				<xsl:when test="name() = 'Weight'">Weight</xsl:when>
 				<xsl:when test="name() = 'EyeColor'">Eye color</xsl:when>
 				<xsl:when test="name() = 'HairColor'">Hair color</xsl:when>
-				<xsl:when test="name() = 'ResidentAddress'">Resident address</xsl:when>
+				<xsl:when test="name() = 'ResidentPostalAddress'">Resident postal address</xsl:when>
 				<xsl:when test="name() = 'PortraitCaptureDate'">Portrait capture date</xsl:when>
 				<xsl:when test="name() = 'AgeInYears'">Age in years</xsl:when>
 				<xsl:when test="name() = 'AgeBirthYear'">Age birth year</xsl:when>
 				<xsl:when test="name() = 'AgeOverNN'">Age over <xsl:value-of select="@parameter"/></xsl:when>
 				<xsl:when test="name() = 'IssuingJurisdiction'">Issuing jurisdiction</xsl:when>
-				<xsl:when test="name() = 'ResidentHouseNumber'">Resident house number</xsl:when>
-				<xsl:when test="name() = 'ResidentStreet'">Resident street</xsl:when>
-				<xsl:when test="name() = 'ResidentCity'">Resident city</xsl:when>
-				<xsl:when test="name() = 'ResidentState'">Resident state</xsl:when>
-				<xsl:when test="name() = 'ResidentPostalCode'">Resident postal code</xsl:when>
-				<xsl:when test="name() = 'ResidentCountry'">Resident country</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressHouseNumber'">Resident address house number</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressStreet'">Resident address street</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressCity'">Resident address city</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressState'">Resident address state</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressPostalCode'">Resident address postal code</xsl:when>
+				<xsl:when test="name() = 'ResidentAddressCountry'">Resident address country</xsl:when>
 				<xsl:when test="name() = 'BiometricTemplate'">Biometric template <xsl:value-of select="@parameter"/></xsl:when>
 				<xsl:when test="name() = 'SignatureUsualMark'">Signature usual mark</xsl:when>
 				<xsl:when test="name() = 'Fingerprint'">Fingerprint</xsl:when>

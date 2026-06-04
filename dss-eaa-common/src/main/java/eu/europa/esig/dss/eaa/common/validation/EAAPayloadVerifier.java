@@ -326,4 +326,16 @@ public abstract class EAAPayloadVerifier {
         }
     }
 
+    /**
+     * Gets the digest algorithm used for hashes computation of selective disclosures
+     *
+     * @return {@link DigestAlgorithm}
+     */
+    public DigestAlgorithm getDigestAlgorithm() {
+        if (digestAlgorithm == null) {
+            throw new IllegalStateException("Please call method #verify before accessing the DigestAlgortihm value!");
+        }
+        return digestAlgorithm;
+    }
+
 }

@@ -67,14 +67,6 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
     /** Issuance date of the identity document or credential. */
     private Date dateOfIssuance;
 
-    // draft-ietf-oauth-sd-jwt-vc-13
-
-    /** Type identifier of the embedded Verifiable Credential. */
-    private String verifiableCredentialsType;
-
-    /** Integrity metadata or cryptographic binding associated with the Verifiable Credential. */
-    private String verifiableCredentialsIntegrity;
-
     // ETSI TS 119 472-1 claims
 
     /**
@@ -401,42 +393,6 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
     }
 
     /**
-     * Gets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
-     *
-     * @return {@link String} the verifiable credentials type
-     */
-    public String getVerifiableCredentialsType() {
-        return verifiableCredentialsType;
-    }
-
-    /**
-     * Sets a "vct" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
-     *
-     * @param verifiableCredentialsType {@link String} the verifiable credentials type
-     */
-    public void setVerifiableCredentialsType(final String verifiableCredentialsType) {
-        this.verifiableCredentialsType = verifiableCredentialsType;
-    }
-
-    /**
-     * Gets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
-     *
-     * @return {@link String} the verifiable credentials metadata integrity
-     */
-    public String getVerifiableCredentialsIntegrity() {
-        return verifiableCredentialsIntegrity;
-    }
-
-    /**
-     * Sets a "vct#integrity" claim value as defined by draft-ietf-oauth-sd-jwt-vc-13
-     *
-     * @param verifiableCredentialsIntegrity {@link String} the verifiable credentials metadata integrity
-     */
-    public void setVerifiableCredentialsIntegrity(final String verifiableCredentialsIntegrity) {
-        this.verifiableCredentialsIntegrity = verifiableCredentialsIntegrity;
-    }
-
-    /**
      * Gets the subject attribute identifier
      *
      * @return {@link String}
@@ -504,7 +460,6 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
                 ", salutation='" + salutation + '\'' +
                 ", dateOfExpiry=" + dateOfExpiry +
                 ", dateOfIssuance=" + dateOfIssuance +
-                ", verifiableCredentialsType='" + verifiableCredentialsType + '\'' +
                 ", attestedAttributesSubjectIdentifier='" + attestedAttributesSubjectIdentifier + '\'' +
                 ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
                 "] " + super.toString();

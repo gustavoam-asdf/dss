@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.spi.eaa;
 
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.identifier.IdentifierBasedObject;
@@ -54,6 +55,13 @@ public interface EAA extends IdentifierBasedObject {
      * @return {@link EAAPayload}
      */
     EAAPayload getPayload();
+
+    /**
+     * Gets DigestAlgorithm used for selective disclosures hashes computation
+     *
+     * @return {@link DigestAlgorithm}
+     */
+    DigestAlgorithm getSelectiveDisclosuresDigestAlgorithm();
 
     /**
      * This method returns the DSS unique id. It allows to unambiguously identify each token.

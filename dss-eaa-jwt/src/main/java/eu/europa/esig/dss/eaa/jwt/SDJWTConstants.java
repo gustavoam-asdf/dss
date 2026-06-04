@@ -13,9 +13,6 @@ public class SDJWTConstants {
         // singleton
     }
 
-    /** "typ" header */
-    public static final String SIGNATURE_TYPE = "dc+sd-jwt";
-
     // SD-JWT unprotected header parameters
 
     /** SD-JWT unprotected header "disclosures" header */

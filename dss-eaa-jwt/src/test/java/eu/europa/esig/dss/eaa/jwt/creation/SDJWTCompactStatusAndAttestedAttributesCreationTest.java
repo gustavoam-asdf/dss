@@ -9,11 +9,11 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,9 +35,9 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         payloadParameters.nonSelectivelyDisclosable().setIssuingAuthority("Public body");
         payloadParameters.nonSelectivelyDisclosable().setGivenName("Alice");
         payloadParameters.nonSelectivelyDisclosable().setFamilyName("Doe");
-        payloadParameters.nonSelectivelyDisclosable().setVerifiableCredentialsType("https://nowina.lu/eaa/metadata");
-        String digest = Utils.toBase64(DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
-        payloadParameters.nonSelectivelyDisclosable().setVerifiableCredentialsIntegrity(DigestAlgorithm.SHA256.getSubresourceIntegrityId() + "-" + digest);
+        payloadParameters.setVerifiableCredentialsType("https://nowina.lu/eaa/metadata");
+        Digest digest = new Digest(DigestAlgorithm.SHA256, DSSUtils.digest(DigestAlgorithm.SHA256, "Hello World".getBytes()));
+        payloadParameters.setVerifiableCredentialsTypeIntegrity(digest);
 
         SDJWTEAAClaimObject status = SDJWTEAAClaim.createObject("status");
         status.addChild(SDJWTEAAClaim.create("type", "TokenStatusList"));

@@ -4,6 +4,7 @@ import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
 import eu.europa.esig.dss.eaa.common.key.PublicKeyInfoFactory;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.key.JWKClaimBuilder;
+import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -73,6 +74,8 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildShortLivedClaim(payloadParameters));
         addIfNotNull(claims, buildStatusClaim(payloadParameters));
         addIfNotNull(claims, buildDeviceKeyClaim(payloadParameters));
+        addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(payloadParameters));
+        addIfNotNull(claims, buildVerifiableCredentialsIntegrityClaim(payloadParameters));
 
         return claims;
     }
@@ -127,8 +130,6 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildAgeBirthYearClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildTrustAnchorClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildAgeEqualOrOverClaim(parameters, selectivelyDisclosable));
-        addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(parameters, selectivelyDisclosable));
-        addIfNotNull(claims, buildVerifiableCredentialsIntegrityClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildIssuingRegistrationIdentifierClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildAdministrativeValidityNotBeforeClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildAdministrativeValidityExpiryClaim(parameters, selectivelyDisclosable));
@@ -338,6 +339,40 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
     }
 
     /**
+     * Builds the verifiable credentials type claim.
+     *
+     * @param parameters the claim parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildVerifiableCredentialsTypeClaim(final SDJWTEAAPayloadParameters parameters) {
+        if (parameters.getVerifiableCredentialsType() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE, parameters.getVerifiableCredentialsType(), false);
+    }
+
+    /**
+     * Builds the verifiable credentials integrity claim.
+     *
+     * @param parameters the claim parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildVerifiableCredentialsIntegrityClaim(final SDJWTEAAPayloadParameters parameters) {
+        if (parameters.getVerifiableCredentialsTypeIntegrity() == null) {
+            return null;
+        }
+
+        Digest vctDigest = parameters.getVerifiableCredentialsTypeIntegrity();
+        if (vctDigest.getAlgorithm() == null || vctDigest.getAlgorithm().getSubresourceIntegrityId() == null) {
+            throw new UnsupportedOperationException(String.format(
+                    "The digest algorithm '%s' is not supported for the vct#integrity claim!", vctDigest.getAlgorithm()));
+        }
+
+        String vctIntegrity = String.format("%s-%s", vctDigest.getAlgorithm().getSubresourceIntegrityId(), vctDigest.getBase64Value());
+        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, vctIntegrity, false);
+    }
+
+    /**
      * Builds the family name claim.
      *
      * @param parameters the parameters
@@ -412,7 +447,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
     protected SDJWTEAAClaimObject buildAddressClaim(final SDJWTClaimParameters parameters,
                                                     final boolean selectivelyDisclosable) {
         if (Utils.areAllStringsEmpty(
-                parameters.getAddressFull(),
+                parameters.getPostalAddress(),
                 parameters.getAddressStreet(),
                 parameters.getAddressCity(),
                 parameters.getAddressState(),
@@ -425,8 +460,8 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(
                 SDJWTConstants.USER_ADDRESS, selectivelyDisclosable);
 
-        if (Utils.isStringNotBlank(parameters.getAddressFull())) {
-            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_FORMATTED, parameters.getAddressFull()));
+        if (Utils.isStringNotBlank(parameters.getPostalAddress())) {
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_FORMATTED, parameters.getPostalAddress()));
         }
         if (Utils.isStringNotBlank(parameters.getAddressStreet())) {
             claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.USER_ADDRESS_STREET_ADDRESS, parameters.getAddressStreet()));
@@ -1058,36 +1093,6 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         });
 
         return claim;
-    }
-
-    /**
-     * Builds the verifiable credentials type claim.
-     *
-     * @param parameters the claim parameters
-     * @param selectivelyDisclosable whether selectively disclosable
-     * @return the claim or null
-     */
-    protected SDJWTEAAClaim buildVerifiableCredentialsTypeClaim(final SDJWTClaimParameters parameters,
-                                                                final boolean selectivelyDisclosable) {
-        if (parameters.getVerifiableCredentialsType() == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE, parameters.getVerifiableCredentialsType(), selectivelyDisclosable);
-    }
-
-    /**
-     * Builds the verifiable credentials integrity claim.
-     *
-     * @param parameters the claim parameters
-     * @param selectivelyDisclosable whether selectively disclosable
-     * @return the claim or null
-     */
-    protected SDJWTEAAClaim buildVerifiableCredentialsIntegrityClaim(final SDJWTClaimParameters parameters,
-                                                                     final boolean selectivelyDisclosable) {
-        if (parameters.getVerifiableCredentialsIntegrity() == null) {
-            return null;
-        }
-        return buildClaim(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY, parameters.getVerifiableCredentialsIntegrity(), selectivelyDisclosable);
     }
 
     /**

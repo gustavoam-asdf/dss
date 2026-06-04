@@ -39,24 +39,24 @@ class SDJWTPayloadBuilderTest {
 
         final SDJWTEAAClaimObject subObject = SDJWTEAAClaim.createObject("sub-addressClaim");
         subObject.addChild(SDJWTEAAClaim.create("sub-key", "sub-value"));
-        subObject.addChild(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("sub-key-hidden", "sub-value-hidden", saltGenerator.generateSaltString()));
+        subObject.addChild(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("sub-key-hidden", "sub-value-hidden", getSalt(saltGenerator)));
         addressClaim.addChild(subObject);
 
         final SDJWTEAAClaimArray pets = SDJWTEAAClaimArray.create("pets");
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("dog", saltGenerator.generateSaltString()));
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("cat", saltGenerator.generateSaltString()));
+        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("dog", getSalt(saltGenerator)));
+        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("cat", getSalt(saltGenerator)));
         addressClaim.addChild(pets);
 
         final SDJWTEAAClaimArray nationalities = SDJWTEAAClaimArray.create("nationalities");
         nationalities.addElement(SDJWTEAAClaim.create("DE"));
         nationalities.addElement(SDJWTEAAClaim.create("EN"));
         nationalities.addElement(SDJWTEAAClaim.create("FR"));
-        nationalities.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("LU", saltGenerator.generateSaltString()));
+        nationalities.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("LU", getSalt(saltGenerator)));
 
-        final SDJWTEAAClaimArray nationalities2 = SDJWTEAAClaimArray.createSelectivelyDisclosableWithSalt("nationalities2", saltGenerator.generateSaltString());
-        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("DE", saltGenerator.generateSaltString()));
-        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("EN", saltGenerator.generateSaltString()));
-        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("FR", saltGenerator.generateSaltString()));
+        final SDJWTEAAClaimArray nationalities2 = SDJWTEAAClaimArray.createSelectivelyDisclosableWithSalt("nationalities2", getSalt(saltGenerator));
+        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("DE", getSalt(saltGenerator)));
+        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("EN", getSalt(saltGenerator)));
+        nationalities2.addElement(SDJWTEAAClaim.createSelectivelyDisclosableWithSalt("FR", getSalt(saltGenerator)));
 
         parameters.nonSelectivelyDisclosable().addClaim(addressClaim);
         parameters.nonSelectivelyDisclosable().addClaim(nationalities);
@@ -122,6 +122,10 @@ class SDJWTPayloadBuilderTest {
 
         List<SDJWTEAADisclosure> disclosures = new SDJWTPayloadBuilder().buildDisclosures(parameters);
         assertEquals(11, disclosures.size());
+    }
+    
+    private String getSalt(EAASaltGenerator saltGenerator) {
+        return DSSJsonUtils.toBase64Url(saltGenerator.generateSalt());
     }
 
     @Test

@@ -61,7 +61,7 @@ public interface EAAClaimParameters<C extends EAAClaim> {
      *
      * @return {@link String}
      */
-    String getAddressFull();
+    String getPostalAddress();
 
     /**
      * Gets the name of the street where the user to whom the person identification data relates currently resides.

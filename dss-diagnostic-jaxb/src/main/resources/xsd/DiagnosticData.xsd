@@ -1736,6 +1736,7 @@
 					<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
 					<xs:element name="EAAType" type="EAAType" />
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
+					<xs:element name="DigestMethod" type="xs:string" minOccurs="0" />
 					<xs:element name="DigestMatchers" type="DigestMatchers" minOccurs="0" />
 					<xs:element name="EAASignature" maxOccurs="unbounded">
 						<xs:complexType>
@@ -1826,16 +1827,16 @@
 			<xs:element name="Weight" type="Claim" minOccurs="0" />
 			<xs:element name="EyeColour" type="Claim" minOccurs="0" />
 			<xs:element name="HairColour" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentAddress" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentPostalAddress" type="Claim" minOccurs="0" />
 			<xs:element name="PortraitCaptureDate" type="Claim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="Claim" minOccurs="0" />
 			<xs:element name="AgeBirthYear" type="Claim" minOccurs="0" />
 			<xs:element name="AgeOverNN" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="IssuingJurisdiction" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentCity" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentState" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentPostalCode" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentCountry" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressCity" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressState" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressPostalCode" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressCountry" type="Claim" minOccurs="0" />
 			<xs:element name="BiometricTemplate" type="BiometricTemplateXXClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="SignatureUsualMark" type="Claim" minOccurs="0" />
 			<xs:element name="Fingerprint" type="Claim" minOccurs="0" />
@@ -1868,8 +1869,8 @@
 
 			<!-- PID Rulebook headers -->
 			<xs:element name="TrustAnchor" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentStreet" type="Claim" minOccurs="0" />
-			<xs:element name="ResidentHouseNumber" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressStreet" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressHouseNumber" type="Claim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />

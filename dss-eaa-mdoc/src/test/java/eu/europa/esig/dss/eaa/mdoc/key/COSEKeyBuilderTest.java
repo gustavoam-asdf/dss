@@ -65,12 +65,12 @@ class COSEKeyBuilderTest {
         PublicKeyInfo unsupported = new PublicKeyInfo() {
             @Override
             public String getKeyType() {
-                return "UNKNOWN";
+                return "";
             }
         };
 
         Exception exception = assertThrows(UnsupportedOperationException.class, () -> new COSEKeyBuilder(unsupported).create());
-        assertEquals("Unsupported key info type: 'UNKNOWN'", exception.getMessage());
+        assertEquals("Unsupported key info type: ''", exception.getMessage());
     }
     
 }

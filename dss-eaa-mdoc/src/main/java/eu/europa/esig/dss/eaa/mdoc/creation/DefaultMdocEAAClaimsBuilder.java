@@ -74,16 +74,16 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         addClaim(result, getWeight(selectivelyDisclosable));
         addClaim(result, getEyeColour(selectivelyDisclosable));
         addClaim(result, getHairColour(selectivelyDisclosable));
-        addClaim(result, getResidentAddress(selectivelyDisclosable));
+        addClaim(result, getPostalAddress(selectivelyDisclosable));
         addClaim(result, getPortraitCaptureDate(selectivelyDisclosable));
         addClaim(result, getAgeInYears(selectivelyDisclosable));
         addClaim(result, getAgeBirthYear(selectivelyDisclosable));
         addClaims(result, getAgeOverNN(selectivelyDisclosable));
         addClaim(result, getIssuingJurisdiction(selectivelyDisclosable));
-        addClaim(result, getResidentCity(selectivelyDisclosable));
-        addClaim(result, getResidentState(selectivelyDisclosable));
-        addClaim(result, getResidentPostalCode(selectivelyDisclosable));
-        addClaim(result, getResidentCountry(selectivelyDisclosable));
+        addClaim(result, getResidentAddressCity(selectivelyDisclosable));
+        addClaim(result, getResidentAddressState(selectivelyDisclosable));
+        addClaim(result, getResidentAddressPostalCode(selectivelyDisclosable));
+        addClaim(result, getResidentAddressCountry(selectivelyDisclosable));
         addClaims(result, getBiometricTemplate(selectivelyDisclosable));
         addClaim(result, getBiometricTemplateFace(selectivelyDisclosable));
         addClaim(result, getSignatureUsualMark(selectivelyDisclosable));
@@ -113,8 +113,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         addClaim(result, getDocumentType(selectivelyDisclosable));
         addClaim(result, getAdministrativeIssuanceDate(selectivelyDisclosable));
         addClaim(result, getAdministrativeExpirationDate(selectivelyDisclosable));
-        addClaim(result, getResidentStreet(selectivelyDisclosable));
-        addClaim(result, getResidentHouseNumber(selectivelyDisclosable));
+        addClaim(result, getResidentAddressStreet(selectivelyDisclosable));
+        addClaim(result, getResidentAddressHouseNumber(selectivelyDisclosable));
         addClaim(result, getTrustAnchor(selectivelyDisclosable));
         addClaim(result, getIssuingAuthorityRegistrationIdentifier(selectivelyDisclosable));
         addClaim(result, getAttestedAttributesSubject(selectivelyDisclosable));
@@ -427,8 +427,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddress(selectivelyDisclosable);
+    protected MdocEAAClaim getPostalAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getPostalAddress(selectivelyDisclosable);
     }
 
     /**
@@ -487,8 +487,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentCity(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressCity(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddressCity(selectivelyDisclosable);
     }
 
     /**
@@ -497,8 +497,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentState(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressState(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddressState(selectivelyDisclosable);
     }
 
     /**
@@ -507,8 +507,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentPostalCode(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddressPostalCode(selectivelyDisclosable);
     }
 
     /**
@@ -517,8 +517,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentCountry(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddressCountry(selectivelyDisclosable);
     }
 
     /**
@@ -817,8 +817,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
-        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentStreet(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressStreet(MdocEAAClaimParameters selectivelyDisclosable) {
+        return ISO232201MIDEAAClaimsBuilder.getInstance().getResidentAddressStreet(selectivelyDisclosable);
     }
 
     /**
@@ -827,8 +827,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
-    protected MdocEAAClaim getResidentHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
-        return EUDIPIDEAAClaimsBuilder.getInstance().getResidentHouseNumber(selectivelyDisclosable);
+    protected MdocEAAClaim getResidentAddressHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+        return EUDIPIDEAAClaimsBuilder.getInstance().getResidentAddressHouseNumber(selectivelyDisclosable);
     }
 
     /**
@@ -1109,9 +1109,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getAddressFull() != null) {
-                return create(ISO180135Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
+        protected MdocEAAClaim getPostalAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getPostalAddress() != null) {
+                return create(ISO180135Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getPostalAddress());
             }
             return null;
         }
@@ -1161,7 +1161,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCity(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCity() != null) {
                 return create(ISO180135Headers.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
@@ -1169,7 +1169,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressState(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressState() != null) {
                 return create(ISO180135Headers.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
@@ -1177,7 +1177,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressPostalCode() != null) {
                 return create(ISO180135Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
@@ -1185,7 +1185,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCountry() != null) {
                 return create(ISO180135Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
@@ -1404,9 +1404,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getAddressFull() != null) {
-                return create(ISO232202Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
+        protected MdocEAAClaim getPostalAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getPostalAddress() != null) {
+                return create(ISO232202Headers.RESIDENT_ADDRESS, selectivelyDisclosable.getPostalAddress());
             }
             return null;
         }
@@ -1456,7 +1456,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCity(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCity() != null) {
                 return create(ISO232202Headers.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
@@ -1464,7 +1464,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressPostalCode() != null) {
                 return create(ISO232202Headers.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
@@ -1472,7 +1472,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCountry() != null) {
                 return create(ISO232202Headers.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
@@ -1480,7 +1480,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressState(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressState() != null) {
                 return create(ISO232202Headers.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
@@ -1488,7 +1488,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressStreet(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressStreet() != null) {
                 return create(ISO232202Headers.RESIDENT_STREET, selectivelyDisclosable.getAddressStreet());
             }
@@ -1881,9 +1881,9 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentAddress(MdocEAAClaimParameters selectivelyDisclosable) {
-            if (selectivelyDisclosable.getAddressFull() != null) {
-                return create(EUDIPIDHeaders.RESIDENT_ADDRESS, selectivelyDisclosable.getAddressFull());
+        protected MdocEAAClaim getPostalAddress(MdocEAAClaimParameters selectivelyDisclosable) {
+            if (selectivelyDisclosable.getPostalAddress() != null) {
+                return create(EUDIPIDHeaders.RESIDENT_ADDRESS, selectivelyDisclosable.getPostalAddress());
             }
             return null;
         }
@@ -1897,7 +1897,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCity(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCity(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCity() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_CITY, selectivelyDisclosable.getAddressCity());
             }
@@ -1905,7 +1905,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentState(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressState(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressState() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_STATE, selectivelyDisclosable.getAddressState());
             }
@@ -1913,7 +1913,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressPostalCode(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressPostalCode() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_POSTAL_CODE, selectivelyDisclosable.getAddressPostalCode());
             }
@@ -1921,7 +1921,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentCountry(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressCountry(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressCountry() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_COUNTRY, selectivelyDisclosable.getAddressCountry());
             }
@@ -1945,7 +1945,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentStreet(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressStreet(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressStreet() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_STREET, selectivelyDisclosable.getAddressStreet());
             }
@@ -1953,7 +1953,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
         }
 
         @Override
-        protected MdocEAAClaim getResidentHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
+        protected MdocEAAClaim getResidentAddressHouseNumber(MdocEAAClaimParameters selectivelyDisclosable) {
             if (selectivelyDisclosable.getAddressHouseNumber() != null) {
                 return create(EUDIPIDHeaders.RESIDENT_HOUSE_NUMBER, selectivelyDisclosable.getAddressHouseNumber());
             }

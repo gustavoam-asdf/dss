@@ -4,6 +4,7 @@ import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -27,8 +28,6 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,52 +56,89 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
     @Override
     public ToBeSigned getDataToBeSigned(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
-        validatePayloadAndSignatureParameters(payload, signatureParameters);
+        validatePayload(payload);
+        ensureSignatureParameters(signatureParameters);
         return getJAdESService().getDataToSign(payload, signatureParameters);
     }
 
     @Override
     public ToBeSigned getDataToBeSigned(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters) {
+        ensureSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
         return getDataToBeSigned(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters);
     }
 
     @Override
     public DSSDocument signEAA(final DSSDocument payload, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
-        validatePayloadAndSignatureParameters(payload, signatureParameters);
+        validatePayload(payload);
+        ensureSignatureParameters(signatureParameters);
         return getJAdESService().signDocument(payload, signatureParameters, signatureValue);
     }
 
     @Override
     public DSSDocument signEAA(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        ensureSignatureParameters(signatureParameters);
         ensurePayloadParameters(payloadParameters, signatureParameters);
         return signEAA(getPayloadBuilder().buildPayload(payloadParameters), signatureParameters, signatureValue);
     }
 
-    private void validatePayloadAndSignatureParameters(final DSSDocument payload, final JAdESSignatureParameters signatureParameters) {
+    /**
+     * This method verifies validity of the payload
+     *
+     * @param payload {@link DSSDocument} to be verified
+     */
+    protected void validatePayload(final DSSDocument payload) {
         Objects.requireNonNull(payload, "payload cannot be null!");
-        Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
 
         if (!DSSJsonUtils.isJsonDocument(payload)) {
             throw new DSSException("Payload is not a JSON document!");
         }
+    }
+
+    /**
+     * This method verifies validity of the signature parameters and provides the necessary configuration, where applicable
+     *
+     * @param signatureParameters {@link JAdESSignatureParameters}
+     */
+    protected void ensureSignatureParameters(final JAdESSignatureParameters signatureParameters) {
+        Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
 
         if (signatureParameters.getSignatureLevel() == null) {
             signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
+            LOG.debug("SignatureLevel is absent and was set to '{}'", SignatureLevel.JAdES_BASELINE_B);
+
         } else if (SignatureLevel.JAdES_BASELINE_B != signatureParameters.getSignatureLevel()) {
-            throw new DSSException("Signature level must be JAdES_BASELINE_B");
+            throw new IllegalArgumentException("Signature level must be JAdES-BASELINE-B!");
         }
 
         if (signatureParameters.getSignaturePackaging() == null) {
             signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+            LOG.debug("SignaturePackaging is absent and was set to '{}'", SignaturePackaging.ENVELOPING);
+
         } else if (SignaturePackaging.ENVELOPING != signatureParameters.getSignaturePackaging()) {
-            throw new DSSException("Signature packaging must be ENVELOPING");
+            throw new IllegalArgumentException("Signature packaging must be ENVELOPING");
         }
 
         if (signatureParameters.getSignatureType() == null) {
-            signatureParameters.setSignatureType(SDJWTConstants.SIGNATURE_TYPE);
-        } else if (!Utils.areStringsEqual(SDJWTConstants.SIGNATURE_TYPE, signatureParameters.getSignatureType())) {
-            throw new DSSException("Signature type must be " + SDJWTConstants.SIGNATURE_TYPE);
+            signatureParameters.setSignatureType(MimeTypeEnum.SD_JWT_VC.getMimeTypeString());
+            LOG.debug("SignatureType is absent and was set to '{}'", MimeTypeEnum.SD_JWT_VC.getMimeTypeString());
+        }
+
+        ensureSigningCertificateDigestAlgorithm(signatureParameters);
+    }
+
+    /**
+     * This method ensures compliance of the used digest algorithm for signing-certificate signed attribute definition
+     *
+     * @param signatureParameters {@link JAdESSignatureParameters}
+     */
+    protected void ensureSigningCertificateDigestAlgorithm(final JAdESSignatureParameters signatureParameters) {
+        // TODO : remove the method should the ETSI TS 119 472-1 be updated
+        if (DigestAlgorithm.SHA256 != signatureParameters.getSigningCertificateDigestMethod()) {
+            LOG.info("ETSI TS 119 472-1 v1.2.1 requires SHA256 to be used for the signing-certificate signed attribute definition. " +
+                    "The value is enforced to DigestAlgorithm.SHA256. Should you need to use a different algorithm, " +
+                    "please override the MdocEAAService#ensureSigningCertificateDigestAlgorithm method.");
+            signatureParameters.setSigningCertificateDigestMethod(DigestAlgorithm.SHA256);
         }
     }
 
@@ -113,9 +149,21 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
      * @param signatureParameters {@link JAdESSignatureParameters}
      */
     protected void ensurePayloadParameters(final SDJWTEAAPayloadParameters payloadParameters, final JAdESSignatureParameters signatureParameters) {
-        if (payloadParameters.getIssuanceDate() == null) {
-            payloadParameters.setIssuanceDate(signatureParameters.bLevel().getSigningDate());
-            LOG.debug("EAA issuance date is absent and was set to {}", signatureParameters.bLevel().getSigningDate());
+        if (payloadParameters.getNotBeforeDate() == null) {
+            payloadParameters.setNotBeforeDate(signatureParameters.bLevel().getSigningDate());
+            LOG.debug("EAA 'nbf' date is absent and was set to {}", signatureParameters.bLevel().getSigningDate());
+        }
+        if (payloadParameters.getExpirationDate() == null && signatureParameters.getSigningCertificate() != null) {
+            payloadParameters.setExpirationDate(signatureParameters.getSigningCertificate().getNotAfter());
+            LOG.debug("EAA 'exp' date is absent and was set to {}", signatureParameters.getSigningCertificate().getNotAfter());
+        }
+        if (Utils.isStringBlank(payloadParameters.getVerifiableCredentialsType())) {
+            LOG.warn("EAA 'vct' claim shall be defined! Absence of the value may lead to interoperability issued. " +
+                    "Please use SDJWTEAAPayloadParameters#setVerifiableCredentialsType method to provide the value.");
+        }
+        if (payloadParameters.getVerifiableCredentialsTypeIntegrity() == null) {
+            LOG.warn("EAA 'vct#integrity' claim shall be defined! Absence of the value may lead to interoperability issued. " +
+                    "Please use SDJWTEAAPayloadParameters#setVerifiableCredentialsTypeIntegrity method to provide the value.");
         }
     }
 

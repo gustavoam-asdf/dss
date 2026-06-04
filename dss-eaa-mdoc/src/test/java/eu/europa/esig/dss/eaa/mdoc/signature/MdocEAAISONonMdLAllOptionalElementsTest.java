@@ -53,7 +53,7 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         payloadParameters.selectivelyDisclosable().setWeight(75);
         payloadParameters.selectivelyDisclosable().setEyeColour("Brown");
         payloadParameters.selectivelyDisclosable().setHairColour("Black");
-        payloadParameters.selectivelyDisclosable().setAddressFull("1 Main Street");
+        payloadParameters.selectivelyDisclosable().setPostalAddress("1 Main Street");
         payloadParameters.selectivelyDisclosable().setPortraitCaptureDate(new Date(1704067200000L)); // 2024-01-01
         payloadParameters.selectivelyDisclosable().setAgeInYears(25);
         payloadParameters.selectivelyDisclosable().setAgeBirthYear(2000);
@@ -151,17 +151,17 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         boolean weightFound = false;
         boolean eyeColorFound = false;
         boolean hairColorFound = false;
-        boolean residentAddressFound = false;
+        boolean postalAddressFound = false;
         boolean portraitCaptureDateFound = false;
         boolean ageInYearsFound = false;
         boolean ageBirthYearFound = false;
         boolean ageOver18Found = false;
         boolean ageOver21Found = false;
         boolean issuingJurisdictionFound = false;
-        boolean residentCityFound = false;
-        boolean residentStateFound = false;
-        boolean residentPostalCodeFound = false;
-        boolean residentCountryFound = false;
+        boolean residentAddressCityFound = false;
+        boolean residentAddressStateFound = false;
+        boolean residentAddressPostalCodeFound = false;
+        boolean residentAddressCountryFound = false;
         boolean biometricTemplateSignatureSignFound = false;
         boolean biometricTemplateFaceFound = false;
         boolean signatureUsualMarkFound = false;
@@ -191,8 +191,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         boolean documentTypeFound = false;
         boolean administrativeIssuanceDateFound = false;
         boolean administrativeExpirationDateFound = false;
-        boolean residentStreetFound = false;
-        boolean residentHouseNumberFound = false;
+        boolean residentAddressStreetFound = false;
+        boolean residentAddressHouseNumberFound = false;
         boolean trustAnchorFound = false;
         boolean issuingAuthorityRegistrationIdentifierFound = false;
         boolean attestedAttributesPseudonymFound = false;
@@ -296,7 +296,7 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             } else if ("resident_address".equals(name)) {
                 assertEquals("1 Main Street", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentAddressFound = true;
+                postalAddressFound = true;
 
             } else if ("portrait_capture_date".equals(name)) {
                 assertEquals("2024-01-01T00:00:00Z", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -324,19 +324,19 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             } else if ("resident_city".equals(name)) {
                 assertEquals("Luxembourg", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentCityFound = true;
+                residentAddressCityFound = true;
 
             } else if ("resident_state".equals(name)) {
                 assertEquals("Luxembourg", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentStateFound = true;
+                residentAddressStateFound = true;
 
             } else if ("resident_postal_code".equals(name)) {
                 assertEquals("L-1234", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentPostalCodeFound = true;
+                residentAddressPostalCodeFound = true;
 
             } else if ("resident_country".equals(name)) {
                 assertEquals("LU", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentCountryFound = true;
+                residentAddressCountryFound = true;
 
             } else if ("biometric_template_signature_sign".equals(name)) {
                 assertEquals("AQI=", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -456,11 +456,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             } else if ("resident_street".equals(name)) {
                 assertEquals("Main Street", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentStreetFound = true;
+                residentAddressStreetFound = true;
 
             } else if ("resident_house_number".equals(name)) {
                 assertEquals("1", xmlDigestMatcher.getDisclosableClaim().getValue());
-                residentHouseNumberFound = true;
+                residentAddressHouseNumberFound = true;
 
             } else if ("trust_anchor".equals(name)) {
                 assertEquals("https://example.com/trust-anchor", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -502,17 +502,17 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         assertTrue(weightFound);
         assertTrue(eyeColorFound);
         assertTrue(hairColorFound);
-        assertTrue(residentAddressFound);
+        assertTrue(postalAddressFound);
         assertTrue(portraitCaptureDateFound);
         assertTrue(ageInYearsFound);
         assertTrue(ageBirthYearFound);
         assertTrue(ageOver18Found);
         assertTrue(ageOver21Found);
         assertTrue(issuingJurisdictionFound);
-        assertTrue(residentCityFound);
-        assertTrue(residentStateFound);
-        assertTrue(residentPostalCodeFound);
-        assertTrue(residentCountryFound);
+        assertTrue(residentAddressCityFound);
+        assertTrue(residentAddressStateFound);
+        assertTrue(residentAddressPostalCodeFound);
+        assertTrue(residentAddressCountryFound);
         assertTrue(biometricTemplateSignatureSignFound);
         assertTrue(biometricTemplateFaceFound);
         assertTrue(signatureUsualMarkFound);
@@ -542,8 +542,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         assertTrue(documentTypeFound);
         assertTrue(administrativeIssuanceDateFound);
         assertTrue(administrativeExpirationDateFound);
-        assertTrue(residentStreetFound);
-        assertTrue(residentHouseNumberFound);
+        assertTrue(residentAddressStreetFound);
+        assertTrue(residentAddressHouseNumberFound);
         assertTrue(trustAnchorFound);
         assertTrue(issuingAuthorityRegistrationIdentifierFound);
         assertTrue(attestedAttributesPseudonymFound);

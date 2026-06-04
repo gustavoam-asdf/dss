@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.identifier.EAAIdentifierBuilder;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDeviceKey;
@@ -101,6 +102,11 @@ public abstract class DefaultEAA implements EAA {
      * @return {@link EAAPayloadVerifier}
      */
     protected abstract EAAPayloadVerifier initEAAPayloadVerifier();
+
+    @Override
+    public DigestAlgorithm getSelectiveDisclosuresDigestAlgorithm() {
+        return getEAAPayloadVerifier().getDigestAlgorithm();
+    }
 
     @Override
     public String getId() {

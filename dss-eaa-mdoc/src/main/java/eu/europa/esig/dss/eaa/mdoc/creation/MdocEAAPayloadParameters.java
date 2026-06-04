@@ -83,18 +83,6 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
-     * Sets the certificate token used for mdoc authentication.
-     * NOTE: only the public key part of the token will be represented within the MSO object.
-     *
-     * @param certificateToken {@link CertificateToken}
-     */
-    public void setDeviceKey(CertificateToken certificateToken) {
-        if (certificateToken != null) {
-            setDeviceKey(certificateToken.getPublicKey());
-        }
-    }
-
-    /**
      * Gets a list of namespaces the device key may sign.
      *
      * @return a list of namespaces

@@ -484,16 +484,16 @@
 			<xs:element name="Weight" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="EyeColour" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="HairColour" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentAddress" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentPostalAddress" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="PortraitCaptureDate" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeBirthYear" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="AgeOverNN" type="ParametrizedDisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="IssuingJurisdiction" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentCity" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentState" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentPostalCode" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentCountry" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressCity" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressState" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressPostalCode" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressCountry" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="BiometricTemplate" type="ParametrizedDisclosableClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="SignatureUsualMark" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Fingerprint" type="DisclosableClaim" minOccurs="0" />
@@ -526,8 +526,8 @@
 
 			<!-- PID Rulebook headers -->
 			<xs:element name="TrustAnchor" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentStreet" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="ResidentHouseNumber" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressStreet" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="ResidentAddressHouseNumber" type="DisclosableClaim" minOccurs="0" />
 
 			<!-- other claims -->
 			<xs:element name="OtherClaim" type="DisclosableClaim" minOccurs="0" maxOccurs="unbounded" />

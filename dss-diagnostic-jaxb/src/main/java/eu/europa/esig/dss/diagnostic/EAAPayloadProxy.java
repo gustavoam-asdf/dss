@@ -753,9 +753,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderResidentAddress() {
+    public ClaimWrapper getResidentPostalAddress() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentAddress());
+            return getClaim(xmlEAAPayload.getResidentPostalAddress());
         }
         return null;
     }
@@ -820,9 +820,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderResidentCity() {
+    public ClaimWrapper getHolderResidentAddressCity() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentCity());
+            return getClaim(xmlEAAPayload.getResidentAddressCity());
         }
         return null;
     }
@@ -833,9 +833,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderResidentState() {
+    public ClaimWrapper getHolderResidentAddressState() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentState());
+            return getClaim(xmlEAAPayload.getResidentAddressState());
         }
         return null;
     }
@@ -846,9 +846,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderResidentPostalCode() {
+    public ClaimWrapper getHolderResidentAddressPostalCode() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentPostalCode());
+            return getClaim(xmlEAAPayload.getResidentAddressPostalCode());
         }
         return null;
     }
@@ -859,9 +859,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getHolderResidentCountry() {
+    public ClaimWrapper getHolderResidentAddressCountry() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentCountry());
+            return getClaim(xmlEAAPayload.getResidentAddressCountry());
         }
         return null;
     }
@@ -1216,9 +1216,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getResidentStreet() {
+    public ClaimWrapper getResidentAddressStreet() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentStreet());
+            return getClaim(xmlEAAPayload.getResidentAddressStreet());
         }
         return null;
     }
@@ -1229,9 +1229,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getResidentHouseNumber() {
+    public ClaimWrapper getResidentAddressHouseNumber() {
         if (xmlEAAPayload != null) {
-            return getClaim(xmlEAAPayload.getResidentHouseNumber());
+            return getClaim(xmlEAAPayload.getResidentAddressHouseNumber());
         }
         return null;
     }
@@ -1505,8 +1505,8 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getHairColour() != null) {
             claimList.add(getClaim(xmlEAAPayload.getHairColour()));
         }
-        if (xmlEAAPayload.getResidentAddress() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentAddress()));
+        if (xmlEAAPayload.getResidentPostalAddress() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentPostalAddress()));
         }
         if (xmlEAAPayload.getPortraitCaptureDate() != null) {
             claimList.add(getClaim(xmlEAAPayload.getPortraitCaptureDate()));
@@ -1525,17 +1525,17 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getIssuingJurisdiction() != null) {
             claimList.add(getClaim(xmlEAAPayload.getIssuingJurisdiction()));
         }
-        if (xmlEAAPayload.getResidentCity() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentCity()));
+        if (xmlEAAPayload.getResidentAddressCity() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressCity()));
         }
-        if (xmlEAAPayload.getResidentState() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentState()));
+        if (xmlEAAPayload.getResidentAddressState() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressState()));
         }
-        if (xmlEAAPayload.getResidentPostalCode() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentPostalCode()));
+        if (xmlEAAPayload.getResidentAddressPostalCode() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressPostalCode()));
         }
-        if (xmlEAAPayload.getResidentCountry() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentCountry()));
+        if (xmlEAAPayload.getResidentAddressCountry() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressCountry()));
         }
         if (xmlEAAPayload.getBiometricTemplate() != null) {
             for (XmlClaim item : xmlEAAPayload.getBiometricTemplate()) {
@@ -1626,11 +1626,11 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getTrustAnchor() != null) {
             claimList.add(getClaim(xmlEAAPayload.getTrustAnchor()));
         }
-        if (xmlEAAPayload.getResidentStreet() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentStreet()));
+        if (xmlEAAPayload.getResidentAddressStreet() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressStreet()));
         }
-        if (xmlEAAPayload.getResidentHouseNumber() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getResidentHouseNumber()));
+        if (xmlEAAPayload.getResidentAddressHouseNumber() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getResidentAddressHouseNumber()));
         }
         if (xmlEAAPayload.getIssuingAuthorityRegistrationIdentifier() != null) {
             claimList.add(getClaim(xmlEAAPayload.getIssuingAuthorityRegistrationIdentifier()));

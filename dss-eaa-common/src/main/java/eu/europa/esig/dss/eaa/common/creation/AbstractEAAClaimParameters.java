@@ -53,7 +53,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> implements 
     /**
      * The place where the mDL holder resides and/or may be contacted
      */
-    private String addressFull;
+    private String postalAddress;
 
     /**
      * The house number where the user currently resides
@@ -294,18 +294,18 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> implements 
     }
 
     @Override
-    public String getAddressFull() {
-        return addressFull;
+    public String getPostalAddress() {
+        return postalAddress;
     }
 
     /**
      * Sets the place where the mDL holder resides and/or may be contacted (street/house number, municipality etc.).
      * The value shall only use latin1 characters and shall have a maximum length of 150 characters.
      *
-     * @param addressFull {@link String}
+     * @param postalAddress {@link String}
      */
-    public void setAddressFull(String addressFull) {
-        this.addressFull = addressFull;
+    public void setPostalAddress(String postalAddress) {
+        this.postalAddress = postalAddress;
     }
 
     @Override
@@ -739,7 +739,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> implements 
                 ", nationalities=" + nationalities +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", addressFull='" + addressFull + '\'' +
+                ", addressFull='" + postalAddress + '\'' +
                 ", addressHouseNumber='" + addressHouseNumber + '\'' +
                 ", addressStreet='" + addressStreet + '\'' +
                 ", addressCity='" + addressCity + '\'' +
