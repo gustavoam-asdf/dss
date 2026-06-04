@@ -4,12 +4,12 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
-import eu.europa.esig.dss.cbades.cose.COSEKeyFactory;
-import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
+import eu.europa.esig.dss.eaa.mdoc.key.COSEKeyBuilder;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -17,6 +17,7 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,12 +36,6 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     private static final Logger LOG = LoggerFactory.getLogger(MdocPayloadBuilder.class);
 
     /**
-     * The factory is used to build a representation of a COSE_Key from a {@code java.security.PublicKey}
-     * Default : {@code DefaultCOSEKeyFactory}
-     */
-    private COSEKeyFactory coseKeyFactory = new DefaultCOSEKeyFactory();
-
-    /**
      * Builds disclosures
      */
     private MdocDisclosureBuilder disclosureBuilder = new DefaultMdocDisclosureBuilder();
@@ -55,17 +50,6 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      */
     public MdocPayloadBuilder() {
         // empty
-    }
-
-    /**
-     * (Optional) allows modifying the default behavior for a COSE_Key computation from a {@code java.security.PublicKey}.
-     * Default : an instance of {@code COSEKeyFactory} is used, relying on JDK 8 and BouncyCastle utility methods.
-     *
-     * @param coseKeyFactory {@link COSEKeyFactory}
-     */
-    public void setCoseKeyFactory(COSEKeyFactory coseKeyFactory) {
-        Objects.requireNonNull(coseKeyFactory, "COSEKeyFactory cannot be null!");
-        this.coseKeyFactory = coseKeyFactory;
     }
 
     /**
@@ -244,7 +228,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
     protected CBORMap buildDeviceKeyInfo(MdocEAAPayloadParameters payloadParameters) {
         Objects.requireNonNull(payloadParameters.getDeviceKey(), "DeviceKey shall be provided for an mdoc payload building!");
         final CBORMap deviceKeyInfo = new CBORMap();
-        deviceKeyInfo.put(MdocConstants.DEVICE_KEY, coseKeyFactory.create(payloadParameters.getDeviceKey()));
+        deviceKeyInfo.put(MdocConstants.DEVICE_KEY, buildCOSEKey(payloadParameters.getDeviceKey()));
         CBORMap keyAuthorizations = buildKeyAuthorizations(payloadParameters.getKeyAuthorizationsNamespaces(), payloadParameters.getKeyAuthorizationsDataElements());
         if (keyAuthorizations != null && !keyAuthorizations.isEmpty()) {
             deviceKeyInfo.put(MdocConstants.KEY_AUTHORIZATIONS, keyAuthorizations);
@@ -254,6 +238,17 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
             deviceKeyInfo.put(MdocConstants.KEY_INFO, keyInfo);
         }
         return deviceKeyInfo;
+    }
+
+    /**
+     * Builds a COSE_Key representation of a device's {@code PublicKey}
+     *
+     * @param publicKey {@link PublicKey}
+     * @return {@link CBORMap}
+     */
+    protected CBORMap buildCOSEKey(PublicKey publicKey) {
+        PublicKeyInfo publicKeyInfo = getPublicKeyInfoFactory().create(publicKey);
+        return new COSEKeyBuilder(publicKeyInfo).create();
     }
 
     /**

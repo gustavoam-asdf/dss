@@ -5,13 +5,15 @@ import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
-import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.eaa.common.key.DefaultPublicKeyInfoFactory;
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.creation.SessionTranscriptBuilder;
+import eu.europa.esig.dss.eaa.mdoc.key.COSEKeyBuilder;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
@@ -255,7 +257,8 @@ class MdocEAAPresentationWithDisclosuresAndKeyBindingValidationTest extends Abst
     private CBORMap getDeviceKeyInfo() {
         signer = ECDSA_521_USER;
         CBORMap deviceKeyInfo = new CBORMap();
-        CBORMap coseKey = new DefaultCOSEKeyFactory().create(getSigningCert().getPublicKey());
+        PublicKeyInfo publicKeyInfo = new DefaultPublicKeyInfoFactory().create(getSigningCert().getPublicKey());
+        CBORMap coseKey = new COSEKeyBuilder(publicKeyInfo).create();
         deviceKeyInfo.put("deviceKey", coseKey);
         return deviceKeyInfo;
     }

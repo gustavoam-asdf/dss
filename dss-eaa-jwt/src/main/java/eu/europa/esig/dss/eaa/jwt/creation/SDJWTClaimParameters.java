@@ -75,6 +75,18 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
     /** Integrity metadata or cryptographic binding associated with the Verifiable Credential. */
     private String verifiableCredentialsIntegrity;
 
+    // ETSI TS 119 472-1 claims
+
+    /**
+     * The subject attribute identifier
+     */
+    private String attestedAttributesSubjectIdentifier;
+
+    /**
+     * The subject attribute pseudonym
+     */
+    private String attestedAttributesSubjectPseudonym;
+
     /**
      * Default constructor
      */
@@ -425,6 +437,43 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
     }
 
     /**
+     * Gets the subject attribute identifier
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectIdentifier() {
+        return attestedAttributesSubjectIdentifier;
+    }
+
+    /**
+     * Sets the subject attribute identifier
+     *
+     * @param attestedAttributesSubjectIdentifier {@link String}
+     */
+    public void setAttestedAttributesSubjectIdentifier(String attestedAttributesSubjectIdentifier) {
+        this.attestedAttributesSubjectIdentifier = attestedAttributesSubjectIdentifier;
+    }
+
+    /**
+     * Gets the pseudonym of the attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectPseudonym() {
+        return attestedAttributesSubjectPseudonym;
+    }
+
+    /**
+     * Sets the claim for associating a set of attributes to one entity different than the EAA subject,
+     * when pseudonym is used.
+     *
+     * @param pseudonym {@link String}  the subject attribute pseudonym
+     */
+    public void setAttestedAttributesSubjectPseudonym(String pseudonym) {
+        this.attestedAttributesSubjectPseudonym = pseudonym;
+    }
+
+    /**
      * Adds a custom claim with the given name and a value.
      * The claim will be added to the root level of the payload.
      *
@@ -456,7 +505,8 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
                 ", dateOfExpiry=" + dateOfExpiry +
                 ", dateOfIssuance=" + dateOfIssuance +
                 ", verifiableCredentialsType='" + verifiableCredentialsType + '\'' +
-                ", verifiableCredentialsIntegrity='" + verifiableCredentialsIntegrity + '\'' +
+                ", attestedAttributesSubjectIdentifier='" + attestedAttributesSubjectIdentifier + '\'' +
+                ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
                 "] " + super.toString();
     }
 

@@ -82,11 +82,26 @@ public class SDJWTConstants {
     /** Specifies a JSON Object that contains a reference to a Status List Token */
     public static final String STATUS_LIST = "status_list";
 
+    /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
+    public static final String STATUS_CERTIFICATE = "certificate";
+
     /** A non-negative Integer that represents the index to check for status information for the current Token */
     public static final String STATUS_IDX = "idx";
 
     /** String value that identifies the Status List Token containing the status information for the Token */
     public static final String STATUS_URI = "uri";
+
+    /** Specifies a CBOR Object that contains a reference to an Identifier List */
+    public static final String IDENTIFIER_LIST = "identifier_list";
+
+    /** Unique identifier of the token */
+    public static final String IDENTIFIER_ID = "id";
+
+    /** String value that identifies the Identifier List containing the status information for the Token */
+    public static final String IDENTIFIER_URI = "uri";
+
+    /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
+    public static final String IDENTIFIER_CERTIFICATE = "certificate";
 
     // ETSI TS 119 472-1 defined "status" headers
 
@@ -319,6 +334,40 @@ public class SDJWTConstants {
 
     /** JWT "kty" header */
     public static final String KTY = "kty";
+
+    /** Confirmation claim "x5c" header */
+    public static final String X5C = "x5c";
+
+    /** Confirmation claim "x5u" header */
+    public static final String X5U = "x5u";
+
+    /** Confirmation claim "x5t#S256" header */
+    public static final String X5TS526 = "x5t#S256";
+
+    // RFC 7518 "JSON Web Algorithms (JWA)" claims
+
+    /** Confirmation claim EC "crv" header */
+    public static final String EC_CRV = "crv";
+
+    /** Confirmation claim EC "x" header */
+    public static final String EC_X = "x";
+
+    /** Confirmation claim EC "y" header */
+    public static final String EC_Y = "y";
+
+    /** Confirmation claim RSA exponent "e" header */
+    public static final String RSA_E = "e";
+
+    /** Confirmation claim RSA modulus "n" header */
+    public static final String RSA_N = "n";
+
+    // RFC 8037 "CFRG Elliptic Curve Diffie-Hellman (ECDH) and Signatures in JSON Object Signing and Encryption (JOSE)" claims
+
+    /** Confirmation claim OKP "crv" header */
+    public static final String OKP_CRV = "crv";
+
+    /** Confirmation claim OKP "x" header */
+    public static final String OKP_X = "x";
 
     // OpenID Identity Assurance Schema Definition 1.0 claims
 

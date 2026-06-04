@@ -1,5 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfoFactory;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,13 @@ import java.util.List;
  *
  */
 public interface SDJWTEAAClaimBuilder {
+
+    /**
+     * Sets factory for building a representation of a device public key
+     *
+     * @param publicKeyInfoFactory {@link PublicKeyInfoFactory}
+     */
+    void setPublicKeyInfoFactory(PublicKeyInfoFactory publicKeyInfoFactory);
 
     /**
      * Creates claims for the given payload parameters

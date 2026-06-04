@@ -130,7 +130,10 @@ public class SDJWTClaimDeviceKey extends SDJWTClaimMap implements ClaimDeviceKey
                 if (jwk == null) {
                     return null;
                 }
-                publicJsonWebKey = PublicJsonWebKey.Factory.newPublicJwk((Map<String, Object>) toJavaObject(getJWK()));
+                Object jwkObject = toJavaObject(jwk);
+                if (jwkObject != null) {
+                    publicJsonWebKey = PublicJsonWebKey.Factory.newPublicJwk((Map<String, Object>) jwkObject);
+                }
 
             } catch (Exception e) {
                 LOG.warn("Unable to parse JWK confirmation claim. Reason : {}", e.getMessage(), e);

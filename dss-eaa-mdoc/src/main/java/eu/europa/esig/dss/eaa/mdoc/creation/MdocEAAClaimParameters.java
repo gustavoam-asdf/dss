@@ -209,6 +209,26 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     private String documentType;
 
     /**
+     * The family name of the attribute subject
+     */
+    private String attestedAttributesSubjectFamilyName;
+
+    /**
+     * The given name of the attribute subject
+     */
+    private String attestedAttributesSubjectGivenName;
+
+    /**
+     * The number of the personal identification data assigned to the attribute subject
+     */
+    private String attestedAttributesSubjectDocumentNumber;
+
+    /**
+     * The subject attribute pseudonym
+     */
+    private String attestedAttributesSubjectPseudonym;
+
+    /**
      * Default constructor
      */
     public MdocEAAClaimParameters() {
@@ -939,6 +959,70 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     }
 
     /**
+     * Gets the family name of the attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectFamilyName() {
+        return attestedAttributesSubjectFamilyName;
+    }
+
+    /**
+     * Gets the given name of the attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectGivenName() {
+        return attestedAttributesSubjectGivenName;
+    }
+
+    /**
+     * Gets the document number of the attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectDocumentNumber() {
+        return attestedAttributesSubjectDocumentNumber;
+    }
+
+    /**
+     * Sets the claim for associating a set of attributes to one entity different than the EAA subject,
+     * when no pseudonym is used.
+     *
+     * @param familyName {@link String} the family name of the attribute subject
+     * @param givenName {@link String} the given name of the attribute subject
+     * @param documentNumber {@link String} the number of the personal identification data assigned to the attribute subject
+     */
+    public void setAttestedAttributesSubject(String familyName, String givenName, String documentNumber) {
+        Objects.requireNonNull(familyName, "Attested Attributes Subject family name cannot be null!");
+        Objects.requireNonNull(givenName, "Attested Attributes Subject given name cannot be null!");
+        Objects.requireNonNull(documentNumber, "Attested Attributes Subject document number cannot be null!");
+        this.attestedAttributesSubjectFamilyName = familyName;
+        this.attestedAttributesSubjectGivenName = givenName;
+        this.attestedAttributesSubjectDocumentNumber = documentNumber;
+    }
+
+    /**
+     * Gets the pseudonym of the attribute subject
+     *
+     * @return {@link String}
+     */
+    public String getAttestedAttributesSubjectPseudonym() {
+        return attestedAttributesSubjectPseudonym;
+    }
+
+    /**
+     * Sets the claim for associating a set of attributes to one entity different than the EAA subject,
+     * when pseudonym is used.
+     *
+     * @param pseudonym {@link String}  the subject attribute pseudonym
+     */
+    public void setAttestedAttributesSubjectPseudonym(String pseudonym) {
+        Objects.requireNonNull(pseudonym, "Attested Attributes Subject pseudonym cannot be null!");
+        this.attestedAttributesSubjectPseudonym = pseudonym;
+    }
+
+    /**
      * Adds a new selectively disclosable claim.
      * A hash will be computed for the claim.
      *
@@ -992,6 +1076,10 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
                 ", relationshipLegalRepresentative='" + relationshipLegalRepresentative + '\'' +
                 ", relationshipAgent='" + relationshipAgent + '\'' +
                 ", documentType='" + documentType + '\'' +
+                ", attestedAttributesSubjectFamilyName='" + attestedAttributesSubjectFamilyName + '\'' +
+                ", attestedAttributesSubjectGivenName='" + attestedAttributesSubjectGivenName + '\'' +
+                ", attestedAttributesSubjectDocumentNumber='" + attestedAttributesSubjectDocumentNumber + '\'' +
+                ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
                 "] " + super.toString();
     }
 

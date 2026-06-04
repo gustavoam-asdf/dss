@@ -1,12 +1,16 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfoFactory;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.eaa.jwt.key.JWKClaimBuilder;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,10 +20,21 @@ import java.util.stream.Collectors;
 public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
 
     /**
+     * The factory is used to build a representation of a public key from a {@code java.security.PublicKey}
+     * Default : {@code DefaultPublicKeyInfoFactory}
+     */
+    private PublicKeyInfoFactory publicKeyInfoFactory;
+
+    /**
      * Default constructor
      */
     public DefaultSDJWTEAAClaimBuilder() {
         // empty
+    }
+
+    @Override
+    public void setPublicKeyInfoFactory(PublicKeyInfoFactory publicKeyInfoFactory) {
+        this.publicKeyInfoFactory = publicKeyInfoFactory;
     }
 
     @Override
@@ -56,6 +71,8 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildSubjectClaim(payloadParameters));
         addIfNotNull(claims, buildOneTimeClaim(payloadParameters));
         addIfNotNull(claims, buildShortLivedClaim(payloadParameters));
+        addIfNotNull(claims, buildStatusClaim(payloadParameters));
+        addIfNotNull(claims, buildDeviceKeyClaim(payloadParameters));
 
         return claims;
     }
@@ -115,6 +132,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildIssuingRegistrationIdentifierClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildAdministrativeValidityNotBeforeClaim(parameters, selectivelyDisclosable));
         addIfNotNull(claims, buildAdministrativeValidityExpiryClaim(parameters, selectivelyDisclosable));
+        addIfNotNull(claims, buildAttestedAttributesSubject(parameters, selectivelyDisclosable));
         if (Utils.isCollectionNotEmpty(parameters.getOtherClaims())) {
             // selectively discloseness is to be chosen based on the upper parameters
             claims.addAll(parameters.getOtherClaims().stream()
@@ -248,6 +266,75 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
             return null;
         }
         return buildClaim(SDJWTConstants.SHORT_LIVED, null, false);
+    }
+
+    /**
+     * Builds a "status" claim a per draft-ietf-oauth-status-list-13
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildStatusClaim(SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getStatusList() == null && payloadParameters.getIdentifierList() == null) {
+            return null;
+        }
+
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.STATUS, false);
+
+        if (payloadParameters.getStatusList() != null) {
+            SDJWTEAAClaimObject statusList = new SDJWTEAAClaimObject(SDJWTConstants.STATUS_LIST, false);
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_INDEX, payloadParameters.getStatusList().getIndex()));
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_URI, payloadParameters.getStatusList().getUri()));
+            if (payloadParameters.getStatusList().getCertificate() != null) {
+                statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
+            }
+            claim.addChild(statusList);
+        }
+        if (payloadParameters.getIdentifierList() != null) {
+            SDJWTEAAClaimObject identifierList = new SDJWTEAAClaimObject(SDJWTConstants.IDENTIFIER_LIST, false);
+            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_ID, payloadParameters.getStatusList().getIndex()));
+            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_URI, payloadParameters.getStatusList().getUri()));
+            if (payloadParameters.getStatusList().getCertificate() != null) {
+                identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
+            }
+            claim.addChild(identifierList);
+        }
+
+        return claim;
+    }
+
+    /**
+     * Builds a "cnf" claim a per RFC 7800 "Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs)"
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildDeviceKeyClaim(SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getDeviceKey() == null && payloadParameters.getDeviceKeyType() == null &&
+                Utils.isCollectionEmpty(payloadParameters.getDeviceX509CertificateChain()) &&
+                payloadParameters.getDeviceX509CertificateThumbprint() == null &&
+                payloadParameters.getDeviceX509CertificateUrl() == null) {
+            return null;
+        }
+
+        PublicKeyInfo devicePublicKeyInfo = null;
+        if (payloadParameters.getDeviceKey() != null) {
+            Objects.requireNonNull(publicKeyInfoFactory,
+                    "PublicKeyInfoFactory shall be defined for device public key incorporation!");
+            devicePublicKeyInfo = publicKeyInfoFactory.create(payloadParameters.getDeviceKey());
+        }
+
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.CNF, false);
+        SDJWTEAAClaim jwk = new JWKClaimBuilder()
+                .publicKeyInfo(devicePublicKeyInfo)
+                .keyType(payloadParameters.getDeviceKeyType())
+                .certificateChain(payloadParameters.getDeviceX509CertificateChain())
+                .certificateThumbprint(payloadParameters.getDeviceX509CertificateThumbprint())
+                .x5u(payloadParameters.getDeviceX509CertificateUrl())
+                .create();
+        claim.addChild(jwk);
+
+        return claim;
     }
 
     /**
@@ -1017,6 +1104,33 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         }
         return buildClaim(SDJWTConstants.ISSUING_REGISTRATION_IDENTIFIER,
                 parameters.getIssuingAuthorityRegistrationIdentifier(), selectivelyDisclosable);
+    }
+
+    /**
+     * Builds the attested attribute subject claim.
+     *
+     * @param parameters the claim parameters
+     * @param selectivelyDisclosable whether selectively disclosable
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildAttestedAttributesSubject(SDJWTClaimParameters parameters, boolean selectivelyDisclosable) {
+        if (Utils.areAllStringsEmpty(parameters.getAttestedAttributesSubjectIdentifier(),
+                parameters.getAttestedAttributesSubjectPseudonym())) {
+            return null;
+        }
+
+        SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT, selectivelyDisclosable);
+        if (Utils.isStringNotBlank(parameters.getAttestedAttributesSubjectIdentifier())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT_ID,
+                    parameters.getAttestedAttributesSubjectIdentifier()));
+        }
+        if (Utils.isStringNotBlank(parameters.getAttestedAttributesSubjectPseudonym())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT_AKA,
+                    parameters.getAttestedAttributesSubjectPseudonym()));
+        }
+        return claim;
     }
 
     /**

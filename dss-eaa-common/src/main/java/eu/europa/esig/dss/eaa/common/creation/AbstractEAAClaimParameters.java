@@ -9,13 +9,12 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Contains common parameters used within SD-JWT VC and mdoc implementations
  *
  */
-public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
+public abstract class AbstractEAAClaimParameters<C extends EAAClaim> implements EAAClaimParameters<C> {
 
     /* OpenID Connect Core 1.0 */
 
@@ -198,26 +197,6 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
     private Date administrativeExpirationDate;
 
     /**
-     * The family name of the attribute subject
-     */
-    private String attestedAttributesSubjectFamilyName;
-
-    /**
-     * The given name of the attribute subject
-     */
-    private String attestedAttributesSubjectGivenName;
-
-    /**
-     * The number of the personal identification data assigned to the attribute subject
-     */
-    private String attestedAttributesSubjectDocumentNumber;
-
-    /**
-     * The subject attribute pseudonym
-     */
-    private String attestedAttributesSubjectPseudonym;
-
-    /**
      * Contains a list of other arbitrary provided claims
      */
     private final List<C> otherClaims = new ArrayList<>();
@@ -229,11 +208,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         // empty
     }
 
-    /**
-     * Gets the user's first or given name information
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getGivenName() {
         return givenName;
     }
@@ -247,11 +222,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.givenName = givenName;
     }
 
-    /**
-     * Gets the user's last name or surname information
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getFamilyName() {
         return familyName;
     }
@@ -265,11 +236,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.familyName = familyName;
     }
 
-    /**
-     * Gets the user's preferred email address
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getEmail() {
         return email;
     }
@@ -283,11 +250,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.email = email;
     }
 
-    /**
-     * Gets the user's gender
-     *
-     * @return {@link Integer}
-     */
+    @Override
     public Integer getSex() {
         return sex;
     }
@@ -302,11 +265,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.sex = sex;
     }
 
-    /**
-     * Gets the user's birthdate
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getBirthdate() {
         return birthdate;
     }
@@ -320,11 +279,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.birthdate = birthdate;
     }
 
-    /**
-     * Gets the user's preferred telephone number
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -338,12 +293,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.phoneNumber = phoneNumber;
     }
 
-    /**
-     * Gets the place where the mDL holder resides and/or may be contacted (street/house number, municipality etc.).
-     * The value shall only use latin1 characters and shall have a maximum length of 150 characters.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressFull() {
         return addressFull;
     }
@@ -358,11 +308,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressFull = addressFull;
     }
 
-    /**
-     * Gets the name of the street where the user to whom the person identification data relates currently resides.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressStreet() {
         return addressStreet;
     }
@@ -376,12 +322,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressStreet = addressStreet;
     }
 
-    /**
-     * Gets the house number where the user to whom the person identification data relates currently resides,
-     * including any affix or suffix.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressHouseNumber() {
         return addressHouseNumber;
     }
@@ -396,11 +337,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressHouseNumber = addressHouseNumber;
     }
 
-    /**
-     * Gets the city where the mDL holder lives.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressCity() {
         return addressCity;
     }
@@ -414,11 +351,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressCity = addressCity;
     }
 
-    /**
-     * Gets the state/province/district where the mDL holder lives.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressState() {
         return addressState;
     }
@@ -432,11 +365,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressState = addressState;
     }
 
-    /**
-     * Gets the postal code of the mDL holder.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressPostalCode() {
         return addressPostalCode;
     }
@@ -450,12 +379,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressPostalCode = addressPostalCode;
     }
 
-    /**
-     * Gets the country where the mDL holder lives as a two letter country code (alpha-2 code)
-     * defined in ISO 3166-1.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getAddressCountry() {
         return addressCountry;
     }
@@ -470,11 +394,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.addressCountry = addressCountry;
     }
 
-    /**
-     * Gets user's place of birth country
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPlaceOfBirthCountry() {
         return placeOfBirthCountry;
     }
@@ -488,11 +408,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.placeOfBirthCountry = placeOfBirthCountry;
     }
 
-    /**
-     * Gets user's place of birth region
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPlaceOfBirthRegion() {
         return placeOfBirthRegion;
     }
@@ -506,11 +422,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.placeOfBirthRegion = placeOfBirthRegion;
     }
 
-    /**
-     * Gets user's place of birth locality
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPlaceOfBirthLocality() {
         return placeOfBirthLocality;
     }
@@ -524,11 +436,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.placeOfBirthLocality = placeOfBirthLocality;
     }
 
-    /**
-     * Gets user's nationalities using ICAO 3-letter codes
-     *
-     * @return a list of {@link String}s
-     */
+    @Override
     public List<String> getNationalities() {
         return nationalities;
     }
@@ -557,11 +465,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.nationalities = nationalities;
     }
 
-    /**
-     * Gets user's first or given name when they were born
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getBirthGivenName() {
         return birthGivenName;
     }
@@ -575,11 +479,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.birthGivenName = birthGivenName;
     }
 
-    /**
-     * Gets user's family or last name when they were born
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getBirthFamilyName() {
         return birthFamilyName;
     }
@@ -593,11 +493,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.birthFamilyName = birthFamilyName;
     }
 
-    /**
-     * Gets user's title, e.g., "Dr"
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getTitle() {
         return title;
     }
@@ -611,11 +507,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.title = title;
     }
 
-    /**
-     * Gets user's mobile phone number
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getMobilePhoneNumber() {
         return mobilePhoneNumber;
     }
@@ -629,11 +521,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.mobilePhoneNumber = mobilePhoneNumber;
     }
 
-    /**
-     * Gets user's stage name, religious name or any other type of alias/pseudonym
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPseudonym() {
         return pseudonym;
     }
@@ -647,11 +535,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.pseudonym = pseudonym;
     }
 
-    /**
-     * Gets alpha-2 country code, as defined in ISO 3166-1, of the issuing authority’s country or territory
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getIssuingCountry() {
         return issuingCountry;
     }
@@ -665,12 +549,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.issuingCountry = issuingCountry;
     }
 
-    /**
-     * Gets issuing authority name.
-     * The value shall only use latin1 characters and shall have a maximum length of 150 characters.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getIssuingAuthority() {
         return issuingAuthority;
     }
@@ -685,12 +564,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.issuingAuthority = issuingAuthority;
     }
 
-    /**
-     * Gets the number assigned or calculated by the issuing authority.
-     * The value shall only use latin1 characters and shall have a maximum length of 150 characters.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getDocumentNumber() {
         return documentNumber;
     }
@@ -705,12 +579,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.documentNumber = documentNumber;
     }
 
-    /**
-     * An audit control number assigned by the issuing authority.
-     * The value shall only use latin1 characters and shall have a maximum length of 150 characters.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getPersonalAdministrativeNumber() {
         return personalAdministrativeNumber;
     }
@@ -725,11 +594,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.personalAdministrativeNumber = personalAdministrativeNumber;
     }
 
-    /**
-     * Gets the date the age of the mDL holder
-     *
-     * @return {@link Number}
-     */
+    @Override
     public Integer getAgeInYears() {
         return ageInYears;
     }
@@ -743,11 +608,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.ageInYears = ageInYears;
     }
 
-    /**
-     * Gets the year when the mDL holder was born
-     *
-     * @return {@link Number}
-     */
+    @Override
     public Integer getAgeBirthYear() {
         return ageBirthYear;
     }
@@ -761,12 +622,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.ageBirthYear = ageBirthYear;
     }
 
-    /**
-     * Gets a list of elements is used to convey to an mDL verifier, in a data-minimized fashion, if the mDL holder
-     * is as old or older than a specified age, or if the mDL holder is younger than a specified age.
-     *
-     * @return a map between {@link Integer} age and {@link Boolean} values
-     */
+    @Override
     public Map<Integer, Boolean> getAgeOverNN() {
         return ageOverNN;
     }
@@ -785,12 +641,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.ageOverNN.put(age, isOver);
     }
 
-    /**
-     * Gets a country subdivision code of the jurisdiction that issued the mDL as defined in
-     * ISO 3166-2:2020, Clause 8.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getIssuingJurisdiction() {
         return issuingJurisdiction;
     }
@@ -805,12 +656,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.issuingJurisdiction = issuingJurisdiction;
     }
 
-    /**
-     * Gets the URL at which a machine-readable version of the trust anchor to be used for
-     * verifying the PID can be found or looked up.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getTrustAnchor() {
         return trustAnchor;
     }
@@ -825,11 +671,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.trustAnchor = trustAnchor;
     }
 
-    /**
-     * Gets the registration identifier of the legal entity on whose behalf the EAA has been issued.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getIssuingAuthorityRegistrationIdentifier() {
         return issuingAuthorityRegistrationIdentifier;
     }
@@ -843,11 +685,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.issuingAuthorityRegistrationIdentifier = issuingAuthorityRegistrationIdentifier;
     }
 
-    /**
-     * Gets the date when the data (e.g. a PID) was issued
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getAdministrativeIssuanceDate() {
         return administrativeIssuanceDate;
     }
@@ -861,11 +699,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         this.administrativeIssuanceDate = administrativeIssuanceDate;
     }
 
-    /**
-     * Gets the date when the data (e.g. a PID) will expire
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getAdministrativeExpirationDate() {
         return administrativeExpirationDate;
     }
@@ -880,70 +714,6 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
     }
 
     /**
-     * Gets the family name of the attribute subject
-     *
-     * @return {@link String}
-     */
-    public String getAttestedAttributesSubjectFamilyName() {
-        return attestedAttributesSubjectFamilyName;
-    }
-
-    /**
-     * Gets the given name of the attribute subject
-     *
-     * @return {@link String}
-     */
-    public String getAttestedAttributesSubjectGivenName() {
-        return attestedAttributesSubjectGivenName;
-    }
-
-    /**
-     * Gets the document number of the attribute subject
-     *
-     * @return {@link String}
-     */
-    public String getAttestedAttributesSubjectDocumentNumber() {
-        return attestedAttributesSubjectDocumentNumber;
-    }
-
-    /**
-     * Sets the claim for associating a set of attributes to one entity different than the EAA subject,
-     * when no pseudonym is used.
-     *
-     * @param familyName {@link String} the family name of the attribute subject
-     * @param givenName {@link String} the given name of the attribute subject
-     * @param documentNumber {@link String} the number of the personal identification data assigned to the attribute subject
-     */
-    public void setAttestedAttributesSubject(String familyName, String givenName, String documentNumber) {
-        Objects.requireNonNull(familyName, "Attested Attributes Subject family name cannot be null!");
-        Objects.requireNonNull(givenName, "Attested Attributes Subject given name cannot be null!");
-        Objects.requireNonNull(documentNumber, "Attested Attributes Subject document number cannot be null!");
-        this.attestedAttributesSubjectFamilyName = familyName;
-        this.attestedAttributesSubjectGivenName = givenName;
-        this.attestedAttributesSubjectDocumentNumber = documentNumber;
-    }
-
-    /**
-     * Gets the pseudonym of the attribute subject
-     *
-     * @return {@link String}
-     */
-    public String getAttestedAttributesSubjectPseudonym() {
-        return attestedAttributesSubjectPseudonym;
-    }
-
-    /**
-     * Sets the claim for associating a set of attributes to one entity different than the EAA subject,
-     * when pseudonym is used.
-     *
-     * @param pseudonym {@link String}  the subject attribute pseudonym
-     */
-    public void setAttestedAttributesSubjectPseudonym(String pseudonym) {
-        Objects.requireNonNull(pseudonym, "Attested Attributes Subject pseudonym cannot be null!");
-        this.attestedAttributesSubjectPseudonym = pseudonym;
-    }
-
-    /**
      * Adds a new claim.
      * A hash will be computed for the claim, if applicable.
      *
@@ -955,11 +725,7 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
         }
     }
 
-    /**
-     * Gets a list of other arbitrary provided claims
-     *
-     * @return a list of other claims
-     */
+    @Override
     public List<C> getOtherClaims() {
         return otherClaims;
     }
@@ -1001,10 +767,6 @@ public abstract class AbstractEAAClaimParameters<C extends EAAClaim> {
                 ", issuingAuthorityRegistrationIdentifier='" + issuingAuthorityRegistrationIdentifier + '\'' +
                 ", administrativeIssuanceDate=" + administrativeIssuanceDate +
                 ", administrativeExpirationDate=" + administrativeExpirationDate +
-                ", attestedAttributesSubjectFamilyName='" + attestedAttributesSubjectFamilyName + '\'' +
-                ", attestedAttributesSubjectGivenName='" + attestedAttributesSubjectGivenName + '\'' +
-                ", attestedAttributesSubjectDocumentNumber='" + attestedAttributesSubjectDocumentNumber + '\'' +
-                ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
                 ", otherClaims=" + otherClaims +
                 ']';
     }

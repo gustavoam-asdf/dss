@@ -25,7 +25,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     /** Date of the EAA technical validity end */
     private Date expirationDate;
 
-    /** Contains the public part of the key pair used for mdoc authentication. */
+    /** Contains the public part of the key pair used for device authentication. */
     private PublicKey deviceKey;
 
     /** (Optional) Contains an "identifier_list". */
@@ -73,11 +73,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.digestAlgorithm = digestAlgorithm;
     }
 
-    /**
-     * Gets the EAA issuance date
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getIssuanceDate() {
         return issuanceDate;
     }
@@ -91,11 +87,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.issuanceDate = issuanceDate;
     }
 
-    /**
-     * Gets the EAA notBefore date
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getNotBeforeDate() {
         return notBeforeDate;
     }
@@ -109,11 +101,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.notBeforeDate = notBeforeDate;
     }
 
-    /**
-     * Gets the EAA expiration date
-     *
-     * @return {@link Date}
-     */
+    @Override
     public Date getExpirationDate() {
         return expirationDate;
     }
@@ -127,11 +115,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.expirationDate = expirationDate;
     }
 
-    /**
-     * Gets the public part of the key pair used for mdoc authentication.
-     *
-     * @return {@link PublicKey}
-     */
+    @Override
     public PublicKey getDeviceKey() {
         return deviceKey;
     }
@@ -145,11 +129,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.deviceKey = deviceKey;
     }
 
-    /**
-     * Gets the identifier_list
-     *
-     * @return {@link EAARevocationList}
-     */
+    @Override
     public EAARevocationList getIdentifierList() {
         return identifierList;
     }
@@ -185,11 +165,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.identifierList = new EAARevocationList(index, url, certificateToken);
     }
 
-    /**
-     * Gets the status_list
-     *
-     * @return {@link EAARevocationList}
-     */
+    @Override
     public EAARevocationList getStatusList() {
         return statusList;
     }
@@ -225,11 +201,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.statusList = new EAARevocationList(index, url, certificateToken);
     }
 
-    /**
-     * Gets the EAA category URN
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getCategory() {
         return category;
     }
@@ -244,11 +216,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.category = category;
     }
 
-    /**
-     * Gets whether the EAA is short-lived (no EAA status check applies)
-     *
-     * @return whether the EAA is short-lived
-     */
+    @Override
     public boolean isShortLived() {
         return shortLived;
     }
@@ -262,11 +230,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
         this.shortLived = shortLived;
     }
 
-    /**
-     * Gets whether the EAA is for one time use
-     *
-     * @return whether the EAA is for one time use
-     */
+    @Override
     public boolean isOneTime() {
         return oneTime;
     }

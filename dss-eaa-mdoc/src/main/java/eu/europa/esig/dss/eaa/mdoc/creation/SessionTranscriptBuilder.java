@@ -7,8 +7,10 @@ import eu.europa.esig.dss.cbades.cbor.CBORNull;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
-import eu.europa.esig.dss.cbades.cose.COSEKeyFactory;
-import eu.europa.esig.dss.cbades.cose.DefaultCOSEKeyFactory;
+import eu.europa.esig.dss.eaa.common.key.DefaultPublicKeyInfoFactory;
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
+import eu.europa.esig.dss.eaa.common.key.PublicKeyInfoFactory;
+import eu.europa.esig.dss.eaa.mdoc.key.COSEKeyBuilder;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -29,10 +31,10 @@ import java.util.Objects;
 public class SessionTranscriptBuilder {
 
     /**
-     * The factory is used to build a representation of a COSE_Key from a {@code java.security.PublicKey}
-     * Default : {@code DefaultCOSEKeyFactory}
+     * The factory is used to build a representation of a key from a {@code java.security.PublicKey}
+     * Default : {@code DefaultPublicKeyInfoFactory}
      */
-    private COSEKeyFactory coseKeyFactory = new DefaultCOSEKeyFactory();
+    private PublicKeyInfoFactory publicKeyInfoFactory = new DefaultPublicKeyInfoFactory();
 
     /**
      * The version of the device engagement structure, in the current version of this document its value shall be “1.0”
@@ -130,14 +132,14 @@ public class SessionTranscriptBuilder {
     }
 
     /**
-     * (Optional) allows modifying the default behavior for a COSE_Key computation from a {@code java.security.PublicKey}.
-     * Default : an instance of {@code COSEKeyFactory} is used, relying on JDK 8 and BouncyCastle utility methods.
+     * (Optional) allows modifying the default behavior for a public key computation from a {@code java.security.PublicKey}.
+     * Default : an instance of {@code DefaultPublicKeyInfoFactory} is used, relying on JDK 8 and BouncyCastle utility methods.
      *
-     * @param coseKeyFactory {@link COSEKeyFactory}
+     * @param publicKeyInfoFactory {@link DefaultPublicKeyInfoFactory}
      */
-    public void setCoseKeyFactory(COSEKeyFactory coseKeyFactory) {
-        Objects.requireNonNull(coseKeyFactory, "COSEKeyFactory cannot be null!");
-        this.coseKeyFactory = coseKeyFactory;
+    public void setPublicKeyInfoFactory(PublicKeyInfoFactory publicKeyInfoFactory) {
+        Objects.requireNonNull(publicKeyInfoFactory, "PublicKeyInfoFactory cannot be null!");
+        this.publicKeyInfoFactory = publicKeyInfoFactory;
     }
 
     /**
@@ -329,7 +331,7 @@ public class SessionTranscriptBuilder {
         CBORArray security = new CBORArray();
         security.add(eDeviceCipherSuiteIdentifier.getCOSEValue());
 
-        CBORMap eDeviceKeyCbor = coseKeyFactory.create(eDeviceKey);
+        CBORMap eDeviceKeyCbor = buildCOSEKey(eDeviceKey);
         CBORByteString eDeviceKeyBytes = CBORUtils.toCborBtsrWrappedTagged(eDeviceKeyCbor);
         security.add(eDeviceKeyBytes);
 
@@ -368,7 +370,18 @@ public class SessionTranscriptBuilder {
      */
     protected CBORMap buildEReaderKey() {
         Objects.requireNonNull(this.eReaderKey, "eReaderKey is not provided! Please use #eReaderKey method.");
-        return coseKeyFactory.create(this.eReaderKey);
+        return buildCOSEKey(this.eReaderKey);
+    }
+
+    /**
+     * Builds a COSE_Key representation of a device's {@code PublicKey}
+     *
+     * @param publicKey {@link PublicKey}
+     * @return {@link CBORMap}
+     */
+    protected CBORMap buildCOSEKey(PublicKey publicKey) {
+        PublicKeyInfo publicKeyInfo = publicKeyInfoFactory.create(publicKey);
+        return new COSEKeyBuilder(publicKeyInfo).create();
     }
 
     /**

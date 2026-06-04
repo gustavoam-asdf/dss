@@ -45,6 +45,16 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     }
 
     /**
+     * Gets a configured instance of {@code SDJWTEAAClaimBuilder}
+     *
+     * @return {@link SDJWTEAAClaimBuilder}
+     */
+    protected SDJWTEAAClaimBuilder getClaimBuilder() {
+        claimBuilder.setPublicKeyInfoFactory(getPublicKeyInfoFactory());
+        return claimBuilder;
+    }
+
+    /**
      * Sets a claim builder.
      * Default : {@code eu.europa.esig.dss.eaa.jwt.creation.DefaultSDJWTEAAClaimBuilder}
      *
@@ -77,7 +87,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     private SDJWTEAAClaimObject getRootPayloadObject(SDJWTEAAPayloadParameters payloadParameters) {
         final SDJWTEAAClaimObject payload = SDJWTEAAClaimObject.create();
 
-        payload.addChildren(claimBuilder.buildClaims(payloadParameters));
+        payload.addChildren(getClaimBuilder().buildClaims(payloadParameters));
 
         if (payloadParameters.getDecoyDigestNumber() > 0) {
             DigestAlgorithm digestAlgorithm = payloadParameters.getDigestAlgorithm() != null ?
