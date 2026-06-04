@@ -136,6 +136,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         for (EAAWrapper eaa : diagnosticData.getEAAs()) {
             List<ClaimWrapper> eaaPayloadClaims = new ArrayList<>(eaa.getAllEAAPayloadClaims());
             assertTrue(Utils.isCollectionNotEmpty(eaaPayloadClaims));
+            assertTrue(Utils.isCollectionNotEmpty(eaa.getAllEAAPayloadClaimNames()));
             checkClaimsRecursively(eaaPayloadClaims, true);
             for (ClaimWrapper claimWrapper : eaaPayloadClaims) {
                 ClaimWrapper claimByHeaderName = eaa.getClaimByHeaderName(claimWrapper.getName());

@@ -23,6 +23,7 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegeClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegeCodeClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegesClaimWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAADisclosure;
@@ -34,6 +35,7 @@ import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -144,6 +146,23 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
                 }
             }
 
+        }
+    }
+
+    @Override
+    protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
+        super.checkEAADigestMatchers(diagnosticData);
+
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
+            for (XmlDigestMatcher xmlDigestMatcher : eaa.getDigestMatchers()) {
+                if (DigestMatcherType.EAA_DISCLOSURE == xmlDigestMatcher.getType()) {
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim());
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim().getName());
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim().getValue());
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim().getId());
+                }
+            }
         }
     }
     

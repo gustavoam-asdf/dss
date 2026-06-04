@@ -5,13 +5,14 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SDJWTCompactEAAPresentationMinimalTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationNoSDWithCnfTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -20,6 +21,8 @@ class SDJWTCompactEAAPresentationMinimalTest extends AbstractSDJWTEAAPresentatio
     void init() {
         payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("EAA provider");
+        payloadParameters.setSubject(DSSASN1Utils.getSubjectCommonName(getSigningCert()));
+        payloadParameters.setDeviceKey(getSigningCert().getPublicKey());
 
         payloadParameters.setVerifiableCredentialsType("urn:eudi:eaa:1");
         Digest digest = new Digest(DigestAlgorithm.SHA256, DSSUtils.digest(DigestAlgorithm.SHA256, "vct".getBytes()));
@@ -61,9 +64,11 @@ class SDJWTCompactEAAPresentationMinimalTest extends AbstractSDJWTEAAPresentatio
         assertEquals(DSSUtils.formatDateToRFC(getSignatureParameters().bLevel().getSigningDate()), DSSUtils.formatDateToRFC(eaa.getEAANotBefore()));
         assertEquals(DSSUtils.formatDateToRFC(getSigningCert().getNotAfter()), DSSUtils.formatDateToRFC(eaa.getEAAExpiration()));
         assertEquals("EAA provider", eaa.getEAAIssuer());
+        assertEquals(DSSASN1Utils.getSubjectCommonName(getSigningCert()), eaa.getEAASubject());
         assertEquals("TEST Authority", eaa.getDocumentIssuingAuthority());
         assertEquals("John", eaa.getHolderGivenName());
         assertEquals("Doe", eaa.getHolderFamilyName());
+        assertArrayEquals(getSigningCert().getPublicKey().getEncoded(), eaa.getEAADevicePublicKey());
     }
 
     @Override
@@ -78,7 +83,7 @@ class SDJWTCompactEAAPresentationMinimalTest extends AbstractSDJWTEAAPresentatio
 
     @Override
     protected String getSigningAlias() {
-        return ECDSA_USER;
+        return GOOD_USER;
     }
 
 }

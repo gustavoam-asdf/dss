@@ -16,10 +16,12 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Creates a payload for an RFC 9901 SD-JWT VC token based on the provided parameters
@@ -76,15 +78,15 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         }
 
         final SecureRandom secureRandom = secureRandom(payloadParameters);
-        final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters);
-        map.putAll(getEAAClaimObjectValue(payload, digestAlgorithm, secureRandom, payloadParameters.isShuffleHashes()));
+        final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters, secureRandom);
+        map.putAll(getEAAClaimObjectValue(new DisclosureTraversalContext(), payload, digestAlgorithm, secureRandom, payloadParameters.isShuffleHashes()));
 
         InMemoryDocument result = new InMemoryDocument(JsonUtil.toJson(map).getBytes());
         result.setMimeType(MimeTypeEnum.JSON);
         return result;
     }
 
-    private SDJWTEAAClaimObject getRootPayloadObject(SDJWTEAAPayloadParameters payloadParameters) {
+    private SDJWTEAAClaimObject getRootPayloadObject(SDJWTEAAPayloadParameters payloadParameters, SecureRandom secureRandom) {
         final SDJWTEAAClaimObject payload = SDJWTEAAClaimObject.create();
 
         payload.addChildren(getClaimBuilder().buildClaims(payloadParameters));
@@ -93,7 +95,6 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
             DigestAlgorithm digestAlgorithm = payloadParameters.getDigestAlgorithm() != null ?
                     payloadParameters.getDigestAlgorithm() : DigestAlgorithm.SHA256;
             int digestLength = digestAlgorithm.getSaltLength();
-            SecureRandom secureRandom = secureRandom(payloadParameters);
             for (int i = 0; i < payloadParameters.getDecoyDigestNumber(); i++) {
                 byte[] bytes = secureRandom.generateSeed(digestLength);
                 payload.addDecoyDigest(DSSJsonUtils.toBase64Url(bytes));
@@ -103,21 +104,21 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return payload;
     }
 
-    private Object getClaimValue(final SDJWTEAAClaim claim, final DigestAlgorithm digestAlgorithm, final SecureRandom secureRandom, final boolean shuffleHashes) {
+    private Object getClaimValue(final DisclosureTraversalContext dtx, final SDJWTEAAClaim claim, final DigestAlgorithm digestAlgorithm, final SecureRandom secureRandom, final boolean shuffleHashes) {
         if (claim instanceof SDJWTEAAClaimObject) {
-            return getEAAClaimObjectValue((SDJWTEAAClaimObject) claim, digestAlgorithm, secureRandom, shuffleHashes);
+            return getEAAClaimObjectValue(dtx, (SDJWTEAAClaimObject) claim, digestAlgorithm, secureRandom, shuffleHashes);
 
         } else if (claim instanceof SDJWTEAAClaimArray) {
-            return getEAAClaimArrayValue((SDJWTEAAClaimArray) claim, digestAlgorithm, secureRandom, shuffleHashes);
+            return getEAAClaimArrayValue(dtx, (SDJWTEAAClaimArray) claim, digestAlgorithm, secureRandom, shuffleHashes);
 
         } else if (claim.getValue() instanceof Map) {
-            return getClaimValue(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
+            return getClaimValue(dtx, toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
 
         } else if (claim.getValue() instanceof Collection) {
-            return getClaimValue(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
+            return getClaimValue(dtx, toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
 
         } else if (claim.getValue() instanceof Object[]) {
-            return getClaimValue(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
+            return getClaimValue(dtx, toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, secureRandom, shuffleHashes);
         }
 
         return claim.getValue();
@@ -166,18 +167,17 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return result;
     }
 
-    private Map<String, Object> getEAAClaimObjectValue(final SDJWTEAAClaimObject objectClaim,
-                                                       final DigestAlgorithm digestAlgorithm,
-                                                       final SecureRandom secureRandom,
+    private Map<String, Object> getEAAClaimObjectValue(final DisclosureTraversalContext dtx, final SDJWTEAAClaimObject objectClaim,
+                                                       final DigestAlgorithm digestAlgorithm, final SecureRandom secureRandom,
                                                        final boolean shuffleHashes) {
         Map<String, Object> result = new LinkedHashMap<>();
         List<String> selectivelyDisclosableClaims = new ArrayList<>();
 
         objectClaim.getChildren().forEach(child -> {
             if (child.isSelectivelyDisclosable()) {
-                selectivelyDisclosableClaims.add(getHashedDisclosure(child, digestAlgorithm, secureRandom, shuffleHashes));
+                selectivelyDisclosableClaims.add(getHashedDisclosure(dtx, child, digestAlgorithm, secureRandom, shuffleHashes));
             } else {
-                result.put(child.getName(), getClaimValue(child, digestAlgorithm, secureRandom, shuffleHashes));
+                result.put(child.getName(), getClaimValue(dtx, child, digestAlgorithm, secureRandom, shuffleHashes));
             }
         });
 
@@ -192,17 +192,19 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return result;
     }
 
-    private List<Object> getEAAClaimArrayValue(final SDJWTEAAClaimArray arrayClaim, final DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, final boolean shuffleHashes) {
+    private List<Object> getEAAClaimArrayValue(final DisclosureTraversalContext dtx, final SDJWTEAAClaimArray arrayClaim,
+                                               final DigestAlgorithm digestAlgorithm, SecureRandom secureRandom,
+                                               final boolean shuffleHashes) {
         List<Object> result = new ArrayList<>();
         List<Object> hashedElements = new ArrayList<>();
 
         arrayClaim.getElements().forEach(element -> {
             if (element.isSelectivelyDisclosable()) {
                 Map<String, String> hashedElement = new LinkedHashMap<>();
-                hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(element, digestAlgorithm, secureRandom, shuffleHashes));
+                hashedElement.put(SDJWTConstants.HASH, getHashedDisclosure(dtx, element, digestAlgorithm, secureRandom, shuffleHashes));
                 hashedElements.add(hashedElement);
             } else {
-                result.add(getClaimValue(element, digestAlgorithm, secureRandom, shuffleHashes));
+                result.add(getClaimValue(dtx, element, digestAlgorithm, secureRandom, shuffleHashes));
             }
         });
 
@@ -220,10 +222,17 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         return result;
     }
 
-    private String getHashedDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, boolean shuffleHashes) {
-        SDJWTEAADisclosure disclosure = buildDisclosure(claim, digestAlgorithm, secureRandom, shuffleHashes);
-        Digest digest = disclosure.computeDigest(digestAlgorithm);
-        return DSSJsonUtils.toBase64Url(digest.getValue());
+    private String getHashedDisclosure(DisclosureTraversalContext dtx, SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, boolean shuffleHashes) {
+        return dtx.getHash(claim, () -> {
+            SDJWTEAADisclosure disclosure = getDisclosure(dtx, claim, digestAlgorithm, secureRandom, shuffleHashes);
+            Digest digest = disclosure.computeDigest(digestAlgorithm);
+            return DSSJsonUtils.toBase64Url(digest.getValue());
+        });
+    }
+
+    private SDJWTEAADisclosure getDisclosure(DisclosureTraversalContext dtx, SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm,
+                                             SecureRandom secureRandom, boolean shuffleHashes) {
+        return dtx.getDisclosure(claim, () -> buildDisclosure(dtx, claim, digestAlgorithm, secureRandom, shuffleHashes));
     }
 
     /**
@@ -235,13 +244,14 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
      *         the digest algorithm
      * @return {@link String}
      */
-    public SDJWTEAADisclosure buildDisclosure(SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, boolean shuffleHashes) {
+    protected SDJWTEAADisclosure buildDisclosure(DisclosureTraversalContext dtx, SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, boolean shuffleHashes) {
+        Object claimValue = getClaimValue(dtx, claim, digestAlgorithm, secureRandom, shuffleHashes);
         String salt = claim.getSalt();
         if (Utils.isStringEmpty(salt)) {
             byte[] bytes = nextRandomSalt(secureRandom); // 16 * 8 = 128 bits
             salt = DSSJsonUtils.toBase64Url(bytes);
         }
-        return disclosureBuilder.build(claim.getName(), getClaimValue(claim, digestAlgorithm, secureRandom, shuffleHashes), salt);
+        return disclosureBuilder.build(claim.getName(), claimValue, salt);
     }
 
     @Override
@@ -249,51 +259,99 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         DigestAlgorithm digestAlgorithm = payloadParameters.getDigestAlgorithm() != null ?
                 payloadParameters.getDigestAlgorithm() : DigestAlgorithm.SHA256;
 
-        final List<SDJWTEAADisclosure> disclosures = new ArrayList<>();
-
         SecureRandom secureRandom = secureRandom(payloadParameters);
-        SDJWTEAAClaimObject root = getRootPayloadObject(payloadParameters);
-        collectDisclosures(root, digestAlgorithm, disclosures, secureRandom, payloadParameters.isShuffleHashes());
-
-        return disclosures;
+        SDJWTEAAClaimObject root = getRootPayloadObject(payloadParameters, secureRandom);
+        return collectDisclosures(root, digestAlgorithm, secureRandom, payloadParameters.isShuffleHashes());
     }
 
-    private void collectDisclosures(final SDJWTEAAClaim claim,
-                                    final DigestAlgorithm digestAlgorithm,
-                                    final List<SDJWTEAADisclosure> disclosures,
-                                    final SecureRandom secureRandom,
-                                    final boolean shuffleHashes) {
+    private List<SDJWTEAADisclosure> collectDisclosures(final SDJWTEAAClaimObject root, final DigestAlgorithm digestAlgorithm,
+                                                        final SecureRandom secureRandom, final boolean shuffleHashes) {
+        DisclosureTraversalContext dtx = new DisclosureTraversalContext();
+        getEAAClaimObjectValue(dtx, root, digestAlgorithm, secureRandom, shuffleHashes);
+        return dtx.getDisclosures();
+    }
 
-        if (claim.isSelectivelyDisclosable()) {
-            disclosures.add(buildDisclosure(claim, digestAlgorithm, secureRandom, shuffleHashes));
+    /**
+     * Holds traversal state while generating an SD-JWT payload and its
+     * associated disclosures.
+     * <p>
+     * This context ensures that disclosures and their corresponding hashes
+     * are generated only once per claim instance and subsequently reused.
+     * This guarantees deterministic disclosure generation for nested
+     * selectively-disclosable claims and prevents inconsistencies caused by
+     * recomputing disclosures with different salts.
+     */
+    private static class DisclosureTraversalContext {
+
+        /**
+         * Cache of generated disclosures keyed by claim instance.
+         * <p>
+         * An {@link IdentityHashMap} is used to ensure caching is based on
+         * object identity rather than {@code equals}/{@code hashCode}.
+         */
+        private final Map<SDJWTEAAClaim, SDJWTEAADisclosure> disclosuresMap = new IdentityHashMap<>();
+
+        /**
+         * Cache of disclosure hashes keyed by claim instance.
+         * <p>
+         * This guarantees that a disclosure hash is computed only once and
+         * reused whenever referenced by parent disclosures.
+         */
+        private final Map<SDJWTEAAClaim, String> hashesMap = new IdentityHashMap<>();
+
+        /**
+         * Ordered list of generated disclosures.
+         * <p>
+         * The order reflects the first encounter of disclosures during claim
+         * tree traversal and is used to produce deterministic output.
+         */
+        private final List<SDJWTEAADisclosure> disclosuresList = new ArrayList<>();
+
+        /**
+         * Returns the disclosure associated with the given claim.
+         * <p>
+         * If no disclosure has been generated yet, the supplied function is
+         * invoked to create and cache it. Newly created disclosures are also
+         * recorded in the ordered disclosure list.
+         *
+         * @param claim {@link SDJWTEAAClaim} for which a disclosure is requested
+         * @param supplier supplies a disclosure when one is not yet cached
+         * @return the cached or newly created disclosure
+         */
+        public SDJWTEAADisclosure getDisclosure(SDJWTEAAClaim claim, Supplier<SDJWTEAADisclosure> supplier) {
+            SDJWTEAADisclosure disclosure = disclosuresMap.get(claim);
+            if (disclosure == null) {
+                disclosure = supplier.get();
+                disclosuresMap.put(claim, disclosure);
+                disclosuresList.add(disclosure);
+            }
+            return disclosure;
         }
 
-        // TODO : improve ?
-        if (claim instanceof SDJWTEAAClaimObject) {
-
-            SDJWTEAAClaimObject objectClaim = (SDJWTEAAClaimObject) claim;
-
-            for (SDJWTEAAClaim child : objectClaim.getChildren()) {
-                collectDisclosures(child, digestAlgorithm, disclosures, secureRandom, shuffleHashes);
-            }
-
-        } else if (claim instanceof SDJWTEAAClaimArray) {
-
-            SDJWTEAAClaimArray arrayClaim = (SDJWTEAAClaimArray) claim;
-
-            for (SDJWTEAAClaim element : arrayClaim.getElements()) {
-                collectDisclosures(element, digestAlgorithm, disclosures, secureRandom, shuffleHashes);
-            }
-
-        } else if (claim.getValue() instanceof Map) {
-            collectDisclosures(toEAAClaimObject((Map<?, ?>) claim.getValue()), digestAlgorithm, disclosures, secureRandom, shuffleHashes);
-
-        } else if (claim.getValue() instanceof Collection) {
-            collectDisclosures(toEAAClaimArray((Collection<?>) claim.getValue()), digestAlgorithm, disclosures, secureRandom, shuffleHashes);
-
-        } else if (claim.getValue() instanceof Object[]) {
-            collectDisclosures(toEAAClaimArray((Object[]) claim.getValue()), digestAlgorithm, disclosures, secureRandom, shuffleHashes);
+        /**
+         * Returns the disclosure hash associated with the given claim.
+         * <p>
+         * If the hash has not yet been computed, the supplied function is
+         * invoked and the resulting value is cached.
+         *
+         * @param claim {@link SDJWTEAAClaim} for which a disclosure hash is requested
+         * @param supplier supplies a hash when one is not yet cached
+         * @return the cached or newly computed disclosure hash
+         */
+        public String getHash(SDJWTEAAClaim claim, Supplier<String> supplier) {
+            return hashesMap.computeIfAbsent(claim, k -> supplier.get());
         }
+
+        /**
+         * Returns the disclosures generated during traversal in deterministic
+         * encounter order.
+         *
+         * @return a list of {@link SDJWTEAADisclosure}s
+         */
+        public List<SDJWTEAADisclosure> getDisclosures() {
+            return disclosuresList;
+        }
+
     }
 
 }

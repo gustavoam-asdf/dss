@@ -2,8 +2,11 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -18,11 +21,17 @@ import eu.europa.esig.dss.utils.Utils;
 import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.jwx.Headers;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,6 +94,22 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
                     assertTrue(DSSJsonUtils.getSupportedProtectedCriticalHeaders().contains(critItem));
                     assertTrue(DSSJsonUtils.isRequiredCriticalHeader(critItem));
                     assertFalse(DSSJsonUtils.isCriticalHeaderException(critItem));
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
+        super.checkEAADigestMatchers(diagnosticData);
+
+        for (EAAWrapper eaa : diagnosticData.getEAAs()) {
+            for (XmlDigestMatcher xmlDigestMatcher : eaa.getDigestMatchers()) {
+                if (DigestMatcherType.EAA_DISCLOSURE == xmlDigestMatcher.getType()) {
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim());
+                    assertNotNull(xmlDigestMatcher.getDisclosableClaim().getValue());
+                    assertNull(xmlDigestMatcher.getDisclosableClaim().getNamespace());
+                    assertNull(xmlDigestMatcher.getDisclosableClaim().getId());
                 }
             }
         }
@@ -162,6 +187,8 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             assertEquals(Utils.isTrue(getPayloadParameters().isOneTime()), Utils.isTrue(eaa.getOneTimeUse()));
 
             assertSDJWTClaims(getPayloadParameters().selectivelyDisclosable(), getPayloadParameters().nonSelectivelyDisclosable(), eaa);
+
+
         }
     }
 
@@ -294,6 +321,13 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
         assertEither(sd.getAttestedAttributesSubjectIdentifier(), nonSd.getAttestedAttributesSubjectIdentifier(), eaa.getAttestedAttributesSubjectId());
         assertEither(sd.getAttestedAttributesSubjectPseudonym(), nonSd.getAttestedAttributesSubjectPseudonym(), eaa.getAttestedAttributesSubjectPseudonym());
+
+        List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
+        if (parametersContainSelectivelyDisclosablClaims()) {
+            assertFalse(selectivelyDisclosableClaims.isEmpty());
+        } else {
+            assertTrue(selectivelyDisclosableClaims.isEmpty());
+        }
     }
 
     private <T> void assertEither(T sdValue, T nonSdValue, T actual) {
@@ -316,6 +350,71 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
             assertTrue(Objects.equals(sdFormatted, actualValue) || Objects.equals(nonSdFormatted, actualValue),
                     String.format("Expected [%s] or [%s] but got [%s]", sdFormatted, nonSdFormatted, actualValue));
+        }
+    }
+
+    private boolean parametersContainSelectivelyDisclosablClaims() {
+        if (hasConfiguredFields(getPayloadParameters().selectivelyDisclosable())) {
+            return true;
+        }
+
+        return hasSDClaims(getPayloadParameters().selectivelyDisclosable()) || hasSDClaims(getPayloadParameters().nonSelectivelyDisclosable());
+    }
+
+    private boolean hasConfiguredFields(SDJWTClaimParameters params) {
+        return getAllFields(params.getClass())
+                .anyMatch(f -> {
+                    try {
+                        f.setAccessible(true);
+                        Object value = f.get(params);
+                        return value != null
+                                && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())
+                                && (!(value instanceof Map) || !((Map<?, ?>) value).isEmpty());
+
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalStateException(e);
+                    }
+                });
+    }
+
+    private Stream<Field> getAllFields(Class<?> type) {
+        List<Field> fields = new ArrayList<>();
+
+        while (type != null && type != Object.class) {
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+            type = type.getSuperclass();
+        }
+
+        return fields.stream();
+    }
+
+    private boolean hasSDClaims(SDJWTClaimParameters claimParameters) {
+        return claimParameters.getOtherClaims().stream().anyMatch(this::hasSDClaims);
+    }
+
+    private boolean hasSDClaims(SDJWTEAAClaim claim) {
+        if (claim == null) {
+            return false;
+        }
+
+        if (claim.isSelectivelyDisclosable()) {
+            return true;
+        }
+
+        if (claim instanceof SDJWTEAAClaimObject) {
+            SDJWTEAAClaimObject object = (SDJWTEAAClaimObject) claim;
+
+            return object.getChildren() != null
+                    && object.getChildren().stream().anyMatch(this::hasSDClaims);
+
+        } else if (claim instanceof SDJWTEAAClaimArray) {
+            SDJWTEAAClaimArray array = (SDJWTEAAClaimArray) claim;
+
+            return array.getElements() != null
+                    && array.getElements().stream().anyMatch(this::hasSDClaims);
+
+        } else {
+            return false;
         }
     }
 
