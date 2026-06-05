@@ -21,8 +21,14 @@ import java.util.List;
  *         implementation of signature parameters corresponding to the supported signature format
  * @param <B>
  *         implementation of EAA payload builder to the EAA format
+ * @param <C>
+ *         implementation of EAA claim for the EAA format
+ * @param <D>
+ *         implementation of EAA disclosure for the EAA format
+ * @param <E>
+ *         implementation of EAA key binding parameters for the EAA format
  */
-public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure> extends Serializable {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure, E extends KeyBindingParameters> extends Serializable {
 
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
@@ -62,13 +68,13 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
      */
     List<D> getDisclosures(final B payloadParameters);
 
-    ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, SP signatureParameters);
+    ToBeSigned getDataToSignForKeyBindingSignature(DSSDocument eaa, E keyBindingParameters, SP signatureParameters);
 
-    ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, List<D> disclosures, SP signatureParameters);
+    ToBeSigned getDataToSignForKeyBindingSignature(DSSDocument eaa, List<D> disclosures, E keyBindingParameters, SP signatureParameters);
 
-    DSSDocument createKeybindingSignature(DSSDocument eea, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument createKeyBindingSignature(DSSDocument eea, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
-    DSSDocument createKeybindingSignature(DSSDocument eea, List<D> disclosures, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument createKeyBindingSignature(DSSDocument eea, List<D> disclosures, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
     DSSDocument issuePresentation(DSSDocument eaa, List<D> disclosures);
 

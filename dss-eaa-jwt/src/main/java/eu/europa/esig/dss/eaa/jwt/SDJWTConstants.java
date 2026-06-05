@@ -23,6 +23,10 @@ public class SDJWTConstants {
 
     // SD-JWT payload parameters
 
+    // Key Binding payload parameters
+
+    public static final String SD_HASH = "sd_hash";
+
     // RFC 9901 payload header parameters
 
     /** SD-JWT payload header used to define a hash value of a selectively disclosable array element */

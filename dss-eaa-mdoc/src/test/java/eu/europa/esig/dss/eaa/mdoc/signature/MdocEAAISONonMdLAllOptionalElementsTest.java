@@ -6,6 +6,7 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -117,6 +118,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
     @Override
     protected CBAdESSignatureParameters getKeyBindingSignatureParameters() {
+        return null;
+    }
+
+    @Override
+    protected MdocKeyBindingParameters getKeyBindingParameters() {
         return null;
     }
 

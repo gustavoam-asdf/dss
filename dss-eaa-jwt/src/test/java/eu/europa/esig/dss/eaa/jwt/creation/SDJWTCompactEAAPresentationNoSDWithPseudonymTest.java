@@ -55,6 +55,11 @@ class SDJWTCompactEAAPresentationNoSDWithPseudonymTest extends AbstractSDJWTEAAP
     }
 
     @Override
+    protected SDJWTKeyBindingParameters getKeyBindingParameters() {
+        return null;
+    }
+
+    @Override
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 

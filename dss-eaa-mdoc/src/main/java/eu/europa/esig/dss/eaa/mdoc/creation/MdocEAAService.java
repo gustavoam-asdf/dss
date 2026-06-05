@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * This service is used to handle creation and issuance workflow for ISO/IEC 18013-5 mdoc EAAs and presentations
  *
  */
-public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure, MdocKeyBindingParameters> {
 
     private static final long serialVersionUID = 6514504397480840459L;
 
@@ -240,27 +240,31 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     }
 
     @Override
-    public List<MdocEAADisclosure> getDisclosures(MdocEAAPayloadParameters payloadParameters) {
-        return getPayloadBuilder().buildDisclosures(payloadParameters);
-    }
-
-    @Override
-    public ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, CBAdESSignatureParameters signatureParameters) {
+    public ToBeSigned getDataToSignForKeyBindingSignature(final DSSDocument eaa, final MdocKeyBindingParameters keyBindingParameters,
+                                                          final CBAdESSignatureParameters signatureParameters) {
         return null;
     }
 
     @Override
-    public ToBeSigned getDataToSignForKeybindingSignature(DSSDocument eaa, List<MdocEAADisclosure> disclosures, CBAdESSignatureParameters signatureParameters) {
+    public ToBeSigned getDataToSignForKeyBindingSignature(final DSSDocument eaa, final List<MdocEAADisclosure> disclosures, final MdocKeyBindingParameters keyBindingParameters,
+                                                          final CBAdESSignatureParameters signatureParameters) {
         return null;
     }
 
     @Override
-    public DSSDocument createKeybindingSignature(DSSDocument eea, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
+    public DSSDocument createKeyBindingSignature(final DSSDocument eea, final MdocKeyBindingParameters keyBindingParameters, final CBAdESSignatureParameters signatureParameters,
+                                                 final SignatureValue signatureValue) {
         return null;
     }
 
     @Override
-    public DSSDocument createKeybindingSignature(DSSDocument eea, List<MdocEAADisclosure> disclosures, CBAdESSignatureParameters signatureParameters, SignatureValue signatureValue) {
+    public DSSDocument createKeyBindingSignature(final DSSDocument eea, final List<MdocEAADisclosure> disclosures, final MdocKeyBindingParameters keyBindingParameters,
+                                                 final CBAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
+        return null;
+    }
+
+    @Override
+    public List<MdocEAADisclosure> getDisclosures(final MdocEAAPayloadParameters payloadParameters) {
         return null;
     }
 
@@ -297,7 +301,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
     /**
      * Gets service to be used for a CB-AdES signature creation
-     * 
+     *
      * @return {@link CBAdESService}
      */
     protected CBAdESService getCBAdESService() {

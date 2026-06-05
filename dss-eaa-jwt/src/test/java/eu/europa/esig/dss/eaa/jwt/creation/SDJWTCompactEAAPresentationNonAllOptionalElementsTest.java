@@ -140,6 +140,11 @@ class SDJWTCompactEAAPresentationNonAllOptionalElementsTest extends AbstractSDJW
     }
 
     @Override
+    protected SDJWTKeyBindingParameters getKeyBindingParameters() {
+        return null;
+    }
+
+    @Override
     protected boolean disclosuresPresent() {
         return false;
     }

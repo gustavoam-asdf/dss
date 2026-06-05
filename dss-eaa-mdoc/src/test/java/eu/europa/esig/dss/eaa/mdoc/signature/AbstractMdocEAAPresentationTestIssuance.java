@@ -29,6 +29,7 @@ import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssua
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAADisclosure;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDrivingPrivilege;
 import eu.europa.esig.dss.enumerations.COSESignatureType;
@@ -58,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEAAPresentationTestIssuance
-        <CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+        <CBAdESSignatureParameters, MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure, MdocKeyBindingParameters> {
 
     @Override
     protected MdocEAAService getService() {
@@ -85,6 +86,7 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void checkAdvancedSignatures(List<AdvancedSignature> signatures) {
         super.checkAdvancedSignatures(signatures);
 
@@ -165,7 +167,7 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             }
         }
     }
-    
+
     @Override
     protected void checkClaims(DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);

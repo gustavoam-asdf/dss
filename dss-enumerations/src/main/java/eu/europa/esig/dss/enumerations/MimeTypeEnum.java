@@ -53,6 +53,9 @@ public enum MimeTypeEnum implements MimeType {
     /** dc+sd-jwt */
     SD_JWT_VC("application/dc+sd-jwt", "json"),
 
+    /** kb+jwt */
+    KB_JWT("application/kb+jwt", "json"),
+
     /** pkcs7-signature */
     PKCS7("application/pkcs7-signature", "pkcs7", "p7m", "p7s"),
 

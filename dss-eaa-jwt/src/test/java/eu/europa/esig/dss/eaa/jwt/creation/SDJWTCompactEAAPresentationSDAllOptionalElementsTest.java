@@ -150,6 +150,11 @@ class SDJWTCompactEAAPresentationSDAllOptionalElementsTest extends AbstractSDJWT
     }
 
     @Override
+    protected SDJWTKeyBindingParameters getKeyBindingParameters() {
+        return null;
+    }
+
+    @Override
     protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
         super.checkEAADigestMatchers(diagnosticData);
 

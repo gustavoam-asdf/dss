@@ -6,6 +6,7 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
@@ -64,6 +65,11 @@ class MdocEAAISONonMdLKeyAuthorizationsDataElementsTest extends AbstractMdocEAAP
 
     @Override
     protected CBAdESSignatureParameters getKeyBindingSignatureParameters() {
+        return null;
+    }
+
+    @Override
+    protected MdocKeyBindingParameters getKeyBindingParameters() {
         return null;
     }
 

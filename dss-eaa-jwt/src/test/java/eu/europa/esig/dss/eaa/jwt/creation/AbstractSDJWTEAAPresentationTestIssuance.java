@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractEAAPresentationTestIssuance<
-        JAdESSignatureParameters, SDJWTEAAPayloadParameters, SDJWTEAAClaim, SDJWTEAADisclosure> {
+        JAdESSignatureParameters, SDJWTEAAPayloadParameters, SDJWTEAAClaim, SDJWTEAADisclosure, SDJWTKeyBindingParameters> {
 
     @Override
     protected SDJWTEAAService getService() {
@@ -73,7 +73,11 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             assertInstanceOf(JAdESSignature.class, signature);
 
             JAdESSignature jadesSignature = (JAdESSignature) signature;
-            assertEquals(MimeTypeEnum.SD_JWT_VC.getMimeTypeString(), jadesSignature.getSignatureType());
+            if (signature.isKeyBindingSignature()) {
+                assertEquals(MimeTypeEnum.KB_JWT.getMimeTypeString(), jadesSignature.getSignatureType());
+            } else {
+                assertEquals(MimeTypeEnum.SD_JWT_VC.getMimeTypeString(), jadesSignature.getSignatureType());
+            }
 
             JWS jws = jadesSignature.getJws();
 
@@ -432,6 +436,7 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
         super.checkSigningCertificateValue(diagnosticData);
 
         for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            JAdESSignatureParameters signatureParameters = signatureWrapper.isKeyBindingSignature() ? getKeyBindingSignatureParameters() : getSignatureParameters();
             FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
             List<RelatedCertificateWrapper> signingCertificates = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
             assertEquals(1, signingCertificates.size());
@@ -443,9 +448,9 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             int signCertRefs = 1 + (Utils.isCollectionNotEmpty(kidCerts) ? 1 : 0) + (Utils.isCollectionNotEmpty(x5uCerts) ? 1 : 0);
             assertEquals(signCertRefs, references.size());
 
-            if (getSignatureParameters().isIncludeKeyIdentifier()) {
+            if (signatureParameters.isIncludeKeyIdentifier()) {
                 assertEquals(1, kidCerts.size());
-            } else if (Utils.isStringNotEmpty(getSignatureParameters().getX509Url())) {
+            } else if (Utils.isStringNotEmpty(signatureParameters.getX509Url())) {
                 assertTrue(Utils.isCollectionNotEmpty(x5uCerts));
             } else {
                 assertEquals(0, kidCerts.size());

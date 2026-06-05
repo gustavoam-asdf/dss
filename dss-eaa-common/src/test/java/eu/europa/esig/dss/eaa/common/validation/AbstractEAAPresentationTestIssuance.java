@@ -6,6 +6,7 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.eaa.common.creation.EAADisclosure;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadParameters;
 import eu.europa.esig.dss.eaa.common.creation.EAAService;
+import eu.europa.esig.dss.eaa.common.creation.KeyBindingParameters;
 import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.MimeType;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractEAAPresentationTestIssuance<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters,
-        C extends EAAClaim, D extends EAADisclosure> extends AbstractEAAPresentationTestValidation {
+        C extends EAAClaim, D extends EAADisclosure, E extends KeyBindingParameters> extends AbstractEAAPresentationTestValidation {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractEAAPresentationTestIssuance.class);
 
@@ -42,7 +43,9 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
 
     protected abstract SP getKeyBindingSignatureParameters();
 
-    protected abstract EAAService<SP, B, C, D> getService();
+    protected abstract E getKeyBindingParameters();
+
+    protected abstract EAAService<SP, B, C, D, E> getService();
 
     protected abstract MimeType getExpectedMime();
 
@@ -77,7 +80,7 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
         if (signedEAA == null) {
             B payloadParameters = getPayloadParameters();
             SP params = getSignatureParameters();
-            EAAService<SP, B, C, D> service = getService();
+            EAAService<SP, B, C, D, E> service = getService();
 
             ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, params);
             SignatureValue signatureValue = getToken().sign(dataToSign, params.getSignatureAlgorithm(), getPrivateKeyEntry());
@@ -89,22 +92,23 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
 
     protected List<D> getDisclosures() {
         B payloadParameters = getPayloadParameters();
-        EAAService<SP, B, C, D> service = getService();
+        EAAService<SP, B, C, D, E> service = getService();
         return service.getDisclosures(payloadParameters);
     }
 
     protected DSSDocument createKeyBindingSignature() {
         if (includeKeyBindingSignature()) {
             SP params = getKeyBindingSignatureParameters();
-            EAAService<SP, B, C, D> service = getService();
+            EAAService<SP, B, C, D, E> service = getService();
 
             DSSDocument signedEAA = signEAA();
             List<D> disclosures = getDisclosures();
+            E keyBindingParameters = getKeyBindingParameters();
 
-            ToBeSigned dataToSign = service.getDataToSignForKeybindingSignature(signedEAA, disclosures, params);
+            ToBeSigned dataToSign = service.getDataToSignForKeyBindingSignature(signedEAA, disclosures, keyBindingParameters, params);
             SignatureValue signatureValue = getToken().sign(dataToSign, params.getSignatureAlgorithm(), getPrivateKeyEntry());
             // TODO : add signature verification ?
-            return service.createKeybindingSignature(signedEAA, disclosures, params, signatureValue);
+            return service.createKeyBindingSignature(signedEAA, disclosures, keyBindingParameters, params, signatureValue);
         }
         return null;
     }

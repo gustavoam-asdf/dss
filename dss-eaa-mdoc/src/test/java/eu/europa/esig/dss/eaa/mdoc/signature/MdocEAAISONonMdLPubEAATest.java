@@ -9,6 +9,7 @@ import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -80,6 +81,11 @@ class MdocEAAISONonMdLPubEAATest extends AbstractMdocEAAPresentationTestIssuance
 
     @Override
     protected CBAdESSignatureParameters getKeyBindingSignatureParameters() {
+        return null;
+    }
+
+    @Override
+    protected MdocKeyBindingParameters getKeyBindingParameters() {
         return null;
     }
 

@@ -1,5 +1,14 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Date;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
@@ -7,16 +16,8 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -27,8 +28,8 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
-        payloadParameters.selectivelyDisclosable().setAdministrativeIssuanceDate(new Date());
-        payloadParameters.selectivelyDisclosable().setAdministrativeExpirationDate(new Date(System.currentTimeMillis() + 3600L * 1000L));
+        payloadParameters.setDeviceKey(getSigningCert().getPublicKey());
+        payloadParameters.setDeviceKeyType("RSA");
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setSigningCertificate(getSigningCert());
@@ -51,12 +52,22 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
 
     @Override
     protected JAdESSignatureParameters getKeyBindingSignatureParameters() {
-        return null;
+        JAdESSignatureParameters keyBindingSignatureParameters = new JAdESSignatureParameters();
+        keyBindingSignatureParameters.setSigningCertificate(getSigningCert());
+        keyBindingSignatureParameters.setCertificateChain(getCertificateChain());
+        keyBindingSignatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+        keyBindingSignatureParameters.setIncludeKeyIdentifier(false);
+        keyBindingSignatureParameters.setIncludeCertificateChain(false);
+        return keyBindingSignatureParameters;
     }
 
     @Override
     protected SDJWTKeyBindingParameters getKeyBindingParameters() {
-        return null;
+        SDJWTKeyBindingParameters keyBindingParameters = new SDJWTKeyBindingParameters();
+        keyBindingParameters.setIssuanceTime(new Date());
+        keyBindingParameters.setAudience("https://verifier.example.org");
+        keyBindingParameters.setNonce("1234567890");
+        return keyBindingParameters;
     }
 
     @Override
@@ -65,28 +76,20 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(4, digestMatchers.size());
+        assertEquals(2, digestMatchers.size());
 
         boolean givenNameSDFound = false;
         boolean familyNameSDFound = false;
-        boolean administrativeValidityNotBeforeSDFound = false;
-        boolean administrativeValidityExpirySDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 givenNameSDFound = true;
             } else if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 familyNameSDFound = true;
-            } else if ("adm_nbf".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                administrativeValidityNotBeforeSDFound = true;
-            } else if ("adm_exp".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
-                administrativeValidityExpirySDFound = true;
             }
         }
         assertTrue(givenNameSDFound);
         assertTrue(familyNameSDFound);
-        assertTrue(administrativeValidityNotBeforeSDFound);
-        assertTrue(administrativeValidityExpirySDFound);
     }
 
     @Override
@@ -97,11 +100,6 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
         assertEquals("John", eaa.getHolderGivenName());
         assertEquals("Doe", eaa.getHolderFamilyName());
-    }
-
-    @Override
-    protected boolean keyBindingPresent() {
-        return false;
     }
 
     @Override
