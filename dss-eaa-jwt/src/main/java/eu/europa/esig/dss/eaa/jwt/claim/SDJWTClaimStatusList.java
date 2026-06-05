@@ -26,12 +26,12 @@ public class SDJWTClaimStatusList extends SDJWTClaimMap implements ClaimStatusLi
 
     @Override
     public ClaimNumber getIndex() {
-        return getAsNumber(SDJWTConstants.STATUS_IDX);
+        return getAsNumber(SDJWTConstants.STATUS_LIST_IDX);
     }
 
     @Override
     public ClaimString getUri() {
-        return getAsString(SDJWTConstants.STATUS_URI);
+        return getAsString(SDJWTConstants.STATUS_LIST_URI);
     }
 
     @Override

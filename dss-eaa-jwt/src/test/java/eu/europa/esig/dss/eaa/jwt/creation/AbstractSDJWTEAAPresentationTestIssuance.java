@@ -1,11 +1,16 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
+import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
+import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
+import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.MimeType;
@@ -254,8 +259,12 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
         assertEither(sd.getPseudonym(), nonSd.getPseudonym(), eaa.getHolderPseudonym());
 
         assertEither(sd.getPersonalAdministrativeNumber(), nonSd.getPersonalAdministrativeNumber(), eaa.getPersonalAdministrativeNumber());
-        assertEither(sd.getSex(), nonSd.getSex(), eaa.getHolderGender()); // TODO : separate gender (String) and sex (Integer)
-        // assertEither(sd.getGender(), nonSd.getGender(), eaa.getGender());
+
+        if (sd.getSex() != null || nonSd.getSex() != null) {
+            assertEither(sd.getSex(), nonSd.getSex(), eaa.getHolderGender());
+        } else {
+            assertEither(sd.getGender(), nonSd.getGender(), eaa.getHolderGender());
+        }
 
         assertEither(sd.getIssuingCountry(), nonSd.getIssuingCountry(), eaa.getDocumentIssuingAuthorityCountry());
         assertEither(sd.getIssuingAuthority(), nonSd.getIssuingAuthority(), eaa.getDocumentIssuingAuthority());
@@ -287,14 +296,21 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
         assertEither(sd.getIssuingAuthorityRegistrationIdentifier(), nonSd.getIssuingAuthorityRegistrationIdentifier(), eaa.getIssuingRegistrationIdentifier());
 
-        assertEitherDate(sd.getAdministrativeIssuanceDate(), nonSd.getAdministrativeIssuanceDate(), eaa.getAdministrativeIssuanceDate());
-        assertEitherDate(sd.getAdministrativeExpirationDate(), nonSd.getAdministrativeExpirationDate(), eaa.getAdministrativeExpirationDate());
+        if (sd.getDateOfIssuance() != null || nonSd.getDateOfIssuance() != null) {
+            assertEitherDate(sd.getDateOfIssuance(), nonSd.getDateOfIssuance(), eaa.getAdministrativeIssuanceDate());
+        } else {
+            assertEitherDate(sd.getAdministrativeIssuanceDate(), nonSd.getAdministrativeIssuanceDate(), eaa.getAdministrativeIssuanceDate());
+        }
+        if (sd.getDateOfExpiry() != null || nonSd.getDateOfExpiry() != null) {
+            assertEitherDate(sd.getDateOfExpiry(), nonSd.getDateOfExpiry(), eaa.getAdministrativeExpirationDate());
+        } else {
+            assertEitherDate(sd.getAdministrativeExpirationDate(), nonSd.getAdministrativeExpirationDate(), eaa.getAdministrativeExpirationDate());
+        }
 
         assertEither(sd.getPicture(), nonSd.getPicture(), eaa.getHolderPictureUrl());
         assertEither(sd.getNickname(), nonSd.getNickname(), eaa.getHolderNickname());
 
-        // TODO : not implemented
-        // assertEither(sd.getPreferredNickname(), nonSd.getPreferredNickname(), eaa.getHolderPreferredNickname());
+        assertEither(sd.getPreferredNickname(), nonSd.getPreferredNickname(), eaa.getHolderShortName());
 
         assertEither(sd.getName(), nonSd.getName(), eaa.getHolderFullName());
         assertEither(sd.getMiddleName(), nonSd.getMiddleName(), eaa.getHolderMiddleName());
@@ -302,9 +318,6 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
         assertEither(sd.getWebsite(), nonSd.getWebsite(), eaa.getHolderWebsiteUrl());
 
         assertEither(sd.getEmailVerified(), nonSd.getEmailVerified(), eaa.getHolderEmailVerified());
-
-        // TODO : separate gender (String) and sex (Integer)
-        // assertEither(sd.getGender(), nonSd.getGender(), eaa.getHolderGender());
 
         assertEither(sd.getZoneinfo(), nonSd.getZoneinfo(), eaa.getHolderTimezone());
         assertEither(sd.getLocale(), nonSd.getLocale(), eaa.getHolderLocale());
@@ -314,10 +327,6 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
         assertEither(sd.getBirthMiddleName(), nonSd.getBirthMiddleName(), eaa.getHolderBirthMiddleName());
         assertEither(sd.getSalutation(), nonSd.getSalutation(), eaa.getHolderSalutation());
-
-        // TODO : review returned values for PID
-        // assertEitherDate(sd.getDateOfIssuance(), nonSd.getDateOfIssuance(), eaa.getEAAIssuedAt());
-        // assertEitherDate(sd.getDateOfExpiry(), nonSd.getDateOfExpiry(), eaa.getEAAExpiration());
 
         assertEither(sd.getAttestedAttributesSubjectIdentifier(), nonSd.getAttestedAttributesSubjectIdentifier(), eaa.getAttestedAttributesSubjectId());
         assertEither(sd.getAttestedAttributesSubjectPseudonym(), nonSd.getAttestedAttributesSubjectPseudonym(), eaa.getAttestedAttributesSubjectPseudonym());
@@ -415,6 +424,58 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
         } else {
             return false;
+        }
+    }
+
+    @Override
+    protected void checkSigningCertificateValue(DiagnosticData diagnosticData) {
+        super.checkSigningCertificateValue(diagnosticData);
+
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
+            List<RelatedCertificateWrapper> signingCertificates = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
+            assertEquals(1, signingCertificates.size());
+
+            List<CertificateRefWrapper> references = signingCertificates.get(0).getReferences();
+            List<RelatedCertificateWrapper> kidCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.KEY_IDENTIFIER);
+            List<RelatedCertificateWrapper> x5uCerts = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.X509_URL);
+
+            int signCertRefs = 1 + (Utils.isCollectionNotEmpty(kidCerts) ? 1 : 0) + (Utils.isCollectionNotEmpty(x5uCerts) ? 1 : 0);
+            assertEquals(signCertRefs, references.size());
+
+            if (getSignatureParameters().isIncludeKeyIdentifier()) {
+                assertEquals(1, kidCerts.size());
+            } else if (Utils.isStringNotEmpty(getSignatureParameters().getX509Url())) {
+                assertTrue(Utils.isCollectionNotEmpty(x5uCerts));
+            } else {
+                assertEquals(0, kidCerts.size());
+                assertEquals(0, x5uCerts.size());
+            }
+
+            for (CertificateRefWrapper certificateRef : references) {
+                if (CertificateRefOrigin.SIGNING_CERTIFICATE.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getDigestAlgoAndValue());
+                    assertNotNull(certificateRef.getDigestMethod());
+                    assertTrue(certificateRef.isDigestValuePresent());
+                    assertTrue(certificateRef.isDigestValueMatch());
+                    assertNull(certificateRef.getIssuerSerial());
+
+                } else if (CertificateRefOrigin.KEY_IDENTIFIER.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getCertificateId());
+                    if (certificateRef.getIssuerSerial() != null) {
+                        assertNotNull(certificateRef.getIssuerSerial());
+                        assertTrue(certificateRef.isIssuerSerialPresent());
+                        assertTrue(certificateRef.isIssuerSerialMatch());
+                    } else {
+                        assertNotNull(certificateRef.getKid());
+                    }
+                    assertNull(certificateRef.getDigestAlgoAndValue());
+
+                } else if (CertificateRefOrigin.X509_URL.equals(certificateRef.getOrigin())) {
+                    assertNotNull(certificateRef.getCertificateId());
+                    assertNotNull(certificateRef.getX509Url());
+                }
+            }
         }
     }
 

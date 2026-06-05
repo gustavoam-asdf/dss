@@ -80,25 +80,25 @@ public class SDJWTConstants {
     public static final String STATUS_LIST = "status_list";
 
     /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
-    public static final String STATUS_CERTIFICATE = "certificate";
+    public static final String STATUS_LIST_CERTIFICATE = "certificate";
 
     /** A non-negative Integer that represents the index to check for status information for the current Token */
-    public static final String STATUS_IDX = "idx";
+    public static final String STATUS_LIST_IDX = "idx";
 
     /** String value that identifies the Status List Token containing the status information for the Token */
-    public static final String STATUS_URI = "uri";
+    public static final String STATUS_LIST_URI = "uri";
 
     /** Specifies a CBOR Object that contains a reference to an Identifier List */
     public static final String IDENTIFIER_LIST = "identifier_list";
 
     /** Unique identifier of the token */
-    public static final String IDENTIFIER_ID = "id";
+    public static final String IDENTIFIER_LIST_ID = "id";
 
     /** String value that identifies the Identifier List containing the status information for the Token */
-    public static final String IDENTIFIER_URI = "uri";
+    public static final String IDENTIFIER_LIST_URI = "uri";
 
     /** A certificate used to sign the top-level certificate in the x5chain element in the MSO revocation list structure */
-    public static final String IDENTIFIER_CERTIFICATE = "certificate";
+    public static final String IDENTIFIER_LIST_CERTIFICATE = "certificate";
 
     // ETSI TS 119 472-1 defined "status" headers
 

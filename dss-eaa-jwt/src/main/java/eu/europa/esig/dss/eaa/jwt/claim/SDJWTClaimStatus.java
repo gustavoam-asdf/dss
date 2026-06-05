@@ -46,7 +46,7 @@ public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
 
     @Override
     public ClaimString getUri() {
-        return getAsString(SDJWTConstants.STATUS_URI);
+        return getAsString(SDJWTConstants.STATUS_LIST_URI);
     }
 
     @Override

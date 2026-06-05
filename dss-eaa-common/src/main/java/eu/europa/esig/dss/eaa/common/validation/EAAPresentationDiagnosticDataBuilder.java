@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeEqualOrOverClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectIdClaim;
@@ -38,6 +39,7 @@ import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeEqualOrOver;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubjectId;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
@@ -357,6 +359,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setPortraitCaptureDate(getXmlClaim(eaaPayload.getPortraitCaptureDate(), supportedClaims));
         xmlEAAPayload.setAgeInYears(getXmlClaim(eaaPayload.getAgeInYears(), supportedClaims));
         xmlEAAPayload.setAgeBirthYear(getXmlClaim(eaaPayload.getAgeBirthYear(), supportedClaims));
+        xmlEAAPayload.setAgeEqualOrOver(getXmlAgeEqualOrOverClaim(eaaPayload.getAgeEqualOrOver(), supportedClaims));
         xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayload.getAgeOverNN(), supportedClaims));
         xmlEAAPayload.setIssuingJurisdiction(getXmlClaim(eaaPayload.getIssuingJurisdiction(), supportedClaims));
         xmlEAAPayload.setResidentAddressCity(getXmlClaim(eaaPayload.getResidentAddressCity(), supportedClaims));
@@ -802,6 +805,20 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         }
         xmlDrivingPrivilegeCodeClaim.getEntry().addAll(getOtherClaims(claimDrivingPrivilegeCode, claimSupportedClaims));
         return xmlDrivingPrivilegeCodeClaim;
+    }
+
+    private XmlAgeEqualOrOverClaim getXmlAgeEqualOrOverClaim(ClaimAgeEqualOrOver claimAgeEqualOrOver, List<XmlClaim> supportedClaims) {
+        if (claimAgeEqualOrOver == null) {
+            return null;
+        }
+        XmlAgeEqualOrOverClaim xmlAgeEqualOrOverClaim = new XmlAgeEqualOrOverClaim();
+        appendGenericInfo(xmlAgeEqualOrOverClaim, claimAgeEqualOrOver, supportedClaims);
+
+        List<XmlClaim> claimSupportedClaims = new ArrayList<>();
+        xmlAgeEqualOrOverClaim.getAgeOverNNClaim().addAll(getXmlAgeOverNNClaims(claimAgeEqualOrOver.getAgeOverNNClaims(), claimSupportedClaims));
+        xmlAgeEqualOrOverClaim.getEntry().addAll(getOtherClaims(claimAgeEqualOrOver, claimSupportedClaims));
+
+        return xmlAgeEqualOrOverClaim;
     }
 
     private List<XmlAgeOverNNClaim> getXmlAgeOverNNClaims(List<ClaimAgeOverNN> claimsAgeOverNN, List<XmlClaim> supportedClaims) {

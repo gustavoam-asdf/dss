@@ -2,6 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
@@ -11,13 +12,14 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationSDArraysNestedRecursiveTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -34,8 +36,14 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
         payloadParameters.setVerifiableCredentialsTypeIntegrity(digest);
 
         SDJWTEAAClaimArray pets = SDJWTEAAClaim.createArray("pets");
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("dog"));
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("cat"));
+        SDJWTEAAClaimObject bella = SDJWTEAAClaim.createObjectSelectivelyDisclosable();
+        bella.addChild(SDJWTEAAClaim.createSelectivelyDisclosable("name", "Bella"));
+        bella.addChild(SDJWTEAAClaim.createSelectivelyDisclosable("type", "dog"));
+        pets.addElement(bella);
+        SDJWTEAAClaimObject slinky = SDJWTEAAClaim.createObjectSelectivelyDisclosable();
+        slinky.addChild(SDJWTEAAClaim.createSelectivelyDisclosable("name", "Slinky"));
+        slinky.addChild(SDJWTEAAClaim.createSelectivelyDisclosable("type", "cat"));
+        pets.addElement(slinky);
         payloadParameters.selectivelyDisclosable().addClaim(pets);
 
         signatureParameters = new JAdESSignatureParameters();
@@ -65,9 +73,11 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(3, digestMatchers.size());
+        assertEquals(7, digestMatchers.size());
 
         boolean petsSDFound = false;
+        boolean bellaSDFound = false;
+        boolean slinkySDFound = false;
         boolean dogSDFound = false;
         boolean catSDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
@@ -75,17 +85,56 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
             if ("pets".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 assertNotNull(xmlDigestMatcher.getDisclosableClaim().getValue());
                 petsSDFound = true;
+            } else if ("Bella".equals(xmlDigestMatcher.getDisclosableClaim().getValue())) {
+                assertEquals("name", xmlDigestMatcher.getDisclosableClaim().getName());
+                bellaSDFound = true;
+            } else if ("Slinky".equals(xmlDigestMatcher.getDisclosableClaim().getValue())) {
+                assertEquals("name", xmlDigestMatcher.getDisclosableClaim().getName());
+                slinkySDFound = true;
             } else if ("dog".equals(xmlDigestMatcher.getDisclosableClaim().getValue())) {
-                assertNull(xmlDigestMatcher.getDisclosableClaim().getName());
+                assertEquals("type", xmlDigestMatcher.getDisclosableClaim().getName());
                 dogSDFound = true;
             } else if ("cat".equals(xmlDigestMatcher.getDisclosableClaim().getValue())) {
-                assertNull(xmlDigestMatcher.getDisclosableClaim().getName());
+                assertEquals("type", xmlDigestMatcher.getDisclosableClaim().getName());
                 catSDFound = true;
             }
         }
         assertTrue(petsSDFound);
+        assertTrue(bellaSDFound);
+        assertTrue(slinkySDFound);
         assertTrue(dogSDFound);
         assertTrue(catSDFound);
+    }
+
+    @Override
+    protected void checkClaims(DiagnosticData diagnosticData) {
+        super.checkClaims(diagnosticData);
+
+        EAAWrapper eaa = diagnosticData.getEAAs().get(0);
+        List<ClaimWrapper> otherClaims = eaa.getOtherClaims();
+        assertEquals(1, otherClaims.size());
+
+        ClaimWrapper pets = otherClaims.get(0);
+        assertEquals("pets", pets.getName());
+        assertEquals(2, pets.getList().size());
+
+        boolean bellaFound = false;
+        boolean slinkyFound = false;
+        for (ClaimWrapper pet : pets.getList()) {
+            assertNull(pet.getName());
+
+            Map<String, ClaimWrapper> petObject = pet.getMap();
+            assertEquals(2, petObject.size());
+            if ("Bella".equals(petObject.get("name").getText())) {
+                assertEquals("dog", petObject.get("type").getText());
+                bellaFound = true;
+            } else if ("Slinky".equals(petObject.get("name").getText())) {
+                assertEquals("cat", petObject.get("type").getText());
+                slinkyFound = true;
+            }
+        }
+        assertTrue(bellaFound);
+        assertTrue(slinkyFound);
     }
 
     @Override

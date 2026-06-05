@@ -72,6 +72,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         addIfNotNull(claims, buildSubjectClaim(payloadParameters));
         addIfNotNull(claims, buildOneTimeClaim(payloadParameters));
         addIfNotNull(claims, buildShortLivedClaim(payloadParameters));
+        addIfNotNull(claims, buildCategoryClaim(payloadParameters));
         addIfNotNull(claims, buildStatusClaim(payloadParameters));
         addIfNotNull(claims, buildDeviceKeyClaim(payloadParameters));
         addIfNotNull(claims, buildVerifiableCredentialsTypeClaim(payloadParameters));
@@ -270,6 +271,19 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
     }
 
     /**
+     * Builds the category claim.
+     *
+     * @param payloadParameters the payload parameters
+     * @return the claim or null
+     */
+    protected SDJWTEAAClaim buildCategoryClaim(SDJWTEAAPayloadParameters payloadParameters) {
+        if (payloadParameters.getCategory() == null) {
+            return null;
+        }
+        return buildClaim(SDJWTConstants.CATEGORY, payloadParameters.getCategory(), false);
+    }
+
+    /**
      * Builds a "status" claim a per draft-ietf-oauth-status-list-13
      *
      * @param payloadParameters the payload parameters
@@ -284,19 +298,19 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
 
         if (payloadParameters.getStatusList() != null) {
             SDJWTEAAClaimObject statusList = new SDJWTEAAClaimObject(SDJWTConstants.STATUS_LIST, false);
-            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_INDEX, payloadParameters.getStatusList().getIndex()));
-            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_URI, payloadParameters.getStatusList().getUri()));
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_IDX, payloadParameters.getStatusList().getIndex()));
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_URI, payloadParameters.getStatusList().getUri()));
             if (payloadParameters.getStatusList().getCertificate() != null) {
-                statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
+                statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
             }
             claim.addChild(statusList);
         }
         if (payloadParameters.getIdentifierList() != null) {
             SDJWTEAAClaimObject identifierList = new SDJWTEAAClaimObject(SDJWTConstants.IDENTIFIER_LIST, false);
-            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_ID, payloadParameters.getStatusList().getIndex()));
-            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_URI, payloadParameters.getStatusList().getUri()));
+            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_ID, payloadParameters.getStatusList().getIndex()));
+            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_URI, payloadParameters.getStatusList().getUri()));
             if (payloadParameters.getStatusList().getCertificate() != null) {
-                identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
+                identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
             }
             claim.addChild(identifierList);
         }
@@ -711,7 +725,9 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
         return buildClaim(SDJWTConstants.UPDATED_AT,
                 DSSUtils.getTimeValueInSeconds(parameters.getUpdatedAt().getTime()),
                 selectivelyDisclosable);
-    }/**
+    }
+
+    /**
      * Builds the place of birth claim.
      *
      * @param parameters the claim parameters

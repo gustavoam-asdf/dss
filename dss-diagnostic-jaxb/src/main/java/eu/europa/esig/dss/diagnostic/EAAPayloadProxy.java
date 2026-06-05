@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.diagnostic;
 
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AgeEqualOrOverClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
@@ -15,6 +16,7 @@ import eu.europa.esig.dss.diagnostic.claim.PlaceOfBirthClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAddressClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeEqualOrOverClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAgeOverNNClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlAttestedAttributesSubjectClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBiometricTemplateXXClaim;
@@ -792,6 +794,21 @@ public class EAAPayloadProxy {
     public ClaimWrapper getHolderAgeBirthYear() {
         if (xmlEAAPayload != null) {
             return getClaim(xmlEAAPayload.getAgeBirthYear());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the map of claims attesting whether the User to whom the person identification data relates is
+     * at least NN years old. N <> 18. Multiple instances of this attribute may be present, provided the value
+     * of NN is different in each of them. If present, the requirements in clause 7.2.5 of ISO/IEC 18013-5
+     * are applicable for these attributes.
+     *
+     * @return {@link ClaimWrapper}
+     */
+    public AgeEqualOrOverClaimWrapper getHolderAgeEqualOrOver() {
+        if (xmlEAAPayload != null) {
+            return getAgeEqualOrOverClaim(xmlEAAPayload.getAgeEqualOrOver());
         }
         return null;
     }
@@ -1737,6 +1754,13 @@ public class EAAPayloadProxy {
             return null;
         }
         return new AttestedAttributesSubjectClaimWrapper(xmlAttestedAttributesSubjectClaim);
+    }
+
+    private AgeEqualOrOverClaimWrapper getAgeEqualOrOverClaim(XmlAgeEqualOrOverClaim xmlAgeEqualOrOverClaim) {
+        if (xmlAgeEqualOrOverClaim == null) {
+            return null;
+        }
+        return new AgeEqualOrOverClaimWrapper(xmlAgeEqualOrOverClaim);
     }
     
 }

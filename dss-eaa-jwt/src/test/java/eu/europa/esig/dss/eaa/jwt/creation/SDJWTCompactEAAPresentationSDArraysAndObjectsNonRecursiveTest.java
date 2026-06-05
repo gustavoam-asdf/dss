@@ -13,11 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationSDArraysAndObjectsNonRecursiveTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -33,10 +34,16 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
         Digest digest = new Digest(DigestAlgorithm.SHA256, DSSUtils.digest(DigestAlgorithm.SHA256, "vct".getBytes()));
         payloadParameters.setVerifiableCredentialsTypeIntegrity(digest);
 
-        SDJWTEAAClaimArray pets = SDJWTEAAClaim.createArray("pets");
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("dog"));
-        pets.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("cat"));
-        payloadParameters.selectivelyDisclosable().addClaim(pets);
+        payloadParameters.selectivelyDisclosable().setGivenName("John");
+        payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
+        payloadParameters.selectivelyDisclosable().setIssuingAuthority("TEST Authority");
+        payloadParameters.selectivelyDisclosable().setIssuingCountry("LU");
+        payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("VATLU-123456");
+
+        SDJWTEAAClaimArray nationalities = SDJWTEAAClaim.createArray("pets");
+        nationalities.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("dog"));
+        nationalities.addElement(SDJWTEAAClaim.createSelectivelyDisclosable("cat"));
+        payloadParameters.nonSelectivelyDisclosable().addClaim(nationalities);
 
         signatureParameters = new JAdESSignatureParameters();
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
@@ -65,14 +72,34 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
 
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
-        assertEquals(3, digestMatchers.size());
+        assertEquals(7, digestMatchers.size());
 
+        boolean familyNameSDFound = false;
+        boolean givenNameSDFound = false;
+        boolean issuingCountrySDFound = false;
+        boolean issuingAuthoritySDFound = false;
+        boolean issuingAuthorityRegNumberSDFound = false;
         boolean petsSDFound = false;
         boolean dogSDFound = false;
         boolean catSDFound = false;
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
-            if ("pets".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+            if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
+                familyNameSDFound = true;
+            } else if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("John", xmlDigestMatcher.getDisclosableClaim().getValue());
+                givenNameSDFound = true;
+            } else if ("issuing_country".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("LU", xmlDigestMatcher.getDisclosableClaim().getValue());
+                issuingCountrySDFound = true;
+            } else if ("issuing_authority".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("TEST Authority", xmlDigestMatcher.getDisclosableClaim().getValue());
+                issuingAuthoritySDFound = true;
+            } else if ("iss_reg_id".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("VATLU-123456", xmlDigestMatcher.getDisclosableClaim().getValue());
+                issuingAuthorityRegNumberSDFound = true;
+            } else if ("pets".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 assertNotNull(xmlDigestMatcher.getDisclosableClaim().getValue());
                 petsSDFound = true;
             } else if ("dog".equals(xmlDigestMatcher.getDisclosableClaim().getValue())) {
@@ -83,7 +110,12 @@ class SDJWTCompactEAAPresentationSDArraysRecursiveTest extends AbstractSDJWTEAAP
                 catSDFound = true;
             }
         }
-        assertTrue(petsSDFound);
+        assertTrue(familyNameSDFound);
+        assertTrue(givenNameSDFound);
+        assertTrue(issuingCountrySDFound);
+        assertTrue(issuingAuthoritySDFound);
+        assertTrue(issuingAuthorityRegNumberSDFound);
+        assertFalse(petsSDFound);
         assertTrue(dogSDFound);
         assertTrue(catSDFound);
     }

@@ -1104,6 +1104,9 @@ public class SimpleReportBuilder {
 		xmlEAAPayload.setPortraitCaptureDate(getXmlDisclosableClaim(eaaPayloadProxy.getHolderPortraitCaptureDate()));
 		xmlEAAPayload.setAgeInYears(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeInYears()));
 		xmlEAAPayload.setAgeBirthYear(getXmlDisclosableClaim(eaaPayloadProxy.getHolderAgeBirthYear()));
+		if (eaaPayloadProxy.getHolderAgeEqualOrOver() != null) {
+			xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayloadProxy.getHolderAgeEqualOrOver().getAgeEqualOrOverList()));
+		}
 		xmlEAAPayload.getAgeOverNN().addAll(getXmlAgeOverNNClaims(eaaPayloadProxy.getHolderAgeOverList()));
 		xmlEAAPayload.setIssuingJurisdiction(getXmlDisclosableClaim(eaaPayloadProxy.getDocumentIssuingAuthorityJurisdiction()));
 		xmlEAAPayload.setResidentAddressCity(getXmlDisclosableClaim(eaaPayloadProxy.getHolderResidentAddressCity()));

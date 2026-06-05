@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.diagnostic;
 
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
+import eu.europa.esig.dss.diagnostic.claim.AgeEqualOrOverClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AttestedAttributesSubjectClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.BiometricTemplateXXClaimWrapper;
@@ -1176,9 +1177,19 @@ public class EAAWrapper extends AbstractTokenProxy {
      * @return {@link Boolean}
      */
     public Boolean isHolderAgeOver(int age) {
-        List<AgeOverNNClaimWrapper> ageOverList = getEAAPayload().getHolderAgeOverList();
-        if (ageOverList != null && !ageOverList.isEmpty()) {
-            for (AgeOverNNClaimWrapper ageOverNNClaim : ageOverList) {
+        AgeEqualOrOverClaimWrapper holderAgeEqualOrOver = getEAAPayload().getHolderAgeEqualOrOver();
+        if (holderAgeEqualOrOver != null) {
+            Boolean result = isHolderAgeOver(holderAgeEqualOrOver.getAgeEqualOrOverList(), age);
+            if (result != null) {
+                return result;
+            }
+        }
+        return isHolderAgeOver(getEAAPayload().getHolderAgeOverList(), age);
+    }
+
+    private Boolean isHolderAgeOver(List<AgeOverNNClaimWrapper> ageOverClaimsList, int age) {
+        if (ageOverClaimsList != null && !ageOverClaimsList.isEmpty()) {
+            for (AgeOverNNClaimWrapper ageOverNNClaim : ageOverClaimsList) {
                 if (age == ageOverNNClaim.getAge()) {
                     return getPayloadClaimBooleanValue(ageOverNNClaim);
                 }

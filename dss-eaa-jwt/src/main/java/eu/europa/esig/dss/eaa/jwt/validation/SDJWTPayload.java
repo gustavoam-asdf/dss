@@ -2,6 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAddress;
+import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAgeOverNNList;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimCredentialSubject;
 import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimDeviceKey;
@@ -12,6 +13,7 @@ import eu.europa.esig.dss.eaa.jwt.claim.SDJWTClaimStatus;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeEqualOrOver;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
@@ -316,7 +318,7 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimString getDocumentNumber() {
-        return null;
+        return getAsString(SDJWTConstants.DOCUMENT_NUMBER);
     }
 
     @Override
@@ -371,11 +373,20 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
 
     @Override
     public ClaimNumber getAgeInYears() {
-        return null;
+        return getAsNumber(SDJWTConstants.AGE_IN_YEARS);
     }
 
     @Override
     public ClaimNumber getAgeBirthYear() {
+        return getAsNumber(SDJWTConstants.AGE_BIRTH_YEAR);
+    }
+
+    @Override
+    public ClaimAgeEqualOrOver getAgeEqualOrOver() {
+        ClaimMap ageEqualOrOver = getAsMap(SDJWTConstants.AGE_EQUAL_OR_OVER);
+        if (ageEqualOrOver != null) {
+            return new SDJWTClaimAgeOverNNList(ageEqualOrOver);
+        }
         return null;
     }
 

@@ -1831,6 +1831,7 @@
 			<xs:element name="PortraitCaptureDate" type="Claim" minOccurs="0" />
 			<xs:element name="AgeInYears" type="Claim" minOccurs="0" />
 			<xs:element name="AgeBirthYear" type="Claim" minOccurs="0" />
+			<xs:element name="AgeEqualOrOver" type="AgeEqualOrOverClaim" minOccurs="0" />
 			<xs:element name="AgeOverNN" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="IssuingJurisdiction" type="Claim" minOccurs="0" />
 			<xs:element name="ResidentAddressCity" type="Claim" minOccurs="0" />
@@ -2089,6 +2090,16 @@
 					<xs:element name="Code" type="Claim" minOccurs="0"/>
 					<xs:element name="Sign" type="Claim" minOccurs="0"/>
 					<xs:element name="Value" type="Claim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AgeEqualOrOverClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="AgeOverNNClaim" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

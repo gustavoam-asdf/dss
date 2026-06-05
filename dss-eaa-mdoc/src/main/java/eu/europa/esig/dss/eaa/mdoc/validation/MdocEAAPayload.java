@@ -18,6 +18,7 @@ import eu.europa.esig.dss.eaa.mdoc.claim.MdocClaimValidityInfo;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeEqualOrOver;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
@@ -416,6 +417,11 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     @Override
     public ClaimNumber getAgeBirthYear() {
         return getAsNumber(forIso180135(ISO180135Headers.AGE_BIRTH_YEAR), forIso232202(ISO232202Headers.AGE_BIRTH_YEAR));
+    }
+
+    @Override
+    public ClaimAgeEqualOrOver getAgeEqualOrOver() {
+        return null;
     }
 
     @Override

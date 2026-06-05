@@ -3,6 +3,7 @@ package eu.europa.esig.dss.spi.eaa;
 import eu.europa.esig.dss.model.eaa.claim.Claim;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAddress;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAgeOverNN;
+import eu.europa.esig.dss.model.eaa.claim.ClaimAgeEqualOrOver;
 import eu.europa.esig.dss.model.eaa.claim.ClaimArray;
 import eu.europa.esig.dss.model.eaa.claim.ClaimAttestedAttributesSubject;
 import eu.europa.esig.dss.model.eaa.claim.ClaimBiometricTemplateXX;
@@ -434,6 +435,16 @@ public interface EAAPayload extends Claim {
      * @return {@link ClaimNumber}
      */
     ClaimNumber getAgeBirthYear();
+
+    /**
+     * Gets a map of elements attesting whether the User to whom the person identification data relates is
+     * at least NN years old. N <> 18. Multiple instances of this attribute may be present, provided the value of
+     * NN is different in each of them. If present, the requirements in clause 7.2.5 of ISO/IEC 18013-5 are
+     * applicable for these attributes.
+     *
+     * @return {@link ClaimAgeEqualOrOver}
+     */
+    ClaimAgeEqualOrOver getAgeEqualOrOver();
 
     /**
      * Gets a list of elements is used to convey to an mDL verifier, in a data-minimized fashion, if the mDL holder
