@@ -265,7 +265,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
     @Override
     public List<MdocEAADisclosure> getDisclosures(final MdocEAAPayloadParameters payloadParameters) {
-        return null;
+        return getPayloadBuilder().buildDisclosures(payloadParameters);
     }
 
     /**

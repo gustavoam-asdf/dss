@@ -41,9 +41,9 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
 
     protected abstract SP getSignatureParameters();
 
-    protected abstract SP getKeyBindingSignatureParameters();
-
     protected abstract E getKeyBindingParameters();
+
+    protected abstract SP getKeyBindingSignatureParameters();
 
     protected abstract EAAService<SP, B, C, D, E> getService();
 
