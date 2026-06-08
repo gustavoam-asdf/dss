@@ -74,8 +74,10 @@ class SDJWTCompactEAAPresentationWithSDClaimsTest extends AbstractSDJWTEAAPresen
         for (XmlDigestMatcher xmlDigestMatcher : digestMatchers) {
             assertNotNull(xmlDigestMatcher.getDisclosableClaim());
             if ("given_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("John", xmlDigestMatcher.getDisclosableClaim().getValue());
                 givenNameSDFound = true;
             } else if ("family_name".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
+                assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
                 familyNameSDFound = true;
             } else if ("adm_nbf".equals(xmlDigestMatcher.getDisclosableClaim().getName())) {
                 administrativeValidityNotBeforeSDFound = true;

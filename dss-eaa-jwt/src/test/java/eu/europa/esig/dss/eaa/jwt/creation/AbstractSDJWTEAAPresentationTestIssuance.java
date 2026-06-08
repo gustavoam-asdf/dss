@@ -10,6 +10,7 @@ import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.EAAType;
@@ -90,7 +91,9 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             for (String signedPropertyName : keySet) {
                 assertTrue(DSSJsonUtils.getSupportedProtectedCriticalHeaders().contains(signedPropertyName) ||
                         DSSJsonUtils.isCriticalHeaderException(signedPropertyName) ||
-                        JAdESHeaderParameterNames.ETSI_U.equals(signedPropertyName));
+                        JAdESHeaderParameterNames.ETSI_U.equals(signedPropertyName) ||
+                        SDJWTConstants.DISCLOSURES.equals(signedPropertyName) ||
+                        SDJWTConstants.KB_JWT.equals(signedPropertyName));
             }
 
             Object crit = headers.getObjectHeaderValue(HeaderParameterNames.CRITICAL);
@@ -201,7 +204,7 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
         }
     }
 
-    private void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
+    protected void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
         if (statusList != null) {
             assertEquals(statusList.getIndex(), eaa.getEAAStatusIndex());
             assertEquals(statusList.getUri(), eaa.getEAAStatusUri());
@@ -481,6 +484,16 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
                     assertNotNull(certificateRef.getX509Url());
                 }
             }
+        }
+    }
+
+    @Override
+    protected void checkContentType(DiagnosticData diagnosticData) {
+        super.checkContentType(diagnosticData);
+
+        for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+            // The cty header parameter should not be present if the content type is implied by the JWS Payload.
+            assertNull(signatureWrapper.getContentType());
         }
     }
 

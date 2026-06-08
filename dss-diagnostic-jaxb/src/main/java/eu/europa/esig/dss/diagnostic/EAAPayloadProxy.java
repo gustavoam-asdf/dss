@@ -1534,6 +1534,9 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getAgeBirthYear() != null) {
             claimList.add(getClaim(xmlEAAPayload.getAgeBirthYear()));
         }
+        if (xmlEAAPayload.getAgeEqualOrOver() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getAgeEqualOrOver()));
+        }
         if (xmlEAAPayload.getAgeOverNN() != null) {
             for (XmlClaim item : xmlEAAPayload.getAgeOverNN()) {
                 claimList.add(getClaim(item));

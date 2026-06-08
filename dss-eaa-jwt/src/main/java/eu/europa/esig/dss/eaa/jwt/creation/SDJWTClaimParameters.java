@@ -1,8 +1,10 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAClaimParameters;
+import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Contains parameters for SD-JWT VC creation which may or may not be made selectively disclosable
@@ -78,6 +80,11 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
      * The subject attribute pseudonym
      */
     private String attestedAttributesSubjectPseudonym;
+
+    /**
+     * The list of attributes associated with the attribute subject
+     */
+    private List<String> attestedAttributes;
 
     /**
      * Default constructor
@@ -405,9 +412,14 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
      * Sets the subject attribute identifier
      *
      * @param attestedAttributesSubjectIdentifier {@link String}
+     * @param attestedAttributes a list of {@link String} attributes associated to the attribute subject
      */
-    public void setAttestedAttributesSubjectIdentifier(String attestedAttributesSubjectIdentifier) {
+    public void setAttestedAttributesSubjectIdentifier(String attestedAttributesSubjectIdentifier, List<String> attestedAttributes) {
+        if (attestedAttributesSubjectIdentifier == null != Utils.isCollectionEmpty(attestedAttributes)) {
+            throw new IllegalArgumentException("Attested attributes shall be present for an attested attributes subject identifier!");
+        }
         this.attestedAttributesSubjectIdentifier = attestedAttributesSubjectIdentifier;
+        this.attestedAttributes = attestedAttributes;
     }
 
     /**
@@ -424,9 +436,23 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
      * when pseudonym is used.
      *
      * @param pseudonym {@link String}  the subject attribute pseudonym
+     * @param attestedAttributes a list of {@link String} attributes associated to the attribute subject
      */
-    public void setAttestedAttributesSubjectPseudonym(String pseudonym) {
+    public void setAttestedAttributesSubjectPseudonym(String pseudonym, List<String> attestedAttributes) {
+        if (pseudonym == null != Utils.isCollectionEmpty(attestedAttributes)) {
+            throw new IllegalArgumentException("Attested attributes shall be present for an attested attributes subject pseudonym!");
+        }
         this.attestedAttributesSubjectPseudonym = pseudonym;
+        this.attestedAttributes = attestedAttributes;
+    }
+
+    /**
+     * Gets a list of attributes associated to the attribute subject
+     *
+     * @return {@link String}
+     */
+    public List<String> getAttestedAttributes() {
+        return attestedAttributes;
     }
 
     /**
@@ -460,7 +486,7 @@ public class SDJWTClaimParameters extends AbstractEAAClaimParameters<SDJWTEAACla
                 ", salutation='" + salutation + '\'' +
                 ", dateOfExpiry=" + dateOfExpiry +
                 ", dateOfIssuance=" + dateOfIssuance +
-                ", attestedAttributesSubjectIdentifier='" + attestedAttributesSubjectIdentifier + '\'' +
+                ", attestedAttributesSubjectIdentifier='" + attestedAttributes + '\'' +
                 ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
                 "] " + super.toString();
     }

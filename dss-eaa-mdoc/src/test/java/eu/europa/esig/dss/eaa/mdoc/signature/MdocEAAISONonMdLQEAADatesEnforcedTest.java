@@ -46,13 +46,13 @@ class MdocEAAISONonMdLQEAADatesEnforcedTest extends AbstractMdocEAAPresentationT
         Calendar calendar = Calendar.getInstance();
         signingDate = calendar.getTime();
 
-        calendar.set(Calendar.DATE, -1);
+        calendar.add(Calendar.DATE, -1);
         validFrom = calendar.getTime();
 
-        calendar.set(Calendar.MONTH, 3);
+        calendar.add(Calendar.MONTH, 3);
         validUntil = calendar.getTime();
 
-        calendar.set(Calendar.MONTH, -2);
+        calendar.add(Calendar.MONTH, -2);
         nextUpdate = calendar.getTime();
 
         payloadParameters.setSigned(signingDate);

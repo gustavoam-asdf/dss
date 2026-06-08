@@ -54,7 +54,9 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
 
     @Override
     protected boolean process() {
-        return checkNowAfterNotBefore()
+        return checkVCTPresent()
+                && checkVCTIntegrityPresent()
+                && checkNowAfterNotBefore()
                 && checkNowBeforeExpiration()
                 && checkNowAfterAdministrativeDateIssuance()
                 && checkNowBeforeAdministrativeDateExpiration()
@@ -65,6 +67,20 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
                 && checkNoStatusIfShortLived()
                 && checkStatusIsPresentIfMandatory()
                 && checkSDJWTStatusConformance();
+    }
+
+    private boolean checkVCTPresent() {
+        if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
+            return eaa.getEAAMetadataUri() != null;
+        }
+        return true;
+    }
+
+    private boolean checkVCTIntegrityPresent() {
+        if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
+            return eaa.getEAAMetadataIntegrityBytes() != null;
+        }
+        return true;
     }
 
     private boolean checkSDJWTIssuingAuthorityAndCountryPresent() {
@@ -171,6 +187,16 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
     @Override
     protected String buildAdditionalInfo() {
         List<String> errors = new ArrayList<>();
+        if (!checkVCTPresent()) {
+            errors.add(i18nProvider.getMessage(MessageTag.SDJWT_EAA_VCT_PRESENT,
+                    ValidationProcessUtils.getFormattedDate(validationTime),
+                    ValidationProcessUtils.getFormattedDate(eaa.getEAANotBefore())));
+        }
+        if (!checkVCTIntegrityPresent()) {
+            errors.add(i18nProvider.getMessage(MessageTag.SDJWT_EAA_VCT_INT_PRESENT,
+                    ValidationProcessUtils.getFormattedDate(validationTime),
+                    ValidationProcessUtils.getFormattedDate(eaa.getEAANotBefore())));
+        }
         if (!checkNowAfterNotBefore()) {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_NOW_BEFORE_NBF,
                     ValidationProcessUtils.getFormattedDate(validationTime),

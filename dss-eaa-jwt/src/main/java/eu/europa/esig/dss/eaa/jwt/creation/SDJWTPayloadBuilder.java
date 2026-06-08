@@ -3,7 +3,6 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.enumerations.MimeTypeEnum;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
@@ -81,9 +80,7 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
         final SDJWTEAAClaimObject payload = getRootPayloadObject(payloadParameters, secureRandom);
         map.putAll(getEAAClaimObjectValue(new DisclosureTraversalContext(), payload, digestAlgorithm, secureRandom, payloadParameters.isShuffleHashes()));
 
-        InMemoryDocument result = new InMemoryDocument(JsonUtil.toJson(map).getBytes());
-        result.setMimeType(MimeTypeEnum.JSON);
-        return result;
+        return new InMemoryDocument(JsonUtil.toJson(map).getBytes());
     }
 
     private SDJWTEAAClaimObject getRootPayloadObject(SDJWTEAAPayloadParameters payloadParameters, SecureRandom secureRandom) {

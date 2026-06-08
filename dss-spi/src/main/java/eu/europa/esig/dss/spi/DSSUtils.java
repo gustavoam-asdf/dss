@@ -188,7 +188,7 @@ public final class DSSUtils {
 				sdf.setLenient(false);
 				return sdf.parse(dateTimeString);
 			} catch (ParseException e) {
-				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
+				LOG.warn("Unable to parse date with value '{}' as RFC 3339 : {}", dateTimeString, e.getMessage());
 			}
 		}
 		return null;
@@ -243,7 +243,7 @@ public final class DSSUtils {
 				sdf.setLenient(false);
 				return sdf.parse(dateString);
 			} catch (ParseException e) {
-				LOG.warn("Unable to parse date with value '{}' : {}", dateString, e.getMessage());
+				LOG.warn("Unable to parse date with value '{}' as ISO 8601-1 : {}", dateString, e.getMessage());
 			}
 		}
 		return null;

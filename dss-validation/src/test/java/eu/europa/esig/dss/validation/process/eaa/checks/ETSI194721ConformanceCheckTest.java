@@ -1,23 +1,24 @@
 package eu.europa.esig.dss.validation.process.eaa.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
 import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -83,9 +88,6 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -133,6 +135,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -173,6 +179,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -213,6 +223,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -261,6 +275,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -309,6 +327,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -351,9 +373,6 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -403,9 +422,6 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -447,9 +463,6 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -493,6 +506,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim shortLived = new XmlClaim();
@@ -540,6 +557,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim shortLived = new XmlClaim();
@@ -587,6 +608,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim issuingAuthority = new XmlClaim();
@@ -638,6 +663,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim issuingAuthority = new XmlClaim();
@@ -689,6 +718,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim issuingAuthority = new XmlClaim();
@@ -744,6 +777,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim issuingAuthority = new XmlClaim();
@@ -797,9 +834,6 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         xmlEAA.getEAASignature().add(presentationSignature);
 
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
         notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
@@ -852,6 +886,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -894,6 +932,10 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
         XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
         xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
+        xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
+        xmlIntegrityClaim.setDigestValue(new byte[]{ 1, 2 , 3});
+        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
         xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
 
         XmlClaim notBefore = new XmlClaim();
@@ -932,6 +974,83 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtNoVctTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setExpiration(notAfter);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlSAV result = new XmlSAV();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtNoVctIntegrityTest() {
+        LevelConstraint constraint = new LevelConstraint();
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlEAASignature presentationSignature = new XmlEAASignature();
+        XmlSignature signature = new XmlSignature();
+        presentationSignature.setSignature(signature);
+        xmlEAA.getEAASignature().add(presentationSignature);
+
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
+        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+
+        XmlClaim notBefore = new XmlClaim();
+        notBefore.setDateTime(new Date(System.currentTimeMillis() - 60000));
+        xmlEAAPayload.setNotBefore(notBefore);
+
+        XmlClaim notAfter = new XmlClaim();
+        notAfter.setDateTime(new Date(notBefore.getDateTime().getTime() + 3600 * 1000));
+        xmlEAAPayload.setExpiration(notAfter);
+
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlSAV result = new XmlSAV();
+
+        ETSI194721ConformanceCheck etsi194721ConformanceCheck = new ETSI194721ConformanceCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new Date(), new LevelConstraintWrapper(constraint));
+        etsi194721ConformanceCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
 
 }

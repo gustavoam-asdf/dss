@@ -2,19 +2,15 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
-import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SDJWTCompactEAAPresentationWithAgeEqualsOrOverClaimTest extends AbstractSDJWTEAAPresentationTestIssuance {
@@ -66,28 +62,10 @@ class SDJWTCompactEAAPresentationWithAgeEqualsOrOverClaimTest extends AbstractSD
         EAAWrapper eaa = diagnosticData.getEAAs().get(0);
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
 
-        boolean claimAgeEqualOrOverFound = false;
-        for (ClaimWrapper claimWrapper : eaa.getEAAPayload().getOtherClaims()) {
-            if (claimWrapper.getName().equals(SDJWTConstants.AGE_EQUAL_OR_OVER)) {
-                claimAgeEqualOrOverFound = true;
-                Map<String, ClaimWrapper> map = claimWrapper.getMap();
-                assertEquals(3, map.size());
-
-                ClaimWrapper equalOrOver18Claim = map.get("18");
-                assertNotNull(equalOrOver18Claim);
-                assertTrue(equalOrOver18Claim.getBoolean());
-
-                ClaimWrapper equalOrOver30Claim = map.get("30");
-                assertNotNull(equalOrOver30Claim);
-                assertTrue(equalOrOver30Claim.getBoolean());
-
-                ClaimWrapper equalOrOver40Claim = map.get("40");
-                assertNotNull(equalOrOver40Claim);
-                assertFalse(equalOrOver40Claim.getBoolean());
-            }
-        }
-
-        assertTrue(claimAgeEqualOrOverFound);
+        assertTrue(eaa.isHolderAgeOver(18));
+        assertTrue(eaa.isHolderAgeOver(30));
+        assertFalse(eaa.isHolderAgeOver(40));
+        assertNull(eaa.isHolderAgeOver(65));
     }
 
     @Override

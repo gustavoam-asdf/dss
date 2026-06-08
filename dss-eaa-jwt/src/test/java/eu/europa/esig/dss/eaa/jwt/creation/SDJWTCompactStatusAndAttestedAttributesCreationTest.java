@@ -2,33 +2,33 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.eaa.jwt.validation.AbstractSDJWTEAAPresentationTestValidation;
+import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
-import eu.europa.esig.dss.model.SignatureValue;
-import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTEAAPresentationTestValidation {
+class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
-    @Override
-    protected DSSDocument getSignedDocument() {
+    private SDJWTEAAPayloadParameters payloadParameters;
+    private JAdESSignatureParameters signatureParameters;
+
+    @BeforeEach
+    void init() {
         Date issuanceDate = new Date();
 
-        SDJWTEAAPayloadParameters payloadParameters = new SDJWTEAAPayloadParameters();
+        payloadParameters = new SDJWTEAAPayloadParameters();
         payloadParameters.setIssuer("https://issuer.example.com");
         payloadParameters.setIssuanceDate(issuanceDate);
         payloadParameters.setExpirationDate(new Date(issuanceDate.getTime() + 3600 * 1000));
@@ -46,17 +46,13 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         status.addChild(SDJWTEAAClaim.create("uri", "https://nowina.lu/pki-factory/status"));
         payloadParameters.nonSelectivelyDisclosable().addClaim(status);
 
-        SDJWTEAAClaimObject subAttrs = SDJWTEAAClaim.createObject("subAttrs");
-        subAttrs.addChild(SDJWTEAAClaim.create("sub_id", DSSASN1Utils.getSubjectCommonName(getSigningCert())));
-        SDJWTEAAClaimArray attrs = SDJWTEAAClaimArray.create("attrs");
-        attrs.addElement(SDJWTEAAClaim.create("given_name"));
-        attrs.addElement(SDJWTEAAClaim.create("family_name"));
-        subAttrs.addChild(attrs);
-        payloadParameters.nonSelectivelyDisclosable().addClaim(subAttrs);
+        payloadParameters.nonSelectivelyDisclosable().setAttestedAttributesSubjectIdentifier(
+                DSSASN1Utils.getSubjectCommonName(getSigningCert()), Arrays.asList("given_name", "family_name")
+        );
 
         payloadParameters.nonSelectivelyDisclosable().setPlaceOfBirthCountry("LU");
 
-        JAdESSignatureParameters signatureParameters = new JAdESSignatureParameters();
+        signatureParameters = new JAdESSignatureParameters();
         signatureParameters.bLevel().setSigningDate(issuanceDate);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
@@ -65,14 +61,21 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
         signatureParameters.setIncludeKeyIdentifier(false);
         signatureParameters.setSignatureType("dc+sd-jwt");
+    }
 
-        SDJWTEAAService service = new SDJWTEAAService(getOfflineCertificateVerifier());
+    @Override
+    protected SDJWTEAAPayloadParameters getPayloadParameters() {
+        return payloadParameters;
+    }
 
-        ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, signatureParameters);
-        SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-        DSSDocument signedDocument = service.signEAA(payloadParameters, signatureParameters, signatureValue);
-        DSSDocument eaaPresentation = service.issuePresentation(signedDocument, Collections.emptyList());
-        return eaaPresentation;
+    @Override
+    protected JAdESSignatureParameters getSignatureParameters() {
+        return signatureParameters;
+    }
+
+    @Override
+    protected JAdESSignatureParameters getKeyBindingSignatureParameters() {
+        return null;
     }
 
     @Override
@@ -94,6 +97,11 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
         assertEquals(Arrays.asList("given_name", "family_name"), eaa.getAttestedAttributes());
 
         assertEquals("LU", eaa.getHolderPlaceOfBirthCountry());
+    }
+
+    @Override
+    protected void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
+        // skip
     }
 
     @Override

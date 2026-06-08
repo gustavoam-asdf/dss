@@ -8,10 +8,11 @@ import eu.europa.esig.dss.spi.x509.CommonX509URLCertificateSource;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
-class SDJWTCompactEAAPresentationNonAllOptionalElementsTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTCompactEAAPresentationNonSDAllOptionalElementsTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -64,7 +65,7 @@ class SDJWTCompactEAAPresentationNonAllOptionalElementsTest extends AbstractSDJW
 
         payloadParameters.nonSelectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("REG-123456");
 
-        payloadParameters.nonSelectivelyDisclosable().setAttestedAttributesSubjectIdentifier("SUBJ-123456");
+        payloadParameters.nonSelectivelyDisclosable().setAttestedAttributesSubjectIdentifier("SUBJ-123456", Arrays.asList("given_name", "family_name"));
 
         payloadParameters.nonSelectivelyDisclosable().setPicture("https://example.com/john.jpg");
         payloadParameters.nonSelectivelyDisclosable().setNickname("johnny");

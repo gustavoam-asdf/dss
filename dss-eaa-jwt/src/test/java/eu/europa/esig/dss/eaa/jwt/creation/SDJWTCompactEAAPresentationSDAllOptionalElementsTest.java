@@ -11,6 +11,7 @@ import eu.europa.esig.dss.spi.x509.CommonX509URLCertificateSource;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -74,7 +75,7 @@ class SDJWTCompactEAAPresentationSDAllOptionalElementsTest extends AbstractSDJWT
 
         payloadParameters.selectivelyDisclosable().setIssuingAuthorityRegistrationIdentifier("REG-123456");
 
-        payloadParameters.selectivelyDisclosable().setAttestedAttributesSubjectIdentifier("SUBJ-123456");
+        payloadParameters.selectivelyDisclosable().setAttestedAttributesSubjectPseudonym("SUBJ-123456", Arrays.asList("given_name", "family_name"));
 
         payloadParameters.selectivelyDisclosable().setPicture("https://example.com/john.jpg");
         payloadParameters.selectivelyDisclosable().setNickname("johnny");
@@ -166,71 +167,71 @@ class SDJWTCompactEAAPresentationSDAllOptionalElementsTest extends AbstractSDJWT
                         dm -> dm.getDisclosableClaim().getName(),
                         Function.identity()));
 
-        assertDigestValue(digestMatchers, "given_name", "John");
-        assertDigestValue(digestMatchers, "family_name", "Doe");
-        assertDigestValue(digestMatchers, "birthdate", "2000-01-01");
-        assertDigestValue(digestMatchers, "email", "john.doe@example.com");
-        assertDigestValue(digestMatchers, "phone_number", "+352123456789");
+        assertDigestMatcherValue(digestMatchers, "given_name", "John");
+        assertDigestMatcherValue(digestMatchers, "family_name", "Doe");
+        assertDigestMatcherValue(digestMatchers, "birthdate", "2000-01-01");
+        assertDigestMatcherValue(digestMatchers, "email", "john.doe@example.com");
+        assertDigestMatcherValue(digestMatchers, "phone_number", "+352123456789");
 
-        assertDigestValue(digestMatchers, "address", "{\"street_address\": \"Main Street\", \"country\": \"LU\", \"formatted\": \"1 Main Street\", \"locality\": \"Kehlen\", \"house_number\": \"1\", \"region\": \"Capellen\", \"postal_code\": \"L-1234\"}");
+        assertDigestMatcherValue(digestMatchers, "address", "{\"street_address\": \"Main Street\", \"country\": \"LU\", \"formatted\": \"1 Main Street\", \"locality\": \"Kehlen\", \"house_number\": \"1\", \"region\": \"Capellen\", \"postal_code\": \"L-1234\"}");
 
-        assertDigestValue(digestMatchers, "place_of_birth", "{\"country\": \"LU\", \"locality\": \"Luxembourg City\", \"region\": \"Luxembourg\"}");
+        assertDigestMatcherValue(digestMatchers, "place_of_birth", "{\"country\": \"LU\", \"locality\": \"Luxembourg City\", \"region\": \"Luxembourg\"}");
 
-        assertDigestValue(digestMatchers, "birth_given_name", "Johnny");
-        assertDigestValue(digestMatchers, "birth_family_name", "Doe");
-        assertDigestValue(digestMatchers, "title", "Dr");
-        assertDigestValue(digestMatchers, "msisdn", "+352987654321");
-        assertDigestValue(digestMatchers, "also_known_as", "JD");
+        assertDigestMatcherValue(digestMatchers, "birth_given_name", "Johnny");
+        assertDigestMatcherValue(digestMatchers, "birth_family_name", "Doe");
+        assertDigestMatcherValue(digestMatchers, "title", "Dr");
+        assertDigestMatcherValue(digestMatchers, "msisdn", "+352987654321");
+        assertDigestMatcherValue(digestMatchers, "also_known_as", "JD");
 
-        assertDigestValue(digestMatchers, "personal_administrative_number", "ADM987654");
+        assertDigestMatcherValue(digestMatchers, "personal_administrative_number", "ADM987654");
 
-        assertDigestValue(digestMatchers, "issuing_country", "LU");
-        assertDigestValue(digestMatchers, "issuing_authority", "Government of Luxembourg");
-        assertDigestValue(digestMatchers, "issuing_jurisdiction", "LU-LU");
-        assertDigestValue(digestMatchers, "document_number", "DOC123456");
+        assertDigestMatcherValue(digestMatchers, "issuing_country", "LU");
+        assertDigestMatcherValue(digestMatchers, "issuing_authority", "Government of Luxembourg");
+        assertDigestMatcherValue(digestMatchers, "issuing_jurisdiction", "LU-LU");
+        assertDigestMatcherValue(digestMatchers, "document_number", "DOC123456");
 
-        assertDigestValue(digestMatchers, "age_in_years", "25");
-        assertDigestValue(digestMatchers, "age_birth_year", "2000");
-        assertDigestValue(digestMatchers, "age_equal_or_over", "{\"18\": true, \"21\": false}");
+        assertDigestMatcherValue(digestMatchers, "age_in_years", "25");
+        assertDigestMatcherValue(digestMatchers, "age_birth_year", "2000");
+        assertDigestMatcherValue(digestMatchers, "age_equal_or_over", "{\"18\": true, \"21\": false}");
 
-        assertDigestValue(digestMatchers, "trust_anchor", "https://example.com/trust-anchor");
+        assertDigestMatcherValue(digestMatchers, "trust_anchor", "https://example.com/trust-anchor");
 
-        assertDigestValue(digestMatchers, "iss_reg_id", "REG-123456");
+        assertDigestMatcherValue(digestMatchers, "iss_reg_id", "REG-123456");
 
-        assertDigestValue(digestMatchers, "subAttrs", "{\"sub_id\": \"SUBJ-123456\"}");
+        assertDigestMatcherValue(digestMatchers, "subAttrs", "{\"sub_aka\": \"SUBJ-123456\", \"attrs\": [\"given_name\", \"family_name\"]}");
 
         // OpenID specific
 
-        assertDigestValue(digestMatchers, "picture", "https://example.com/john.jpg");
-        assertDigestValue(digestMatchers, "nickname", "johnny");
-        assertDigestValue(digestMatchers, "preferred_username", "jd");
-        assertDigestValue(digestMatchers, "name", "Dr. John Doe");
-        assertDigestValue(digestMatchers, "middle_name", "William");
+        assertDigestMatcherValue(digestMatchers, "picture", "https://example.com/john.jpg");
+        assertDigestMatcherValue(digestMatchers, "nickname", "johnny");
+        assertDigestMatcherValue(digestMatchers, "preferred_username", "jd");
+        assertDigestMatcherValue(digestMatchers, "name", "Dr. John Doe");
+        assertDigestMatcherValue(digestMatchers, "middle_name", "William");
 
-        assertDigestValue(digestMatchers, "profile", "https://example.com/profile/john");
-        assertDigestValue(digestMatchers, "website", "https://johndoe.example");
+        assertDigestMatcherValue(digestMatchers, "profile", "https://example.com/profile/john");
+        assertDigestMatcherValue(digestMatchers, "website", "https://johndoe.example");
 
-        assertDigestValue(digestMatchers, "email_verified", "true");
-        assertDigestValue(digestMatchers, "gender", "male");
-        assertDigestValue(digestMatchers, "zoneinfo", "Europe/Luxembourg");
-        assertDigestValue(digestMatchers, "locale", "en-LU");
-        assertDigestValue(digestMatchers, "phone_number_verified", "true");
+        assertDigestMatcherValue(digestMatchers, "email_verified", "true");
+        assertDigestMatcherValue(digestMatchers, "gender", "male");
+        assertDigestMatcherValue(digestMatchers, "zoneinfo", "Europe/Luxembourg");
+        assertDigestMatcherValue(digestMatchers, "locale", "en-LU");
+        assertDigestMatcherValue(digestMatchers, "phone_number_verified", "true");
 
-        assertDigestValue(digestMatchers, "birth_middle_name", "William");
-        assertDigestValue(digestMatchers, "salutation", "Mr.");
+        assertDigestMatcherValue(digestMatchers, "birth_middle_name", "William");
+        assertDigestMatcherValue(digestMatchers, "salutation", "Mr.");
 
-        assertDigestValue(digestMatchers, "date_of_issuance", "2024-01-01");
-        assertDigestValue(digestMatchers, "date_of_expiry", "2025-01-01");
+        assertDigestMatcherValue(digestMatchers, "date_of_issuance", "2024-01-01");
+        assertDigestMatcherValue(digestMatchers, "date_of_expiry", "2025-01-01");
 
-        assertDigestValue(digestMatchers, "updated_at", "1711929600");
+        assertDigestMatcherValue(digestMatchers, "updated_at", "1711929600");
 
         // custom object claim
         assertTrue(digestMatchers.containsKey("employment"));
     }
 
-    private void assertDigestValue(Map<String, XmlDigestMatcher> digestMatchers,
-                                   String claimName,
-                                   String expectedValue) {
+    private void assertDigestMatcherValue(Map<String, XmlDigestMatcher> digestMatchers,
+                                          String claimName,
+                                          String expectedValue) {
         XmlDigestMatcher matcher = digestMatchers.get(claimName);
 
         assertNotNull(matcher, "Missing digest matcher for claim: " + claimName);

@@ -889,8 +889,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
             return null;
         }
         return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_NOT_BEFORE,
-                DSSUtils.formatDateToISO8601(parameters.getAdministrativeIssuanceDate()),
-                selectivelyDisclosable);
+                DSSUtils.getTimeValueInSeconds(parameters.getAdministrativeIssuanceDate().getTime()), selectivelyDisclosable);
     }
 
     /**
@@ -906,8 +905,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
             return null;
         }
         return buildClaim(SDJWTConstants.ADMINISTRATIVE_VALIDITY_EXPIRY,
-                DSSUtils.formatDateToISO8601(parameters.getAdministrativeExpirationDate()),
-                selectivelyDisclosable);
+                DSSUtils.getTimeValueInSeconds(parameters.getAdministrativeExpirationDate().getTime()), selectivelyDisclosable);
     }
 
     /**
@@ -1136,8 +1134,13 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
      */
     protected SDJWTEAAClaim buildAttestedAttributesSubject(SDJWTClaimParameters parameters, boolean selectivelyDisclosable) {
         if (Utils.areAllStringsEmpty(parameters.getAttestedAttributesSubjectIdentifier(),
-                parameters.getAttestedAttributesSubjectPseudonym())) {
+                parameters.getAttestedAttributesSubjectPseudonym()) && Utils.isCollectionEmpty(parameters.getAttestedAttributes())) {
             return null;
+        }
+
+        if ((parameters.getAttestedAttributesSubjectIdentifier() == null) == (parameters.getAttestedAttributesSubjectPseudonym() == null)) {
+            throw new IllegalArgumentException("Either attested attributes subject identifier or " +
+                    "attested attributes subject pseudonym shall be present!");
         }
 
         SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT, selectivelyDisclosable);
@@ -1150,6 +1153,11 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
             claim.addChild(SDJWTEAAClaim.create(
                     SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT_AKA,
                     parameters.getAttestedAttributesSubjectPseudonym()));
+        }
+        if (Utils.isCollectionNotEmpty(parameters.getAttestedAttributes())) {
+            claim.addChild(SDJWTEAAClaim.create(
+                    SDJWTConstants.ATTESTED_ATTRIBUTES_SUBJECT_ATTRIBUTES,
+                    parameters.getAttestedAttributes()));
         }
         return claim;
     }
