@@ -62,6 +62,11 @@ class SDJWTCompactOneTimeCreationTest extends AbstractSDJWTEAAPresentationTestIs
     }
 
     @Override
+    protected SDJWTKeyBindingParameters getKeyBindingParameters() {
+        return null;
+    }
+
+    @Override
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 

@@ -366,13 +366,17 @@ public class JAdESLevelBaselineB {
 
 		}
 	}
-	
+
 	/**
 	 * Incorporates 5.1.11 iat or 5.2.1 sigT (claimed signing time) header parameter
 	 */
 	protected void incorporateSigningTime() {
-		final Date signingDate = parameters.bLevel().getSigningDate();
-		switch (parameters.getJadesSigningTimeType()) {
+        if (parameters.getJadesSigningTimeType() == null) {
+            return;
+        }
+
+        final Date signingDate = parameters.bLevel().getSigningDate();
+        switch (parameters.getJadesSigningTimeType()) {
 			case IAT:
 				long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
 				addHeader(JAdESHeaderParameterNames.IAT, signedTimeInSeconds);

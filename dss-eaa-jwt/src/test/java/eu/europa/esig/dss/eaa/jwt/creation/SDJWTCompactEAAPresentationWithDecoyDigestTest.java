@@ -63,6 +63,11 @@ class SDJWTCompactEAAPresentationWithDecoyDigestTest extends AbstractSDJWTEAAPre
     }
 
     @Override
+    protected SDJWTKeyBindingParameters getKeyBindingParameters() {
+        return null;
+    }
+
+    @Override
     protected void checkClaims(final DiagnosticData diagnosticData) {
         super.checkClaims(diagnosticData);
 
