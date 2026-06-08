@@ -8,12 +8,10 @@ import eu.europa.esig.dss.jades.validation.JWS;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.utils.Utils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,28 +70,25 @@ public class SDJWTJsonSerializationEAAPresentationAnalyzer extends AbstractSDJWT
          *
          * <Issuer-signed JWT>~<Disclosure 1>~<Disclosure 2>~...~<Disclosure N>~
          */
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); DataOutputStream dos = new DataOutputStream(baos)) {
-            JWSJsonSerializationObject eaaSignature = sdJwtSerializationObject.getSignature();
-            JWS jws = eaaSignature.getSignatures().get(0);
-            dos.writeChars(jws.getEncodedHeader());
-            dos.writeChars(".");
-            dos.writeChars(jws.getSignedPayload());
-            dos.writeChars(".");
-            dos.writeChars(jws.getEncodedSignature());
-            dos.writeChars("~");
-            List<String> disclosures = getDisclosures(jws);
-            if (Utils.isCollectionNotEmpty(disclosures)) {
-                for (String disclosure : disclosures) {
-                    dos.writeChars(disclosure);
-                    dos.writeChars("~");
-                }
-            }
-            return new InMemoryDocument(baos.toByteArray());
+        JWSJsonSerializationObject eaaSignature = sdJwtSerializationObject.getSignature();
+        JWS jws = eaaSignature.getSignatures().get(0);
 
-        } catch (IOException e) {
-            LOG.warn("Unable to compute input for the key binding signature verification : {}", e.getMessage(), e);
-            return null;
+        StringBuilder compactSerialization = new StringBuilder();
+        compactSerialization.append(jws.getEncodedHeader());
+        compactSerialization.append(".");
+        compactSerialization.append(jws.getEncodedPayload());
+        compactSerialization.append(".");
+        compactSerialization.append(jws.getEncodedSignature());
+        compactSerialization.append("~");
+        List<String> disclosures = getDisclosures(jws);
+        if (Utils.isCollectionNotEmpty(disclosures)) {
+            for (String disclosure : disclosures) {
+                compactSerialization.append(disclosure);
+                compactSerialization.append("~");
+            }
         }
+
+        return new InMemoryDocument(compactSerialization.toString().getBytes());
     }
 
     private List<String> getDisclosures(JWS jws) {

@@ -17,7 +17,7 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 
-class SDJWTCompactEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPresentationTestIssuance {
+class SDJWTFlattenedJsonSerializationEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPresentationTestIssuance {
 
     private SDJWTEAAPayloadParameters payloadParameters;
     private JAdESSignatureParameters signatureParameters;
@@ -39,7 +39,7 @@ class SDJWTCompactEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPre
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
-        signatureParameters.setJwsSerializationType(JWSSerializationType.COMPACT_SERIALIZATION);
+        signatureParameters.setJwsSerializationType(JWSSerializationType.FLATTENED_JSON_SERIALIZATION);
         signatureParameters.setX509Url("http://nowina.lu/pki-factory/good-cert");
 
         keyBindingSignatureParameters = new JAdESSignatureParameters();
