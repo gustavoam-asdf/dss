@@ -29,6 +29,7 @@ import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JAdESSigningTimeType;
 import eu.europa.esig.dss.jades.JAdESTimestampParameters;
 import eu.europa.esig.dss.jades.JWSConstants;
+import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -94,7 +95,7 @@ class JAdESLevelBSerializationTest extends AbstractJAdESTestSignature {
 			Map<String, Object> protectedHeaderMap = JsonUtil.parseJson(new String(bytes));
 			assertTrue(Utils.isMapNotEmpty(protectedHeaderMap));
 
-			Object iat = protectedHeaderMap.get(JAdESHeaderParameterNames.IAT);
+			Object iat = protectedHeaderMap.get(JWTClaimNames.IAT);
 			assertNotNull(iat);
 			
 			String signatureValue = (String) signature.get(JWSConstants.SIGNATURE);

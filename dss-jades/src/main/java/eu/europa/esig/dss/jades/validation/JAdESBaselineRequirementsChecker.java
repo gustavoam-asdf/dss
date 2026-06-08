@@ -22,6 +22,7 @@ package eu.europa.esig.dss.jades.validation;
 
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
+import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.spi.signature.BaselineRequirementsChecker;
@@ -219,7 +220,7 @@ public class JAdESBaselineRequirementsChecker extends BaselineRequirementsChecke
          *    in new JAdES signatures. Starting at 2025-07-15T00:00:00Z the generator shall include the
          *    iat header parameter for indicating the claimed signing time in new JAdES signatures.
          */
-        Number iat = jws.getProtectedHeaderValueAsNumber(JAdESHeaderParameterNames.IAT);
+        Number iat = jws.getProtectedHeaderValueAsNumber(JWTClaimNames.IAT);
         String sigT = jws.getProtectedHeaderValueAsString(JAdESHeaderParameterNames.SIG_T);
         Date signingTime = signature.getSigningTime();
 

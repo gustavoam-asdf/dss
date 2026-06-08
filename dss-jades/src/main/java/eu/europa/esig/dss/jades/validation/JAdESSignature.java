@@ -30,6 +30,7 @@ import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
+import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
 import eu.europa.esig.dss.jades.signature.HttpHeadersPayloadBuilder;
 import eu.europa.esig.dss.jades.validation.scope.JAdESSignatureScopeFinder;
 import eu.europa.esig.dss.jades.validation.timestamp.JAdESTimestampSource;
@@ -136,15 +137,14 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 
 	@Override
 	public Date getSigningTime() {
-		Number iat = jws.getProtectedHeaderValueAsNumber(JAdESHeaderParameterNames.IAT);
+		Number iat = jws.getProtectedHeaderValueAsNumber(JWTClaimNames.IAT);
 		String sigT = jws.getProtectedHeaderValueAsString(JAdESHeaderParameterNames.SIG_T);
 		if (iat != null && Utils.isStringNotEmpty(sigT)) {
 			LOG.debug("Unable to extract claimed signing-time: Conflict between 'iat' and 'sigT' header parameters! " +
 					"Only one shall be present.");
 			return null;
 		} else if (iat != null) {
-			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.longValue());
-			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+			return DSSJsonUtils.toNumericDate(iat);
 		} else if (Utils.isStringNotEmpty(sigT)) {
 			return DSSUtils.parseRFCDate(sigT);
 		}
@@ -162,12 +162,8 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	 * @return {@link Date}
 	 */
 	public Date getExpirationTime() {
-		Number exp = jws.getProtectedHeaderValueAsNumber(JAdESHeaderParameterNames.EXP);
-		if (exp != null) {
-			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(exp.longValue());
-			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
-		}
-		return null;
+		Number exp = jws.getProtectedHeaderValueAsNumber(JWTClaimNames.EXP);
+		return DSSJsonUtils.toNumericDate(exp);
 	}
 
 	/**

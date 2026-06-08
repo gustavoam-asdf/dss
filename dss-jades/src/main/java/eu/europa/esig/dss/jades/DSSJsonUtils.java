@@ -22,6 +22,7 @@ package eu.europa.esig.dss.jades;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
+import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
 import eu.europa.esig.dss.jades.validation.EtsiUComponent;
 import eu.europa.esig.dss.jades.validation.JAdESEtsiUHeader;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
@@ -77,8 +78,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.ADO_TST;
-import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.EXP;
-import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.IAT;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_D;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_PID;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_PL;
@@ -161,7 +160,7 @@ public class DSSJsonUtils {
 				/* JAdES TS 119 182-1 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
-				IAT, EXP,
+				JWTClaimNames.IAT, JWTClaimNames.EXP,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD
 		).collect(Collectors.toSet());
@@ -1266,6 +1265,63 @@ public class DSSJsonUtils {
 			}
 		}
 		return listOfNumbers;
+	}
+
+	/**
+	 * Gets a value from the {@code map} under the given {@code key} as {@code Date}
+	 *
+	 * @param map {@link Map} to extract the value from
+	 * @param key {@link String} key
+	 * @return {@link Date} value when found, empty list otherwise
+	 */
+	public static Date getAsNumericDate(Map<?, ?> map, String key) {
+		return toNumericDate(map.get(key), key);
+	}
+
+	/**
+	 * Method safely converts {@code Object} to {@code Date} if possible.
+	 *
+	 * @param object {@link Object} to convert
+	 * @return {@link Date} if able to convert, empty map otherwise
+	 */
+	public static Date toNumericDate(Object object) {
+		return toNumericDate(object, null);
+	}
+
+	/**
+	 * Method safely converts {@code Object} to {@code Date} if possible.
+	 * The method also provides a user-friendly message explaining the origin of the unexpected variable.
+	 *
+	 * @param object {@link Object} to convert
+	 * @param headerName {@link String} name of the header attribute with the extracted value
+	 * @return {@link Date} if able to convert, empty map otherwise
+	 */
+	public static Date toNumericDate(Object object, String headerName) {
+		if (object == null) {
+			// continue
+
+		} else if (object instanceof Number) {
+			Number number = (Number) object;
+			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(number.longValue());
+			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+
+		} else if (Utils.isStringNotEmpty(headerName)) {
+			if (LOG.isDebugEnabled()) {
+				LOG.warn("Unable to process '{}' header parameter with value : '{}'. The JSON Number type is expected!",
+						headerName, object);
+			} else {
+				LOG.warn("Unable to process '{}' header parameter. The JSON Number type is expected!", headerName);
+			}
+
+		} else {
+			if (LOG.isDebugEnabled()) {
+				LOG.warn("Unable to process an obtained item with value : '{}'. The JSON Number type is expected!", object);
+			} else {
+				LOG.warn("Unable to process an obtained item. The JSON Number type is expected!");
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -31,6 +31,7 @@ import eu.europa.esig.dss.jades.HTTPHeader;
 import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JsonObject;
+import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
 import eu.europa.esig.dss.model.CommitmentQualifier;
 import eu.europa.esig.dss.model.CommonCommitmentType;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -379,7 +380,7 @@ public class JAdESLevelBaselineB {
         switch (parameters.getJadesSigningTimeType()) {
 			case IAT:
 				long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
-				addHeader(JAdESHeaderParameterNames.IAT, signedTimeInSeconds);
+				addHeader(JWTClaimNames.IAT, signedTimeInSeconds);
 				break;
 			case SIG_T:
 				final String stringSigningTime = DSSUtils.formatDateToRFC(signingDate);
@@ -937,7 +938,7 @@ public class JAdESLevelBaselineB {
 	private void incorporateExpirationTime() {
 		if (parameters.getExpirationTime() != null) {
 			long expirationTimeInSeconds = DSSUtils.getTimeValueInSeconds(parameters.getExpirationTime().getTime());
-			addHeader(JAdESHeaderParameterNames.EXP, expirationTimeInSeconds);
+			addHeader(JWTClaimNames.EXP, expirationTimeInSeconds);
 		}
 	}
 	
