@@ -294,7 +294,7 @@ class EAAValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         executor.setValidationPolicy(loadDefaultPolicy());
 
         Reports reports = executor.execute();
-        reports.print();
+        // reports.print();
 
         SimpleReport simpleReport = reports.getSimpleReport();
         assertNotNull(simpleReport);

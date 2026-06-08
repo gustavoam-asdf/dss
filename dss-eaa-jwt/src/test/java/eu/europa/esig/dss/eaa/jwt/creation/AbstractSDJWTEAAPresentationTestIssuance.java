@@ -27,17 +27,11 @@ import eu.europa.esig.dss.utils.Utils;
 import org.jose4j.jwx.HeaderParameterNames;
 import org.jose4j.jwx.Headers;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -370,38 +364,78 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
     }
 
     private boolean parametersContainSelectivelyDisclosablClaims() {
-        if (hasConfiguredFields(getPayloadParameters().selectivelyDisclosable())) {
+        if (hasConfiguredClaims(getPayloadParameters().selectivelyDisclosable())) {
             return true;
         }
 
         return hasSDClaims(getPayloadParameters().selectivelyDisclosable()) || hasSDClaims(getPayloadParameters().nonSelectivelyDisclosable());
     }
 
-    private boolean hasConfiguredFields(SDJWTClaimParameters params) {
-        return getAllFields(params.getClass())
-                .anyMatch(f -> {
-                    try {
-                        f.setAccessible(true);
-                        Object value = f.get(params);
-                        return value != null
-                                && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())
-                                && (!(value instanceof Map) || !((Map<?, ?>) value).isEmpty());
+    private boolean hasConfiguredClaims(SDJWTClaimParameters p) {
+        return p.getGivenName() != null
+                || p.getFamilyName() != null
+                || p.getBirthdate() != null
+                || (p.getNationalities() != null && !p.getNationalities().isEmpty())
+                || p.getEmail() != null
+                || p.getPhoneNumber() != null
 
-                    } catch (IllegalAccessException e) {
-                        throw new IllegalStateException(e);
-                    }
-                });
-    }
+                || p.getPostalAddress() != null
+                || p.getAddressHouseNumber() != null
+                || p.getAddressStreet() != null
+                || p.getAddressCity() != null
+                || p.getAddressState() != null
+                || p.getAddressPostalCode() != null
+                || p.getAddressCountry() != null
 
-    private Stream<Field> getAllFields(Class<?> type) {
-        List<Field> fields = new ArrayList<>();
+                || p.getPlaceOfBirthCountry() != null
+                || p.getPlaceOfBirthRegion() != null
+                || p.getPlaceOfBirthLocality() != null
+                || p.getBirthGivenName() != null
+                || p.getBirthFamilyName() != null
+                || p.getTitle() != null
+                || p.getMobilePhoneNumber() != null
+                || p.getPseudonym() != null
 
-        while (type != null && type != Object.class) {
-            fields.addAll(Arrays.asList(type.getDeclaredFields()));
-            type = type.getSuperclass();
-        }
+                || p.getPersonalAdministrativeNumber() != null
+                || p.getSex() != null
+                || p.getIssuingCountry() != null
+                || p.getIssuingAuthority() != null
+                || p.getIssuingJurisdiction() != null
+                || p.getDocumentNumber() != null
+                || p.getAgeInYears() != null
+                || p.getAgeBirthYear() != null
+                || p.getTrustAnchor() != null
+                || (p.getAgeOverNN() != null && !p.getAgeOverNN().isEmpty())
 
-        return fields.stream();
+                || p.getIssuingAuthorityRegistrationIdentifier() != null
+                || p.getAdministrativeIssuanceDate() != null
+                || p.getAdministrativeExpirationDate() != null
+
+                || p.getPicture() != null
+                || p.getNickname() != null
+                || p.getPreferredNickname() != null
+                || p.getName() != null
+                || p.getMiddleName() != null
+                || p.getProfile() != null
+                || p.getWebsite() != null
+                || p.getEmailVerified() != null
+                || p.getGender() != null
+                || p.getZoneinfo() != null
+                || p.getLocale() != null
+                || p.getPhoneNumberVerified() != null
+                || p.getUpdatedAt() != null
+
+                || p.getBirthMiddleName() != null
+                || p.getSalutation() != null
+
+                || p.getDateOfExpiry() != null
+                || p.getDateOfIssuance() != null
+
+                || p.getAttestedAttributesSubjectIdentifier() != null
+                || p.getAttestedAttributesSubjectPseudonym() != null
+                || (p.getAttestedAttributes() != null && !p.getAttestedAttributes().isEmpty())
+
+                || !p.getOtherClaims().isEmpty();
     }
 
     private boolean hasSDClaims(SDJWTClaimParameters claimParameters) {
