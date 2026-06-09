@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.jades.eaa;
+package eu.europa.esig.dss.jades.jwt;
 
 /**
  * Contains header parameters for RFC 7519: JSON Web Token (JWT)

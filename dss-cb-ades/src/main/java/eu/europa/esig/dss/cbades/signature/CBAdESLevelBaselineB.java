@@ -10,6 +10,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.cbades.cwt.CWTClaims;
 import eu.europa.esig.dss.enumerations.CommitmentType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
@@ -313,7 +314,7 @@ public class CBAdESLevelBaselineB {
         long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
 
         CBORMap cwtClaims = new CBORMap();
-        cwtClaims.put(COSEHeaderParameter.CWT_CLAIMS_IAT.cbor(), signedTimeInSeconds); // NumericDate
+        cwtClaims.put(CWTClaims.IAT.cbor(), signedTimeInSeconds); // NumericDate
 
         addHeader(COSEHeaderParameter.CWT_CLAIMS.cbor(), cwtClaims);
     }

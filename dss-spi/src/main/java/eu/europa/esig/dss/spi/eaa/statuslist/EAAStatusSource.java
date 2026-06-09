@@ -8,7 +8,7 @@ import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
  * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
  *
  */
-public interface EAAStatusListSource {
+public interface EAAStatusSource {
 
     /**
      * Gets the resulting status_list token for the given {@code EAA}

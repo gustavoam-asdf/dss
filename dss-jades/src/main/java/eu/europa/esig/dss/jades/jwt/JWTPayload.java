@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.jades.eaa;
+package eu.europa.esig.dss.jades.jwt;
 
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.spi.WebTokenPayload;
@@ -86,7 +86,7 @@ public class JWTPayload implements WebTokenPayload {
      *
      * @return {@link String}
      */
-    public String getJWTId() {
+    public String getTokenId() {
         return getAsString(JWTClaimNames.JTI);
     }
 

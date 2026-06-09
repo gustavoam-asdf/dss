@@ -11,6 +11,7 @@ import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.ListCertificateSource;
+import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +107,29 @@ public abstract class DefaultEAA implements EAA {
     @Override
     public DigestAlgorithm getSelectiveDisclosuresDigestAlgorithm() {
         return getEAAPayloadVerifier().getDigestAlgorithm();
+    }
+
+    @Override
+    public CertificateSource getDeviceKeyCertificateSource() {
+        AdvancedSignature keyBindingSignature = getKeyBindingSignature();
+        if (keyBindingSignature != null) {
+            return getProofOfPossessionCertificateSource(keyBindingSignature.getSigningCertificateSource());
+        }
+        return null;
+    }
+
+    private CertificateSource getProofOfPossessionCertificateSource(CertificateSource certificateSource) {
+        if (certificateSource instanceof ProofOfPossessionCertificateSource) {
+            return certificateSource;
+        } else if (certificateSource instanceof ListCertificateSource) {
+            for (CertificateSource embeddedCertSource : ((ListCertificateSource) certificateSource).getSources()) {
+                CertificateSource popCertificateSource = getProofOfPossessionCertificateSource(embeddedCertSource);
+                if (popCertificateSource != null) {
+                    return popCertificateSource;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

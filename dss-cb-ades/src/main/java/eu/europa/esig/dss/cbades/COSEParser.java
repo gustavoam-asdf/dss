@@ -16,6 +16,7 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -73,10 +74,36 @@ public class COSEParser extends AbstractCOSEParser {
      */
     public static boolean isSupported(DSSDocument document) {
         try (InputStream is = document.openStream()) {
-            return isCoseStart(is);
+            return isSupported(is);
         } catch (IOException e) {
             throw new DSSException(String.format("Unable to read the document with name '%s' : %s",
                     document.getName(), e.getMessage()));
+        }
+    }
+
+    /**
+     * This method verifies whether the document binaries represent a COSE structure
+     *
+     * @param binaries binaries to be validated
+     * @return TRUE if the document is supported, FALSE otherwise
+     */
+    public static boolean isSupported(byte[] binaries) {
+        try (InputStream is = new ByteArrayInputStream(binaries)) {
+            return isSupported(is);
+        } catch (IOException e) {
+            throw new DSSException(String.format("Unable to read the binaries : %s", e.getMessage()));
+        }
+    }
+
+    /**
+     * This method verifies whether the InputStream represents a COSE structure
+     *
+     * @param inputStream {@link InputStream} to be validated
+     * @return TRUE if the InputStream is supported, FALSE otherwise
+     */
+    public static boolean isSupported(InputStream inputStream) throws IOException {
+        try (InputStream is = inputStream) {
+            return isCoseStart(is);
         }
     }
 

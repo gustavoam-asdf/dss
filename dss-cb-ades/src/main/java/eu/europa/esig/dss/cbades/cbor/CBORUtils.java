@@ -366,4 +366,28 @@ public final class CBORUtils {
         return cborObject;
     }
 
+    /**
+     * Obtains a CBOR object represented by a NumericDate and returns the resulted {@code Date}
+     *
+     * @param cborObject {@link CBORObject}
+     * @return {@link Date}
+     */
+    public static Date fromNumericDate(CBORObject cborObject) {
+        if (cborObject == null) {
+            return null;
+        }
+        long timeValueInMilliseconds;
+        if (cborObject.isUnsignedInteger() || cborObject.isNegativeInteger()) {
+            CBORSimpleObject iat = (CBORSimpleObject) cborObject;
+            timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsLong());
+        } else if (cborObject.isFloatingPointNumber()) {
+            CBORSimpleObject iat = (CBORSimpleObject) cborObject;
+            timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsDouble());
+        } else {
+            LOG.warn("NumericDate is expected. Obtained value : {}", cborObject);
+            return null;
+        }
+        return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+    }
+
 }

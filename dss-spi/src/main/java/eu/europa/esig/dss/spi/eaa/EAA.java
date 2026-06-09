@@ -5,6 +5,7 @@ import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
 import eu.europa.esig.dss.model.identifier.IdentifierBasedObject;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
 
 import java.util.List;
 
@@ -48,6 +49,13 @@ public interface EAA extends IdentifierBasedObject {
      * @return {@link AdvancedSignature}
      */
     AdvancedSignature getKeyBindingSignature();
+
+    /**
+     * Gets the certificate source containing a public key or certificate representation of the device holder
+     *
+     * @return {@link CertificateSource}
+     */
+    CertificateSource getDeviceKeyCertificateSource();
 
     /**
      * Gets a clear payload of the Electronic Attestation of Attributes

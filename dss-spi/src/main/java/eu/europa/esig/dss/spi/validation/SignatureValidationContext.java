@@ -417,7 +417,6 @@ public class SignatureValidationContext implements ValidationContext {
 			for (AdvancedSignature counterSignature : counterSignatures) {
 				addSignatureForVerification(counterSignature);
 			}
-
 		}
 	}
 

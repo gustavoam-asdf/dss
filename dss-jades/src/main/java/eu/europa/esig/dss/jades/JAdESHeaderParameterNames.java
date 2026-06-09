@@ -20,7 +20,7 @@
  */
 package eu.europa.esig.dss.jades;
 
-import eu.europa.esig.dss.jades.eaa.JWTClaimNames;
+import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
 
 /**
  * Defines a list of JAdES header names as in ETSI TS 119 182-1

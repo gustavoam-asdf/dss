@@ -1,17 +1,15 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAA;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationContext;
 import eu.europa.esig.dss.spi.validation.analyzer.DefaultDocumentAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.eaa.EAAPresentationAnalyzer;
 import eu.europa.esig.dss.spi.validation.analyzer.eaa.EAAPresentationAnalyzerFactory;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.spi.x509.ListCertificateSource;
-import eu.europa.esig.dss.spi.x509.ProofOfPossessionCertificateSource;
 import eu.europa.esig.dss.spi.x509.evidencerecord.EvidenceRecord;
 import eu.europa.esig.dss.spi.x509.tsp.TimestampToken;
 
@@ -29,6 +27,9 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
 
     /** Cached presentation of Electronic Attestation of Attributes */
     private EAAPresentation eaaPresentation;
+
+    /** Source used to verify status of the EAA */
+    private EAAStatusSource eaaStatusSource;
 
     /**
      * Empty constructor
@@ -68,6 +69,15 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     }
 
     /**
+     * Sets the EAA status source providing access to the information about the EAA validity status
+     *
+     * @param eaaStatusSource {@link EAAStatusSource}
+     */
+    public void setEAAStatusSource(EAAStatusSource eaaStatusSource) {
+        this.eaaStatusSource = eaaStatusSource;
+    }
+
+    /**
      * Builds a list of presentation of Electronic Attestation of Attributes
      *
      * @return {@link EAAPresentation}
@@ -92,37 +102,55 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     protected <T extends AdvancedSignature> ValidationContext prepareValidationContext(
             Collection<T> signatures, Collection<TimestampToken> detachedTimestamps,
             Collection<EvidenceRecord> detachedEvidenceRecords, CertificateVerifier certificateVerifier) {
-        ValidationContext validationContext = super.prepareValidationContext(signatures, detachedTimestamps, detachedEvidenceRecords, certificateVerifier);
+        EAAValidationContext validationContext = (EAAValidationContext) super.prepareValidationContext(signatures, detachedTimestamps, detachedEvidenceRecords, certificateVerifier);
+        validationContext.setEAAStatusSource(eaaStatusSource);
+
         EAAPresentation eaaPresentation = getEAAPresentation();
-        for (EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
-            CertificateSource deviceKeyCertificateSource = getDeviceKeyCertificateSource(eaa);
-            if (deviceKeyCertificateSource != null) {
-                validationContext.addDocumentCertificateSource(deviceKeyCertificateSource);
-            }
-        }
+        prepareEAAValidationContext(validationContext, eaaPresentation.getElectronicAttestationsOfAttributes());
         return validationContext;
     }
 
-    private CertificateSource getDeviceKeyCertificateSource(EAA eaa) {
-        AdvancedSignature keyBindingSignature = eaa.getKeyBindingSignature();
-        if (keyBindingSignature != null) {
-            return getProofOfPossessionCertificateSource(keyBindingSignature.getSigningCertificateSource());
-        }
-        return null;
+    @Override
+    protected ValidationContext createValidationContext() {
+        return new EAAValidationContext(getValidationTime());
     }
 
-    private CertificateSource getProofOfPossessionCertificateSource(CertificateSource certificateSource) {
-        if (certificateSource instanceof ProofOfPossessionCertificateSource) {
-            return certificateSource;
-        } else if (certificateSource instanceof ListCertificateSource) {
-            for (CertificateSource embeddedCertSource : ((ListCertificateSource) certificateSource).getSources()) {
-                CertificateSource popCertificateSource = getProofOfPossessionCertificateSource(embeddedCertSource);
-                if (popCertificateSource != null) {
-                    return popCertificateSource;
-                }
-            }
+    /**
+     * Prepares the {@code EAAValidationContext} for EAA validation process
+     *
+     * @param validationContext
+     *                          {@link EAAValidationContext}
+     * @param eaas
+     *                          a collection of all {@link EAA}s to be validated
+     */
+    protected void prepareEAAValidationContext(
+            final EAAValidationContext validationContext, final Collection<EAA> eaas) {
+        prepareEAAForVerification(validationContext, eaas);
+        processEAAValidation(eaas);
+    }
+
+    /**
+     * This method prepares a {@code EAAValidationContext} for signatures validation
+     *
+     * @param validationContext {@code EAAValidationContext}
+     */
+    protected void prepareEAAForVerification(
+            final EAAValidationContext validationContext, final Collection<EAA> eaas) {
+        for (final EAA eaa : eaas) {
+            validationContext.addEAAForVerification(eaa);
         }
-        return null;
+    }
+
+    /**
+     * Performs cryptographic validation of the EAA signatures
+     *
+     * @param eaas a collection of {@link EAA}s
+     */
+    protected void processEAAValidation(Collection<EAA> eaas) {
+        for (final EAA eaa : eaas) {
+            processSignaturesValidation(eaa.getSignatures());
+            processSignatureValidation(eaa.getKeyBindingSignature());
+        }
     }
 
     @Override

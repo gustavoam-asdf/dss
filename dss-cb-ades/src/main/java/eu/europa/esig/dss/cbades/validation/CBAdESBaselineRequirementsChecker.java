@@ -6,6 +6,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.cbades.cwt.CWTClaims;
 import eu.europa.esig.dss.spi.signature.BaselineRequirementsChecker;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.utils.Utils;
@@ -110,7 +111,7 @@ public class CBAdESBaselineRequirementsChecker extends BaselineRequirementsCheck
         }
         // iat (Cardinality == 1)
         CBORMap cwtClaims = signatureProtectedHeader.getAsMap(COSEHeaderParameter.CWT_CLAIMS.cbor());
-        if (cwtClaims == null || cwtClaims.getAsLong(COSEHeaderParameter.CWT_CLAIMS_IAT.cbor()) == null) {
+        if (cwtClaims == null || cwtClaims.getAsLong(CWTClaims.IAT.cbor()) == null) {
             LOG.warn("'CWT Claims enclosing the iat' header shall be present for CB-AdES-BASELINE-B signature (cardinality == 1)!");
             return false;
         }

@@ -13,6 +13,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORSimpleObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
+import eu.europa.esig.dss.cbades.cwt.CWTClaims;
 import eu.europa.esig.dss.cbades.validation.scope.CBAdESSignatureScopeFinder;
 import eu.europa.esig.dss.cbades.validation.timestamp.CBAdESTimestampSource;
 import eu.europa.esig.dss.enumerations.COSESignatureType;
@@ -214,21 +215,8 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
     public Date getSigningTime() {
         CBORMap cwtClaims = cose.getProtectedHeaderValueAsMap(COSEHeaderParameter.CWT_CLAIMS.cbor());
         if (cwtClaims != null && !cwtClaims.isEmpty()) {
-            CBORObject iatHeader = cwtClaims.getHeader(COSEHeaderParameter.CWT_CLAIMS_IAT.cbor());
-            if (iatHeader != null) {
-                long timeValueInMilliseconds;
-                if (iatHeader.isUnsignedInteger() || iatHeader.isNegativeInteger()) {
-                    CBORSimpleObject iat = (CBORSimpleObject) iatHeader;
-                    timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsLong());
-                } else if (iatHeader.isFloatingPointNumber()) {
-                    CBORSimpleObject iat = (CBORSimpleObject) iatHeader;
-                    timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(iat.getValueAsDouble());
-                } else {
-                    LOG.debug("Unsupported 'iat' header type found. The value is skipped");
-                    return null;
-                }
-                return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
-            }
+            CBORObject iatHeader = cwtClaims.getHeader(CWTClaims.IAT.cbor());
+            return CBORUtils.fromNumericDate(iatHeader);
         }
         LOG.debug("Unable to extract claimed signing-time: No 'CWT Claims enclosing the iat' header was found.");
         return null;

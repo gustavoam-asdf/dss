@@ -1,18 +1,21 @@
 package eu.europa.esig.dss.spi.eaa;
 
-import eu.europa.esig.dss.enumerations.EAAStatusOrigin;
 import eu.europa.esig.dss.enumerations.EAAStatus;
+import eu.europa.esig.dss.enumerations.EAAStatusOrigin;
 import eu.europa.esig.dss.enumerations.SignatureValidity;
 import eu.europa.esig.dss.model.identifier.TokenIdentifier;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
 
 import javax.security.auth.x500.X500Principal;
-import java.io.Serializable;
 import java.security.PublicKey;
-import java.util.Date;
 
-public class EAAStatusToken extends Token {
+/**
+ * Represents an EAA status representation
+ *
+ */
+public abstract class EAAStatusToken extends Token {
 
     private static final long serialVersionUID = 3803119761156101993L;
 
@@ -34,38 +37,77 @@ public class EAAStatusToken extends Token {
     /** Contains the revocation status of the token. */
     protected EAAStatus status;
 
-    /** The time at which the Status List Token was issued. */
-    protected Date issuanceTime;
-
-    /** The time at which the Status List Token is considered expired by the Status Issuer. */
-    protected Date expirationTime;
-
-    /** The time until when the Status List Token can be cached by a consumer before a fresh copy SHOULD be retrieved. */
-    protected Date timeToLive;
+    /** Certificate source built on the extracted information from the EAA status */
+    protected CertificateSource certificateSource;
 
     /**
-     * Constructor to instantiate the EAA Status List object from a builder
-     *
-     * @param builder {@link EAAStatusTokenBuilder}
+     * Default constructor
      */
-    protected EAAStatusToken(EAAStatusTokenBuilder builder) {
-        this.encoded = builder.binary;
-        this.signature = builder.signature;
-        this.relatedEAA = builder.relatedEAA;
-        this.sourceURL = builder.sourceURL;
-        this.status = builder.status;
-        this.issuanceTime = builder.issuanceTime;
-        this.expirationTime = builder.expirationTime;
-        this.timeToLive = builder.timeToLive;
+    protected EAAStatusToken() {
+        // empty
     }
 
     /**
-     * Instantiates a new builder to create the EAAStatusToken
+     * Sets a related EAA
      *
-     * @return {@link EAAStatusTokenBuilder}
+     * @param relatedEAA {@link EAA}
      */
-    public static EAAStatusTokenBuilder initBuilder() {
-        return new EAAStatusTokenBuilder();
+    public void setRelatedEAA(EAA relatedEAA) {
+        this.relatedEAA = relatedEAA;
+    }
+
+    /**
+     * Sets the source URL used to access the status token
+     *
+     * @param sourceURL {@link String}
+     */
+    public void setSourceURL(String sourceURL) {
+        this.sourceURL = sourceURL;
+    }
+
+    /**
+     * Sets the origin of the status token (e.g. EXTERNAL or CACHED)
+     *
+     * @param origin {@link EAAStatusOrigin}
+     */
+    public void setOrigin(EAAStatusOrigin origin) {
+        this.origin = origin;
+    }
+
+    /**
+     * Gets signature used to sign the EAA status token
+     *
+     * @return {@link AdvancedSignature}
+     */
+    public AdvancedSignature getSignature() {
+        return signature;
+    }
+
+    /**
+     * Gets the indication of the status of the related token (e.g. VALID, INVALID, etc.)
+     *
+     * @return {@link EAAStatus}
+     */
+    public EAAStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Gets the certificate source built on the extracted EAA status information
+     *
+     * @return {@link CertificateSource}
+     */
+    public CertificateSource getCertificateSource() {
+        return certificateSource;
+    }
+
+    /**
+     * Sets the certificate source built on the extracted EAA status information
+     *
+     * @param certificateSource {@link CertificateSource}
+     */
+    public void setCertificateSource(CertificateSource certificateSource) {
+        this.certificateSource = certificateSource;
     }
 
     @Override
@@ -87,116 +129,14 @@ public class EAAStatusToken extends Token {
     }
 
     @Override
-    public Date getCreationDate() {
-        return issuanceTime;
-    }
-
-    @Override
     public String toString(String indentStr) {
+        // TODO : to be implemented
         return "";
     }
 
     @Override
     public byte[] getEncoded() {
         return encoded.getBinaries();
-    }
-
-    /**
-     * Builder to create the EAA Status Token
-     *
-     */
-    public static class EAAStatusTokenBuilder implements Serializable {
-
-        private static final long serialVersionUID = -5818532413563116918L;
-
-        /** Extracted binaries of the Status Token */
-        protected StatusTokenBinary binary;
-
-        /** Signature used to sign the EAA status data */
-        protected AdvancedSignature signature;
-
-        /** Related {@link EAA} to this status object */
-        protected EAA relatedEAA;
-
-        /** The URL which was used to obtain the status data (online). */
-        protected String sourceURL;
-
-        /** The external origin (EXTERNAL or CACHED) */
-        protected EAAStatusOrigin origin;
-
-        /** Contains the revocation status of the token. */
-        protected EAAStatus status;
-
-        /** The time at which the Status List Token was issued. */
-        protected Date issuanceTime;
-
-        /** The time at which the Status List Token is considered expired by the Status Issuer. */
-        protected Date expirationTime;
-
-        /** The time until when the Status List Token can be cached by a consumer before a fresh copy SHOULD be retrieved. */
-        protected Date timeToLive;
-
-        /**
-         * Default constructor
-         */
-        protected EAAStatusTokenBuilder() {
-            // empty
-        }
-
-        public EAAStatusTokenBuilder setBinary(StatusTokenBinary binary) {
-            this.binary = binary;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setSignature(AdvancedSignature signature) {
-            this.signature = signature;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setRelatedEAA(EAA relatedEAA) {
-            this.relatedEAA = relatedEAA;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setSourceURL(String sourceURL) {
-            this.sourceURL = sourceURL;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setOrigin(EAAStatusOrigin origin) {
-            this.origin = origin;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setStatus(EAAStatus status) {
-            this.status = status;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setIssuanceTime(Date issuanceTime) {
-            this.issuanceTime = issuanceTime;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setExpirationTime(Date expirationTime) {
-            this.expirationTime = expirationTime;
-            return this;
-        }
-
-        public EAAStatusTokenBuilder setTimeToLive(Date timeToLive) {
-            this.timeToLive = timeToLive;
-            return this;
-        }
-
-        /**
-         * Builds the {@link EAAStatusToken}
-         *
-         * @return {@link EAAStatusToken}
-         */
-        public EAAStatusToken build() {
-            return new EAAStatusToken(this);
-        }
-
     }
 
 }

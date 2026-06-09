@@ -56,6 +56,9 @@ public enum CertificateOrigin {
 	EVIDENCE_RECORD,
 
 	/** Certificates present within an unprotected header parameter (JWS or COSE) */
-	UNPROTECTED_HEADER
+	UNPROTECTED_HEADER,
+
+	/** Certificates present within a Token Status List claim of an EAA */
+	STATUS_LIST
 
 }

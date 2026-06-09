@@ -1,7 +1,10 @@
 package eu.europa.esig.dss.jades.eaa.statuslist;
 
 import eu.europa.esig.dss.jades.DSSJsonUtils;
-import eu.europa.esig.dss.jades.eaa.JWTPayload;
+import eu.europa.esig.dss.jades.jwt.JWTPayload;
+import eu.europa.esig.dss.spi.eaa.statuslist.StatusListPayload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -9,7 +12,9 @@ import java.util.Map;
  * Represents a payload of a Token Status List (TLS), as defined in
  * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
  */
-public class JWTStatusListPayload extends JWTPayload {
+public class JWTStatusListPayload extends JWTPayload implements StatusListPayload {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JWTStatusListPayload.class);
 
     /**
      * Default constructor
@@ -25,6 +30,7 @@ public class JWTStatusListPayload extends JWTPayload {
      *
      * @return {@link String}
      */
+    @Override
     public String getType() {
         return getAsString(JWTStatusListClaimNames.TYP);
     }
@@ -33,8 +39,9 @@ public class JWTStatusListPayload extends JWTPayload {
      * Gets the value of the 'ttl' (time to live) claim that specifies the maximum amount of time,
      * in seconds, that the Status List Token can be cached by a consumer before a fresh copy SHOULD be retrieved.
      *
-     * @return {@link String}
+     * @return {@link Number}
      */
+    @Override
     public Number getTimeToLive() {
         return getAsNumber(JWTStatusListClaimNames.TTL);
     }
@@ -43,18 +50,13 @@ public class JWTStatusListPayload extends JWTPayload {
      * Gets the value of the 'status_list' (status list) claim that specifies the Status List
      * conforming to the structure defined in Section 4.2.
      *
-     * @return {@link String}
+     * @return {@link Map}
      */
     public Map<?, ?> getStatusList() {
         return getAsMap(JWTStatusListClaimNames.STATUS_LIST);
     }
 
-    /**
-     * Gets the value of the 'bits' (bits) of the "status_list" claim that specifies
-     * the number of bits per Referenced Token in the compressed byte array (lst).
-     *
-     * @return {@link String}
-     */
+    @Override
     public Number getStatusListBits() {
         Map<?, ?> statusList = getStatusList();
         if (statusList != null) {
@@ -63,28 +65,29 @@ public class JWTStatusListPayload extends JWTPayload {
         return null;
     }
 
-    /**
-     * Gets the value of the 'lst' (list) of the "status_list" claim that contains
-     * the status values for all the Referenced Tokens it conveys statuses for.
-     * The contained value shall be base64url-encoded.
-     * NOTE: this class does not verify validity of the data format.
-     *
-     * @return {@link String}
-     */
-    public String getStatusListBase64Url() {
+    @Override
+    public byte[] getStatusListEncoded() {
         Map<?, ?> statusList = getStatusList();
         if (statusList != null) {
-            return DSSJsonUtils.getAsString(statusList, JWTStatusListClaimNames.LST);
+            String lst = DSSJsonUtils.getAsString(statusList, JWTStatusListClaimNames.LST);
+            if (lst == null) {
+                LOG.warn("The 'lst' claim of the 'status_list' is not present or null!");
+                return null;
+            }
+            if (!DSSJsonUtils.isBase64UrlEncoded(lst)) {
+                LOG.warn("The value of the 'lst' claim of the 'status_list' is not base64url-encoded!");
+                return null;
+            }
+            try {
+                return DSSJsonUtils.fromBase64Url(lst);
+            } catch (Exception e) {
+                LOG.warn("Unable to decode 'lst' string value : {}", e.getMessage(), e);
+            }
         }
         return null;
     }
 
-    /**
-     * Gets the value of the 'aggregation_uri' (Aggregation URI) of the "status_list" claim that contains
-     * a URI to retrieve the Status List Aggregation for this type of Referenced Token or Issuer.
-     *
-     * @return {@link String}
-     */
+    @Override
     public String getStatusListAggregationUri() {
         Map<?, ?> statusList = getStatusList();
         if (statusList != null) {
