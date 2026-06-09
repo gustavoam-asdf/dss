@@ -6,10 +6,11 @@ import eu.europa.esig.dss.enumerations.SignatureValidity;
 import eu.europa.esig.dss.model.identifier.TokenIdentifier;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.TokenCertificateSource;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.PublicKey;
+import java.util.Date;
 
 /**
  * Represents an EAA status representation
@@ -38,7 +39,7 @@ public abstract class EAAStatusToken extends Token {
     protected EAAStatus status;
 
     /** Certificate source built on the extracted information from the EAA status */
-    protected CertificateSource certificateSource;
+    protected TokenCertificateSource certificateSource;
 
     /**
      * Default constructor
@@ -57,12 +58,30 @@ public abstract class EAAStatusToken extends Token {
     }
 
     /**
+     * Gets the source URL used to access the status token
+     *
+     * @return {@link String}
+     */
+    public String getSourceURL() {
+        return sourceURL;
+    }
+
+    /**
      * Sets the source URL used to access the status token
      *
      * @param sourceURL {@link String}
      */
     public void setSourceURL(String sourceURL) {
         this.sourceURL = sourceURL;
+    }
+
+    /**
+     * Gets the origin of the status token (e.g. EXTERNAL or CACHED)
+     *
+     * @return {@link EAAStatusOrigin}
+     */
+    public EAAStatusOrigin getOrigin() {
+        return origin;
     }
 
     /**
@@ -95,19 +114,59 @@ public abstract class EAAStatusToken extends Token {
     /**
      * Gets the certificate source built on the extracted EAA status information
      *
-     * @return {@link CertificateSource}
+     * @return {@link TokenCertificateSource}
      */
-    public CertificateSource getCertificateSource() {
+    public TokenCertificateSource getCertificateSource() {
         return certificateSource;
     }
 
     /**
      * Sets the certificate source built on the extracted EAA status information
      *
-     * @param certificateSource {@link CertificateSource}
+     * @param certificateSource {@link TokenCertificateSource}
      */
-    public void setCertificateSource(CertificateSource certificateSource) {
+    public void setCertificateSource(TokenCertificateSource certificateSource) {
         this.certificateSource = certificateSource;
+    }
+
+    /**
+     * Gets type of the token
+     *
+     * @return {@link String}
+     */
+    public String getType() {
+        // not implemented by default
+        return null;
+    }
+
+    /**
+     * Gets subject of the token
+     *
+     * @return {@link String}
+     */
+    public String getSubject() {
+        // not implemented by default
+        return null;
+    }
+
+    /**
+     * Gets expiration date of the token
+     *
+     * @return {@link Date}
+     */
+    public Date getExpirationDate() {
+        // not implemented by default
+        return null;
+    }
+
+    /**
+     * Gets time in seconds when a consumer should request a new token after its extraction
+     *
+     * @return {@link Number}
+     */
+    public Number getTimeToLive() {
+        // not implemented by default
+        return null;
     }
 
     @Override
@@ -124,6 +183,27 @@ public abstract class EAAStatusToken extends Token {
     public X500Principal getIssuerX500Principal() {
         if (signature.getSigningCertificateToken() != null) {
             return signature.getSigningCertificateToken().getSubject().getPrincipal();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the related EAA
+     *
+     * @return {@link EAA}
+     */
+    public EAA getRelatedEAA() {
+        return relatedEAA;
+    }
+
+    /**
+     * Gets the {@code String} identifier of the related EAA
+     *
+     * @return {@link String}
+     */
+    public String getRelatedEAAId() {
+        if (relatedEAA != null) {
+            return relatedEAA.getId();
         }
         return null;
     }

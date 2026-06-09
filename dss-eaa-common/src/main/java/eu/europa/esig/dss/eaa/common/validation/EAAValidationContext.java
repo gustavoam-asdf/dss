@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.spi.eaa.EAA;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
@@ -24,19 +25,19 @@ public class EAAValidationContext extends SignatureValidationContext {
     private static final Logger LOG = LoggerFactory.getLogger(EAAValidationContext.class);
 
     /**
-     * A set of EAAs to process
+     * EAA Presentation to process
      */
-    private final Set<EAA> processedEAAs = new LinkedHashSet<>();
+    private EAAPresentation processedEAAPresentation;
 
     /**
-     * A set of EAA Status tokens to process
+     * A set of EAAPresentation Status tokens to process
      */
     private final Set<EAAStatusToken> processedEAAStatusTokens = new LinkedHashSet<>();
 
     /**
-     * Source used to verify status of the EAA
+     * Source used to verify status of the EAAPresentation
      */
-    private EAAStatusSource eaaStatusSource;
+    private EAAStatusSource EAAStatusSource;
 
     /**
      * Default constructor instantiating object with null or empty values and current time
@@ -55,91 +56,97 @@ public class EAAValidationContext extends SignatureValidationContext {
     }
 
     /**
-     * Sets the EAAStatusSource used for retrieving an information about a status of the EAAs
+     * Sets the EAAStatusSource used for retrieving an information about a status of the EAAPresentations
      *
-     * @param eaaStatusSource {@link EAAStatusSource}
+     * @param EAAStatusSource {@link EAAStatusSource}
      */
-    public void setEAAStatusSource(EAAStatusSource eaaStatusSource) {
-        this.eaaStatusSource = eaaStatusSource;
+    public void setEAAStatusSource(EAAStatusSource EAAStatusSource) {
+        this.EAAStatusSource = EAAStatusSource;
     }
 
     /**
-     * Adds an {@code EAA} to be verified
+     * Adds an {@code EAAPresentation} to be verified
      *
-     * @param eaa {@link EAA}
+     * @param eaaPresentation {@link EAAPresentation}
      */
-    public void addEAAForVerification(final EAA eaa) {
-        if (eaa == null) {
+    public void addEAAPresentationForVerification(final EAAPresentation eaaPresentation) {
+        if (eaaPresentation == null) {
             return;
         }
+        if (processedEAAPresentation != null) {
+            throw new IllegalStateException("EAA Presentation was already added to EAAValidationContext! " +
+                    "Only one EAAPresentation is supported per validation.");
+        }
 
-        addEAACertificateSources(eaa);
+        addEAAPresentationCertificateSources(eaaPresentation);
 
-        prepareSignatures(eaa);
+        prepareSignatures(eaaPresentation);
 
-        final boolean added = processedEAAs.add(eaa);
+        processedEAAPresentation = eaaPresentation;
         if (LOG.isTraceEnabled()) {
-            if (added) {
-                LOG.trace("EAA added to processedEAAs: {} ", eaa.getId());
-            } else {
-                LOG.trace("EAA already present processedEAAs: {} ", eaa.getId());
+            LOG.trace("EAAPresentation added to EAAValidationContext");
+        }
+    }
+
+    private void addEAAPresentationCertificateSources(EAAPresentation eaaPresentation) {
+        for (EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
+            CertificateSource deviceKeyCertificateSource = eaa.getDeviceKeyCertificateSource();
+            if (deviceKeyCertificateSource != null) {
+                addDocumentCertificateSource(deviceKeyCertificateSource);
             }
         }
     }
 
-    private void prepareSignatures(EAA eaa) {
-        List<AdvancedSignature> signatures = eaa.getSignatures();
-        if (Utils.isCollectionNotEmpty(signatures)) {
-            for (AdvancedSignature signature : signatures) {
-                addSignatureForVerification(signature);
+    private void prepareSignatures(EAAPresentation eaaPresentation) {
+        for (EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
+            List<AdvancedSignature> signatures = eaa.getSignatures();
+            if (Utils.isCollectionNotEmpty(signatures)) {
+                for (AdvancedSignature signature : signatures) {
+                    addSignatureForVerification(signature);
+                }
             }
-        }
-        AdvancedSignature keyBindingSignature = eaa.getKeyBindingSignature();
-        if (keyBindingSignature != null) {
-            addSignatureForVerification(keyBindingSignature);
-        }
-    }
-
-    private void addEAACertificateSources(EAA eaa) {
-        CertificateSource deviceKeyCertificateSource = eaa.getDeviceKeyCertificateSource();
-        if (deviceKeyCertificateSource != null) {
-            addDocumentCertificateSource(deviceKeyCertificateSource);
+            AdvancedSignature keyBindingSignature = eaa.getKeyBindingSignature();
+            if (keyBindingSignature != null) {
+                addSignatureForVerification(keyBindingSignature);
+            }
         }
     }
 
     /**
      * Adds an {@code EAAStatusToken} to be verified
      *
-     * @param eaaStatusToken {@link EAAStatusToken}
+     * @param EAAStatusToken {@link EAAStatusToken}
      */
-    public void addEAAStatusTokenForVerification(final EAAStatusToken eaaStatusToken) {
-        if (eaaStatusToken == null) {
+    public void addEAAStatusTokenForVerification(final EAAStatusToken EAAStatusToken) {
+        if (EAAStatusToken == null) {
             return;
         }
 
-        addSignatureForVerification(eaaStatusToken.getSignature());
-        addDocumentCertificateSource(eaaStatusToken.getCertificateSource());
+        addSignatureForVerification(EAAStatusToken.getSignature());
+        addDocumentCertificateSource(EAAStatusToken.getCertificateSource());
 
-        final boolean added = processedEAAStatusTokens.add(eaaStatusToken);
+        final boolean added = processedEAAStatusTokens.add(EAAStatusToken);
         if (LOG.isTraceEnabled()) {
             if (added) {
-                LOG.trace("EAA Status Token added to processedEAAStatusTokens: {} ", eaaStatusToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation Status Token added to processedEAAStatusTokens: {} ", EAAStatusToken.getDSSIdAsString());
             } else {
-                LOG.trace("EAA already present processedEAAStatusTokens: {} ", eaaStatusToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation already present processedEAAStatusTokens: {} ", EAAStatusToken.getDSSIdAsString());
             }
         }
     }
 
     @Override
     public void validate() {
-        for (EAA eaa : processedEAAs) {
-            findEAAStatusData(eaa);
+        if (processedEAAPresentation != null) {
+            for (EAA eaa : processedEAAPresentation.getElectronicAttestationsOfAttributes()) {
+                findEAAStatusData(eaa);
+            }
         }
         super.validate();
     }
 
     /**
-     * Fetches the EAA status token for the {@code eaa}, when required
+     * Fetches the EAAPresentation status token for the {@code EAAPresentation}, when required
      *
      * @param eaa {@link EAA} to get status for
      */
@@ -149,33 +156,33 @@ public class EAAValidationContext extends SignatureValidationContext {
         }
 
         if (isEAAStatusCheckRequired(eaa)) {
-            if (eaaStatusSource == null) {
-                LOG.info("No EAAStatusSource has been provided. EAA status check is skipped.");
+            if (EAAStatusSource == null) {
+                LOG.info("No EAAStatusSource has been provided. EAAPresentation status check is skipped.");
                 return;
             }
             if (LOG.isTraceEnabled()) {
-                LOG.trace("EAA status check is in progress for EAA : {}", eaa.getId());
+                LOG.trace("EAAPresentation status check is in progress for EAAPresentation : {}", eaa.getId());
             }
 
-            EAAStatusToken eaaStatusToken = eaaStatusSource.getEAAStatus(eaa);
-            if (eaaStatusToken != null) {
+            EAAStatusToken EAAStatusToken = EAAStatusSource.getEAAStatus(eaa);
+            if (EAAStatusToken != null) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Obtained a new EAA Status token : {}, for EAA : {}",
-                            eaaStatusToken.getDSSIdAsString(), eaa.getId());
+                    LOG.debug("Obtained a new EAAPresentation Status token : {}, for EAAPresentation : {}",
+                            EAAStatusToken.getDSSIdAsString(), eaa.getId());
                 }
-                addEAAStatusTokenForVerification(eaaStatusToken);
+                addEAAStatusTokenForVerification(EAAStatusToken);
             }
 
         } else if (LOG.isDebugEnabled()) {
-            LOG.debug("Status data is not required for EAA : {}", eaa.getId());
+            LOG.debug("Status data is not required for EAAPresentation : {}", eaa.getId());
         }
     }
 
     /**
-     * This method verifies whether the {@code eaa} requires the status verification
+     * This method verifies whether the {@code EAAPresentation} requires the status verification
      *
      * @param eaa {@link EAA}
-     * @return TRUE if the EAA status should be checked, FALSE otherwise
+     * @return TRUE if the EAAPresentation status should be checked, FALSE otherwise
      */
     protected boolean isEAAStatusCheckRequired(EAA eaa) {
         if (eaa.getPayload() != null && eaa.getPayload().getShortLived() != null) {
@@ -183,6 +190,24 @@ public class EAAValidationContext extends SignatureValidationContext {
             return shortLived != null && !Utils.isTrue(shortLived);
         }
         return true;
+    }
+
+    /**
+     * Gets an EAAPresentations validated by the context
+     *
+     * @return {@link EAAPresentation}
+     */
+    public EAAPresentation getProcessedEAAPresentation() {
+        return processedEAAPresentation;
+    }
+
+    /**
+     * Gets a set of EAAPresentation Status Tokens validated by the context
+     *
+     * @return a set of {@link EAAStatusToken}s
+     */
+    public Set<EAAStatusToken> getProcessedEAAStatusTokens() {
+        return processedEAAStatusTokens;
     }
 
 }

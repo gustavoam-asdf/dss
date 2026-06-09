@@ -106,7 +106,7 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
         validationContext.setEAAStatusSource(eaaStatusSource);
 
         EAAPresentation eaaPresentation = getEAAPresentation();
-        prepareEAAValidationContext(validationContext, eaaPresentation.getElectronicAttestationsOfAttributes());
+        prepareEAAPresentationValidationContext(validationContext, eaaPresentation);
         return validationContext;
     }
 
@@ -120,34 +120,33 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
      *
      * @param validationContext
      *                          {@link EAAValidationContext}
-     * @param eaas
-     *                          a collection of all {@link EAA}s to be validated
+     * @param eaaPresentation
+     *                          {@link EAAPresentation} to be validated
      */
-    protected void prepareEAAValidationContext(
-            final EAAValidationContext validationContext, final Collection<EAA> eaas) {
-        prepareEAAForVerification(validationContext, eaas);
-        processEAAValidation(eaas);
+    protected void prepareEAAPresentationValidationContext(
+            final EAAValidationContext validationContext, final EAAPresentation eaaPresentation) {
+        prepareEAAPresentationForVerification(validationContext, eaaPresentation);
+        processEAAPresentationValidation(eaaPresentation);
     }
 
     /**
-     * This method prepares a {@code EAAValidationContext} for signatures validation
+     * This method prepares a {@code EAAValidationContext} for EAA presentation validation
      *
      * @param validationContext {@code EAAValidationContext}
+     * @param eaaPresentation {@link EAAPresentation}
      */
-    protected void prepareEAAForVerification(
-            final EAAValidationContext validationContext, final Collection<EAA> eaas) {
-        for (final EAA eaa : eaas) {
-            validationContext.addEAAForVerification(eaa);
-        }
+    protected void prepareEAAPresentationForVerification(
+            final EAAValidationContext validationContext, final EAAPresentation eaaPresentation) {
+        validationContext.addEAAPresentationForVerification(eaaPresentation);
     }
 
     /**
      * Performs cryptographic validation of the EAA signatures
      *
-     * @param eaas a collection of {@link EAA}s
+     * @param eaaPresentation {@link EAAPresentation}
      */
-    protected void processEAAValidation(Collection<EAA> eaas) {
-        for (final EAA eaa : eaas) {
+    protected void processEAAPresentationValidation(EAAPresentation eaaPresentation) {
+        for (final EAA eaa : eaaPresentation.getElectronicAttestationsOfAttributes()) {
             processSignaturesValidation(eaa.getSignatures());
             processSignatureValidation(eaa.getKeyBindingSignature());
         }

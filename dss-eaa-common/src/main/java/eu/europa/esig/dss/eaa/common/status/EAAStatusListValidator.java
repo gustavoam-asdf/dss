@@ -8,7 +8,7 @@ import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.EAAStatusValidator;
 import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidatorFactory;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.spi.x509.TokenCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Collections;
@@ -81,9 +81,9 @@ public class EAAStatusListValidator implements EAAStatusValidator {
      * Gets the certificate source based on the certificate present within the "status_list" claim, if any
      *
      * @param eaa {@link EAA}
-     * @return {@link CertificateSource}
+     * @return {@link TokenCertificateSource}
      */
-    protected CertificateSource getCertificateSource(EAA eaa) {
+    protected TokenCertificateSource getCertificateSource(EAA eaa) {
         return new EAAStatusListCertificateSource(eaa.getPayload().getStatus().getStatusList());
     }
 

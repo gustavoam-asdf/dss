@@ -13,7 +13,7 @@ class CWTStatusListValidatorTest {
 
     @Test
     void CWTStatusListTest() {
-        /* See draft-ietf-oauth-status-list-20.html */
+        /* See draft-ietf-oauth-status-list-20 */
 
         String tokenHex =
                 "d2845820a2012610781a6170706c69636174696f6e2f7374617475736c6973742b63" +

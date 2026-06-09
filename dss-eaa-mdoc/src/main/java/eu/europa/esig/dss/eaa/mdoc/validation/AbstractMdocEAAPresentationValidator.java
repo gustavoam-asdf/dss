@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.mdoc.validation;
 import eu.europa.esig.dss.cbades.validation.CBAdESDiagnosticDataBuilder;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
+import eu.europa.esig.dss.eaa.common.validation.EAAPresentationDiagnosticDataBuilder;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 /**
@@ -26,7 +27,7 @@ public abstract class AbstractMdocEAAPresentationValidator extends DefaultEAAPre
     }
 
     @Override
-    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public EAAPresentationDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new MdocPresentationDiagnosticDataBuilder()
                 .foundEAAPresentation(getEAAPresentation())
                 .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());

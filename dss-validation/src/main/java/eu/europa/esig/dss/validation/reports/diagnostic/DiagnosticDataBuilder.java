@@ -1083,7 +1083,7 @@ public abstract class DiagnosticDataBuilder {
 	 * @param certificateSource {@link CertificateSource}
 	 * @return {@link XmlSigningCertificate}
 	 */
-	private XmlSigningCertificate getXmlSigningCertificate(final Token token, CertificateSource certificateSource) {
+	protected XmlSigningCertificate getXmlSigningCertificate(final Token token, CertificateSource certificateSource) {
 		final XmlSigningCertificate xmlSignCertType = new XmlSigningCertificate();
 		final CertificateToken certificateByPubKey = getIssuerCertificate(token, certificateSource);
 		if (certificateByPubKey != null) {

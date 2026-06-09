@@ -35,6 +35,13 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="UsedEAAStatusTokens" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAAStatusToken" type="EAAStatusToken" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="UsedCertificates" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -1749,6 +1756,15 @@
 						</xs:complexType>
 					</xs:element>
 					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
+
+					<xs:element name="Statuses" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="EAAStatus" type="EAAStatus" minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
@@ -2159,6 +2175,57 @@
 		<xs:attribute name="namespace" type="xs:string" /> <!-- may be null -->
 		<xs:attribute name="disclosure" type="xs:boolean" />
 	</xs:complexType>
+
+	<xs:complexType name="EAAStatusToken">
+		<xs:complexContent>
+			<xs:extension base="AbstractToken">
+				<xs:sequence>
+					<xs:element name="Origin" type="EAAStatusOrigin" />
+					<xs:element name="Type" type="xs:string" minOccurs="0" />
+					<xs:element name="SourceAddress" type="xs:string" minOccurs="0" />
+					<xs:element name="Subject" type="xs:string" minOccurs="0" />
+					<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="ExpirationTime" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="TimeToLive" type="xs:integer" minOccurs="0" />
+
+					<xs:element name="BasicSignature" type="BasicSignature" minOccurs="0" /> <!-- Can be null in case of no SUCCESSFUL response of OCSP -->
+					<xs:element name="SigningCertificate" type="SigningCertificate" minOccurs="0" />
+					<xs:element name="CertificateChain" type="CertificateChain" minOccurs="0" />
+
+					<xs:element name="FoundCertificates" type="FoundCertificates" minOccurs="0" />
+
+					<xs:choice>
+						<xs:element name="Base64Encoded" type="xs:base64Binary" />
+						<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" />
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:simpleType name="EAAStatusOrigin" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EXTERNAL" />
+			<xs:enumeration value="CACHED" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="EAAStatus">
+		<xs:sequence>
+			<xs:element name="Status" type="EAAStatusEnum" />
+		</xs:sequence>
+		<xs:attribute name="EAAStatusToken" type="xs:IDREF" use="required" />
+	</xs:complexType>
+
+	<xs:simpleType name="EAAStatusEnum" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VALID" />
+			<xs:enumeration value="INVALID" />
+			<xs:enumeration value="SUSPENDED" />
+			<xs:enumeration value="APPLICATION_SPECIFIC" />
+			<xs:enumeration value="UNKNOWN" />
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="DigestMatchers">
 		<xs:sequence>

@@ -12,7 +12,7 @@ class JWTStatusListValidatorTest {
 
     @Test
     void jwtStatusListTest() {
-        /* See draft-ietf-oauth-status-list-20.html */
+        /* See draft-ietf-oauth-status-list-20 */
 
         String tokenB64Url =
                 "eyJhbGciOiJFUzI1NiIsImtpZCI6IjEyIiwidHlwIjoic3RhdHVzbGlzdCtqd3QifQ.e" +

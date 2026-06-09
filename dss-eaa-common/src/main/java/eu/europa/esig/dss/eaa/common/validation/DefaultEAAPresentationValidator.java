@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.enumerations.ValidationLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
@@ -10,6 +11,7 @@ import eu.europa.esig.dss.validation.executor.DocumentProcessExecutor;
 import eu.europa.esig.dss.validation.executor.eaa.EAAPresentationProcessExecutor;
 import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
+import eu.europa.esig.dss.validation.reports.diagnostic.XmlDiagnosticDataFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,11 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
+    public void setEAAStatusSource(EAAStatusSource eaaStatusSource) {
+        getDocumentAnalyzer().setEAAStatusSource(eaaStatusSource);
+    }
+
+    @Override
     public EAAPresentation getEAAPresentation() {
         return getDocumentAnalyzer().getEAAPresentation();
     }
@@ -80,10 +87,14 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
-    public SignedDocumentDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
+    public EAAPresentationDiagnosticDataBuilder initializeDiagnosticDataBuilder() {
         return new EAAPresentationDiagnosticDataBuilder()
-                .foundEAAPresentation(getEAAPresentation())
                 .setSignatureDiagnosticDataBuilder(getSignatureDiagnosticDataBuilder());
+    }
+
+    @Override
+    protected XmlDiagnosticDataFactory initDiagnosticDataFactory(SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder) {
+        return new XmlEAAPresentationDiagnosticDataFactory((EAAPresentationDiagnosticDataBuilder) diagnosticDataBuilder);
     }
 
     @Override

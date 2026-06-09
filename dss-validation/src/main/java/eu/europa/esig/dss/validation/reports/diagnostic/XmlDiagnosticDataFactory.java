@@ -37,25 +37,25 @@ import java.util.Objects;
 public class XmlDiagnosticDataFactory {
 
     /** The corresponding diagnostic data builder */
-    private final SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder;
+    protected final SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder;
 
     /** The document to be validated */
-    private DSSDocument document;
+    protected DSSDocument document;
 
     /** The validation time */
-    private Date validationTime;
+    protected Date validationTime;
 
     /** The current validation context */
-    private ValidationContext validationContext;
+    protected ValidationContext validationContext;
 
     /** The used default digest algorithm for tokens definition */
-    private DigestAlgorithm defaultDigestAlgorithm;
+    protected DigestAlgorithm defaultDigestAlgorithm;
 
     /** The token extraction strategy to be used (i.e. binaries vs digest) */
-    private TokenExtractionStrategy tokenExtractionStrategy;
+    protected TokenExtractionStrategy tokenExtractionStrategy;
 
     /** The class to compute identifiers for tokens to be returned in the reports */
-    private TokenIdentifierProvider tokenIdentifierProvider;
+    protected TokenIdentifierProvider tokenIdentifierProvider;
 
     /**
      * Default constructor
@@ -139,6 +139,15 @@ public class XmlDiagnosticDataFactory {
      * @return {@link XmlDiagnosticData}
      */
     public XmlDiagnosticData create() {
+        return initBuilder().build();
+    }
+
+    /**
+     * Instantiates the Diagnostic Data builder with the validation context
+     *
+     * @return {@link DiagnosticDataBuilder}
+     */
+    protected DiagnosticDataBuilder initBuilder() {
         return diagnosticDataBuilder
                 .document(document)
                 .validationDate(validationTime)
@@ -153,8 +162,7 @@ public class XmlDiagnosticDataFactory {
                 .usedRevocations(validationContext.getProcessedRevocations())
                 .defaultDigestAlgorithm(defaultDigestAlgorithm)
                 .tokenExtractionStrategy(tokenExtractionStrategy)
-                .tokenIdentifierProvider(tokenIdentifierProvider)
-                .build();
+                .tokenIdentifierProvider(tokenIdentifierProvider);
     }
 
 }

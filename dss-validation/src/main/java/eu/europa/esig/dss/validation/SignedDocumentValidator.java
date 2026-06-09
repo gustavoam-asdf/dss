@@ -459,7 +459,7 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 	public final XmlDiagnosticData getDiagnosticData() {
 		ValidationContext validationContext = documentAnalyzer.validate();
 		SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder = initializeDiagnosticDataBuilder();
-		return new XmlDiagnosticDataFactory(diagnosticDataBuilder)
+		return initDiagnosticDataFactory(diagnosticDataBuilder)
 				.setDocument(documentAnalyzer.getDocument())
 				.setValidationTime(documentAnalyzer.getValidationTime())
 				.setTokenIdentifierProvider(documentAnalyzer.getTokenIdentifierProvider())
@@ -467,6 +467,16 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 				.setDefaultDigestAlgorithm(defaultDigestAlgorithm)
 				.setTokenExtractionStrategy(tokenExtractionStrategy)
 				.create();
+	}
+
+	/**
+	 * Creates a new instance of a factory used to create a Diagnostic Data
+	 *
+	 * @param diagnosticDataBuilder {@link SignedDocumentDiagnosticDataBuilder}
+	 * @return {@link XmlDiagnosticDataFactory}
+	 */
+	protected XmlDiagnosticDataFactory initDiagnosticDataFactory(SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder) {
+		return new XmlDiagnosticDataFactory(diagnosticDataBuilder);
 	}
 
 	/**
