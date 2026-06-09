@@ -6,6 +6,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
+import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.MdocDeviceResponseParser;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceAuth;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceNameSpaces;
@@ -167,7 +168,7 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
          * ]
          */
         final CBORArray deviceAuthentication = new CBORArray();
-        deviceAuthentication.add("DeviceAuthentication");
+        deviceAuthentication.add(MdocConstants.DEVICE_AUTHENTICATION);
 
         CBORArray sessionTranscriptCbor = new CBORArray();
         try {

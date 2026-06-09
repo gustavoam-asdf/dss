@@ -120,7 +120,11 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             assertNull(signerProtectedHeader);
 
             assertNotNull(bodyUnprotectedHeader);
-            assertFalse(bodyUnprotectedHeader.isEmpty());
+            if (signature.isKeyBindingSignature()) {
+                assertTrue(bodyUnprotectedHeader.isEmpty());
+            } else {
+                assertFalse(bodyUnprotectedHeader.isEmpty());
+            }
             assertNull(signerUnprotectedHeader);
 
             Set<CBORObject> keySet = bodyProtectedHeader.getKeys();
@@ -429,10 +433,12 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
 
             FoundCertificatesProxy foundCertificates = signatureWrapper.foundCertificates();
             List<RelatedCertificateWrapper> signingCertificates = foundCertificates.getRelatedCertificatesByRefOrigin(CertificateRefOrigin.SIGNING_CERTIFICATE);
-            if (getSignatureParameters().isIncludeCertificateChainThumbprints()) {
+
+            CBAdESSignatureParameters signatureParameters = signatureWrapper.isKeyBindingSignature() ? getKeyBindingSignatureParameters() : getSignatureParameters();
+            if (signatureParameters.isIncludeCertificateChainThumbprints()) {
                 BaselineBCertificateSelector certificateSelector = new BaselineBCertificateSelector(
-                        getSignatureParameters().getSigningCertificate(), getSignatureParameters().getCertificateChain())
-                        .setTrustAnchorBPPolicy(getSignatureParameters().bLevel().isTrustAnchorBPPolicy())
+                        signatureParameters.getSigningCertificate(), signatureParameters.getCertificateChain())
+                        .setTrustAnchorBPPolicy(signatureParameters.bLevel().isTrustAnchorBPPolicy())
                         .setTrustedCertificateSource(getTrustedCertificateSource());
                 assertEquals(certificateSelector.getCertificates().size(), signingCertificates.size());
             } else {
@@ -454,9 +460,9 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
             int signCertRefs = 1 + (Utils.isCollectionNotEmpty(kidCerts) ? 1 : 0) + (Utils.isCollectionNotEmpty(x5uCerts) ? 1 : 0);
             assertEquals(signCertRefs, signingCertificateRefs.size());
 
-            if (getSignatureParameters().isIncludeKeyIdentifier()) {
+            if (signatureParameters.isIncludeKeyIdentifier()) {
                 assertEquals(1, kidCerts.size());
-            } else if (Utils.isStringNotEmpty(getSignatureParameters().getX509Url())) {
+            } else if (Utils.isStringNotEmpty(signatureParameters.getX509Url())) {
                 assertTrue(Utils.isCollectionNotEmpty(x5uCerts));
             } else {
                 assertEquals(0, kidCerts.size());

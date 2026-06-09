@@ -72,9 +72,9 @@ public interface EAAService<SP extends SerializableSignatureParameters, B extend
 
     ToBeSigned getDataToSignForKeyBindingSignature(DSSDocument eaa, List<D> disclosures, E keyBindingParameters, SP signatureParameters);
 
-    DSSDocument createKeyBindingSignature(DSSDocument eea, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument createKeyBindingSignature(DSSDocument eaa, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
-    DSSDocument createKeyBindingSignature(DSSDocument eea, List<D> disclosures, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
+    DSSDocument createKeyBindingSignature(DSSDocument eaa, List<D> disclosures, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
     DSSDocument issuePresentation(DSSDocument eaa, List<D> disclosures);
 

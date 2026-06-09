@@ -1,20 +1,30 @@
 package eu.europa.esig.dss.eaa.mdoc.creation;
 
+import eu.europa.esig.dss.cbades.cbor.CBORArray;
+import eu.europa.esig.dss.cbades.cbor.CBORByteString;
+import eu.europa.esig.dss.cbades.cbor.CBORMap;
+import eu.europa.esig.dss.cbades.cbor.CBORObject;
+import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
+import eu.europa.esig.dss.eaa.mdoc.IssuerSignedParser;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
+import eu.europa.esig.dss.eaa.mdoc.MdocHeaderParameter;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeType;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
+import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
@@ -242,25 +252,78 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     @Override
     public ToBeSigned getDataToSignForKeyBindingSignature(final DSSDocument eaa, final MdocKeyBindingParameters keyBindingParameters,
                                                           final CBAdESSignatureParameters signatureParameters) {
-        return null;
+        return getDataToSignForKeyBindingSignature(eaa, null, keyBindingParameters, signatureParameters);
     }
 
     @Override
     public ToBeSigned getDataToSignForKeyBindingSignature(final DSSDocument eaa, final List<MdocEAADisclosure> disclosures, final MdocKeyBindingParameters keyBindingParameters,
                                                           final CBAdESSignatureParameters signatureParameters) {
-        return null;
+        ensureKeyBindingSignatureParameters(signatureParameters);
+        DSSDocument deviceAuthentication = getDeviceAuthenticationBuilder().build(keyBindingParameters);
+        return dataToBeSigned(deviceAuthentication, signatureParameters);
     }
 
     @Override
-    public DSSDocument createKeyBindingSignature(final DSSDocument eea, final MdocKeyBindingParameters keyBindingParameters, final CBAdESSignatureParameters signatureParameters,
+    public DSSDocument createKeyBindingSignature(final DSSDocument eaa, final MdocKeyBindingParameters keyBindingParameters, final CBAdESSignatureParameters signatureParameters,
                                                  final SignatureValue signatureValue) {
-        return null;
+        return createKeyBindingSignature(eaa, null, keyBindingParameters, signatureParameters, signatureValue);
     }
 
     @Override
-    public DSSDocument createKeyBindingSignature(final DSSDocument eea, final List<MdocEAADisclosure> disclosures, final MdocKeyBindingParameters keyBindingParameters,
+    public DSSDocument createKeyBindingSignature(final DSSDocument eaa, final List<MdocEAADisclosure> disclosures, final MdocKeyBindingParameters keyBindingParameters,
                                                  final CBAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
-        return null;
+        ensureKeyBindingSignatureParameters(signatureParameters);
+        DSSDocument deviceAuthentication = getDeviceAuthenticationBuilder().build(keyBindingParameters);
+        return getCBAdESService().signDocument(deviceAuthentication, signatureParameters, signatureValue);
+    }
+
+    protected void ensureKeyBindingSignatureParameters(final CBAdESSignatureParameters signatureParameters) {
+        Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
+
+        if (signatureParameters.getSignatureLevel() == null) {
+            signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+            LOG.debug("SignatureLevel is absent and was set to '{}'", SignatureLevel.CB_AdES_BASELINE_B);
+
+        } else if (SignatureLevel.CB_AdES_BASELINE_B != signatureParameters.getSignatureLevel()) {
+            throw new IllegalArgumentException("Signature level must be CB-AdES-BASELINE-B!");
+        }
+
+        if (signatureParameters.getSignaturePackaging() == null) {
+            signatureParameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+            LOG.debug("SignaturePackaging is absent and was set to '{}'", SignaturePackaging.DETACHED);
+
+        } else if (SignaturePackaging.DETACHED != signatureParameters.getSignaturePackaging()) {
+            throw new IllegalArgumentException("Signature packaging must be DETACHED!");
+        }
+
+        if (signatureParameters.getSigDMechanism() == null) {
+            signatureParameters.setSigDMechanism(SigDMechanism.NO_SIG_D);
+            LOG.debug("SigDMechanism is absent and was set to '{}'", SigDMechanism.NO_SIG_D);
+
+        } else if (SigDMechanism.NO_SIG_D != signatureParameters.getSigDMechanism()) {
+            throw new IllegalArgumentException("SigDMechanism must be NO_SIG_D!");
+        }
+
+        if (COSEStructureType.COSE_SIGN1 != signatureParameters.getCoseStructureType()) {
+            signatureParameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+            LOG.debug("COSEStructureType was set to '{}'", COSEStructureType.COSE_SIGN1);
+        }
+
+        if (signatureParameters.isTagged()) {
+            signatureParameters.setTagged(false);
+            LOG.debug("COSE_Sign1 structure shall be untagged. The value was set to 'false'.");
+        }
+
+        if (signatureParameters.isIncludeCertificateChain()) {
+            signatureParameters.setIncludeCertificateChain(false);
+            LOG.debug("IncludeCertificateChain should not be 'true'. The value was set to 'false'.");
+        }
+
+        if (EncryptionAlgorithm.ECDSA != signatureParameters.getEncryptionAlgorithm() &&
+                EncryptionAlgorithm.EDDSA != signatureParameters.getEncryptionAlgorithm()) {
+            throw new IllegalArgumentException(String.format("DeviceAuthentication shall be signed by ECDSA or EDDSA algortihm! " +
+                    "Obtained value : '%s'", signatureParameters.getEncryptionAlgorithm()));
+        }
     }
 
     @Override
@@ -291,12 +354,71 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
     @Override
     public DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keybinding) {
-        return null;
+        return issuePresentation(eaa, null, keybinding);
     }
 
     @Override
     public DSSDocument issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures, DSSDocument keyBinding) {
-        return null;
+        if (!CBORUtils.isCbor(eaa)) {
+            throw new DSSException("The eaa should be a cbor document!");
+        }
+        if (!CBORUtils.isCbor(keyBinding)) {
+            throw new DSSException("The keyBinding should be a cbor document!");
+        }
+        try {
+            CBORMap issuerSigned = (CBORMap) CBORUtils.parseCbor(createIssuerSigned(eaa, disclosures));
+            CBORObject deviceSignature = CBORUtils.parseCbor(keyBinding);
+
+            CBORMap deviceAuth = new CBORMap();
+            deviceAuth.put(MdocHeaderParameter.DEVICE_SIGNATURE.toString(), deviceSignature);
+
+            CBORMap deviceSigned = new CBORMap();
+            deviceSigned.put(MdocHeaderParameter.NAMESPACES.toString(), CBORUtils.toCborBtsrWrappedTagged(new CBORMap()));
+            deviceSigned.put(MdocHeaderParameter.DEVICE_AUTH.toString(), deviceAuth);
+
+            CBORMap document = new CBORMap();
+            document.put(MdocHeaderParameter.DOC_TYPE.toString(), extractDocTypeFromIssuerSigned(issuerSigned));
+            document.put(MdocHeaderParameter.ISSUER_SIGNED.toString(), issuerSigned);
+            document.put(MdocHeaderParameter.DEVICE_SIGNED.toString(), deviceSigned);
+
+            CBORArray documents =  new CBORArray();
+            documents.add(document);
+
+            CBORMap deviceResponse = new CBORMap();
+            deviceResponse.put(MdocHeaderParameter.VERSION.toString(), CBORObjectFactory.toCBORObject("1.0"));
+            deviceResponse.put(MdocHeaderParameter.DOCUMENTS.toString(), documents);
+            deviceResponse.put(MdocHeaderParameter.STATUS.toString(), CBORObjectFactory.toCBORObject(0));
+
+            DSSDocument result = new InMemoryDocument(CBORUtils.serializeCborObject(deviceResponse));
+            result.setName(getFinalDocumentName(eaa));
+            result.setMimeType(getEAAPresentationMimeType());
+            return result;
+        } catch (Exception e) {
+            throw new DSSException(String.format("Unable to issue presentation. Reason : %s", e.getMessage()), e);
+        }
+    }
+
+    /**
+     * Extract the value of the docType from the issuerSigned to use it in the DeviceResponse
+     *
+     * @param issuerSigned the issuerSigned
+     * @return {@link String} the value of the docType
+     */
+    protected String extractDocTypeFromIssuerSigned(final CBORMap issuerSigned) {
+        IssuerSignedParser parser = new IssuerSignedParser(issuerSigned);
+        CBORByteString encodedPayload = (CBORByteString) parser.parse().getIssuerAuth().getPayload();
+        CBORByteString decodedPayload = (CBORByteString) CBORUtils.parseCbor(encodedPayload.getValueAsBytes());
+        CBORMap mso = new CBORMap(decodedPayload);
+        return mso.getAsString(MdocConstants.DOC_TYPE);
+    }
+
+    /**
+     * Gets the builder to use to build the DeviceAuthentication structure
+     *
+     * @return {@link MdocEAADeviceAuthenticationBuilder}
+     */
+    protected MdocEAADeviceAuthenticationBuilder getDeviceAuthenticationBuilder() {
+        return new DefaultMdocEAADeviceAuthenticationBuilder();
     }
 
     /**
@@ -317,5 +439,4 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     protected MimeType getEAAPresentationMimeType() {
         return MimeTypeEnum.CBOR;
     }
-
 }

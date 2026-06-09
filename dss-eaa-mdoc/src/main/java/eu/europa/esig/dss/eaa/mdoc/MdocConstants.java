@@ -45,6 +45,9 @@ public class MdocConstants {
     /** The mdoc authentication public key and information related to this key */
     public static final String DEVICE_KEY_INFO = "deviceKeyInfo";
 
+    /** The device authentication */
+    public static final String DEVICE_AUTHENTICATION = "DeviceAuthentication";
+
     /** Message digest algorithm used */
     public static final String DIGEST_ALGORITHM = "digestAlgorithm";
 
