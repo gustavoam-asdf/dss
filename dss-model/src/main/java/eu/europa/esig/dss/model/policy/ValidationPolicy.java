@@ -1844,7 +1844,28 @@ public interface ValidationPolicy {
      *
      * @return {@code MultiValuesRule} if EAASupportedClaims element is present
      */
-    MultiValuesRule getEAASupportedClaimsConstraint();
+	MultiValuesRule getEAASupportedClaimsConstraint();
+
+	/**
+	 * Returns EAAStatusAvailable constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAStatusAvailable element is present
+	 */
+	LevelRule getEAAStatusAvailableConstraint();
+
+	/**
+	 * Returns AcceptableEAAStatusFound constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if AcceptableEAAStatusFound element is present
+	 */
+	LevelRule getAcceptableEAAStatusFoundConstraint();
+
+	/**
+	 * Returns EAAStatusValid constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAStatusValid element is present
+	 */
+	LevelRule getEAAStatusValidConstraint();
 
     /**
      * Returns EAAType constraint if present in the policy, null otherwise
@@ -1901,6 +1922,63 @@ public interface ValidationPolicy {
      * @return {@code LevelRule} if ETSI194721Conformance element is present
      */
     LevelRule getEAAETSI194721ConformanceConstraint();
+
+	/**
+	 * Returns StatusTokenType constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if StatusTokenType element is present
+	 */
+	MultiValuesRule getEAAStatusTokenTypeConstraint();
+
+	/**
+	 * Returns UnknownStatus constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if UnknownStatus element is present
+	 */
+	LevelRule getEAAStatusUnknownStatusConstraint();
+
+	/**
+	 * Returns IssuanceTimePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if IssuanceTimePresent element is present
+	 */
+	LevelRule getEAAStatusIssuanceTimePresentConstraint();
+
+	/**
+	 * Returns ExpirationTimePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if ExpirationTimePresent element is present
+	 */
+	LevelRule getEAAStatusExpirationTimePresentConstraint();
+
+	/**
+	 * Returns NotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if NotExpired element is present
+	 */
+	LevelRule getEAAStatusNotExpiredConstraint();
+
+	/**
+	 * Returns EAAStatusSubjectKnown constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAStatusSubjectKnown element is present
+	 */
+	LevelRule getEAAStatusSubjectKnownConstraint();
+
+	/**
+	 * Returns EAAStatusSubjectMatch constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAStatusSubjectMatch element is present
+	 */
+	LevelRule getEAAStatusSubjectMatchConstraint();
+
+	/**
+	 * Returns EAAStatusTokenIssuerValidAtIssuanceTime constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAStatusTokenIssuerValidAtIssuanceTime element is present
+	 */
+	LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint();
+
 
 	/* Article 32 */
 

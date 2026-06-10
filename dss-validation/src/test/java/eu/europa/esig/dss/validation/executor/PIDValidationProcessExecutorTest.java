@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
 
-    private static final String PID_POLICY_LOCATION = "/policy/pid-constraint.xml";
+    private static final String PID_POLICY_LOCATION = "/policy/eaa-constraint.xml";
 
     private static I18nProvider i18nProvider;
 

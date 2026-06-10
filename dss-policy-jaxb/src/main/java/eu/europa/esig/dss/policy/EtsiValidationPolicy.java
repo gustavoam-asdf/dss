@@ -37,6 +37,7 @@ import eu.europa.esig.dss.policy.jaxb.CertificateValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.policy.jaxb.ContainerConstraints;
 import eu.europa.esig.dss.policy.jaxb.CryptographicConstraint;
+import eu.europa.esig.dss.policy.jaxb.EAAStatusConstraints;
 import eu.europa.esig.dss.policy.jaxb.EIDAS;
 import eu.europa.esig.dss.policy.jaxb.EAAConstraints;
 import eu.europa.esig.dss.policy.jaxb.EvidenceRecordConstraints;
@@ -1684,6 +1685,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 				break;
 			case EAA:
 				return null;
+			case EAA_STATUS:
+				EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+				if (eaaStatusConstraints != null) {
+					return eaaStatusConstraints.getBasicSignatureConstraints();
+				}
+				break;
 			default:
 				throw new UnsupportedOperationException(String.format("Unsupported context '%s'", context));
 		}
@@ -2073,7 +2080,34 @@ public class EtsiValidationPolicy implements ValidationPolicy {
         return null;
     }
 
-    @Override
+	@Override
+	public LevelRule getEAAStatusAvailableConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAStatusAvailable());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getAcceptableEAAStatusFoundConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAStatusAvailable());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusValidConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAStatusValid());
+		}
+		return null;
+	}
+
+	@Override
     public MultiValuesRule getEAATypeConstraint() {
         EAAConstraints eaaConstraints = getEAAConstraints();
         if (eaaConstraints != null) {
@@ -2145,7 +2179,79 @@ public class EtsiValidationPolicy implements ValidationPolicy {
         return null;
     }
 
-    @Override
+	@Override
+	public MultiValuesRule getEAAStatusTokenTypeConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toRule(eaaStatusConstraints.getEAAStatusTokenType());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusUnknownStatusConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getUnknownStatus());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusIssuanceTimePresentConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getIssuanceTimePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusExpirationTimePresentConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getExpirationTimePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusNotExpiredConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getNotExpired());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusSubjectKnownConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getEAAStatusSubjectKnown());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusSubjectMatchConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getEAAStatusSubjectMatch());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint() {
+		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
+		if (eaaStatusConstraints != null) {
+			return toLevelRule(eaaStatusConstraints.getEAAStatusTokenIssuerValidAtIssuanceTime());
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isEIDASConstraintPresent() {
 		return getEIDASConstraints() != null;
 	}
@@ -2311,6 +2417,16 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	 */
 	public EAAConstraints getEAAConstraints() {
 		return policy.getEAA();
+	}
+
+
+	/**
+	 * Returns the constraint used for EAA status token validation
+	 *
+	 * @return {@code EAAStatusConstraints}
+	 */
+	public EAAStatusConstraints getEAAStatusConstraints() {
+		return policy.getEAAStatus();
 	}
 
 	/**

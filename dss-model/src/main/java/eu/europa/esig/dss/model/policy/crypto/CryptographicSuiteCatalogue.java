@@ -247,6 +247,16 @@ public abstract class CryptographicSuiteCatalogue {
         return getCryptographicSuite();
     }
 
+    /**
+     * Gets the {@code CryptographicSuite} for validation of an EAA status
+     *
+     * @return {@link CryptographicSuite}
+     */
+    public CryptographicSuite getEAAStatusCryptographicSuite() {
+        // no separate handling
+        return getCryptographicSuite();
+    }
+
     private List<CryptographicSuiteAlgorithm> filterByAlgorithmUsage(List<CryptographicSuiteAlgorithm> algorithmList,
                                                                      List<CryptographicSuiteAlgorithmUsage> algorithmUsages) {
         final List<CryptographicSuiteAlgorithm> result = new ArrayList<>();

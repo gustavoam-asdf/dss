@@ -16,7 +16,7 @@ public class EAAStatusTokenIdentifier extends TokenIdentifier {
      * @param eaaStatusToken {@link EAAStatusToken}
      */
     public EAAStatusTokenIdentifier(EAAStatusToken eaaStatusToken) {
-        this("R-", eaaStatusToken);
+        this("ST-", eaaStatusToken);
     }
 
     /**

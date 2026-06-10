@@ -185,6 +185,11 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
+            <Statuses>
+                <EAAStatus EAAStatusToken="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+                    <Status>VALID</Status>
+                </EAAStatus>
+            </Statuses>
         </EAA>
     </EAAs>
     <Signatures>
@@ -343,6 +348,52 @@
         </Signature>
     </Signatures>
     <EvidenceRecords/>
+    <UsedEAAStatusTokens>
+        <EAAStatusToken Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+            <Origin>EXTERNAL</Origin>
+            <Type>statuslist+cwt</Type>
+            <SourceAddress>https://dss.nowina.lu/pki-factory/eaa/status_list</SourceAddress>
+            <Subject>https://dss.nowina.lu/pki-factory/eaa/status_list</Subject>
+            <IssuedAt>2026-04-23T09:29:00Z</IssuedAt>
+            <ExpirationTime>2027-05-10T14:11:28Z</ExpirationTime>
+            <BasicSignature>
+                <EncryptionAlgoUsedToSignThisToken>RSA</EncryptionAlgoUsedToSignThisToken>
+                <KeyLengthUsedToSignThisToken>2048</KeyLengthUsedToSignThisToken>
+                <DigestAlgoUsedToSignThisToken>SHA512</DigestAlgoUsedToSignThisToken>
+                <SignatureIntact>true</SignatureIntact>
+                <SignatureValid>true</SignatureValid>
+            </BasicSignature>
+            <SigningCertificate Certificate="C-95B95869B1259A15CE92AA869BB50F71D39190092FA4C2DBE265BC6CA2B6A0EE"/>
+            <CertificateChain>
+                <ChainItem Certificate="C-95B95869B1259A15CE92AA869BB50F71D39190092FA4C2DBE265BC6CA2B6A0EE"/>
+                <ChainItem Certificate="C-E1DC8511516F8954665647902D31509CC2F563958EFB55A65BEB5B640040B361"/>
+            </CertificateChain>
+            <FoundCertificates>
+                <RelatedCertificate Certificate="C-95B95869B1259A15CE92AA869BB50F71D39190092FA4C2DBE265BC6CA2B6A0EE">
+                    <Origin>KEY_INFO</Origin>
+                    <CertificateRef>
+                        <Origin>SIGNING_CERTIFICATE</Origin>
+                        <DigestAlgoAndValue match="true">
+                            <DigestMethod>SHA512</DigestMethod>
+                            <DigestValue>gA76C1xhQXUknPQK2SEGsGq29KDHN/Ppw+e4WGMwvfVH55woVe4V2zmR4JRqYSiTbbbYe5uzzwWy7hleMVttzA==</DigestValue>
+                        </DigestAlgoAndValue>
+                    </CertificateRef>
+                    <CertificateRef>
+                        <Origin>KEY_IDENTIFIER</Origin>
+                        <IssuerSerial match="true">MFYwUaRPME0xEDAOBgNVBAMMB3Jvb3QtY2ExGTAXBgNVBAoMEE5vd2luYSBTb2x1dGlvbnMxETAPBgNVBAsMCFBLSS1URVNUMQswCQYDVQQGEwJMVQIBBA==</IssuerSerial>
+                        <SerialInfo>
+                            <IssuerName>C=LU, OU=PKI-TEST, O=Nowina Solutions, CN=root-ca</IssuerName>
+                            <SerialNumber>4</SerialNumber>
+                        </SerialInfo>
+                    </CertificateRef>
+                </RelatedCertificate>
+            </FoundCertificates>
+            <DigestAlgoAndValue>
+                <DigestMethod>SHA256</DigestMethod>
+                <DigestValue>qRRMZ0SZRFF9RIGzZjN8AkiLpsvUL4nhwsgiXlB1GO8=</DigestValue>
+            </DigestAlgoAndValue>
+        </EAAStatusToken>
+    </UsedEAAStatusTokens>
     <UsedCertificates>
         <Certificate Id="C-57C7CD0B7050F689603B33CD37F86817F53EEE1F81181184FB09DAE40D2007AC">
             <SubjectDistinguishedName Format="CANONICAL">c=lu,ou=pki-test,o=nowina solutions,cn=ocsp-responder</SubjectDistinguishedName>

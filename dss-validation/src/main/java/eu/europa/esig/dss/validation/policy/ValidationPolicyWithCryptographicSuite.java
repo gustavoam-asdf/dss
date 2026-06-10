@@ -1161,6 +1161,21 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getEAAStatusAvailableConstraint() {
+        return validationPolicy.getEAAStatusAvailableConstraint();
+    }
+
+    @Override
+    public LevelRule getAcceptableEAAStatusFoundConstraint() {
+        return validationPolicy.getAcceptableEAAStatusFoundConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusValidConstraint() {
+        return validationPolicy.getEAAStatusValidConstraint();
+    }
+
+    @Override
     public MultiValuesRule getEAATypeConstraint() {
         return validationPolicy.getEAATypeConstraint();
     }
@@ -1198,6 +1213,46 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getEAAETSI194721ConformanceConstraint() {
         return validationPolicy.getEAAETSI194721ConformanceConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAStatusTokenTypeConstraint() {
+        return validationPolicy.getEAAStatusTokenTypeConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusUnknownStatusConstraint() {
+        return validationPolicy.getEAAStatusUnknownStatusConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusIssuanceTimePresentConstraint() {
+        return validationPolicy.getEAAStatusIssuanceTimePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusExpirationTimePresentConstraint() {
+        return validationPolicy.getEAAStatusExpirationTimePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusNotExpiredConstraint() {
+        return validationPolicy.getEAAStatusNotExpiredConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusSubjectKnownConstraint() {
+        return validationPolicy.getEAAStatusSubjectKnownConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusSubjectMatchConstraint() {
+        return validationPolicy.getEAAStatusSubjectMatchConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint() {
+        return validationPolicy.getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint();
     }
 
     @Override

@@ -522,6 +522,10 @@ public class ValidationPolicyLoader {
                     addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAACryptographicSuite(), context, subContext);
                     break;
 
+                case EAA_STATUS:
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAAStatusCryptographicSuite(), context, subContext);
+                    break;
+
                 default:
                     throw new UnsupportedOperationException(String.format("The Context '%s' is not supported!", context));
 

@@ -66,6 +66,11 @@
 					<xsd:documentation>Constraints on the EAA presentations</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element name="EAAStatus" type="EAAStatusConstraints" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Constraints related to the EAA status token</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 				<xsd:annotation>
 					<xsd:documentation>Global constraints about cryptographic usage (encryption, digest, key length, algorithm deprecation,...). If no specific constraints is added in Signature/Timestamp/... elements, this configuration will be used.</xsd:documentation>
@@ -588,7 +593,7 @@
 					</xsd:element>
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Group of cryptographic checks to operate on the certificate</xsd:documentation>
+							<xsd:documentation>Group of cryptographic checks to operate on the evidence record</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
@@ -728,9 +733,9 @@
 							<xsd:documentation>Checks whether the registration identifier of the EAA issuer claim corresponds to one of the defined values</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusPresent" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="EAAOneTimeUse" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA contains a status claim</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA contains a one-time use claim</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="EAAShortLived" type="LevelConstraint" minOccurs="0">
@@ -738,9 +743,24 @@
 							<xsd:documentation>Checks whether the EAA contains a short-lived claim</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAOneTimeUse" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="EAAStatusPresent" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA contains a one-time use claim</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA contains a status claim</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusAvailable" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if an EAA status token is found for the EAA</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="AcceptableEAAStatusFound" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if an acceptable EAA status token has been found for the EAA</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusValid" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if the stat</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="EAAUsePseudonym" type="LevelConstraint" minOccurs="0">
@@ -761,6 +781,63 @@
 					<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Group of cryptographic checks to operate on the disclosure hash algorithm(s)</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="EAAStatusConstraints">
+		<xsd:annotation>
+			<xsd:documentation>Group of constraints on the revocation data</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="LevelConstraint">
+				<xsd:sequence>
+					<xsd:element name="EAAStatusTokenType" type="MultiValuesConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the value of the 'type' field is within the accepted list of tokens</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="UnknownStatus" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks the returned status is not unknown</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="IssuanceTimePresent" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether 'issuedAt' field is defined within the EAA status token</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="ExpirationTimePresent" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether thisUpdate field is defined within the revocation data</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="NotExpired" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the validation time is within the validity range of the EAA status token</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusSubjectKnown" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the subject is defined within the EAA status token</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusSubjectMatch" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the subject defined within the EAA status token matches</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="EAAStatusTokenIssuerValidAtIssuanceTime" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks whether the EAA status token issuer's certificate was valid at the EAA status token issuance time</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="BasicSignatureConstraints" type="BasicSignatureConstraints" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Group of common checks on this token signature</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

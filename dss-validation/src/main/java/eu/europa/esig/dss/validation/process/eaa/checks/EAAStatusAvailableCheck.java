@@ -8,13 +8,14 @@ import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.model.policy.MultiValuesRule;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * This class verifies whether the EAA status claim is present
+ * Checks if the SVA was able to retrieve a status token for the EAA
  *
  */
-public class EAAStatusPresentCheck extends ChainItem<XmlSAV> {
+public class EAAStatusAvailableCheck extends ChainItem<XmlSAV> {
 
     /** EAA to check */
     private final EAAWrapper eaa;
@@ -27,25 +28,25 @@ public class EAAStatusPresentCheck extends ChainItem<XmlSAV> {
      * @param eaa {@link EAAWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAAStatusPresentCheck(final I18nProvider i18nProvider, final XmlSAV result,
-                                 final EAAWrapper eaa, final LevelRule constraint) {
+    public EAAStatusAvailableCheck(final I18nProvider i18nProvider, final XmlSAV result,
+                                   final EAAWrapper eaa, final LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaa = eaa;
     }
 
     @Override
-    public boolean process() {
-        return eaa.getEAAPayload().getEAAStatus() != null;
+    protected boolean process() {
+        return Utils.isCollectionNotEmpty(eaa.getEAAStatuses());
     }
 
     @Override
     protected MessageTag getMessageTag() {
-        return MessageTag.EAA_STATUS_PR;
+        return MessageTag.EAA_STATUS_AV;
     }
 
     @Override
     protected MessageTag getErrorMessageTag() {
-        return MessageTag.EAA_STATUS_PR_ANS;
+        return MessageTag.EAA_STATUS_AV_ANS;
     }
 
     @Override

@@ -279,6 +279,7 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
 				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
+				process(diagnosticData.getAllEAAStatusTokens(), Context.EAA_STATUS, bbbs);
 				process(diagnosticData.getAllEAA(), Context.EAA, bbbs);
 				break;
 			case LONG_TERM_DATA:
@@ -287,6 +288,7 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
 				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
+				process(diagnosticData.getAllEAAStatusTokens(), Context.EAA_STATUS, bbbs);
 				process(diagnosticData.getAllEAA(), Context.EAA, bbbs);
 				break;
 			case TIMESTAMPS:
@@ -294,12 +296,14 @@ public class DetailedReportBuilder extends AbstractDetailedReportBuilder {
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
 				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
+				process(diagnosticData.getAllEAAStatusTokens(), Context.EAA_STATUS, bbbs);
 				process(diagnosticData.getAllEAA(), Context.EAA, bbbs);
 				break;
 			case BASIC_SIGNATURES:
 				process(diagnosticData.getAllSignatures(), Context.SIGNATURE, bbbs);
 				process(diagnosticData.getAllCounterSignatures(), Context.COUNTER_SIGNATURE, bbbs);
 				process(diagnosticData.getAllKeyBindingSignatures(), Context.KEY_BINDING_SIGNATURE, bbbs);
+				process(diagnosticData.getAllEAAStatusTokens(), Context.EAA_STATUS, bbbs);
 				process(diagnosticData.getAllEAA(), Context.EAA, bbbs);
 				break;
 			default:

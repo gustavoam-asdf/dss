@@ -1,7 +1,11 @@
 package eu.europa.esig.dss.validation.process.bbb.sav;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlAOV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
+import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.EAAType;
@@ -12,6 +16,7 @@ import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
+import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAAStatusFoundCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
@@ -28,7 +33,10 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAOneTimeUseCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAPseudonymUsageCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAShortLivedCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAcceptableCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAvailableCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusValidCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectPseudonymCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
@@ -37,12 +45,16 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentC
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Performs verification of EAA against the validationPolicy defined acceptance criteria
  * 
  */
 public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWrapper> {
+
+    /** A map of BasicBuildingBlocks */
+    private final Map<String, XmlBasicBuildingBlocks> bbbs;
 
     /**
      * Default constructor
@@ -54,8 +66,10 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
      * @param validationPolicy {@link ValidationPolicy}
      */
     public EAAAcceptanceValidation(I18nProvider i18nProvider, Date currentTime,
-                                   EAAWrapper eaaWrapper, XmlAOV aov, ValidationPolicy validationPolicy) {
+                                   EAAWrapper eaaWrapper, Map<String, XmlBasicBuildingBlocks> bbbs, XmlAOV aov,
+                                   ValidationPolicy validationPolicy) {
         super(i18nProvider, eaaWrapper, currentTime, Context.EAA, aov, validationPolicy);
+        this.bbbs = bbbs;
     }
 
     @Override
@@ -106,14 +120,52 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
 
         item = item.setNextItem(issuingAuthorityRegistrationIdentifier());
 
-        if (Utils.isTrue(token.getShortLived())) {
-            item = item.setNextItem(shortLived());
-        } else {
-            item = item.setNextItem(statusPresent());
-        }
-
         if (Utils.isTrue(token.getOneTimeUse())) {
             item = item.setNextItem(oneTimeUse());
+        }
+
+        if (Utils.isTrue(token.getShortLived())) {
+
+            item = item.setNextItem(shortLived());
+
+        } else {
+
+            // TODO : make status check configurable ?
+
+            EAAStatusPresentCheck eaaStatusPresentCheck = statusPresent();
+
+            item = item.setNextItem(eaaStatusPresentCheck);
+
+            if (eaaStatusPresentCheck.process()) {
+
+                item = item.setNextItem(statusAvailable());
+
+                EAAStatusWrapper lastAcceptableStatus = null;
+                for (EAAStatusWrapper eaaStatusWrapper : token.getEAAStatuses()) {
+
+                    XmlBasicBuildingBlocks eaaStatusBBB = bbbs.get(eaaStatusWrapper.getId());
+                    if (eaaStatusBBB == null) {
+                        throw new IllegalStateException(String.format("No BasicBuildingBlock found for token with Id '%s'", eaaStatusWrapper.getId()));
+                    }
+
+                    item = item.setNextItem(statusAcceptable(eaaStatusWrapper, eaaStatusBBB.getConclusion()));
+
+                    if (isValidConclusion(eaaStatusBBB.getConclusion())) {
+                        if (lastAcceptableStatus == null || lastAcceptableStatus.getIssuedAt().before(eaaStatusWrapper.getIssuedAt())) {
+                            lastAcceptableStatus = eaaStatusWrapper;
+                        }
+                    }
+
+                }
+
+                item = item.setNextItem(acceptableStatusFound(lastAcceptableStatus));
+
+                if (lastAcceptableStatus != null) {
+                    item = item.setNextItem(statusValid(lastAcceptableStatus));
+                }
+
+            }
+
         }
 
         if (token.getHolderPseudonym() != null) {
@@ -214,9 +266,28 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new EAAIssuingAuthorityRegistrationIdentifierCheck(i18nProvider, result, token, constraint);
     }
 
-    private ChainItem<XmlSAV> statusPresent() {
+    private EAAStatusPresentCheck statusPresent() {
         LevelRule constraint = validationPolicy.getEAAStatusPresentConstraint();
         return new EAAStatusPresentCheck(i18nProvider, result, token, constraint);
+    }
+
+    private ChainItem<XmlSAV> statusAvailable() {
+        LevelRule constraint = validationPolicy.getEAAStatusAvailableConstraint();
+        return new EAAStatusAvailableCheck(i18nProvider, result, token, constraint);
+    }
+
+    private ChainItem<XmlSAV> statusAcceptable(EAAStatusWrapper eaaStatusWrapper, XmlConclusion xmlConclusion) {
+        return new EAAStatusAcceptableCheck(i18nProvider, result, eaaStatusWrapper, xmlConclusion, getWarnLevelRule());
+    }
+
+    private ChainItem<XmlSAV> acceptableStatusFound(EAAStatusWrapper acceptableEAAStatusWrapper) {
+        LevelRule constraint = validationPolicy.getEAAStatusAvailableConstraint();
+        return new AcceptableEAAStatusFoundCheck(i18nProvider, result, acceptableEAAStatusWrapper, constraint);
+    }
+
+    private ChainItem<XmlSAV> statusValid(EAAStatusWrapper eaaStatusWrapper) {
+        LevelRule constraint = validationPolicy.getEAAStatusValidConstraint();
+        return new EAAStatusValidCheck(i18nProvider, result, eaaStatusWrapper, constraint);
     }
 
     private ChainItem<XmlSAV> shortLived() {
@@ -244,4 +315,10 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new EAASupportedClaimsCheck(i18nProvider, result, token, constraint);
     }
 
+    @Override
+    protected void collectMessages(XmlConclusion conclusion, XmlConstraint constraint) {
+        if (!MessageTag.EAA_STATUS_ACC.getId().equals(constraint.getName().getKey())) {
+            super.collectMessages(conclusion, constraint);
+        }
+    }
 }

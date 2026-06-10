@@ -47,6 +47,9 @@ public enum Context {
 	CERTIFICATE,
 
 	/** The processing token is an electronic attestation of attributes */
-	EAA
+	EAA,
+
+	/** The processing token is an EAA status token */
+	EAA_STATUS
 
 }
