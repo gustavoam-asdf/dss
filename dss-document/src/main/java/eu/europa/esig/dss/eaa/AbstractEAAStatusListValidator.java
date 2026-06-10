@@ -106,7 +106,7 @@ public abstract class AbstractEAAStatusListValidator implements StatusListValida
 
         Number statusListBits = statusListPayload.getStatusListBits();
         if (statusListBits == null) {
-            throw new DSSException("The 'bits' claim of the 'status_list' is not present or null!");
+            throw new DSSException("The 'bits' claim of the Token Status List is not present or null!");
         }
 
         return getStatus(statusListDecompressed, index, statusListBits.intValue());
@@ -128,7 +128,7 @@ public abstract class AbstractEAAStatusListValidator implements StatusListValida
 
         } catch (IOException e) {
             throw new DSSException(String.format(
-                    "An error occurred during on attempt to decompress the 'status_list' : %s", e.getMessage()), e);
+                    "An error occurred during on attempt to decompress the Token Status List : %s", e.getMessage()), e);
         }
     }
 

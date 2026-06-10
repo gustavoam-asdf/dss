@@ -5,6 +5,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAStatusTokenWrapper;
+import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
@@ -21,8 +23,9 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
-import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAA;
+import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
 import eu.europa.esig.dss.utils.Utils;
@@ -46,13 +49,18 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     @Override
     protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
-        SignedDocumentValidator validator = DefaultEAAPresentationValidator.fromDocument(signedDocument);
+        DefaultEAAPresentationValidator validator = DefaultEAAPresentationValidator.fromDocument(signedDocument);
         validator.setCertificateVerifier(getOfflineCertificateVerifier());
         validator.setTokenExtractionStrategy(getTokenExtractionStrategy());
         validator.setSignaturePolicyProvider(getSignaturePolicyProvider());
         validator.setTokenIdentifierProvider(getTokenIdentifierProvider());
         validator.setSigningCertificateSource(getSigningCertificateSource());
+        validator.setEAAStatusSource(getEAAStatusSource());
         return validator;
+    }
+
+    protected EAAStatusSource getEAAStatusSource() {
+        return null;
     }
 
     @Override
@@ -86,20 +94,9 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     protected void verifyDiagnosticData(DiagnosticData diagnosticData) {
         super.verifyDiagnosticData(diagnosticData);
 
-        List<EAAWrapper> eaas = diagnosticData.getEAAs();
-        assertEquals(1, eaas.size());
-
-        EAAWrapper eaaWrappper = eaas.get(0);
-        assertNotNull(eaaWrappper.getId());
-        assertEquals(expectedSignaturesCount(), eaaWrappper.getEAASignatures().size());
-        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaWrappper.getDigestMatchers()));
-        assertEquals(keyBindingPresent(), eaaWrappper.getKeyBindingSignature() != null);
-        assertEquals(getEAAType(), eaaWrappper.getEAAType());
-
         checkEAAPresentationInfo(diagnosticData);
-        checkEAADigestMatchers(diagnosticData);
-        checkClaims(diagnosticData);
-        checkDeviceKeyClaim(diagnosticData);
+        checkEAAs(diagnosticData);
+        checkEAAStatusTokens(diagnosticData);
     }
 
     protected void checkEAAPresentationInfo(DiagnosticData diagnosticData) {
@@ -110,6 +107,32 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         List<XmlEAADocument> documents = eaaPresentationInfo.getDocuments();
         assertTrue(Utils.isCollectionNotEmpty(documents));
         assertEquals(documents.size(), diagnosticData.getEAAs().size());
+    }
+
+    protected void checkEAAs(DiagnosticData diagnosticData) {
+        List<EAAWrapper> eaas = diagnosticData.getEAAs();
+        assertEquals(1, eaas.size());
+
+        EAAWrapper eaaWrappper = eaas.get(0);
+        assertNotNull(eaaWrappper.getId());
+        assertEquals(expectedSignaturesCount(), eaaWrappper.getEAASignatures().size());
+        assertEquals(disclosuresPresent() || orphanSelectivelyDisclosableClaimsPresent(), Utils.isCollectionNotEmpty(eaaWrappper.getDigestMatchers()));
+        assertEquals(keyBindingPresent(), eaaWrappper.getKeyBindingSignature() != null);
+        assertEquals(getEAAType(), eaaWrappper.getEAAType());
+
+        checkEAADigestMatchers(diagnosticData);
+        checkClaims(diagnosticData);
+        checkDeviceKeyClaim(diagnosticData);
+        checkEAAStatuses(diagnosticData);
+    }
+
+    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
+        for (EAAWrapper eaa : diagnosticData.getAllEAA()) {
+            for (EAAStatusWrapper eaaStatusWrapper : eaa.getEAAStatuses()) {
+                assertNotNull(eaaStatusWrapper.getId());
+                assertNotNull(eaaStatusWrapper.getStatus());
+            }
+        }
     }
 
     protected void checkEAADigestMatchers(DiagnosticData diagnosticData) {
@@ -271,6 +294,24 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
                 if (eaa.getEAADeviceCertificate() != null) {
                     assertEquals(1, eaa.getEAADeviceCertificateChain().size()); // only one certificate should be present
                 }
+            }
+        }
+    }
+
+    protected void checkEAAStatusTokens(DiagnosticData diagnosticData) {
+        for (EAAStatusTokenWrapper eaaStatusTokenWrapper : diagnosticData.getAllEAAStatusTokens()) {
+            assertNotNull(eaaStatusTokenWrapper.getId());
+            assertNotNull(eaaStatusTokenWrapper.getType());
+            assertNotNull(eaaStatusTokenWrapper.getOrigin());
+            assertNotNull(eaaStatusTokenWrapper.getIssuedAt());
+            assertNotNull(eaaStatusTokenWrapper.getExpirationTime());
+
+            assertNotNull(eaaStatusTokenWrapper.foundCertificates());
+            assertNotNull(eaaStatusTokenWrapper.foundCertificates().getRelatedCertificates());
+            assertNotNull(eaaStatusTokenWrapper.foundCertificates().getOrphanCertificates());
+
+            if (eaaStatusTokenWrapper.getSigningCertificate() != null) {
+                assertTrue(Utils.isCollectionNotEmpty(eaaStatusTokenWrapper.getCertificateChain()));
             }
         }
     }

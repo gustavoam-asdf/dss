@@ -135,8 +135,7 @@ public abstract class EAAStatusToken extends Token {
      * @return {@link String}
      */
     public String getType() {
-        // not implemented by default
-        return null;
+        return signature != null ? signature.getSignatureType() : null;
     }
 
     /**

@@ -25,6 +25,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatusToken;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlFoundCertificates;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
@@ -65,10 +66,13 @@ import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
+import eu.europa.esig.dss.spi.x509.CertificateValidity;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 import java.math.BigInteger;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1041,6 +1045,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         final XmlEAAStatusToken xmlEAAStatusToken = new XmlEAAStatusToken();
         xmlEAAStatusToken.setId(identifierProvider.getIdAsString(eaaStatusToken));
         xmlEAAStatusToken.setOrigin(eaaStatusToken.getOrigin());
+        xmlEAAStatusToken.setType(eaaStatusToken.getType());
         xmlEAAStatusToken.setSourceAddress(eaaStatusToken.getSourceURL());
         xmlEAAStatusToken.setSubject(eaaStatusToken.getSubject());
         xmlEAAStatusToken.setIssuedAt(eaaStatusToken.getCreationDate());
@@ -1049,15 +1054,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             xmlEAAStatusToken.setTimeToLive(BigInteger.valueOf(eaaStatusToken.getTimeToLive().longValue()));
         }
 
-        xmlEAAStatusToken.setBasicSignature(getXmlBasicSignature(eaaStatusToken));
-        xmlEAAStatusToken.setSigningCertificate(getXmlSigningCertificate(eaaStatusToken, eaaStatusToken.getCertificateSource()));
-        xmlEAAStatusToken.setCertificateChain(getXmlForCertificateChain(eaaStatusToken, eaaStatusToken.getCertificateSource()));
-
-        if (eaaStatusToken.getCertificateSource() != null) {
-            // in case of OCSP token
-            xmlEAAStatusToken.setFoundCertificates(
-                    getXmlFoundCertificates(eaaStatusToken.getDSSId(), eaaStatusToken.getCertificateSource()));
-        }
+        setSignatureInfo(xmlEAAStatusToken, eaaStatusToken);
+        xmlEAAStatusToken.setFoundCertificates(getXmlFoundCertificates(eaaStatusToken));
 
         if (tokenExtractionStrategy.isRevocationData()) {
             xmlEAAStatusToken.setBase64Encoded(eaaStatusToken.getEncoded());
@@ -1067,6 +1065,41 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         }
 
         return xmlEAAStatusToken;
+    }
+
+    private void setSignatureInfo(XmlEAAStatusToken xmlEAAStatusToken, EAAStatusToken eaaStatusToken) {
+        AdvancedSignature signature = eaaStatusToken.getSignature();
+        if (signature != null) {
+            final CandidatesForSigningCertificate candidatesForSigningCertificate = signature.getCandidatesForSigningCertificate();
+            final CertificateValidity theCertificateValidity = candidatesForSigningCertificate.getTheCertificateValidity();
+            PublicKey signingCertificatePublicKey = null;
+            if (theCertificateValidity != null) {
+                xmlEAAStatusToken.setSigningCertificate(getXmlSigningCertificate(eaaStatusToken.getDSSId(), theCertificateValidity));
+                xmlEAAStatusToken.setCertificateChain(getXmlForCertificateChain(theCertificateValidity, signature.getCertificateSource()));
+                signingCertificatePublicKey = theCertificateValidity.getPublicKey();
+            }
+
+            xmlEAAStatusToken.setBasicSignature(getXmlBasicSignature(signature, signingCertificatePublicKey));
+        }
+    }
+
+    private XmlFoundCertificates getXmlFoundCertificates(EAAStatusToken eaaStatusToken) {
+        final XmlFoundCertificates xmlFoundCertificates = new XmlFoundCertificates();
+        if (eaaStatusToken.getSignature() != null) {
+            XmlFoundCertificates signatureFoundCertificates = getXmlFoundCertificates(
+                    eaaStatusToken.getSignature().getDSSId(), eaaStatusToken.getSignature().getCertificateSource());
+            populate(xmlFoundCertificates, signatureFoundCertificates);
+        }
+        if (eaaStatusToken.getCertificateSource() != null) {
+            XmlFoundCertificates statusListFoundCertificates = getXmlFoundCertificates(eaaStatusToken.getDSSId(), eaaStatusToken.getCertificateSource());
+            populate(xmlFoundCertificates, statusListFoundCertificates);
+        }
+        return xmlFoundCertificates;
+    }
+
+    private void populate(XmlFoundCertificates result, XmlFoundCertificates foundCertificates) {
+        result.getRelatedCertificates().addAll(foundCertificates.getRelatedCertificates());
+        result.getOrphanCertificates().addAll(foundCertificates.getOrphanCertificates());
     }
 
     private void linkEAAAndStatuses(Collection<EAA> eaas) {

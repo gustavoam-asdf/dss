@@ -59,6 +59,11 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
     private boolean includeCertificateChainThumbprints = true;
 
     /**
+     * Defines a MimeType of the signature to be created, to be provided within a signed header ('typ' attribute)
+     */
+    private String signatureType;
+
+    /**
      * This property defines whether a 'kid' (key identifier) header parameter should be added to a signed header.
      * <p>
      * NOTE: a signing certificate shall be provided to embed the 'kid' header
@@ -221,6 +226,24 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      */
     public void setIncludeCertificateChainThumbprints(boolean includeCertificateChainThumbprints) {
         this.includeCertificateChainThumbprints = includeCertificateChainThumbprints;
+    }
+
+    /**
+     * Gets the MimeType of the signature, to be incorporated in the signed header ('typ' attribute)
+     *
+     * @return {@link String}
+     */
+    public String getSignatureType() {
+        return signatureType;
+    }
+
+    /**
+     * Sets the MimeType of the signature to be incorporated within the signed header ('typ' attribute)
+     *
+     * @param signatureType {@link String}
+     */
+    public void setSignatureType(String signatureType) {
+        this.signatureType = signatureType;
     }
 
     /**

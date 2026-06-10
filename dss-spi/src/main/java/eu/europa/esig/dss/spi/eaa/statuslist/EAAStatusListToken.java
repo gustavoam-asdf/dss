@@ -42,8 +42,23 @@ public class EAAStatusListToken extends EAAStatusToken {
     }
 
     @Override
+    public String getSubject() {
+        return payload != null ? payload.getSubject() : null;
+    }
+
+    @Override
     public Date getCreationDate() {
         return payload != null ? payload.getIssuedAt() : null;
+    }
+
+    @Override
+    public Date getExpirationDate() {
+        return payload != null ? payload.getExpirationTime() : null;
+    }
+
+    @Override
+    public Number getTimeToLive() {
+        return payload != null ? payload.getTimeToLive() : null;
     }
 
     /**

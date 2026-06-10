@@ -341,6 +341,7 @@ public class JAdESSignature extends DefaultAdvancedSignature {
 	 *
 	 * @return {@link String}
 	 */
+	@Override
 	public String getSignatureType() {
 		String value = jws.getProtectedHeaderValueAsString(HeaderParameterNames.TYPE);
 		if (Utils.isStringNotEmpty(value)) {

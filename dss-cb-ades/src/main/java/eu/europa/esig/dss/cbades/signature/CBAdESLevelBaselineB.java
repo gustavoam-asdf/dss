@@ -110,6 +110,9 @@ public class CBAdESLevelBaselineB {
         incorporateSigningCertificate();
         incorporateCertificateChain();
 
+        // RFC 9596 headers
+        incorporateSignatureType();
+
         // TS 119-152 headers
         incorporateSigningTime();
         incorporateX509CertificateDigests();
@@ -304,6 +307,16 @@ public class CBAdESLevelBaselineB {
         // Signed is default behavior (when NULL)
         return parameters.getX5ChainHeaderPlacement() == null ||
                 CBAdESSignatureParameters.X5ChainHeaderPlacement.protectedHeader == parameters.getX5ChainHeaderPlacement();
+    }
+
+    /**
+     * Incorporates RFC 9596: CBOR Object Signing and Encryption (COSE) "typ" (type) Header Parameter
+     */
+    protected void incorporateSignatureType() {
+        if (parameters.getSignatureType() == null) {
+            return;
+        }
+        addHeader(COSEHeaderParameter.SIGNATURE_TYPE.cbor(), parameters.getSignatureType()); // tstr/uint
     }
 
     /**

@@ -18,6 +18,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
@@ -601,6 +602,20 @@ public class EAAWrapper extends AbstractTokenProxy {
             return eaaDeviceKey.getAuthorizedDataElements();
         }
         return null;
+    }
+
+    /**
+     * Returns a list of statuses for the EAA
+     *
+     * @return a list of {@link EAAStatusWrapper}s
+     */
+    public List<EAAStatusWrapper> getEAAStatuses() {
+        List<EAAStatusWrapper> statusWrappers = new ArrayList<>();
+        List<XmlEAAStatus> statuses = eaa.getStatuses();
+        for (XmlEAAStatus xmlEAAStatus : statuses) {
+            statusWrappers.add(new EAAStatusWrapper(xmlEAAStatus));
+        }
+        return statusWrappers;
     }
 
     /**

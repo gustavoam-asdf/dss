@@ -20,11 +20,6 @@ public class CWTStatusListPayload extends CWTPayload implements StatusListPayloa
     }
 
     @Override
-    public String getType() {
-        return payload.getAsString(CWTStatusListClaims.TYP.cbor());
-    }
-
-    @Override
     public Number getTimeToLive() {
         return payload.getAsLong(CWTStatusListClaims.TIME_TO_LIVE.cbor());
     }

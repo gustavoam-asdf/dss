@@ -1,1 +1,2 @@
-eu.europa.esig.dss.eaa.common.status.EAAStatusListValidator
+eu.europa.esig.dss.eaa.common.status.IETFEAAStatusListValidator
+eu.europa.esig.dss.eaa.common.status.ETSI194721V121EAAStatusListValidator

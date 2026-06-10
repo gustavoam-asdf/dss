@@ -740,7 +740,13 @@ public class XAdESSignature extends DefaultAdvancedSignature {
 		}
 		return mimeType;
 	}
-	
+
+	@Override
+	public String getSignatureType() {
+		// not supported
+		return null;
+	}
+
 	/**
 	 * Returns a base64 SignatureValue
 	 * 

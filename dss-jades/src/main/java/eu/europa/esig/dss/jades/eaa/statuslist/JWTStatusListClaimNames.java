@@ -27,11 +27,6 @@ public final class JWTStatusListClaimNames {
      */
     public static final String TTL = "ttl";
 
-    /**
-     * Type of the token. The JWT type MUST be statuslist+jwt.
-     */
-    public static final String TYP = "typ";
-
     /* 4.2. Status List in JSON Format */
 
     /**

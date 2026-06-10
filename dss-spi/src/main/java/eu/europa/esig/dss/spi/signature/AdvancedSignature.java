@@ -364,6 +364,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	String getMimeType();
 
 	/**
+	 * Returns the value of the signature type protected header (JAdES, CB-AdES)
+	 *
+	 * @return {@code String}
+	 */
+	String getSignatureType();
+
+	/**
 	 * Returns the list of roles of the signer.
 	 *
 	 * @return list of the {@link SignerRole}s

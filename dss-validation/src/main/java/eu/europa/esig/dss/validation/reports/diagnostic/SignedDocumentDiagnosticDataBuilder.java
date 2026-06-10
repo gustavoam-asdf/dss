@@ -603,7 +603,14 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 		return xmlSignerRoles;
 	}
 
-	private XmlBasicSignature getXmlBasicSignature(AdvancedSignature signature, PublicKey signingCertificatePublicKey) {
+	/**
+	 * Gets {@code XmlBasicSignature} for a signature
+	 *
+	 * @param signature {@link AdvancedSignature}
+	 * @param signingCertificatePublicKey {@link PublicKey}
+	 * @return {@link XmlBasicSignature}
+	 */
+	protected XmlBasicSignature getXmlBasicSignature(AdvancedSignature signature, PublicKey signingCertificatePublicKey) {
 		XmlBasicSignature xmlBasicSignature = new XmlBasicSignature();
 		xmlBasicSignature.setEncryptionAlgoUsedToSignThisToken(signature.getEncryptionAlgorithm());
 		xmlBasicSignature.setKeyLengthUsedToSignThisToken(DSSPKUtils.getStringPublicKeySize(signingCertificatePublicKey));

@@ -238,12 +238,15 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
          * name>/<subtype-name>", where <type-name> and <subtype-name> are
          * defined in Section 4.2 of [RFC6838].
          */
-        String value = cose.getProtectedHeaderValueAsString(COSEHeaderParameter.CONTENT_TYPE.cbor());
-        if (Utils.isStringEmpty(value)) {
-            Long valueAsLong = cose.getProtectedHeaderValueAsLong(COSEHeaderParameter.CONTENT_TYPE.cbor());
-            if (valueAsLong != null) {
-                // TODO : add support of 'content type' of uint type
-                LOG.warn("'content type' protected header of UnsignedInteger type is not supported by implementation");
+        String value = null;
+        CBORObject cty = cose.getProtectedHeaderValue(COSEHeaderParameter.CONTENT_TYPE.cbor());
+        if (cty != null) {
+            if (cty.isUnicodeString()) {
+                value = cty.getValueAsString();
+            } else if (cty.isUnsignedInteger()) {
+                value = String.valueOf(cty.getValueAsLong());
+            } else {
+                LOG.warn("'content type' protected header shall be either if String or Unsigned Integer type!");
             }
         }
         if (Utils.isStringEmpty(value)) {
@@ -254,6 +257,21 @@ public class CBAdESSignature extends DefaultAdvancedSignature {
             }
         }
         return value;
+    }
+
+    @Override
+    public String getSignatureType() {
+        CBORObject typ = cose.getProtectedHeaderValue(COSEHeaderParameter.SIGNATURE_TYPE.cbor());
+        if (typ != null) {
+            if (typ.isUnicodeString()) {
+                return typ.getValueAsString();
+            } else if (typ.isUnsignedInteger()) {
+                return String.valueOf(typ.getValueAsLong());
+            } else {
+                LOG.warn("'signature type' protected header shall be either if String or Unsigned Integer type!");
+            }
+        }
+        return null;
     }
 
     @Override

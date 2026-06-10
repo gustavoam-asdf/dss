@@ -26,16 +26,6 @@ public class JWTStatusListPayload extends JWTPayload implements StatusListPayloa
     }
 
     /**
-     * Gets the value of the 'typ' (type) claim that specifies the type of the token.
-     *
-     * @return {@link String}
-     */
-    @Override
-    public String getType() {
-        return getAsString(JWTStatusListClaimNames.TYP);
-    }
-
-    /**
      * Gets the value of the 'ttl' (time to live) claim that specifies the maximum amount of time,
      * in seconds, that the Status List Token can be cached by a consumer before a fresh copy SHOULD be retrieved.
      *

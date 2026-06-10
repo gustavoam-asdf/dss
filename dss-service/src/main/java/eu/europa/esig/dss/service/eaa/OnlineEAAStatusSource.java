@@ -78,10 +78,11 @@ public class OnlineEAAStatusSource implements EAAStatusSource {
                         }
 
                     } catch (Exception e) {
-                        LOG.warn("An error occurred on EAA status validation using the {}", validator.getClass().getSimpleName());
+                        LOG.warn("An error occurred on EAA status validation using the {} : {}", validator.getClass().getSimpleName(), e.getMessage());
                     }
                 }
             }
+            LOG.warn("No supported EAA status claim has been found. EAA status request was not performed.");
         }
 
         return null;

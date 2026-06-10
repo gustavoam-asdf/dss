@@ -50,6 +50,11 @@ public enum COSEHeaderParameter {
     /** CWT Claims. CBOR Tag '15' */
     CWT_CLAIMS(15L),
 
+    /* RFC 9596 Header Parameters */
+
+    /** Type. CBOR Tag '16' */
+    SIGNATURE_TYPE(16L),
+
     /* RFC 9360 Header parameters */
 
     /** An unordered bag of X.509 certificates. CBOR Tag '32' */

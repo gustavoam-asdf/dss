@@ -9,13 +9,6 @@ import java.util.Date;
 public interface StatusListPayload {
 
     /**
-     * Gets the value of the (Type) claim that specifies the type of the token.
-     *
-     * @return {@link String}
-     */
-    String getType();
-
-    /**
      * Gets the value of the Subject claim identifying the principal that is the subject of the token.
      *
      * @return {@link String}

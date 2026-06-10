@@ -11,7 +11,9 @@ import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -198,7 +200,7 @@ public class EAAValidationContext extends SignatureValidationContext {
      * @return {@link EAAPresentation}
      */
     public EAAPresentation getProcessedEAAPresentation() {
-        return processedEAAPresentation;
+        return  processedEAAPresentation;
     }
 
     /**
@@ -207,7 +209,24 @@ public class EAAValidationContext extends SignatureValidationContext {
      * @return a set of {@link EAAStatusToken}s
      */
     public Set<EAAStatusToken> getProcessedEAAStatusTokens() {
-        return processedEAAStatusTokens;
+        return Collections.unmodifiableSet(processedEAAStatusTokens);
+    }
+
+    @Override
+    public Set<AdvancedSignature> getProcessedSignatures() {
+        // exclude EAA status list signatures
+        Set<AdvancedSignature> processedSignatures = super.getProcessedSignatures();
+        if (Utils.isCollectionEmpty(processedEAAStatusTokens)) {
+            return processedSignatures;
+        }
+        final Set<AdvancedSignature> result = new HashSet<>();
+        for (AdvancedSignature advancedSignature : processedSignatures) {
+            if (processedEAAStatusTokens.stream().noneMatch(t -> t.getSignature() != null
+                    && advancedSignature.getId().equals(t.getSignature().getId()))) {
+                result.add(advancedSignature);
+            }
+        }
+        return result;
     }
 
 }
