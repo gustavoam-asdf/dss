@@ -2,14 +2,18 @@ package eu.europa.esig.dss.eaa.jwt.validation;
 
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAA;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
+import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
+import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class represents an SD-JWT VC object, as per IETF draft-ietf-oauth-selective-disclosure-jwt-22.
@@ -36,6 +40,23 @@ public class SDJWTEAA extends DefaultEAA {
     @Override
     public EAAType getEAAType() {
         return EAAType.SD_JWT_VC;
+    }
+
+    @Override
+    public EAAKeyBindingPayload getKeyBindingSignaturePayload() {
+        if (getKeyBindingSignature() == null) {
+            return null;
+        }
+
+        return new SDJWTKeyBindingPayload(getKeyBindingPayloadMap());
+    }
+
+
+    private Map<String, Object> getKeyBindingPayloadMap() {
+        JAdESSignature signature = (JAdESSignature) getKeyBindingSignature();
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>(signature.getJws().getDecodedPayload());
+        result.remove(SDJWTConstants.SD_HASH);
+        return result;
     }
 
     @Override

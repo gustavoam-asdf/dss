@@ -51,6 +51,13 @@ public interface EAA extends IdentifierBasedObject {
     AdvancedSignature getKeyBindingSignature();
 
     /**
+     * Gets key binding payload, when present
+     *
+     * @return {@link EAAKeyBindingPayload}
+     */
+    EAAKeyBindingPayload getKeyBindingSignaturePayload();
+
+    /**
      * Gets the certificate source containing a public key or certificate representation of the device holder
      *
      * @return {@link CertificateSource}

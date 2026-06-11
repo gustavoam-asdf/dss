@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +51,7 @@ class SDJWTCompactEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPre
         keyBindingSignatureParameters.setIncludeCertificateChain(false);
 
         keyBindingParameters = new SDJWTKeyBindingParameters();
-        keyBindingParameters.setIssuanceTime(new Date());
+        keyBindingParameters.setIssuanceTime(Date.from(new Date().toInstant().truncatedTo(ChronoUnit.SECONDS)));
         keyBindingParameters.setAudience("https://verifier.example.org");
         keyBindingParameters.setNonce("1234567890");
     }
@@ -105,6 +106,11 @@ class SDJWTCompactEAAPresentationWithKBSignatureTest extends AbstractSDJWTEAAPre
         assertEquals("https://issuer.example.com", eaa.getEAAIssuer());
         assertEquals("John", eaa.getHolderGivenName());
         assertEquals("Doe", eaa.getHolderFamilyName());
+
+        assertEquals(keyBindingParameters.getNonce(), eaa.getKeyBindingSignatureNonce());
+        assertEquals(keyBindingParameters.getAudience(), eaa.getKeyBindingSignatureAudience());
+        assertEquals(keyBindingParameters.getIssuanceTime().getTime(), eaa.getKeyBindingSignatureIssuanceTime().getTime());
+        assertEquals(0, eaa.getOtherKeyBindingPayloadClaims().size());
     }
 
     @Override

@@ -1,19 +1,11 @@
 package eu.europa.esig.dss.eaa.mdoc.creation;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import eu.europa.esig.dss.cbades.cbor.CBORArray;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;
-import eu.europa.esig.dss.cbades.cbor.CBORMap;
-import eu.europa.esig.dss.cbades.cbor.CBORObject;
-import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
-import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -32,7 +24,7 @@ public class DefaultMdocEAADeviceAuthenticationBuilder implements MdocEAADeviceA
             deviceAuthentication.add(MdocConstants.DEVICE_AUTHENTICATION);
             deviceAuthentication.add(CBORUtils.parseCbor(keyBindingParameters.getSessionTranscript()));
             deviceAuthentication.add(keyBindingParameters.getDocType());
-            deviceAuthentication.add(getDeviceNameSpacesBytes(keyBindingParameters));
+            deviceAuthentication.add(getDeviceNameSpacesBuilder().buildDeviceNameSpacesBytes(keyBindingParameters));
         } catch (Exception e) {
             throw new DSSException(String.format("Unable to build DeviceAuthentication. Reason : %s", e.getMessage()), e);
         }
@@ -51,23 +43,7 @@ public class DefaultMdocEAADeviceAuthenticationBuilder implements MdocEAADeviceA
         }
     }
 
-    protected CBORByteString getDeviceNameSpacesBytes(final MdocKeyBindingParameters keyBindingParameters) {
-        Map<String, List<MdocEAAClaim>> groupedClaims = keyBindingParameters.getDeviceSignedDataElements()
-                .stream()
-                .collect(Collectors.groupingBy(MdocEAAClaim::getNamespace, LinkedHashMap::new, Collectors.toList()));
-
-        CBORMap deviceNameSpaces = new CBORMap();
-
-        for (Map.Entry<String, List<MdocEAAClaim>> entry : groupedClaims.entrySet()) {
-            CBORMap map = new CBORMap();
-            for (MdocEAAClaim claim : entry.getValue()) {
-                CBORObject object = CBORObjectFactory.toCBORObject(claim.getValue());
-                map.put(claim.getName(), object);
-            }
-
-            deviceNameSpaces.put(entry.getKey(), map);
-        }
-
-        return CBORUtils.toCborBtsrWrappedTagged(deviceNameSpaces);
+    protected MdocEAADeviceNameSpacesBuilder getDeviceNameSpacesBuilder(){
+        return new DefaultMdocEAADeviceNameSpacesBuilder();
     }
 }

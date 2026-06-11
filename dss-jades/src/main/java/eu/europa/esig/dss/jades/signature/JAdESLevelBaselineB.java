@@ -372,10 +372,6 @@ public class JAdESLevelBaselineB {
 	 * Incorporates 5.1.11 iat or 5.2.1 sigT (claimed signing time) header parameter
 	 */
 	protected void incorporateSigningTime() {
-        if (parameters.getJadesSigningTimeType() == null) {
-            return;
-        }
-
         final Date signingDate = parameters.bLevel().getSigningDate();
         switch (parameters.getJadesSigningTimeType()) {
 			case IAT:
@@ -386,6 +382,9 @@ public class JAdESLevelBaselineB {
 				final String stringSigningTime = DSSUtils.formatDateToRFC(signingDate);
 				addHeader(JAdESHeaderParameterNames.SIG_T, stringSigningTime);
 				break;
+            case NONE:
+                // No signing time header to incorporate
+                break;
 			default:
 				throw new UnsupportedOperationException(String.format(
 						"The JAdESSigningTimeType '%s' is not supported!", parameters.getJadesSigningTimeType()));

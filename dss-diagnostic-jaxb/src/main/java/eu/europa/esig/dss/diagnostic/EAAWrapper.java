@@ -14,6 +14,7 @@ import eu.europa.esig.dss.diagnostic.claim.StatusClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ValidityInfoClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlBasicSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlChainItem;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
@@ -198,6 +199,67 @@ public class EAAWrapper extends AbstractTokenProxy {
      */
     public EAAPayloadProxy getEAAPayload() {
         return new EAAPayloadProxy(eaa.getEAAPayload());
+    }
+
+    /**
+     * Gets the nonce provided in the key binding signature payload
+     *
+     * @return {@link String}
+     */
+    public String getKeyBindingSignatureNonce() {
+        if (eaa.getKeyBindingPayload() == null) {
+            return null;
+        }
+
+        final XmlClaim nonce = eaa.getKeyBindingPayload().getNonce();
+        if (nonce != null) {
+            return nonce.getText();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the audience provided in the key binding signature payload
+     *
+     * @return {@link String}
+     */
+    public String getKeyBindingSignatureAudience() {
+        if (eaa.getKeyBindingPayload() == null) {
+            return null;
+        }
+
+        final XmlClaim audience = eaa.getKeyBindingPayload().getAudience();
+        if (audience != null) {
+            return audience.getText();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets the issuance time provided in the key binding signature payload
+     *
+     * @return {@link Date}
+     */
+    public Date getKeyBindingSignatureIssuanceTime() {
+        if (eaa.getKeyBindingPayload() == null) {
+            return null;
+        }
+
+        final XmlClaim issuanceTime = eaa.getKeyBindingPayload().getIssuanceTime();
+        if (issuanceTime != null) {
+            return issuanceTime.getDateTime();
+        }
+
+        return null;
+    }
+
+    public List<ClaimWrapper> getOtherKeyBindingPayloadClaims() {
+        if (eaa.getKeyBindingPayload() != null && eaa.getKeyBindingPayload().getOtherClaim() != null) {
+            return eaa.getKeyBindingPayload().getOtherClaim().stream().map(ClaimWrapper::new).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     /**

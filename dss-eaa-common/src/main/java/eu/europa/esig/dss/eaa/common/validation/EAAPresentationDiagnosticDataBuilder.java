@@ -29,6 +29,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASubject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlFoundCertificates;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
@@ -63,6 +64,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimValidityInfo;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.TokenComparator;
 import eu.europa.esig.dss.spi.eaa.EAA;
+import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
@@ -224,6 +226,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             xmlEAAPresentation.setKeyBindingSignature(getXmlKeyBindingSignature(eaa.getKeyBindingSignature()));
         }
         xmlEAAPresentation.setEAAPayload(getXmlEAAPayload(eaa.getPayload()));
+        xmlEAAPresentation.setKeyBindingPayload(getXmlKeyBindingPayload(eaa.getKeyBindingSignaturePayload()));
         return xmlEAAPresentation;
     }
 
@@ -433,6 +436,22 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.getOtherClaim().addAll(getOtherClaims(eaaPayload, supportedClaims));
 
         return xmlEAAPayload;
+    }
+
+    private XmlKeyBindingPayload getXmlKeyBindingPayload(EAAKeyBindingPayload keyBindingPayload) {
+        if (keyBindingPayload == null) {
+            return null;
+        }
+
+        final List<XmlClaim> supportedClaims = new ArrayList<>();
+        final XmlKeyBindingPayload xmlKeyBindingPayload = new XmlKeyBindingPayload();
+
+        xmlKeyBindingPayload.setNonce(getXmlClaim(keyBindingPayload.getNonce(), supportedClaims));
+        xmlKeyBindingPayload.setAudience(getXmlClaim(keyBindingPayload.getAudience(), supportedClaims));
+        xmlKeyBindingPayload.setIssuanceTime(getXmlClaim(keyBindingPayload.getIssuedAt(), supportedClaims));
+
+        xmlKeyBindingPayload.getOtherClaim().addAll(getOtherClaims(keyBindingPayload, supportedClaims));
+        return xmlKeyBindingPayload;
     }
 
     private XmlClaim getXmlClaim(Claim claim) {

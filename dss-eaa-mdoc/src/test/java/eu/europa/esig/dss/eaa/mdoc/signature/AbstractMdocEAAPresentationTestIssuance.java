@@ -69,7 +69,7 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
     @Override
     protected DSSDocument issuePresentation(DSSDocument signedEAA, List<MdocEAADisclosure> disclosures, DSSDocument keyBindingSignature) {
         if (includeKeyBindingSignature()) {
-            return super.issuePresentation(signedEAA, disclosures, keyBindingSignature);
+            return getService().issuePresentation(signedEAA, disclosures, keyBindingSignature, getKeyBindingParameters());
         } else {
             return getService().createIssuerSigned(signedEAA, disclosures);
         }

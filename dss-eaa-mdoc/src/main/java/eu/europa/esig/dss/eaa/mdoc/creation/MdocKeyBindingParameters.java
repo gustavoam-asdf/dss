@@ -10,7 +10,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 /**
  * Implementation of {@link KeyBindingParameters} for ISO/IEC 18013-5 mdoc EAA.
  */
-public class MdocKeyBindingParameters implements KeyBindingParameters {
+public class MdocKeyBindingParameters implements KeyBindingParameters, MdocEAADeviceSignedParameters {
 
     /** The session transcript to use for the creation of the key binding signature */
     private DSSDocument sessionTranscript;
@@ -37,10 +37,15 @@ public class MdocKeyBindingParameters implements KeyBindingParameters {
         this.docType = docType;
     }
 
-    public void addDeviceSignedDataElements(final MdocEAAClaim deviceSignedDataElement) {
+    public void addDeviceSignedDataElement(final MdocEAAClaim deviceSignedDataElement) {
         deviceSignedDataElements.add(deviceSignedDataElement);
     }
 
+    public void addDeviceSignedDataElement(final String namespace, final String name, final Object value) {
+        deviceSignedDataElements.add(MdocEAAClaim.create(namespace, name, value));
+    }
+
+    @Override
     public List<MdocEAAClaim> getDeviceSignedDataElements() {
         return deviceSignedDataElements;
     }

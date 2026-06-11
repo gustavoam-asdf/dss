@@ -10,11 +10,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 
-import eu.europa.esig.dss.cbades.cbor.CBORObject;
-import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
@@ -24,7 +23,6 @@ import eu.europa.esig.dss.eaa.mdoc.validation.MdocDeviceResponseEAAPresentationV
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
 import eu.europa.esig.dss.model.DSSDocument;
-import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 
@@ -173,6 +171,9 @@ class MdocEAAISONonMdLWithKBTest extends AbstractMdocEAAPresentationTestIssuance
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
+
+        final List<ClaimWrapper> otherKeyBindingPayloadClaims = eaa.getOtherKeyBindingPayloadClaims();
+        assertEquals(0, otherKeyBindingPayloadClaims.size());
     }
 
     @Override

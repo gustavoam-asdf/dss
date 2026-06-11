@@ -316,7 +316,7 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
         if (signatureParameters.isIncludeCertificateChain()) {
             signatureParameters.setIncludeCertificateChain(false);
-            LOG.debug("IncludeCertificateChain should not be 'true'. The value was set to 'false'.");
+            LOG.debug("IncludeCertificateChain shall not be 'true'. The value was set to 'false'.");
         }
 
         if (EncryptionAlgorithm.ECDSA != signatureParameters.getEncryptionAlgorithm() &&
@@ -359,6 +359,11 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
     @Override
     public DSSDocument issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures, DSSDocument keyBinding) {
+        return issuePresentation(eaa, disclosures, keyBinding, new MdocKeyBindingParameters());
+    }
+
+    public DSSDocument issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures, DSSDocument keyBinding, MdocEAADeviceSignedParameters deviceSignedParameters) {
+        Objects.requireNonNull(deviceSignedParameters, "deviceSignedParameters must not be null!");
         if (!CBORUtils.isCbor(eaa)) {
             throw new DSSException("The eaa should be a cbor document!");
         }
@@ -373,7 +378,8 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
             deviceAuth.put(MdocHeaderParameter.DEVICE_SIGNATURE.toString(), deviceSignature);
 
             CBORMap deviceSigned = new CBORMap();
-            deviceSigned.put(MdocHeaderParameter.NAMESPACES.toString(), CBORUtils.toCborBtsrWrappedTagged(new CBORMap()));
+
+            deviceSigned.put(MdocHeaderParameter.NAMESPACES.toString(), getDeviceNameSpacesBuilder().buildDeviceNameSpacesBytes(deviceSignedParameters));
             deviceSigned.put(MdocHeaderParameter.DEVICE_AUTH.toString(), deviceAuth);
 
             CBORMap document = new CBORMap();
@@ -419,6 +425,15 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
      */
     protected MdocEAADeviceAuthenticationBuilder getDeviceAuthenticationBuilder() {
         return new DefaultMdocEAADeviceAuthenticationBuilder();
+    }
+
+    /**
+     * Gets the builder to use to build the DeviceNameSpacesBytes
+     *
+     * @return {@link MdocEAADeviceNameSpacesBuilder}
+     */
+    protected MdocEAADeviceNameSpacesBuilder getDeviceNameSpacesBuilder() {
+        return new DefaultMdocEAADeviceNameSpacesBuilder();
     }
 
     /**

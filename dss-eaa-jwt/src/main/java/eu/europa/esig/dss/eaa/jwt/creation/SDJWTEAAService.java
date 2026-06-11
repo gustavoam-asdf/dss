@@ -46,8 +46,6 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
 
     private static final Logger LOG = LoggerFactory.getLogger(SDJWTEAAService.class);
 
-    private SDJWTEAAKeyBindingPayloadBuilder keyBindingPayloadBuilder = new DefaultSDJWTEAAKeyBindingPayloadBuilder();
-
     /**
      * Default constructor to instantiate an {@code SDJWTEAAService}
      *
@@ -183,7 +181,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         ensureKeyBindingParameters(keyBindingParameters);
         ensureKeyBindingSignatureParameters(signatureParameters);
 
-        DSSDocument keyBindingPayload = keyBindingPayloadBuilder.buildPayload(eaa, disclosures, keyBindingParameters);
+        DSSDocument keyBindingPayload = getKeyBindingPayloadBuilder().buildPayload(eaa, disclosures, keyBindingParameters);
         return getJAdESService().getDataToSign(keyBindingPayload, signatureParameters);
     }
 
@@ -199,7 +197,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         ensureKeyBindingParameters(keyBindingParameters);
         ensureKeyBindingSignatureParameters(signatureParameters);
 
-        DSSDocument keyBindingPayload = keyBindingPayloadBuilder.buildPayload(eaa, disclosures, keyBindingParameters);
+        DSSDocument keyBindingPayload = getKeyBindingPayloadBuilder().buildPayload(eaa, disclosures, keyBindingParameters);
         return getJAdESService().signDocument(keyBindingPayload, signatureParameters, signatureValue);
     }
 
@@ -356,8 +354,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         return MimeTypeEnum.JSON; // TODO : improve
     }
 
-    public void setKeyBindingPayloadBuilder(final SDJWTEAAKeyBindingPayloadBuilder keyBindingPayloadBuilder) {
-        Objects.requireNonNull(keyBindingPayloadBuilder, "keyBindingPayloadBuilder cannot be null");
-        this.keyBindingPayloadBuilder = keyBindingPayloadBuilder;
+    protected SDJWTEAAKeyBindingPayloadBuilder getKeyBindingPayloadBuilder() {
+        return new DefaultSDJWTEAAKeyBindingPayloadBuilder();
     }
 }

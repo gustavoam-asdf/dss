@@ -1756,6 +1756,7 @@
 						</xs:complexType>
 					</xs:element>
 					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
+                    <xs:element name="KeyBindingPayload" type="KeyBindingPayload" minOccurs="0" />
 
 					<xs:element name="Statuses" minOccurs="0">
 						<xs:complexType>
@@ -1769,6 +1770,15 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+
+    <xs:complexType name="KeyBindingPayload">
+        <xs:sequence>
+            <xs:element name="IssuanceTime" type="Claim" minOccurs="0" />
+            <xs:element name="Nonce" type="Claim" minOccurs="0" />
+            <xs:element name="Audience" type="Claim" minOccurs="0" />
+            <xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
 
 	<xs:complexType name="EAAPayload">
 		<xs:sequence>

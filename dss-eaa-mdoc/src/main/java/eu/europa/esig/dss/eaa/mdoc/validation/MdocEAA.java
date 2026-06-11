@@ -3,9 +3,11 @@ package eu.europa.esig.dss.eaa.mdoc.validation;
 import eu.europa.esig.dss.cbades.validation.CBAdESSignature;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAA;
 import eu.europa.esig.dss.eaa.common.validation.EAAPayloadVerifier;
+import eu.europa.esig.dss.eaa.mdoc.model.MdocDeviceNameSpaces;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDocument;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.model.eaa.ValidationDisclosure;
+import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -71,6 +73,12 @@ public class MdocEAA extends DefaultEAA {
             payloadVerifier.setDocType(document.getDocType());
         }
         return payloadVerifier;
+    }
+
+    @Override
+    public EAAKeyBindingPayload getKeyBindingSignaturePayload() {
+        final MdocDeviceNameSpaces deviceNameSpaces = document.getDeviceSigned().getDeviceNameSpaces();
+        return new MdocKeyBindingPayload(deviceNameSpaces.getNamespaces());
     }
 
     /**
