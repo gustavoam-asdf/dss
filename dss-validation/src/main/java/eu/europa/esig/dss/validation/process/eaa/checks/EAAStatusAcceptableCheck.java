@@ -34,7 +34,7 @@ public class EAAStatusAcceptableCheck extends ChainItem<XmlSAV> {
      */
     public EAAStatusAcceptableCheck(final I18nProvider i18nProvider, final XmlSAV result,
                                    final EAAStatusWrapper eaaStatusToken, final XmlConclusion conclusion, final LevelRule constraint) {
-        super(i18nProvider, result, constraint);
+        super(i18nProvider, result, constraint, eaaStatusToken.getId());
         this.eaaStatusToken = eaaStatusToken;
         this.conclusion = conclusion;
     }

@@ -1171,8 +1171,13 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAStatusValidConstraint() {
-        return validationPolicy.getEAAStatusValidConstraint();
+    public LevelRule getEAAStatusNotRevokedConstraint() {
+        return validationPolicy.getEAAStatusNotRevokedConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAStatusNotOnHoldConstraint() {
+        return validationPolicy.getEAAStatusNotOnHoldConstraint();
     }
 
     @Override
@@ -1226,13 +1231,13 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAStatusIssuanceTimePresentConstraint() {
-        return validationPolicy.getEAAStatusIssuanceTimePresentConstraint();
+    public LevelRule getEAAStatusIssuanceTimeConstraint() {
+        return validationPolicy.getEAAStatusIssuanceTimeConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusExpirationTimePresentConstraint() {
-        return validationPolicy.getEAAStatusExpirationTimePresentConstraint();
+    public LevelRule getEAAStatusExpirationTimeConstraint() {
+        return validationPolicy.getEAAStatusExpirationTimeConstraint();
     }
 
     @Override
@@ -1241,8 +1246,8 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAStatusSubjectKnownConstraint() {
-        return validationPolicy.getEAAStatusSubjectKnownConstraint();
+    public MultiValuesRule getEAAStatusSubjectConstraint() {
+        return validationPolicy.getEAAStatusSubjectConstraint();
     }
 
     @Override

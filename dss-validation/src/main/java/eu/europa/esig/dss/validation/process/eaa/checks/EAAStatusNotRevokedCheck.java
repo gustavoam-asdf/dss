@@ -12,10 +12,10 @@ import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
 /**
- * Checks whether the corresponding status declares a valid state for the EAA
+ * Checks whether the corresponding status declares that the EAA is not revoked
  *
  */
-public class EAAStatusValidCheck extends ChainItem<XmlSAV> {
+public class EAAStatusNotRevokedCheck extends ChainItem<XmlSAV> {
 
     /** EAA status token to check */
     private final EAAStatusWrapper eaaStatusToken;
@@ -28,35 +28,35 @@ public class EAAStatusValidCheck extends ChainItem<XmlSAV> {
      * @param eaaStatusToken {@link EAAStatusWrapper}
      * @param constraint {@link MultiValuesRule}
      */
-    public EAAStatusValidCheck(final I18nProvider i18nProvider, final XmlSAV result,
-                               final EAAStatusWrapper eaaStatusToken, final LevelRule constraint) {
+    public EAAStatusNotRevokedCheck(final I18nProvider i18nProvider, final XmlSAV result,
+                                    final EAAStatusWrapper eaaStatusToken, final LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.eaaStatusToken = eaaStatusToken;
     }
 
     @Override
     protected boolean process() {
-        return eaaStatusToken != null && EAAStatus.VALID == eaaStatusToken.getStatus();
+        return eaaStatusToken == null || EAAStatus.INVALID != eaaStatusToken.getStatus();
     }
 
     @Override
     protected MessageTag getMessageTag() {
-        return MessageTag.EAA_STATUS_V;
+        return MessageTag.EAA_STATUS_NOT_REV;
     }
 
     @Override
     protected MessageTag getErrorMessageTag() {
-        return MessageTag.EAA_STATUS_V_ANS;
+        return MessageTag.EAA_STATUS_NOT_REV_ANS;
     }
 
     @Override
     protected Indication getFailedIndicationForConclusion() {
-        return Indication.INDETERMINATE;
+        return Indication.FAILED;
     }
 
     @Override
     protected SubIndication getFailedSubIndicationForConclusion() {
-        return SubIndication.EAA_CONSTRAINTS_FAILURE;
+        return SubIndication.REVOKED;
     }
 
 }

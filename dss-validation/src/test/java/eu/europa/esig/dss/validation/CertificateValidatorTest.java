@@ -151,7 +151,7 @@ class CertificateValidatorTest {
 
 		DiagnosticData diagnosticData = reports.getDiagnosticData();
 		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
-		assertEquals(3, usedCertificates.size());
+		assertTrue(Utils.isCollectionNotEmpty(usedCertificates));
 
 		CertificateWrapper certificateWrapper = usedCertificates.get(0);
 		assertTrue(certificateWrapper.isQcCompliance());

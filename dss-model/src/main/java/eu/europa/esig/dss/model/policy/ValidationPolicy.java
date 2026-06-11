@@ -1861,11 +1861,18 @@ public interface ValidationPolicy {
 	LevelRule getAcceptableEAAStatusFoundConstraint();
 
 	/**
-	 * Returns EAAStatusValid constraint if present in the policy, null otherwise
+	 * Returns NotRevoked constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if EAAStatusValid element is present
+	 * @return {@code LevelRule} if NotRevoked element is present
 	 */
-	LevelRule getEAAStatusValidConstraint();
+	LevelRule getEAAStatusNotRevokedConstraint();
+
+	/**
+	 * Returns NotOnHold constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if NotOnHold element is present
+	 */
+	LevelRule getEAAStatusNotOnHoldConstraint();
 
     /**
      * Returns EAAType constraint if present in the policy, null otherwise
@@ -1938,18 +1945,18 @@ public interface ValidationPolicy {
 	LevelRule getEAAStatusUnknownStatusConstraint();
 
 	/**
-	 * Returns IssuanceTimePresent constraint if present in the policy, null otherwise
+	 * Returns IssuanceTime constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if IssuanceTimePresent element is present
+	 * @return {@code LevelRule} if IssuanceTime element is present
 	 */
-	LevelRule getEAAStatusIssuanceTimePresentConstraint();
+	LevelRule getEAAStatusIssuanceTimeConstraint();
 
 	/**
-	 * Returns ExpirationTimePresent constraint if present in the policy, null otherwise
+	 * Returns ExpirationTime constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if ExpirationTimePresent element is present
+	 * @return {@code LevelRule} if ExpirationTime element is present
 	 */
-	LevelRule getEAAStatusExpirationTimePresentConstraint();
+	LevelRule getEAAStatusExpirationTimeConstraint();
 
 	/**
 	 * Returns NotExpired constraint if present in the policy, null otherwise
@@ -1959,11 +1966,11 @@ public interface ValidationPolicy {
 	LevelRule getEAAStatusNotExpiredConstraint();
 
 	/**
-	 * Returns EAAStatusSubjectKnown constraint if present in the policy, null otherwise
+	 * Returns EAAStatusSubject constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if EAAStatusSubjectKnown element is present
+	 * @return {@code MultiValuesRule} if EAAStatusSubject element is present
 	 */
-	LevelRule getEAAStatusSubjectKnownConstraint();
+	MultiValuesRule getEAAStatusSubjectConstraint();
 
 	/**
 	 * Returns EAAStatusSubjectMatch constraint if present in the policy, null otherwise

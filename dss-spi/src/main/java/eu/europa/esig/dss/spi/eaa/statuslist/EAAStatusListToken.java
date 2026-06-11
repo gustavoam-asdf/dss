@@ -47,6 +47,11 @@ public class EAAStatusListToken extends EAAStatusToken {
     }
 
     @Override
+    public Boolean getSubjectMatch() {
+        return sourceURL != null && sourceURL.equals(getSubject());
+    }
+
+    @Override
     public Date getCreationDate() {
         return payload != null ? payload.getIssuedAt() : null;
     }

@@ -72,6 +72,11 @@ public class CheckSubXCVResult extends ChainItem<XmlXCV> {
 	}
 
 	@Override
+	protected String buildAdditionalInfo() {
+		return i18nProvider.getMessage(MessageTag.CERTIFICATE_ID, subResult.getId());
+	}
+
+	@Override
 	protected Indication getFailedIndicationForConclusion() {
 		return subResult.getConclusion().getIndication();
 	}

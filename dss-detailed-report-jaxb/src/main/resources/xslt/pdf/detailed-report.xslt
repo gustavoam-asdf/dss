@@ -78,8 +78,11 @@
 					<xsl:apply-templates select="dss:Timestamp"/>
 					<xsl:apply-templates select="dss:EvidenceRecord"/>
 					<xsl:apply-templates select="dss:EAA"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='SIGNATURE']"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA_STATUS']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='COUNTER_SIGNATURE']"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='KEY_BINDING_SIGNATURE']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='TIMESTAMP']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='REVOCATION']"/>
 					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EVIDENCE_RECORD']"/>

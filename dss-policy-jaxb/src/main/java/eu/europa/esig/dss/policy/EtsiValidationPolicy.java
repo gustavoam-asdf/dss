@@ -2099,10 +2099,19 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAStatusValidConstraint() {
+	public LevelRule getEAAStatusNotRevokedConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
-			return toLevelRule(eaaConstraints.getEAAStatusValid());
+			return toLevelRule(eaaConstraints.getNotRevoked());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAStatusNotOnHoldConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getNotOnHold());
 		}
 		return null;
 	}
@@ -2198,19 +2207,19 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAStatusIssuanceTimePresentConstraint() {
+	public LevelRule getEAAStatusIssuanceTimeConstraint() {
 		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
 		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getIssuanceTimePresent());
+			return toLevelRule(eaaStatusConstraints.getIssuanceTime());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusExpirationTimePresentConstraint() {
+	public LevelRule getEAAStatusExpirationTimeConstraint() {
 		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
 		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getExpirationTimePresent());
+			return toLevelRule(eaaStatusConstraints.getExpirationTime());
 		}
 		return null;
 	}
@@ -2225,10 +2234,10 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAStatusSubjectKnownConstraint() {
+	public MultiValuesRule getEAAStatusSubjectConstraint() {
 		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
 		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getEAAStatusSubjectKnown());
+			return toRule(eaaStatusConstraints.getEAAStatusSubject());
 		}
 		return null;
 	}

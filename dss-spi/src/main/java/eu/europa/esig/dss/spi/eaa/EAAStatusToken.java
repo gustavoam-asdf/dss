@@ -149,6 +149,16 @@ public abstract class EAAStatusToken extends Token {
     }
 
     /**
+     * Gets whether the subject defined in the EAA status token matches the value defined in the EAA
+     *
+     * @return TRUE if the subject matches, FALSE otherwise. NULL if not supported.
+     */
+    public Boolean getSubjectMatch() {
+        // not implemented by default
+        return null;
+    }
+
+    /**
      * Gets expiration date of the token
      *
      * @return {@link Date}

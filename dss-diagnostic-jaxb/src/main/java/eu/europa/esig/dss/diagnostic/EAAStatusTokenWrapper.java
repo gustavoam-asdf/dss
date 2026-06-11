@@ -83,6 +83,25 @@ public class EAAStatusTokenWrapper extends AbstractTokenProxy {
     }
 
     /**
+     * Gets the subject of the EAA status token
+     *
+     * @return {@link String}
+     */
+    public String getSubject() {
+        return eaaStatusToken.getSubject() != null ? eaaStatusToken.getSubject().getValue() : null;
+    }
+
+    /**
+     * Gets whether the subject of the EAA status token matches the subject of the related EAA
+     *
+     * @return TRUE if the subject matches, FALSE otherwise
+     */
+    public boolean getSubjectMatch() {
+        return eaaStatusToken.getSubject() != null && eaaStatusToken.getSubject().isMatch() != null ?
+                eaaStatusToken.getSubject().isMatch() : false;
+    }
+
+    /**
      * Gets time of the issuance of the EAA status token
      *
      * @return {@link Date}

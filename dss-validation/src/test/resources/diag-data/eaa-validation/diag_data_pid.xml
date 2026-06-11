@@ -41,6 +41,9 @@
                 <IssuedAt name="iat">
                     <DateTime>2023-05-02T04:00:00Z</DateTime>
                 </IssuedAt>
+                <NotBefore name="nbf">
+                    <DateTime>2023-05-02T04:00:00Z</DateTime>
+                </NotBefore>
                 <Expiration name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
                 </Expiration>
@@ -243,7 +246,7 @@
             <Origin>EXTERNAL</Origin>
             <Type>statuslist+cwt</Type>
             <SourceAddress>https://dss.nowina.lu/pki-factory/eaa/status_list</SourceAddress>
-            <Subject>https://dss.nowina.lu/pki-factory/eaa/status_list</Subject>
+            <Subject match="true">https://dss.nowina.lu/pki-factory/eaa/status_list</Subject>
             <IssuedAt>2026-04-23T09:29:00Z</IssuedAt>
             <ExpirationTime>2027-05-10T14:11:28Z</ExpirationTime>
             <BasicSignature>

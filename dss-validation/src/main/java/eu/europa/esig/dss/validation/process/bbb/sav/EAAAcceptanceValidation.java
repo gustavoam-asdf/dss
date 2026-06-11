@@ -35,14 +35,16 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAAPseudonymUsageCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAShortLivedCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAcceptableCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAvailableCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusNotOnHoldCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusValidCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusNotRevokedCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectPseudonymCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
+import eu.europa.esig.dss.validation.process.eaa.status.EAAStatusKnownCheck;
 
 import java.util.Date;
 import java.util.Map;
@@ -55,6 +57,9 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
 
     /** A map of BasicBuildingBlocks */
     private final Map<String, XmlBasicBuildingBlocks> bbbs;
+
+    /** Last acceptable EAA token status */
+    private EAAStatusWrapper lastAcceptableStatus;
 
     /**
      * Default constructor
@@ -140,13 +145,16 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
 
                 item = item.setNextItem(statusAvailable());
 
-                EAAStatusWrapper lastAcceptableStatus = null;
+                // TODO : improve with EAA Status selector ?
+                lastAcceptableStatus = null;
                 for (EAAStatusWrapper eaaStatusWrapper : token.getEAAStatuses()) {
 
                     XmlBasicBuildingBlocks eaaStatusBBB = bbbs.get(eaaStatusWrapper.getId());
                     if (eaaStatusBBB == null) {
                         throw new IllegalStateException(String.format("No BasicBuildingBlock found for token with Id '%s'", eaaStatusWrapper.getId()));
                     }
+
+                    item = item.setNextItem(statusKnown(eaaStatusWrapper));
 
                     item = item.setNextItem(statusAcceptable(eaaStatusWrapper, eaaStatusBBB.getConclusion()));
 
@@ -161,7 +169,11 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
                 item = item.setNextItem(acceptableStatusFound(lastAcceptableStatus));
 
                 if (lastAcceptableStatus != null) {
-                    item = item.setNextItem(statusValid(lastAcceptableStatus));
+
+                    item = item.setNextItem(notRevoked(lastAcceptableStatus));
+
+                    item = item.setNextItem(notOnHold(lastAcceptableStatus));
+
                 }
 
             }
@@ -276,6 +288,11 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new EAAStatusAvailableCheck(i18nProvider, result, token, constraint);
     }
 
+    private ChainItem<XmlSAV> statusKnown(EAAStatusWrapper eaaStatusWrapper) {
+        LevelRule constraint = validationPolicy.getEAAStatusUnknownStatusConstraint();
+        return new EAAStatusKnownCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    }
+
     private ChainItem<XmlSAV> statusAcceptable(EAAStatusWrapper eaaStatusWrapper, XmlConclusion xmlConclusion) {
         return new EAAStatusAcceptableCheck(i18nProvider, result, eaaStatusWrapper, xmlConclusion, getWarnLevelRule());
     }
@@ -285,9 +302,14 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new AcceptableEAAStatusFoundCheck(i18nProvider, result, acceptableEAAStatusWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> statusValid(EAAStatusWrapper eaaStatusWrapper) {
-        LevelRule constraint = validationPolicy.getEAAStatusValidConstraint();
-        return new EAAStatusValidCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    private ChainItem<XmlSAV> notRevoked(EAAStatusWrapper eaaStatusWrapper) {
+        LevelRule constraint = validationPolicy.getEAAStatusNotRevokedConstraint();
+        return new EAAStatusNotRevokedCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    }
+
+    private ChainItem<XmlSAV> notOnHold(EAAStatusWrapper eaaStatusWrapper) {
+        LevelRule constraint = validationPolicy.getEAAStatusNotOnHoldConstraint();
+        return new EAAStatusNotOnHoldCheck(i18nProvider, result, eaaStatusWrapper, constraint);
     }
 
     private ChainItem<XmlSAV> shortLived() {
@@ -321,4 +343,20 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
             super.collectMessages(conclusion, constraint);
         }
     }
+
+    @Override
+    protected void collectAdditionalMessages(XmlConclusion conclusion) {
+        super.collectAdditionalMessages(conclusion);
+
+        if (lastAcceptableStatus != null) {
+            XmlBasicBuildingBlocks tokenBBB = bbbs.get(lastAcceptableStatus.getId());
+            collectAllMessages(conclusion, tokenBBB.getConclusion());
+        } else {
+            for (EAAStatusWrapper eaaStatusWrapper : token.getEAAStatuses()) {
+                XmlBasicBuildingBlocks tokenBBB = bbbs.get(eaaStatusWrapper.getId());
+                collectAllMessages(conclusion, tokenBBB.getConclusion());
+            }
+        }
+    }
+
 }

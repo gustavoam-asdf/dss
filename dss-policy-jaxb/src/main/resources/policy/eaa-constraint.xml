@@ -359,9 +359,10 @@
         <EAAOneTimeUse Level="INFORM" />
         <EAAShortLived Level="INFORM" />
         <EAAStatusPresent Level="WARN" />
-        <EAAStatusAvailable Level="WARN" />
-        <AcceptableEAAStatusFound Level="WARN" />
-        <EAAStatusValid Level="FAIL" />
+        <EAAStatusAvailable Level="FAIL" />
+        <AcceptableEAAStatusFound Level="FAIL" />
+        <NotRevoked Level="FAIL" />
+        <NotOnHold Level="FAIL" />
         <EAAUsePseudonym Level="INFORM" />
     </EAA>
     <EAAStatus>
@@ -369,10 +370,12 @@
             <Id>*</Id>
         </EAAStatusTokenType>
         <UnknownStatus Level="FAIL" />
-        <IssuanceTimePresent Level="FAIL" />
-        <ExpirationTimePresent Level="FAIL" />
+        <IssuanceTime Level="FAIL" />
+        <ExpirationTime Level="FAIL" />
         <NotExpired Level="FAIL" />
-        <EAAStatusSubjectKnown Level="FAIL" />
+        <EAAStatusSubject Level="FAIL">
+            <Id>*</Id>
+        </EAAStatusSubject>
         <EAAStatusSubjectMatch Level="FAIL" />
         <EAAStatusTokenIssuerValidAtIssuanceTime Level="FAIL" />
         <BasicSignatureConstraints>

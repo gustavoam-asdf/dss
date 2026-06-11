@@ -2183,7 +2183,7 @@
 					<xs:element name="Origin" type="EAAStatusOrigin" />
 					<xs:element name="Type" type="xs:string" minOccurs="0" />
 					<xs:element name="SourceAddress" type="xs:string" minOccurs="0" />
-					<xs:element name="Subject" type="xs:string" minOccurs="0" />
+					<xs:element name="Subject" type="EAASubject" minOccurs="0" />
 					<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0" />
 					<xs:element name="ExpirationTime" type="xs:dateTime" minOccurs="0" />
 					<xs:element name="TimeToLive" type="xs:integer" minOccurs="0" />
@@ -2201,6 +2201,14 @@
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EAASubject">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="match" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:simpleType name="EAAStatusOrigin" final="restriction">

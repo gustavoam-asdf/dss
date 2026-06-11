@@ -758,9 +758,14 @@
 							<xsd:documentation>Checks if an acceptable EAA status token has been found for the EAA</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusValid" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="NotRevoked" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks if the stat</xsd:documentation>
+							<xsd:documentation>Checks if the EAA is not revoked, annulled, taken back, recalled or cancelled.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="NotOnHold" type="LevelConstraint" minOccurs="0">
+						<xsd:annotation>
+							<xsd:documentation>Checks if the EAA is not temporarily invalid, hanging, debarred from privilege.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="EAAUsePseudonym" type="LevelConstraint" minOccurs="0">
@@ -805,12 +810,12 @@
 							<xsd:documentation>Checks the returned status is not unknown</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="IssuanceTimePresent" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="IssuanceTime" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Checks whether 'issuedAt' field is defined within the EAA status token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="ExpirationTimePresent" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="ExpirationTime" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Checks whether thisUpdate field is defined within the revocation data</xsd:documentation>
 						</xsd:annotation>
@@ -820,7 +825,7 @@
 							<xsd:documentation>Checks whether the validation time is within the validity range of the EAA status token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusSubjectKnown" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="EAAStatusSubject" type="MultiValuesConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Checks whether the subject is defined within the EAA status token</xsd:documentation>
 						</xsd:annotation>

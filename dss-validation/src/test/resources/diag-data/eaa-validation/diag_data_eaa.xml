@@ -353,7 +353,7 @@
             <Origin>EXTERNAL</Origin>
             <Type>statuslist+cwt</Type>
             <SourceAddress>https://dss.nowina.lu/pki-factory/eaa/status_list</SourceAddress>
-            <Subject>https://dss.nowina.lu/pki-factory/eaa/status_list</Subject>
+            <Subject match="true">https://dss.nowina.lu/pki-factory/eaa/status_list</Subject>
             <IssuedAt>2026-04-23T09:29:00Z</IssuedAt>
             <ExpirationTime>2027-05-10T14:11:28Z</ExpirationTime>
             <BasicSignature>

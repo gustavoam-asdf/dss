@@ -25,6 +25,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatusToken;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASubject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlFoundCertificates;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
@@ -1047,7 +1048,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAStatusToken.setOrigin(eaaStatusToken.getOrigin());
         xmlEAAStatusToken.setType(eaaStatusToken.getType());
         xmlEAAStatusToken.setSourceAddress(eaaStatusToken.getSourceURL());
-        xmlEAAStatusToken.setSubject(eaaStatusToken.getSubject());
+        xmlEAAStatusToken.setSubject(getXmlEAASubject(eaaStatusToken));
         xmlEAAStatusToken.setIssuedAt(eaaStatusToken.getCreationDate());
         xmlEAAStatusToken.setExpirationTime(eaaStatusToken.getExpirationDate());
         if (eaaStatusToken.getTimeToLive() != null) {
@@ -1065,6 +1066,18 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         }
 
         return xmlEAAStatusToken;
+    }
+
+    private XmlEAASubject getXmlEAASubject(EAAStatusToken eaaStatusToken) {
+        if (eaaStatusToken.getSubject() == null) {
+            return null;
+        }
+        XmlEAASubject xmlEAASubject = new XmlEAASubject();
+        xmlEAASubject.setValue(eaaStatusToken.getSubject());
+        if (eaaStatusToken.getSubjectMatch() != null) {
+            xmlEAASubject.setMatch(eaaStatusToken.getSubjectMatch());
+        }
+        return xmlEAASubject;
     }
 
     private void setSignatureInfo(XmlEAAStatusToken xmlEAAStatusToken, EAAStatusToken eaaStatusToken) {
