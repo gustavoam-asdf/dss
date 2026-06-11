@@ -77,6 +77,9 @@ public class MdocEAA extends DefaultEAA {
 
     @Override
     public EAAKeyBindingPayload getKeyBindingSignaturePayload() {
+        if ((document == null) || (document.getDeviceSigned() == null)) {
+            return null;
+        }
         final MdocDeviceNameSpaces deviceNameSpaces = document.getDeviceSigned().getDeviceNameSpaces();
         return new MdocKeyBindingPayload(deviceNameSpaces.getNamespaces());
     }

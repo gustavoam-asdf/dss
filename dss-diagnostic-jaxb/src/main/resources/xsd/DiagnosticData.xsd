@@ -1750,12 +1750,13 @@
 							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
 						</xs:complexType>
 					</xs:element>
-					<xs:element name="KeyBindingSignature" minOccurs="0">
+                    <xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
+
+                    <xs:element name="KeyBindingSignature" minOccurs="0">
 						<xs:complexType>
 							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
 						</xs:complexType>
 					</xs:element>
-					<xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
                     <xs:element name="KeyBindingPayload" type="KeyBindingPayload" minOccurs="0" />
 
 					<xs:element name="Statuses" minOccurs="0">
