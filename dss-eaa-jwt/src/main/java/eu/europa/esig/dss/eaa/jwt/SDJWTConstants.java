@@ -109,11 +109,14 @@ public class SDJWTConstants {
     /** A non-negative Integer that represents the index to check for status information for the current Token */
     public static final String STATUS_INDEX = "index";
 
+    /** Purpose of the status entry claim */
+    public static final String STATUS_PURPOSE = "purpose";
+
     /** An identifier of the type of the status information provided by the service */
     public static final String STATUS_TYPE = "type";
 
-    /** Purpose of the status entry claim */
-    public static final String STATUS_PURPOSE = "purpose";
+    /** String value that identifies the Status List Token containing the status information for the Token */
+    public static final String STATUS_URI = "uri";
 
     // RFC 9449 Nonce
 

@@ -86,8 +86,13 @@ public class PKIJWTStatusListSource extends PKIEAAStatusListSource<JAdESSignatur
         statusList.put(JWTStatusListClaimNames.LST, createLst(getStatusList()));
         statusListPayload.put(JWTStatusListClaimNames.STATUS_LIST, statusList);
 
-        if (claimStatus != null && claimStatus.getStatusList() != null && claimStatus.getStatusList().getUri() != null) {
-            statusListPayload.put(JWTClaimNames.SUB, claimStatus.getStatusList().getUri().getStringValue());
+        if (claimStatus != null) {
+            if (claimStatus.getUri() != null) {
+                statusListPayload.put(JWTClaimNames.SUB, claimStatus.getUri().getStringValue());
+            }
+            if (claimStatus.getStatusList() != null && claimStatus.getStatusList().getUri() != null) {
+                statusListPayload.put(JWTClaimNames.SUB, claimStatus.getStatusList().getUri().getStringValue());
+            }
         }
 
         return new InMemoryDocument(statusListPayload.toJSONString().getBytes());

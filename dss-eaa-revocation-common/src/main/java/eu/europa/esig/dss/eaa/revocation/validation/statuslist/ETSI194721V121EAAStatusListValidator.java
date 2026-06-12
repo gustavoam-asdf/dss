@@ -38,21 +38,21 @@ public class ETSI194721V121EAAStatusListValidator implements EAARevocationValida
 
     @Override
     public List<String> getUris(EAA eaa) {
-        if (isSupported(eaa)) {
-            ClaimString uriClaim = eaa.getPayload().getStatus().getUri();
-            if (uriClaim != null && Utils.isStringNotEmpty(uriClaim.getStringValue())) {
-                return Collections.singletonList(uriClaim.getStringValue());
-            } else {
-                throw new DSSException("No 'uri' claim is present for the 'TokenStatusList' claim!");
-            }
+        if (!isSupported(eaa)) {
+            throw new UnsupportedOperationException("The provided EAA token does not contain 'status' or not supported!");
         }
-        return Collections.emptyList();
+        ClaimString uriClaim = eaa.getPayload().getStatus().getUri();
+        if (uriClaim != null && Utils.isStringNotEmpty(uriClaim.getStringValue())) {
+            return Collections.singletonList(uriClaim.getStringValue());
+        } else {
+            throw new DSSException("No 'uri' claim is present for the 'TokenStatusList' claim!");
+        }
     }
 
     @Override
     public EAARevocationToken validate(EAA eaa, byte[] statusListDocument) {
         if (!isSupported(eaa)) {
-            throw new IllegalStateException("The provided EAA token does not contain 'status' or not supported!");
+            throw new UnsupportedOperationException("The provided EAA token does not contain 'status' or not supported!");
         }
         ClaimNumber indexClaim = eaa.getPayload().getStatus().getIndex();
         if (indexClaim != null && indexClaim.getNumberValue() != null) {

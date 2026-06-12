@@ -130,8 +130,8 @@ public class PKICWTIdentifierListSource extends AbstractPKIEAARevocationListSour
         identifierList.put(CWTIdentifierListClaims.IDENTIFIER_LIST_IDENTIFIERS.cbor(), createIdentifiersMap(getIdentifiers()));
         payload.put(CWTIdentifierListClaims.IDENTIFIER_LIST.cbor(), identifierList);
 
-        if (claimStatus != null && claimStatus.getStatusList() != null && claimStatus.getStatusList().getUri() != null) {
-            payload.put(CWTClaims.SUB.cbor(), claimStatus.getStatusList().getUri().getStringValue());
+        if (claimStatus != null && claimStatus.getIdentifierList() != null && claimStatus.getIdentifierList().getUri() != null) {
+            payload.put(CWTClaims.SUB.cbor(), claimStatus.getIdentifierList().getUri().getStringValue());
         }
 
         return new InMemoryDocument(CBORUtils.serializeCborObject(payload));

@@ -45,13 +45,15 @@ public abstract class PKIEAAStatusListSource<T extends SerializableSignaturePara
 
     @Override
     public EAARevocationToken getEAARevocation(EAA eaa) {
-        if (eaa != null && eaa.getPayload() != null && eaa.getPayload().getStatus() != null
-                && eaa.getPayload().getStatus().getStatusList() != null) {
-
+        if (eaa != null && eaa.getPayload() != null && eaa.getPayload().getStatus() != null) {
             DSSDocument statusListToken = generateIdentifierListToken(eaa);
 
-            ClaimNumber index = eaa.getPayload().getStatus().getStatusList().getIndex();
-            ClaimString uri = eaa.getPayload().getStatus().getStatusList().getUri();
+            ClaimNumber index = eaa.getPayload().getStatus().getIndex();
+            ClaimString uri = eaa.getPayload().getStatus().getUri();
+            if (eaa.getPayload().getStatus().getStatusList() != null) {
+                index = eaa.getPayload().getStatus().getStatusList().getIndex();
+                uri = eaa.getPayload().getStatus().getStatusList().getUri();
+            }
             if (index != null) {
                 EAARevocationToken statusToken = createValidator(DSSUtils.toByteArray(statusListToken))
                         .getRevocationToken(index.getNumberValue().intValue());

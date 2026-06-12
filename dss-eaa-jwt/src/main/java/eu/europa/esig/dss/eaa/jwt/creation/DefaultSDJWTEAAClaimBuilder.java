@@ -1,5 +1,6 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
+import eu.europa.esig.dss.eaa.common.creation.EAAStatusList;
 import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
 import eu.europa.esig.dss.eaa.common.key.PublicKeyInfoFactory;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
@@ -7,6 +8,8 @@ import eu.europa.esig.dss.eaa.jwt.key.JWKClaimBuilder;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
  * Default implementation of {@link SDJWTEAAClaimBuilder}
  */
 public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultSDJWTEAAClaimBuilder.class);
 
     /**
      * The factory is used to build a representation of a public key from a {@code java.security.PublicKey}
@@ -296,15 +301,29 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
 
         SDJWTEAAClaimObject claim = new SDJWTEAAClaimObject(SDJWTConstants.STATUS, false);
 
-        if (payloadParameters.getStatusList() != null) {
+        EAAStatusList eaaStatusList = payloadParameters.getStatusList();
+        if (eaaStatusList instanceof ETSIEAAStatusList) {
+            LOG.debug("Status list is created as per ETSI TS 119 472-1 v1.2.1 definition.");
+            ETSIEAAStatusList etsiEAAStatusList = (ETSIEAAStatusList) eaaStatusList;
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_TYPE, etsiEAAStatusList.getType()));
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_PURPOSE, etsiEAAStatusList.getPurpose()));
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_INDEX, etsiEAAStatusList.getIndex()));
+            claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_URI, etsiEAAStatusList.getUri()));
+            if (etsiEAAStatusList.getCertificate() != null) {
+                claim.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_CERTIFICATE, Utils.toBase64(eaaStatusList.getCertificate().getEncoded())));
+            }
+
+        } else {
+            LOG.debug("Status list is created as per draft-ietf-oauth-status-list-13 definition.");
             SDJWTEAAClaimObject statusList = new SDJWTEAAClaimObject(SDJWTConstants.STATUS_LIST, false);
-            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_IDX, payloadParameters.getStatusList().getIndex()));
-            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_URI, payloadParameters.getStatusList().getUri()));
-            if (payloadParameters.getStatusList().getCertificate() != null) {
-                statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_IDX, eaaStatusList.getIndex()));
+            statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_URI, eaaStatusList.getUri()));
+            if (eaaStatusList.getCertificate() != null) {
+                statusList.addChild(SDJWTEAAClaim.create(SDJWTConstants.STATUS_LIST_CERTIFICATE, Utils.toBase64(eaaStatusList.getCertificate().getEncoded())));
             }
             claim.addChild(statusList);
         }
+
         // TODO : identifier_list ? no specification available at the moment for SD-JWT VC
 
         return claim;

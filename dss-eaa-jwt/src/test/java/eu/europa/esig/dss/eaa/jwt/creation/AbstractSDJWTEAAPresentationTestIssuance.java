@@ -199,6 +199,14 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
 
     protected void assertStatusListEqual(EAAStatusList statusList, EAAWrapper eaa) {
         if (statusList != null) {
+            if (statusList instanceof ETSIEAAStatusList) {
+                ETSIEAAStatusList etsiEAAStatusList = (ETSIEAAStatusList) statusList;
+                assertEquals(etsiEAAStatusList.getType(), eaa.getEAAStatusType());
+                assertEquals(etsiEAAStatusList.getPurpose(), eaa.getEAAStatusPurpose());
+            } else {
+                assertNull(eaa.getEAAStatusType());
+                assertNull(eaa.getEAAStatusPurpose());
+            }
             assertEquals(statusList.getIndex(), eaa.getEAAStatusIndex());
             assertEquals(statusList.getUri(), eaa.getEAAStatusUri());
             if (statusList.getCertificate() != null) {

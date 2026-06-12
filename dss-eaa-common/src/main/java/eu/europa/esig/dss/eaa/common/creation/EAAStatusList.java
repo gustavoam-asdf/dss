@@ -75,4 +75,32 @@ public class EAAStatusList implements Serializable {
         return certificate;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        EAAStatusList that = (EAAStatusList) object;
+        return index == that.index
+                && Objects.equals(uri, that.uri)
+                && Objects.equals(certificate, that.certificate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = index;
+        result = 31 * result + Objects.hashCode(uri);
+        result = 31 * result + Objects.hashCode(certificate);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "EAAStatusList [" +
+                "index=" + index +
+                ", uri='" + uri + '\'' +
+                ", certificate=" + certificate +
+                ']';
+    }
+
 }

@@ -36,21 +36,21 @@ public class ISO180135EAAIdentifierListValidator implements EAARevocationValidat
 
     @Override
     public List<String> getUris(EAA eaa) {
-        if (isSupported(eaa)) {
-            ClaimString uriClaim = eaa.getPayload().getStatus().getIdentifierList().getUri();
-            if (uriClaim != null && Utils.isStringNotEmpty(uriClaim.getStringValue())) {
-                return Collections.singletonList(uriClaim.getStringValue());
-            } else {
-                throw new DSSException("No 'uri' claim is present for the 'identifier_list' claim!");
-            }
+        if (!isSupported(eaa)) {
+            throw new UnsupportedOperationException("The provided EAA token does not contain 'identifier_list' or not supported!");
         }
-        return Collections.emptyList();
+        ClaimString uriClaim = eaa.getPayload().getStatus().getIdentifierList().getUri();
+        if (uriClaim != null && Utils.isStringNotEmpty(uriClaim.getStringValue())) {
+            return Collections.singletonList(uriClaim.getStringValue());
+        } else {
+            throw new DSSException("No 'uri' claim is present for the 'identifier_list' claim!");
+        }
     }
 
     @Override
     public EAARevocationToken validate(EAA eaa, byte[] identifierListDocument) {
         if (!isSupported(eaa)) {
-            throw new IllegalStateException("The provided EAA token does not contain 'identifier_list' or not supported!");
+            throw new UnsupportedOperationException("The provided EAA token does not contain 'identifier_list' or not supported!");
         }
         ClaimByteString identifier = eaa.getPayload().getStatus().getIdentifierList().getIdentifier();
         if (identifier != null && identifier.getBinaryValue() != null) {

@@ -1,13 +1,5 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.jose4j.base64url.Base64;
-import org.jose4j.base64url.Base64Url;
-import org.jose4j.json.JsonUtil;
-
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.MimeTypeEnum;
@@ -21,7 +13,16 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.utils.Utils;
+import org.jose4j.json.JsonUtil;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Default implementation to create a payload for the SD-JWT VC key binding signature
+ *
+ */
 public class DefaultSDJWTEAAKeyBindingPayloadBuilder implements SDJWTEAAKeyBindingPayloadBuilder {
 
     @Override
@@ -64,4 +65,5 @@ public class DefaultSDJWTEAAKeyBindingPayloadBuilder implements SDJWTEAAKeyBindi
         result.setMimeType(MimeTypeEnum.JSON);
         return result;
     }
+
 }

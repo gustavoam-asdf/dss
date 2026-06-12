@@ -226,6 +226,22 @@ public class SDJWTEAAPayloadParameters extends AbstractEAAPayloadParameters {
     }
 
     /**
+     * Sets the status, according to the ETSI TS 119 472-1 v1.2.1 definition,
+     * that includes type, purpose, index and uri.
+     * NOTE: when used, the properties are to be added within the "status" claim,
+     * and not within the "status_list" child.
+     *
+     * @param type {@link String} type of the EAA revocation token (e.g. "TokenStatusList" for Token Status List
+     *             as specified in IETF draft-ietf-oauth-status-list-13)
+     * @param purpose {@link String} purpose of the status list
+     * @param index integer representing an EAA identifier within the status
+     * @param url {@link String} where the status can be accessed from
+     */
+    public void setStatusList(String type, String purpose, int index, String url) {
+        setStatusList(new ETSIEAAStatusList(type, purpose, index, url));
+    }
+
+    /**
      * Gets a catalogue of claims to be made selectively disclosable within the produced SD-JWT VC EAA.
      * When parameters are defined within the object, the computed hashes will be computed and
      * incorporated within "_sd" header parameter of the EAA Payload.
