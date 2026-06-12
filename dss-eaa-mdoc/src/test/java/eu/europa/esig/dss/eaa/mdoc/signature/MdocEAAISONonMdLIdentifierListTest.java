@@ -31,7 +31,7 @@ class MdocEAAISONonMdLIdentifierListTest extends AbstractMdocEAAPresentationTest
         payloadParameters.setDocType(MdocConstants.ISO23220_1_MID_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
 
-        payloadParameters.setIdentifierList(1, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
+        payloadParameters.setIdentifierList(new byte[] { 1 }, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
 
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
@@ -139,7 +139,7 @@ class MdocEAAISONonMdLIdentifierListTest extends AbstractMdocEAAPresentationTest
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.23220.1.mID", eaa.getEAADocumentType());
 
-        assertEquals(1, eaa.getEAAIdentifierListId());
+        assertArrayEquals(new byte[] { 1 }, eaa.getEAAIdentifierListId());
         assertEquals("https://pki.nowina.lu/eaa/identifier_list", eaa.getEAAIdentifierListUri());
         assertArrayEquals(getCertificate("ocsp-responder").getEncoded(), eaa.getEAAIdentifierListCertificate());
 

@@ -9,7 +9,7 @@ import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;

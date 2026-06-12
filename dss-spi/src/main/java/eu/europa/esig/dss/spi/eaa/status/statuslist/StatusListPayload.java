@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.spi.eaa.statuslist;
+package eu.europa.esig.dss.spi.eaa.status.statuslist;
 
 import java.util.Date;
 
@@ -61,6 +61,6 @@ public interface StatusListPayload {
      *
      * @return {@link String}
      */
-    String getStatusListAggregationUri();
+    String getAggregationUri();
 
 }

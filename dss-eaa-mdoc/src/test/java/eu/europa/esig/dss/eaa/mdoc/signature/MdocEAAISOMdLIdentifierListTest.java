@@ -2,14 +2,18 @@ package eu.europa.esig.dss.eaa.mdoc.signature;
 
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDrivingPrivilege;
+import eu.europa.esig.dss.eaa.mdoc.pki.PKICWTIdentifierListSource;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -32,7 +36,7 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO18013_5_MDL_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
-        payloadParameters.setIdentifierList(1, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
+        payloadParameters.setIdentifierList(new byte[] { 1 }, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
 
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
@@ -55,6 +59,22 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
         signatureParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
         signatureParameters.setSigningCertificate(getSigningCert());
         signatureParameters.setCertificateChain(getCertificateChain());
+    }
+
+    @Override
+    protected EAAStatusSource getEAAStatusSource() {
+        return new PKICWTIdentifierListSource(getCertEntityRepository(), getCertEntity(GOOD_CA));
+    }
+
+    @Override
+    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
+        super.checkEAAStatuses(diagnosticData);
+
+        EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
+        List<EAAStatusWrapper> eaaStatuses = eaa.getEAAStatuses();
+        assertEquals(1, eaaStatuses.size());
+        assertEquals(EAAStatus.VALID, eaaStatuses.get(0).getStatus());
+        assertEquals("application/identifierlist+cwt", eaaStatuses.get(0).getType());
     }
 
     @Override
@@ -164,7 +184,7 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
         assertEquals("1.0", eaa.getEAAVersion());
         assertEquals("org.iso.18013.5.1.mDL", eaa.getEAADocumentType());
 
-        assertEquals(1, eaa.getEAAIdentifierListId());
+        assertArrayEquals(new byte[] { 1 }, eaa.getEAAIdentifierListId());
         assertEquals("https://pki.nowina.lu/eaa/identifier_list", eaa.getEAAIdentifierListUri());
         assertArrayEquals(getCertificate("ocsp-responder").getEncoded(), eaa.getEAAIdentifierListCertificate());
 

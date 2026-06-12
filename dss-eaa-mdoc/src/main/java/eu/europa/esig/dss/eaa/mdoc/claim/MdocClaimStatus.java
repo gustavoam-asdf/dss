@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.mdoc.claim;
 
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIdentifierList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -35,7 +36,7 @@ public class MdocClaimStatus extends MdocClaimMap implements ClaimStatus {
     }
 
     @Override
-    public ClaimStatusList getIdentifierList() {
+    public ClaimIdentifierList getIdentifierList() {
         ClaimMap statusList = getAsMap(MdocConstants.IDENTIFIER_LIST);
         if (statusList != null) {
             return new MdocClaimIdentifierList(statusList);

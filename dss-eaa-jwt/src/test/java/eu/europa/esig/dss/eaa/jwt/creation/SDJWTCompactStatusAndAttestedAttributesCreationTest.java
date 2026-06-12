@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
-import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
+import eu.europa.esig.dss.eaa.common.creation.EAAStatusList;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -105,7 +105,7 @@ class SDJWTCompactStatusAndAttestedAttributesCreationTest extends AbstractSDJWTE
     }
 
     @Override
-    protected void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
+    protected void assertStatusListEqual(EAAStatusList statusList, EAAWrapper eaa) {
         // skip
     }
 

@@ -25,7 +25,7 @@ import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
 import eu.europa.esig.dss.utils.Utils;

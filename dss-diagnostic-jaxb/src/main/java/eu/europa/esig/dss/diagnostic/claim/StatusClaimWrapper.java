@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.diagnostic.claim;
 
 import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlIdentifierListClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusListClaim;
 
@@ -25,7 +26,7 @@ public class StatusClaimWrapper extends ClaimWrapper {
     /**
      * Gets the status list
      *
-     * @return {@link ClaimWrapper}
+     * @return {@link StatusListClaimWrapper}
      */
     public StatusListClaimWrapper getStatusList() {
         XmlStatusListClaim statusList = getWrapped().getStatusList();
@@ -38,12 +39,12 @@ public class StatusClaimWrapper extends ClaimWrapper {
     /**
      * Gets the identifier list
      *
-     * @return {@link ClaimWrapper}
+     * @return {@link IdentifierListClaimWrapper}
      */
-    public StatusListClaimWrapper getIdentifierList() {
-        XmlStatusListClaim identifierList = getWrapped().getIdentifierList();
+    public IdentifierListClaimWrapper getIdentifierList() {
+        XmlIdentifierListClaim identifierList = getWrapped().getIdentifierList();
         if (identifierList != null) {
-            return new StatusListClaimWrapper(identifierList, this);
+            return new IdentifierListClaimWrapper(identifierList, this);
         }
         return null;
     }
@@ -112,7 +113,7 @@ public class StatusClaimWrapper extends ClaimWrapper {
         if (statusList != null) {
             result.put(statusList.getName(), statusList);
         }
-        StatusListClaimWrapper identifierList = getIdentifierList();
+        IdentifierListClaimWrapper identifierList = getIdentifierList();
         if (identifierList != null) {
             result.put(identifierList.getName(), identifierList);
         }

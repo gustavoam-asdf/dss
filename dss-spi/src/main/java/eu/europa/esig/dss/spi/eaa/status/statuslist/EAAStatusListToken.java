@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.spi.eaa.statuslist;
+package eu.europa.esig.dss.spi.eaa.status.statuslist;
 
 import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
@@ -96,26 +96,56 @@ public class EAAStatusListToken extends EAAStatusToken {
             // empty
         }
 
+        /**
+         * Sets binaries of the revocation token
+         *
+         * @param binary {@link StatusTokenBinary}
+         * @return this {@link EAAStatusListTokenBuilder}
+         */
         public EAAStatusListTokenBuilder setBinary(StatusTokenBinary binary) {
             this.binary = binary;
             return this;
         }
 
+        /**
+         * Sets signature used to sign this token
+         *
+         * @param signature {@link AdvancedSignature}
+         * @return this {@link EAAStatusListTokenBuilder}
+         */
         public EAAStatusListTokenBuilder setSignature(AdvancedSignature signature) {
             this.signature = signature;
             return this;
         }
 
+        /**
+         * Sets the status value for the corresponding EAA
+         *
+         * @param status {@link EAAStatus}
+         * @return this {@link EAAStatusListTokenBuilder}
+         */
         public EAAStatusListTokenBuilder setStatus(EAAStatus status) {
             this.status = status;
             return this;
         }
 
+        /**
+         * Sets the payload of the revocation token
+         *
+         * @param payload {@link StatusListPayload}
+         * @return this {@link EAAStatusListTokenBuilder}
+         */
         public EAAStatusListTokenBuilder setPayload(StatusListPayload payload) {
             this.payload = payload;
             return this;
         }
 
+        /**
+         * Sets the certificate source
+         *
+         * @param certificateSource {@link CertificateSource}
+         * @return this {@link EAAStatusListTokenBuilder}
+         */
         public EAAStatusListTokenBuilder setCertificateSource(CertificateSource certificateSource) {
             this.certificateSource = certificateSource;
             return this;

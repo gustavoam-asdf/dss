@@ -8,7 +8,7 @@ import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
+import eu.europa.esig.dss.eaa.common.creation.EAAStatusList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
@@ -186,7 +186,6 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             assertEquals(DSSUtils.formatDateToRFC(getPayloadParameters().getExpirationDate()), DSSUtils.formatDateToRFC(eaa.getEAAExpiration()));
 
             assertStatusListEqual(getPayloadParameters().getStatusList(), eaa);
-            assertIdentifierListEqual(getPayloadParameters().getIdentifierList(), eaa);
 
             assertEquals(getPayloadParameters().getCategory(), eaa.getEAACategory());
             assertEquals(Utils.isTrue(getPayloadParameters().isShortLived()), Utils.isTrue(eaa.getShortLived()));
@@ -198,7 +197,7 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
         }
     }
 
-    protected void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
+    protected void assertStatusListEqual(EAAStatusList statusList, EAAWrapper eaa) {
         if (statusList != null) {
             assertEquals(statusList.getIndex(), eaa.getEAAStatusIndex());
             assertEquals(statusList.getUri(), eaa.getEAAStatusUri());
@@ -211,22 +210,6 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             assertNull(eaa.getEAAStatusIndex());
             assertNull(eaa.getEAAStatusUri());
             assertNull(eaa.getEAAStatusCertificate());
-        }
-    }
-
-    private void assertIdentifierListEqual(EAARevocationList identifierList, EAAWrapper eaa) {
-        if (identifierList != null) {
-            assertEquals(identifierList.getIndex(), eaa.getEAAIdentifierListId());
-            assertEquals(identifierList.getUri(), eaa.getEAAIdentifierListUri());
-            if (identifierList.getCertificate() != null) {
-                assertArrayEquals(identifierList.getCertificate().getEncoded(), eaa.getEAAIdentifierListCertificate());
-            } else {
-                assertNull(eaa.getEAAIdentifierListCertificate());
-            }
-        } else {
-            assertNull(eaa.getEAAIdentifierListId());
-            assertNull(eaa.getEAAIdentifierListUri());
-            assertNull(eaa.getEAAIdentifierListCertificate());
         }
     }
 

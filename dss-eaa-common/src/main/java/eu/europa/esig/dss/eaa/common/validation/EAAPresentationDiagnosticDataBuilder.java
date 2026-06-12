@@ -27,6 +27,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatusToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASubject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlFoundCertificates;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlIdentifierListClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingPayload;
@@ -55,6 +56,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilege;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilegeCode;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivilegeCodes;
 import eu.europa.esig.dss.model.eaa.claim.ClaimDrivingPrivileges;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIdentifierList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimIntegrity;
 import eu.europa.esig.dss.model.eaa.claim.ClaimPlaceOfBirth;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -521,7 +523,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             xmlStatus.setStatusList(getXmlStatusList(claimStatus.getStatusList(), claimSupportedClaims));
         }
         if (claimStatus.getIdentifierList() != null) {
-            xmlStatus.setIdentifierList(getXmlStatusList(claimStatus.getIdentifierList(), claimSupportedClaims));
+            xmlStatus.setIdentifierList(getXmlIdentifierList(claimStatus.getIdentifierList(), claimSupportedClaims));
         }
         if (claimStatus.getIndex() != null) {
             xmlStatus.setIndex(getXmlClaim(claimStatus.getIndex(), claimSupportedClaims));
@@ -558,6 +560,27 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         }
         xmlStatusList.getEntry().addAll(getOtherClaims(claimStatusList, claimSupportedClaims));
         return xmlStatusList;
+    }
+
+    private XmlIdentifierListClaim getXmlIdentifierList(ClaimIdentifierList claimStatusList, List<XmlClaim> supportedClaims) {
+        if (claimStatusList == null) {
+            return null;
+        }
+        XmlIdentifierListClaim xmlIdentifierList = new XmlIdentifierListClaim();
+        appendGenericInfo(xmlIdentifierList, claimStatusList, supportedClaims);
+
+        List<XmlClaim> claimSupportedClaims = new ArrayList<>();
+        if (claimStatusList.getIdentifier() != null) {
+            xmlIdentifierList.setIdentifier(getXmlClaim(claimStatusList.getIdentifier(), claimSupportedClaims));
+        }
+        if (claimStatusList.getUri() != null) {
+            xmlIdentifierList.setUri(getXmlClaim(claimStatusList.getUri(), claimSupportedClaims));
+        }
+        if (claimStatusList.getCertificate() != null) {
+            xmlIdentifierList.setCertificate(getXmlClaim(claimStatusList.getCertificate(), claimSupportedClaims));
+        }
+        xmlIdentifierList.getEntry().addAll(getOtherClaims(claimStatusList, claimSupportedClaims));
+        return xmlIdentifierList;
     }
 
     private XmlDeviceKeyClaim getXmlDeviceKeyClaim(ClaimDeviceKey deviceKey, List<XmlClaim> supportedClaims) {

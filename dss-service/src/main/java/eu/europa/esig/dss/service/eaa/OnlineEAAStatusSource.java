@@ -6,7 +6,7 @@ import eu.europa.esig.dss.spi.client.http.DataLoader;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.EAAStatusValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.exception.DSSExternalResourceException;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;

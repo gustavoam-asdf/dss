@@ -1,9 +1,9 @@
-package eu.europa.esig.dss.spi.eaa.statuslist;
+package eu.europa.esig.dss.spi.eaa.status.statuslist;
 
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 
 /**
- * Accepts a DSSDocument and parses its value as an EAA's Token Status List (TSL)
+ * Accepts a status list document and parses its value as an EAA's Token Status List (TSL)
  *
  */
 public interface StatusListValidator {

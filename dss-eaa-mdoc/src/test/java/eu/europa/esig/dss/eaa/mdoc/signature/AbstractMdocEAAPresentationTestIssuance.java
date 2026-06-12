@@ -24,11 +24,12 @@ import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegeClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegeCodeClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.DrivingPrivilegesClaimWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
-import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
+import eu.europa.esig.dss.eaa.common.creation.EAAStatusList;
 import eu.europa.esig.dss.eaa.common.validation.AbstractEAAPresentationTestIssuance;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAADisclosure;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAService;
+import eu.europa.esig.dss.eaa.mdoc.creation.MdocIdentifierList;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
 import eu.europa.esig.dss.eaa.mdoc.model.MdocDrivingPrivilege;
@@ -361,7 +362,7 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
         }
     }
 
-    private void assertStatusListEqual(EAARevocationList statusList, EAAWrapper eaa) {
+    private void assertStatusListEqual(EAAStatusList statusList, EAAWrapper eaa) {
         if (statusList != null) {
             assertEquals(statusList.getIndex(), eaa.getEAAStatusIndex());
             assertEquals(statusList.getUri(), eaa.getEAAStatusUri());
@@ -377,9 +378,9 @@ public abstract class AbstractMdocEAAPresentationTestIssuance extends AbstractEA
         }
     }
 
-    private void assertIdentifierListEqual(EAARevocationList identifierList, EAAWrapper eaa) {
+    private void assertIdentifierListEqual(MdocIdentifierList identifierList, EAAWrapper eaa) {
         if (identifierList != null) {
-            assertEquals(identifierList.getIndex(), eaa.getEAAIdentifierListId());
+            assertArrayEquals(identifierList.getIdentifier(), eaa.getEAAIdentifierListId());
             assertEquals(identifierList.getUri(), eaa.getEAAIdentifierListUri());
             if (identifierList.getCertificate() != null) {
                 assertArrayEquals(identifierList.getCertificate().getEncoded(), eaa.getEAAIdentifierListCertificate());

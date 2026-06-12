@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.SignatureValidationContext;
 import eu.europa.esig.dss.spi.x509.CertificateSource;

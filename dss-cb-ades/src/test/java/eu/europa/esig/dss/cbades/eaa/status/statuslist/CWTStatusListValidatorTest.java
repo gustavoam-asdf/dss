@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.cbades.eaa.statuslist;
+package eu.europa.esig.dss.cbades.eaa.status.statuslist;
 
 import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.model.DSSException;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CWTStatusListValidatorTest {
 
     @Test
-    void CWTStatusListTest() {
+    void cwtStatusListTest() {
         /* See draft-ietf-oauth-status-list-20 */
 
         String tokenHex =

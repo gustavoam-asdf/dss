@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.cbades.eaa.statuslist;
+package eu.europa.esig.dss.cbades.eaa.status.statuslist;
 
 import eu.europa.esig.dss.cbades.COSEParser;
 import eu.europa.esig.dss.cbades.cbor.CBORByteString;

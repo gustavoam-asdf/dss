@@ -1,8 +1,8 @@
-package eu.europa.esig.dss.cbades.eaa.statuslist;
+package eu.europa.esig.dss.cbades.eaa.status.statuslist;
 
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cwt.CWTPayload;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListPayload;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListPayload;
 
 /**
  * Represents a payload of an CWT-encoded Token Status List
@@ -53,7 +53,7 @@ public class CWTStatusListPayload extends CWTPayload implements StatusListPayloa
     }
 
     @Override
-    public String getStatusListAggregationUri() {
+    public String getAggregationUri() {
         CBORMap statusList = getStatusList();
         if (statusList != null) {
             return statusList.getAsString(CWTStatusListClaims.STATUS_LIST_AGGREGATION_URI.cbor());

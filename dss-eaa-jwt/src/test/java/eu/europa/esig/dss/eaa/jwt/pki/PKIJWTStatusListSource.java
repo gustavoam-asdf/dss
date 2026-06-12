@@ -16,7 +16,7 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import org.jose4j.json.internal.json_simple.JSONObject;
 
@@ -34,6 +34,7 @@ public class PKIJWTStatusListSource extends PKIEAAStatusListSource<JAdESSignatur
         super(certEntityRepository, statusListIssuer);
     }
 
+    @Override
     public String getType() {
         String type = super.getType();
         if (type == null) {

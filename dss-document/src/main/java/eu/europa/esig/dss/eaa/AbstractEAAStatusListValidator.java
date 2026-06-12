@@ -4,9 +4,9 @@ import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.StatusTokenBinary;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusListToken;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListPayload;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusListToken;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListPayload;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.utils.Utils;
 

@@ -507,15 +507,15 @@ public class EAAWrapper extends AbstractTokenProxy {
     }
 
     /**
-     * Gets EAA identifier list index as defined in the EAA payload
+     * Gets EAA identifier to be used for the EAA status verification using an Identifier List mechanism
      *
-     * @return {@link Integer}
+     * @return byte array
      */
-    public Integer getEAAIdentifierListId() {
+    public byte[] getEAAIdentifierListId() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
         if (eaaStatus != null) {
             if (eaaStatus.getIdentifierList() != null) {
-                return getPayloadClaimIntegerValue(eaaStatus.getIdentifierList().getIndex());
+                return getPayloadClaimByteValue(eaaStatus.getIdentifierList().getIdentifier());
             }
         }
         return null;

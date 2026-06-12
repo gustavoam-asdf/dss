@@ -9,7 +9,7 @@ import java.util.Objects;
  * Represents a status_list structure as specified in clause 6 of IETF draft-ietf-oauth-status-list-13.
  *
  */
-public class EAARevocationList implements Serializable {
+public class EAAStatusList implements Serializable {
 
     private static final long serialVersionUID = -8538801549100678146L;
 
@@ -28,7 +28,7 @@ public class EAARevocationList implements Serializable {
      * @param index integer
      * @param uri {@link String}
      */
-    public EAARevocationList(final int index, final String uri) {
+    public EAAStatusList(final int index, final String uri) {
         this(index, uri, null);
     }
 
@@ -38,7 +38,7 @@ public class EAARevocationList implements Serializable {
      * @param index integer
      * @param uri {@link String}
      */
-    public EAARevocationList(final int index, final String uri, final CertificateToken certificate) {
+    public EAAStatusList(final int index, final String uri, final CertificateToken certificate) {
         Objects.requireNonNull(uri, "Uri cannot be null!");
         if (index < 0) {
             throw new IllegalArgumentException("Index shall be a non-negative integer!");

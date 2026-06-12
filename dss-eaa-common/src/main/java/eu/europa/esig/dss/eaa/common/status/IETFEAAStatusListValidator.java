@@ -6,8 +6,8 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.EAAStatusValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidatorFactory;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidatorFactory;
 import eu.europa.esig.dss.spi.x509.TokenCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -84,7 +84,7 @@ public class IETFEAAStatusListValidator implements EAAStatusValidator {
      * @return {@link TokenCertificateSource}
      */
     protected TokenCertificateSource getCertificateSource(EAA eaa) {
-        return new EAAStatusListCertificateSource(eaa.getPayload().getStatus().getStatusList());
+        return new EAARevocationListCertificateSource(eaa.getPayload().getStatus().getStatusList());
     }
 
 }

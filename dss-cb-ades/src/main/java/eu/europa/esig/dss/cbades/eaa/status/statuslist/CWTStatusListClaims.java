@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.cbades.eaa.statuslist;
+package eu.europa.esig.dss.cbades.eaa.status.statuslist;
 
 import eu.europa.esig.dss.cbades.cbor.CBORObject;
 import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
@@ -9,11 +9,6 @@ import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
  *
  */
 public enum CWTStatusListClaims {
-
-    /**
-     * Type of the token
-     */
-    TYP(16L),
 
     /**
      * The status list map.

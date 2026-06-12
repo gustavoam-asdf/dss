@@ -5,7 +5,7 @@ import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.jwt.pki.PKIJWTStatusListSource;
 import eu.europa.esig.dss.enumerations.EAAStatus;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 
 import java.util.Arrays;
 import java.util.List;

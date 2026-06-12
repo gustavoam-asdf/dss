@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.claim;
 
 import eu.europa.esig.dss.eaa.jwt.SDJWTConstants;
+import eu.europa.esig.dss.model.eaa.claim.ClaimIdentifierList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimMap;
 import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -34,7 +35,7 @@ public class SDJWTClaimStatus extends SDJWTClaimMap implements ClaimStatus {
     }
 
     @Override
-    public ClaimStatusList getIdentifierList() {
+    public ClaimIdentifierList getIdentifierList() {
         // not defined
         return null;
     }

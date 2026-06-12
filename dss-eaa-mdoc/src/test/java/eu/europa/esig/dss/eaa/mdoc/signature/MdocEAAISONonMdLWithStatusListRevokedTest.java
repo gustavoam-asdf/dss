@@ -5,7 +5,7 @@ import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.mdoc.pki.PKICWTStatusListSource;
 import eu.europa.esig.dss.enumerations.EAAStatus;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +29,7 @@ class MdocEAAISONonMdLWithStatusListRevokedTest extends MdocEAAISONonMdLWithStat
         List<EAAStatusWrapper> eaaStatuses = eaa.getEAAStatuses();
         assertEquals(1, eaaStatuses.size());
         assertEquals(EAAStatus.INVALID, eaaStatuses.get(0).getStatus());
-        assertEquals("statuslist+cwt", eaaStatuses.get(0).getType());
+        assertEquals("application/statuslist+cwt", eaaStatuses.get(0).getType());
     }
 
 }

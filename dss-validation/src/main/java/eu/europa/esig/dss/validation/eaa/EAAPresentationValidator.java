@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.eaa;
 
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
 import eu.europa.esig.dss.validation.DocumentValidator;
 
 /**

@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.spi.eaa.statuslist;
+package eu.europa.esig.dss.spi.eaa.status.statuslist;
 
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;

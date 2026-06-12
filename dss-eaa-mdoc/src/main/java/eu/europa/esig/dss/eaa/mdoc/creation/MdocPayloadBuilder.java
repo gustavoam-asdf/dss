@@ -5,7 +5,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORByteString;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAPayloadBuilder;
-import eu.europa.esig.dss.eaa.common.creation.EAARevocationList;
+import eu.europa.esig.dss.eaa.common.creation.EAAStatusList;
 import eu.europa.esig.dss.eaa.common.key.PublicKeyInfo;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
@@ -343,8 +343,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildStatus(EAARevocationList identifierList, EAARevocationList statusList) {
-        // TODO : review with the new revision of ISO/IEC 18013-5
+    protected CBORMap buildStatus(MdocIdentifierList identifierList, EAAStatusList statusList) {
         if (identifierList == null && statusList == null) {
             return null;
         }
@@ -369,16 +368,19 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *     ? "certificate": Certificate
      *     * tstr => RFU
      *   }
+     *   Identifier = bstr
+     *   URI = tstr
+     *   Certificate = bstr
      * }
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildIdentifierListInfo(EAARevocationList identifierList) {
+    protected CBORMap buildIdentifierListInfo(MdocIdentifierList identifierList) {
         if (identifierList == null) {
             return null;
         }
         final CBORMap identifierListInfo = new CBORMap();
-        identifierListInfo.put(MdocConstants.IDENTIFIER_ID, identifierList.getIndex());
+        identifierListInfo.put(MdocConstants.IDENTIFIER_ID, identifierList.getIdentifier());
         identifierListInfo.put(MdocConstants.IDENTIFIER_URI, identifierList.getUri());
         if (identifierList.getCertificate() != null) {
             identifierListInfo.put(MdocConstants.IDENTIFIER_CERTIFICATE, identifierList.getCertificate().getEncoded());
@@ -390,16 +392,15 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      * Builds an StatusListInfo structure.
      * {@code
      *   StatusListInfo = {
-     *     "idx": Identifier,
-     *     "uri": URI,
-     *     ? "certificate": Certificate
-     *     * tstr => RFU
+     *     "idx": unit,
+     *     "uri": tstr,
+     *     ? "certificate": bstr
      *   }
      * }
      *
      * @return {@link CBORMap}
      */
-    protected CBORMap buildStatusListInfo(EAARevocationList statusList) {
+    protected CBORMap buildStatusListInfo(EAAStatusList statusList) {
         if (statusList == null) {
             return null;
         }

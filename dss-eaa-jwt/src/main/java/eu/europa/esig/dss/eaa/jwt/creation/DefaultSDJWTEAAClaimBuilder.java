@@ -290,7 +290,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
      * @return the claim or null
      */
     protected SDJWTEAAClaim buildStatusClaim(SDJWTEAAPayloadParameters payloadParameters) {
-        if (payloadParameters.getStatusList() == null && payloadParameters.getIdentifierList() == null) {
+        if (payloadParameters.getStatusList() == null) {
             return null;
         }
 
@@ -305,15 +305,7 @@ public class DefaultSDJWTEAAClaimBuilder implements SDJWTEAAClaimBuilder {
             }
             claim.addChild(statusList);
         }
-        if (payloadParameters.getIdentifierList() != null) {
-            SDJWTEAAClaimObject identifierList = new SDJWTEAAClaimObject(SDJWTConstants.IDENTIFIER_LIST, false);
-            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_ID, payloadParameters.getStatusList().getIndex()));
-            identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_URI, payloadParameters.getStatusList().getUri()));
-            if (payloadParameters.getStatusList().getCertificate() != null) {
-                identifierList.addChild(SDJWTEAAClaim.create(SDJWTConstants.IDENTIFIER_LIST_CERTIFICATE, Utils.toBase64(payloadParameters.getStatusList().getCertificate().getEncoded())));
-            }
-            claim.addChild(identifierList);
-        }
+        // TODO : identifier_list ? no specification available at the moment for SD-JWT VC
 
         return claim;
     }

@@ -2,7 +2,7 @@ package eu.europa.esig.dss.jades.eaa.statuslist;
 
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.jwt.JWTPayload;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListPayload;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class JWTStatusListPayload extends JWTPayload implements StatusListPayloa
     }
 
     @Override
-    public String getStatusListAggregationUri() {
+    public String getAggregationUri() {
         Map<?, ?> statusList = getStatusList();
         if (statusList != null) {
             return DSSJsonUtils.getAsString(statusList, JWTStatusListClaimNames.AGGREGATION_URI);

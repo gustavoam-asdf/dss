@@ -1,7 +1,7 @@
-package eu.europa.esig.dss.cbades.eaa.statuslist;
+package eu.europa.esig.dss.cbades.eaa.status.statuslist;
 
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidatorFactory;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidatorFactory;
 
 /**
  * Loads a corresponding validator for a Token Status List (TSL) provided in CWT Format, 

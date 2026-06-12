@@ -6,8 +6,8 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
 import eu.europa.esig.dss.spi.eaa.EAAStatusValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidatorFactory;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidatorFactory;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.util.Collections;

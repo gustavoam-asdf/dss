@@ -48,18 +48,11 @@ public interface EAAPayloadParameters {
     PublicKey getDeviceKey();
 
     /**
-     * Gets the identifier_list
-     *
-     * @return {@link EAARevocationList}
-     */
-    EAARevocationList getIdentifierList();
-
-    /**
      * Gets the status_list
      *
-     * @return {@link EAARevocationList}
+     * @return {@link EAAStatusList}
      */
-    EAARevocationList getStatusList();
+    EAAStatusList getStatusList();
 
     /**
      * Gets the EAA category URN

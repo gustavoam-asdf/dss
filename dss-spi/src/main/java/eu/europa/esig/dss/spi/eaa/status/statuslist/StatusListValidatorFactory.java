@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.spi.eaa.statuslist;
+package eu.europa.esig.dss.spi.eaa.status.statuslist;
 
 /**
  * Loads a relevant implementation for an EAA's Token Status List (TSL) processing

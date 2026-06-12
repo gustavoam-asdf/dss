@@ -3,8 +3,8 @@ package eu.europa.esig.dss.eaa.mdoc.pki;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.cwt.CWTClaims;
-import eu.europa.esig.dss.cbades.eaa.statuslist.CWTStatusListClaims;
-import eu.europa.esig.dss.cbades.eaa.statuslist.CWTStatusListValidator;
+import eu.europa.esig.dss.cbades.eaa.status.statuslist.CWTStatusListClaims;
+import eu.europa.esig.dss.cbades.eaa.status.statuslist.CWTStatusListValidator;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.PKIEAAStatusListSource;
@@ -17,11 +17,15 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.statuslist.StatusListValidator;
+import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 
 import java.util.Collections;
 
+/**
+ * Test implementation for generation of CWT-encoded Token Status List
+ *
+ */
 public class PKICWTStatusListSource extends PKIEAAStatusListSource<CBAdESSignatureParameters> {
 
     /**
@@ -34,10 +38,11 @@ public class PKICWTStatusListSource extends PKIEAAStatusListSource<CBAdESSignatu
         super(certEntityRepository, statusListIssuer);
     }
 
+    @Override
     public String getType() {
         String type = super.getType();
         if (type == null) {
-            return "statuslist+cwt";
+            return "application/statuslist+cwt";
         }
         return type;
     }

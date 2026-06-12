@@ -58,6 +58,11 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private Date expectedUpdate;
 
     /**
+     * (Optional) Contains an "identifier_list", as defined in ISO/IEC 18013-5 "12.3.6.4 Identifier list details".
+     */
+    private MdocIdentifierList identifierList;
+
+    /**
      * Contains other optional selectively disclosable parameters
      */
     private MdocEAAClaimParameters selectivelyDisclosableParameters;
@@ -233,6 +238,46 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
      */
     public void setExpectedUpdate(Date expectedUpdate) {
         this.expectedUpdate = expectedUpdate;
+    }
+
+    /**
+     * Gets the identifier_list
+     *
+     * @return {@link MdocIdentifierList}
+     */
+    public MdocIdentifierList getIdentifierList() {
+        return identifierList;
+    }
+
+    /**
+     * Sets the identifier_list
+     *
+     * @param identifierList {@link MdocIdentifierList}
+     */
+    public void setIdentifierList(MdocIdentifierList identifierList) {
+        this.identifierList = identifierList;
+    }
+
+    /**
+     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
+     *
+     * @param identifier byte array representing an EAA identifier within the identifier_list
+     * @param url {@link String} where the identifier_list can be accessed from
+     */
+    public void setIdentifierList(byte[] identifier, String url) {
+        this.identifierList = new MdocIdentifierList(identifier, url);
+    }
+
+    /**
+     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
+     *
+     * @param identifier byte array representing an EAA identifier within the identifier_list
+     * @param url {@link String} where the identifier_list can be accessed from
+     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
+     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
+     */
+    public void setIdentifierList(byte[] identifier, String url, CertificateToken certificateToken) {
+        this.identifierList = new MdocIdentifierList(identifier, url, certificateToken);
     }
 
     /**

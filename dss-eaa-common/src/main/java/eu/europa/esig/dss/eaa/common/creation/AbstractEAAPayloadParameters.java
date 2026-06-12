@@ -28,11 +28,8 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     /** Contains the public part of the key pair used for device authentication. */
     private PublicKey deviceKey;
 
-    /** (Optional) Contains an "identifier_list". */
-    private EAARevocationList identifierList;
-
     /** (Optional) Contains a "status_list" as defined in IETF draft-ietf-oauth-status-list-20. */
-    private EAARevocationList statusList;
+    private EAAStatusList statusList;
 
     /* ETSI technical claims */
 
@@ -142,52 +139,16 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
     }
 
     @Override
-    public EAARevocationList getIdentifierList() {
-        return identifierList;
-    }
-
-    /**
-     * Sets the identifier_list
-     *
-     * @param identifierList {@link EAARevocationList}
-     */
-    public void setIdentifierList(EAARevocationList identifierList) {
-        this.identifierList = identifierList;
-    }
-
-    /**
-     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the identifier_list
-     * @param url {@link String} where the identifier_list can be accessed from
-     */
-    public void setIdentifierList(int index, String url) {
-        this.identifierList = new EAARevocationList(index, url);
-    }
-
-    /**
-     * Sets the identifier_list, by specifying an index of the EAA and a status distribution URL
-     *
-     * @param index integer representing an EAA identifier within the identifier_list
-     * @param url {@link String} where the identifier_list can be accessed from
-     * @param certificateToken {@link CertificateToken} containing the public key that signed or sealed
-     *                         the top-level certificate in the x5chain element in the MSO revocation list structure
-     */
-    public void setIdentifierList(int index, String url, CertificateToken certificateToken) {
-        this.identifierList = new EAARevocationList(index, url, certificateToken);
-    }
-
-    @Override
-    public EAARevocationList getStatusList() {
+    public EAAStatusList getStatusList() {
         return statusList;
     }
 
     /**
      * Sets the status_list
      *
-     * @param statusList {@link EAARevocationList}
+     * @param statusList {@link EAAStatusList}
      */
-    public void setStatusList(EAARevocationList statusList) {
+    public void setStatusList(EAAStatusList statusList) {
         this.statusList = statusList;
     }
 
@@ -198,7 +159,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
      * @param url {@link String} where the status_list can be accessed from
      */
     public void setStatusList(int index, String url) {
-        this.statusList = new EAARevocationList(index, url);
+        this.statusList = new EAAStatusList(index, url);
     }
 
     /**
@@ -210,7 +171,7 @@ public abstract class AbstractEAAPayloadParameters implements EAAPayloadParamete
      *                         the top-level certificate in the x5chain element in the MSO revocation list structure
      */
     public void setStatusList(int index, String url, CertificateToken certificateToken) {
-        this.statusList = new EAARevocationList(index, url, certificateToken);
+        this.statusList = new EAAStatusList(index, url, certificateToken);
     }
 
     @Override

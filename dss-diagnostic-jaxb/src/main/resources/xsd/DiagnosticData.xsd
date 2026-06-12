@@ -1971,7 +1971,7 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="StatusList" type="StatusListClaim" minOccurs="0" />
-					<xs:element name="IdentifierList" type="StatusListClaim" minOccurs="0" />
+					<xs:element name="IdentifierList" type="IdentifierListClaim" minOccurs="0" />
 					<xs:element name="Index" type="Claim" minOccurs="0" />
 					<xs:element name="Uri" type="Claim" minOccurs="0" />
 					<xs:element name="Type" type="Claim" minOccurs="0" />
@@ -1986,6 +1986,18 @@
 			<xs:extension base="Claim">
 				<xs:sequence>
 					<xs:element name="Index" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Certificate" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="IdentifierListClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Identifier" type="Claim" minOccurs="0" />
 					<xs:element name="Uri" type="Claim" minOccurs="0" />
 					<xs:element name="Certificate" type="Claim" minOccurs="0" />
 				</xs:sequence>
