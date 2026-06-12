@@ -574,7 +574,7 @@
 	</xsl:template>
 
 	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:Expiration|dss:UpdatedAt
-			|dss:NextUpdate|dss:Category|dss:MetadataType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
+			|dss:NextUpdate|dss:Category|dss:VerifiableCredentialsType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
 			|dss:Nonce|dss:Version|dss:DocType|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
 			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
 			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
@@ -607,7 +607,7 @@
 				<xsl:when test="name() = 'UpdatedAt'">Update time</xsl:when>
 				<xsl:when test="name() = 'NextUpdate'">Next update time</xsl:when>
 				<xsl:when test="name() = 'Category'">Category</xsl:when>
-				<xsl:when test="name() = 'MetadataType'">Metadata type</xsl:when>
+				<xsl:when test="name() = 'VerifiableCredentialsType'">Verifiable credentials type</xsl:when>
 				<xsl:when test="name() = 'StatusIndex'">Status index</xsl:when>
 				<xsl:when test="name() = 'StatusUri'">Status URI</xsl:when>
 				<xsl:when test="name() = 'StatusType'">Status type</xsl:when>

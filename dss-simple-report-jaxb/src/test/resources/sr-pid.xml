@@ -44,7 +44,7 @@
             <Subject name="sub">user_42</Subject>
             <IssuedAt name="iat">2023-05-02T04:00:00Z</IssuedAt>
             <Expiration name="exp">2029-09-01T23:33:20Z</Expiration>
-            <MetadataType name="vct">urn:eudi:pid:1</MetadataType>
+            <VerifiableCredentialsType name="vct">urn:eudi:pid:1</VerifiableCredentialsType>
             <GivenName name="given_name">John</GivenName>
             <FamilyName name="family_name">Doe</FamilyName>
             <AddressCity name="address/locality">Anytown</AddressCity>

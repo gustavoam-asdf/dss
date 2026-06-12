@@ -95,9 +95,9 @@ class SDJWTCompactEAAPresentationWithMetadataValidationTest extends AbstractSDJW
         assertEquals("user_42", eaa.getEAASubject());
         assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAAExpiration());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
-        assertEquals("urn:eudi:pid:1", eaa.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
-        assertEquals("1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=", Utils.toBase64(eaa.getEAAMetadataIntegrityBytes()));
+        assertEquals("urn:eudi:pid:1", eaa.getEAAVerifiableCredentialsTypeUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+        assertEquals("1odmyxoVQCuQx8SAym8rWHXba41fM/Iv/V1H8VHGN00=", Utils.toBase64(eaa.getEAAVerifiableCredentialsTypeIntegrityBytes()));
 
         List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);

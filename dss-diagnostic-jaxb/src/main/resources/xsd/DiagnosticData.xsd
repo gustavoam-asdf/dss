@@ -1793,7 +1793,7 @@
 			<xs:element name="Expiration" type="Claim" minOccurs="0" />
 			<xs:element name="UpdatedAt" type="Claim" minOccurs="0" />
 			<xs:element name="Category" type="Claim" minOccurs="0" />
-			<xs:element name="MetadataType" type="MetadataTypeClaim" minOccurs="0" />
+			<xs:element name="VerifiableCredentialsType" type="VerifiableCredentialsTypeClaim" minOccurs="0" />
 			<xs:element name="Status" type="StatusClaim" minOccurs="0" />
 			<xs:element name="Nonce" type="Claim" minOccurs="0" />
 			<xs:element name="DeviceKey" type="DeviceKeyClaim" minOccurs="0" />
@@ -1945,7 +1945,7 @@
 	</xs:complexType>
 
 	<!-- Verifiable Credential Type -->
-	<xs:complexType name="MetadataTypeClaim">
+	<xs:complexType name="VerifiableCredentialsTypeClaim">
 		<xs:complexContent>
 			<xs:extension base="Claim">
 				<xs:sequence>

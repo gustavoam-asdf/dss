@@ -128,12 +128,12 @@ public class MdocEAAPayload extends MdocClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getMetadataType() {
+    public ClaimString getVerifiableCredentialsType() {
         return null;
     }
 
     @Override
-    public ClaimIntegrity getMetadataIntegrity() {
+    public ClaimIntegrity getVerifiableCredentialsTypeIntegrity() {
         return null;
     }
 

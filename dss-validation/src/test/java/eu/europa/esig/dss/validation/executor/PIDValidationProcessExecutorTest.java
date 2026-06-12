@@ -321,7 +321,7 @@ class PIDValidationProcessExecutorTest extends AbstractTestValidationExecutor {
         assertNotNull(diagnosticData);
 
         eu.europa.esig.dss.diagnostic.jaxb.XmlEAA eaa = diagnosticData.getEAAs().get(0);
-        eaa.getEAAPayload().getMetadataType().setText("urn:none:eu:pid:1");
+        eaa.getEAAPayload().getVerifiableCredentialsType().setText("urn:none:eu:pid:1");
 
         EAAPresentationProcessExecutor executor = new EAAPresentationProcessExecutor();
         executor.setDiagnosticData(diagnosticData);

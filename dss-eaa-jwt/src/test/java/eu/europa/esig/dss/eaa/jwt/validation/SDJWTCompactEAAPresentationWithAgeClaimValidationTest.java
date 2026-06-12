@@ -97,9 +97,9 @@ class SDJWTCompactEAAPresentationWithAgeClaimValidationTest extends AbstractSDJW
         assertEquals(DSSUtils.parseRFCDate("2029-09-01T23:33:20Z"), eaa.getEAAExpiration());
         assertEquals(DSSUtils.parseRFCDate("2023-05-02T04:00:00Z"), eaa.getEAAIssuedAt());
 
-        assertEquals("urn:eudi:eaa:1", eaa.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
-        assertNotNull(eaa.getEAAMetadataIntegrityBytes());
+        assertEquals("urn:eudi:eaa:1", eaa.getEAAVerifiableCredentialsTypeUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+        assertNotNull(eaa.getEAAVerifiableCredentialsTypeIntegrityBytes());
 
         List<ClaimWrapper> payloadClaims = eaa.getAllEAAPayloadClaims();
         assertNotNull(payloadClaims);

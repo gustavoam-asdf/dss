@@ -113,12 +113,12 @@ public class SDJWTPayload extends SDJWTClaimMap implements EAAPayload {
     }
 
     @Override
-    public ClaimString getMetadataType() {
+    public ClaimString getVerifiableCredentialsType() {
         return getAsString(SDJWTConstants.VERIFIABLE_CREDENTIALS_TYPE);
     }
 
     @Override
-    public ClaimIntegrity getMetadataIntegrity() {
+    public ClaimIntegrity getVerifiableCredentialsTypeIntegrity() {
         ClaimString metadataIntegrity = getAsString(SDJWTConstants.VERIFIABLE_CREDENTIALS_INTEGRITY);
         if (metadataIntegrity != null) {
             return new SDJWTClaimIntegrity(metadataIntegrity);

@@ -46,9 +46,9 @@
                 <Expiration name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
                 </Expiration>
-                <MetadataType name="vct">
+                <VerifiableCredentialsType name="vct">
                     <Text>urn:eudi:pid:1</Text>
-                </MetadataType>
+                </VerifiableCredentialsType>
                 <DeviceKey name="cnf">
                     <Entry name="jwk">
                         <Entry name="kty">

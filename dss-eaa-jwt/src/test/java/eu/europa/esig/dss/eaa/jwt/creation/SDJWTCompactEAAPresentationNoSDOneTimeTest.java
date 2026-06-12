@@ -68,9 +68,9 @@ class SDJWTCompactEAAPresentationNoSDOneTimeTest extends AbstractSDJWTEAAPresent
         super.checkClaims(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
-        assertEquals("urn:eudi:eaa:1", eaa.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
-        assertArrayEquals(DSSUtils.digest(DigestAlgorithm.SHA256, "vct".getBytes()), eaa.getEAAMetadataIntegrityBytes());
+        assertEquals("urn:eudi:eaa:1", eaa.getEAAVerifiableCredentialsTypeUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+        assertArrayEquals(DSSUtils.digest(DigestAlgorithm.SHA256, "vct".getBytes()), eaa.getEAAVerifiableCredentialsTypeIntegrityBytes());
         assertEquals(DSSUtils.formatDateToRFC(getSignatureParameters().bLevel().getSigningDate()), DSSUtils.formatDateToRFC(eaa.getEAANotBefore()));
         assertEquals(DSSUtils.formatDateToRFC(getSigningCert().getNotAfter()), DSSUtils.formatDateToRFC(eaa.getEAAExpiration()));
         assertEquals("EAA provider", eaa.getEAAIssuer());

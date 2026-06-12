@@ -402,8 +402,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link String}
      */
-    public String getEAAMetadataUri() {
-        return getPayloadClaimTextValue(getEAAPayload().getEAAMetadataType());
+    public String getEAAVerifiableCredentialsTypeUri() {
+        return getPayloadClaimTextValue(getEAAPayload().getEAAVerifiableCredentialsType());
     }
 
     /**
@@ -411,10 +411,10 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return {@link DigestAlgorithm}
      */
-    public DigestAlgorithm getEAAMetadataIntegrityDigestAlgorithm() {
-        IntegrityClaimWrapper eaaMetadataIntegrity = getEAAPayload().getEAAMetadataIntegrity();
-        if (eaaMetadataIntegrity != null) {
-            return eaaMetadataIntegrity.getDigestAlgorithm();
+    public DigestAlgorithm getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm() {
+        IntegrityClaimWrapper eaaVerifiableCredentialsTypeIntegrity = getEAAPayload().getEAAVerifiableCredentialsTypeIntegrity();
+        if (eaaVerifiableCredentialsTypeIntegrity != null) {
+            return eaaVerifiableCredentialsTypeIntegrity.getDigestAlgorithm();
         }
         return null;
     }
@@ -424,10 +424,10 @@ public class EAAWrapper extends AbstractTokenProxy {
      *
      * @return byte array representing the EAA's metadata hash
      */
-    public byte[] getEAAMetadataIntegrityBytes() {
-        IntegrityClaimWrapper eaaMetadataIntegrity = getEAAPayload().getEAAMetadataIntegrity();
-        if (eaaMetadataIntegrity != null) {
-            return eaaMetadataIntegrity.getDigestValue();
+    public byte[] getEAAVerifiableCredentialsTypeIntegrityBytes() {
+        IntegrityClaimWrapper eaaVerifiableCredentialsTypeIntegrity = getEAAPayload().getEAAVerifiableCredentialsTypeIntegrity();
+        if (eaaVerifiableCredentialsTypeIntegrity != null) {
+            return eaaVerifiableCredentialsTypeIntegrity.getDigestValue();
         }
         return null;
     }

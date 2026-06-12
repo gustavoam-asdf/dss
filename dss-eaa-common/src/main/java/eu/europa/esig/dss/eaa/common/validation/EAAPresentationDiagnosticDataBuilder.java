@@ -32,7 +32,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
@@ -336,7 +336,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         xmlEAAPayload.setIssuedAt(getXmlClaim(eaaPayload.getIssuedAtTime(), supportedClaims));
         xmlEAAPayload.setUpdatedAt(getXmlClaim(eaaPayload.getUpdatedAtTime(), supportedClaims));
         xmlEAAPayload.setCategory(getXmlClaim(eaaPayload.getCategory(), supportedClaims));
-        xmlEAAPayload.setMetadataType(getXmlMetadataType(eaaPayload, supportedClaims));
+        xmlEAAPayload.setVerifiableCredentialsType(getXmlVerifiableCredentialsType(eaaPayload, supportedClaims));
         xmlEAAPayload.setStatus(getXmlStatus(eaaPayload.getStatus(), supportedClaims));
         xmlEAAPayload.setNonce(getXmlClaim(eaaPayload.getNonce(), supportedClaims));
         xmlEAAPayload.setDeviceKey(getXmlDeviceKeyClaim(eaaPayload.getDeviceKey(), supportedClaims));
@@ -499,14 +499,14 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return null;
     }
 
-    private XmlMetadataTypeClaim getXmlMetadataType(EAAPayload eaaPayload, List<XmlClaim> supportedClaims) {
-        ClaimString metadata = eaaPayload.getMetadataType();
+    private XmlVerifiableCredentialsTypeClaim getXmlVerifiableCredentialsType(EAAPayload eaaPayload, List<XmlClaim> supportedClaims) {
+        ClaimString metadata = eaaPayload.getVerifiableCredentialsType();
         if (metadata != null) {
-            XmlMetadataTypeClaim xmlMetadataType = getXmlClaim(metadata, new XmlMetadataTypeClaim(), supportedClaims);
-            if (eaaPayload.getMetadataIntegrity() != null) {
-                xmlMetadataType.setIntegrity(getXmlIntegrityClaim(eaaPayload.getMetadataIntegrity(), supportedClaims));
+            XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsType = getXmlClaim(metadata, new XmlVerifiableCredentialsTypeClaim(), supportedClaims);
+            if (eaaPayload.getVerifiableCredentialsTypeIntegrity() != null) {
+                xmlVerifiableCredentialsType.setIntegrity(getXmlIntegrityClaim(eaaPayload.getVerifiableCredentialsTypeIntegrity(), supportedClaims));
             }
-            return xmlMetadataType;
+            return xmlVerifiableCredentialsType;
         }
         return null;
     }

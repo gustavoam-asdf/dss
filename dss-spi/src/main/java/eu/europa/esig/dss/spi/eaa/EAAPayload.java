@@ -101,14 +101,14 @@ public interface EAAPayload extends Claim {
      *
      * @return {@link ClaimString}
      */
-    ClaimString getMetadataType();
+    ClaimString getVerifiableCredentialsType();
 
     /**
      * Gets the EAA's Metadata integrity claim, when present
      *
      * @return {@link Claim}
      */
-    ClaimIntegrity getMetadataIntegrity();
+    ClaimIntegrity getVerifiableCredentialsTypeIntegrity();
 
     /**
      * Gets the EAA's Status value, when present

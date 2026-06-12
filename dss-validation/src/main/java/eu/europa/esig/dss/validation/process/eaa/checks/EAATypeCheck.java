@@ -36,7 +36,7 @@ public class EAATypeCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
     protected boolean process() {
         switch (eaa.getEAAType()) {
             case SD_JWT_VC:
-                return processValueCheck(eaa.getEAAMetadataUri());
+                return processValueCheck(eaa.getEAAVerifiableCredentialsTypeUri());
             case ISO_IEC_MDOC:
                 String docType = eaa.getEAADocumentType();
                 if (docType == null) {

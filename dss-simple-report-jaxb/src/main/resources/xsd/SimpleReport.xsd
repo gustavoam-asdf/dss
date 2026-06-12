@@ -410,7 +410,7 @@
 			<xs:element name="UpdatedAt" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="NextUpdate" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="Category" type="DisclosableClaim" minOccurs="0" />
-			<xs:element name="MetadataType" type="DisclosableClaim" minOccurs="0" />
+			<xs:element name="VerifiableCredentialsType" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusIndex" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusUri" type="DisclosableClaim" minOccurs="0" />
 			<xs:element name="StatusType" type="DisclosableClaim" minOccurs="0" />

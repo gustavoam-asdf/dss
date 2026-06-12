@@ -33,7 +33,7 @@ public class EAATypeIntegrityPresentCheck extends ChainItem<XmlSAV> {
 
     @Override
     protected boolean process() {
-        return eaa.getEAAMetadataIntegrityDigestAlgorithm() != null && eaa.getEAAMetadataIntegrityBytes() != null;
+        return eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm() != null && eaa.getEAAVerifiableCredentialsTypeIntegrityBytes() != null;
     }
 
     @Override

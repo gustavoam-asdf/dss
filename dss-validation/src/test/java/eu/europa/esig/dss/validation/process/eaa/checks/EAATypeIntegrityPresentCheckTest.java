@@ -7,7 +7,7 @@ import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
@@ -31,13 +31,13 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1");
         XmlIntegrityClaim xmlIntegrityClaim = new XmlIntegrityClaim();
         xmlIntegrityClaim.setDigestMethod(DigestAlgorithm.SHA256);
         xmlIntegrityClaim.setDigestValue("test".getBytes());
-        xmlMetadataTypeClaim.setIntegrity(xmlIntegrityClaim);
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        xmlVerifiableCredentialsTypeClaim.setIntegrity(xmlIntegrityClaim);
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlSAV result = new XmlSAV();
@@ -59,8 +59,8 @@ class EAATypeIntegrityPresentCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlSAV result = new XmlSAV();

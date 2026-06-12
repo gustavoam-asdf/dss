@@ -6,7 +6,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationPIDQualificationProce
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlMetadataTypeClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.enumerations.Level;
 import eu.europa.esig.dss.policy.LevelConstraintWrapper;
@@ -29,9 +29,9 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
@@ -53,9 +53,9 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:eudi:pid:1:de");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1:de");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
@@ -77,9 +77,9 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.SD_JWT_VC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("urn:zzdi:pid:1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:zzdi:pid:1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();
@@ -161,9 +161,9 @@ class PIDDocumentTypeAcceptableCheckTest extends AbstractTestCheck {
         XmlEAA xmlEAA = new XmlEAA();
         xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
         XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
-        XmlMetadataTypeClaim xmlMetadataTypeClaim = new XmlMetadataTypeClaim();
-        xmlMetadataTypeClaim.setText("eu.europa.ec.eudi.pid.1");
-        xmlEAAPayload.setMetadataType(xmlMetadataTypeClaim);
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("eu.europa.ec.eudi.pid.1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
         xmlEAA.setEAAPayload(xmlEAAPayload);
 
         XmlValidationPIDQualificationProcess result = new XmlValidationPIDQualificationProcess();

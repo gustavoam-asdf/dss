@@ -169,14 +169,14 @@ public abstract class AbstractSDJWTEAAPresentationTestIssuance extends AbstractE
             // TODO : not yet supported
             assertEquals(0, Utils.collectionSize(eaa.getEAADeviceCertificateKIDs()));
 
-            assertEquals(getPayloadParameters().getVerifiableCredentialsType(), eaa.getEAAMetadataUri());
+            assertEquals(getPayloadParameters().getVerifiableCredentialsType(), eaa.getEAAVerifiableCredentialsTypeUri());
 
             if (getPayloadParameters().getVerifiableCredentialsTypeIntegrity() != null) {
-                assertEquals(getPayloadParameters().getVerifiableCredentialsTypeIntegrity().getAlgorithm(), eaa.getEAAMetadataIntegrityDigestAlgorithm());
-                assertArrayEquals(getPayloadParameters().getVerifiableCredentialsTypeIntegrity().getValue(), eaa.getEAAMetadataIntegrityBytes());
+                assertEquals(getPayloadParameters().getVerifiableCredentialsTypeIntegrity().getAlgorithm(), eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+                assertArrayEquals(getPayloadParameters().getVerifiableCredentialsTypeIntegrity().getValue(), eaa.getEAAVerifiableCredentialsTypeIntegrityBytes());
             } else {
-                assertNull(eaa.getEAAMetadataIntegrityDigestAlgorithm());
-                assertNull(eaa.getEAAMetadataIntegrityBytes());
+                assertNull(eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+                assertNull(eaa.getEAAVerifiableCredentialsTypeIntegrityBytes());
             }
 
             assertEquals(getPayloadParameters().getDigestAlgorithm(), eaa.getSelectiveDisclosuresDigestAlgorithm());

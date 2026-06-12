@@ -71,14 +71,14 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
 
     private boolean checkVCTPresent() {
         if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
-            return eaa.getEAAMetadataUri() != null;
+            return eaa.getEAAVerifiableCredentialsTypeUri() != null;
         }
         return true;
     }
 
     private boolean checkVCTIntegrityPresent() {
         if (EAAType.SD_JWT_VC.equals(eaa.getEAAType())) {
-            return eaa.getEAAMetadataIntegrityBytes() != null;
+            return eaa.getEAAVerifiableCredentialsTypeIntegrityBytes() != null;
         }
         return true;
     }

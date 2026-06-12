@@ -164,9 +164,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public ClaimWrapper getEAAMetadataType() {
-        if (xmlEAAPayload != null && xmlEAAPayload.getMetadataType() != null) {
-            return getClaim(xmlEAAPayload.getMetadataType());
+    public ClaimWrapper getEAAVerifiableCredentialsType() {
+        if (xmlEAAPayload != null && xmlEAAPayload.getVerifiableCredentialsType() != null) {
+            return getClaim(xmlEAAPayload.getVerifiableCredentialsType());
         }
         return null;
     }
@@ -176,9 +176,9 @@ public class EAAPayloadProxy {
      *
      * @return {@link ClaimWrapper}
      */
-    public IntegrityClaimWrapper getEAAMetadataIntegrity() {
-        if (xmlEAAPayload != null && xmlEAAPayload.getMetadataType() != null) {
-            return getIntegrityClaim(xmlEAAPayload.getMetadataType().getIntegrity());
+    public IntegrityClaimWrapper getEAAVerifiableCredentialsTypeIntegrity() {
+        if (xmlEAAPayload != null && xmlEAAPayload.getVerifiableCredentialsType() != null) {
+            return getIntegrityClaim(xmlEAAPayload.getVerifiableCredentialsType().getIntegrity());
         }
         return null;
     }
@@ -1381,10 +1381,10 @@ public class EAAPayloadProxy {
         if (xmlEAAPayload.getCategory() != null) {
             claimList.add(getClaim(xmlEAAPayload.getCategory()));
         }
-        if (xmlEAAPayload.getMetadataType() != null) {
-            claimList.add(getClaim(xmlEAAPayload.getMetadataType()));
-            if (xmlEAAPayload.getMetadataType().getIntegrity() != null) {
-                claimList.add(getIntegrityClaim(xmlEAAPayload.getMetadataType().getIntegrity()));
+        if (xmlEAAPayload.getVerifiableCredentialsType() != null) {
+            claimList.add(getClaim(xmlEAAPayload.getVerifiableCredentialsType()));
+            if (xmlEAAPayload.getVerifiableCredentialsType().getIntegrity() != null) {
+                claimList.add(getIntegrityClaim(xmlEAAPayload.getVerifiableCredentialsType().getIntegrity()));
             }
         }
         if (xmlEAAPayload.getStatus() != null) {

@@ -146,9 +146,9 @@ class SDJWTCompactEAAPresentationWithDisclosuresValidationTest extends AbstractS
         assertTrue(eaa.getHolderPhoneNumberVerified());
         assertEquals(Arrays.asList("US", "DE"), eaa.getHolderNationalities());
 
-        assertEquals("urn:eudi:eaa:1", eaa.getEAAMetadataUri());
-        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAMetadataIntegrityDigestAlgorithm());
-        assertNotNull(eaa.getEAAMetadataIntegrityBytes());
+        assertEquals("urn:eudi:eaa:1", eaa.getEAAVerifiableCredentialsTypeUri());
+        assertEquals(DigestAlgorithm.SHA256, eaa.getEAAVerifiableCredentialsTypeIntegrityDigestAlgorithm());
+        assertNotNull(eaa.getEAAVerifiableCredentialsTypeIntegrityBytes());
 
         List<ClaimWrapper> selectivelyDisclosableClaims = eaa.getSelectivelyDisclosableClaims();
         assertEquals(10, selectivelyDisclosableClaims.size());

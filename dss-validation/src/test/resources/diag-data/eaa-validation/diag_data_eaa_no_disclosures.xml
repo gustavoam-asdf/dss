@@ -23,13 +23,13 @@
                 <Expiration name="exp">
                     <DateTime>2029-09-01T23:33:20Z</DateTime>
                 </Expiration>
-                <MetadataType name="vct">
+                <VerifiableCredentialsType name="vct">
                     <Text>nowina:lu:oid</Text>
                     <Integrity name="vct#integrity">
                         <DigestMethod>SHA256</DigestMethod>
                         <DigestValue>ztYSkjm28ZN3FjZBWKimYkC6XQGBqdyepA0cTMMhPPQ=</DigestValue>
                     </Integrity>
-                </MetadataType>
+                </VerifiableCredentialsType>
                 <Status name="status">
                     <StatusList name="status_list">
                         <Index name="index">

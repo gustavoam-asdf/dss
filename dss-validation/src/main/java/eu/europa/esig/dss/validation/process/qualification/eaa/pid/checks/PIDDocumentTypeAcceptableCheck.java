@@ -58,7 +58,7 @@ public class PIDDocumentTypeAcceptableCheck extends ChainItem<XmlValidationPIDQu
     private String getClaimedDocumentType() {
         switch (eaa.getEAAType()) {
             case SD_JWT_VC:
-                return eaa.getEAAMetadataUri();
+                return eaa.getEAAVerifiableCredentialsTypeUri();
             case ISO_IEC_MDOC:
                 // TODO : not clear what element is to be checked
                 /*
