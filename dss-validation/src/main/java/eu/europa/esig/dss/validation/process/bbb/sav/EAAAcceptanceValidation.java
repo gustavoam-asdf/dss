@@ -5,7 +5,7 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
-import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
+import eu.europa.esig.dss.diagnostic.EAARevocationWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.enumerations.EAAType;
@@ -16,7 +16,7 @@ import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
-import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAAStatusFoundCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.AcceptableEAARevocationFoundCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeExpirationDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativeIssuanceDatePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAAdministrativePeriodNotExpiredCheck;
@@ -30,21 +30,21 @@ import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingAuthorityRegis
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAIssuingCountryCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotBeforePresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAANotExpiredCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAANotOnHoldCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAANotRevokedCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAOneTimeUseCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAPseudonymUsageCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAARevocationAcceptableCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAARevocationAvailableCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAARevocationPresentCheck;
+import eu.europa.esig.dss.validation.process.eaa.checks.EAARevocationStatusKnownCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAAShortLivedCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAcceptableCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusAvailableCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusNotOnHoldCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusPresentCheck;
-import eu.europa.esig.dss.validation.process.eaa.checks.EAAStatusNotRevokedCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASubjectPseudonymCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAASupportedClaimsCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.EAATypeIntegrityPresentCheck;
 import eu.europa.esig.dss.validation.process.eaa.checks.ETSI194721ConformanceCheck;
-import eu.europa.esig.dss.validation.process.eaa.status.EAAStatusKnownCheck;
 
 import java.util.Date;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
     private final Map<String, XmlBasicBuildingBlocks> bbbs;
 
     /** Last acceptable EAA token status */
-    private EAAStatusWrapper lastAcceptableStatus;
+    private EAARevocationWrapper lastAcceptableStatus;
 
     /**
      * Default constructor
@@ -137,30 +137,30 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
 
             // TODO : make status check configurable ?
 
-            EAAStatusPresentCheck eaaStatusPresentCheck = statusPresent();
+            EAARevocationPresentCheck EAARevocationPresentCheck = statusPresent();
 
-            item = item.setNextItem(eaaStatusPresentCheck);
+            item = item.setNextItem(EAARevocationPresentCheck);
 
-            if (eaaStatusPresentCheck.process()) {
+            if (EAARevocationPresentCheck.process()) {
 
                 item = item.setNextItem(statusAvailable());
 
                 // TODO : improve with EAA Status selector ?
                 lastAcceptableStatus = null;
-                for (EAAStatusWrapper eaaStatusWrapper : token.getEAAStatuses()) {
+                for (EAARevocationWrapper EAARevocationWrapper : token.getEAARevocations()) {
 
-                    XmlBasicBuildingBlocks eaaStatusBBB = bbbs.get(eaaStatusWrapper.getId());
-                    if (eaaStatusBBB == null) {
-                        throw new IllegalStateException(String.format("No BasicBuildingBlock found for token with Id '%s'", eaaStatusWrapper.getId()));
+                    XmlBasicBuildingBlocks EAARevocationBBB = bbbs.get(EAARevocationWrapper.getId());
+                    if (EAARevocationBBB == null) {
+                        throw new IllegalStateException(String.format("No BasicBuildingBlock found for token with Id '%s'", EAARevocationWrapper.getId()));
                     }
 
-                    item = item.setNextItem(statusKnown(eaaStatusWrapper));
+                    item = item.setNextItem(statusKnown(EAARevocationWrapper));
 
-                    item = item.setNextItem(statusAcceptable(eaaStatusWrapper, eaaStatusBBB.getConclusion()));
+                    item = item.setNextItem(statusAcceptable(EAARevocationWrapper, EAARevocationBBB.getConclusion()));
 
-                    if (isValidConclusion(eaaStatusBBB.getConclusion())) {
-                        if (lastAcceptableStatus == null || lastAcceptableStatus.getIssuedAt().before(eaaStatusWrapper.getIssuedAt())) {
-                            lastAcceptableStatus = eaaStatusWrapper;
+                    if (isValidConclusion(EAARevocationBBB.getConclusion())) {
+                        if (lastAcceptableStatus == null || lastAcceptableStatus.getIssuedAt().before(EAARevocationWrapper.getIssuedAt())) {
+                            lastAcceptableStatus = EAARevocationWrapper;
                         }
                     }
 
@@ -278,38 +278,38 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new EAAIssuingAuthorityRegistrationIdentifierCheck(i18nProvider, result, token, constraint);
     }
 
-    private EAAStatusPresentCheck statusPresent() {
-        LevelRule constraint = validationPolicy.getEAAStatusPresentConstraint();
-        return new EAAStatusPresentCheck(i18nProvider, result, token, constraint);
+    private EAARevocationPresentCheck statusPresent() {
+        LevelRule constraint = validationPolicy.getEAARevocationPresentConstraint();
+        return new EAARevocationPresentCheck(i18nProvider, result, token, constraint);
     }
 
     private ChainItem<XmlSAV> statusAvailable() {
-        LevelRule constraint = validationPolicy.getEAAStatusAvailableConstraint();
-        return new EAAStatusAvailableCheck(i18nProvider, result, token, constraint);
+        LevelRule constraint = validationPolicy.getEAARevocationAvailableConstraint();
+        return new EAARevocationAvailableCheck(i18nProvider, result, token, constraint);
     }
 
-    private ChainItem<XmlSAV> statusKnown(EAAStatusWrapper eaaStatusWrapper) {
-        LevelRule constraint = validationPolicy.getEAAStatusUnknownStatusConstraint();
-        return new EAAStatusKnownCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    private ChainItem<XmlSAV> statusKnown(EAARevocationWrapper EAARevocationWrapper) {
+        LevelRule constraint = validationPolicy.getEAARevocationUnknownStatusConstraint();
+        return new EAARevocationStatusKnownCheck(i18nProvider, result, EAARevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> statusAcceptable(EAAStatusWrapper eaaStatusWrapper, XmlConclusion xmlConclusion) {
-        return new EAAStatusAcceptableCheck(i18nProvider, result, eaaStatusWrapper, xmlConclusion, getWarnLevelRule());
+    private ChainItem<XmlSAV> statusAcceptable(EAARevocationWrapper EAARevocationWrapper, XmlConclusion xmlConclusion) {
+        return new EAARevocationAcceptableCheck(i18nProvider, result, EAARevocationWrapper, xmlConclusion, getWarnLevelRule());
     }
 
-    private ChainItem<XmlSAV> acceptableStatusFound(EAAStatusWrapper acceptableEAAStatusWrapper) {
-        LevelRule constraint = validationPolicy.getEAAStatusAvailableConstraint();
-        return new AcceptableEAAStatusFoundCheck(i18nProvider, result, acceptableEAAStatusWrapper, constraint);
+    private ChainItem<XmlSAV> acceptableStatusFound(EAARevocationWrapper acceptableEAARevocationWrapper) {
+        LevelRule constraint = validationPolicy.getEAARevocationAvailableConstraint();
+        return new AcceptableEAARevocationFoundCheck(i18nProvider, result, acceptableEAARevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> notRevoked(EAAStatusWrapper eaaStatusWrapper) {
-        LevelRule constraint = validationPolicy.getEAAStatusNotRevokedConstraint();
-        return new EAAStatusNotRevokedCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    private ChainItem<XmlSAV> notRevoked(EAARevocationWrapper EAARevocationWrapper) {
+        LevelRule constraint = validationPolicy.getEAARevocationNotRevokedConstraint();
+        return new EAANotRevokedCheck(i18nProvider, result, EAARevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> notOnHold(EAAStatusWrapper eaaStatusWrapper) {
-        LevelRule constraint = validationPolicy.getEAAStatusNotOnHoldConstraint();
-        return new EAAStatusNotOnHoldCheck(i18nProvider, result, eaaStatusWrapper, constraint);
+    private ChainItem<XmlSAV> notOnHold(EAARevocationWrapper EAARevocationWrapper) {
+        LevelRule constraint = validationPolicy.getEAARevocationNotOnHoldConstraint();
+        return new EAANotOnHoldCheck(i18nProvider, result, EAARevocationWrapper, constraint);
     }
 
     private ChainItem<XmlSAV> shortLived() {
@@ -339,7 +339,7 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
 
     @Override
     protected void collectMessages(XmlConclusion conclusion, XmlConstraint constraint) {
-        if (!MessageTag.EAA_STATUS_ACC.getId().equals(constraint.getName().getKey())) {
+        if (!MessageTag.EAA_REV_ACC.getId().equals(constraint.getName().getKey())) {
             super.collectMessages(conclusion, constraint);
         }
     }
@@ -352,8 +352,8 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
             XmlBasicBuildingBlocks tokenBBB = bbbs.get(lastAcceptableStatus.getId());
             collectAllMessages(conclusion, tokenBBB.getConclusion());
         } else {
-            for (EAAStatusWrapper eaaStatusWrapper : token.getEAAStatuses()) {
-                XmlBasicBuildingBlocks tokenBBB = bbbs.get(eaaStatusWrapper.getId());
+            for (EAARevocationWrapper EAARevocationWrapper : token.getEAARevocations()) {
+                XmlBasicBuildingBlocks tokenBBB = bbbs.get(EAARevocationWrapper.getId());
                 collectAllMessages(conclusion, tokenBBB.getConclusion());
             }
         }

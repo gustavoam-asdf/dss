@@ -3,13 +3,13 @@ package eu.europa.esig.dss.eaa.mdoc.pki;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.cwt.CWTClaims;
-import eu.europa.esig.dss.cbades.eaa.status.identifierlist.CWTIdentifierListClaims;
-import eu.europa.esig.dss.cbades.eaa.status.identifierlist.CWTIdentifierListValidator;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
-import eu.europa.esig.dss.eaa.common.AbstractPKIEAARevocationListSource;
+import eu.europa.esig.dss.eaa.common.pki.AbstractPKIEAARevocationListSource;
+import eu.europa.esig.dss.eaa.revocation.cwt.model.identifierlist.CWTIdentifierListClaims;
+import eu.europa.esig.dss.eaa.revocation.cwt.validation.identifierlist.CWTIdentifierListValidator;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
-import eu.europa.esig.dss.enumerations.EAAStatusOrigin;
+import eu.europa.esig.dss.enumerations.EAARevocationOrigin;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -21,8 +21,7 @@ import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.eaa.EAA;
-import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
-import eu.europa.esig.dss.spi.eaa.status.identifierlist.IdentifierListValidator;
+import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -87,7 +86,7 @@ public class PKICWTIdentifierListSource extends AbstractPKIEAARevocationListSour
     }
 
     @Override
-    public EAAStatusToken getEAAStatus(EAA eaa) {
+    public EAARevocationToken getEAARevocation(EAA eaa) {
         if (eaa != null && eaa.getPayload() != null && eaa.getPayload().getStatus() != null
                 && eaa.getPayload().getStatus().getIdentifierList() != null) {
 
@@ -96,9 +95,9 @@ public class PKICWTIdentifierListSource extends AbstractPKIEAARevocationListSour
             ClaimByteString identifier = eaa.getPayload().getStatus().getIdentifierList().getIdentifier();
             ClaimString uri = eaa.getPayload().getStatus().getIdentifierList().getUri();
             if (identifier != null) {
-                EAAStatusToken statusToken = createValidator(DSSUtils.toByteArray(statusListToken))
-                        .getStatusToken(identifier.getBinaryValue());
-                statusToken.setOrigin(EAAStatusOrigin.EXTERNAL);
+                EAARevocationToken statusToken = createValidator(DSSUtils.toByteArray(statusListToken))
+                        .getRevocationToken(identifier.getBinaryValue());
+                statusToken.setOrigin(EAARevocationOrigin.EXTERNAL);
                 statusToken.setSourceURL(uri.getValueAsString());
                 statusToken.setRelatedEAA(eaa);
                 return statusToken;
@@ -107,7 +106,7 @@ public class PKICWTIdentifierListSource extends AbstractPKIEAARevocationListSour
         return null;
     }
 
-    protected IdentifierListValidator createValidator(byte[] statusListToken) {
+    protected CWTIdentifierListValidator createValidator(byte[] statusListToken) {
         return new CWTIdentifierListValidator(statusListToken);
     }
 

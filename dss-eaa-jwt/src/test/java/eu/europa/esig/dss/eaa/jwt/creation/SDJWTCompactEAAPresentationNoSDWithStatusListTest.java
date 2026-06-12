@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
+import eu.europa.esig.dss.diagnostic.EAARevocationWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.jwt.pki.PKIJWTStatusListSource;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -9,7 +9,7 @@ import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class SDJWTCompactEAAPresentationNoSDWithStatusListTest extends AbstractS
     }
 
     @Override
-    protected EAAStatusSource getEAAStatusSource() {
+    protected EAARevocationSource getEAAStatusSource() {
         return new PKIJWTStatusListSource(getCertEntityRepository(), getCertEntity(GOOD_CA));
     }
 
@@ -48,7 +48,7 @@ public class SDJWTCompactEAAPresentationNoSDWithStatusListTest extends AbstractS
         super.checkEAAStatuses(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
-        List<EAAStatusWrapper> eaaStatuses = eaa.getEAAStatuses();
+        List<EAARevocationWrapper> eaaStatuses = eaa.getEAARevocations();
         assertEquals(1, eaaStatuses.size());
         assertEquals(EAAStatus.VALID, eaaStatuses.get(0).getStatus());
         assertEquals("application/statuslist+jwt", eaaStatuses.get(0).getType());

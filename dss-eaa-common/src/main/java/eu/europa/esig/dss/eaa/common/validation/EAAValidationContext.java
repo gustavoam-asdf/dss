@@ -2,8 +2,8 @@ package eu.europa.esig.dss.eaa.common.validation;
 
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.SignatureValidationContext;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * Performs validation of EAA tokens. During validation, retrieved the corresponding information,
- * including the data required for a signature validation, and/or EAA status verification.
+ * including the data required for a signature validation, and/or EAA revocation verification.
  */
 public class EAAValidationContext extends SignatureValidationContext {
 
@@ -34,12 +34,12 @@ public class EAAValidationContext extends SignatureValidationContext {
     /**
      * A set of EAAPresentation Status tokens to process
      */
-    private final Set<EAAStatusToken> processedEAAStatusTokens = new LinkedHashSet<>();
+    private final Set<EAARevocationToken> processedEAARevocationTokens = new LinkedHashSet<>();
 
     /**
      * Source used to verify status of the EAAPresentation
      */
-    private EAAStatusSource EAAStatusSource;
+    private EAARevocationSource EAARevocationSource;
 
     /**
      * Default constructor instantiating object with null or empty values and current time
@@ -60,10 +60,10 @@ public class EAAValidationContext extends SignatureValidationContext {
     /**
      * Sets the EAAStatusSource used for retrieving an information about a status of the EAAPresentations
      *
-     * @param EAAStatusSource {@link EAAStatusSource}
+     * @param EAARevocationSource {@link EAARevocationSource}
      */
-    public void setEAAStatusSource(EAAStatusSource EAAStatusSource) {
-        this.EAAStatusSource = EAAStatusSource;
+    public void setEAAStatusSource(EAARevocationSource EAARevocationSource) {
+        this.EAARevocationSource = EAARevocationSource;
     }
 
     /**
@@ -117,22 +117,22 @@ public class EAAValidationContext extends SignatureValidationContext {
     /**
      * Adds an {@code EAAStatusToken} to be verified
      *
-     * @param EAAStatusToken {@link EAAStatusToken}
+     * @param EAARevocationToken {@link EAARevocationToken}
      */
-    public void addEAAStatusTokenForVerification(final EAAStatusToken EAAStatusToken) {
-        if (EAAStatusToken == null) {
+    public void addEAAStatusTokenForVerification(final EAARevocationToken EAARevocationToken) {
+        if (EAARevocationToken == null) {
             return;
         }
 
-        addSignatureForVerification(EAAStatusToken.getSignature());
-        addDocumentCertificateSource(EAAStatusToken.getCertificateSource());
+        addSignatureForVerification(EAARevocationToken.getSignature());
+        addDocumentCertificateSource(EAARevocationToken.getCertificateSource());
 
-        final boolean added = processedEAAStatusTokens.add(EAAStatusToken);
+        final boolean added = processedEAARevocationTokens.add(EAARevocationToken);
         if (LOG.isTraceEnabled()) {
             if (added) {
-                LOG.trace("EAAPresentation Status Token added to processedEAAStatusTokens: {} ", EAAStatusToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation Status Token added to processedEAAStatusTokens: {} ", EAARevocationToken.getDSSIdAsString());
             } else {
-                LOG.trace("EAAPresentation already present processedEAAStatusTokens: {} ", EAAStatusToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation already present processedEAAStatusTokens: {} ", EAARevocationToken.getDSSIdAsString());
             }
         }
     }
@@ -158,7 +158,7 @@ public class EAAValidationContext extends SignatureValidationContext {
         }
 
         if (isEAAStatusCheckRequired(eaa)) {
-            if (EAAStatusSource == null) {
+            if (EAARevocationSource == null) {
                 LOG.info("No EAAStatusSource has been provided. EAAPresentation status check is skipped.");
                 return;
             }
@@ -166,13 +166,13 @@ public class EAAValidationContext extends SignatureValidationContext {
                 LOG.trace("EAAPresentation status check is in progress for EAAPresentation : {}", eaa.getId());
             }
 
-            EAAStatusToken EAAStatusToken = EAAStatusSource.getEAAStatus(eaa);
-            if (EAAStatusToken != null) {
+            EAARevocationToken EAARevocationToken = EAARevocationSource.getEAARevocation(eaa);
+            if (EAARevocationToken != null) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Obtained a new EAAPresentation Status token : {}, for EAAPresentation : {}",
-                            EAAStatusToken.getDSSIdAsString(), eaa.getId());
+                            EAARevocationToken.getDSSIdAsString(), eaa.getId());
                 }
-                addEAAStatusTokenForVerification(EAAStatusToken);
+                addEAAStatusTokenForVerification(EAARevocationToken);
             }
 
         } else if (LOG.isDebugEnabled()) {
@@ -206,22 +206,22 @@ public class EAAValidationContext extends SignatureValidationContext {
     /**
      * Gets a set of EAAPresentation Status Tokens validated by the context
      *
-     * @return a set of {@link EAAStatusToken}s
+     * @return a set of {@link EAARevocationToken}s
      */
-    public Set<EAAStatusToken> getProcessedEAAStatusTokens() {
-        return Collections.unmodifiableSet(processedEAAStatusTokens);
+    public Set<EAARevocationToken> getProcessedEAAStatusTokens() {
+        return Collections.unmodifiableSet(processedEAARevocationTokens);
     }
 
     @Override
     public Set<AdvancedSignature> getProcessedSignatures() {
-        // exclude EAA status list signatures
+        // exclude EAA revocation signatures
         Set<AdvancedSignature> processedSignatures = super.getProcessedSignatures();
-        if (Utils.isCollectionEmpty(processedEAAStatusTokens)) {
+        if (Utils.isCollectionEmpty(processedEAARevocationTokens)) {
             return processedSignatures;
         }
         final Set<AdvancedSignature> result = new HashSet<>();
         for (AdvancedSignature advancedSignature : processedSignatures) {
-            if (processedEAAStatusTokens.stream().noneMatch(t -> t.getSignature() != null
+            if (processedEAARevocationTokens.stream().noneMatch(t -> t.getSignature() != null
                     && advancedSignature.getId().equals(t.getSignature().getId()))) {
                 result.add(advancedSignature);
             }

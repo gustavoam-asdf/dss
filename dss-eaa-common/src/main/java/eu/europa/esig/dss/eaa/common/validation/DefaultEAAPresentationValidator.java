@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.enumerations.ValidationLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.eaa.EAAPresentationValidator;
@@ -66,8 +66,8 @@ public abstract class DefaultEAAPresentationValidator extends SignedDocumentVali
     }
 
     @Override
-    public void setEAAStatusSource(EAAStatusSource eaaStatusSource) {
-        getDocumentAnalyzer().setEAAStatusSource(eaaStatusSource);
+    public void setEAARevocationSource(EAARevocationSource eaaRevocationSource) {
+        getDocumentAnalyzer().setEAARevocationSource(eaaRevocationSource);
     }
 
     @Override

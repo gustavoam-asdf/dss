@@ -1805,11 +1805,11 @@ public interface ValidationPolicy {
 	MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint();
 
 	/**
-	 * Returns EAAStatusPresent constraint if present in the policy, null otherwise
+	 * Returns EAARevocationPresent constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelConstraint} if EAAStatusPresent element is present
+	 * @return {@code LevelConstraint} if EAARevocationPresent element is present
 	 */
-	LevelRule getEAAStatusPresentConstraint();
+	LevelRule getEAARevocationPresentConstraint();
 
 	/**
 	 * Returns EAAShortLived constraint if present in the policy, null otherwise
@@ -1847,32 +1847,32 @@ public interface ValidationPolicy {
 	MultiValuesRule getEAASupportedClaimsConstraint();
 
 	/**
-	 * Returns EAAStatusAvailable constraint if present in the policy, null otherwise
+	 * Returns EAARevocationAvailable constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if EAAStatusAvailable element is present
+	 * @return {@code LevelRule} if EAARevocationAvailable element is present
 	 */
-	LevelRule getEAAStatusAvailableConstraint();
+	LevelRule getEAARevocationAvailableConstraint();
 
 	/**
-	 * Returns AcceptableEAAStatusFound constraint if present in the policy, null otherwise
+	 * Returns AcceptableEAARevocationFound constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if AcceptableEAAStatusFound element is present
+	 * @return {@code LevelRule} if AcceptableEAARevocationFound element is present
 	 */
-	LevelRule getAcceptableEAAStatusFoundConstraint();
+	LevelRule getAcceptableEAARevocationFoundConstraint();
 
 	/**
 	 * Returns NotRevoked constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if NotRevoked element is present
 	 */
-	LevelRule getEAAStatusNotRevokedConstraint();
+	LevelRule getEAARevocationNotRevokedConstraint();
 
 	/**
 	 * Returns NotOnHold constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if NotOnHold element is present
 	 */
-	LevelRule getEAAStatusNotOnHoldConstraint();
+	LevelRule getEAARevocationNotOnHoldConstraint();
 
     /**
      * Returns EAAType constraint if present in the policy, null otherwise
@@ -1935,56 +1935,56 @@ public interface ValidationPolicy {
 	 *
 	 * @return {@code MultiValuesRule} if StatusTokenType element is present
 	 */
-	MultiValuesRule getEAAStatusTokenTypeConstraint();
+	MultiValuesRule getEAARevocationTokenTypeConstraint();
 
 	/**
 	 * Returns UnknownStatus constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if UnknownStatus element is present
 	 */
-	LevelRule getEAAStatusUnknownStatusConstraint();
+	LevelRule getEAARevocationUnknownStatusConstraint();
 
 	/**
 	 * Returns IssuanceTime constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if IssuanceTime element is present
 	 */
-	LevelRule getEAAStatusIssuanceTimeConstraint();
+	LevelRule getEAARevocationIssuanceTimeConstraint();
 
 	/**
 	 * Returns ExpirationTime constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if ExpirationTime element is present
 	 */
-	LevelRule getEAAStatusExpirationTimeConstraint();
+	LevelRule getEAARevocationExpirationTimeConstraint();
 
 	/**
 	 * Returns NotExpired constraint if present in the policy, null otherwise
 	 *
 	 * @return {@code LevelRule} if NotExpired element is present
 	 */
-	LevelRule getEAAStatusNotExpiredConstraint();
+	LevelRule getEAARevocationNotExpiredConstraint();
 
 	/**
-	 * Returns EAAStatusSubject constraint if present in the policy, null otherwise
+	 * Returns EAARevocationSubject constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code MultiValuesRule} if EAAStatusSubject element is present
+	 * @return {@code MultiValuesRule} if EAARevocationSubject element is present
 	 */
-	MultiValuesRule getEAAStatusSubjectConstraint();
+	MultiValuesRule getEAARevocationSubjectConstraint();
 
 	/**
-	 * Returns EAAStatusSubjectMatch constraint if present in the policy, null otherwise
+	 * Returns EAARevocationSubjectMatch constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if EAAStatusSubjectMatch element is present
+	 * @return {@code LevelRule} if EAARevocationSubjectMatch element is present
 	 */
-	LevelRule getEAAStatusSubjectMatchConstraint();
+	LevelRule getEAARevocationSubjectMatchConstraint();
 
 	/**
-	 * Returns EAAStatusTokenIssuerValidAtIssuanceTime constraint if present in the policy, null otherwise
+	 * Returns EAARevocationIssuerValidAtIssuanceTime constraint if present in the policy, null otherwise
 	 *
-	 * @return {@code LevelRule} if EAAStatusTokenIssuerValidAtIssuanceTime element is present
+	 * @return {@code LevelRule} if EAARevocationIssuerValidAtIssuanceTime element is present
 	 */
-	LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint();
+	LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint();
 
 
 	/* Article 32 */

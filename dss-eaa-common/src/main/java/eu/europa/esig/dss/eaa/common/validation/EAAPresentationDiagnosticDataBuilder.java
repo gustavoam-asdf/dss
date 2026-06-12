@@ -23,8 +23,8 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAADocument;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatusToken;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationStatus;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASubject;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlFoundCertificates;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIdentifierListClaim;
@@ -69,7 +69,7 @@ import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPayload;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
+import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
@@ -97,8 +97,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     /** The EAA presentation */
     protected EAAPresentation eaaPresentation;
 
-    /** Collection of EAA status tokens acquired during the validation */
-    protected Collection<EAAStatusToken> eaaStatusTokens;
+    /** Collection of EAA revocation tokens acquired during the validation */
+    protected Collection<EAARevocationToken> eaaRevocationTokens;
 
     /** Builder used to build a signature object */
     private SignedDocumentDiagnosticDataBuilder signatureDiagnosticDataBuilder;
@@ -106,8 +106,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     /** The cached map of EAAs */
     protected Map<String, XmlEAA> xmlEAAMap = new HashMap<>();
 
-    /** The cached map of EAA status tokens */
-    protected Map<String, XmlEAAStatusToken> xmlEAAStatusTokenMap = new HashMap<>();
+    /** The cached map of EAA revocation tokens */
+    protected Map<String, XmlEAARevocationToken> xmlEAARevocationTokenMap = new HashMap<>();
 
     /**
      * Default constructor
@@ -128,13 +128,13 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     /**
-     * Sets found EAA status tokens
+     * Sets found EAA revocation tokens
      *
-     * @param eaaStatusTokens a collection of {@code EAAStatusToken}s
+     * @param eaaRevocationTokens a collection of {@code EAAStatusToken}s
      * @return this builder
      */
-    public EAAPresentationDiagnosticDataBuilder foundEAAStatusTokens(Collection<EAAStatusToken> eaaStatusTokens) {
-        this.eaaStatusTokens = eaaStatusTokens;
+    public EAAPresentationDiagnosticDataBuilder foundEAAStatusTokens(Collection<EAARevocationToken> eaaRevocationTokens) {
+        this.eaaRevocationTokens = eaaRevocationTokens;
         return this;
     }
 
@@ -158,8 +158,8 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
             Collection<XmlEAA> xmlEAAs = buildXmlEAA(eaas);
             xmlDiagnosticData.getEAAs().addAll(xmlEAAs);
 
-            if (Utils.isCollectionNotEmpty(eaaStatusTokens)) {
-                xmlDiagnosticData.getUsedEAAStatusTokens().addAll(buildXmlEAAStatusTokens(eaaStatusTokens));
+            if (Utils.isCollectionNotEmpty(eaaRevocationTokens)) {
+                xmlDiagnosticData.getUsedEAARevocationTokens().addAll(buildXmlEAARevocationTokens(eaaRevocationTokens));
                 linkEAAAndStatuses(eaaPresentation.getElectronicAttestationsOfAttributes());
             }
         }
@@ -1054,99 +1054,99 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         return signatureDiagnosticDataBuilder.buildDetachedXmlSignature(signature);
     }
 
-    private List<XmlEAAStatusToken> buildXmlEAAStatusTokens(Collection<EAAStatusToken> statusTokens) {
-        List<XmlEAAStatusToken> xmlEAAStatusTokens = new ArrayList<>();
+    private List<XmlEAARevocationToken> buildXmlEAARevocationTokens(Collection<EAARevocationToken> statusTokens) {
+        List<XmlEAARevocationToken> xmlEAARevocationTokens = new ArrayList<>();
         if (Utils.isCollectionNotEmpty(statusTokens)) {
-            List<EAAStatusToken> tokens = new ArrayList<>(statusTokens);
+            List<EAARevocationToken> tokens = new ArrayList<>(statusTokens);
             tokens.sort(new TokenComparator());
             List<String> uniqueIds = new ArrayList<>(); // possible that EAAs share one EAA Status List
-            for (EAAStatusToken eaaStatusToken : tokens) {
-                String id = eaaStatusToken.getDSSIdAsString();
+            for (EAARevocationToken eaaRevocationToken : tokens) {
+                String id = eaaRevocationToken.getDSSIdAsString();
                 if (uniqueIds.contains(id)) {
                     continue;
                 }
-                XmlEAAStatusToken xmlEAAStatusToken = xmlEAAStatusTokenMap.get(id);
-                if (xmlEAAStatusToken == null) {
-                    xmlEAAStatusToken = buildDetachedXmlEAAStatusToken(eaaStatusToken);
-                    xmlEAAStatusTokenMap.put(id, xmlEAAStatusToken);
-                    xmlEAAStatusTokens.add(xmlEAAStatusToken);
+                XmlEAARevocationToken xmlEAARevocationToken = xmlEAARevocationTokenMap.get(id);
+                if (xmlEAARevocationToken == null) {
+                    xmlEAARevocationToken = buildDetachedXmlEAARevocationToken(eaaRevocationToken);
+                    xmlEAARevocationTokenMap.put(id, xmlEAARevocationToken);
+                    xmlEAARevocationTokens.add(xmlEAARevocationToken);
                 }
                 uniqueIds.add(id);
             }
         }
-        return xmlEAAStatusTokens;
+        return xmlEAARevocationTokens;
 
     }
 
     /**
-     * Builds a new {@code XmlEAAStatusToken}
+     * Builds a new {@code XmlEAARevocationToken}
      *
-     * @param eaaStatusToken {@link EAAStatusToken}
-     * @return {@link XmlEAAStatusToken}
+     * @param eaaRevocationToken {@link EAARevocationToken}
+     * @return {@link XmlEAARevocationToken}
      */
-    protected XmlEAAStatusToken buildDetachedXmlEAAStatusToken(EAAStatusToken eaaStatusToken) {
-        final XmlEAAStatusToken xmlEAAStatusToken = new XmlEAAStatusToken();
-        xmlEAAStatusToken.setId(identifierProvider.getIdAsString(eaaStatusToken));
-        xmlEAAStatusToken.setOrigin(eaaStatusToken.getOrigin());
-        xmlEAAStatusToken.setType(eaaStatusToken.getType());
-        xmlEAAStatusToken.setSourceAddress(eaaStatusToken.getSourceURL());
-        xmlEAAStatusToken.setSubject(getXmlEAASubject(eaaStatusToken));
-        xmlEAAStatusToken.setIssuedAt(eaaStatusToken.getCreationDate());
-        xmlEAAStatusToken.setExpirationTime(eaaStatusToken.getExpirationDate());
-        if (eaaStatusToken.getTimeToLive() != null) {
-            xmlEAAStatusToken.setTimeToLive(BigInteger.valueOf(eaaStatusToken.getTimeToLive().longValue()));
+    protected XmlEAARevocationToken buildDetachedXmlEAARevocationToken(EAARevocationToken eaaRevocationToken) {
+        final XmlEAARevocationToken xmlEAARevocationToken = new XmlEAARevocationToken();
+        xmlEAARevocationToken.setId(identifierProvider.getIdAsString(eaaRevocationToken));
+        xmlEAARevocationToken.setOrigin(eaaRevocationToken.getOrigin());
+        xmlEAARevocationToken.setType(eaaRevocationToken.getType());
+        xmlEAARevocationToken.setSourceAddress(eaaRevocationToken.getSourceURL());
+        xmlEAARevocationToken.setSubject(getXmlEAASubject(eaaRevocationToken));
+        xmlEAARevocationToken.setIssuedAt(eaaRevocationToken.getCreationDate());
+        xmlEAARevocationToken.setExpirationTime(eaaRevocationToken.getExpirationDate());
+        if (eaaRevocationToken.getTimeToLive() != null) {
+            xmlEAARevocationToken.setTimeToLive(BigInteger.valueOf(eaaRevocationToken.getTimeToLive().longValue()));
         }
 
-        setSignatureInfo(xmlEAAStatusToken, eaaStatusToken);
-        xmlEAAStatusToken.setFoundCertificates(getXmlFoundCertificates(eaaStatusToken));
+        setSignatureInfo(xmlEAARevocationToken, eaaRevocationToken);
+        xmlEAARevocationToken.setFoundCertificates(getXmlFoundCertificates(eaaRevocationToken));
 
         if (tokenExtractionStrategy.isRevocationData()) {
-            xmlEAAStatusToken.setBase64Encoded(eaaStatusToken.getEncoded());
+            xmlEAARevocationToken.setBase64Encoded(eaaRevocationToken.getEncoded());
         } else {
-            byte[] revocationDigest = eaaStatusToken.getDigest(defaultDigestAlgorithm);
-            xmlEAAStatusToken.setDigestAlgoAndValue(getXmlDigestAlgoAndValue(defaultDigestAlgorithm, revocationDigest));
+            byte[] revocationDigest = eaaRevocationToken.getDigest(defaultDigestAlgorithm);
+            xmlEAARevocationToken.setDigestAlgoAndValue(getXmlDigestAlgoAndValue(defaultDigestAlgorithm, revocationDigest));
         }
 
-        return xmlEAAStatusToken;
+        return xmlEAARevocationToken;
     }
 
-    private XmlEAASubject getXmlEAASubject(EAAStatusToken eaaStatusToken) {
-        if (eaaStatusToken.getSubject() == null) {
+    private XmlEAASubject getXmlEAASubject(EAARevocationToken eaaRevocationToken) {
+        if (eaaRevocationToken.getSubject() == null) {
             return null;
         }
         XmlEAASubject xmlEAASubject = new XmlEAASubject();
-        xmlEAASubject.setValue(eaaStatusToken.getSubject());
-        if (eaaStatusToken.getSubjectMatch() != null) {
-            xmlEAASubject.setMatch(eaaStatusToken.getSubjectMatch());
+        xmlEAASubject.setValue(eaaRevocationToken.getSubject());
+        if (eaaRevocationToken.getSubjectMatch() != null) {
+            xmlEAASubject.setMatch(eaaRevocationToken.getSubjectMatch());
         }
         return xmlEAASubject;
     }
 
-    private void setSignatureInfo(XmlEAAStatusToken xmlEAAStatusToken, EAAStatusToken eaaStatusToken) {
-        AdvancedSignature signature = eaaStatusToken.getSignature();
+    private void setSignatureInfo(XmlEAARevocationToken xmlEAARevocationToken, EAARevocationToken eaaRevocationToken) {
+        AdvancedSignature signature = eaaRevocationToken.getSignature();
         if (signature != null) {
             final CandidatesForSigningCertificate candidatesForSigningCertificate = signature.getCandidatesForSigningCertificate();
             final CertificateValidity theCertificateValidity = candidatesForSigningCertificate.getTheCertificateValidity();
             PublicKey signingCertificatePublicKey = null;
             if (theCertificateValidity != null) {
-                xmlEAAStatusToken.setSigningCertificate(getXmlSigningCertificate(eaaStatusToken.getDSSId(), theCertificateValidity));
-                xmlEAAStatusToken.setCertificateChain(getXmlForCertificateChain(theCertificateValidity, signature.getCertificateSource()));
+                xmlEAARevocationToken.setSigningCertificate(getXmlSigningCertificate(eaaRevocationToken.getDSSId(), theCertificateValidity));
+                xmlEAARevocationToken.setCertificateChain(getXmlForCertificateChain(theCertificateValidity, signature.getCertificateSource()));
                 signingCertificatePublicKey = theCertificateValidity.getPublicKey();
             }
 
-            xmlEAAStatusToken.setBasicSignature(getXmlBasicSignature(signature, signingCertificatePublicKey));
+            xmlEAARevocationToken.setBasicSignature(getXmlBasicSignature(signature, signingCertificatePublicKey));
         }
     }
 
-    private XmlFoundCertificates getXmlFoundCertificates(EAAStatusToken eaaStatusToken) {
+    private XmlFoundCertificates getXmlFoundCertificates(EAARevocationToken eaaRevocationToken) {
         final XmlFoundCertificates xmlFoundCertificates = new XmlFoundCertificates();
-        if (eaaStatusToken.getSignature() != null) {
+        if (eaaRevocationToken.getSignature() != null) {
             XmlFoundCertificates signatureFoundCertificates = getXmlFoundCertificates(
-                    eaaStatusToken.getSignature().getDSSId(), eaaStatusToken.getSignature().getCertificateSource());
+                    eaaRevocationToken.getSignature().getDSSId(), eaaRevocationToken.getSignature().getCertificateSource());
             populate(xmlFoundCertificates, signatureFoundCertificates);
         }
-        if (eaaStatusToken.getCertificateSource() != null) {
-            XmlFoundCertificates statusListFoundCertificates = getXmlFoundCertificates(eaaStatusToken.getDSSId(), eaaStatusToken.getCertificateSource());
+        if (eaaRevocationToken.getCertificateSource() != null) {
+            XmlFoundCertificates statusListFoundCertificates = getXmlFoundCertificates(eaaRevocationToken.getDSSId(), eaaRevocationToken.getCertificateSource());
             populate(xmlFoundCertificates, statusListFoundCertificates);
         }
         return xmlFoundCertificates;
@@ -1161,24 +1161,24 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
         if (Utils.isCollectionNotEmpty(eaas)) {
             for (EAA eaa : eaas) {
                 XmlEAA xmlEAA = xmlEAAMap.get(eaa.getId());
-                Set<EAAStatusToken> statusesForEAA = getStatusTokenForEAA(eaa);
-                for (EAAStatusToken statusToken : statusesForEAA) {
-                    XmlEAAStatusToken xmlEAAStatusToken = xmlEAAStatusTokenMap.get(statusToken.getDSSIdAsString());
-                    XmlEAAStatus xmlEAAStatus = new XmlEAAStatus();
-                    xmlEAAStatus.setEAAStatusToken(xmlEAAStatusToken);
-                    xmlEAAStatus.setStatus(statusToken.getStatus());
-                    xmlEAA.getStatuses().add(xmlEAAStatus);
+                Set<EAARevocationToken> statusesForEAA = getStatusTokenForEAA(eaa);
+                for (EAARevocationToken statusToken : statusesForEAA) {
+                    XmlEAARevocationToken xmlEAARevocationToken = xmlEAARevocationTokenMap.get(statusToken.getDSSIdAsString());
+                    XmlEAARevocationStatus xmlEAARevocationStatus = new XmlEAARevocationStatus();
+                    xmlEAARevocationStatus.setEAARevocationToken(xmlEAARevocationToken);
+                    xmlEAARevocationStatus.setStatus(statusToken.getStatus());
+                    xmlEAA.getEAARevocations().add(xmlEAARevocationStatus);
                 }
             }
         }
     }
 
-    private Set<EAAStatusToken> getStatusTokenForEAA(EAA eaa) {
-        Set<EAAStatusToken> statuses = new HashSet<>();
-        if (Utils.isCollectionNotEmpty(eaaStatusTokens)) {
-            for (EAAStatusToken eaaStatusToken : eaaStatusTokens) {
-                if (Utils.areStringsEqual(eaa.getId(), eaaStatusToken.getRelatedEAAId())) {
-                    statuses.add(eaaStatusToken);
+    private Set<EAARevocationToken> getStatusTokenForEAA(EAA eaa) {
+        Set<EAARevocationToken> statuses = new HashSet<>();
+        if (Utils.isCollectionNotEmpty(eaaRevocationTokens)) {
+            for (EAARevocationToken eaaRevocationToken : eaaRevocationTokens) {
+                if (Utils.areStringsEqual(eaa.getId(), eaaRevocationToken.getRelatedEAAId())) {
+                    statuses.add(eaaRevocationToken);
                 }
             }
         }

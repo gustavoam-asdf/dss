@@ -3,11 +3,11 @@ package eu.europa.esig.dss.eaa.mdoc.pki;
 import eu.europa.esig.dss.cbades.cbor.CBORMap;
 import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.cwt.CWTClaims;
-import eu.europa.esig.dss.cbades.eaa.status.statuslist.CWTStatusListClaims;
-import eu.europa.esig.dss.cbades.eaa.status.statuslist.CWTStatusListValidator;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
-import eu.europa.esig.dss.eaa.common.PKIEAAStatusListSource;
+import eu.europa.esig.dss.eaa.common.pki.PKIEAAStatusListSource;
+import eu.europa.esig.dss.eaa.revocation.cwt.model.statuslist.CWTStatusListClaims;
+import eu.europa.esig.dss.eaa.revocation.cwt.validation.statuslist.CWTStatusListValidator;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -17,7 +17,6 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 
 import java.util.Collections;
@@ -67,7 +66,7 @@ public class PKICWTStatusListSource extends PKIEAAStatusListSource<CBAdESSignatu
     }
 
     @Override
-    protected StatusListValidator createValidator(byte[] statusListToken) {
+    protected CWTStatusListValidator createValidator(byte[] statusListToken) {
         return new CWTStatusListValidator(statusListToken);
     }
 

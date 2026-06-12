@@ -78,7 +78,6 @@
                 </DigestMatcher>
             </DigestMatchers>
             <EAASignature Signature="S-61D369A7F2D4DD3A70C24A844C4C8E693ECF3BAECFBB558A2B4D3FEF8827A09C"/>
-            <KeyBindingSignature Signature="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9"/>
             <EAAPayload>
                 <Issuer name="iss">
                     <Text>https://issuer.example.com</Text>
@@ -185,11 +184,12 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
-            <Statuses>
-                <EAAStatus EAAStatusToken="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+            <KeyBindingSignature Signature="S-B76CB61A45DDB0E0CA3970C6F40C5FBF329A5546A6A4320EBC331A7498F17FC9"/>
+            <EAARevocations>
+                <EAARevocationStatus EAARevocationToken="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
                     <Status>VALID</Status>
-                </EAAStatus>
-            </Statuses>
+                </EAARevocationStatus>
+            </EAARevocations>
         </EAA>
     </EAAs>
     <Signatures>
@@ -348,8 +348,8 @@
         </Signature>
     </Signatures>
     <EvidenceRecords/>
-    <UsedEAAStatusTokens>
-        <EAAStatusToken Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+    <UsedEAARevocationTokens>
+        <EAARevocationToken Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
             <Origin>EXTERNAL</Origin>
             <Type>statuslist+cwt</Type>
             <SourceAddress>https://dss.nowina.lu/pki-factory/eaa/status_list</SourceAddress>
@@ -392,8 +392,8 @@
                 <DigestMethod>SHA256</DigestMethod>
                 <DigestValue>qRRMZ0SZRFF9RIGzZjN8AkiLpsvUL4nhwsgiXlB1GO8=</DigestValue>
             </DigestAlgoAndValue>
-        </EAAStatusToken>
-    </UsedEAAStatusTokens>
+        </EAARevocationToken>
+    </UsedEAARevocationTokens>
     <UsedCertificates>
         <Certificate Id="C-57C7CD0B7050F689603B33CD37F86817F53EEE1F81181184FB09DAE40D2007AC">
             <SubjectDistinguishedName Format="CANONICAL">c=lu,ou=pki-test,o=nowina solutions,cn=ocsp-responder</SubjectDistinguishedName>

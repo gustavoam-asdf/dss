@@ -19,7 +19,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatus;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationStatus;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
@@ -669,15 +669,15 @@ public class EAAWrapper extends AbstractTokenProxy {
     /**
      * Returns a list of statuses for the EAA
      *
-     * @return a list of {@link EAAStatusWrapper}s
+     * @return a list of {@link EAARevocationWrapper}s
      */
-    public List<EAAStatusWrapper> getEAAStatuses() {
-        List<EAAStatusWrapper> statusWrappers = new ArrayList<>();
-        List<XmlEAAStatus> statuses = eaa.getStatuses();
-        for (XmlEAAStatus xmlEAAStatus : statuses) {
-            statusWrappers.add(new EAAStatusWrapper(xmlEAAStatus));
+    public List<EAARevocationWrapper> getEAARevocations() {
+        List<EAARevocationWrapper> revocationWrappers = new ArrayList<>();
+        List<XmlEAARevocationStatus> statuses = eaa.getEAARevocations();
+        for (XmlEAARevocationStatus xmlEAARevocationStatus : statuses) {
+            revocationWrappers.add(new EAARevocationWrapper(xmlEAARevocationStatus));
         }
-        return statusWrappers;
+        return revocationWrappers;
     }
 
     /**

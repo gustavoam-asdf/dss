@@ -1,13 +1,13 @@
 package eu.europa.esig.dss.eaa.jwt.pki;
 
-import eu.europa.esig.dss.eaa.common.PKIEAAStatusListSource;
+import eu.europa.esig.dss.eaa.common.pki.PKIEAAStatusListSource;
+import eu.europa.esig.dss.eaa.revocation.jwt.model.statuslist.JWTStatusListClaimNames;
+import eu.europa.esig.dss.eaa.revocation.jwt.validation.statuslist.JWTStatusListValidator;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
-import eu.europa.esig.dss.jades.eaa.statuslist.JWTStatusListClaimNames;
-import eu.europa.esig.dss.jades.eaa.statuslist.JWTStatusListValidator;
 import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -16,7 +16,6 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.StatusListValidator;
 import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import org.jose4j.json.internal.json_simple.JSONObject;
 
@@ -62,7 +61,7 @@ public class PKIJWTStatusListSource extends PKIEAAStatusListSource<JAdESSignatur
     }
 
     @Override
-    protected StatusListValidator createValidator(byte[] statusListToken) {
+    protected JWTStatusListValidator createValidator(byte[] statusListToken) {
         return new JWTStatusListValidator(statusListToken);
     }
 

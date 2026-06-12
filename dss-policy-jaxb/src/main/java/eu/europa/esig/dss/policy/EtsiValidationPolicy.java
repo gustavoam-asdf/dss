@@ -37,7 +37,7 @@ import eu.europa.esig.dss.policy.jaxb.CertificateValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.policy.jaxb.ContainerConstraints;
 import eu.europa.esig.dss.policy.jaxb.CryptographicConstraint;
-import eu.europa.esig.dss.policy.jaxb.EAAStatusConstraints;
+import eu.europa.esig.dss.policy.jaxb.EAARevocationConstraints;
 import eu.europa.esig.dss.policy.jaxb.EIDAS;
 import eu.europa.esig.dss.policy.jaxb.EAAConstraints;
 import eu.europa.esig.dss.policy.jaxb.EvidenceRecordConstraints;
@@ -1685,10 +1685,10 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 				break;
 			case EAA:
 				return null;
-			case EAA_STATUS:
-				EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-				if (eaaStatusConstraints != null) {
-					return eaaStatusConstraints.getBasicSignatureConstraints();
+			case EAA_REVOCATION:
+				EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+				if (EAARevocationConstraints != null) {
+					return EAARevocationConstraints.getBasicSignatureConstraints();
 				}
 				break;
 			default:
@@ -2027,10 +2027,10 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAStatusPresentConstraint() {
+	public LevelRule getEAARevocationPresentConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
-			return toLevelRule(eaaConstraints.getEAAStatusPresent());
+			return toLevelRule(eaaConstraints.getEAARevocationPresent());
 		}
 		return null;
 	}
@@ -2081,25 +2081,25 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
 	@Override
-	public LevelRule getEAAStatusAvailableConstraint() {
+	public LevelRule getEAARevocationAvailableConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
-			return toLevelRule(eaaConstraints.getEAAStatusAvailable());
+			return toLevelRule(eaaConstraints.getEAARevocationAvailable());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getAcceptableEAAStatusFoundConstraint() {
+	public LevelRule getAcceptableEAARevocationFoundConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
-			return toLevelRule(eaaConstraints.getEAAStatusAvailable());
+			return toLevelRule(eaaConstraints.getEAARevocationAvailable());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusNotRevokedConstraint() {
+	public LevelRule getEAARevocationNotRevokedConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
 			return toLevelRule(eaaConstraints.getNotRevoked());
@@ -2108,7 +2108,7 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
-	public LevelRule getEAAStatusNotOnHoldConstraint() {
+	public LevelRule getEAARevocationNotOnHoldConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
 			return toLevelRule(eaaConstraints.getNotOnHold());
@@ -2189,73 +2189,73 @@ public class EtsiValidationPolicy implements ValidationPolicy {
     }
 
 	@Override
-	public MultiValuesRule getEAAStatusTokenTypeConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toRule(eaaStatusConstraints.getEAAStatusTokenType());
+	public MultiValuesRule getEAARevocationTokenTypeConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toRule(EAARevocationConstraints.getType());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusUnknownStatusConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getUnknownStatus());
+	public LevelRule getEAARevocationUnknownStatusConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getUnknownStatus());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusIssuanceTimeConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getIssuanceTime());
+	public LevelRule getEAARevocationIssuanceTimeConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getIssuanceTime());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusExpirationTimeConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getExpirationTime());
+	public LevelRule getEAARevocationExpirationTimeConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getExpirationTime());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusNotExpiredConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getNotExpired());
+	public LevelRule getEAARevocationNotExpiredConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getNotExpired());
 		}
 		return null;
 	}
 
 	@Override
-	public MultiValuesRule getEAAStatusSubjectConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toRule(eaaStatusConstraints.getEAAStatusSubject());
+	public MultiValuesRule getEAARevocationSubjectConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toRule(EAARevocationConstraints.getSubject());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusSubjectMatchConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getEAAStatusSubjectMatch());
+	public LevelRule getEAARevocationSubjectMatchConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getSubjectMatch());
 		}
 		return null;
 	}
 
 	@Override
-	public LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint() {
-		EAAStatusConstraints eaaStatusConstraints = getEAAStatusConstraints();
-		if (eaaStatusConstraints != null) {
-			return toLevelRule(eaaStatusConstraints.getEAAStatusTokenIssuerValidAtIssuanceTime());
+	public LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint() {
+		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
+		if (EAARevocationConstraints != null) {
+			return toLevelRule(EAARevocationConstraints.getIssuerValidAtIssuanceTime());
 		}
 		return null;
 	}
@@ -2430,12 +2430,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 
 	/**
-	 * Returns the constraint used for EAA status token validation
+	 * Returns the constraint used for EAA revocation token validation
 	 *
-	 * @return {@code EAAStatusConstraints}
+	 * @return {@code EAARevocationConstraints}
 	 */
-	public EAAStatusConstraints getEAAStatusConstraints() {
-		return policy.getEAAStatus();
+	public EAARevocationConstraints getEAARevocationConstraints() {
+		return policy.getEAARevocation();
 	}
 
 	/**

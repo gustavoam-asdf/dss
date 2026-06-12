@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.eaa;
 
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.validation.DocumentValidator;
 
 /**
@@ -18,10 +18,10 @@ public interface EAAPresentationValidator extends DocumentValidator {
     EAAPresentation getEAAPresentation();
 
     /**
-     * Sets the EAA status source providing access to the information about the EAA validity status
+     * Sets the EAA revocation source providing access to the information about the EAA validity status
      *
-     * @param eaaStatusSource {@link EAAStatusSource}
+     * @param eaaRevocationSource {@link EAARevocationSource}
      */
-    void setEAAStatusSource(EAAStatusSource eaaStatusSource);
+    void setEAARevocationSource(EAARevocationSource eaaRevocationSource);
 
 }

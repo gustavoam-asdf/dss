@@ -236,7 +236,7 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_MANDATORY_STATUS_ABSENT));
         }
         if (!checkSDJWTStatusConformance()) {
-            errors.add(i18nProvider.getMessage(MessageTag.EAA_STATUS_SDJWT_CONFORMANCE));
+            errors.add(i18nProvider.getMessage(MessageTag.EAA_REV_SDJWT_CONFORMANCE));
         }
 
         return Utils.joinStrings(errors, " - ");

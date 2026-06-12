@@ -35,10 +35,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="UsedEAAStatusTokens" minOccurs="0">
+			<xs:element name="UsedEAARevocationTokens" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="EAAStatusToken" type="EAAStatusToken" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element name="EAARevocationToken" type="EAARevocationToken" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1759,10 +1759,10 @@
 					</xs:element>
                     <xs:element name="KeyBindingPayload" type="KeyBindingPayload" minOccurs="0" />
 
-					<xs:element name="Statuses" minOccurs="0">
+					<xs:element name="EAARevocations" minOccurs="0">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="EAAStatus" type="EAAStatus" minOccurs="0" maxOccurs="unbounded" />
+								<xs:element name="EAARevocationStatus" type="EAARevocationStatus" minOccurs="0" maxOccurs="unbounded" />
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -2199,11 +2199,11 @@
 		<xs:attribute name="disclosure" type="xs:boolean" />
 	</xs:complexType>
 
-	<xs:complexType name="EAAStatusToken">
+	<xs:complexType name="EAARevocationToken">
 		<xs:complexContent>
 			<xs:extension base="AbstractToken">
 				<xs:sequence>
-					<xs:element name="Origin" type="EAAStatusOrigin" />
+					<xs:element name="Origin" type="EAARevocationOrigin" />
 					<xs:element name="Type" type="xs:string" minOccurs="0" />
 					<xs:element name="SourceAddress" type="xs:string" minOccurs="0" />
 					<xs:element name="Subject" type="EAASubject" minOccurs="0" />
@@ -2234,21 +2234,21 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:simpleType name="EAAStatusOrigin" final="restriction">
+	<xs:simpleType name="EAARevocationOrigin" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="EXTERNAL" />
 			<xs:enumeration value="CACHED" />
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="EAAStatus">
+	<xs:complexType name="EAARevocationStatus">
 		<xs:sequence>
-			<xs:element name="Status" type="EAAStatusEnum" />
+			<xs:element name="Status" type="EAAStatus" />
 		</xs:sequence>
-		<xs:attribute name="EAAStatusToken" type="xs:IDREF" use="required" />
+		<xs:attribute name="EAARevocationToken" type="xs:IDREF" use="required" />
 	</xs:complexType>
 
-	<xs:simpleType name="EAAStatusEnum" final="restriction">
+	<xs:simpleType name="EAAStatus" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="VALID" />
 			<xs:enumeration value="INVALID" />

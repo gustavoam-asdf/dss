@@ -25,7 +25,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlContainerInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAStatusToken;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEncapsulationType;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
@@ -1190,14 +1190,14 @@ public class DiagnosticData {
 	}
 
 	/**
-	 * This method returns all EAA status tokens
+	 * This method returns all EAA revocation tokens
 	 *
 	 * @return a set of revocation data
 	 */
-	public Set<EAAStatusTokenWrapper> getAllEAAStatusTokens() {
-		Set<EAAStatusTokenWrapper> eaaStatusTokens = new HashSet<>();
-		for (XmlEAAStatusToken xmlEAAStatusToken : wrapped.getUsedEAAStatusTokens()) {
-			eaaStatusTokens.add(new EAAStatusTokenWrapper(xmlEAAStatusToken));
+	public Set<EAARevocationTokenWrapper> getAllEAARevocationTokens() {
+		Set<EAARevocationTokenWrapper> eaaStatusTokens = new HashSet<>();
+		for (XmlEAARevocationToken xmlEAARevocationToken : wrapped.getUsedEAARevocationTokens()) {
+			eaaStatusTokens.add(new EAARevocationTokenWrapper(xmlEAARevocationToken));
 		}
 		return eaaStatusTokens;
 	}

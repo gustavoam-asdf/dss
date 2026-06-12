@@ -709,7 +709,7 @@
 			<xs:enumeration value="REVOCATION" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
 			<xs:enumeration value="EAA" />
-			<xs:enumeration value="EAA_STATUS" />
+			<xs:enumeration value="EAA_REVOCATION" />
 			<!-- For Qualification -->
 			<xs:enumeration value="CERTIFICATE" />
 		</xs:restriction>

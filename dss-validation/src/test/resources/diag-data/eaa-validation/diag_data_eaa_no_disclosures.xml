@@ -7,7 +7,6 @@
             <EAAType>SD_JWT_VC</EAAType>
             <DigestMatchers/>
             <EAASignature Signature="S-B2CFE51EC9DE416F729051941F47145C3F2FB5571CAEFE3E661BD810D03CDC5F"/>
-            <KeyBindingSignature Signature="S-9C630F3A99773E09B7227D07CD0675A8EFB7EB1350408231DE83696A5F33D38E"/>
             <EAAPayload>
                 <Issuer name="iss">
                     <Text>https://issuer.example.com</Text>
@@ -102,11 +101,12 @@
                     </Item>
                 </Nationalities>
             </EAAPayload>
-            <Statuses>
-                <EAAStatus EAAStatusToken="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+            <KeyBindingSignature Signature="S-9C630F3A99773E09B7227D07CD0675A8EFB7EB1350408231DE83696A5F33D38E"/>
+            <EAARevocations>
+                <EAARevocationStatus EAARevocationToken="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
                     <Status>VALID</Status>
-                </EAAStatus>
-            </Statuses>
+                </EAARevocationStatus>
+            </EAARevocations>
         </EAA>
     </EAAs>
     <Signatures>
@@ -265,8 +265,8 @@
         </Signature>
     </Signatures>
     <EvidenceRecords/>
-    <UsedEAAStatusTokens>
-        <EAAStatusToken Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
+    <UsedEAARevocationTokens>
+        <EAARevocationToken Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
             <Origin>EXTERNAL</Origin>
             <Type>statuslist+cwt</Type>
             <SourceAddress>https://dss.nowina.lu/pki-factory/eaa/status_list</SourceAddress>
@@ -309,8 +309,8 @@
                 <DigestMethod>SHA256</DigestMethod>
                 <DigestValue>qRRMZ0SZRFF9RIGzZjN8AkiLpsvUL4nhwsgiXlB1GO8=</DigestValue>
             </DigestAlgoAndValue>
-        </EAAStatusToken>
-    </UsedEAAStatusTokens>
+        </EAARevocationToken>
+    </UsedEAARevocationTokens>
     <UsedCertificates>
         <Certificate Id="C-A527118875D9015C0D199251B9449E0E12CC4BF5F53D6ABF002D6C19900AEB2C">
             <SubjectDistinguishedName Format="CANONICAL">c=lu,ou=pki-test,o=nowina solutions,cn=good-user</SubjectDistinguishedName>

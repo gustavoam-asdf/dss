@@ -66,9 +66,9 @@
 					<xsd:documentation>Constraints on the EAA presentations</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element name="EAAStatus" type="EAAStatusConstraints" minOccurs="0">
+			<xsd:element name="EAARevocation" type="EAARevocationConstraints" minOccurs="0">
 				<xsd:annotation>
-					<xsd:documentation>Constraints related to the EAA status token</xsd:documentation>
+					<xsd:documentation>Constraints related to the EAA revocation token</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="Cryptographic" type="CryptographicConstraint" minOccurs="0">
@@ -743,19 +743,19 @@
 							<xsd:documentation>Checks whether the EAA contains a short-lived claim</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusPresent" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="EAARevocationPresent" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA contains a status claim</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA contains a revocation claim</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusAvailable" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="EAARevocationAvailable" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks if an EAA status token is found for the EAA</xsd:documentation>
+							<xsd:documentation>Checks if an EAA revocation token is found for the EAA</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="AcceptableEAAStatusFound" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="AcceptableEAARevocationFound" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks if an acceptable EAA status token has been found for the EAA</xsd:documentation>
+							<xsd:documentation>Checks if an acceptable EAA revocation token has been found for the EAA</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="NotRevoked" type="LevelConstraint" minOccurs="0">
@@ -793,14 +793,14 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="EAAStatusConstraints">
+	<xsd:complexType name="EAARevocationConstraints">
 		<xsd:annotation>
 			<xsd:documentation>Group of constraints on the revocation data</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="LevelConstraint">
 				<xsd:sequence>
-					<xsd:element name="EAAStatusTokenType" type="MultiValuesConstraint" minOccurs="0">
+					<xsd:element name="Type" type="MultiValuesConstraint" minOccurs="0">
 						<xsd:annotation>
 							<xsd:documentation>Checks whether the value of the 'type' field is within the accepted list of tokens</xsd:documentation>
 						</xsd:annotation>
@@ -812,7 +812,7 @@
 					</xsd:element>
 					<xsd:element name="IssuanceTime" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether 'issuedAt' field is defined within the EAA status token</xsd:documentation>
+							<xsd:documentation>Checks whether 'issuedAt' field is defined within the EAA revocation token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="ExpirationTime" type="LevelConstraint" minOccurs="0">
@@ -822,22 +822,22 @@
 					</xsd:element>
 					<xsd:element name="NotExpired" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the validation time is within the validity range of the EAA status token</xsd:documentation>
+							<xsd:documentation>Checks whether the validation time is within the validity range of the EAA revocation token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusSubject" type="MultiValuesConstraint" minOccurs="0">
+					<xsd:element name="Subject" type="MultiValuesConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the subject is defined within the EAA status token</xsd:documentation>
+							<xsd:documentation>Checks whether the subject is defined within the EAA revocation token</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusSubjectMatch" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="SubjectMatch" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the subject defined within the EAA status token matches</xsd:documentation>
+							<xsd:documentation>Checks whether the subject defined within the EAA revocation token matches</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element name="EAAStatusTokenIssuerValidAtIssuanceTime" type="LevelConstraint" minOccurs="0">
+					<xsd:element name="IssuerValidAtIssuanceTime" type="LevelConstraint" minOccurs="0">
 						<xsd:annotation>
-							<xsd:documentation>Checks whether the EAA status token issuer's certificate was valid at the EAA status token issuance time</xsd:documentation>
+							<xsd:documentation>Checks whether the EAA revocation token issuer's certificate was valid at the EAA revocation token issuance time</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element name="BasicSignatureConstraints" type="BasicSignatureConstraints" minOccurs="0">

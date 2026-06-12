@@ -5,8 +5,8 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAStatusTokenWrapper;
-import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
+import eu.europa.esig.dss.diagnostic.EAARevocationTokenWrapper;
+import eu.europa.esig.dss.diagnostic.EAARevocationWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.claim.ClaimWrapper;
@@ -25,7 +25,7 @@ import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.simplereport.jaxb.XmlSignature;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
 import eu.europa.esig.dss.utils.Utils;
@@ -55,11 +55,11 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         validator.setSignaturePolicyProvider(getSignaturePolicyProvider());
         validator.setTokenIdentifierProvider(getTokenIdentifierProvider());
         validator.setSigningCertificateSource(getSigningCertificateSource());
-        validator.setEAAStatusSource(getEAAStatusSource());
+        validator.setEAARevocationSource(getEAAStatusSource());
         return validator;
     }
 
-    protected EAAStatusSource getEAAStatusSource() {
+    protected EAARevocationSource getEAAStatusSource() {
         return null;
     }
 
@@ -128,7 +128,7 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
 
     protected void checkEAAStatuses(DiagnosticData diagnosticData) {
         for (EAAWrapper eaa : diagnosticData.getAllEAA()) {
-            for (EAAStatusWrapper eaaStatusWrapper : eaa.getEAAStatuses()) {
+            for (EAARevocationWrapper eaaStatusWrapper : eaa.getEAARevocations()) {
                 assertNotNull(eaaStatusWrapper.getId());
                 assertNotNull(eaaStatusWrapper.getStatus());
             }
@@ -299,19 +299,19 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
     }
 
     protected void checkEAAStatusTokens(DiagnosticData diagnosticData) {
-        for (EAAStatusTokenWrapper eaaStatusTokenWrapper : diagnosticData.getAllEAAStatusTokens()) {
-            assertNotNull(eaaStatusTokenWrapper.getId());
-            assertNotNull(eaaStatusTokenWrapper.getType());
-            assertNotNull(eaaStatusTokenWrapper.getOrigin());
-            assertNotNull(eaaStatusTokenWrapper.getIssuedAt());
-            assertNotNull(eaaStatusTokenWrapper.getExpirationTime());
+        for (EAARevocationTokenWrapper eaaRevocationTokenWrapper : diagnosticData.getAllEAARevocationTokens()) {
+            assertNotNull(eaaRevocationTokenWrapper.getId());
+            assertNotNull(eaaRevocationTokenWrapper.getType());
+            assertNotNull(eaaRevocationTokenWrapper.getOrigin());
+            assertNotNull(eaaRevocationTokenWrapper.getIssuedAt());
+            assertNotNull(eaaRevocationTokenWrapper.getExpirationTime());
 
-            assertNotNull(eaaStatusTokenWrapper.foundCertificates());
-            assertNotNull(eaaStatusTokenWrapper.foundCertificates().getRelatedCertificates());
-            assertNotNull(eaaStatusTokenWrapper.foundCertificates().getOrphanCertificates());
+            assertNotNull(eaaRevocationTokenWrapper.foundCertificates());
+            assertNotNull(eaaRevocationTokenWrapper.foundCertificates().getRelatedCertificates());
+            assertNotNull(eaaRevocationTokenWrapper.foundCertificates().getOrphanCertificates());
 
-            if (eaaStatusTokenWrapper.getSigningCertificate() != null) {
-                assertTrue(Utils.isCollectionNotEmpty(eaaStatusTokenWrapper.getCertificateChain()));
+            if (eaaRevocationTokenWrapper.getSigningCertificate() != null) {
+                assertTrue(Utils.isCollectionNotEmpty(eaaRevocationTokenWrapper.getCertificateChain()));
             }
         }
     }

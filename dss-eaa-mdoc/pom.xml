@@ -67,5 +67,10 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-revocation-cwt</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

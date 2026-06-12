@@ -39,7 +39,7 @@ import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.eaa.EAA;
-import eu.europa.esig.dss.spi.eaa.EAAStatusToken;
+import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.CertificateRef;
 import eu.europa.esig.dss.spi.x509.evidencerecord.EvidenceRecord;
@@ -134,7 +134,7 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
     /** The prefix to be used for an EAA identifier creation */
     private String eaaPrefix = "EAA";
 
-    /** The prefix to be used for an EAA status token identifier creation */
+    /** The prefix to be used for an EAA revocation token identifier creation */
     private String eaaStatusTokenPrefix = "EAA-STATUS";
 
     /** The prefix to be used for a List of Trusted Lists identifier creation */
@@ -621,7 +621,7 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
             return ocspPrefix;
         } else if (token instanceof TimestampToken) {
             return timestampPrefix;
-        }  else if (token instanceof EAAStatusToken) {
+        }  else if (token instanceof EAARevocationToken) {
             return eaaStatusTokenPrefix;
         } else {
             throw new IllegalArgumentException(String.format(

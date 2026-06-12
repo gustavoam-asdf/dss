@@ -3,7 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.validation.ValidationContext;
@@ -29,7 +29,7 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     private EAAPresentation eaaPresentation;
 
     /** Source used to verify status of the EAA */
-    private EAAStatusSource eaaStatusSource;
+    private EAARevocationSource eaaRevocationSource;
 
     /**
      * Empty constructor
@@ -69,12 +69,12 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
     }
 
     /**
-     * Sets the EAA status source providing access to the information about the EAA validity status
+     * Sets the EAA revocation source providing access to the information about the EAA validity status
      *
-     * @param eaaStatusSource {@link EAAStatusSource}
+     * @param eaaRevocationSource {@link EAARevocationSource}
      */
-    public void setEAAStatusSource(EAAStatusSource eaaStatusSource) {
-        this.eaaStatusSource = eaaStatusSource;
+    public void setEAARevocationSource(EAARevocationSource eaaRevocationSource) {
+        this.eaaRevocationSource = eaaRevocationSource;
     }
 
     /**
@@ -103,7 +103,7 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
             Collection<T> signatures, Collection<TimestampToken> detachedTimestamps,
             Collection<EvidenceRecord> detachedEvidenceRecords, CertificateVerifier certificateVerifier) {
         EAAValidationContext validationContext = (EAAValidationContext) super.prepareValidationContext(signatures, detachedTimestamps, detachedEvidenceRecords, certificateVerifier);
-        validationContext.setEAAStatusSource(eaaStatusSource);
+        validationContext.setEAAStatusSource(eaaRevocationSource);
 
         EAAPresentation eaaPresentation = getEAAPresentation();
         prepareEAAPresentationValidationContext(validationContext, eaaPresentation);

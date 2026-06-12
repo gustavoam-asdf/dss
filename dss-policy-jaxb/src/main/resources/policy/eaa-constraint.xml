@@ -358,26 +358,26 @@
         <EAAAdministrativePeriodNotExpired Level="WARN" />
         <EAAOneTimeUse Level="INFORM" />
         <EAAShortLived Level="INFORM" />
-        <EAAStatusPresent Level="WARN" />
-        <EAAStatusAvailable Level="FAIL" />
-        <AcceptableEAAStatusFound Level="FAIL" />
+        <EAARevocationPresent Level="WARN" />
+        <EAARevocationAvailable Level="FAIL" />
+        <AcceptableEAARevocationFound Level="FAIL" />
         <NotRevoked Level="FAIL" />
         <NotOnHold Level="FAIL" />
         <EAAUsePseudonym Level="INFORM" />
     </EAA>
-    <EAAStatus>
-        <EAAStatusTokenType Level="FAIL">
+    <EAARevocation>
+        <Type Level="FAIL">
             <Id>*</Id>
-        </EAAStatusTokenType>
+        </Type>
         <UnknownStatus Level="FAIL" />
         <IssuanceTime Level="FAIL" />
         <ExpirationTime Level="FAIL" />
         <NotExpired Level="FAIL" />
-        <EAAStatusSubject Level="FAIL">
+        <Subject Level="FAIL">
             <Id>*</Id>
-        </EAAStatusSubject>
-        <EAAStatusSubjectMatch Level="FAIL" />
-        <EAAStatusTokenIssuerValidAtIssuanceTime Level="FAIL" />
+        </Subject>
+        <SubjectMatch Level="FAIL" />
+        <IssuerValidAtIssuanceTime Level="FAIL" />
         <BasicSignatureConstraints>
             <ReferenceDataExistence Level="FAIL" />
             <ReferenceDataIntact Level="FAIL" />
@@ -460,7 +460,7 @@
             </CACertificate>
             <Cryptographic />
         </BasicSignatureConstraints>
-    </EAAStatus>
+    </EAARevocation>
     <Cryptographic Level="FAIL">
         <AcceptableEncryptionAlgo>
             <Algo>RSA</Algo>

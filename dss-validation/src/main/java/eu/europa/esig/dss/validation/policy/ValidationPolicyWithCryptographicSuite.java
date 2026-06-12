@@ -1131,8 +1131,8 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAStatusPresentConstraint() {
-        return validationPolicy.getEAAStatusPresentConstraint();
+    public LevelRule getEAARevocationPresentConstraint() {
+        return validationPolicy.getEAARevocationPresentConstraint();
     }
 
     @Override
@@ -1161,23 +1161,23 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public LevelRule getEAAStatusAvailableConstraint() {
-        return validationPolicy.getEAAStatusAvailableConstraint();
+    public LevelRule getEAARevocationAvailableConstraint() {
+        return validationPolicy.getEAARevocationAvailableConstraint();
     }
 
     @Override
-    public LevelRule getAcceptableEAAStatusFoundConstraint() {
-        return validationPolicy.getAcceptableEAAStatusFoundConstraint();
+    public LevelRule getAcceptableEAARevocationFoundConstraint() {
+        return validationPolicy.getAcceptableEAARevocationFoundConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusNotRevokedConstraint() {
-        return validationPolicy.getEAAStatusNotRevokedConstraint();
+    public LevelRule getEAARevocationNotRevokedConstraint() {
+        return validationPolicy.getEAARevocationNotRevokedConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusNotOnHoldConstraint() {
-        return validationPolicy.getEAAStatusNotOnHoldConstraint();
+    public LevelRule getEAARevocationNotOnHoldConstraint() {
+        return validationPolicy.getEAARevocationNotOnHoldConstraint();
     }
 
     @Override
@@ -1221,43 +1221,43 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
-    public MultiValuesRule getEAAStatusTokenTypeConstraint() {
-        return validationPolicy.getEAAStatusTokenTypeConstraint();
+    public MultiValuesRule getEAARevocationTokenTypeConstraint() {
+        return validationPolicy.getEAARevocationTokenTypeConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusUnknownStatusConstraint() {
-        return validationPolicy.getEAAStatusUnknownStatusConstraint();
+    public LevelRule getEAARevocationUnknownStatusConstraint() {
+        return validationPolicy.getEAARevocationUnknownStatusConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusIssuanceTimeConstraint() {
-        return validationPolicy.getEAAStatusIssuanceTimeConstraint();
+    public LevelRule getEAARevocationIssuanceTimeConstraint() {
+        return validationPolicy.getEAARevocationIssuanceTimeConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusExpirationTimeConstraint() {
-        return validationPolicy.getEAAStatusExpirationTimeConstraint();
+    public LevelRule getEAARevocationExpirationTimeConstraint() {
+        return validationPolicy.getEAARevocationExpirationTimeConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusNotExpiredConstraint() {
-        return validationPolicy.getEAAStatusNotExpiredConstraint();
+    public LevelRule getEAARevocationNotExpiredConstraint() {
+        return validationPolicy.getEAARevocationNotExpiredConstraint();
     }
 
     @Override
-    public MultiValuesRule getEAAStatusSubjectConstraint() {
-        return validationPolicy.getEAAStatusSubjectConstraint();
+    public MultiValuesRule getEAARevocationSubjectConstraint() {
+        return validationPolicy.getEAARevocationSubjectConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusSubjectMatchConstraint() {
-        return validationPolicy.getEAAStatusSubjectMatchConstraint();
+    public LevelRule getEAARevocationSubjectMatchConstraint() {
+        return validationPolicy.getEAARevocationSubjectMatchConstraint();
     }
 
     @Override
-    public LevelRule getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint() {
-        return validationPolicy.getEAAStatusTokenIssuerValidAtIssuanceTimeConstraint();
+    public LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint() {
+        return validationPolicy.getEAARevocationIssuerValidAtIssuanceTimeConstraint();
     }
 
     @Override

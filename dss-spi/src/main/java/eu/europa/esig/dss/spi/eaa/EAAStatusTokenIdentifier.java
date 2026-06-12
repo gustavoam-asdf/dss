@@ -13,20 +13,20 @@ public class EAAStatusTokenIdentifier extends TokenIdentifier {
     /**
      * Default constructor
      *
-     * @param eaaStatusToken {@link EAAStatusToken}
+     * @param eaaRevocationToken {@link EAARevocationToken}
      */
-    public EAAStatusTokenIdentifier(EAAStatusToken eaaStatusToken) {
-        this("ST-", eaaStatusToken);
+    public EAAStatusTokenIdentifier(EAARevocationToken eaaRevocationToken) {
+        this("ST-", eaaRevocationToken);
     }
 
     /**
      * Internal constructor with a custom prefix
      *
      * @param prefix {@link String}
-     * @param eaaStatusToken {@link EAAStatusToken}
+     * @param eaaRevocationToken {@link EAARevocationToken}
      */
-    EAAStatusTokenIdentifier(String prefix, EAAStatusToken eaaStatusToken) {
-        super(prefix, eaaStatusToken);
+    EAAStatusTokenIdentifier(String prefix, EAARevocationToken eaaRevocationToken) {
+        super(prefix, eaaRevocationToken);
     }
 
 }

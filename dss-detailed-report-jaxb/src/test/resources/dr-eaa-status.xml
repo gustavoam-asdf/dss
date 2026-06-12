@@ -1146,28 +1146,28 @@
         </CV>
         <SAV Title="Signature Acceptance Validation">
             <Constraint>
-                <Name Key="EAA_STATUS_ISS">Is an issuance time present within the EAA status token?</Name>
+                <Name Key="EAA_STATUS_ISS">Is an issuance time present within the EAA revocation token?</Name>
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
-                <Name Key="EAA_STATUS_EXP">Is an expiration time present within the EAA status token?</Name>
+                <Name Key="EAA_STATUS_EXP">Is an expiration time present within the EAA revocation token?</Name>
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
-                <Name Key="EAA_STATUS_NOT_EXP">Is the EAA status valid at the validation time?</Name>
+                <Name Key="EAA_STATUS_NOT_EXP">Is the EAA revocation valid at the validation time?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Validation time : 2026-04-23 09:29, Issuance time : 2026-04-23 09:29, Expiration time 2027-05-10 14:11</AdditionalInfo>
             </Constraint>
             <Constraint>
-                <Name Key="EAA_STATUS_SUB">Is a subject of the EAA status token known?</Name>
+                <Name Key="EAA_STATUS_SUB">Is a subject of the EAA revocation token known?</Name>
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
-                <Name Key="EAA_STATUS_SUB_MATCH">Does the subject of the EAA status token match the subject of the related EAA?</Name>
+                <Name Key="EAA_STATUS_SUB_MATCH">Does the subject of the EAA revocation token match the subject of the related EAA?</Name>
                 <Status>OK</Status>
             </Constraint>
             <Constraint>
-                <Name Key="EAA_STATUS_ISS_VALID">Is the EAA status token's issuer certificate valid at the EAA status token's issuance time?</Name>
+                <Name Key="EAA_STATUS_ISS_VALID">Is the EAA revocation token's issuer certificate valid at the EAA revocation token's issuance time?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Issuance time : 2026-04-23 09:29, Certificate validity : 2025-05-23 09:28 - 2027-03-23 10:28</AdditionalInfo>
             </Constraint>
@@ -1187,7 +1187,7 @@
                 <AdditionalInfo>Signature algorithm RSA with SHA512 with key size 2048 at validation time : 2026-04-23 09:29</AdditionalInfo>
             </Constraint>
             <Constraint Id="C-95B95869B1259A15CE92AA869BB50F71D39190092FA4C2DBE265BC6CA2B6A0EE" BlockType="AOV_XCV">
-                <Name Key="ACCM">Are cryptographic constraints met for the EAA status's issuer certificate?</Name>
+                <Name Key="ACCM">Are cryptographic constraints met for the EAA revocation's issuer certificate?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Signature algorithm RSA with SHA512 with key size 2048 at validation time : 2026-04-23 09:29</AdditionalInfo>
             </Constraint>
@@ -1389,11 +1389,11 @@
                 <Status>OK</Status>
             </Constraint>
             <Constraint Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
-                <Name Key="EAA_STATUS_KNOWN">Is the type EAA status known?</Name>
+                <Name Key="EAA_STATUS_KNOWN">Is the type EAA revocation known?</Name>
                 <Status>OK</Status>
             </Constraint>
             <Constraint Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF">
-                <Name Key="EAA_STATUS_ACC">Is the EAA status token acceptable?</Name>
+                <Name Key="EAA_STATUS_ACC">Is the EAA revocation token acceptable?</Name>
                 <Status>OK</Status>
                 <AdditionalInfo>Id = ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF</AdditionalInfo>
             </Constraint>

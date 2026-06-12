@@ -49,7 +49,7 @@ public enum Context {
 	/** The processing token is an electronic attestation of attributes */
 	EAA,
 
-	/** The processing token is an EAA status token */
-	EAA_STATUS
+	/** The processing token is an EAA revocation token */
+	EAA_REVOCATION
 
 }

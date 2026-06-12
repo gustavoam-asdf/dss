@@ -155,6 +155,9 @@
 		<module>dss-evidence-record-common</module>
 		<module>dss-evidence-record-xml</module>
 		<module>dss-evidence-record-asn1</module>
+		<module>dss-eaa-revocation-common</module>
+		<module>dss-eaa-revocation-jwt</module>
+		<module>dss-eaa-revocation-cwt</module>
 		<module>dss-eaa-common</module>
 		<module>dss-eaa-jwt</module>
 		<module>dss-eaa-mdoc</module>
@@ -194,7 +197,7 @@
 
 		<module>dss-jacoco-coverage</module>
 		<module>dss-bom</module>
-    </modules>
+	</modules>
 
 	<build>
 		<plugins>
@@ -667,6 +670,21 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-evidence-record-asn1</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-revocation-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-revocation-jwt</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-revocation-cwt</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

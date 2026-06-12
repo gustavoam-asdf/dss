@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.mdoc.signature;
 
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.diagnostic.EAAStatusWrapper;
+import eu.europa.esig.dss.diagnostic.EAARevocationWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
@@ -10,7 +10,7 @@ import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.eaa.mdoc.pki.PKICWTStatusListSource;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAStatus;
-import eu.europa.esig.dss.spi.eaa.status.statuslist.EAAStatusSource;
+import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class MdocEAAISONonMdLWithStatusListTest extends AbstractMdocEAAPresentat
     }
 
     @Override
-    protected EAAStatusSource getEAAStatusSource() {
+    protected EAARevocationSource getEAAStatusSource() {
         return new PKICWTStatusListSource(getCertEntityRepository(), getCertEntity(GOOD_CA));
     }
 
@@ -46,7 +46,7 @@ public class MdocEAAISONonMdLWithStatusListTest extends AbstractMdocEAAPresentat
         super.checkEAAStatuses(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
-        List<EAAStatusWrapper> eaaStatuses = eaa.getEAAStatuses();
+        List<EAARevocationWrapper> eaaStatuses = eaa.getEAARevocations();
         assertEquals(1, eaaStatuses.size());
         assertEquals(EAAStatus.VALID, eaaStatuses.get(0).getStatus());
         assertEquals("application/statuslist+cwt", eaaStatuses.get(0).getType());

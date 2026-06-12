@@ -400,7 +400,7 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_EV_RECORD;
 			case EAA:
 				return MessageTag.ACCM_POS_EAA;
-			case EAA_STATUS:
+			case EAA_REVOCATION:
 				return MessageTag.ACCM_POS_EAA;
 			default:
 				throw new IllegalArgumentException("Unsupported context " + context);
@@ -423,8 +423,8 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_CERT_CHAIN_TST;
 			case REVOCATION:
 				return MessageTag.ACCM_POS_CERT_CHAIN_REVOC;
-			case EAA_STATUS:
-				return MessageTag.ACCM_POS_CERT_CHAIN_EAA_STATUS;
+			case EAA_REVOCATION:
+				return MessageTag.ACCM_POS_CERT_CHAIN_EAA_REV;
 			case CERTIFICATE:
 				return MessageTag.ACCM_POS_CERT_CHAIN;
 			default:
@@ -642,12 +642,12 @@ public class ValidationProcessUtils {
 					default:
 						throw new IllegalArgumentException("Unsupported subContext " + subContext);
 				}
-			case EAA_STATUS:
+			case EAA_REVOCATION:
 				switch (subContext) {
 					case SIGNING_CERT:
-						return MessageTag.EAA_STATUS_SIG_CERT;
+						return MessageTag.EAA_REV_SIG_CERT;
 					case CA_CERTIFICATE:
-						return MessageTag.EAA_STATUS_CA_CERT;
+						return MessageTag.EAA_REV_CA_CERT;
 					default:
 						throw new IllegalArgumentException("Unsupported subContext " + subContext);
 				}
