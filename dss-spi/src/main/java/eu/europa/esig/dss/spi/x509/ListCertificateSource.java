@@ -65,6 +65,16 @@ public class ListCertificateSource implements CertificateSource {
 	}
 
 	/**
+	 * This constructor allows to instantiate an object of the class with an array of
+	 * {@code CertificateSource}s
+	 *
+	 * @param certificateSource an array of {@link CertificateSource}s
+	 */
+	public ListCertificateSource(CertificateSource... certificateSource) {
+		addAll(certificateSource);
+	}
+
+	/**
 	 * This constructor allows to instantiate an object of the class with a list of
 	 * {@code CertificateSource}
 	 * 
@@ -72,6 +82,19 @@ public class ListCertificateSource implements CertificateSource {
 	 */
 	public ListCertificateSource(List<CertificateSource> certificateSources) {
 		addAll(certificateSources);
+	}
+
+	/**
+	 * This method allows to add a certificate source to the list
+	 *
+	 * @param certificateSource {@link CertificateSource}
+	 * @return whether the certificateSource has been added successfully
+	 */
+	public boolean add(CertificateSource certificateSource) {
+		if (certificateSource != null && !sources.contains(certificateSource)) {
+			return sources.add(certificateSource);
+		}
+		return false;
 	}
 
 	/**
@@ -99,16 +122,16 @@ public class ListCertificateSource implements CertificateSource {
 	}
 	
 	/**
-	 * This method allows to add a certificate source to the list
-	 * 
-	 * @param certificateSource {@link CertificateSource}
-	 * @return whether the certificateSource has been added successfully
+	 * Allows to add an array of certificate sources
+	 *
+	 * @param certificateSources an array of {@link CertificateSource}s to add
 	 */
-	public boolean add(CertificateSource certificateSource) {
-		if (certificateSource != null && !sources.contains(certificateSource)) {
-			return sources.add(certificateSource);
+	public void addAll(CertificateSource... certificateSources) {
+		if (certificateSources != null) {
+			for (CertificateSource certificateSource : certificateSources) {
+				add(certificateSource);
+			}
 		}
-		return false;
 	}
 
 	/**

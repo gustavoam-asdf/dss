@@ -1,0 +1,58 @@
+package eu.europa.esig.dss.lote.json.parsing.function;
+
+import eu.europa.esig.dss.jades.DSSJsonUtils;
+import eu.europa.esig.dss.lote.json.parsing.JsonLoTEHeaderParameterNames;
+import eu.europa.esig.dss.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+/**
+ * This class converts a Json list of extracted "multiLangString" objects to a Java map
+ *
+ */
+public class MultiLangStringListConverter implements Function<List<?>, Map<String, List<String>>> {
+
+    /** The predicate to be used */
+    private final Predicate<String> predicate;
+
+    /**
+     * Default constructor (selects all)
+     */
+    public MultiLangStringListConverter() {
+        // select all
+        this(x -> true);
+    }
+
+    /**
+     * Default constructor with a filter predicate
+     *
+     * @param predicate {@link Predicate}
+     */
+    public MultiLangStringListConverter(Predicate<String> predicate) {
+        this.predicate = predicate;
+    }
+
+    @Override
+    public Map<String, List<String>> apply(List<?> original) {
+        Map<String, List<String>> result = new HashMap<>();
+        if (Utils.isCollectionNotEmpty(original)) {
+            for (Object multiLangStringObject : original) {
+                Map<?, ?> multiLangString = DSSJsonUtils.toMap(multiLangStringObject);
+                if (Utils.isMapNotEmpty(multiLangString)) {
+                    final String lang = DSSJsonUtils.getAsString(multiLangString, JsonLoTEHeaderParameterNames.LANG);
+                    final String value = DSSJsonUtils.getAsString(multiLangString, JsonLoTEHeaderParameterNames.VALUE);
+                    if (predicate.test(value)) {
+                        result.computeIfAbsent(lang, k -> new ArrayList<>()).add(value);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+}

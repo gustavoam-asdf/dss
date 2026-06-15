@@ -154,6 +154,26 @@ public abstract class CryptographicSuiteCatalogue {
     }
 
     /**
+     * Gets the {@code CryptographicSuite} for validation of a key binding signature
+     *
+     * @return {@link CryptographicSuite}
+     */
+    public CryptographicSuite getKeyBindingSignatureCryptographicSuite() {
+        // same as global constraints
+        return getCryptographicSuite();
+    }
+
+    /**
+     * Gets the {@code CryptographicSuite} for validation of key binding signature certificates
+     *
+     * @return {@link CryptographicSuite}
+     */
+    public CryptographicSuite getKeyBindingSignatureCertificatesCryptographicSuite() {
+        // same as signature constraints
+        return getSignatureCertificatesCryptographicSuite();
+    }
+
+    /**
      * Gets the {@code CryptographicSuite} for validation of a revocation data
      *
      * @return {@link CryptographicSuite}
@@ -212,7 +232,27 @@ public abstract class CryptographicSuiteCatalogue {
      *
      * @return {@link CryptographicSuite}
      */
-    public CryptographicSuite getEvidenceRecordSignatureCryptographicSuite() {
+    public CryptographicSuite getEvidenceRecordCryptographicSuite() {
+        // no separate handling
+        return getCryptographicSuite();
+    }
+
+    /**
+     * Gets the {@code CryptographicSuite} for validation of an EAA
+     *
+     * @return {@link CryptographicSuite}
+     */
+    public CryptographicSuite getEAACryptographicSuite() {
+        // no separate handling
+        return getCryptographicSuite();
+    }
+
+    /**
+     * Gets the {@code CryptographicSuite} for validation of an EAA revocation
+     *
+     * @return {@link CryptographicSuite}
+     */
+    public CryptographicSuite getEAARevocationCryptographicSuite() {
         // no separate handling
         return getCryptographicSuite();
     }

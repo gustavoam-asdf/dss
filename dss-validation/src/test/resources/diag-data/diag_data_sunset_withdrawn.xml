@@ -255,7 +255,7 @@
         <TrustedList Id="TL-269D5F53B06C45CC3A93F452721C26E5F95D3AB01846B9858944E4A7DB7027A2" parent="LOTL-721CD722096C5A36BBFFA85580E2FE44E4626A1682566CBA39A83A560F7B90F8">
             <CountryCode>LU</CountryCode>
             <Url>https://eidas.ec.europa.eu/efda/api/v2/validation-tests/testcase/tl/TL-3.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>1</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-08-16T11:03:44Z</LastLoading>
@@ -266,7 +266,7 @@
         <TrustedList Id="LOTL-721CD722096C5A36BBFFA85580E2FE44E4626A1682566CBA39A83A560F7B90F8" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://eidas.ec.europa.eu/efda/api/v2/validation-tests/testcase/tl/LOTL-3.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>1</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-08-16T11:03:44Z</LastLoading>

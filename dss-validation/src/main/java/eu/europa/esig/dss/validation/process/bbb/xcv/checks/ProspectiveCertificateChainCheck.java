@@ -72,15 +72,16 @@ public class ProspectiveCertificateChainCheck<T extends XmlConstraintsConclusion
 	@Override
 	protected MessageTag getErrorMessageTag() {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.BBB_XCV_CCCBB_SIG_ANS;
-		case TIMESTAMP:
-			return MessageTag.BBB_XCV_CCCBB_TSP_ANS;
-		case REVOCATION:
-			return MessageTag.BBB_XCV_CCCBB_REV_ANS;
-		default:
-			return MessageTag.BBB_XCV_CCCBB_ANS;
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.BBB_XCV_CCCBB_SIG_ANS;
+			case TIMESTAMP:
+				return MessageTag.BBB_XCV_CCCBB_TSP_ANS;
+			case REVOCATION:
+				return MessageTag.BBB_XCV_CCCBB_REV_ANS;
+			default:
+				return MessageTag.BBB_XCV_CCCBB_ANS;
 		}
 	}
 

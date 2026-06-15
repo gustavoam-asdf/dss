@@ -160,8 +160,8 @@ public abstract class CAdESSignatureExtension implements SignatureExtension<CAdE
 
 		List<String> signatureIdsToExtend = new ArrayList<>();
 
-		CMSDocumentAnalyzer validator = getDocumentValidator(cms, parameters);
-		List<AdvancedSignature> signatures = validator.getSignatures();
+		CMSDocumentAnalyzer analyzer = getDocumentAnalyzer(cms, parameters);
+		List<AdvancedSignature> signatures = analyzer.getSignatures();
 		for (AdvancedSignature signature : signatures) {
 			CAdESSignature cadesSignature = (CAdESSignature) signature;
 			if (signerInformationsToExtend.contains(cadesSignature.getSignerInformation())) {
@@ -240,13 +240,13 @@ public abstract class CAdESSignatureExtension implements SignatureExtension<CAdE
 	}
 
 	/**
-	 * This method returns a document validator for a {@code CMS}
+	 * This method returns a document analyzer for a {@code CMS}
 	 *
 	 * @param cms {@link CMS} to get validation for
 	 * @param parameters {@link CAdESSignatureParameters}
 	 * @return {@link CMSDocumentAnalyzer}
 	 */
-	protected CMSDocumentAnalyzer getDocumentValidator(CMS cms, CAdESSignatureParameters parameters) {
+	protected CMSDocumentAnalyzer getDocumentAnalyzer(CMS cms, CAdESSignatureParameters parameters) {
 		CMSDocumentAnalyzer documentValidator = new CMSDocumentAnalyzer(cms);
 		documentValidator.setCertificateVerifier(certificateVerifier);
 		documentValidator.setDetachedContents(parameters.getDetachedContents());

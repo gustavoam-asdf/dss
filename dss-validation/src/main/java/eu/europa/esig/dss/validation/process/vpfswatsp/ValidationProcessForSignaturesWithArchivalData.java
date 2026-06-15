@@ -140,7 +140,12 @@ public class ValidationProcessForSignaturesWithArchivalData extends Chain<XmlVal
 	@Override
 	protected void initChain() {
 
-		context = signature.isCounterSignature() ? Context.COUNTER_SIGNATURE : Context.SIGNATURE;
+		context = Context.SIGNATURE;
+		if (signature.isCounterSignature()) {
+			context = Context.COUNTER_SIGNATURE;
+		} else if (signature.isKeyBindingSignature()) {
+			context = Context.KEY_BINDING_SIGNATURE;
+		}
 
 		ChainItem<XmlValidationProcessArchivalData> item = null;
 

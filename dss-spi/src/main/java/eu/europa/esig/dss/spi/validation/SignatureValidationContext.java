@@ -417,7 +417,6 @@ public class SignatureValidationContext implements ValidationContext {
 			for (AdvancedSignature counterSignature : counterSignatures) {
 				addSignatureForVerification(counterSignature);
 			}
-
 		}
 	}
 
@@ -1063,7 +1062,7 @@ public class SignatureValidationContext implements ValidationContext {
 		revocations.addAll(getRelatedRevocationTokens(certToken));
 
 		Set<RevocationToken<?>> externalRevocationTokens = getExternalRevocationTokens(certToken, issuerToken);
-		revocations.addAll(externalRevocationTokens);
+		revocations.addAll(getExternalRevocationTokens(certToken, issuerToken));
 
 		if ((remoteOCSPSource != null || remoteCRLSource != null) &&
 				(Utils.isCollectionEmpty(revocations) || (Utils.isCollectionEmpty(externalRevocationTokens) && isRevocationDataRefreshNeeded(certToken, revocations)))) {
@@ -1097,7 +1096,7 @@ public class SignatureValidationContext implements ValidationContext {
 	}
 
 	private Set<RevocationToken<?>> getExternalRevocationTokens(CertificateToken certToken,
-																	   CertificateToken issuerCertificateToken) {
+																CertificateToken issuerCertificateToken) {
 		Set<RevocationToken<?>> result = new HashSet<>();
 		if (issuerCertificateToken != null) {
 			List<RevocationToken<?>> revocationTokens = externalRevocationTokensMap.get(issuerCertificateToken);

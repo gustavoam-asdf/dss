@@ -114,6 +114,25 @@ public class CertificateRefWrapper {
 		}
 		return null;
 	}
+
+	/**
+	 * Returns KID (key identifier) of the certificate reference.
+	 * NOTE: If the original signature contains a byte string, the returned value of the method is base64-encoded result
+	 *
+	 * @return {@link String}
+	 */
+	public String getKid() {
+		return certificateRef.getKID();
+	}
+
+	/**
+	 * Returns X.509 URL (key identifier) of the certificate reference.
+	 *
+	 * @return {@link String}
+	 */
+	public String getX509Url() {
+		return certificateRef.getX509Url();
+	}
 	
 	/**
 	 * Returns digest algo and value

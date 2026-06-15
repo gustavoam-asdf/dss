@@ -390,6 +390,17 @@ public final class Utils {
 	}
 
 	/**
+	 * Gets the size of the collection
+	 *
+	 * @param collection {@link Collection}
+	 * @return size of the collection
+	 */
+	@SuppressWarnings("rawtypes")
+	public static int collectionSize(Collection collection) {
+		return impl.collectionSize(collection);
+	}
+
+	/**
 	 * Checks if the map is null or empty
 	 *
 	 * @param map to check
@@ -410,14 +421,14 @@ public final class Utils {
 	}
 
 	/**
-	 * Gets the size of the collection
+	 * Gets the size of the map
 	 *
-	 * @param collection {@link Collection}
-	 * @return size of the collection
+	 * @param map {@link Map}
+	 * @return size of the map
 	 */
 	@SuppressWarnings("rawtypes")
-	public static int collectionSize(Collection collection) {
-		return impl.collectionSize(collection);
+	public static int mapSize(Map<?,?> map) {
+		return impl.mapSize(map);
 	}
 
 	/**

@@ -451,7 +451,7 @@
         <TrustedList Id="TL-716A43AE73126C30D04EFADFCDFBCD0542830FA604B0192756664DE72B204FA1" parent="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
             <CountryCode>IT</CountryCode>
             <Url>https://eidas.agid.gov.it/TL/TSL-IT.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>192</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2023-07-19T14:49:40Z</LastLoading>
@@ -462,7 +462,7 @@
         <TrustedList Id="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://ec.europa.eu/tools/lotl/eu-lotl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>328</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2023-07-19T14:49:39Z</LastLoading>

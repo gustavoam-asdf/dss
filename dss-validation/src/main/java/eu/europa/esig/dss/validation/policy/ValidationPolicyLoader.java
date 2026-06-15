@@ -484,6 +484,16 @@ public class ValidationPolicyLoader {
                     }
                     break;
 
+                case KEY_BINDING_SIGNATURE:
+                    if (subContext != null) {
+                        addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getKeyBindingSignatureCertificatesCryptographicSuite(), context, subContext);
+                    } else {
+                        addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getKeyBindingSignatureCryptographicSuite(), context, subContext);
+                        addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getKeyBindingSignatureCertificatesCryptographicSuite(), context, SubContext.SIGNING_CERT);
+                        addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getKeyBindingSignatureCertificatesCryptographicSuite(), context, SubContext.CA_CERTIFICATE);
+                    }
+                    break;
+
                 case REVOCATION:
                     if (subContext != null) {
                         addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite(), context, subContext);
@@ -505,7 +515,15 @@ public class ValidationPolicyLoader {
                     break;
 
                 case EVIDENCE_RECORD:
-                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite(), context, subContext);
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite(), context, subContext);
+                    break;
+
+                case EAA:
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAACryptographicSuite(), context, subContext);
+                    break;
+
+                case EAA_REVOCATION:
+                    addCryptographicSuite(cryptographicSuites, cryptographicSuiteCatalogue.getEAARevocationCryptographicSuite(), context, subContext);
                     break;
 
                 default:

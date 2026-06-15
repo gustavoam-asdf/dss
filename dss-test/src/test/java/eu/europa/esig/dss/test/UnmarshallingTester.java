@@ -1590,7 +1590,7 @@ public class UnmarshallingTester {
 	private static void compareXmlTrustedList(XmlTrustedList xmlTrustedList1, XmlTrustedList xmlTrustedList2) {
 		assertEquals(xmlTrustedList1.getCountryCode(), xmlTrustedList2.getCountryCode());
 		assertEquals(xmlTrustedList1.getUrl(), xmlTrustedList2.getUrl());
-		assertEquals(xmlTrustedList1.getTSLType(), xmlTrustedList2.getTSLType());
+		assertEquals(xmlTrustedList1.getType(), xmlTrustedList2.getType());
 		assertEquals(xmlTrustedList1.getSequenceNumber(), xmlTrustedList2.getSequenceNumber());
 		assertEquals(xmlTrustedList1.getVersion(), xmlTrustedList2.getVersion());
 		assertDateEquals(xmlTrustedList1.getLastLoading(), xmlTrustedList2.getLastLoading());

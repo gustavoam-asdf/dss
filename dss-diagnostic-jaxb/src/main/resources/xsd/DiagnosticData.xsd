@@ -13,6 +13,14 @@
 			<xs:element name="ContainerInfo" type="ContainerInfo" minOccurs="0" />
 			<xs:element name="PDFAInfo" type="PDFAInfo" minOccurs="0" />
 			<xs:element name="ConnectionInfo" type="ConnectionInfo" minOccurs="0" />
+			<xs:element name="EAAPresentationInfo" type="EAAPresentationInfo" minOccurs="0" />
+			<xs:element name="EAAs" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAA" type="EAA" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="Signatures" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -24,6 +32,13 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="EvidenceRecord" type="EvidenceRecord" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="UsedEAARevocationTokens" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAARevocationToken" type="EAARevocationToken" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -68,6 +83,14 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="TrustedList" type="TrustedList" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="ListsOfTrustedEntities" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ListOfTrustedEntities" type="ListOfTrustedEntities" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -151,6 +174,42 @@
 		</xs:sequence>
 		<xs:attribute name="url" type="xs:string" use="required" />
 	</xs:complexType>
+
+	<xs:complexType name="EAAPresentationInfo">
+		<xs:sequence>
+			<xs:element name="EAAPresentationType" type="EAAPresentationType" />
+			<xs:element name="Version" type="xs:string" minOccurs="0" /> <!-- mdoc -->
+			<xs:element name="Documents" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EAADocument" type="EAADocument" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Errors" type="Errors" minOccurs="0" /> <!-- mdoc -->
+			<xs:element name="Status" type="xs:integer" minOccurs="0" /> <!-- mdoc -->
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="EAADocument">
+		<xs:sequence>
+			<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
+			<xs:element name="Errors" type="Errors" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="EAA" type="xs:IDREF" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="Errors">
+		<xs:sequence>
+			<xs:element name="Error" type="Error" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="namespace" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Error">
+		<xs:attribute name="label" type="xs:string" />
+		<xs:attribute name="code" type="xs:integer" />
+	</xs:complexType>
 	
 	<xs:complexType name="AbstractToken" abstract="true">
 		<xs:attribute name="Id" type="xs:ID" use="required" />
@@ -169,6 +228,7 @@
 					<xs:element name="SignatureFormat" type="SignatureFormat" />
 					<xs:element name="JWSSerializationType" type="JWSSerializationType" minOccurs="0" /> <!-- JAdES only -->
 					<xs:element name="SignatureType" type="xs:string" minOccurs="0" /> <!-- JAdES only -->
+					<xs:element name="COSESignatureType" type="COSESignatureType" minOccurs="0" /> <!-- CB-AdES only -->
 		
 					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 					
@@ -217,6 +277,7 @@
 					
 				</xs:sequence>
 				<xs:attribute name="CounterSignature" type="xs:boolean" use="optional" />
+				<xs:attribute name="KeyBindingSignature" type="xs:boolean" use="optional" />
 				<xs:attribute name="Parent" type="xs:IDREF" use="optional" /> <!-- If is a counter-signature -->
 			</xs:extension>
 		</xs:complexContent>
@@ -453,6 +514,14 @@
 						<xs:complexType>
 							<xs:sequence>
 								<xs:element name="TrustServiceProvider" type="TrustServiceProvider" minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+
+					<xs:element name="TrustedEntities" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="TrustedEntity" type="TrustedEntity" minOccurs="0" maxOccurs="unbounded" />
 							</xs:sequence>
 						</xs:complexType>
 					</xs:element>
@@ -712,6 +781,7 @@
 					<xs:element name="PSD2QcInfo" type="PSD2QcInfo" minOccurs="0" />
 					<xs:element name="QcQSCDlegislation" type="QcQSCDlegislation" minOccurs="0" />
 					<xs:element name="QcIdentMethod" type="OID" minOccurs="0" />
+					<xs:element name="QcPSB" type="QcPSB" minOccurs="0" />
 					<xs:element name="OtherOIDs" type="OtherOIDs" minOccurs="0" />
 					<xs:element name="MRACertificateMapping" type="MRACertificateMapping" minOccurs="0" />
 				</xs:sequence>
@@ -820,6 +890,22 @@
 		</xs:sequence>
 	</xs:complexType>
 
+	<xs:complexType name="CertForPID">
+		<xs:attribute name="present" type="xs:boolean" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="CertForWallet">
+		<xs:attribute name="present" type="xs:boolean" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="QcPSB">
+		<xs:sequence>
+			<xs:element name="countryOfLegislation" type="xs:string" />
+			<xs:element name="authSourceIdentification" type="xs:string" />
+			<xs:element name="legislationIdentification" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+
 	<xs:complexType name="CertificateContentEquivalenceList">
 		<xs:sequence>
 			<xs:element name="CertificateContentEquivalence" type="CertificateContentEquivalence" minOccurs="0" maxOccurs="unbounded" />
@@ -906,10 +992,17 @@
 			<xs:enumeration value="PKCS7-LT" />
 			<xs:enumeration value="PKCS7-LTA" />
 			<xs:enumeration value="JSON-NOT-ETSI" />
+			<xs:enumeration value="JAdES" />
 			<xs:enumeration value="JAdES-BASELINE-B" />
 			<xs:enumeration value="JAdES-BASELINE-T" />
 			<xs:enumeration value="JAdES-BASELINE-LT" />
 			<xs:enumeration value="JAdES-BASELINE-LTA" />
+			<xs:enumeration value="CBOR-NOT-ETSI" />
+			<xs:enumeration value="CB-AdES" />
+			<xs:enumeration value="CB-AdES-BASELINE-B" />
+			<xs:enumeration value="CB-AdES-BASELINE-T" />
+			<xs:enumeration value="CB-AdES-BASELINE-LT" />
+			<xs:enumeration value="CB-AdES-BASELINE-LTA" />
 			<xs:enumeration value="UNKNOWN" />
 		</xs:restriction>
 	</xs:simpleType>
@@ -921,6 +1014,25 @@
 			<xs:enumeration value="FLATTENED_JSON_SERIALIZATION" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="COSESignatureType">
+		<xs:simpleContent>
+			<xs:extension base="COSESignatureTypeEnum">
+				<xs:attribute name="tagged" type="xs:boolean" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="COSESignatureTypeEnum" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="COSE_Sign" />
+			<xs:enumeration value="COSE_Sign1" />
+			<xs:enumeration value="COSE_Countersignature" />
+			<xs:enumeration value="COSE_Countersignature0" />
+			<xs:enumeration value="COSE_Countersignature_V2" />
+			<xs:enumeration value="COSE_Countersignature0_V2" />
+		</xs:restriction>
+	</xs:simpleType>
 	
 	<xs:simpleType name="ScopeType" final="restriction">
 		<xs:restriction base="xs:string">
@@ -929,6 +1041,8 @@
 			<xs:enumeration value="DIGEST" />
 			<xs:enumeration value="ARCHIVED" />
 			<xs:enumeration value="COUNTER_SIGNATURE" />
+			<xs:enumeration value="EAA_SIGNATURE" />
+			<xs:enumeration value="KEY_BINDING_SIGNATURE" />
 			<xs:enumeration value="SIGNATURE" />
 		</xs:restriction>
 	</xs:simpleType>
@@ -1079,6 +1193,7 @@
 					<xs:element name="DataFound" type="xs:boolean" />
 					<xs:element name="DataIntact" type="xs:boolean" />
 					<xs:element name="DataObjectReferences" type="ObjectReferences" minOccurs="0" />
+					<xs:element name="DisclosableClaim" type="DisclosableClaim" minOccurs="0" /> <!-- EAA specific -->
 				</xs:sequence>
 				<xs:attribute name="type" type="DigestMatcherType" use="required" />
 				<xs:attribute name="id" type="xs:string" use="optional"/>
@@ -1087,6 +1202,16 @@
 				<xs:attribute name="duplicated" type="xs:boolean" use="optional" default="false" />
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DisclosableClaim">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:integer" use="optional" />
+				<xs:attribute name="name" type="xs:string" use="optional" />
+				<xs:attribute name="namespace" type="xs:string" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	
 	<xs:simpleType name="EndorsementType" final="restriction">
@@ -1116,9 +1241,12 @@
 			<xs:enumeration value="CONTENT_DIGEST" />
 			
 			<!-- JAdES -->
-			<xs:enumeration value="JWS_SIGNING_INPUT_DIGEST" />
+			<xs:enumeration value="JWS_SIGNING_INPUT" />
 			<xs:enumeration value="SIG_D_ENTRY" />
 			<xs:enumeration value="COUNTER_SIGNED_SIGNATURE_VALUE" />
+
+			<!-- CB-AdES -->
+			<xs:enumeration value="COSE_SIG_STRUCTURE" />
 			
 			<!-- TIMESTAMP -->
 			<xs:enumeration value="MESSAGE_IMPRINT" />
@@ -1129,6 +1257,12 @@
 			<xs:enumeration value="EVIDENCE_RECORD_ARCHIVE_TIME_STAMP" />
 			<xs:enumeration value="EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE" />
 			<xs:enumeration value="EVIDENCE_RECORD_MASTER_SIGNATURE" />
+
+			<!-- EAA -->
+			<xs:enumeration value="EAA_DISCLOSURE" />
+			<xs:enumeration value="EAA_NESTED_DISCLOSURE" />
+			<xs:enumeration value="EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM" />
+			<xs:enumeration value="EAA_KEY_BINDING" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1177,7 +1311,8 @@
 			<xs:choice>
 				<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue"/>
 				<xs:element name="SerialInfo" type="SignerInfo" /> <!-- OCSP -->
-				<xs:element name="X509Url" type="xs:string" /> <!-- JAdES -->
+				<xs:element name="KID" type="xs:string" /> <!-- JAdES / CB-AdES -->
+				<xs:element name="X509Url" type="xs:string" /> <!-- JAdES / CB-AdES -->
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>	
@@ -1194,6 +1329,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="TRUSTED_STORE" />
 			<xs:enumeration value="TRUSTED_LIST" />
+			<xs:enumeration value="TRUSTED_ENTITIES" />
 			<xs:enumeration value="SIGNATURE" />
 			<xs:enumeration value="OCSP_RESPONSE" />
 			<xs:enumeration value="OTHER" />
@@ -1216,6 +1352,7 @@
 			<xs:enumeration value="VRI_DICTIONARY" />
 			<xs:enumeration value="BASIC_OCSP_RESP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="UNPROTECTED_HEADER" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1226,6 +1363,7 @@
 			<xs:enumeration value="ATTRIBUTE_CERTIFICATE_REFS" />
 			<xs:enumeration value="KEY_IDENTIFIER" /> <!-- JWS/JAdES only -->
 			<xs:enumeration value="X509_URL" /> <!-- JWS/JAdES only -->
+			<xs:enumeration value="UNPROTECTED_HEADER_REFS" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -1299,6 +1437,7 @@
 			<xs:enumeration value="CAdES_V3" />
 			<xs:enumeration value="CAdES_DETACHED" />
 			<xs:enumeration value="JAdES" />
+			<xs:enumeration value="CB_AdES" />
 			<xs:enumeration value="PAdES" />
 
 			<!-- Evidence record time-stamps -->
@@ -1454,11 +1593,12 @@
 		<xs:sequence>
 			<xs:element name="Origin" type="RevocationRefOriginType" maxOccurs="unbounded" />
 			<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" />
-			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" /> <!-- OCSP -->
+			<xs:element name="ProducedAt" type="xs:dateTime" minOccurs="0" />
 			<xs:element name="ResponderId" type="SignerInfo" minOccurs="0" /> <!-- OCSP -->
 			<xs:element name="Issuer" type="xs:string" minOccurs="0" /> <!-- CRL -->
 			<xs:element name="IssueTime" type="xs:dateTime" minOccurs="0" /> <!-- CRL -->
-			<xs:element name="Number" type="xs:integer" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="CRLNumber" type="xs:integer" minOccurs="0" /> <!-- CRL -->
+			<xs:element name="Uri" type="xs:string" minOccurs="0" />
 		</xs:sequence>
 	</xs:complexType>
 	
@@ -1595,6 +1735,529 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="EAA">
+		<xs:complexContent>
+			<xs:extension base="AbstractToken">
+				<xs:sequence>
+					<xs:element name="DocumentName" type="xs:string" minOccurs="0" />
+					<xs:element name="DocumentType" type="xs:string" minOccurs="0" />
+					<xs:element name="EAAType" type="EAAType" />
+					<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
+					<xs:element name="DigestMethod" type="xs:string" minOccurs="0" />
+					<xs:element name="DigestMatchers" type="DigestMatchers" minOccurs="0" />
+					<xs:element name="EAASignature" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+                    <xs:element name="EAAPayload" type="EAAPayload" minOccurs="0" />
+
+                    <xs:element name="KeyBindingSignature" minOccurs="0">
+						<xs:complexType>
+							<xs:attribute name="Signature" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+                    <xs:element name="KeyBindingPayload" type="KeyBindingPayload" minOccurs="0" />
+
+					<xs:element name="EAARevocations" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="EAARevocationStatus" type="EAARevocationStatus" minOccurs="0" maxOccurs="unbounded" />
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+    <xs:complexType name="KeyBindingPayload">
+        <xs:sequence>
+            <xs:element name="IssuanceTime" type="Claim" minOccurs="0" />
+            <xs:element name="Nonce" type="Claim" minOccurs="0" />
+            <xs:element name="Audience" type="Claim" minOccurs="0" />
+            <xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+	<xs:complexType name="EAAPayload">
+		<xs:sequence>
+			<!-- technical claims -->
+			<xs:element name="Identifier" type="Claim" minOccurs="0" />
+			<xs:element name="Issuer" type="Claim" minOccurs="0" />
+			<xs:element name="Subject" type="Claim" minOccurs="0" />
+			<xs:element name="Audience" type="Claim" minOccurs="0" />
+			<xs:element name="IssuedAt" type="Claim" minOccurs="0" />
+			<xs:element name="NotBefore" type="Claim" minOccurs="0" />
+			<xs:element name="Expiration" type="Claim" minOccurs="0" />
+			<xs:element name="UpdatedAt" type="Claim" minOccurs="0" />
+			<xs:element name="Category" type="Claim" minOccurs="0" />
+			<xs:element name="VerifiableCredentialsType" type="VerifiableCredentialsTypeClaim" minOccurs="0" />
+			<xs:element name="Status" type="StatusClaim" minOccurs="0" />
+			<xs:element name="Nonce" type="Claim" minOccurs="0" />
+			<xs:element name="DeviceKey" type="DeviceKeyClaim" minOccurs="0" />
+
+			<!-- mdoc technical claims -->
+			<xs:element name="Version" type="Claim" minOccurs="0" />
+			<xs:element name="DocType" type="Claim" minOccurs="0" />
+			<xs:element name="ValidityInfo" type="ValidityInfoClaim" minOccurs="0" />
+
+			<!-- ETSI TS 119 472-1 technical claims -->
+			<xs:element name="AdministrativeIssuanceDate" type="Claim" minOccurs="0" />
+			<xs:element name="AdministrativeExpirationDate" type="Claim" minOccurs="0" />
+			<xs:element name="OneTimeUse" type="Claim" minOccurs="0" />
+			<xs:element name="ShortLived" type="Claim" minOccurs="0" />
+			<xs:element name="Evidence" type="Claim" minOccurs="0" />
+			<xs:element name="AttestedAttributesSubject" type="AttestedAttributesSubjectClaim" minOccurs="0" />
+
+			<!-- holder info -->
+			<xs:element name="FullName" type="Claim" minOccurs="0" />
+			<xs:element name="GivenName" type="Claim" minOccurs="0" />
+			<xs:element name="FamilyName" type="Claim" minOccurs="0" />
+			<xs:element name="MiddleName" type="Claim" minOccurs="0" />
+			<xs:element name="Nickname" type="Claim" minOccurs="0" />
+			<xs:element name="ShortName" type="Claim" minOccurs="0" />
+			<xs:element name="ProfileUrl" type="Claim" minOccurs="0" />
+			<xs:element name="PictureUrl" type="Claim" minOccurs="0" />
+			<xs:element name="WebsiteUrl" type="Claim" minOccurs="0" />
+			<xs:element name="Email" type="Claim" minOccurs="0" />
+			<xs:element name="EmailVerified" type="Claim" minOccurs="0" />
+			<xs:element name="Gender" type="Claim" minOccurs="0" />
+			<xs:element name="Birthdate" type="BirthdateClaim" minOccurs="0" />
+			<xs:element name="Timezone" type="Claim" minOccurs="0" />
+			<xs:element name="Locale" type="Claim" minOccurs="0" />
+			<xs:element name="Address" type="AddressClaim" minOccurs="0" />
+			<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
+			<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
+			<xs:element name="PlaceOfBirth" type="PlaceOfBirthClaim" minOccurs="0" />
+			<xs:element name="Nationalities" type="Claim" minOccurs="0" />
+			<xs:element name="BirthFamilyName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthGivenName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthMiddleName" type="Claim" minOccurs="0" />
+			<xs:element name="Salutation" type="Claim" minOccurs="0" />
+			<xs:element name="Title" type="Claim" minOccurs="0" />
+			<xs:element name="MobilePhoneNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Pseudonym" type="Claim" minOccurs="0" />
+
+			<xs:element name="CredentialSubject" type="CredentialSubjectClaim" minOccurs="0" maxOccurs="unbounded" />
+
+			<!-- mdoc claims -->
+			<xs:element name="IssuingCountry" type="Claim" minOccurs="0" />
+			<xs:element name="IssuingAuthority" type="Claim" minOccurs="0" />
+			<xs:element name="DocumentNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Portrait" type="Claim" minOccurs="0" />
+			<xs:element name="DrivingPrivileges" type="DrivingPrivilegesClaim" minOccurs="0" />
+			<xs:element name="UNDistinguishingSign" type="Claim" minOccurs="0" />
+			<xs:element name="PersonalAdministrativeNumber" type="Claim" minOccurs="0" />
+			<xs:element name="Height" type="Claim" minOccurs="0" />
+			<xs:element name="Weight" type="Claim" minOccurs="0" />
+			<xs:element name="EyeColour" type="Claim" minOccurs="0" />
+			<xs:element name="HairColour" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentPostalAddress" type="Claim" minOccurs="0" />
+			<xs:element name="PortraitCaptureDate" type="Claim" minOccurs="0" />
+			<xs:element name="AgeInYears" type="Claim" minOccurs="0" />
+			<xs:element name="AgeBirthYear" type="Claim" minOccurs="0" />
+			<xs:element name="AgeEqualOrOver" type="AgeEqualOrOverClaim" minOccurs="0" />
+			<xs:element name="AgeOverNN" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="IssuingJurisdiction" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressCity" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressState" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressPostalCode" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressCountry" type="Claim" minOccurs="0" />
+			<xs:element name="BiometricTemplate" type="BiometricTemplateXXClaim" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="SignatureUsualMark" type="Claim" minOccurs="0" />
+			<xs:element name="Fingerprint" type="Claim" minOccurs="0" />
+			<xs:element name="BusinessName" type="Claim" minOccurs="0" />
+			<xs:element name="OrganizationName" type="Claim" minOccurs="0" />
+			<xs:element name="BirthFullName" type="Claim" minOccurs="0" />
+			<xs:element name="Profession" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipFather" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipMother" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParent" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSon" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipDaughter" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipBrother" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSister" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSibling" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSpouse" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipFatherInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipMotherInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParentInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipSonInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipDaughterInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipChildInLaw" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipParentalAuthority" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipLegalRepresentative" type="Claim" minOccurs="0" />
+			<xs:element name="RelationshipAgent" type="Claim" minOccurs="0" />
+			<xs:element name="DocumentType" type="Claim" minOccurs="0" />
+
+			<!-- ETSI TS 119 472-1 other claims -->
+			<xs:element name="IssuingAuthorityRegistrationIdentifier" type="Claim" minOccurs="0" />
+
+			<!-- PID Rulebook headers -->
+			<xs:element name="TrustAnchor" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressStreet" type="Claim" minOccurs="0" />
+			<xs:element name="ResidentAddressHouseNumber" type="Claim" minOccurs="0" />
+
+			<!-- other claims -->
+			<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CredentialSubjectClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="FullName" type="Claim" minOccurs="0" />
+					<xs:element name="GivenName" type="Claim" minOccurs="0" />
+					<xs:element name="FamilyName" type="Claim" minOccurs="0" />
+					<xs:element name="MiddleName" type="Claim" minOccurs="0" />
+					<xs:element name="Nickname" type="Claim" minOccurs="0" />
+					<xs:element name="ShortName" type="Claim" minOccurs="0" />
+					<xs:element name="ProfileUrl" type="Claim" minOccurs="0" />
+					<xs:element name="PictureUrl" type="Claim" minOccurs="0" />
+					<xs:element name="WebsiteUrl" type="Claim" minOccurs="0" />
+					<xs:element name="Email" type="Claim" minOccurs="0" />
+					<xs:element name="EmailVerified" type="Claim" minOccurs="0" />
+					<xs:element name="Gender" type="Claim" minOccurs="0" />
+					<xs:element name="Birthdate" type="BirthdateClaim" minOccurs="0" />
+					<xs:element name="Timezone" type="Claim" minOccurs="0" />
+					<xs:element name="Locale" type="Claim" minOccurs="0" />
+					<xs:element name="Address" type="AddressClaim" minOccurs="0" />
+					<xs:element name="PhoneNumber" type="Claim" minOccurs="0" />
+					<xs:element name="PhoneNumberVerified" type="Claim" minOccurs="0" />
+					<xs:element name="PlaceOfBirth" type="Claim" minOccurs="0" />
+					<xs:element name="Nationalities" type="Claim" minOccurs="0" />
+					<xs:element name="BirthFamilyName" type="Claim" minOccurs="0" />
+					<xs:element name="BirthGivenName" type="Claim" minOccurs="0" />
+					<xs:element name="BirthMiddleName" type="Claim" minOccurs="0" />
+					<xs:element name="Salutation" type="Claim" minOccurs="0" />
+					<xs:element name="Title" type="Claim" minOccurs="0" />
+					<xs:element name="MobilePhoneNumber" type="Claim" minOccurs="0" />
+					<xs:element name="Pseudonym" type="Claim" minOccurs="0" />
+
+					<!-- other claims -->
+					<xs:element name="OtherClaim" type="Claim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<!-- Verifiable Credential Type -->
+	<xs:complexType name="VerifiableCredentialsTypeClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Integrity" type="IntegrityClaim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="IntegrityClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="DigestMethod" type="xs:string" minOccurs="0" />
+					<xs:element name="DigestValue" type="xs:base64Binary" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="StatusClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="StatusList" type="StatusListClaim" minOccurs="0" />
+					<xs:element name="IdentifierList" type="IdentifierListClaim" minOccurs="0" />
+					<xs:element name="Index" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Type" type="Claim" minOccurs="0" />
+					<xs:element name="Purpose" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="StatusListClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Index" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Certificate" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="IdentifierListClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Identifier" type="Claim" minOccurs="0" />
+					<xs:element name="Uri" type="Claim" minOccurs="0" />
+					<xs:element name="Certificate" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DeviceKeyClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="PublicKey" type="xs:base64Binary" minOccurs="0" />
+					<xs:element name="X509Certificate" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="Certificate" type="xs:IDREF" use="required" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="KID" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="X509Url" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="KeyAuthorizations" type="KeyAuthorizations" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="KeyAuthorizations">
+		<xs:sequence>
+			<xs:element name="AuthorizedNamespace" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="AuthorizedDataElements" type="AuthorizedDataElements" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="AuthorizedDataElements">
+		<xs:sequence>
+			<xs:element name="DataElement" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="namespace" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="AddressClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="PostalAddress" type="Claim" minOccurs="0" />
+					<xs:element name="City" type="Claim" minOccurs="0" />
+					<xs:element name="StateOrProvince" type="Claim" minOccurs="0" />
+					<xs:element name="PostalCode" type="Claim" minOccurs="0" />
+					<xs:element name="CountryName" type="Claim" minOccurs="0" />
+					<xs:element name="StreetAddress" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BirthdateClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Birthdate" type="Claim" minOccurs="0"/>
+					<xs:element name="ApproximateMask" type="Claim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="PlaceOfBirthClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Country" type="Claim" minOccurs="0"/>
+					<xs:element name="Region" type="Claim" minOccurs="0"/>
+					<xs:element name="City" type="Claim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidityInfoClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Signed" type="Claim" minOccurs="0" />
+					<xs:element name="ValidFrom" type="Claim" minOccurs="0" />
+					<xs:element name="ValidUntil" type="Claim" minOccurs="0" />
+					<xs:element name="ExpectedUpdate" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegesClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="DrivingPrivilege" type="DrivingPrivilegeClaim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="VehicleCategoryCode" type="Claim" minOccurs="0"/>
+					<xs:element name="IssueDate" type="Claim" minOccurs="0"/>
+					<xs:element name="ExpiryDate" type="Claim" minOccurs="0"/>
+					<xs:element name="Codes" type="DrivingPrivilegeCodesClaim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeCodesClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Code" type="DrivingPrivilegeCodeClaim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="DrivingPrivilegeCodeClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="Code" type="Claim" minOccurs="0"/>
+					<xs:element name="Sign" type="Claim" minOccurs="0"/>
+					<xs:element name="Value" type="Claim" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AgeEqualOrOverClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="AgeOverNNClaim" type="AgeOverNNClaim" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AgeOverNNClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:attribute name="age" type="xs:int" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BiometricTemplateXXClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:attribute name="type" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AttestedAttributesSubjectClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="SubjectId" type="AttestedAttributesSubjectIdClaim" minOccurs="0" />
+					<xs:element name="SubjectPseudonym" type="Claim" minOccurs="0" />
+					<xs:element name="Attributes" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="AttestedAttributesSubjectIdClaim">
+		<xs:complexContent>
+			<xs:extension base="Claim">
+				<xs:sequence>
+					<xs:element name="FamilyName" type="Claim" minOccurs="0" />
+					<xs:element name="GivenName" type="Claim" minOccurs="0" />
+					<xs:element name="DocumentNumber" type="Claim" minOccurs="0" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="Claim">
+		<xs:sequence>
+			<xs:element name="Text" type="xs:string" minOccurs="0" />
+			<xs:element name="Number" type="xs:integer" minOccurs="0" />
+			<xs:element name="Boolean" type="xs:boolean" minOccurs="0" />
+			<xs:element name="Binary" type="xs:base64Binary" minOccurs="0" />
+			<xs:element name="DateTime" type="xs:dateTime" minOccurs="0" />
+			<xs:element name="Item" type="Claim" minOccurs="0" maxOccurs="unbounded" /> <!-- Represents a value of an array item -->
+			<xs:element name="Entry" type="Claim" minOccurs="0" maxOccurs="unbounded" /> <!-- Represents a value of a map entry -->
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" /> <!-- may be null -->
+		<xs:attribute name="namespace" type="xs:string" /> <!-- may be null -->
+		<xs:attribute name="disclosure" type="xs:boolean" />
+	</xs:complexType>
+
+	<xs:complexType name="EAARevocationToken">
+		<xs:complexContent>
+			<xs:extension base="AbstractToken">
+				<xs:sequence>
+					<xs:element name="Origin" type="EAARevocationOrigin" />
+					<xs:element name="Type" type="xs:string" minOccurs="0" />
+					<xs:element name="SourceAddress" type="xs:string" minOccurs="0" />
+					<xs:element name="Subject" type="EAASubject" minOccurs="0" />
+					<xs:element name="IssuedAt" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="ExpirationTime" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="TimeToLive" type="xs:integer" minOccurs="0" />
+
+					<xs:element name="BasicSignature" type="BasicSignature" minOccurs="0" /> <!-- Can be null in case of no SUCCESSFUL response of OCSP -->
+					<xs:element name="SigningCertificate" type="SigningCertificate" minOccurs="0" />
+					<xs:element name="CertificateChain" type="CertificateChain" minOccurs="0" />
+
+					<xs:element name="FoundCertificates" type="FoundCertificates" minOccurs="0" />
+
+					<xs:choice>
+						<xs:element name="Base64Encoded" type="xs:base64Binary" />
+						<xs:element name="DigestAlgoAndValue" type="DigestAlgoAndValue" />
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="EAASubject">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="match" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="EAARevocationOrigin" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EXTERNAL" />
+			<xs:enumeration value="CACHED" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="EAARevocationStatus">
+		<xs:sequence>
+			<xs:element name="Status" type="EAAStatus" />
+		</xs:sequence>
+		<xs:attribute name="EAARevocationToken" type="xs:IDREF" use="required" />
+	</xs:complexType>
+
+	<xs:simpleType name="EAAStatus" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VALID" />
+			<xs:enumeration value="INVALID" />
+			<xs:enumeration value="SUSPENDED" />
+			<xs:enumeration value="APPLICATION_SPECIFIC" />
+			<xs:enumeration value="UNKNOWN" />
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:complexType name="DigestMatchers">
 		<xs:sequence>
 			<xs:element name="DigestMatcher" type="DigestMatcher" minOccurs="0" maxOccurs="unbounded" />
@@ -1622,12 +2285,31 @@
 			<xs:enumeration value="EXTERNAL_EVIDENCE_RECORD" />
 		</xs:restriction>
 	</xs:simpleType>
-	
-	<xs:complexType name="TrustedList">
+
+	<xs:simpleType name="EAAType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SD_JWT_VC" />
+			<xs:enumeration value="ISO_IEC_MDOC" />
+			<xs:enumeration value="W3C_VC" />
+			<xs:enumeration value="X509_AC" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="EAAPresentationType" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SD_JWT" />
+			<xs:enumeration value="MDOC_DEVICE_RESPONSE" />
+			<xs:enumeration value="MDOC_ISSUER_SIGNED" />
+			<xs:enumeration value="JWS" />
+			<xs:enumeration value="X509_AC" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="TrustSourceList">
 		<xs:sequence>
 			<xs:element name="CountryCode" type="xs:string" minOccurs="0" />
 			<xs:element name="Url" type="xs:string" />
-			<xs:element name="TSLType" type="xs:string" minOccurs="0" />
+			<xs:element name="Type" type="xs:string" minOccurs="0" />
 			<xs:element name="SequenceNumber" type="xs:int" minOccurs="0" />
 			<xs:element name="Version" type="xs:int" minOccurs="0" />
 			<xs:element name="LastLoading" type="xs:dateTime" minOccurs="0" />
@@ -1637,9 +2319,25 @@
 			<xs:element name="StructuralValidation"	type="StructuralValidation" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="Id" type="xs:ID" use="required" />
-		<xs:attribute name="LOTL" type="xs:boolean" default="false" use="optional" />
-		<xs:attribute name="parent" type="xs:IDREF" use="optional" />
-		<xs:attribute name="mra" type="xs:boolean" use="optional" />
+	</xs:complexType>
+	
+	<xs:complexType name="TrustedList">
+		<xs:complexContent>
+			<xs:extension base="TrustSourceList">
+				<xs:attribute name="LOTL" type="xs:boolean" default="false" use="optional" />
+				<xs:attribute name="parent" type="xs:IDREF" use="optional" />
+				<xs:attribute name="mra" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ListOfTrustedEntities">
+		<xs:complexContent>
+			<xs:extension base="TrustSourceList">
+				<xs:attribute name="LoLoTE" type="xs:boolean" default="false" use="optional" />
+				<xs:attribute name="parent" type="xs:IDREF" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	
 	<xs:complexType name="TrustServiceProvider">
@@ -1677,8 +2375,44 @@
 		<xs:attribute name="TL" type="xs:IDREF" use="required" />
 		<xs:attribute name="LOTL" type="xs:IDREF" use="optional" />
 	</xs:complexType>
-	
-	<xs:complexType name="TrustService">
+
+	<xs:complexType name="TrustedEntity">
+		<xs:sequence>
+			<xs:element name="Names" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Name" type="LangAndValue" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TradeNames" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TradeName" type="LangAndValue" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RegistrationIdentifiers" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="RegistrationIdentifier" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="TrustedEntityServices" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TrustedEntityService" type="TrustedEntityService" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="LoTE" type="xs:IDREF" use="required" />
+		<xs:attribute name="LoLoTE" type="xs:IDREF" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="TrustedEntityService">
 		<xs:sequence>
 			<xs:element name="ServiceNames" minOccurs="0">
 				<xs:complexType>
@@ -1694,7 +2428,7 @@
 
 			<xs:element name="CapturedQualifiers" type="CapturedQualifiers" minOccurs="0" />
 			<xs:element name="AdditionalServiceInfoUris" type="AdditionalServiceInfoUris" minOccurs="0" />
-			
+
 			<xs:element name="ServiceSupplyPoints" minOccurs="0">
 				<xs:complexType>
 					<xs:sequence>
@@ -1702,12 +2436,20 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			
-			<xs:element name="ExpiredCertsRevocationInfo" type="xs:dateTime" minOccurs="0" />
-			<xs:element name="MRATrustServiceMapping" type="MRATrustServiceMapping" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="ServiceDigitalIdentifier" type="xs:IDREF" use="required" />
-		<xs:attribute name="enactedMRA" type="xs:boolean" use="optional" />
+	</xs:complexType>
+	
+	<xs:complexType name="TrustService">
+		<xs:complexContent>
+			<xs:extension base="TrustedEntityService">
+				<xs:sequence>
+					<xs:element name="ExpiredCertsRevocationInfo" type="xs:dateTime" minOccurs="0" />
+					<xs:element name="MRATrustServiceMapping" type="MRATrustServiceMapping" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="enactedMRA" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	
 	<xs:complexType name="DigestAlgoAndValues">

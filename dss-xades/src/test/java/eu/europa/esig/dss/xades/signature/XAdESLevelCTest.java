@@ -254,7 +254,7 @@ public class XAdESLevelCTest extends AbstractXAdESTestSignature {
 
 				assertNotNull(crlRef.getIssuer());
 				assertNotNull(crlRef.getIssueTime());
-				assertNull(crlRef.getNumber());
+				assertNull(crlRef.getCRLNumber());
 
 				assertNull(crlRef.getProductionTime());
 				assertNull(crlRef.getResponderIdKey());
@@ -276,7 +276,7 @@ public class XAdESLevelCTest extends AbstractXAdESTestSignature {
 
 				assertNull(crlRef.getIssuer());
 				assertNull(crlRef.getIssueTime());
-				assertNull(crlRef.getNumber());
+				assertNull(crlRef.getCRLNumber());
 
 				++ocspRefCounter;
 			}

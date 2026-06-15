@@ -78,6 +78,9 @@ public class ContentTypeCheck extends AbstractMultiValuesCheckItem<XmlSAV> {
 	}
 
 	private String getRFC7515ContentType(String mimeType) {
+		if (mimeType == null) {
+			return null;
+		}
 		/*
 		 * RFC 7515 requires to handle the ContentType, as it has an omitted "application/" prefix.
 		 * Therefore, we add additional value to ensure its correct processing

@@ -191,4 +191,56 @@ class CertificateQcTypeCheckTest extends AbstractTestCheck {
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
     }
 
+    @Test
+    void certForPIDTest() {
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.1");
+        xmlQcStatements.getQcTypes().add(xmlOID);
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("0.4.0.194126.1.1");
+
+        XmlCertificate xc = new XmlCertificate();
+        xc.getCertificateExtensions().add(xmlQcStatements);
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateQcTypeCheck cqctc = new CertificateQcTypeCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new MultiValuesConstraintWrapper(constraint));
+        cqctc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void certForWalletTest() {
+        XmlQcStatements xmlQcStatements = new XmlQcStatements();
+        xmlQcStatements.setOID(CertificateExtensionEnum.QC_STATEMENTS.getOid());
+
+        XmlOID xmlOID = new XmlOID();
+        xmlOID.setValue("0.4.0.194126.1.2");
+        xmlQcStatements.getQcTypes().add(xmlOID);
+
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.setLevel(Level.FAIL);
+        constraint.getId().add("0.4.0.194126.1.2");
+
+        XmlCertificate xc = new XmlCertificate();
+        xc.getCertificateExtensions().add(xmlQcStatements);
+
+        XmlSubXCV result = new XmlSubXCV();
+        CertificateQcTypeCheck cqctc = new CertificateQcTypeCheck(i18nProvider, result,
+                new CertificateWrapper(xc), new MultiValuesConstraintWrapper(constraint));
+        cqctc.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
 }

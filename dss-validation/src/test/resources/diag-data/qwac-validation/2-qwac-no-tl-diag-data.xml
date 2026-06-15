@@ -15,7 +15,7 @@
             <JWSSerializationType>COMPACT_SERIALIZATION</JWSSerializationType>
             <StructuralValidation valid="true"/>
             <DigestMatchers>
-                <DigestMatcher type="JWS_SIGNING_INPUT_DIGEST">
+                <DigestMatcher type="JWS_SIGNING_INPUT">
                     <DigestMethod>SHA512</DigestMethod>
                     <DigestValue>KLt5AbtqzxJANxf7a94rWRPvSlF+jh0eEVWEJ4l1YLhAvP7vQb/s9QBeS8DVAYKl+DzOsnPwzhNKO68AqCrKhQ==</DigestValue>
                     <DataFound>true</DataFound>

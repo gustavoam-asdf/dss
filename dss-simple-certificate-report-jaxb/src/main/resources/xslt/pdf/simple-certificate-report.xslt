@@ -181,6 +181,8 @@
 								<xsl:apply-templates select="dss:enactedMRA"/>
 								<xsl:apply-templates select="dss:qwacProfile"/>
 								<xsl:apply-templates select="dss:qwacDetails"/>
+								<xsl:apply-templates select="dss:certificateUsageAtIssuanceTime"/>
+								<xsl:apply-templates select="dss:certificateUsageAtValidationTime"/>
 
 								<fo:table-row>
 									<xsl:variable name="indicationText" select="dss:Indication/text()"/>
@@ -306,6 +308,12 @@
 
 			</fo:table-cell>
 		</fo:table-row>
+	</xsl:template>
+
+	<xsl:template match="dss:Details">
+		<xsl:apply-templates select="dss:Error" />
+		<xsl:apply-templates select="dss:Warning" />
+		<xsl:apply-templates select="dss:Info" />
 	</xsl:template>
 
 	<xsl:template match="dss:Error|dss:Warning|dss:Info">
@@ -557,6 +565,76 @@
 			</fo:table-cell>
 		</fo:table-row>
     </xsl:template>
+
+	<xsl:template match="dss:certificateUsageAtIssuanceTime|dss:certificateUsageAtValidationTime">
+		<xsl:variable name="label">
+			<xsl:choose>
+				<xsl:when test="name()='certificateUsageAtIssuanceTime'">Usage at issuance time</xsl:when>
+				<xsl:when test="name()='certificateUsageAtValidationTime'">Usage at validation time</xsl:when>
+				<xsl:otherwise>?</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<fo:table-row>
+			<fo:table-cell>
+				<fo:block>
+					<xsl:attribute name="margin-top">1px</xsl:attribute>
+					<xsl:attribute name="margin-bottom">1px</xsl:attribute>
+
+					<xsl:attribute name="font-weight">bold</xsl:attribute>
+					<xsl:value-of select="$label" /><xsl:text>:</xsl:text>
+				</fo:block>
+			</fo:table-cell>
+			<fo:table-cell>
+				<fo:block>
+					<xsl:attribute name="margin-top">1px</xsl:attribute>
+					<xsl:attribute name="margin-bottom">1px</xsl:attribute>
+					<xsl:attribute name="font-size">7pt</xsl:attribute>
+
+					<xsl:apply-templates select="dss:certificateUsage"/>
+				</fo:block>
+			</fo:table-cell>
+		</fo:table-row>
+	</xsl:template>
+
+	<xsl:template match="dss:certificateUsage">
+		<fo:table table-layout="fixed">
+			<fo:table-column>
+				<xsl:attribute name="column-width">100%</xsl:attribute>
+			</fo:table-column>
+			<fo:table-body>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="margin-top">1px</xsl:attribute>
+							<xsl:attribute name="margin-bottom">1px</xsl:attribute>
+
+							<xsl:attribute name="font-weight">bold</xsl:attribute>
+
+							<xsl:choose>
+								<xsl:when test="@label">
+									<xsl:value-of select="@label"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="dss:ServiceTypeIdentifier"/> - <xsl:value-of select="dss:ServiceStatus"/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="margin-top">1px</xsl:attribute>
+							<xsl:attribute name="margin-bottom">1px</xsl:attribute>
+
+							<xsl:apply-templates select="dss:Details"/>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+			</fo:table-body>
+		</fo:table>
+	</xsl:template>
     
     <xsl:template match="dss:revocation">
     

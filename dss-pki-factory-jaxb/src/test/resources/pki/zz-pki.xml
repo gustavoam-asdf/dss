@@ -127,7 +127,7 @@
             <qcType>0.4.0.1862.1.6.1</qcType>
         </qcTypes>
         <qcCClegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcCClegislation>
         <crl>Test-Qualified-CA1-from-ZZ</crl>
         <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
@@ -159,7 +159,7 @@
             <qcType>0.4.0.1862.1.6.1</qcType>
         </qcTypes>
         <qcCClegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcCClegislation>
         <crl>Test-Qualified-CA1-from-ZZ</crl>
         <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
@@ -188,7 +188,7 @@
             <qcStatement>0.4.0.1862.1.1</qcStatement>
         </qcStatementIds>
         <qcCClegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcCClegislation>
         <crl>Test-Qualified-CA1-from-ZZ</crl>
         <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>
@@ -238,7 +238,7 @@
             <qcType>0.4.0.1862.1.6.1</qcType>
         </qcTypes>
         <qcCClegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcCClegislation>
         <crl>Test-Non-Qualified-CA-from-ZZ</crl>
         <ocsp>Test-Non-Qualified-CA-from-ZZ</ocsp>
@@ -270,10 +270,10 @@
             <qcType>0.4.0.1862.1.6.1</qcType>
         </qcTypes>
         <qcCClegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcCClegislation>
         <qcQSCDlegislation>
-            <CountryName>ZZ</CountryName>
+            <countryName>ZZ</countryName>
         </qcQSCDlegislation>
         <crl>Test-Qualified-CA1-from-ZZ</crl>
         <ocsp>Test-Qualified-CA1-from-ZZ</ocsp>

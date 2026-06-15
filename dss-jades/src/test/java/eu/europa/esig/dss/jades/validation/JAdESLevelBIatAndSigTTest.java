@@ -41,7 +41,7 @@ class JAdESLevelBIatAndSigTTest extends AbstractJAdESTestValidation {
 
     @Override
     protected void checkSignatureLevel(DiagnosticData diagnosticData) {
-        Assertions.assertEquals(SignatureLevel.JSON_NOT_ETSI, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
+        Assertions.assertEquals(SignatureLevel.JAdES, diagnosticData.getSignatureFormat(diagnosticData.getFirstSignatureId()));
     }
 
     @Override

@@ -40,7 +40,7 @@ import eu.europa.esig.dss.validation.process.bbb.fc.checks.TimestampManifestFile
  * This class performs "5.2.2 Format Checking" building block execution for a document or container timestamp
  *
  */
-public class TimestampFormatChecking extends AbstractFormatChecking<TimestampWrapper> {
+public class TimestampFormatChecking extends AbstractSignatureFormatChecking<TimestampWrapper> {
 
     /**
      * Default constructor

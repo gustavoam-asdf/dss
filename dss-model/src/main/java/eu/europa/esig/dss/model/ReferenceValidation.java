@@ -75,6 +75,9 @@ public class ReferenceValidation implements Serializable {
 	/** The reference points to more than one element */
 	private boolean isDuplicated;
 
+	/** List of errors occurred during the reference validation */
+	private List<String> errorMessages = new ArrayList<>();
+
 	/**
 	 * List of dependent {@code ReferenceValidation}s (used in case of manifest type
 	 * for manifest entries)
@@ -281,6 +284,24 @@ public class ReferenceValidation implements Serializable {
 			dependentReferenceValidations = new ArrayList<>();
 		}
 		return dependentReferenceValidations;
+	}
+
+	/**
+	 * Gets error messages occurred during the reference validation
+	 *
+	 * @return a list of {@link String} messages
+	 */
+	public List<String> getErrorMessages() {
+		return errorMessages;
+	}
+
+	/**
+	 * Sets error messages occurred during the reference validation
+	 *
+	 * @param errorMessages a list of {@link String} messages
+	 */
+	public void setErrorMessages(List<String> errorMessages) {
+		this.errorMessages = errorMessages;
 	}
 
 }

@@ -21,11 +21,10 @@
 package eu.europa.esig.dss.detailedreport;
 
 import eu.europa.esig.dss.detailedreport.jaxb.ObjectFactory;
-import eu.europa.esig.dss.xml.common.XmlDefinerUtils;
-import org.xml.sax.SAXException;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
+import org.xml.sax.SAXException;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
@@ -50,6 +49,9 @@ public final class DetailedReportXmlDefiner {
 	/** The XSLT for PDF detailed report generation path */
 	private static final String DETAILED_REPORT_XSLT_PDF_LOCATION = "/xslt/pdf/detailed-report.xslt";
 
+	/**
+	 * Default constructor
+	 */
 	private DetailedReportXmlDefiner() {
 		// empty
 	}
@@ -59,28 +61,28 @@ public final class DetailedReportXmlDefiner {
 
 	/**
 	 * Handles a JAXB Object
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static JAXBContext jc;
 
 	/**
 	 * The cached Detailed Report schema
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Schema schema;
 
 	/**
 	 * The cached Bootstrap 4 HTML template
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Templates htmlBootstrap4Templates;
 
 	/**
 	 * The cached PDF template
-	 *
+	 * <p>
 	 * NOTE: Thread-safe
 	 */
 	private static Templates pdfTemplates;
@@ -108,7 +110,7 @@ public final class DetailedReportXmlDefiner {
 	public static Schema getSchema() throws IOException, SAXException {
 		if (schema == null) {
 			try (InputStream isXSDDetailedReport = DetailedReportXmlDefiner.class.getResourceAsStream(DETAILED_REPORT_SCHEMA_LOCATION)) {
-				SchemaFactory sf = XmlDefinerUtils.getInstance().getSecureSchemaFactory();
+				SchemaFactory sf = DetailedReportXmlDefinedUtils.getInstance().getSecureSchemaFactory();
 				schema = sf.newSchema(new Source[] { new StreamSource(isXSDDetailedReport) });
 			}
 		}
@@ -145,7 +147,7 @@ public final class DetailedReportXmlDefiner {
 
 	private static Templates loadTemplates(String path) throws TransformerConfigurationException, IOException {
 		try (InputStream is = DetailedReportXmlDefiner.class.getResourceAsStream(path)) {
-			TransformerFactory transformerFactory = XmlDefinerUtils.getInstance().getSecureTransformerFactory();
+			TransformerFactory transformerFactory = DetailedReportXmlDefinedUtils.getInstance().getSecureTransformerFactory();
 			return transformerFactory.newTemplates(new StreamSource(is));
 		}
 	}

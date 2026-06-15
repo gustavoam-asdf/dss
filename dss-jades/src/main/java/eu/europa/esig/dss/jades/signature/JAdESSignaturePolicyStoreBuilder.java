@@ -80,7 +80,7 @@ public class JAdESSignaturePolicyStoreBuilder extends JAdESExtensionBuilder {
 		Objects.requireNonNull(document, "Signature document must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		final AbstractJWSDocumentAnalyzer documentAnalyzer = getDocumentValidator(document);
+		final AbstractJWSDocumentAnalyzer documentAnalyzer = getDocumentAnalyzer(document);
 		JWSJsonSerializationObject jwsJsonSerializationObject = documentAnalyzer.getJwsJsonSerializationObject();
 		assertJSONSerializationObjectMayBeExtended(jwsJsonSerializationObject);
 
@@ -119,17 +119,17 @@ public class JAdESSignaturePolicyStoreBuilder extends JAdESExtensionBuilder {
 		Objects.requireNonNull(document, "Signature document must be provided!");
 		assertConfigurationValid(signaturePolicyStore);
 
-		final AbstractJWSDocumentAnalyzer documentValidator = getDocumentValidator(document);
-		JWSJsonSerializationObject jwsJsonSerializationObject = documentValidator.getJwsJsonSerializationObject();
+		final AbstractJWSDocumentAnalyzer documentAnalyzer = getDocumentAnalyzer(document);
+		JWSJsonSerializationObject jwsJsonSerializationObject = documentAnalyzer.getJwsJsonSerializationObject();
 		assertJSONSerializationObjectMayBeExtended(jwsJsonSerializationObject);
 
-		AdvancedSignature signature = documentValidator.getSignatureById(signatureId);
+		AdvancedSignature signature = documentAnalyzer.getSignatureById(signatureId);
 		if (signature == null) {
 			throw new IllegalInputException(String.format("Unable to find a signature with Id : %s!", signatureId));
 		}
 
 		boolean added = addSignaturePolicyStoreIfDigestMatch((JAdESSignature) signature, signaturePolicyStore,
-				base64UrlInstance, documentValidator);
+				base64UrlInstance, documentAnalyzer);
 		if (!added) {
 			throw new IllegalInputException(String.format(
 					"The process was not able to add SignaturePolicyStore to a signature with Id : %s!", signatureId));
@@ -224,9 +224,9 @@ public class JAdESSignaturePolicyStoreBuilder extends JAdESExtensionBuilder {
 		return digestMatch;
 	}
 
-	private AbstractJWSDocumentAnalyzer getDocumentValidator(DSSDocument document) {
-		JWSDocumentAnalyzerFactory documentValidatorFactory = new JWSDocumentAnalyzerFactory();
-		return documentValidatorFactory.create(document);
+	private AbstractJWSDocumentAnalyzer getDocumentAnalyzer(DSSDocument document) {
+		JWSDocumentAnalyzerFactory documentAnalyzerFactory = new JWSDocumentAnalyzerFactory();
+		return documentAnalyzerFactory.create(document);
 	}
 
 	private void assertConfigurationValid(SignaturePolicyStore signaturePolicyStore) {

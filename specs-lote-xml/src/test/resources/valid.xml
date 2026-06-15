@@ -27,7 +27,7 @@
                 </PostalAddress>
             </PostalAddresses>
             <ElectronicAddress>
-                <URI xml:lang="en">mailto@schemeoperator.com</URI>
+                <URI xml:lang="en">mailto:mailto@schemeoperator.com</URI>
             </ElectronicAddress>
         </SchemeOperatorAddress>
         <SchemeName>

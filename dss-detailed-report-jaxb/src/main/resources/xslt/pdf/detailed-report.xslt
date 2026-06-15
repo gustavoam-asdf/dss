@@ -77,13 +77,18 @@
 					<xsl:apply-templates select="dss:Signature"/>
 					<xsl:apply-templates select="dss:Timestamp"/>
 					<xsl:apply-templates select="dss:EvidenceRecord"/>
+					<xsl:apply-templates select="dss:EAA"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='SIGNATURE']"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA_STATUS']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='COUNTER_SIGNATURE']"/>
+					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='KEY_BINDING_SIGNATURE']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='TIMESTAMP']"/>
 				    <xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='REVOCATION']"/>
 					<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EVIDENCE_RECORD']"/>
 				    
    					<xsl:apply-templates select="dss:TLAnalysis"/>
+					<xsl:apply-templates select="dss:LoTEAnalysis"/>
 	    			
    					<xsl:if test="dss:Semantic">
    						
@@ -146,7 +151,7 @@
 
     </xsl:template>
     
-	<xsl:template match="dss:TLAnalysis">
+	<xsl:template match="dss:TLAnalysis|dss:LoTEAnalysis">
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
 			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
@@ -211,7 +216,7 @@
 
     </xsl:template>
     
-    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:Certificate">
+    <xsl:template match="dss:Signature|dss:Timestamp|dss:EvidenceRecord|dss:Certificate|dss:EAA">
 	    
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
@@ -281,7 +286,7 @@
     
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessBasicTimestamp|dss:ValidationProcessLongTermData
 			|dss:ValidationProcessArchivalData|dss:ValidationProcessArchivalDataTimestamp|dss:ValidationProcessEvidenceRecord
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess|dss:ValidationProcessEAA">
 
 		<xsl:variable name="poeStringValue">
 			<xsl:choose>
@@ -364,32 +369,33 @@
     	</fo:block-container>
     	
     </xsl:template>
-    
-    <xsl:template match="dss:ValidationSignatureQualification|dss:ValidationTimestampQualification|dss:ValidationTimestampQualificationAtTime|dss:ValidationCertificateQualification">
+
+    <xsl:template match="dss:ValidationSignatureQualification|dss:ValidationTimestampQualification|dss:ValidationTimestampQualificationAtTime
+			|dss:ValidationEAAQualification|dss:ValidationEAAQualificationProcess|dss:ValidationPIDQualificationProcess">
 
     	<fo:table table-layout="fixed">
 			<xsl:attribute name="keep-with-next">always</xsl:attribute>
 			<xsl:attribute name="page-break-inside">avoid</xsl:attribute>
-			
+
 			<xsl:attribute name="margin-top">4px</xsl:attribute>
 			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
-			
+
 			<fo:table-column>
 				<xsl:attribute name="column-width">60%</xsl:attribute>
 			</fo:table-column>
 			<fo:table-column>
 				<xsl:attribute name="column-width">40%</xsl:attribute>
 			</fo:table-column>
-    
+
     		<fo:table-body>
 				<xsl:attribute name="start-indent">0</xsl:attribute>
 				<xsl:attribute name="end-indent">0</xsl:attribute>
-				
+
 		    	<fo:table-row>
 					<fo:table-cell>
 						<fo:block>
 		    				<xsl:attribute name="font-weight">bold</xsl:attribute>
-    
+
     						<xsl:value-of select="@Title" />
 							<xsl:if test="@DateTime">
 								<fo:inline>
@@ -400,12 +406,12 @@
 							</xsl:if>
    						</fo:block>
     				</fo:table-cell>
-    				
+
 					<fo:table-cell>
 						<fo:block>
 		    				<xsl:attribute name="font-weight">bold</xsl:attribute>
 							<xsl:attribute name="text-align">right</xsl:attribute>
-		    				
+
 		    				<xsl:choose>
 					    		<xsl:when test="@SignatureQualification">
 					       			<xsl:value-of select="@SignatureQualification"/>
@@ -413,9 +419,14 @@
 					    		<xsl:when test="@TimestampQualification">
 					       			<xsl:value-of select="@TimestampQualification"/>
 					       		</xsl:when>
-					    		<xsl:when test="@CertificateQualification">
-					       			<xsl:value-of select="@CertificateQualification"/>
-					       		</xsl:when>
+								<xsl:when test="@EAAQualification">
+									<xsl:value-of select="@EAAQualification"/>
+								</xsl:when>
+								<xsl:when test="dss:EAAQualification">
+									<xsl:for-each select="dss:EAAQualification">
+										<xsl:text>&#xa;</xsl:text><xsl:value-of select="."/>
+									</xsl:for-each>
+								</xsl:when>
 				       		</xsl:choose>
 			       		</fo:block>
 					</fo:table-cell>
@@ -424,15 +435,15 @@
 			</fo:table-body>
 		</fo:table>
 
-    	
+
 		<fo:block-container>
        		<xsl:attribute name="border-left-style">solid</xsl:attribute>
        		<xsl:attribute name="border-color">#004494</xsl:attribute>
        		<xsl:attribute name="border-width">1px</xsl:attribute>
-       		
+
 			<xsl:attribute name="margin-top">2px</xsl:attribute>
 			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
-       		
+
 			<fo:block-container>
 				<xsl:attribute name="margin-left">10px</xsl:attribute>
 				<fo:block-container>
@@ -442,10 +453,99 @@
 			       	</fo:block>
 		       	</fo:block-container>
 	       	</fo:block-container>
-	       	
+
     	</fo:block-container>
 
     </xsl:template>
+
+	<xsl:template match="dss:ValidationCertificateQualification|dss:ValidationCertificateUsage">
+
+		<fo:table table-layout="fixed">
+			<xsl:attribute name="keep-with-next">always</xsl:attribute>
+			<xsl:attribute name="page-break-inside">avoid</xsl:attribute>
+
+			<xsl:attribute name="margin-top">4px</xsl:attribute>
+			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
+
+			<fo:table-column>
+				<xsl:attribute name="column-width">60%</xsl:attribute>
+			</fo:table-column>
+			<fo:table-column>
+				<xsl:attribute name="column-width">40%</xsl:attribute>
+			</fo:table-column>
+
+			<fo:table-body>
+				<xsl:attribute name="start-indent">0</xsl:attribute>
+				<xsl:attribute name="end-indent">0</xsl:attribute>
+
+				<fo:table-row>
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="font-weight">bold</xsl:attribute>
+
+							<xsl:value-of select="@Title" />
+							<xsl:if test="@DateTime">
+								<fo:inline>
+									<xsl:attribute name="font-weight">normal</xsl:attribute>
+									<xsl:attribute name="font-size">6pt</xsl:attribute>
+									(<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="@DateTime"/></xsl:call-template>)
+								</fo:inline>
+							</xsl:if>
+						</fo:block>
+					</fo:table-cell>
+
+					<fo:table-cell>
+						<fo:block>
+							<xsl:attribute name="font-weight">bold</xsl:attribute>
+							<xsl:attribute name="text-align">right</xsl:attribute>
+
+							<xsl:choose>
+								<xsl:when test="@CertificateQualification">
+									<xsl:value-of select="@CertificateQualification"/>
+								</xsl:when>
+								<xsl:when test="dss:CertificateUsage">
+									<xsl:for-each select="dss:CertificateUsage">
+										<xsl:text>&#xa;</xsl:text>
+										<xsl:choose>
+											<xsl:when test="@label">
+												<xsl:value-of select="@label"/>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:value-of select="dss:ServiceTypeIdentifier"/>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:for-each>
+								</xsl:when>
+							</xsl:choose>
+						</fo:block>
+					</fo:table-cell>
+				</fo:table-row>
+
+			</fo:table-body>
+		</fo:table>
+
+
+		<fo:block-container>
+			<xsl:attribute name="border-left-style">solid</xsl:attribute>
+			<xsl:attribute name="border-color">#004494</xsl:attribute>
+			<xsl:attribute name="border-width">1px</xsl:attribute>
+
+			<xsl:attribute name="margin-top">2px</xsl:attribute>
+			<xsl:attribute name="margin-bottom">2px</xsl:attribute>
+
+			<fo:block-container>
+				<xsl:attribute name="margin-left">10px</xsl:attribute>
+				<fo:block-container>
+					<xsl:attribute name="margin">0</xsl:attribute>
+					<fo:block>
+						<xsl:apply-templates select="dss:Constraint" />
+					</fo:block>
+				</fo:block-container>
+			</fo:block-container>
+
+		</fo:block-container>
+
+	</xsl:template>
 
 	<xsl:template match="dss:QWACProcess">
 
@@ -811,6 +911,7 @@
 	<xsl:template match="dss:DigestMatchersValidation" />
 	<xsl:template match="dss:CertificateChainCryptographicValidation" />
 	<xsl:template match="dss:ControlTime" />
+	<xsl:template match="dss:EAAQualification" />
 
 	<xsl:template name="formatdate">
 		<xsl:param name="DateTimeStr" />

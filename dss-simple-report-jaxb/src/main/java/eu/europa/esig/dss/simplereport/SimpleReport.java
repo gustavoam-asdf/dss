@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.simplereport;
 
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
@@ -28,6 +29,8 @@ import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TimestampQualification;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.simplereport.jaxb.XmlCertificateChain;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAALevel;
+import eu.europa.esig.dss.simplereport.jaxb.XmlEAA;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecords;
 import eu.europa.esig.dss.simplereport.jaxb.XmlMessage;
@@ -47,7 +50,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A SimpleReport holder to fetch values from a JAXB SimpleReport.
+ * A SimpleReport holder to fetch values from a JAXB SimpleReport
+ *
  */
 public class SimpleReport {
 
@@ -171,6 +175,24 @@ public class SimpleReport {
 	}
 
 	/**
+	 * This method retrieves the EAA ids
+	 *
+	 * @return the {@code List} of EAA id(s) contained in the simpleReport
+	 */
+	public List<String> getEAAIdList() {
+		final List<String> eaaIdList = new ArrayList<>();
+		List<XmlToken> tokens = wrapped.getSignatureOrTimestampOrEvidenceRecord();
+		if (tokens != null) {
+			for (XmlToken token : tokens) {
+				if (token instanceof XmlEAA) {
+					eaaIdList.add(token.getId());
+				}
+			}
+		}
+		return eaaIdList;
+	}
+
+	/**
 	 * This method returns the first signature id.
 	 *
 	 * @return the first signature id
@@ -205,6 +227,19 @@ public class SimpleReport {
 		final List<String> evidenceRecordIdList = getEvidenceRecordIdList();
 		if (!evidenceRecordIdList.isEmpty()) {
 			return evidenceRecordIdList.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns the first  id.
+	 *
+	 * @return the first evidence record id
+	 */
+	public String getFirstEAAId() {
+		final List<String> eaaIdList = getEAAIdList();
+		if (!eaaIdList.isEmpty()) {
+			return eaaIdList.get(0);
 		}
 		return null;
 	}
@@ -532,6 +567,41 @@ public class SimpleReport {
 	}
 
 	/**
+	 * This method returns the first determined EAA's qualification.
+	 * This method could be used for a simple EAAQualification result extraction, suitable for the most use cases.
+	 * Should you need a more comprehensive validation output, please use the {@code #getEAAQualifications} method.
+	 *
+	 * @param eaaPresentationId
+	 *                    the EAA presentation id
+	 * @return {@link EAAQualification} for a given EAA
+	 */
+	public EAAQualification getEAAQualification(final String eaaPresentationId) {
+		XmlEAA XmlEAA = getEAAById(eaaPresentationId);
+		if (XmlEAA != null && XmlEAA.getEAALevel() != null && !XmlEAA.getEAALevel().isEmpty()) {
+			return XmlEAA.getEAALevel().iterator().next().getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns a list of determined EAA's qualifications.
+	 * This list should be used if a comprehensive result of EAA validation is required,
+	 * as potentially a token may be qualified with different outputs during the validation process,
+	 * even thought it should not happen in production environments.
+	 *
+	 * @param eaaPresentationId
+	 *                    the EAA presentation id
+	 * @return a list of {@link EAAQualification}s for a given EAA
+	 */
+	public List<EAAQualification> getEAAQualifications(final String eaaPresentationId) {
+		XmlEAA XmlEAA = getEAAById(eaaPresentationId);
+		if (XmlEAA != null && XmlEAA.getEAALevel() != null && !XmlEAA.getEAALevel().isEmpty()) {
+			return XmlEAA.getEAALevel().stream().map(XmlEAALevel::getValue).collect(Collectors.toList());
+		}
+		return null;
+	}
+
+	/**
 	 * This method returns a wrapper for the given token id
 	 * 
 	 * @param tokenId
@@ -567,6 +637,11 @@ public class SimpleReport {
 					if (timestampById != null) {
 						return timestampById;
 					}
+				} else if (token instanceof XmlEAA) {
+					XmlToken signatureById = getEAASignatureById((XmlEAA) token, tokenId);
+					if (signatureById != null) {
+						return signatureById;
+					}
 				}
 			}
 		}
@@ -601,6 +676,24 @@ public class SimpleReport {
 		XmlTimestamps timestamps = evidenceRecord.getTimestamps();
 		if (timestamps != null && timestamps.getTimestamp() != null) {
 			return getEmbeddedTokenById(timestamps.getTimestamp(), tokenId);
+		}
+		return null;
+	}
+
+	private XmlToken getEAASignatureById(XmlEAA eaa, String tokenId) {
+		List<XmlSignature> signatures = eaa.getEAASignature();
+		if (signatures != null && !signatures.isEmpty()) {
+			XmlToken embeddedTokenById = getEmbeddedTokenById(signatures, tokenId);
+			if (embeddedTokenById != null) {
+				return embeddedTokenById;
+			}
+		}
+		XmlSignature keyBindingSignature = eaa.getKeyBindingSignature();
+		if (keyBindingSignature != null) {
+			XmlToken embeddedTokenById = getEmbeddedTokenById(Collections.singletonList(keyBindingSignature), tokenId);
+			if (embeddedTokenById != null) {
+				return embeddedTokenById;
+			}
 		}
 		return null;
 	}
@@ -646,6 +739,21 @@ public class SimpleReport {
 		XmlToken token = getTokenById(evidenceRecordId);
 		if (token instanceof XmlEvidenceRecord) {
 			return (XmlEvidenceRecord) token;
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns a wrapper for the given EAA
+	 *
+	 * @param eaaId
+	 *            the EAA id
+	 * @return the wrapper for the given EAA id
+	 */
+	public XmlEAA getEAAById(String eaaId) {
+		XmlToken token = getTokenById(eaaId);
+		if (token instanceof XmlEAA) {
+			return (XmlEAA) token;
 		}
 		return null;
 	}
@@ -708,6 +816,38 @@ public class SimpleReport {
 			return xmlEvidenceRecord.getTimestamps().getTimestamp();
 		}
 		return Collections.emptyList();
+	}
+
+	/**
+	 * This method returns a list of signatures used to create the EAA with the given Id
+	 * NOTE: This method does not return key binding signature. To extract the latest, please use
+	 *       {@code #getEAAKeyBindingSignature} method
+	 *
+	 * @param eaaId
+	 *            the evidence record id
+	 * @return list if signature wrappers
+	 */
+	public List<XmlSignature> getEAASignatures(String eaaId) {
+		XmlEAA eaaById = getEAAById(eaaId);
+		if (eaaById != null && eaaById.getEAASignature() != null) {
+			return eaaById.getEAASignature();
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method returns a key binding signature for the EAA, when present
+	 *
+	 * @param eaaPresentationId
+	 *            the evidence record id
+	 * @return {@link XmlSignature}
+	 */
+	public XmlSignature getEAAKeyBindingSignature(String eaaPresentationId) {
+		XmlEAA eaa = getEAAById(eaaPresentationId);
+		if (eaa != null) {
+			return eaa.getKeyBindingSignature();
+		}
+		return null;
 	}
 
 	/**

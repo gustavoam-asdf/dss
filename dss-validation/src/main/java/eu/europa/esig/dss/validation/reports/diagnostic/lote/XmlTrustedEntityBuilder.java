@@ -1,0 +1,184 @@
+package eu.europa.esig.dss.validation.reports.diagnostic.lote;
+
+import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
+import eu.europa.esig.dss.model.lote.ListInfo;
+import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
+import eu.europa.esig.dss.model.lote.TrustedEntity;
+import eu.europa.esig.dss.model.lote.TrustedProperties;
+import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Builds a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity} instance
+ *
+ */
+public class XmlTrustedEntityBuilder {
+
+    /**
+     * The map of certificates identifiers and their corresponding XML representations
+     */
+    private final Map<String, XmlCertificate> xmlCertsMap;
+
+    /**
+     * The map of Trust Sources
+     */
+    private final Map<String, XmlListOfTrustedEntities> xmlTrustSourceListsMap;
+
+    /**
+     * Default constructor
+     *
+     * @param xmlCertsMap a map of certificate identifiers and corresponding XML representations
+     * @param xmlTrustSourceListsMap a map of trust source list identifiers and corresponding XML representations
+     */
+    public XmlTrustedEntityBuilder(final Map<String, XmlCertificate> xmlCertsMap,
+                                  final Map<String, XmlListOfTrustedEntities> xmlTrustSourceListsMap) {
+        this.xmlCertsMap = xmlCertsMap;
+        this.xmlTrustSourceListsMap = xmlTrustSourceListsMap;
+    }
+
+    /**
+     * This method builds a list of {@link XmlTrustedEntity}s corresponding to the given {@code CertificateToken}
+     *
+     * @param certificateToken {@link CertificateToken} to get a list of {@link XmlTrustedEntity}s
+     * @param relatedTrustedProperties a map of trust anchor {@link CertificateToken}s and their corresponding trusted services
+     * @return a list of {@link XmlTrustedEntity}s
+     */
+    public List<XmlTrustedEntity> build(CertificateToken certificateToken,
+                                        Map<CertificateToken, List<TrustedProperties>> relatedTrustedProperties) {
+        List<XmlTrustedEntity> result = new ArrayList<>();
+        for (Map.Entry<CertificateToken, List<TrustedProperties>> entry : relatedTrustedProperties.entrySet()) {
+            CertificateToken trustedCert = entry.getKey();
+            List<TrustedProperties> services = entry.getValue();
+
+            Map<TrustedEntity, List<TrustedProperties>> servicesByProviders = classifyByServiceProvider(services);
+
+            for (Map.Entry<TrustedEntity, List<TrustedProperties>> servicesByProvider : servicesByProviders
+                    .entrySet()) {
+
+                List<TrustedProperties> trustServices = servicesByProvider.getValue();
+                if (Utils.isCollectionNotEmpty(trustServices)) {
+                    result.add(getXmlTrustedEntity(certificateToken, trustServices, trustedCert));
+                }
+            }
+
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    private Map<TrustedEntity, List<TrustedProperties>> classifyByServiceProvider(
+            List<TrustedProperties> trustPropertiesList) {
+        Map<TrustedEntity, List<TrustedProperties>> servicesByProviders = new HashMap<>();
+        if (Utils.isCollectionNotEmpty(trustPropertiesList)) {
+            for (TrustedProperties trustProperties : trustPropertiesList) {
+                TrustedEntity currentTrustedEntity = trustProperties.getTrustedEntity();
+                List<TrustedProperties> list = servicesByProviders.computeIfAbsent(currentTrustedEntity, k -> new ArrayList<>());
+                list.add(trustProperties);
+            }
+        }
+        return servicesByProviders;
+    }
+
+    private XmlTrustedEntity getXmlTrustedEntity(CertificateToken certificateToken, List<TrustedProperties> trustServices,
+                                                               CertificateToken trustAnchor) {
+        TrustedProperties trustProperties = trustServices.iterator().next();
+
+        final XmlTrustedEntity result = new XmlTrustedEntity();
+        ListInfo listInfo = trustProperties.getListInfo();
+        if (listInfo != null) {
+            XmlTrustSourceList xmlList = xmlTrustSourceListsMap.get(listInfo.getDSSIdAsString());
+            if (xmlList == null) {
+                throw new IllegalStateException(String.format("LoTE with Id '%s' has not been found! " +
+                        "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listInfo.getDSSIdAsString()));
+            }
+            result.setLoTE(xmlList);
+
+            if (listInfo.getParent() != null) {
+                ListInfo listOfListsInfo = listInfo.getParent();
+                if (listOfListsInfo != null) {
+                    XmlTrustSourceList xmllistOfLists = xmlTrustSourceListsMap.get(listOfListsInfo.getDSSIdAsString());
+                    if (xmllistOfLists == null) {
+                        throw new IllegalStateException(String.format("LoLoTE with Id '%s' has not been found! " +
+                                "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listOfListsInfo.getDSSIdAsString()));
+                    }
+                    result.setLoLoTE(xmllistOfLists);
+                }
+            }
+        }
+
+        TrustedEntity tsp = trustProperties.getTrustedEntity();
+        result.setNames(getLangAndValues(tsp.getNames()));
+        result.setTradeNames(getLangAndValues(tsp.getTradeNames()));
+        result.setRegistrationIdentifiers(tsp.getRegistrationIdentifiers());
+
+        result.setTrustedEntityServices(buildXmlTrustedEntityServicesList(certificateToken, trustServices, trustAnchor));
+
+        return result;
+    }
+
+    private List<XmlLangAndValue> getLangAndValues(Map<String, List<String>> map) {
+        if (Utils.isMapNotEmpty(map)) {
+            List<XmlLangAndValue> result = new ArrayList<>();
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                String lang = entry.getKey();
+                for (String value : entry.getValue()) {
+                    XmlLangAndValue langAndValue = new XmlLangAndValue();
+                    langAndValue.setLang(lang);
+                    langAndValue.setValue(value);
+                    result.add(langAndValue);
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+
+    private List<XmlTrustedEntityService> buildXmlTrustedEntityServicesList(CertificateToken certToken, List<TrustedProperties> trustServices,
+                                                                            CertificateToken trustAnchor) {
+        List<XmlTrustedEntityService> result = new ArrayList<>();
+
+        for (TrustedProperties trustProperties : trustServices) {
+            TimeDependentValues<ServiceStatusAndInformationExtensions> trustService =
+                    trustProperties.getTrustedServices();
+            List<ServiceStatusAndInformationExtensions> serviceStatusAfterOfEqualsCertIssuance =
+                    trustService.getAfter(certToken.getNotBefore());
+            if (Utils.isCollectionNotEmpty(serviceStatusAfterOfEqualsCertIssuance)) {
+                for (ServiceStatusAndInformationExtensions serviceInfoStatus : serviceStatusAfterOfEqualsCertIssuance) {
+                    result.add(getXmlTrustedEntityService(serviceInfoStatus, certToken, trustAnchor));
+                }
+            }
+        }
+        return Collections.unmodifiableList(result);
+    }
+
+    private XmlTrustedEntityService getXmlTrustedEntityService(ServiceStatusAndInformationExtensions serviceInfoStatus,
+                                               CertificateToken certToken, CertificateToken trustAnchor) {
+        XmlTrustedEntityService trustService = new XmlTrustedEntityService();
+
+        trustService.setServiceDigitalIdentifier(xmlCertsMap.get(trustAnchor.getDSSIdAsString()));
+        trustService.setServiceNames(getLangAndValues(serviceInfoStatus.getNames()));
+        trustService.setServiceType(serviceInfoStatus.getType());
+        trustService.setStatus(serviceInfoStatus.getStatus());
+        trustService.setStartDate(serviceInfoStatus.getStartDate());
+        trustService.setEndDate(serviceInfoStatus.getEndDate());
+
+        List<String> serviceSupplyPoints = serviceInfoStatus.getServiceSupplyPoints();
+        if (Utils.isCollectionNotEmpty(serviceSupplyPoints)) {
+            trustService.setServiceSupplyPoints(serviceSupplyPoints);
+        }
+
+        return trustService;
+    }
+    
+}

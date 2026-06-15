@@ -72,6 +72,11 @@ public class XAdESBaselineRequirementsChecker extends BaselineRequirementsChecke
     }
 
     @Override
+    public boolean hasAdESProfile() {
+        return hasExtendedBESProfile() || hasBaselineBProfile();
+    }
+
+    @Override
     public boolean hasBaselineBProfile() {
         Element signatureElement = signature.getSignatureElement();
         XAdESPath xadesPaths = signature.getXAdESPaths();

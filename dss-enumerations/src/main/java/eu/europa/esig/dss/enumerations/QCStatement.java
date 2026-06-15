@@ -89,7 +89,14 @@ public enum QCStatement implements OidDescription {
 	 * QcQSCDlegislation ::= SEQUENCE SIZE (1..MAX) OF CountryName
 	 * CountryName ::= PrintableString (SIZE (2)) (CONSTRAINED BY { -- ISO 3166-1 [6] alpha-2 codes only
 	 */
-	QC_QSCD_LEGISLATION("qc-qscdLegislation", "0.4.0.1862.1.9");
+	QC_QSCD_LEGISLATION("qc-qscdLegislation", "0.4.0.1862.1.9"),
+
+	/**
+	 * -- PSB certificate mandatory data
+	 * id-etsi-qcs-QcPSB   OBJECT IDENTIFIER ::= { id-etsi-eidas2-qct-extensions 3 }
+	 * esi4-qcStatement-10 QC-STATEMENT ::= { SYNTAX QcPSB IDENTIFIED BY id-etsi-qcs-QcPSB }
+	 */
+	QC_PSB("qc-psb", "0.4.0.194126.1.3");
 
 	/** User-friendly identifier */
 	private final String description;

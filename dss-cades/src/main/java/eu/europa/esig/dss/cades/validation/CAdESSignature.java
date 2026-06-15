@@ -1057,6 +1057,12 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 		return DSSASN1Utils.getString(attrValue);
 	}
 
+	@Override
+	public String getSignatureType() {
+		// not supported
+		return null;
+	}
+
 	/**
 	 * Gets ContentIdentifier String
 	 *

@@ -40,6 +40,12 @@ public enum SignatureScopeType {
 	/** The signature counter-signs its master signature */
 	COUNTER_SIGNATURE,
 
+	/** The signature used to issue the EAA */
+	EAA_SIGNATURE,
+
+	/** The key binding signature used to proof a possession of the key by a Wallet holder */
+	KEY_BINDING_SIGNATURE,
+
 	/** The evidence record covers a signature */
 	SIGNATURE
 

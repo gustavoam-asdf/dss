@@ -581,6 +581,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		checkContainerInfo(diagnosticData);
 		checkPDFAInfo(diagnosticData);
 		checkJWSSerializationType(diagnosticData);
+		checkCOSESignatureType(diagnosticData);
 
 		checkNoDuplicateSignatures(diagnosticData);
 		checkNoDuplicateCompleteCertificates(diagnosticData);
@@ -700,6 +701,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case CAdES_X:
 			case JAdES_BASELINE_T:
 			case PAdES_BASELINE_T:
+			case CB_AdES_BASELINE_T:
 				return true;
 			default:
 				return isBaselineLT(signatureLevel);
@@ -716,6 +718,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case CAdES_XL:
 			case JAdES_BASELINE_LT:
 			case PAdES_BASELINE_LT:
+			case CB_AdES_BASELINE_LT:
 				return true;
 			default:
 				return isBaselineLTA(signatureLevel) || isLevelERS(signatureLevel);
@@ -731,6 +734,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			case JAdES_BASELINE_LTA:
 			case PAdES_BASELINE_LTA:
 			case PAdES_LTV:
+			case CB_AdES_BASELINE_LTA:
 				return true;
 			default:
 				return false;
@@ -1649,11 +1653,21 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 
 	protected void checkJWSSerializationType(DiagnosticData diagnosticData) {
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
-				if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.JAdES) {
-					assertNotNull(signatureWrapper.getJWSSerializationType());
-				} else {
-					assertNull(signatureWrapper.getJWSSerializationType());
-				}
+			if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.JAdES) {
+				assertNotNull(signatureWrapper.getJWSSerializationType());
+			} else {
+				assertNull(signatureWrapper.getJWSSerializationType());
+			}
+		}
+	}
+
+	protected void checkCOSESignatureType(DiagnosticData diagnosticData) {
+		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
+			if (signatureWrapper.getSignatureFormat() != null && signatureWrapper.getSignatureFormat().getSignatureForm() == SignatureForm.CBAdES) {
+				assertNotNull(signatureWrapper.getCOSESignatureType());
+			} else {
+				assertNull(signatureWrapper.getCOSESignatureType());
+			}
 		}
 	}
 
@@ -1837,7 +1851,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		assertNotNull(simpleReport.getValidationTime());
 	}
 
-	private boolean createdWithTrustAnchor(XmlCertificateChain xmlCertificateChain) {
+	protected boolean createdWithTrustAnchor(XmlCertificateChain xmlCertificateChain) {
 		if (xmlCertificateChain != null && Utils.isCollectionNotEmpty(xmlCertificateChain.getCertificate())) {
 			eu.europa.esig.dss.simplereport.jaxb.XmlCertificate xmlCertificate = xmlCertificateChain.getCertificate().get(0);
 			return xmlCertificate.isTrusted();
@@ -1845,14 +1859,14 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 		return false;
 	}
 
-	private boolean timestampedWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlTimestamp> xmlTimestampList) {
+	protected boolean timestampedWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlTimestamp> xmlTimestampList) {
 		if (Utils.isCollectionNotEmpty(xmlTimestampList)) {
 			return xmlTimestampList.stream().anyMatch(t -> createdWithTrustAnchor(t.getCertificateChain()));
 		}
 		return false;
 	}
 
-	private boolean preservedByERWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord> xmlEvidenceRecordList) {
+	protected boolean preservedByERWithTrustAnchor(List<eu.europa.esig.dss.simplereport.jaxb.XmlEvidenceRecord> xmlEvidenceRecordList) {
 		if (Utils.isCollectionNotEmpty(xmlEvidenceRecordList)) {
 			return xmlEvidenceRecordList.stream().anyMatch(er -> timestampedWithTrustAnchor(er.getTimestamps().getTimestamp()));
 		}
@@ -2224,6 +2238,10 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 				assertNotNull(validationObject.getId());
 				assertNotNull(validationObject.getObjectType());
 				assertNotNull(validationObject.getValidationObjectRepresentation());
+
+				if (ObjectType.OTHER == validationObject.getObjectType()) {
+					continue;
+				}
 
 				List<Object> validationObjectRepresentationList = validationObject.getValidationObjectRepresentation().getDirectOrBase64OrDigestAlgAndValue();
 				assertEquals(1 , validationObjectRepresentationList.size());
@@ -2652,6 +2670,10 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 					assertNotNull(validationReport);
 					ValidationStatusType signatureValidationStatus = validationReport.getSignatureValidationStatus();
 					assertNotNull(signatureValidationStatus);
+					if (ObjectType.OTHER == validationObject.getObjectType()) {
+						// skip process for EAA, as may have different validation results than BBB alone
+						continue;
+					}
 					assertEquals(conclusion.getIndication(), signatureValidationStatus.getMainIndication());
 					if (conclusion.getSubIndication() != null) {
 						assertEquals(1, signatureValidationStatus.getSubIndication().size());
@@ -2714,7 +2736,7 @@ public abstract class AbstractPkiFactoryTestValidation extends PKIFactoryAccess 
 			assertEquals(diagnosticData.getTimestampList().size(), timestampCounter);
 			assertEquals(diagnosticData.getEvidenceRecords().size(), evidenceRecordCounter);
 			assertEquals(diagnosticData.getAllSignerDocuments().size(), signedDataCounter);
-			assertEquals(0, otherCounter);
+			assertEquals(diagnosticData.getEAAs().size(), otherCounter);
 			
 		} else {
 			assertEquals(0, diagnosticData.getUsedCertificates().size());

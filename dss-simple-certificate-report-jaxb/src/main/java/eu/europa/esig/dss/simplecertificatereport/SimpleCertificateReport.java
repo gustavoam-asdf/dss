@@ -21,11 +21,15 @@
 package eu.europa.esig.dss.simplecertificatereport;
 
 import eu.europa.esig.dss.enumerations.CertificateQualification;
+import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.QWACProfile;
 import eu.europa.esig.dss.enumerations.RevocationReason;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtTime;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlMessage;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlRevocation;
@@ -586,6 +590,120 @@ public class SimpleCertificateReport {
 		return Collections.emptyList();
 	}
 
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's errors for
+	 * a given certificate by id at issuance time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageErrorsAtIssuanceTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtIssuanceTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtIssuanceTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getError());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's warnings for
+	 * a given certificate by id at issuance time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageWarningsAtIssuanceTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtIssuanceTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtIssuanceTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getWarning());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's information messages for
+	 * a given certificate by id at issuance time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageInfoAtIssuanceTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtIssuanceTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtIssuanceTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getInfo());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's errors for
+	 * a given certificate by id at validation time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageErrorsAtValidationTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtValidationTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtValidationTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getError());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's warnings for
+	 * a given certificate by id at validation time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageWarningsAtValidationTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtValidationTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtValidationTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getWarning());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate usage process's information messages for
+	 * a given certificate by id at validation time for the given {@code CertificateUsage}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateUsageInfoAtValidationTime(final String certificateId, final CertificateUsage certificateUsage) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateUsageAtValidationTime() != null) {
+			XmlCertificateUsage xmlCertificateUsage = getXmlCertificateUsage(certificate.getCertificateUsageAtValidationTime(), certificateUsage);
+			if (xmlCertificateUsage != null && xmlCertificateUsage.getDetails() != null) {
+				return convert(xmlCertificateUsage.getDetails().getInfo());
+			}
+		}
+		return Collections.emptyList();
+	}
+
 	private Message convert(XmlMessage v) {
 		if (v != null) {
 			return new Message(v.getKey(), v.getValue());
@@ -618,6 +736,70 @@ public class SimpleCertificateReport {
 	public CertificateQualification getQualificationAtValidationTime() {
 		XmlChainItem cert = getFirstCertificate();
 		return cert.getQualificationAtValidation();
+	}
+
+	/**
+	 * This method returns the qualification of the first certificate at its issuance
+	 *
+	 * @return the qualification at the certificate creation
+	 */
+	public List<CertificateUsage> getCertificateUsageAtCertificateIssuance() {
+		XmlChainItem cert = getFirstCertificate();
+		return toCertificateUsageList(cert.getCertificateUsageAtIssuanceTime());
+	}
+
+	/**
+	 * This method returns the qualification of the first certificate at the validation time
+	 *
+	 * @return the qualification at the validation time
+	 */
+	public List<CertificateUsage> getCertificateUsageAtValidationTime() {
+		XmlChainItem cert = getFirstCertificate();
+		return toCertificateUsageList(cert.getCertificateUsageAtValidationTime());
+	}
+
+	private List<CertificateUsage> toCertificateUsageList(XmlCertificateUsageAtTime xmlCertificateUsageAtTime) {
+		if (xmlCertificateUsageAtTime == null) {
+			return null;
+		}
+		List<XmlCertificateUsage> xmlCertificateUsages = xmlCertificateUsageAtTime.getCertificateUsage();
+		if (xmlCertificateUsages == null || xmlCertificateUsages.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<CertificateUsage> usages = new ArrayList<>();
+		for (XmlCertificateUsage xmlCertificateUsage : xmlCertificateUsages) {
+			usages.add(toCertificateUsage(xmlCertificateUsage));
+		}
+		return usages;
+	}
+
+	private CertificateUsage toCertificateUsage(XmlCertificateUsage xmlCertificateUsage) {
+		if (xmlCertificateUsage == null) {
+			return null;
+		}
+		CertificateUsage result = CertificateUsage.fromDefinition(xmlCertificateUsage.getListType(),
+				xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
+		if (result != null && result.getLabel() != null && CertificateUsageEnum.CERT_FOR_UNKNOWN != result) {
+			return result;
+		}
+		return CertificateUsage.create(CertificateUsageEnum.CERT_FOR_UNKNOWN.getLabel(), xmlCertificateUsage.getListType(),
+				xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
+	}
+
+	private XmlCertificateUsage getXmlCertificateUsage(XmlCertificateUsageAtTime xmlCertificateUsageAtTime, CertificateUsage certificateUsage) {
+		if (xmlCertificateUsageAtTime != null && xmlCertificateUsageAtTime.getCertificateUsage() != null) {
+			for (XmlCertificateUsage xmlCertificateUsage : xmlCertificateUsageAtTime.getCertificateUsage()) {
+				if (xmlCertificateUsage != null &&
+						certificateUsage.getListType() != null && certificateUsage.getListType().getUri() != null
+						&& xmlCertificateUsage.getListType() != null && certificateUsage.getListType().getUri().equals(xmlCertificateUsage.getListType().getUri()) &&
+						certificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri() != null
+						&& xmlCertificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri().equals(xmlCertificateUsage.getServiceTypeIdentifier().getUri())) {
+					return xmlCertificateUsage;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

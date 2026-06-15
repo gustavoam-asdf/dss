@@ -66,6 +66,15 @@ public final class TrustServicesFilterFactory {
 	}
 
 	/**
+	 * Creates a TrustService filter by 'EAA/Q' identifier
+	 *
+	 * @return {@link TrustServiceFilter}
+	 */
+	public static TrustServiceFilter createFilterByQEAA() {
+		return new QEAAServiceFilter();
+	}
+
+	/**
 	 * Creates a TrustService filter by date
 	 *
 	 * @param date {@link Date} to filter trusted services by

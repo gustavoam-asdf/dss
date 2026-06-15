@@ -619,7 +619,6 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
         if (signatures == null) {
             signatures = buildSignatures();
         }
-        // delegated in CommonSignatureValidator
         return signatures;
     }
 
@@ -756,6 +755,18 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      */
     protected <T extends AdvancedSignature> void processSignaturesValidation(Collection<T> allSignatureList) {
         for (final AdvancedSignature signature : allSignatureList) {
+            processSignatureValidation(signature);
+        }
+    }
+
+    /**
+     * Performs cryptographic validation of the signature
+     *
+     * @param signature {@link AdvancedSignature}
+     * @param <T> {@link AdvancedSignature}
+     */
+    protected <T extends AdvancedSignature> void processSignatureValidation(T signature) {
+        if (signature != null) {
             signature.checkSignatureIntegrity();
         }
     }

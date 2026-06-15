@@ -80,15 +80,14 @@ public class RevocationRefWrapper {
 		return revocationRef.getIssueTime();
 	}
 
-
 	/**
 	 * Gets the number of the CRL.
 	 * NOTE: applicable only for CRL references.
 	 *
 	 * @return {@link BigInteger}
 	 */
-	public BigInteger getNumber() {
-		return revocationRef.getNumber();
+	public BigInteger getCRLNumber() {
+		return revocationRef.getCRLNumber();
 	}
 
 	/**
@@ -125,6 +124,15 @@ public class RevocationRefWrapper {
 			return revocationRef.getResponderId().getSki();
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the URI reference to the revocation data, when present
+	 *
+	 * @return {@link String}
+	 */
+	public String getUri() {
+		return revocationRef.getUri();
 	}
 	
 	/**

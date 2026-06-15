@@ -28,6 +28,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.extension.PSD2QcType;
 import eu.europa.esig.dss.model.x509.extension.PdsLocation;
 import eu.europa.esig.dss.model.x509.extension.QCLimitValue;
+import eu.europa.esig.dss.model.x509.extension.QCPSB;
 import eu.europa.esig.dss.model.x509.extension.QcStatements;
 import eu.europa.esig.dss.model.x509.extension.RoleOfPSP;
 import eu.europa.esig.dss.utils.Utils;
@@ -132,6 +133,8 @@ public class QcStatementUtils {
                     result.setQcQSCDLegislationCountryCodes(getQcLegislationCountryCodes(statementInfo));
                 } else if (isQcIdentMethod(oid)) {
                     result.setQcIdentMethod(getQcIdentMethod(statementInfo));
+                } else if (isCertForPSB(oid)) {
+                    result.setQcPSB(getQcPSB(statementInfo));
                 } else {
                     LOG.warn("Not supported QcStatement with OID : '{}'", oid);
                     result.addOtherOid(oid);
@@ -249,6 +252,17 @@ public class QcStatementUtils {
      */
     public static boolean isQcQSCDlegislation(String oid) {
         return OID.id_etsi_qcs_QcQSCDlegislation.getId().equals(oid);
+    }
+
+    /**
+     * This method verifies of the given OID is for
+     * Public Sector Body's Electronic Attestation of Attributes (PSBEAA) provider certificate
+     *
+     * @param oid {@link String} to check
+     * @return TRUE if OID is a Cert for PSBEAA, FALSE otherwise
+     */
+    public static boolean isCertForPSB(String oid) {
+        return OID.id_etsi_qcs_QcPSB.getId().equals(oid);
     }
 
     private static QCStatement getQCStatement(ASN1Encodable qcStatement) {
@@ -498,6 +512,30 @@ public class QcStatementUtils {
         }
     }
 
+    private static QCPSB getQcPSB(ASN1Encodable statementInfo) {
+        try {
+            ASN1Sequence sequence = ASN1Sequence.getInstance(statementInfo);
+            if (sequence.size() != 3) {
+                LOG.warn("Sequence size of QCPSB shall be equal to 3. Found : {}. Value is skipped.",sequence.size());
+                return null;
+            }
+            final QCPSB qcPSB = new QCPSB();
+            qcPSB.setCountryOfLegislation(DSSASN1Utils.getString(sequence.getObjectAt(0)));
+            qcPSB.setAuthSourceIdentification(DSSASN1Utils.getString(sequence.getObjectAt(1)));
+            qcPSB.setLegislationIdentification(DSSASN1Utils.getString(sequence.getObjectAt(2)));
+            return qcPSB;
+
+        } catch (Exception e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.warn("Unable to extract QCPSB : {}. Obtained binaries : '{}'",
+                        e.getMessage(), Utils.toBase64(DSSASN1Utils.getDEREncoded(statementInfo)));
+            } else {
+                LOG.warn("Unable to extract QCPSB : {}", e.getMessage());
+            }
+        }
+        return null;
+    }
+
     /**
      * This method verifies whether the given {@code qcStatementOid} is present within the {@code QcStatements}
      *
@@ -528,6 +566,8 @@ public class QcStatementUtils {
             return Utils.isCollectionNotEmpty(qcStatements.getQcQSCDLegislationCountryCodes());
         } else if (isQcIdentMethod(qcStatementOid)) {
             return qcStatements.getQcIdentMethod() != null;
+        } else if (isCertForPSB(qcStatementOid)) {
+            return qcStatements.getQcPSB() != null;
         } else {
             return qcStatements.getOtherOids().contains(qcStatementOid);
         }

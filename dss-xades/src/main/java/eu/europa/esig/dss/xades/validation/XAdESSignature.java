@@ -22,7 +22,6 @@ package eu.europa.esig.dss.xades.validation;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
-import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.EndorsementType;
 import eu.europa.esig.dss.enumerations.ObjectIdentifierQualifier;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
@@ -338,24 +337,6 @@ public class XAdESSignature extends DefaultAdvancedSignature {
 	@Override
 	public SignatureForm getSignatureForm() {
 		return SignatureForm.XAdES;
-	}
-
-	@Override
-	public EncryptionAlgorithm getEncryptionAlgorithm() {
-		final SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
-		if (signatureAlgorithm == null) {
-			return null;
-		}
-		return signatureAlgorithm.getEncryptionAlgorithm();
-	}
-
-	@Override
-	public DigestAlgorithm getDigestAlgorithm() {
-		final SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
-		if (signatureAlgorithm == null) {
-			return null;
-		}
-		return signatureAlgorithm.getDigestAlgorithm();
 	}
 
 	@Override
@@ -759,7 +740,13 @@ public class XAdESSignature extends DefaultAdvancedSignature {
 		}
 		return mimeType;
 	}
-	
+
+	@Override
+	public String getSignatureType() {
+		// not supported
+		return null;
+	}
+
 	/**
 	 * Returns a base64 SignatureValue
 	 * 

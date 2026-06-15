@@ -31,6 +31,9 @@ public enum CertificateSourceType {
 	/** Defines a certificate source populated by a TLValidationJob */
 	TRUSTED_LIST,
 
+	/** Defines a certificate source populated by processing List(s) of Trusted Entities */
+	TRUSTED_ENTITIES,
+
 	/** Certificate source extracted from a signature */
 	SIGNATURE,
 
@@ -58,7 +61,7 @@ public enum CertificateSourceType {
 	 * @return TRUE if the certificates in the source are trusted, FALSE otherwise
 	 */
 	public boolean isTrusted() {
-		return TRUSTED_STORE.equals(this) || TRUSTED_LIST.equals(this);
+		return TRUSTED_STORE.equals(this) || TRUSTED_LIST.equals(this) || TRUSTED_ENTITIES.equals(this);
 	}
 
 }

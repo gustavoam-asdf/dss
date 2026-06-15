@@ -79,7 +79,7 @@ public class TLValidationJob {
 
 	/**
 	 * Array of zero, one or more Trusted List (TL) sources.
-	 * 
+	 * <p>
 	 * These trusted lists are not referenced in a List Of Trusted Lists (LOTL)
 	 */
 	private TLSource[] trustedListSources;
@@ -111,7 +111,7 @@ public class TLValidationJob {
 
 	/**
 	 * The strategy to follow to synchronize the certificates.
-	 * 
+	 * <p>
 	 * Default : all trusted lists and LOTLs are synchronized
 	 */
 	private SynchronizationStrategy synchronizationStrategy = new AcceptAllStrategy();

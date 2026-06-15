@@ -238,12 +238,6 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 	}
 
 	@Override
-	@Deprecated
-	public RemoteDocument extendDocument(RemoteDocument remoteDocument, RemoteSignatureParameters remoteParameters) {
-		return extendDocument(remoteDocument, null, remoteParameters);
-	}
-
-	@Override
 	public RemoteDocument extendDocument(RemoteDocument remoteDocument, SignatureProfile signatureProfile, RemoteSignatureParameters remoteParameters) throws DSSException {
 		Objects.requireNonNull(remoteDocument, "remoteDocument must be defined!");
 		if (signatureProfile == null && (remoteParameters == null || remoteParameters.getSignatureLevel() == null)) {

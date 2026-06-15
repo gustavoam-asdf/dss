@@ -247,10 +247,10 @@ public class JAdESService extends AbstractSignatureService<JAdESSignatureParamet
 	private JWSJsonSerializationObject getJWSJsonSerializationObjectToSign(List<DSSDocument> documentsToSign) {
 		if (Utils.isCollectionNotEmpty(documentsToSign) && documentsToSign.size() == 1) {
 			DSSDocument document = documentsToSign.get(0);
-			JWSDocumentAnalyzerFactory documentValidatorFactory = new JWSDocumentAnalyzerFactory();
-			if (documentValidatorFactory.isSupported(document)) {
-				AbstractJWSDocumentAnalyzer documentValidator = documentValidatorFactory.create(document);
-				return documentValidator.getJwsJsonSerializationObject();
+			JWSDocumentAnalyzerFactory documentAnalyzerFactory = new JWSDocumentAnalyzerFactory();
+			if (documentAnalyzerFactory.isSupported(document)) {
+				AbstractJWSDocumentAnalyzer documentAnalyzer = documentAnalyzerFactory.create(document);
+				return documentAnalyzer.getJwsJsonSerializationObject();
 			}
 		}
 		return null;

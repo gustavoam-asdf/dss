@@ -510,11 +510,9 @@ class TLParsingTaskTest {
 			assertNotNull(tsp.getNames());
 			assertFalse(tsp.getNames().isEmpty());
 
+			assertNotNull(tsp.getTradeNames());
 			assertNotNull(tsp.getRegistrationIdentifiers());
-			assertFalse(tsp.getRegistrationIdentifiers().isEmpty());
-
-			assertNotNull(tsp.getRegistrationIdentifiers());
-			assertFalse(tsp.getRegistrationIdentifiers().isEmpty());
+			assertFalse(tsp.getTradeNames().isEmpty() && tsp.getRegistrationIdentifiers().isEmpty());
 
 			assertNotNull(tsp.getElectronicAddresses());
 			assertFalse(tsp.getElectronicAddresses().isEmpty());

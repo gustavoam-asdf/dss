@@ -43,6 +43,9 @@ public class PrettyPrintTransformer {
 	/** The indent amount (4 by default) */
 	private int indentAmount = DSSXMLUtils.TRANSFORMER_INDENT_NUMBER;
 
+	/** Whether original indents are to be preserved */
+	private boolean keepOriginalIndents = true;
+
 	/**
 	 * Default constructor
 	 */
@@ -54,13 +57,27 @@ public class PrettyPrintTransformer {
 	 * Configures the amount of spaces to add
 	 *
 	 * @param indentAmount {@code int}
+	 * @return this {@link PrettyPrintTransformer}
 	 */
-	public void setIndentAmount(int indentAmount) {
+	public PrettyPrintTransformer setIndentAmount(int indentAmount) {
 		this.indentAmount = indentAmount;
+		return this;
 	}
-	
+
 	/**
-	 * Indents the provided {@code nodeToTransform}, by keeping the original indents if present
+	 * Sets whether the original indents are to be kept
+	 * Default : TRUE (Original indents are not modified)
+	 *
+	 * @param keepOriginalIndents whether the original indents are to be kept
+	 * @return this {@link PrettyPrintTransformer}
+	 */
+	public PrettyPrintTransformer setKeepOriginalIndents(boolean keepOriginalIndents) {
+		this.keepOriginalIndents = keepOriginalIndents;
+		return this;
+	}
+
+	/**
+	 * Indents the provided {@code nodeToTransform}
 	 *
 	 * @param nodeToTransform {@link Node} to be indented
 	 * @return {@link Node} with indents
@@ -78,7 +95,12 @@ public class PrettyPrintTransformer {
 			Node childNode = nodeToTransform.getFirstChild();
 			while (childNode != null) {
 				if (Node.TEXT_NODE == childNode.getNodeType()) {
-					skip = true;
+					if (keepOriginalIndents) {
+						skip = true;
+					} else {
+						removeSiblingIndents(childNode);
+					}
+
 				} else {
 					if (!skip && Utils.isStringNotEmpty(indentString)) {
 						Node indentNode = getIndentNode(indentString);
@@ -96,6 +118,16 @@ public class PrettyPrintTransformer {
 			}
 		}
 		return nodeToTransform;
+	}
+
+	private Node removeSiblingIndents(Node node) {
+		Node parentNode = node.getParentNode();
+		if (Node.TEXT_NODE == node.getNodeType()) {
+			Node nextSibling = node.getNextSibling();
+			parentNode.removeChild(node);
+			return removeSiblingIndents(nextSibling);
+		}
+		return node;
 	}
 	
 	private Node getIndentNode(final String indentString) {

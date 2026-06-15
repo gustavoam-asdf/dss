@@ -1,0 +1,200 @@
+package eu.europa.esig.dss.validation.process.eaa.checks;
+
+import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlSAV;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
+import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
+import eu.europa.esig.dss.enumerations.EAAType;
+import eu.europa.esig.dss.enumerations.Level;
+import eu.europa.esig.dss.policy.MultiValuesConstraintWrapper;
+import eu.europa.esig.dss.policy.jaxb.MultiValuesConstraint;
+import eu.europa.esig.dss.validation.process.bbb.AbstractTestCheck;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class EAATypeCheckTest extends AbstractTestCheck {
+
+    @Test
+    void sdjwtValidTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("urn:eudi:pid:1");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtValidAllValuesTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocValidTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("urn:eudi:pid:1");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocValidAllValuesTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtInvalidTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("urn:eudi:pid:2");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+        XmlEAAPayload xmlEAAPayload = new XmlEAAPayload();
+        XmlVerifiableCredentialsTypeClaim xmlVerifiableCredentialsTypeClaim = new XmlVerifiableCredentialsTypeClaim();
+        xmlVerifiableCredentialsTypeClaim.setText("urn:eudi:pid:1");
+        xmlEAAPayload.setVerifiableCredentialsType(xmlVerifiableCredentialsTypeClaim);
+        xmlEAA.setEAAPayload(xmlEAAPayload);
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocInvalidTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("urn:eudi:pid:2");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+        xmlEAA.setDocumentType("urn:eudi:pid:1");
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void sdjwtNotPresentTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.SD_JWT_VC);
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+
+    @Test
+    void mdocNotPresentTest() {
+        MultiValuesConstraint constraint = new MultiValuesConstraint();
+        constraint.getId().add("*");
+        constraint.setLevel(Level.FAIL);
+
+        XmlEAA xmlEAA = new XmlEAA();
+        xmlEAA.setEAAType(EAAType.ISO_IEC_MDOC);
+
+        XmlSAV result = new XmlSAV();
+
+        EAATypeCheck typePresentCheck = new EAATypeCheck(
+                i18nProvider, result, new EAAWrapper(xmlEAA), new MultiValuesConstraintWrapper(constraint));
+        typePresentCheck.execute();
+
+        List<XmlConstraint> constraints = result.getConstraint();
+        assertEquals(1, constraints.size());
+        assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+    }
+}

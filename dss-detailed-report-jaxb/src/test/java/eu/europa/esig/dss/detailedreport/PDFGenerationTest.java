@@ -109,6 +109,26 @@ class PDFGenerationTest {
 	void qwac2DetailedReport() throws Exception {
 		createAndValidate("dr-2qwac.xml");
 	}
+
+	@Test
+	void pidDetailedReport() throws Exception {
+		createAndValidate("dr-pid.xml");
+	}
+
+	@Test
+	void qeaaDetailedReport() throws Exception {
+		createAndValidate("dr-qeaa.xml");
+	}
+
+	@Test
+	void eaaPidDetailedReport() throws Exception {
+		createAndValidate("dr-eaa-pid.xml");
+	}
+
+	@Test
+	void eaaWithStatusDetailedReport() throws Exception {
+		createAndValidate("dr-eaa-status.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		DetailedReportFacade facade = DetailedReportFacade.newFacade();

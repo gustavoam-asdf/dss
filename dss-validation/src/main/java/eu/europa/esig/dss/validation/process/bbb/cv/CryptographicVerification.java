@@ -106,8 +106,10 @@ public class CryptographicVerification extends Chain<XmlCV> {
 
 		if (Utils.isCollectionNotEmpty(digestMatchers)) {
 			for (XmlDigestMatcher digestMatcher : digestMatchers) {
-				if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE == digestMatcher.getType()) {
+				if (DigestMatcherType.EVIDENCE_RECORD_ORPHAN_REFERENCE == digestMatcher.getType() ||
+						DigestMatcherType.EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM == digestMatcher.getType()) {
 					// Evidence Records optionally allow additional digests to be present within first data group
+					// EAAs allow non-disclosed hashes
 					continue;
 				}
 				if (containsManifest && DigestMatcherType.MANIFEST_ENTRY == digestMatcher.getType()) {
@@ -213,12 +215,22 @@ public class CryptographicVerification extends Chain<XmlCV> {
 	}
 
 	private ChainItem<XmlCV> referenceDataFound(XmlDigestMatcher digestMatcher) {
-		LevelRule constraint = validationPolicy.getReferenceDataExistenceConstraint(context);
+		LevelRule constraint;
+		if (Context.EAA == context) {
+			constraint = validationPolicy.getEAADisclosureFoundConstraint();
+		} else {
+			constraint = validationPolicy.getReferenceDataExistenceConstraint(context);
+		}
 		return new ReferenceDataExistenceCheck<>(i18nProvider, result, digestMatcher, constraint);
 	}
 
 	private ChainItem<XmlCV> referenceDataIntact(XmlDigestMatcher digestMatcher) {
-		LevelRule constraint = validationPolicy.getReferenceDataIntactConstraint(context);
+		LevelRule constraint;
+		if (Context.EAA == context) {
+			constraint = validationPolicy.getEAADisclosureIntactConstraint();
+		} else {
+			constraint = validationPolicy.getReferenceDataIntactConstraint(context);
+		}
 		return new ReferenceDataIntactCheck<>(i18nProvider, result, digestMatcher, constraint);
 	}
 

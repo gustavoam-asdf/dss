@@ -23,8 +23,12 @@ package eu.europa.esig.dss.diagnostic;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlContainerInfo;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPresentationInfo;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEncapsulationType;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEvidenceRecord;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlManifestFile;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOrphanCertificateToken;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlOrphanRevocationToken;
@@ -39,6 +43,7 @@ import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.CertificateSourceType;
 import eu.europa.esig.dss.enumerations.CertificateStatus;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAAPresentationType;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.RevocationReason;
 import eu.europa.esig.dss.enumerations.RevocationType;
@@ -75,6 +80,9 @@ public class DiagnosticData {
 
 	/** List of found evidence records */
 	private List<EvidenceRecordWrapper> foundEvidenceRecords;
+
+	/** List of found EAA presentations */
+	private List<EAAWrapper> foundEAAs;
 
 	/**
 	 * Default constructor
@@ -1004,6 +1012,59 @@ public class DiagnosticData {
 	}
 
 	/**
+	 * This method retrieves a list of EAA wrappers
+	 *
+	 * @return a list of EAA wrappers
+	 */
+	public List<EAAWrapper> getEAAs() {
+		if (foundEAAs == null) {
+			foundEAAs = new ArrayList<>();
+			List<XmlEAA> xmlEAAs = wrapped.getEAAs();
+			if (xmlEAAs != null) {
+				for (XmlEAA xmlEAA : xmlEAAs) {
+					foundEAAs.add(new EAAWrapper(xmlEAA));
+				}
+			}
+		}
+		return foundEAAs;
+	}
+
+	/**
+	 * Returns the EAAWrapper corresponding to the given id.
+	 *
+	 * @param id
+	 *            EAA presentation id
+	 * @return evidence record wrapper or null
+	 */
+	public EAAWrapper getEAAById(String id) {
+		List<EAAWrapper> eaas = getEAAs();
+		for (EAAWrapper eaa : eaas) {
+			if (id.equals(eaa.getId())) {
+				return eaa;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * This method returns the first EAA id.
+	 *
+	 * @return the first EAA id
+	 */
+	public String getFirstEAAId() {
+		EAAWrapper firstEAA = getFirstEAANullSafe();
+		return firstEAA.getId();
+	}
+
+	private EAAWrapper getFirstEAANullSafe() {
+		List<EAAWrapper> eaas = getEAAs();
+		if (eaas != null && !eaas.isEmpty()) {
+			return eaas.get(0);
+		}
+		return new EAAWrapper(new XmlEAA());
+	}
+
+	/**
 	 * This method retrieves a list of certificate wrappers
 	 * 
 	 * @return a list of {@link CertificateWrapper}s.
@@ -1030,7 +1091,7 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() == null) {
+			if (!signatureWrapper.isCounterSignature() && !signatureWrapper.isKeyBindingSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}
@@ -1046,7 +1107,7 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() != null) {
+			if (signatureWrapper.isCounterSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}
@@ -1062,7 +1123,23 @@ public class DiagnosticData {
 		Set<SignatureWrapper> signatures = new HashSet<>();
 		List<SignatureWrapper> mixedSignatures = getSignatures();
 		for (SignatureWrapper signatureWrapper : mixedSignatures) {
-			if (signatureWrapper.getParent() != null && signatureWrapper.getParent().equals(masterSignatureWrapper)) {
+			if (signatureWrapper.isCounterSignature() && signatureWrapper.getParent().equals(masterSignatureWrapper)) {
+				signatures.add(signatureWrapper);
+			}
+		}
+		return signatures;
+	}
+
+	/**
+	 * This method returns key binding signatures (not EAA signatures)
+	 *
+	 * @return a set of SignatureWrapper
+	 */
+	public Set<SignatureWrapper> getAllKeyBindingSignatures() {
+		Set<SignatureWrapper> signatures = new HashSet<>();
+		List<SignatureWrapper> mixedSignatures = getSignatures();
+		for (SignatureWrapper signatureWrapper : mixedSignatures) {
+			if (signatureWrapper.isKeyBindingSignature()) {
 				signatures.add(signatureWrapper);
 			}
 		}
@@ -1097,6 +1174,32 @@ public class DiagnosticData {
 			}
 		}
 		return latest;
+	}
+
+	/**
+	 * This method returns all electronic attestation of attributes (EAAs)
+	 *
+	 * @return a set of EAAs
+	 */
+	public Set<EAAWrapper> getAllEAA() {
+		Set<EAAWrapper> eaas = new HashSet<>();
+		for (XmlEAA xmlEAA : wrapped.getEAAs()) {
+			eaas.add(new EAAWrapper(xmlEAA));
+		}
+		return eaas;
+	}
+
+	/**
+	 * This method returns all EAA revocation tokens
+	 *
+	 * @return a set of revocation data
+	 */
+	public Set<EAARevocationTokenWrapper> getAllEAARevocationTokens() {
+		Set<EAARevocationTokenWrapper> eaaStatusTokens = new HashSet<>();
+		for (XmlEAARevocationToken xmlEAARevocationToken : wrapped.getUsedEAARevocationTokens()) {
+			eaaStatusTokens.add(new EAARevocationTokenWrapper(xmlEAARevocationToken));
+		}
+		return eaaStatusTokens;
 	}
 
 	/**
@@ -1382,6 +1485,28 @@ public class DiagnosticData {
 	}
 
 	/**
+	 * Returns information about EAA Presentation document
+	 *
+	 * @return {@link XmlEAAPresentationInfo}
+	 */
+	public XmlEAAPresentationInfo getEAAPresentationInfo() {
+		return wrapped.getEAAPresentationInfo();
+	}
+
+	/**
+	 * Gets type of the EAA Presentation document
+	 *
+	 * @return {@link EAAPresentationType}
+	 */
+	public EAAPresentationType getEAAPresentationType() {
+		XmlEAAPresentationInfo eaaPresentationInfo = getEAAPresentationInfo();
+		if (eaaPresentationInfo != null) {
+			return eaaPresentationInfo.getEAAPresentationType();
+		}
+		return null;
+	}
+
+	/**
 	 * This method returns the JAXB model of the used trusted lists
 	 * 
 	 * @return the JAXB model of the used trusted lists
@@ -1408,6 +1533,38 @@ public class DiagnosticData {
 		for (XmlTrustedList xmlTrustedList : trustedLists) {
 			if (xmlTrustedList.isLOTL()) {
 				result.add(xmlTrustedList);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * This method returns the JAXB model of the used lists of trusted entities
+	 *
+	 * @return the JAXB model of the used lists of trusted entities
+	 */
+	public List<XmlListOfTrustedEntities> getListsOfTrustedEntities() {
+		List<XmlListOfTrustedEntities> result = new ArrayList<>();
+		List<XmlListOfTrustedEntities> listsOfTrustedEntities = wrapped.getListsOfTrustedEntities();
+		for (XmlListOfTrustedEntities lote : listsOfTrustedEntities) {
+			if (!lote.isLoLoTE()) {
+				result.add(lote);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * This method returns the JAXB model of the used lists of lists of trusted entities
+	 *
+	 * @return the JAXB model of the used lists of lists of trusted entities
+	 */
+	public List<XmlListOfTrustedEntities> getListsOfListsOfTrustedEntities() {
+		List<XmlListOfTrustedEntities> result = new ArrayList<>();
+		List<XmlListOfTrustedEntities> listsOfTrustedEntities = wrapped.getListsOfTrustedEntities();
+		for (XmlListOfTrustedEntities lote : listsOfTrustedEntities) {
+			if (lote.isLoLoTE()) {
+				result.add(lote);
 			}
 		}
 		return result;

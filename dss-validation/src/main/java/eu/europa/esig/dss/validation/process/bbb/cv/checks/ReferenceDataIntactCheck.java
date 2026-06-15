@@ -23,6 +23,7 @@ package eu.europa.esig.dss.validation.process.bbb.cv.checks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCV;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
+import eu.europa.esig.dss.enumerations.DigestMatcherType;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -72,6 +73,10 @@ public class ReferenceDataIntactCheck<T extends XmlConstraintsConclusion> extend
 				return MessageTag.BBB_CV_ER_ATSRI;
 			case EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE:
 				return MessageTag.BBB_CV_ER_ATSSRI;
+			case EAA_DISCLOSURE:
+				return MessageTag.BBB_CV_EAA_SDCBI;
+			case EAA_NESTED_DISCLOSURE:
+				return MessageTag.BBB_CV_EAA_NSDCBI;
 			default:
 				return MessageTag.BBB_CV_IRDOI;
 		}
@@ -90,6 +95,10 @@ public class ReferenceDataIntactCheck<T extends XmlConstraintsConclusion> extend
 				return MessageTag.BBB_CV_ER_ATSRI_ANS;
 			case EVIDENCE_RECORD_ARCHIVE_TIME_STAMP_SEQUENCE:
 				return MessageTag.BBB_CV_ER_ATSSRI_ANS;
+			case EAA_DISCLOSURE:
+				return MessageTag.BBB_CV_EAA_SDCBI_ANS;
+			case EAA_NESTED_DISCLOSURE:
+				return MessageTag.BBB_CV_EAA_NSDCBI_ANS;
 			default:
 				return MessageTag.BBB_CV_IRDOI_ANS;
 		}
@@ -129,6 +138,12 @@ public class ReferenceDataIntactCheck<T extends XmlConstraintsConclusion> extend
 			return digestMatcher.getId();
 		} else if (Utils.isStringNotBlank(digestMatcher.getUri())) {
 			return digestMatcher.getUri();
+		} else if (digestMatcher.getDisclosableClaim() != null && digestMatcher.getDisclosableClaim().getName() != null) {
+			String claimName = digestMatcher.getDisclosableClaim().getName();
+			if (DigestMatcherType.EAA_NESTED_DISCLOSURE == digestMatcher.getType() && digestMatcher.getDisclosableClaim().getValue() != null) {
+				claimName += String.format(" '%s'", digestMatcher.getDisclosableClaim().getValue());
+			}
+			return claimName;
 		} else {
 			return digestMatcher.getType().name();
 		}

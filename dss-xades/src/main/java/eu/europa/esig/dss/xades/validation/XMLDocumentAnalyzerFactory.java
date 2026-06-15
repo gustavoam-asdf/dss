@@ -39,8 +39,8 @@ public class XMLDocumentAnalyzerFactory implements DocumentAnalyzerFactory {
 
 	@Override
 	public boolean isSupported(DSSDocument document) {
-		XMLDocumentAnalyzer validator = new XMLDocumentAnalyzer();
-		return validator.isSupported(document);
+		XMLDocumentAnalyzer analyzer = new XMLDocumentAnalyzer();
+		return analyzer.isSupported(document);
 	}
 
 	@Override

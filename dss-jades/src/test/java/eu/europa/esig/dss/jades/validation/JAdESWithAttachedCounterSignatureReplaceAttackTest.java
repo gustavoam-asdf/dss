@@ -51,7 +51,7 @@ class JAdESWithAttachedCounterSignatureReplaceAttackTest extends AbstractJAdESTe
                 boolean jwsSignatureInputFound = false;
                 boolean counterSignedSignatureInputFound = false;
                 for (XmlDigestMatcher digestMatcher : digestMatchers) {
-                    if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType())) {
+                    if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType())) {
                         assertTrue(digestMatcher.isDataFound());
                         assertTrue(digestMatcher.isDataIntact());
                         jwsSignatureInputFound = true;
@@ -67,7 +67,7 @@ class JAdESWithAttachedCounterSignatureReplaceAttackTest extends AbstractJAdESTe
             } else {
                 assertEquals(1, digestMatchers.size());
                 XmlDigestMatcher digestMatcher = digestMatchers.get(0);
-                assertEquals(DigestMatcherType.JWS_SIGNING_INPUT_DIGEST, digestMatcher.getType());
+                assertEquals(DigestMatcherType.JWS_SIGNING_INPUT, digestMatcher.getType());
                 assertTrue(digestMatcher.isDataFound());
                 assertTrue(digestMatcher.isDataIntact());
                 ++masterSignatureCounter;

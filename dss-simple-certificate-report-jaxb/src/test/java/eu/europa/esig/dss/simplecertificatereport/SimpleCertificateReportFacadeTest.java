@@ -58,6 +58,11 @@ class SimpleCertificateReportFacadeTest {
 	void testNotQwac() throws Exception {
 		createAndValidate("simple-cert-report-not-qwac.xml");
 	}
+
+	@Test
+	void testPid() throws Exception {
+		createAndValidate("simple-cert-report-pid.xml");
+	}
 	
 	private void createAndValidate(String filename) throws Exception {
 		SimpleCertificateReportFacade facade = SimpleCertificateReportFacade.newFacade();

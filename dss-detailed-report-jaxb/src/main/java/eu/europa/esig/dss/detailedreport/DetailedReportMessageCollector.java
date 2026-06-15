@@ -22,8 +22,10 @@ package eu.europa.esig.dss.detailedreport;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlQWACProcess;
@@ -31,10 +33,13 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateQualification;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
+import eu.europa.esig.dss.enumerations.CertificateUsage;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.MessageType;
 import eu.europa.esig.dss.enumerations.ValidationTime;
@@ -231,6 +236,90 @@ public class DetailedReportMessageCollector {
 		return collectQWACValidationDetails(MessageType.INFO, certificateId);
 	}
 
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation errors for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageErrorsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtIssuanceTime(MessageType.ERROR, certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation warnings for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageWarningsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtIssuanceTime(MessageType.WARN, certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation information messages for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageInfosAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtIssuanceTime(MessageType.INFO, certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation errors for a certificate with
+	 * the given id at validation time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageErrorsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtValidationTime(MessageType.ERROR, certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation warnings for a certificate with
+	 * the given id at validation time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageWarningsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtValidationTime(MessageType.WARN, certificateId, certificateUsage);
+	}
+
+	/**
+	 * Returns a list of TS 119 602 certificate usage validation information messages for a certificate with
+	 * the given id at validation time and the given {@code certificateUsage}
+	 * <p>
+	 * NOTE: applicable only for certificate validation
+	 *
+	 * @param certificateId {@link String} id of a certificate to get qualification errors for
+	 * @param certificateUsage {@link CertificateUsage}
+	 * @return a list of {@link Message}s
+	 */
+	List<Message> getCertificateUsageInfosAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
+		return collectCertificateUsageAtValidationTime(MessageType.INFO, certificateId, certificateUsage);
+	}
+
 	private List<Message> collectAdESValidationMessages(MessageType type, String tokenId) {
 		XmlSignature signatureById = detailedReport.getXmlSignatureById(tokenId);
 		if (signatureById != null) {
@@ -243,6 +332,10 @@ public class DetailedReportMessageCollector {
 		XmlEvidenceRecord evidenceRecordById = detailedReport.getXmlEvidenceRecordById(tokenId);
 		if (evidenceRecordById != null) {
 			return collectEvidenceRecordValidation(type, evidenceRecordById);
+		}
+		XmlEAA EAAById = detailedReport.getXmlEAAById(tokenId);
+		if (EAAById != null) {
+			return collectEAAValidation(type, EAAById);
 		}
 		XmlTLAnalysis tlAnalysisById = detailedReport.getTLAnalysisById(tokenId);
 		if (tlAnalysisById != null) {
@@ -270,6 +363,10 @@ public class DetailedReportMessageCollector {
 		XmlTimestamp timestampById = detailedReport.getXmlTimestampById(tokenId);
 		if (timestampById != null) {
 			return collectTimestampQualification(type, timestampById);
+		}
+		XmlEAA EAAById = detailedReport.getXmlEAAById(tokenId);
+		if (EAAById != null) {
+			return collectEAAQualification(type, EAAById);
 		}
 		List<XmlValidationCertificateQualification> certificateById = getCertificateQualificationProcess(tokenId);
 		if (certificateById != null) {
@@ -314,6 +411,14 @@ public class DetailedReportMessageCollector {
 		return result;
 	}
 
+	private List<Message> collectEAAValidation(MessageType type, XmlEAA xmlEAA) {
+		List<Message> result = new ArrayList<>();
+
+		XmlValidationProcessEAA validationProcessEAA = xmlEAA.getValidationProcessEAA();
+		addMessages(result, getMessages(type, validationProcessEAA));
+		return result;
+	}
+
 	private List<Message> collectTLAnalysisValidation(MessageType type, XmlTLAnalysis tlAnalysisById) {
 		List<Message> result = new ArrayList<>();
 		addMessages(result, getMessages(type, tlAnalysisById.getConclusion()));
@@ -341,6 +446,12 @@ public class DetailedReportMessageCollector {
 	private List<Message> collectTimestampQualification(MessageType type, XmlTimestamp xmlTimestamp) {
 		List<Message> result = new ArrayList<>();
 		addMessages(result, getMessages(type, xmlTimestamp.getValidationTimestampQualification()));
+		return result;
+	}
+
+	private List<Message> collectEAAQualification(MessageType type, XmlEAA xmlEAA) {
+		List<Message> result = new ArrayList<>();
+		addMessages(result, getMessages(type, xmlEAA.getValidationEAAQualification()));
 		return result;
 	}
 
@@ -450,6 +561,68 @@ public class DetailedReportMessageCollector {
 		} else {
 			return Collections.emptyList();
 		}
+	}
+
+	private List<Message> collectCertificateUsageAtIssuanceTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
+		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
+		if (certificateUsageProcess != null) {
+			return collectCertificateUsageAtIssuanceTime(type, certificateUsageProcess);
+		}
+		return Collections.emptyList();
+	}
+
+	private List<Message> collectCertificateUsageAtValidationTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
+		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
+		if (certificateUsageProcess != null) {
+			return collectCertificateUsageAtValidationTime(type, certificateUsageProcess);
+		}
+		return Collections.emptyList();
+	}
+
+	private List<XmlValidationCertificateUsage> getCertificateUsageProcess(String certificateId, CertificateUsage certificateUsage) {
+		final List<XmlValidationCertificateUsage> result = new ArrayList<>();
+
+		XmlCertificate xmlCertificate = detailedReport.getXmlCertificateById(certificateId);
+		if (xmlCertificate != null && xmlCertificate.getCertificateUsageProcess() != null) {
+			List<XmlValidationCertificateUsage> validationCertificateUsages = xmlCertificate.getCertificateUsageProcess().getValidationCertificateUsage();
+			for (XmlValidationCertificateUsage validationCertificateUsage : validationCertificateUsages) {
+				XmlCertificateUsage xmlCertificateUsage = validationCertificateUsage.getCertificateUsage();
+				if (xmlCertificateUsage != null &&
+						certificateUsage.getListType() != null && certificateUsage.getListType().getUri() != null
+						&& xmlCertificateUsage.getListType() != null && certificateUsage.getListType().getUri().equals(xmlCertificateUsage.getListType().getUri()) &&
+						certificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri() != null
+						&& xmlCertificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri().equals(xmlCertificateUsage.getServiceTypeIdentifier().getUri())) {
+					result.add(validationCertificateUsage);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private List<Message> collectCertificateUsageAtIssuanceTime(
+			MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses) {
+		return collectCertificateUsageAtTime(type, certificateUsageProcesses, ValidationTime.CERTIFICATE_ISSUANCE_TIME);
+	}
+
+	private List<Message> collectCertificateUsageAtValidationTime(
+			MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses) {
+		return collectCertificateUsageAtTime(type, certificateUsageProcesses, ValidationTime.VALIDATION_TIME);
+	}
+
+	private List<Message> collectCertificateUsageAtTime(MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses,
+														ValidationTime validationTime) {
+		if (certificateUsageProcesses != null) {
+			for (XmlValidationCertificateUsage certificateUsageProcess : certificateUsageProcesses) {
+				if (validationTime.equals(certificateUsageProcess.getValidationTime())) {
+					return getMessages(type,certificateUsageProcess);
+				}
+			}
+		}
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("The certificate usage validation at time '{}' is not found or not performed!", validationTime);
+		}
+		return Collections.emptyList();
 	}
 
 	private List<Message> getMessages(MessageType type, XmlConstraintsConclusion constraintsConclusion) {

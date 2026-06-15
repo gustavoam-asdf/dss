@@ -73,6 +73,16 @@ public final class DateParser extends XmlAdapter<String, Date> {
 	 */
 	@Override
 	public String marshal(Date date) throws Exception {
+		return toString(date);
+	}
+
+	/**
+	 * This method converts a {@code Date} into a String representation following the RFC 3339 DateTime format
+	 *
+	 * @param date {@link Date}
+	 * @return {@link String}
+	 */
+	public String toString(Date date) {
 		if (date != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 			sdf.setTimeZone(UTC);

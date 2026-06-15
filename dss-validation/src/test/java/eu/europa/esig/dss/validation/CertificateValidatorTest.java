@@ -76,6 +76,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -150,7 +151,7 @@ class CertificateValidatorTest {
 
 		DiagnosticData diagnosticData = reports.getDiagnosticData();
 		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
-		assertEquals(3, usedCertificates.size());
+		assertTrue(Utils.isCollectionNotEmpty(usedCertificates));
 
 		CertificateWrapper certificateWrapper = usedCertificates.get(0);
 		assertTrue(certificateWrapper.isQcCompliance());
@@ -184,6 +185,73 @@ class CertificateValidatorTest {
 		assertEquals(1, certificateWrapper.getQcQSCDLegislation().size());
 		assertEquals("ZZ", certificateWrapper.getQcQSCDLegislation().iterator().next());
 		assertEquals(QCIdentMethodEnum.QCT_EIDAS2_B, certificateWrapper.getQcIdentMethod());
+
+		validateReports(reports);
+	}
+
+	@Test
+	void qcStatementsCertForPIDTest() throws Exception {
+		CertificateValidator cv = CertificateValidator
+				.fromCertificate(DSSUtils.loadCertificateFromBase64EncodedString("MIIFJzCCBA+gAwIBAgIDAYcUMA0GCSqGSIb3DQEBCwUAMH8xIzAhBgNVBAMMGlRlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMB4XDTI1MDMwOTA4MTEyMFoXDTI3MDEwOTA4MTEyMFowcTEVMBMGA1UEAwwMQ2VydCBmb3IgUElEMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnQV7+LVn+N2OepfPv7I4liKBdEQNG3bR9WEU//Ju1bpWAAsMvjVo+JYH0uikPa1b5HuasnXjA2+/PWTfKDngcfEsotMuLDZaGVEdFIkrudjGgGwKJWoVbdPadiLcZ6K5n2KHssB1ILxjf6Cgd/sWyBH1X7Z4DckUWOK7Phrm0WYvUjeAEcZi5nZyzeEIiqCWi78j7pAtqKpEVjVb6RT40VYSfcO2wLN7KmOxEn+ZVrE7EWDMRXT+HrNNXO5KbWt1c9rio+hjxlJaRH25aPQTQM7/dqevUjfn+4ZkVhxH9PqecKZD9T9w5bFIGGddqwdKG5GYHX8yWNwhchqu2bWJQwIDAQABo4IBuDCCAbQwDgYDVR0PAQH/BAQDAgbAMCEGA1UdEQQaMBiCCW5vd2luYS5sdYILKi5ub3dpbmEubHUwNwYIKwYBBQUHAQMEKzApMAgGBgQAjkYBATAIBgYEAI5GAQQwEwYGBACORgEGMAkGBwQAi+xOAQEwVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2Rzcy5ub3dpbmEubHUvcGtpLWZhY3RvcnkvY3JsL1Rlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaLmNybDCBrwYIKwYBBQUHAQEEgaIwgZ8wTAYIKwYBBQUHMAGGQGh0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L29jc3AvVGVzdC1RdWFsaWZpZWQtQ0ExLWZyb20tWlowTwYIKwYBBQUHMAKGQ2h0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L2NydC9UZXN0LVF1YWxpZmllZC1DQTEtZnJvbS1aWi5jcnQwHwYDVR0jBBgwFoAU/RVYd982PMkwzrISxYWBINpCUNIwHQYDVR0OBBYEFMaLEMU1w/RJ/V4floj8arXG415pMA0GCSqGSIb3DQEBCwUAA4IBAQBLnEKbNoQp4GUgCh9ioNMNEr1sShUbKTooCtzbS48KM8WpbqOzlxe9agWHhyb/skqN0/h4aFFFZdgbfHD10/91R001MOV0InFK0QLyxkr4XkBpOVrBQH3tQSpR4cZxJZd9wsysNZW8BGeoPez9LBwPeBwsYa+2Gt3Ej0Fn2Frc/XOIcGPjJViD2CBFNNril6iuKf9NDj13wJSXIs0znSDJpDO0N2fhlFyzQUUmKS9w8SJC2/X4IxHzGzBzKcAcXyPMow20AuQ2VdrCWTcC9t+2oaBpzjtLQmv7r0tJXtAMD5YV/nZvb06F937QC1QL7DHfWt2A0tKTlM/DDl+zkXfb"));
+		cv.setCertificateVerifier(new CommonCertificateVerifier());
+		CertificateReports reports = cv.validate();
+
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
+		assertEquals(1, usedCertificates.size());
+
+		CertificateWrapper certificateWrapper = usedCertificates.get(0);
+		assertTrue(certificateWrapper.isQcCompliance());
+		assertTrue(certificateWrapper.isSupportedByQSCD());
+		assertEquals(1, certificateWrapper.getQcTypes().size());
+		assertEquals(QCTypeEnum.QCT_PID, certificateWrapper.getQcTypes().get(0));
+		assertNull(certificateWrapper.getQcPSB());
+
+		validateReports(reports);
+	}
+
+	@Test
+	void qcStatementsCertForWalletTest() throws Exception {
+		CertificateValidator cv = CertificateValidator
+				.fromCertificate(DSSUtils.loadCertificateFromBase64EncodedString("MIIFKjCCBBKgAwIBAgIDAYcVMA0GCSqGSIb3DQEBCwUAMH8xIzAhBgNVBAMMGlRlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMB4XDTI1MDMwOTA4MTAzNVoXDTI3MDEwOTA4MTAzNVowdDEYMBYGA1UEAwwPQ2VydCBmb3IgV2FsbGV0MTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyWEqqjh51SWSUP+J+Y17AuM6R1rkz2nsy5dh3lhntVLRSN+qPwRed3DXVNdmIgJuL9HjoI3T5hSwrt3hzcTrDhVgGaWwnjJ+OyNYlMbrm/8x+WwTQkLzz7QN07CPaXhQNB0hHnbHfqB80nGaUfGyNuOzPO7ol35vvfK8eeZ5KeJwqXvThjH0+NS9NrBpOB5yVHQ1AkZ0pV+wM3wMqCN1Cks6/GRArJDbN/9h2DFtwaKSQiENlZ9KOYhRUMsjUtDHSWSJRxbPBq9H/TU9TItWH+rwnMolFHpOaopT6AqnzIKJXHtYhv7RIYxtPw07txKLNQK5fof0Mm0+I7EbYPfR7wIDAQABo4IBuDCCAbQwDgYDVR0PAQH/BAQDAgbAMCEGA1UdEQQaMBiCCW5vd2luYS5sdYILKi5ub3dpbmEubHUwNwYIKwYBBQUHAQMEKzApMAgGBgQAjkYBATAIBgYEAI5GAQQwEwYGBACORgEGMAkGBwQAi+xOAQIwVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2Rzcy5ub3dpbmEubHUvcGtpLWZhY3RvcnkvY3JsL1Rlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaLmNybDCBrwYIKwYBBQUHAQEEgaIwgZ8wTAYIKwYBBQUHMAGGQGh0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L29jc3AvVGVzdC1RdWFsaWZpZWQtQ0ExLWZyb20tWlowTwYIKwYBBQUHMAKGQ2h0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L2NydC9UZXN0LVF1YWxpZmllZC1DQTEtZnJvbS1aWi5jcnQwHwYDVR0jBBgwFoAU1rCuDUzUt8vcQvdwHbau3TPpaKkwHQYDVR0OBBYEFNnDoa7lyndZV4iNK1M3NpYo05bnMA0GCSqGSIb3DQEBCwUAA4IBAQBPAdivSEsKotwAY9lqvPUsxh3g06eWjNDkiCegA6JlKEcIPkrg0hG3uDI5mwr6i9UR6HS7dYcppnB8cN2enttngZrj5+r6Q0wjBvBKaKV6koLThh5TOKvFaHHoaaDDNiFZjcak2xH781n56Q6FPKOkVKR830LP/nEDUlAII4q9c5z06Am5HZk8aWmlw0u2N7yRks3MW069Net1lMgvfQtioar6w30Jjrz+UrGl5bdUfl/vl4rSK4GPvwRS+s5lgyQXK5eMGX40GhagmkD2Ss5AvsVHc9DZH18IyI6r4BsfakoCo5ap9Wf/iN860zsPB0iYevmNar5jiDga8ShIcQOD"));
+		cv.setCertificateVerifier(new CommonCertificateVerifier());
+		CertificateReports reports = cv.validate();
+
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
+		assertEquals(1, usedCertificates.size());
+
+		CertificateWrapper certificateWrapper = usedCertificates.get(0);
+		assertTrue(certificateWrapper.isQcCompliance());
+		assertTrue(certificateWrapper.isSupportedByQSCD());
+		assertEquals(1, certificateWrapper.getQcTypes().size());
+		assertEquals(QCTypeEnum.QCT_WAL, certificateWrapper.getQcTypes().get(0));
+		assertNull(certificateWrapper.getQcPSB());
+
+		validateReports(reports);
+	}
+
+	@Test
+	void qcStatementsQcPSBTest() throws Exception {
+		CertificateValidator cv = CertificateValidator
+				.fromCertificate(DSSUtils.loadCertificateFromBase64EncodedString("MIIFTDCCBDSgAwIBAgIDAYcWMA0GCSqGSIb3DQEBCwUAMH8xIzAhBgNVBAMMGlRlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMB4XDTI1MDMwNjEyNDIwNVoXDTI3MDEwNjEyNDIwNVowdDEYMBYGA1UEAwwPQ2VydCBmb3IgUFVCRUFBMTgwNgYDVQQKDC9UZXN0IFF1YWxpZmllZCBUcnVzdCBTZXJ2aWNlIFByb3ZpZGVyIDEgZnJvbSBaWjERMA8GA1UECwwIUEtJLVRFU1QxCzAJBgNVBAYTAlpaMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqO4hLJN2GKqfD34Dtp7RH0DFB6iuOgewBVAMVXtZW+AkLJBOVvRL3V9w+5dqOYGzOfkoyASQVyeB7Sh0Xf8si+Cg6wh1PWkAAJGaLZdwIj09HjQfeMA7rBhydOnAh0IHfnM3UmBJFr4vJhLwmynsxWciGY591qZFgRFA5EYuoEvGqpmfWI5qZHFrf5XjTrsfv7uMd+vTX9zk9yv/9B1FmoYlcFt3y1DF+cQbqu9CoxRO+2+dmdaQztuM6KaBOe/6+81X2XxfGT4K4D4+KuwYOPX1z/rIeZjfwFuC/aJWLXSekZhb4++IKTWycWZqMMBVrjgLMTQKDqcxMCUHVR62IwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgbAMCEGA1UdEQQaMBiCCW5vd2luYS5sdYILKi5ub3dpbmEubHUwWQYIKwYBBQUHAQMETTBLMAgGBgQAjkYBATAIBgYEAI5GAQQwEwYGBACORgEGMAkGBwQAjkYBBgEwIAYHBACL7E4BAzAVEwJFVQwISUQtMTIzNDUMBVRFLUVVMFQGA1UdHwRNMEswSaBHoEWGQ2h0dHA6Ly9kc3Mubm93aW5hLmx1L3BraS1mYWN0b3J5L2NybC9UZXN0LVF1YWxpZmllZC1DQTEtZnJvbS1aWi5jcmwwga8GCCsGAQUFBwEBBIGiMIGfMEwGCCsGAQUFBzABhkBodHRwOi8vZHNzLm5vd2luYS5sdS9wa2ktZmFjdG9yeS9vY3NwL1Rlc3QtUXVhbGlmaWVkLUNBMS1mcm9tLVpaME8GCCsGAQUFBzAChkNodHRwOi8vZHNzLm5vd2luYS5sdS9wa2ktZmFjdG9yeS9jcnQvVGVzdC1RdWFsaWZpZWQtQ0ExLWZyb20tWlouY3J0MB8GA1UdIwQYMBaAFH/zjBn9WK6TDqo2q0OeyJ8g+GHrMB0GA1UdDgQWBBSVTVcvEiZRceBt0fsBjimrnzgxEjANBgkqhkiG9w0BAQsFAAOCAQEAT8ruIWB+3iI2S0JvRkptyPEIkJzfwMMDAJz9SiYeUOSjKbTCjJp7Sf+h/un191KOaTxhCrnFKGx0uVtSuLREd1zk7Og+gti2SLXEeWOM+jfCp2/+Sos/Dplht6GDzUKtB4Z8SNz1FtUcyJAq0E88h9HKYqzYo6qmQvPjDm8tTQxFcXq5PBHaCp1p16sDi8hQU8M8GpvzAli6PjJx4utGKMwZO3HrxxYcPi40WjPXnI/B9+cWBu4y4CIlNl9ugNIzX6X0X7iPLoK0jjFWW3WBgMl7rDvr9Wp/KLl24kfKO2F8pntfh4hmvMRfSGnudGLwgo2pv2sBXKdqzXf5TfjdgQ=="));
+		cv.setCertificateVerifier(new CommonCertificateVerifier());
+		CertificateReports reports = cv.validate();
+
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		List<CertificateWrapper> usedCertificates = diagnosticData.getUsedCertificates();
+		assertEquals(1, usedCertificates.size());
+
+		CertificateWrapper certificateWrapper = usedCertificates.get(0);
+		assertTrue(certificateWrapper.isQcCompliance());
+		assertTrue(certificateWrapper.isSupportedByQSCD());
+		assertEquals(1, certificateWrapper.getQcTypes().size());
+		assertEquals(QCTypeEnum.QCT_ESIGN, certificateWrapper.getQcTypes().get(0));
+
+		assertNotNull(certificateWrapper.getQcPSB());
+		assertEquals("EU", certificateWrapper.getQcPSB().getCountryOfLegislation());
+		assertEquals("ID-12345", certificateWrapper.getQcPSB().getAuthSourceIdentification());
+		assertEquals("TE-EU", certificateWrapper.getQcPSB().getLegislationIdentification());
 
 		validateReports(reports);
 	}

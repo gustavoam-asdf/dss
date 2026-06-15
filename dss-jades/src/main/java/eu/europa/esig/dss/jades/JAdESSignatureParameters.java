@@ -52,6 +52,13 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	private boolean includeSignatureType = true;
 
 	/**
+	 * Defines a MimeType of the signature to be created, to be provided within a signed header ('typ' attribute)
+	 * <p>
+	 * DEFAULT: The type is determined based on the JWS serialization type
+	 */
+	private String signatureType;
+
+	/**
 	 * This property defines whether a 'kid' (key identifier) header parameter should be added to a protected header.
 	 * <p>
 	 * NOTE: a signing certificate shall be provided to embed the 'kid' header
@@ -60,6 +67,14 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 *           the signing-certificate is defined within the signature parameters).
 	 */
 	private boolean includeKeyIdentifier = true;
+
+	/**
+	 * The value of the 'kid' (key identifier) parameter to be embedded within the protected header of the signature
+	 * <p>
+	 * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+	 *          protected header corresponds to the IssuerSerial of the signing-certificate.
+	 */
+	private String keyIdentifier;
 
 	/**
 	 * This property defines the value of the 'cty' (content type) header parameter.
@@ -212,6 +227,26 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	}
 
 	/**
+	 * Gets the MimeType of the signature, to be incorporated in the signed header ('typ' attribute)
+	 *
+	 * @return {@link String}
+	 */
+	public String getSignatureType() {
+		return signatureType;
+	}
+
+	/**
+	 * Sets the MimeType of the signature to be incorporated within the signed header ('typ' attribute)
+	 * <p>
+	 * Default: The signature type is derived from the selected JWS serialization type
+	 *
+	 * @param signatureType {@link String}
+	 */
+	public void setSignatureType(String signatureType) {
+		this.signatureType = signatureType;
+	}
+
+	/**
 	 * Returns whether a 'kid' (key identifier) header parameter should be created
 	 *
 	 * @return TRUE if the 'kid' should be created, FALSE otherwise
@@ -230,6 +265,27 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	 */
 	public void setIncludeKeyIdentifier(boolean includeKeyIdentifier) {
 		this.includeKeyIdentifier = includeKeyIdentifier;
+	}
+
+	/**
+	 * Gets the value of the 'kid' (key identifier) protected header parameter.
+	 *
+	 * @return {@link String}
+	 */
+	public String getKeyIdentifier() {
+		return keyIdentifier;
+	}
+
+	/**
+	 * Sets the 'kid' value to be incorporated within the signature's protected header.
+	 * <p>
+	 * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
+	 *          protected header corresponds to the IssuerSerial of the signing-certificate.
+	 *
+	 * @param keyIdentifier {@link String}
+	 */
+	public void setKeyIdentifier(String keyIdentifier) {
+		this.keyIdentifier = keyIdentifier;
 	}
 
 	/**
@@ -294,7 +350,7 @@ public class JAdESSignatureParameters extends AbstractSignatureParameters<JAdEST
 	/**
 	 * The digest method indicates the digest algorithm to be used to calculate the certificate digest
 	 * to define a signing certificate ('x5t#256' for SHA256 or 'x5t#o' for other algorithms)
-	 * Default: DigestAlgorithm.SHA256 ('x5t#256' attribute will be created)
+	 * Default: DigestAlgorithm.SHA512 ('x5t#o' attribute will be created)
 	 *
 	 * @param signingCertificateDigestMethod {@link DigestAlgorithm} to be used
 	 */
