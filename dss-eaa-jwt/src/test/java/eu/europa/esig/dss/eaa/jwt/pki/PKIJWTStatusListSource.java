@@ -2,7 +2,6 @@ package eu.europa.esig.dss.eaa.jwt.pki;
 
 import eu.europa.esig.dss.eaa.common.pki.PKIEAAStatusListSource;
 import eu.europa.esig.dss.eaa.revocation.jwt.model.statuslist.JWTStatusListClaimNames;
-import eu.europa.esig.dss.eaa.revocation.jwt.validation.statuslist.JWTStatusListValidator;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -58,11 +57,6 @@ public class PKIJWTStatusListSource extends PKIEAAStatusListSource<JAdESSignatur
     @Override
     protected JAdESService getService() {
         return new JAdESService(new CommonCertificateVerifier());
-    }
-
-    @Override
-    protected JWTStatusListValidator createValidator(byte[] statusListToken) {
-        return new JWTStatusListValidator(statusListToken);
     }
 
     /**

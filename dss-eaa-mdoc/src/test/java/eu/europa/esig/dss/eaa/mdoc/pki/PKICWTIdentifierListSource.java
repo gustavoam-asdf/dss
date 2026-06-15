@@ -7,16 +7,13 @@ import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.pki.AbstractPKIEAARevocationListSource;
 import eu.europa.esig.dss.eaa.revocation.cwt.model.identifierlist.CWTIdentifierListClaims;
-import eu.europa.esig.dss.eaa.revocation.cwt.validation.identifierlist.CWTIdentifierListValidator;
+import eu.europa.esig.dss.eaa.revocation.source.ExternalResourcesEAARevocationSource;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
-import eu.europa.esig.dss.enumerations.EAARevocationOrigin;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
-import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -89,25 +86,10 @@ public class PKICWTIdentifierListSource extends AbstractPKIEAARevocationListSour
     public EAARevocationToken getEAARevocation(EAA eaa) {
         if (eaa != null && eaa.getPayload() != null && eaa.getPayload().getStatus() != null
                 && eaa.getPayload().getStatus().getIdentifierList() != null) {
-
-            DSSDocument statusListToken = generateIdentifierListToken(eaa);
-
-            ClaimByteString identifier = eaa.getPayload().getStatus().getIdentifierList().getIdentifier();
-            ClaimString uri = eaa.getPayload().getStatus().getIdentifierList().getUri();
-            if (identifier != null) {
-                EAARevocationToken statusToken = createValidator(DSSUtils.toByteArray(statusListToken))
-                        .getRevocationToken(identifier.getBinaryValue());
-                statusToken.setOrigin(EAARevocationOrigin.EXTERNAL);
-                statusToken.setSourceURL(uri.getValueAsString());
-                statusToken.setRelatedEAA(eaa);
-                return statusToken;
-            }
+            DSSDocument statusListToken = generateStatusListToken(eaa);
+            return new ExternalResourcesEAARevocationSource(DSSUtils.toByteArray(statusListToken)).getEAARevocation(eaa);
         }
         return null;
-    }
-
-    protected CWTIdentifierListValidator createValidator(byte[] statusListToken) {
-        return new CWTIdentifierListValidator(statusListToken);
     }
 
     /**

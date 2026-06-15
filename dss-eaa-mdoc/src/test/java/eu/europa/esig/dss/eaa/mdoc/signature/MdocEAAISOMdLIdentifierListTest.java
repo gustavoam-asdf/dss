@@ -4,6 +4,8 @@ import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAARevocationWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
+import eu.europa.esig.dss.diagnostic.FoundCertificatesProxy;
+import eu.europa.esig.dss.diagnostic.RelatedCertificateWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
@@ -36,7 +38,7 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
         payloadParameters = new MdocEAAPayloadParameters();
         payloadParameters.setDocType(MdocConstants.ISO18013_5_MDL_DOC_TYPE);
         payloadParameters.setDeviceKey(getSigningCert());
-        payloadParameters.setIdentifierList(new byte[] { 1 }, "https://pki.nowina.lu/eaa/identifier_list", getCertificate("ocsp-responder"));
+        payloadParameters.setIdentifierList(new byte[] { 1 }, "https://pki.nowina.lu/eaa/identifier_list", getCertificate(GOOD_CA));
 
         payloadParameters.selectivelyDisclosable().setFamilyName("Doe");
         payloadParameters.selectivelyDisclosable().setGivenName("John");
@@ -67,14 +69,23 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
     }
 
     @Override
-    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
-        super.checkEAAStatuses(diagnosticData);
+    protected void checkEAARevocations(DiagnosticData diagnosticData) {
+        super.checkEAARevocations(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         List<EAARevocationWrapper> eaaStatuses = eaa.getEAARevocations();
         assertEquals(1, eaaStatuses.size());
-        assertEquals(EAAStatus.VALID, eaaStatuses.get(0).getStatus());
-        assertEquals("application/identifierlist+cwt", eaaStatuses.get(0).getType());
+        EAARevocationWrapper eaaRevocationWrapper = eaaStatuses.get(0);
+        assertEquals(EAAStatus.VALID, eaaRevocationWrapper.getStatus());
+        assertEquals("application/identifierlist+cwt", eaaRevocationWrapper.getType());
+
+        FoundCertificatesProxy foundCertificates = eaaRevocationWrapper.foundCertificates();
+        List<RelatedCertificateWrapper> relatedCertificates = foundCertificates.getRelatedCertificates();
+        assertEquals(1, relatedCertificates.size());
+
+        RelatedCertificateWrapper certificateWrapper = relatedCertificates.get(0);
+        assertEquals(2, certificateWrapper.getOrigins().size());
+        assertEquals(2, certificateWrapper.getReferences().size());
     }
 
     @Override
@@ -186,7 +197,7 @@ class MdocEAAISOMdLIdentifierListTest extends AbstractMdocEAAPresentationTestIss
 
         assertArrayEquals(new byte[] { 1 }, eaa.getEAAIdentifierListId());
         assertEquals("https://pki.nowina.lu/eaa/identifier_list", eaa.getEAAIdentifierListUri());
-        assertArrayEquals(getCertificate("ocsp-responder").getEncoded(), eaa.getEAAIdentifierListCertificate());
+        assertArrayEquals(getCertificate(GOOD_CA).getEncoded(), eaa.getEAAIdentifierListCertificate());
 
         assertNull(eaa.getEAAStatusIndex());
         assertNull(eaa.getEAAStatusUri());

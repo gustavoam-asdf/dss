@@ -59,6 +59,6 @@ public enum CertificateOrigin {
 	UNPROTECTED_HEADER,
 
 	/** Certificates present within a Token Status List claim of an EAA */
-	EAA_REVOCATION
+	EAA
 
 }

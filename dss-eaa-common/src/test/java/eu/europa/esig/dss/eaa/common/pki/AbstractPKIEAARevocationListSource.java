@@ -101,7 +101,7 @@ public abstract class AbstractPKIEAARevocationListSource<T extends SerializableS
      * @param eaa {@link EAA} to get a status_list for
      * @return {@link DSSDocument}
      */
-    protected DSSDocument generateIdentifierListToken(EAA eaa) {
+    protected DSSDocument generateStatusListToken(EAA eaa) {
         T signatureParameters = getSignatureParameters();
         DSSDocument payload = generatePayload(eaa.getPayload().getStatus());
         DocumentSignatureService<T, ?> service = getService();

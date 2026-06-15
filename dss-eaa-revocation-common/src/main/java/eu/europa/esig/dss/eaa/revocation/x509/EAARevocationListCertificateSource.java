@@ -43,7 +43,7 @@ public class EAARevocationListCertificateSource extends TokenCertificateSource {
         if (certificateByteString != null) {
             try {
                 CertificateToken certificate = DSSUtils.loadCertificate(certificateByteString.getBinaryValue());
-                addCertificate(certificate, CertificateOrigin.EAA_REVOCATION);
+                addCertificate(certificate, CertificateOrigin.EAA);
             } catch (Exception e) {
                 LOG.warn("Unable to decode a certificate! Reason : {}", e.getMessage(), e);
             }
@@ -52,7 +52,7 @@ public class EAARevocationListCertificateSource extends TokenCertificateSource {
 
     @Override
     public CertificateSourceType getCertificateSourceType() {
-        return CertificateSourceType.EAA_REVOCATION;
+        return CertificateSourceType.EAA;
     }
 
 }

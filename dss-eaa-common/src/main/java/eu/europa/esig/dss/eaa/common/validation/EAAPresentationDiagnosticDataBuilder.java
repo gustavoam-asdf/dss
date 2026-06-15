@@ -32,6 +32,8 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyAuthorizations;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlKeyBindingSignature;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlOrphanCertificate;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlRelatedCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlPlaceOfBirthClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
@@ -39,6 +41,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusListClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlValidityInfoClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlX509Certificate;
+import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.eaa.DisclosureValidation;
@@ -174,6 +177,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
                 linkEAAAndStatuses(eaaPresentation.getElectronicAttestationsOfAttributes());
             }
         }
+        xmlDiagnosticData.setOrphanTokens(buildXmlOrphanTokens());
         return xmlDiagnosticData;
     }
 
@@ -1164,8 +1168,44 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     private void populate(XmlFoundCertificates result, XmlFoundCertificates foundCertificates) {
-        result.getRelatedCertificates().addAll(foundCertificates.getRelatedCertificates());
-        result.getOrphanCertificates().addAll(foundCertificates.getOrphanCertificates());
+        if (Utils.isCollectionNotEmpty(foundCertificates.getRelatedCertificates())) {
+            for (XmlRelatedCertificate xmlRelatedCertificate : foundCertificates.getRelatedCertificates()) {
+                List<XmlRelatedCertificate> matchingCertificates = result.getRelatedCertificates().stream()
+                        .filter(c -> xmlRelatedCertificate.getCertificate().getId().equals(c.getCertificate().getId()))
+                        .collect(Collectors.toList());
+                if (Utils.isCollectionNotEmpty(matchingCertificates)) {
+                    XmlRelatedCertificate resultRelatedCertificate = matchingCertificates.get(0); // only one is expected
+                    for (CertificateOrigin certificateOrigin : xmlRelatedCertificate.getOrigins()) {
+                        if (!resultRelatedCertificate.getOrigins().contains(certificateOrigin)) {
+                            resultRelatedCertificate.getOrigins().add(certificateOrigin);
+                        }
+                    }
+                    resultRelatedCertificate.getCertificateRefs().addAll(xmlRelatedCertificate.getCertificateRefs());
+
+                } else {
+                    result.getRelatedCertificates().add(xmlRelatedCertificate);
+                }
+            }
+        }
+        if (Utils.isCollectionNotEmpty(foundCertificates.getOrphanCertificates())) {
+            for (XmlOrphanCertificate xmlOrphanCertificate : foundCertificates.getOrphanCertificates()) {
+                List<XmlOrphanCertificate> matchingCertificates = result.getOrphanCertificates().stream()
+                        .filter(c -> xmlOrphanCertificate.getToken().getId().equals(c.getToken().getId()))
+                        .collect(Collectors.toList());
+                if (Utils.isCollectionNotEmpty(matchingCertificates)) {
+                    XmlOrphanCertificate resultOrphanCertificate = matchingCertificates.get(0); // only one is expected
+                    for (CertificateOrigin certificateOrigin : xmlOrphanCertificate.getOrigins()) {
+                        if (!resultOrphanCertificate.getOrigins().contains(certificateOrigin)) {
+                            resultOrphanCertificate.getOrigins().add(certificateOrigin);
+                        }
+                    }
+                    resultOrphanCertificate.getCertificateRefs().addAll(xmlOrphanCertificate.getCertificateRefs());
+
+                } else {
+                    result.getOrphanCertificates().add(xmlOrphanCertificate);
+                }
+            }
+        }
     }
 
     private void linkEAAAndStatuses(Collection<EAA> eaas) {

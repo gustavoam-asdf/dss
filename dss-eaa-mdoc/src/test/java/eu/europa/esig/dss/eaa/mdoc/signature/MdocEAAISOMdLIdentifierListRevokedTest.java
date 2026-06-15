@@ -22,7 +22,7 @@ class MdocEAAISOMdLIdentifierListRevokedTest extends MdocEAAISOMdLIdentifierList
     }
 
     @Override
-    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
+    protected void checkEAARevocations(DiagnosticData diagnosticData) {
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         List<EAARevocationWrapper> eaaStatuses = eaa.getEAARevocations();
         assertEquals(1, eaaStatuses.size());

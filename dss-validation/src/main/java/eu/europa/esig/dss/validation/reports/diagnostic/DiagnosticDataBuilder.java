@@ -1299,8 +1299,8 @@ public abstract class DiagnosticDataBuilder {
 			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.EVIDENCE_RECORD,
 					certificateSource.getCertificates(), certificateSource);
 
-		} else if (CertificateSourceType.EAA_REVOCATION.equals(certificateSource.getCertificateSourceType())) {
-			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.EAA_REVOCATION,
+		} else if (CertificateSourceType.EAA.equals(certificateSource.getCertificateSourceType())) {
+			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.EAA,
 					certificateSource.getCertificates(), certificateSource);
 
 		} else {
@@ -1454,8 +1454,8 @@ public abstract class DiagnosticDataBuilder {
 			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.BASIC_OCSP_RESP,
 					certificateSource.getCertificates(), certificateSource, signingCertificate);
 
-		} else if (CertificateSourceType.EAA_REVOCATION.equals(certificateSource.getCertificateSourceType())) {
-			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.EAA_REVOCATION,
+		} else if (CertificateSourceType.EAA.equals(certificateSource.getCertificateSourceType())) {
+			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.EAA,
 					certificateSource.getCertificates(), certificateSource, signingCertificate);
 
 		} else {

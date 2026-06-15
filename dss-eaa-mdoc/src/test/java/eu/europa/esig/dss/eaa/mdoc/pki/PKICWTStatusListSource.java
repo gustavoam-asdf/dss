@@ -7,7 +7,6 @@ import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.pki.PKIEAAStatusListSource;
 import eu.europa.esig.dss.eaa.revocation.cwt.model.statuslist.CWTStatusListClaims;
-import eu.europa.esig.dss.eaa.revocation.cwt.validation.statuslist.CWTStatusListValidator;
 import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
@@ -63,11 +62,6 @@ public class PKICWTStatusListSource extends PKIEAAStatusListSource<CBAdESSignatu
     @Override
     protected CBAdESService getService() {
         return new CBAdESService(new CommonCertificateVerifier());
-    }
-
-    @Override
-    protected CWTStatusListValidator createValidator(byte[] statusListToken) {
-        return new CWTStatusListValidator(statusListToken);
     }
 
     /**

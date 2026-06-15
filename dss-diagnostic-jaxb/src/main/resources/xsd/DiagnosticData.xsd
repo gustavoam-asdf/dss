@@ -1336,6 +1336,7 @@
 			<xs:enumeration value="AIA" />
 			<xs:enumeration value="TIMESTAMP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="EAA" />
 			<xs:enumeration value="UNKNOWN" />
 		</xs:restriction>
 	</xs:simpleType>
@@ -1353,7 +1354,7 @@
 			<xs:enumeration value="BASIC_OCSP_RESP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
 			<xs:enumeration value="UNPROTECTED_HEADER" />
-			<xs:enumeration value="EAA_REVOCATION" />
+			<xs:enumeration value="EAA" />
 		</xs:restriction>
 	</xs:simpleType>
 	

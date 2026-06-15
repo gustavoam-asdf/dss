@@ -1,12 +1,9 @@
 package eu.europa.esig.dss.eaa.common.pki;
 
-import eu.europa.esig.dss.eaa.revocation.validation.statuslist.StatusListValidator;
-import eu.europa.esig.dss.enumerations.EAARevocationOrigin;
+import eu.europa.esig.dss.eaa.revocation.source.ExternalResourcesEAARevocationSource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
-import eu.europa.esig.dss.model.eaa.claim.ClaimNumber;
-import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.pki.model.CertEntity;
 import eu.europa.esig.dss.pki.model.CertEntityRepository;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -46,33 +43,11 @@ public abstract class PKIEAAStatusListSource<T extends SerializableSignaturePara
     @Override
     public EAARevocationToken getEAARevocation(EAA eaa) {
         if (eaa != null && eaa.getPayload() != null && eaa.getPayload().getStatus() != null) {
-            DSSDocument statusListToken = generateIdentifierListToken(eaa);
-
-            ClaimNumber index = eaa.getPayload().getStatus().getIndex();
-            ClaimString uri = eaa.getPayload().getStatus().getUri();
-            if (eaa.getPayload().getStatus().getStatusList() != null) {
-                index = eaa.getPayload().getStatus().getStatusList().getIndex();
-                uri = eaa.getPayload().getStatus().getStatusList().getUri();
-            }
-            if (index != null) {
-                EAARevocationToken statusToken = createValidator(DSSUtils.toByteArray(statusListToken))
-                        .getRevocationToken(index.getNumberValue().intValue());
-                statusToken.setOrigin(EAARevocationOrigin.EXTERNAL);
-                statusToken.setSourceURL(uri.getValueAsString());
-                statusToken.setRelatedEAA(eaa);
-                return statusToken;
-            }
+            DSSDocument statusListToken = generateStatusListToken(eaa);
+            return new ExternalResourcesEAARevocationSource(DSSUtils.toByteArray(statusListToken)).getEAARevocation(eaa);
         }
         return null;
     }
-
-    /**
-     * Creates a validator for the {@code statusListToken}
-     *
-     * @param statusListToken byte array
-     * @return {@link StatusListValidator}
-     */
-    protected abstract StatusListValidator createValidator(byte[] statusListToken);
 
     /**
      * Compresses the input bytes

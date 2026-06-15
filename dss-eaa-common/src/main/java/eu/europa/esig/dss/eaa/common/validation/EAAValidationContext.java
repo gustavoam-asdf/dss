@@ -117,22 +117,22 @@ public class EAAValidationContext extends SignatureValidationContext {
     /**
      * Adds an {@code EAAStatusToken} to be verified
      *
-     * @param EAARevocationToken {@link EAARevocationToken}
+     * @param eaaRevocationToken {@link EAARevocationToken}
      */
-    public void addEAAStatusTokenForVerification(final EAARevocationToken EAARevocationToken) {
-        if (EAARevocationToken == null) {
+    public void addEAAStatusTokenForVerification(final EAARevocationToken eaaRevocationToken) {
+        if (eaaRevocationToken == null) {
             return;
         }
 
-        addSignatureForVerification(EAARevocationToken.getSignature());
-        addDocumentCertificateSource(EAARevocationToken.getCertificateSource());
+        addSignatureForVerification(eaaRevocationToken.getSignature());
+        addDocumentCertificateSource(eaaRevocationToken.getCertificateSource());
 
-        final boolean added = processedEAARevocationTokens.add(EAARevocationToken);
+        final boolean added = processedEAARevocationTokens.add(eaaRevocationToken);
         if (LOG.isTraceEnabled()) {
             if (added) {
-                LOG.trace("EAAPresentation Status Token added to processedEAAStatusTokens: {} ", EAARevocationToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation Status Token added to processedEAAStatusTokens: {} ", eaaRevocationToken.getDSSIdAsString());
             } else {
-                LOG.trace("EAAPresentation already present processedEAAStatusTokens: {} ", EAARevocationToken.getDSSIdAsString());
+                LOG.trace("EAAPresentation already present processedEAAStatusTokens: {} ", eaaRevocationToken.getDSSIdAsString());
             }
         }
     }
@@ -166,13 +166,13 @@ public class EAAValidationContext extends SignatureValidationContext {
                 LOG.trace("EAAPresentation status check is in progress for EAAPresentation : {}", eaa.getId());
             }
 
-            EAARevocationToken EAARevocationToken = EAARevocationSource.getEAARevocation(eaa);
-            if (EAARevocationToken != null) {
+            EAARevocationToken eaaRevocationToken = EAARevocationSource.getEAARevocation(eaa);
+            if (eaaRevocationToken != null) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Obtained a new EAAPresentation Status token : {}, for EAAPresentation : {}",
-                            EAARevocationToken.getDSSIdAsString(), eaa.getId());
+                            eaaRevocationToken.getDSSIdAsString(), eaa.getId());
                 }
-                addEAAStatusTokenForVerification(EAARevocationToken);
+                addEAAStatusTokenForVerification(eaaRevocationToken);
             }
 
         } else if (LOG.isDebugEnabled()) {

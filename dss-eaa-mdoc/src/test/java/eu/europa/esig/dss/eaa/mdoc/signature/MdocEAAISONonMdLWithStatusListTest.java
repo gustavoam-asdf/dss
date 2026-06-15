@@ -42,8 +42,8 @@ public class MdocEAAISONonMdLWithStatusListTest extends AbstractMdocEAAPresentat
     }
 
     @Override
-    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
-        super.checkEAAStatuses(diagnosticData);
+    protected void checkEAARevocations(DiagnosticData diagnosticData) {
+        super.checkEAARevocations(diagnosticData);
 
         EAAWrapper eaa = diagnosticData.getEAAById(diagnosticData.getFirstEAAId());
         List<EAARevocationWrapper> eaaStatuses = eaa.getEAARevocations();

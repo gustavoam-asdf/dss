@@ -123,10 +123,10 @@ public abstract class AbstractEAAPresentationTestValidation extends AbstractDocu
         checkEAADigestMatchers(diagnosticData);
         checkClaims(diagnosticData);
         checkDeviceKeyClaim(diagnosticData);
-        checkEAAStatuses(diagnosticData);
+        checkEAARevocations(diagnosticData);
     }
 
-    protected void checkEAAStatuses(DiagnosticData diagnosticData) {
+    protected void checkEAARevocations(DiagnosticData diagnosticData) {
         for (EAAWrapper eaa : diagnosticData.getAllEAA()) {
             for (EAARevocationWrapper eaaStatusWrapper : eaa.getEAARevocations()) {
                 assertNotNull(eaaStatusWrapper.getId());
