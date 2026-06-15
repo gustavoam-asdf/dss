@@ -7,9 +7,11 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class CBAdESLevelBCoseSignCountersignatureInArrayRfc8152Test extends AbstractCBAdESTestValidation {
 
@@ -49,6 +51,13 @@ class CBAdESLevelBCoseSignCountersignatureInArrayRfc8152Test extends AbstractCBA
         for (SignatureWrapper signatureWrapper : signatures) {
             assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
         }
+    }
+
+    @Override
+    protected void checkNoDuplicateSignatures(DiagnosticData diagnosticData) {
+        List<SignatureWrapper> countersignatures = new ArrayList<>(diagnosticData.getAllCounterSignatures());
+        assertEquals(2, countersignatures.size());
+        assertNotEquals(countersignatures.get(0).getId(), countersignatures.get(1).getId());
     }
 
 }

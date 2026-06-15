@@ -939,7 +939,7 @@
             <Warnings Key="BBB_ICS_ISCI_ANS">There is no candidate for the signing certificate!</Warnings>
         </Conclusion>
     </BasicBuildingBlocks>
-    <BasicBuildingBlocks Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF" Type="EAA_STATUS">
+    <BasicBuildingBlocks Id="ST-A9144C67449944517D4481B366337C02488BA6CBD42F89E1C2C8225E507518EF" Type="EAA_REVOCATION">
         <FC Title="Format Checking">
             <Constraint>
                 <Name Key="EAA_STATUS_TYPE">Is the type of the EAA Status Token within a list of expected value(s)?</Name>

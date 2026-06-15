@@ -11,6 +11,7 @@ import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +47,10 @@ class CBAdESDoubleSignatureLevelBUntaggedTest extends AbstractCBAdESTestSignatur
         documentToSign = originalDocument;
         DSSDocument signedDocument = super.sign();
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, 1);
+        signatureParameters.bLevel().setSigningDate(calendar.getTime());
+
         SignedDocumentValidator validator = SignedDocumentValidator.fromDocument(signedDocument);
         List<AdvancedSignature> signatures = validator.getSignatures();
         assertEquals(1, signatures.size());
@@ -59,6 +64,11 @@ class CBAdESDoubleSignatureLevelBUntaggedTest extends AbstractCBAdESTestSignatur
     @Override
     protected void checkNumberOfSignatures(DiagnosticData diagnosticData) {
         assertEquals(2, diagnosticData.getSignatures().size());
+    }
+
+    @Override
+    protected void checkSigningDate(DiagnosticData diagnosticData) {
+        // skip
     }
 
     @Override
