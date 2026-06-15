@@ -557,7 +557,22 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
     }
 
     protected String getIdAsStringForEAAIdentifier(EAA eaa) {
-        throw new UnsupportedOperationException("Not implented!");
+        StringBuilder stringBuilder = new StringBuilder(eaaPrefix);
+
+        if (eaa.getPayload().getSubject() != null) {
+            stringBuilder.append(STRING_DELIMITER);
+            stringBuilder.append(eaa.getPayload().getSubject().getStringValue());
+        }
+        if  (eaa.getPayload().getDocType() != null) {
+            stringBuilder.append(STRING_DELIMITER);
+            stringBuilder.append(eaa.getPayload().getDocType().getStringValue());
+        }
+        if (eaa.getPayload().getIssuedAtTime() != null) {
+            stringBuilder.append(STRING_DELIMITER);
+            stringBuilder.append(DSSUtils.formatDateWithCustomFormat(eaa.getPayload().getIssuedAtTime().getDateValue(), dateFormat));
+        }
+
+        return generateId(stringBuilder, eaa.getId());
     }
 
     private String createIdString(String prefix, X500PrincipalHelper subject, Date creationDate, String dssId) {

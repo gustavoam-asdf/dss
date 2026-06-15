@@ -73,7 +73,9 @@ import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
 import eu.europa.esig.dss.spi.x509.CertificateValidity;
+import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.reports.diagnostic.DiagnosticDataBuilder;
 import eu.europa.esig.dss.validation.reports.diagnostic.SignedDocumentDiagnosticDataBuilder;
 
 import java.math.BigInteger;
@@ -150,6 +152,15 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
     }
 
     @Override
+    public DiagnosticDataBuilder tokenIdentifierProvider(TokenIdentifierProvider identifierProvider) {
+        super.tokenIdentifierProvider(identifierProvider);
+        if (signatureDiagnosticDataBuilder != null) {
+            signatureDiagnosticDataBuilder.tokenIdentifierProvider(identifierProvider);
+        }
+        return this;
+    }
+
+    @Override
     public XmlDiagnosticData build() {
         XmlDiagnosticData xmlDiagnosticData = super.build();
         if (eaaPresentation != null) {
@@ -216,7 +227,7 @@ public class EAAPresentationDiagnosticDataBuilder extends SignedDocumentDiagnost
      */
     protected XmlEAA buildDetachedXmlEAA(EAA eaa) {
         final XmlEAA xmlEAAPresentation = new XmlEAA();
-        xmlEAAPresentation.setId(eaa.getId());
+        xmlEAAPresentation.setId(identifierProvider.getIdAsString(eaa));
         xmlEAAPresentation.setDocumentName(eaa.getFilename());
         xmlEAAPresentation.setEAAType(eaa.getEAAType());
         for (AdvancedSignature signature : eaa.getSignatures()) {

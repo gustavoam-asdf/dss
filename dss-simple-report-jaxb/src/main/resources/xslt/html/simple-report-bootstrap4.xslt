@@ -28,6 +28,7 @@
     <xsl:template match="dss:ValidSignaturesCount"/>
     <xsl:template match="dss:ContainerType"/>
 	<xsl:template match="dss:PDFAInfo"/>
+    <xsl:template match="dss:DeviceKey"/>
 
     <xsl:template match="dss:ValidationPolicy">
 		<div>
