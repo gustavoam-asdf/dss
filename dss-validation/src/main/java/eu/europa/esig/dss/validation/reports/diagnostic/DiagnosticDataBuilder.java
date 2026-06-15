@@ -1299,6 +1299,10 @@ public abstract class DiagnosticDataBuilder {
 			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.EVIDENCE_RECORD,
 					certificateSource.getCertificates(), certificateSource);
 
+		} else if (CertificateSourceType.EAA_REVOCATION.equals(certificateSource.getCertificateSourceType())) {
+			populateCertificateOriginMap(relatedCertificatesMap, CertificateOrigin.EAA_REVOCATION,
+					certificateSource.getCertificates(), certificateSource);
+
 		} else {
 			SignatureCertificateSource signatureCertificateSource = (SignatureCertificateSource) certificateSource;
 
@@ -1448,6 +1452,10 @@ public abstract class DiagnosticDataBuilder {
 
 		if (CertificateSourceType.OCSP_RESPONSE.equals(certificateSource.getCertificateSourceType())) {
 			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.BASIC_OCSP_RESP,
+					certificateSource.getCertificates(), certificateSource, signingCertificate);
+
+		} else if (CertificateSourceType.EAA_REVOCATION.equals(certificateSource.getCertificateSourceType())) {
+			populateOrphanCertificateOriginMap(orphanCertificatesMap, CertificateOrigin.EAA_REVOCATION,
 					certificateSource.getCertificates(), certificateSource, signingCertificate);
 
 		} else {

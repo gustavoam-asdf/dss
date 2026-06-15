@@ -1,15 +1,5 @@
 package eu.europa.esig.dss.eaa.mdoc.signature;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Calendar;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
@@ -20,11 +10,21 @@ import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAAPayloadParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocKeyBindingParameters;
 import eu.europa.esig.dss.eaa.mdoc.creation.SessionTranscriptBuilder;
 import eu.europa.esig.dss.eaa.mdoc.validation.MdocDeviceResponseEAAPresentationValidator;
+import eu.europa.esig.dss.eaa.mdoc.validation.MdocValidationParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import org.junit.jupiter.api.BeforeEach;
+
+import java.util.Calendar;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MdocEAAISONonMdLWithKBTest extends AbstractMdocEAAPresentationTestIssuance {
 
@@ -87,7 +87,9 @@ class MdocEAAISONonMdLWithKBTest extends AbstractMdocEAAPresentationTestIssuance
     protected SignedDocumentValidator getValidator(DSSDocument signedDocument) {
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         MdocDeviceResponseEAAPresentationValidator mdocValidator = assertInstanceOf(MdocDeviceResponseEAAPresentationValidator.class, validator);
-        mdocValidator.setSessionTranscript(buildSessionTranscript());
+        MdocValidationParameters mdocValidationParameters = new MdocValidationParameters();
+        mdocValidationParameters.setSessionTranscript(buildSessionTranscript());
+        mdocValidator.setEAAValidationParameters(mdocValidationParameters);
         return validator;
     }
 

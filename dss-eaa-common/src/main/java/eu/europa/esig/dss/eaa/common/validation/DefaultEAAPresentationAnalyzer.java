@@ -3,6 +3,7 @@ package eu.europa.esig.dss.eaa.common.validation;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAAValidationParameters;
 import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -30,6 +31,9 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
 
     /** Source used to verify status of the EAA */
     private EAARevocationSource eaaRevocationSource;
+
+    /** Supplementary validation data */
+    private EAAValidationParameters eaaValidationParameters;
 
     /**
      * Empty constructor
@@ -75,6 +79,24 @@ public abstract class DefaultEAAPresentationAnalyzer extends DefaultDocumentAnal
      */
     public void setEAARevocationSource(EAARevocationSource eaaRevocationSource) {
         this.eaaRevocationSource = eaaRevocationSource;
+    }
+
+    /**
+     * Gets supplementary validation parameters
+     *
+     * @return {@link EAAValidationParameters}
+     */
+    protected EAAValidationParameters getEAAValidationParameters() {
+        return eaaValidationParameters;
+    }
+
+    /**
+     * Sets supplementary data parameters requiring for validation of the EAA Presentation
+     *
+     * @param eaaValidationParameters {@link EAAValidationParameters}
+     */
+    public void setEAAValidationParameters(EAAValidationParameters eaaValidationParameters) {
+        this.eaaValidationParameters = eaaValidationParameters;
     }
 
     /**

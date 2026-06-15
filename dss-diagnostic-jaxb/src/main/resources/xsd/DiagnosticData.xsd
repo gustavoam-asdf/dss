@@ -1353,6 +1353,7 @@
 			<xs:enumeration value="BASIC_OCSP_RESP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
 			<xs:enumeration value="UNPROTECTED_HEADER" />
+			<xs:enumeration value="EAA_REVOCATION" />
 		</xs:restriction>
 	</xs:simpleType>
 	

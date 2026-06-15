@@ -38,9 +38,6 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
     /** Cached instance of the mdoc */
     private MdocDeviceResponse mdoc;
 
-    /** Contains transcript of communication used for the device retrieval (mdoc key binding signature) */
-    private DSSDocument sessionTranscript;
-
     /**
      * Default constructor
      */
@@ -56,15 +53,6 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
     public MdocDeviceResponseEAAPresentationAnalyzer(DSSDocument document) {
         super(document);
         this.mdoc = buildMdoc();
-    }
-
-    /**
-     * Sets the session transcript of communication used for the device retrieval (mdoc key binding signature)
-     *
-     * @param sessionTranscript {@link DSSDocument}
-     */
-    public void setSessionTranscript(DSSDocument sessionTranscript) {
-        this.sessionTranscript = sessionTranscript;
     }
 
     @Override
@@ -151,6 +139,13 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
      * @return {@link DSSDocument}
      */
     protected DSSDocument getDeviceAuthenticationBytes(String docType, MdocDeviceNameSpaces deviceNameSpaces) {
+        MdocValidationParameters eaaValidationParameters = getEAAValidationParameters();
+        if (eaaValidationParameters == null) {
+            LOG.info("No validation parameters have been provided. Required for a key binding signature validation. " +
+                    "Absence will result to invalidity of the key binding signature.");
+            return null;
+        }
+        DSSDocument sessionTranscript = eaaValidationParameters.getSessionTranscript();
         if (sessionTranscript == null) {
             LOG.info("No session transcript bytes have been provided. Validation of key binding signature is limited.");
             return null;

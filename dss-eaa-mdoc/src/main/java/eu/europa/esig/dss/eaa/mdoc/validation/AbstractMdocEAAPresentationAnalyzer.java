@@ -6,6 +6,7 @@ import eu.europa.esig.dss.cbades.validation.CBORSignature;
 import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationAnalyzer;
 import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.model.DSSDocument;
+import eu.europa.esig.dss.spi.eaa.EAAValidationParameters;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import eu.europa.esig.dss.utils.Utils;
 
@@ -33,6 +34,23 @@ public abstract class AbstractMdocEAAPresentationAnalyzer extends DefaultEAAPres
     protected AbstractMdocEAAPresentationAnalyzer(DSSDocument document) {
         Objects.requireNonNull(document, "Document to be validated cannot be null!");
         this.document = document;
+    }
+
+    @Override
+    protected MdocValidationParameters getEAAValidationParameters() {
+        EAAValidationParameters eaaValidationParameters = super.getEAAValidationParameters();
+        if (eaaValidationParameters != null && !(eaaValidationParameters instanceof MdocValidationParameters)) {
+            throw new IllegalStateException("eaaValidationParameters shall be an instance of MdocValidationParameters!");
+        }
+        return (MdocValidationParameters) eaaValidationParameters;
+    }
+
+    @Override
+    public void setEAAValidationParameters(EAAValidationParameters eaaValidationParameters) {
+        if (eaaValidationParameters != null && !(eaaValidationParameters instanceof MdocValidationParameters)) {
+            throw new IllegalArgumentException("eaaValidationParameters shall be an instance of MdocValidationParameters!");
+        }
+        super.setEAAValidationParameters(eaaValidationParameters);
     }
 
     /**

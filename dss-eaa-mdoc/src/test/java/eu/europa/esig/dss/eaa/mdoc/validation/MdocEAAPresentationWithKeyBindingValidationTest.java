@@ -132,7 +132,10 @@ class MdocEAAPresentationWithKeyBindingValidationTest extends AbstractMdocEAAPre
         SignedDocumentValidator validator = super.getValidator(signedDocument);
         validator.setCertificateVerifier(getCompleteCertificateVerifier());
         MdocDeviceResponseEAAPresentationValidator mdocValidator = assertInstanceOf(MdocDeviceResponseEAAPresentationValidator.class, validator);
-        mdocValidator.setSessionTranscript(new InMemoryDocument(CBORUtils.serializeCborObject(buildSessionTranscript())));
+        DSSDocument sessionTranscript = new InMemoryDocument(CBORUtils.serializeCborObject(buildSessionTranscript()));
+        MdocValidationParameters mdocValidationParameters = new MdocValidationParameters();
+        mdocValidationParameters.setSessionTranscript(sessionTranscript);
+        mdocValidator.setEAAValidationParameters(mdocValidationParameters);
         return validator;
     }
 

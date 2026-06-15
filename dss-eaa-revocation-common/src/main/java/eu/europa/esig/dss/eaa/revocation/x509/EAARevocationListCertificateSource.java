@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.eaa.revocation.x509;
 
 import eu.europa.esig.dss.enumerations.CertificateOrigin;
+import eu.europa.esig.dss.enumerations.CertificateSourceType;
 import eu.europa.esig.dss.model.eaa.claim.ClaimByteString;
 import eu.europa.esig.dss.model.eaa.claim.ClaimRevocationList;
 import eu.europa.esig.dss.model.eaa.claim.ClaimStatus;
@@ -42,11 +43,16 @@ public class EAARevocationListCertificateSource extends TokenCertificateSource {
         if (certificateByteString != null) {
             try {
                 CertificateToken certificate = DSSUtils.loadCertificate(certificateByteString.getBinaryValue());
-                addCertificate(certificate, CertificateOrigin.STATUS_LIST);
+                addCertificate(certificate, CertificateOrigin.EAA_REVOCATION);
             } catch (Exception e) {
                 LOG.warn("Unable to decode a certificate! Reason : {}", e.getMessage(), e);
             }
         }
+    }
+
+    @Override
+    public CertificateSourceType getCertificateSourceType() {
+        return CertificateSourceType.EAA_REVOCATION;
     }
 
 }

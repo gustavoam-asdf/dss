@@ -68,26 +68,38 @@ public class OnlineEAARevocationSource implements EAARevocationSource {
         Objects.requireNonNull(dataLoader, "DataLoader is not provided!");
         LOG.trace("--> OnlineEAARevocationSource queried for {}", eaa.getId());
 
+        EAARevocationValidator validator = getValidator(eaa);
+        if (validator != null) {
+            try {
+                EAARevocationToken eaaRevocationToken = validate(eaa, validator);
+                if (eaaRevocationToken != null) {
+                    return eaaRevocationToken;
+                }
+            } catch (Exception e) {
+                LOG.warn("An error occurred on EAA revocation validation using the {} : {}", validator.getClass().getSimpleName(), e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Loads a relevant {@code EAARevocationValidator} for revocation status verification of the {@code eaa}
+     *
+     * @param eaa {@link EAA} to be verified
+     * @return {@link EAARevocationValidator}
+     */
+    protected EAARevocationValidator getValidator(EAA eaa) {
         ServiceLoader<EAARevocationValidator> loader = ServiceLoader.load(EAARevocationValidator.class);
         Iterator<EAARevocationValidator> validatorOptions = loader.iterator();
 
         if (validatorOptions.hasNext()) {
             for (EAARevocationValidator validator : loader) {
                 if (validator.isSupported(eaa)) {
-                    try {
-                        EAARevocationToken eaaRevocationToken = validate(eaa, validator);
-                        if (eaaRevocationToken != null) {
-                            return eaaRevocationToken;
-                        }
-
-                    } catch (Exception e) {
-                        LOG.warn("An error occurred on EAA revocation validation using the {} : {}", validator.getClass().getSimpleName(), e.getMessage());
-                    }
+                    return validator;
                 }
             }
-            LOG.warn("No supported EAA revocation claim has been found. EAA revocation request was not performed.");
         }
-
+        LOG.warn("No supported EAA revocation claim has been found. EAA revocation request won't be performed.");
         return null;
     }
 

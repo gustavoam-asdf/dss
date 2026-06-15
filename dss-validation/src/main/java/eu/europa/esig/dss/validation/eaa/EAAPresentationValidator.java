@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.validation.eaa;
 
 import eu.europa.esig.dss.spi.eaa.EAAPresentation;
+import eu.europa.esig.dss.spi.eaa.EAAValidationParameters;
 import eu.europa.esig.dss.spi.eaa.status.EAARevocationSource;
 import eu.europa.esig.dss.validation.DocumentValidator;
 
@@ -23,5 +24,12 @@ public interface EAAPresentationValidator extends DocumentValidator {
      * @param eaaRevocationSource {@link EAARevocationSource}
      */
     void setEAARevocationSource(EAARevocationSource eaaRevocationSource);
+
+    /**
+     * Sets supplementary data requiring for validation of EAA presentation (format specific)
+     *
+     * @param eaaValidationParameters {@link EAAValidationParameters}
+     */
+    void setEAAValidationParameters(EAAValidationParameters eaaValidationParameters);
 
 }
