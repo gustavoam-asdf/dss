@@ -32,7 +32,7 @@ import java.util.Objects;
  * returning org.bouncycastle.crypto.prng.FixedSecureRandom instance
  *
  */
-public class DSSFixedSecureRandomProvider implements SecureRandomProvider {
+public class DSSSecureRandomProvider implements SecureRandomProvider {
 	
 	/**
 	 * DigestAlgorithm used for random string generation
@@ -43,7 +43,7 @@ public class DSSFixedSecureRandomProvider implements SecureRandomProvider {
 	 * The default constructor taking an object to compute seeds from.
 	 * When using this constructor, the used binary length is 512 bits.
 	 */
-	public DSSFixedSecureRandomProvider() {
+	public DSSSecureRandomProvider() {
 		// empty
 	}
 
@@ -53,7 +53,7 @@ public class DSSFixedSecureRandomProvider implements SecureRandomProvider {
 	 *
 	 * @param digestAlgorithm {@link DigestAlgorithm} to be used for pseudo-random string generation
 	 */
-	public DSSFixedSecureRandomProvider(DigestAlgorithm digestAlgorithm) {
+	public DSSSecureRandomProvider(DigestAlgorithm digestAlgorithm) {
 		Objects.requireNonNull(digestAlgorithm, "DigestAlgorithm cannot be null!");
 		this.digestAlgorithm = digestAlgorithm;
 	}

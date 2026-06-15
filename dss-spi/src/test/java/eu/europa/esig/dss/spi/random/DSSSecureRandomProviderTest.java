@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class DSSFixedSecureRandomProviderTest {
+class DSSSecureRandomProviderTest {
 
     @Test
     void deterministicTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         byte[] seed = "my-seed".getBytes();
 
@@ -36,8 +36,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void differentSeed() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         SecureRandom random1 =
                 provider.getSecureRandom("seed-1".getBytes());
@@ -57,8 +57,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void largeBytesTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         SecureRandom random =
                 provider.getSecureRandom("large-request-seed".getBytes());
@@ -85,8 +85,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void consistentTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         byte[] seed = "chunk-seed".getBytes();
 
@@ -117,8 +117,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void generateSeedTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         byte[] seed = "seed-generation".getBytes();
 
@@ -134,8 +134,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void nullTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         Exception exception = assertThrows(NullPointerException.class,
                 () -> provider.getSecureRandom(null));
@@ -144,8 +144,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void emptyTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         SecureRandom random =
                 provider.getSecureRandom("empty".getBytes());
@@ -159,8 +159,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void manyRequestsTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider();
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider();
 
         byte[] seed = "multi-block-seed".getBytes();
 
@@ -182,8 +182,8 @@ class DSSFixedSecureRandomProviderTest {
 
     @Test
     void diffDigestAlgoTest() {
-        DSSFixedSecureRandomProvider provider =
-                new DSSFixedSecureRandomProvider(DigestAlgorithm.SHA1);
+        DSSSecureRandomProvider provider =
+                new DSSSecureRandomProvider(DigestAlgorithm.SHA1);
 
         byte[] seed = "my-seed".getBytes();
 

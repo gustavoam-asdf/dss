@@ -87,6 +87,29 @@ XPathQuery query = XPathQueryBuilder.fromCurrentPosition().element(XMLDSigElemen
 Element element = XPathUtils.getElement(document, query);
 ----
 
+a|PAdES SecureRandom          a|
+[source,java]
+----
+import eu.europa.esig.dss.pdf.encryption.DSSSecureRandomProvider;
+import eu.europa.esig.dss.pdf.encryption.SecureRandomProvider;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxSignatureService;
+
+PdfBoxSignatureService padesSignatureService = ...
+SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider(parameters);
+padesSignatureService.setSecureRandomProvider(secureRandomProvider);
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxSignatureService;
+import eu.europa.esig.dss.spi.random.DSSSecureRandomProvider;
+import eu.europa.esig.dss.spi.random.SecureRandomProvider;
+
+PdfBoxSignatureService padesSignatureService = ...
+SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider();
+padesSignatureService.setSecureRandomProvider(secureRandomProvider);
+----
+
 |===
 
 .Code changes from version 6.3 to 6.4
