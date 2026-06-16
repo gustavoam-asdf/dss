@@ -22,6 +22,7 @@ package eu.europa.esig.dss.ws.signature.common;
 
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureProfile;
@@ -64,6 +65,9 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 	/** JAdES multiple signature service */
 	private JAdESService jadesService;
 
+	/** CB-AdES multiple signature service */
+	private CBAdESService cbadesService;
+
 	/** ASiC with XAdES multiple signature service */
 	private ASiCWithXAdESService asicWithXAdESService;
 
@@ -93,6 +97,15 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 	 */
 	public void setJadesService(JAdESService jadesService) {
 		this.jadesService = jadesService;
+	}
+
+	/**
+	 * Sets the CB-AdES multiple signature service
+	 *
+	 * @param cbadesService {@link CBAdESService}
+	 */
+	public void setCbadesService(CBAdESService cbadesService) {
+		this.cbadesService = cbadesService;
 	}
 
 	/**
@@ -130,6 +143,8 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 					return xadesService;
 				case JAdES:
 					return jadesService;
+				case CBAdES:
+					return cbadesService;
 				default:
 					throw new UnsupportedOperationException("Unrecognized format " +
 							"(only XAdES and JAdES are allowed for multiple documents signing) : " + signatureForm);
@@ -191,7 +206,7 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 
 		DSSDocument dssDocument = RemoteDocumentConverter.toDSSDocument(remoteDocument);
 		SignedDocumentExtender documentExtender = SignedDocumentExtender.fromDocument(dssDocument);
-		documentExtender.setServices(xadesService, jadesService, asicWithXAdESService, asicWithCAdESService);
+		documentExtender.setServices(xadesService, jadesService, cbadesService, asicWithXAdESService, asicWithCAdESService);
 
 		SignatureForm signatureForm = documentExtender.getSignatureForm();
 		SerializableSignatureParameters signatureParameters;
@@ -200,7 +215,7 @@ public class RemoteMultipleDocumentsSignatureServiceImpl extends AbstractRemoteS
 		} else if (documentExtender.isASiC()) {
 			signatureParameters = getASiCSignatureParameters(null, signatureForm);
 		} else {
-			signatureParameters = getSignatureParameters(signatureForm, remoteParameters);
+			signatureParameters = getExtensionParameters(signatureForm, remoteParameters);
 		}
 		fillParameters(signatureParameters, remoteParameters, signatureForm);
 

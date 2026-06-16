@@ -110,6 +110,33 @@ SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider();
 padesSignatureService.setSecureRandomProvider(secureRandomProvider);
 ----
 
+a|`dss-signature-remote` switched to optional dependencies          a|
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+    <artifactId>dss-signature-remote</artifactId>
+</dependency>
+a|
+[source,xml]
+.pom.xml
+----
+<dependency>
+    <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+    <artifactId>dss-signature-remote</artifactId>
+</dependency>
+<dependency>
+    <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+    <artifactId>dss-xades</artifactId>
+</dependency>
+<dependency>
+    <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+    <artifactId>dss-cades</artifactId>
+</dependency>
+<!-- etc. -->
+----
+
 |===
 
 .Code changes from version 6.3 to 6.4

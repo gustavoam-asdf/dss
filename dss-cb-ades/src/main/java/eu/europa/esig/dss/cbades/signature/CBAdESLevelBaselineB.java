@@ -176,7 +176,7 @@ public class CBAdESLevelBaselineB {
      */
     protected void incorporateKeyIdentifier() {
         if (parameters.isIncludeKeyIdentifier()) {
-            byte[] kid = parameters.getKid();
+            byte[] kid = parameters.getKeyIdentifier();
             if (kid == null && parameters.getSigningCertificate() != null) {
                 kid = DSSUtils.generateKid(parameters.getSigningCertificate());
             }

@@ -23,6 +23,7 @@ package eu.europa.esig.dss.ws.signature.common;
 import eu.europa.esig.dss.asic.cades.signature.ASiCWithCAdESService;
 import eu.europa.esig.dss.asic.xades.signature.ASiCWithXAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESService;
+import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureProfile;
@@ -71,6 +72,9 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 
 	/** JAdES signature service */
 	private JAdESService jadesService;
+
+	/** CB-AdES signature service */
+	private CBAdESService cbadesService;
 
 	/** ASiC with XAdES signature service */
 	private ASiCWithXAdESService asicWithXAdESService;
@@ -122,6 +126,15 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 	}
 
 	/**
+	 * Sets the CB-AdES signature service
+	 *
+	 * @param cbadesService {@link CBAdESService}
+	 */
+	public void setCbadesService(CBAdESService cbadesService) {
+		this.cbadesService = cbadesService;
+	}
+
+	/**
 	 * Sets the ASiC with XAdES signature service
 	 *
 	 * @param asicWithXAdESService {@link ASiCWithXAdESService}
@@ -141,70 +154,117 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 
 	@SuppressWarnings("rawtypes")
 	private DocumentSignatureService getServiceForSignature(SignatureForm signatureForm, ASiCContainerType asicContainerType) {
+		DocumentSignatureService service;
 		if (asicContainerType != null) {
 			switch (signatureForm) {
 				case XAdES:
-					return asicWithXAdESService;
+					service = asicWithXAdESService;
+					break;
 				case CAdES:
-					return asicWithCAdESService;
+					service = asicWithCAdESService;
+					break;
 				default:
 					throw new UnsupportedOperationException("Unrecognized format (XAdES or CAdES are allowed with ASiC) : " + signatureForm);
 				}
 		} else {
 			switch (signatureForm) {
 				case XAdES:
-					return xadesService;
+					service = xadesService;
+					break;
 				case CAdES:
-					return cadesService;
+					service = cadesService;
+					break;
 				case PAdES:
-					return padesService;
+					service = padesService;
+					break;
 				case JAdES:
-					return jadesService;
+					service = jadesService;
+					break;
+				case CBAdES:
+					service = cbadesService;
+					break;
 				default:
 					throw new UnsupportedOperationException("Unrecognized format " + signatureForm);
 				}
 		}
+		if (service == null) {
+			if (asicContainerType != null) {
+				throw new NullPointerException(String.format("No service has been provided for the signature form '%s' " +
+						"and ASiC type '%s'", signatureForm, asicContainerType));
+			} else {
+				throw new NullPointerException(String.format("No service has been provided for the signature form '%s'",
+						signatureForm));
+			}
+		}
+		return service;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private CounterSignatureService getServiceForCounterSignature(SignatureForm signatureForm, ASiCContainerType asicContainerType) {
+		CounterSignatureService service;
 		if (asicContainerType != null) {
 			switch (signatureForm) {
 				case XAdES:
-					return asicWithXAdESService;
+					service = asicWithXAdESService;
+					break;
 				case CAdES:
-					return asicWithCAdESService;
+					service = asicWithCAdESService;
+					break;
 				default:
 					throw new UnsupportedOperationException("Unrecognized format (XAdES or CAdES are allowed with ASiC) : " + signatureForm);
 				}
 		} else {
 			switch (signatureForm) {
 				case XAdES:
-					return xadesService;
+					service = xadesService;
+					break;
 				case CAdES:
-					return cadesService;
+					service = cadesService;
+					break;
 				case PAdES:
 					throw new UnsupportedOperationException(String.format("The Counter Signature is not supported with %s", signatureForm));
 				case JAdES:
-					return jadesService;
+					service = jadesService;
+					break;
+				case CBAdES:
+					service = cbadesService;
+					break;
 				default:
 					throw new UnsupportedOperationException("Unrecognized format " + signatureForm);
 			}
 		}
+		if (service == null) {
+			if (asicContainerType != null) {
+				throw new NullPointerException(String.format("No service has been provided for the signature form '%s' " +
+						"and ASiC type '%s'", signatureForm, asicContainerType));
+			} else {
+				throw new NullPointerException(String.format("No service has been provided for the signature form '%s'",
+						signatureForm));
+			}
+		}
+		return service;
 	}
 
 	@SuppressWarnings("rawtypes")
 	private DocumentSignatureService getServiceForTimestamp(TimestampContainerForm timestampContainerForm) {
 		Objects.requireNonNull(timestampContainerForm, "The timestampContainerForm must be defined!");
+		DocumentSignatureService service;
 		switch(timestampContainerForm) {
 			case PDF:
-				return padesService;
+				service = padesService;
+				break;
 			case ASiC_E:
 			case ASiC_S:
-				return asicWithCAdESService;
+				service = asicWithCAdESService;
+				break;
 			default:
 				throw new UnsupportedOperationException("Unrecognized format (only PDF, ASiC-E and ASiC-S are allowed) : " + timestampContainerForm);
 		}
+		if (service == null) {
+			throw new NullPointerException(String.format("No service has been provided for the timestamp form '%s'",
+					timestampContainerForm));
+		}
+		return service;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -247,7 +307,7 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 
 		DSSDocument dssDocument = RemoteDocumentConverter.toDSSDocument(remoteDocument);
 		SignedDocumentExtender documentExtender = SignedDocumentExtender.fromDocument(dssDocument);
-		documentExtender.setServices(xadesService, cadesService, padesService, jadesService, asicWithXAdESService, asicWithCAdESService);
+		documentExtender.setServices(xadesService, cadesService, padesService, jadesService, cbadesService, asicWithXAdESService, asicWithCAdESService);
 
 		SignatureForm signatureForm = documentExtender.getSignatureForm();
 		SerializableSignatureParameters signatureParameters;

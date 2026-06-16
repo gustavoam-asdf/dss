@@ -202,7 +202,7 @@ public class EAAToValidateDTO {
      *
      * @return {@link EAAValidationParametersDTO}
      */
-    public EAAValidationParametersDTO getEAAValidationParameters() {
+    public EAAValidationParametersDTO getEaaValidationParameters() {
         return eaaValidationParameters;
     }
 
@@ -211,7 +211,7 @@ public class EAAToValidateDTO {
      *
      * @param eaaValidationParameters {@link EAAValidationParametersDTO}
      */
-    public void setEAAValidationParameters(EAAValidationParametersDTO eaaValidationParameters) {
+    public void setEaaValidationParameters(EAAValidationParametersDTO eaaValidationParameters) {
         this.eaaValidationParameters = eaaValidationParameters;
     }
 

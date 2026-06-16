@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.ws.signature.dto.parameters;
 
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -108,6 +109,37 @@ public class RemoteSignatureParameters implements Serializable {
 	 * JAdES base64url encoded etsiU components
 	 */
 	private Boolean base64UrlEncodedEtsiUComponents;
+
+	/**
+	 * JAdES and CB-AdES signature type
+	 */
+	private String signatureType;
+
+	/**
+	 * JAdES and CB-AdES kid reference to the signing-certificate
+	 */
+	private String keyIdentifier;
+
+	/**
+	 * JAdES and CB-AdES x509url reference to the signing-certificate
+	 */
+	private String x509Url;
+
+	/**
+	 * CB-AdES structure type
+	 */
+	private COSEStructureType coseStructureType;
+
+	/**
+	 * CB-AdES structure tagged type;
+	 */
+	private Boolean tagged;
+
+	/**
+	 * CB-AdES externally supplied data from the application, carried outside the COSE signature structure,
+	 * but used as a part of a signature computation.
+	 */
+	private RemoteDocument externallySuppliedData;
 
 	/**
 	 * The digest algorithm used on signature creation.
@@ -374,6 +406,116 @@ public class RemoteSignatureParameters implements Serializable {
 	 */
 	public void setBase64UrlEncodedEtsiUComponents(Boolean base64UrlEncodedEtsiUComponents) {
 		this.base64UrlEncodedEtsiUComponents = base64UrlEncodedEtsiUComponents;
+	}
+
+	/**
+	 * Gets type of the signature (JAdES and CB-AdES)
+	 *
+	 * @return {@link String}
+	 */
+	public String getSignatureType() {
+		return signatureType;
+	}
+
+	/**
+	 * Sets the signature type to be embedded within a 'typ' protected header (JAdES and CB-AdES)
+	 *
+	 * @param signatureType {@link String}
+	 */
+	public void setSignatureType(String signatureType) {
+		this.signatureType = signatureType;
+	}
+
+	/**
+	 * Gets the 'kid' header value
+	 *
+	 * @return {@link String}
+	 */
+	public String getKeyIdentifier() {
+		return keyIdentifier;
+	}
+
+	/**
+	 * Sets the 'kid' header value (JAdES and CB-AdES)
+	 *
+	 * @param keyIdentifier {@link String}
+	 */
+	public void setKeyIdentifier(String keyIdentifier) {
+		this.keyIdentifier = keyIdentifier;
+	}
+
+	/**
+	 * Gets the 'x5u' header value
+	 *
+	 * @return {@link String}
+	 */
+	public String getX509Url() {
+		return x509Url;
+	}
+
+	/**
+	 * Sets the URL location of the X.509 signing certificate (JAdES and CB-AdES)
+	 *
+	 * @param x509Url {@link String}
+	 */
+	public void setX509Url(String x509Url) {
+		this.x509Url = x509Url;
+	}
+
+	/**
+	 * Gets the COSE structure type
+	 *
+	 * @return {@link COSEStructureType}
+	 */
+	public COSEStructureType getCoseStructureType() {
+		return coseStructureType;
+	}
+
+	/**
+	 * Sets COSE structure type (CB-AdES only)
+	 *
+	 * @param coseStructureType {@link COSEStructureType}
+	 */
+	public void setCoseStructureType(COSEStructureType coseStructureType) {
+		this.coseStructureType = coseStructureType;
+	}
+
+	/**
+	 * Gets whether COSE signature is to be encapsulated within a tagged CBOR structure
+	 *
+	 * @return {@link Boolean} whether CBOR signature structure is tagged
+	 */
+	public Boolean getTagged() {
+		return tagged;
+	}
+
+	/**
+	 * Sets whether COSE signature is to be encapsulated within a tagged CBOR structure (CB-AdES only)
+	 *
+	 * @param tagged {@link Boolean} whether CBOR signature structure is tagged
+	 */
+	public void setTagged(Boolean tagged) {
+		this.tagged = tagged;
+	}
+
+	/**
+	 * Gets externally supplied data
+	 *
+	 * @return {@link RemoteDocument}
+	 */
+	public RemoteDocument getExternallySuppliedData() {
+		return externallySuppliedData;
+	}
+
+	/**
+	 * Sets externally supplied data from the application, carried outside the COSE signature structure,
+	 * but used as a part of a signature computation.
+	 * NOTE: CB-AdES only
+	 *
+	 * @param externallySuppliedData {@link RemoteDocument}
+	 */
+	public void setExternallySuppliedData(RemoteDocument externallySuppliedData) {
+		this.externallySuppliedData = externallySuppliedData;
 	}
 
 	/**

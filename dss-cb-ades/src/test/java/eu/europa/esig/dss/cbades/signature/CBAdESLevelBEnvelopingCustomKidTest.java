@@ -45,7 +45,7 @@ class CBAdESLevelBEnvelopingCustomKidTest extends AbstractCBAdESTestSignature {
         signatureParameters.setCertificateChain(getCertificateChain());
         signatureParameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
         signatureParameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
-        signatureParameters.setKid("GOOD-USER".getBytes());
+        signatureParameters.setKeyIdentifier("GOOD-USER".getBytes());
         return signatureParameters;
     }
 

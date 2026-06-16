@@ -510,6 +510,7 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 				getXmlCommitmentTypeIndications(signature.getCommitmentTypeIndications()));
 		xmlSignature.getSignerRole().addAll(getXmlSignerRoles(signature.getSignerRoles()));
 
+		xmlSignature.setSignatureType(signature.getSignatureType());
 		xmlSignature.setContentType(signature.getContentType());
 		xmlSignature.setMimeType(signature.getMimeType());
 

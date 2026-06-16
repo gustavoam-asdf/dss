@@ -169,9 +169,9 @@ public class RemoteEAAValidationService {
         if (eaaRevocationSource != null) {
             validator.setEAARevocationSource(eaaRevocationSource);
         }
-        if (dataToValidate.getEAAValidationParameters() != null) {
+        if (dataToValidate.getEaaValidationParameters() != null) {
             EAAValidationParameters eaaValidationParameters =
-                    new RemoteEAAValidationParametersBuilder(dataToValidate.getEAAValidationParameters()).build();
+                    new RemoteEAAValidationParametersBuilder(dataToValidate.getEaaValidationParameters()).build();
             validator.setEAAValidationParameters(eaaValidationParameters);
         }
         if (dataToValidate.getValidationTime() != null) {

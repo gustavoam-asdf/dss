@@ -411,6 +411,19 @@ public abstract class AbstractCBAdESTestSignature
     }
 
     @Override
+    protected void checkSignatureType(DiagnosticData diagnosticData) {
+        super.checkSignatureType(diagnosticData);
+
+        SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
+        if (getSignatureParameters().getSignatureType() != null) {
+            assertNotNull(signature.getSignatureType());
+            assertEquals(getSignatureParameters().getSignatureType(), signature.getSignatureType());
+        } else {
+            assertNull(signature.getSignatureType());
+        }
+    }
+
+    @Override
     protected void checkReportsSignatureIdentifier(Reports reports) {
         DiagnosticData diagnosticData = reports.getDiagnosticData();
         ValidationReportType etsiValidationReport = reports.getEtsiValidationReportJaxb();

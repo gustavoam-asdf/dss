@@ -79,7 +79,7 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
      *          protected header corresponds to the IssuerSerial of the signing-certificate.
      */
-    private byte[] kid;
+    private byte[] keyIdentifier;
 
     /**
      * This property defines a value for the 'x5u' signed header parameter (see RFC 9360).
@@ -272,8 +272,8 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      *
      * @return byte array
      */
-    public byte[] getKid() {
-        return kid;
+    public byte[] getKeyIdentifier() {
+        return keyIdentifier;
     }
 
     /**
@@ -282,10 +282,10 @@ public class CBAdESSignatureParameters extends AbstractSignatureParameters<CBAdE
      * DEFAULT: when not defined and {@code includeKeyIdentifier} is enabled, the value of the embedded 'kid'
      *          protected header corresponds to the IssuerSerial of the signing-certificate.
      *
-     * @param kid byte array
+     * @param keyIdentifier byte array
      */
-    public void setKid(byte[] kid) {
-        this.kid = kid;
+    public void setKeyIdentifier(byte[] keyIdentifier) {
+        this.keyIdentifier = keyIdentifier;
     }
 
     /**
