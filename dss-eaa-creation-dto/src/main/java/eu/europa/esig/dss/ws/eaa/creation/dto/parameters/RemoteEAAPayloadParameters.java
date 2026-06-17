@@ -1,0 +1,574 @@
+package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
+
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAAType;
+import eu.europa.esig.dss.ws.dto.DigestDTO;
+import eu.europa.esig.dss.ws.dto.RemoteDocument;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * DTO containing parameters for an EAA payload generation
+ *
+ */
+public class RemoteEAAPayloadParameters implements Serializable {
+
+    private static final long serialVersionUID = 6192999476014374481L;
+
+    /** (Required) Type of the EAA to be created */
+    private EAAType eaaType;
+
+    /** Pre-computed payload */
+    private RemoteDocument preComputedPayload;
+
+    /* Generic payload parameters */
+
+    /** DigestAlgorithm used to compute hashes for selectively disclosable claims  */
+    private DigestAlgorithm digestAlgorithm;
+    /** Date of the EAA issuance */
+    private Date issuanceDate;
+    /** Date of the EAA technical validity start */
+    private Date notBeforeDate;
+    /** Date of the EAA technical validity end */
+    private Date expirationDate;
+    /** Contains the public part of the key pair used for device authentication. */
+    private RemotePublicKey deviceKey;
+    /** Contains a "status_list" as defined in IETF draft-ietf-oauth-status-list-20. */
+    private RemoteEAAStatusList statusList;
+    /** Contains an "identifier_list" as defined in ISO/IEC 18013-5. */
+    private RemoteEAAIdentifierList identifierList;
+
+    /* ETSI technical claims */
+
+    /** Category of the EAA (e.g. QEAA, Pub-EAA, or other) */
+    private String category;
+    /** Whether the EAA is short-lived */
+    private Boolean shortLived;
+    /** Whether the EAA is issued for a one time use */
+    private Boolean oneTime;
+    /** The number of decoy digests that will be added */
+    private Integer decoyDigestNumber;
+    /** If the hashes in the EAA should be shuffled */
+    private Boolean shuffleHashes;
+
+    /* SD-JWT VC technical claims */
+
+    /** EAA issuer subject */
+    private String issuer;
+    /** EAA subject */
+    private String subject;
+    /** Type identifier of the embedded Verifiable Credential. */
+    private String verifiableCredentialsType;
+    /** Integrity metadata or cryptographic binding associated with the Verifiable Credential. */
+    private DigestDTO verifiableCredentialsTypeIntegrity;
+
+    /* Mdoc technical claims */
+
+    /** The document type of the document and shall be identical to the DocType element in the mdoc response. */
+    private String docType;
+    /** Defines when the signature of the MSO is created.*/
+    private Date signed;
+    /** Defines date from when the signature of the MSO is valid.*/
+    private Date validFrom;
+    /** Defines date from when the signature of the MSO is no longer valid.*/
+    private Date validUntil;
+    /** Contains a date at which the issuing authority expects to re-sign the MSO (and potentially update the elements). */
+    private Date expectedUpdate;
+
+    /* Selectively disclosable claims */
+
+    /** Contains non-selectively disclosable claims */
+    private RemoteEAAClaimParameters nonSelectivelyDisclosable;
+    /** Contains selectively disclosable claims */
+    private RemoteEAAClaimParameters selectivelyDisclosable;
+
+    /**
+     * Default constructor
+     */
+    public RemoteEAAPayloadParameters() {
+        super();
+    }
+
+    /**
+     * Constructor with EAA type provided
+     */
+    public RemoteEAAPayloadParameters(EAAType eaaType) {
+        this(eaaType, null);
+    }
+
+    /**
+     * Constructor with a pre-computed payload.
+     * When used, the provided payload is used and all the configuration parameters of the class are ignored.
+     *
+     * @param preComputedPayload {@link RemoteDocument}
+     */
+    public RemoteEAAPayloadParameters(RemoteDocument preComputedPayload) {
+        this(null, preComputedPayload);
+    }
+
+    /**
+     * Constructor with defined EAA type and a pre-computed payload.
+     * When used, the provided payload is used and all the configuration parameters of the class are ignored.
+     *
+     * @param eaaType {@link EAAType}
+     * @param preComputedPayload {@link RemoteDocument}
+     */
+    public RemoteEAAPayloadParameters(EAAType eaaType, RemoteDocument preComputedPayload) {
+        super();
+        this.eaaType = eaaType;
+        this.preComputedPayload = preComputedPayload;
+    }
+
+    /**
+     * Gets the EAA Type
+     *
+     * @return {@link EAAType}
+     */
+    public EAAType getEaaType() {
+        return eaaType;
+    }
+
+    /**
+     * Sets the target EAA type
+     *
+     * @param eaaType {@link EAAType}
+     */
+    public void setEaaType(EAAType eaaType) {
+        this.eaaType = eaaType;
+    }
+
+    /**
+     * Gets a pre-computed payload
+     *
+     * @return {@link RemoteDocument}
+     */
+    public RemoteDocument getPreComputedPayload() {
+        return preComputedPayload;
+    }
+
+    /**
+     * Sets a pre-computed payload.
+     * When used, the provided payload is used and all the configuration parameters of the class are ignored.
+     *
+     * @param preComputedPayload {@link RemoteDocument}
+     */
+    public void setPreComputedPayload(RemoteDocument preComputedPayload) {
+        this.preComputedPayload = preComputedPayload;
+    }
+
+    /**
+     * Gets the Digest Algorithm
+     *
+     * @return {@link DigestAlgorithm}
+     */
+    public DigestAlgorithm getDigestAlgorithm() {
+        return digestAlgorithm;
+    }
+
+    /**
+     * Sets the digest algorithm
+     *
+     * @param digestAlgorithm {@link DigestAlgorithm}
+     */
+    public void setDigestAlgorithm(DigestAlgorithm digestAlgorithm) {
+        this.digestAlgorithm = digestAlgorithm;
+    }
+
+    /**
+     * Gets the issuance date
+     *
+     * @return {@link Date}
+     */
+    public Date getIssuanceDate() {
+        return issuanceDate;
+    }
+
+    /**
+     * Sets the issuance date
+     *
+     * @param issuanceDate {@link Date}
+     */
+    public void setIssuanceDate(Date issuanceDate) {
+        this.issuanceDate = issuanceDate;
+    }
+
+    /**
+     * Gets the not before date
+     *
+     * @return {@link Date}
+     */
+    public Date getNotBeforeDate() {
+        return notBeforeDate;
+    }
+
+    /**
+     * Sets the not before date
+     *
+     * @param notBeforeDate {@link Date}
+     */
+    public void setNotBeforeDate(Date notBeforeDate) {
+        this.notBeforeDate = notBeforeDate;
+    }
+
+    /**
+     * Gets the expiration date
+     *
+     * @return {@link Date}
+     */
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
+
+    /**
+     * Sets the expiration date
+     *
+     * @param expirationDate {@link Date}
+     */
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    /**
+     * Gets the device key
+     *
+     * @return {@link RemotePublicKey}
+     */
+    public RemotePublicKey getDeviceKey() {
+        return deviceKey;
+    }
+
+    /**
+     * Sets the device key
+     *
+     * @param deviceKey {@link RemotePublicKey}
+     */
+    public void setDeviceKey(RemotePublicKey deviceKey) {
+        this.deviceKey = deviceKey;
+    }
+
+    /**
+     * Gets the status list
+     *
+     * @return {@link RemoteEAAStatusList}
+     */
+    public RemoteEAAStatusList getStatusList() {
+        return statusList;
+    }
+
+    /**
+     * Sets the status list
+     *
+     * @param statusList {@link RemoteEAAStatusList}
+     */
+    public void setStatusList(RemoteEAAStatusList statusList) {
+        this.statusList = statusList;
+    }
+
+    /**
+     * Gets the identifier list
+     *
+     * @return {@link RemoteEAAIdentifierList}
+     */
+    public RemoteEAAIdentifierList getIdentifierList() {
+        return identifierList;
+    }
+
+    /**
+     * Sets the identifier list
+     *
+     * @param identifierList {@link RemoteEAAIdentifierList}
+     */
+    public void setIdentifierList(RemoteEAAIdentifierList identifierList) {
+        this.identifierList = identifierList;
+    }
+
+    /**
+     * Gets the category
+     *
+     * @return {@link String}
+     */
+    public String getCategory() {
+        return category;
+    }
+
+    /**
+     * Sets the category
+     *
+     * @param category {@link String}
+     */
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    /**
+     * Gets whether the EAA is short-lived
+     *
+     * @return {@link Boolean}
+     */
+    public Boolean getShortLived() {
+        return shortLived;
+    }
+
+    /**
+     * Sets whether the EAA is short-lived
+     *
+     * @param shortLived {@link Boolean}
+     */
+    public void setShortLived(Boolean shortLived) {
+        this.shortLived = shortLived;
+    }
+
+    /**
+     * Gets whether the EAA is issued for a one time use
+     *
+     * @return {@link Boolean}
+     */
+    public Boolean getOneTime() {
+        return oneTime;
+    }
+
+    /**
+     * Sets whether the EAA is issued for a one time use
+     *
+     * @param oneTime {@link Boolean}
+     */
+    public void setOneTime(Boolean oneTime) {
+        this.oneTime = oneTime;
+    }
+
+    /**
+     * Gets the number of decoy digests
+     *
+     * @return {@link Integer}
+     */
+    public Integer getDecoyDigestNumber() {
+        return decoyDigestNumber;
+    }
+
+    /**
+     * Sets the number of decoy digests
+     *
+     * @param decoyDigestNumber {@link Integer}
+     */
+    public void setDecoyDigestNumber(Integer decoyDigestNumber) {
+        this.decoyDigestNumber = decoyDigestNumber;
+    }
+
+    /**
+     * Gets whether hashes should be shuffled
+     *
+     * @return {@link Boolean}
+     */
+    public Boolean getShuffleHashes() {
+        return shuffleHashes;
+    }
+
+    /**
+     * Sets whether hashes should be shuffled
+     *
+     * @param shuffleHashes {@link Boolean}
+     */
+    public void setShuffleHashes(Boolean shuffleHashes) {
+        this.shuffleHashes = shuffleHashes;
+    }
+
+    /**
+     * Gets the issuer
+     *
+     * @return {@link String}
+     */
+    public String getIssuer() {
+        return issuer;
+    }
+
+    /**
+     * Sets the issuer
+     *
+     * @param issuer {@link String}
+     */
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    /**
+     * Gets the subject
+     *
+     * @return {@link String}
+     */
+    public String getSubject() {
+        return subject;
+    }
+
+    /**
+     * Sets the subject
+     *
+     * @param subject {@link String}
+     */
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    /**
+     * Gets the Verifiable Credential type
+     *
+     * @return {@link String}
+     */
+    public String getVerifiableCredentialsType() {
+        return verifiableCredentialsType;
+    }
+
+    /**
+     * Sets the Verifiable Credential type
+     *
+     * @param verifiableCredentialsType {@link String}
+     */
+    public void setVerifiableCredentialsType(String verifiableCredentialsType) {
+        this.verifiableCredentialsType = verifiableCredentialsType;
+    }
+
+    /**
+     * Gets the Verifiable Credential type integrity
+     *
+     * @return {@link DigestDTO}
+     */
+    public DigestDTO getVerifiableCredentialsTypeIntegrity() {
+        return verifiableCredentialsTypeIntegrity;
+    }
+
+    /**
+     * Sets the Verifiable Credential type integrity
+     *
+     * @param verifiableCredentialsTypeIntegrity {@link DigestDTO}
+     */
+    public void setVerifiableCredentialsTypeIntegrity(DigestDTO verifiableCredentialsTypeIntegrity) {
+        this.verifiableCredentialsTypeIntegrity = verifiableCredentialsTypeIntegrity;
+    }
+
+    /**
+     * Gets the document type
+     *
+     * @return {@link String}
+     */
+    public String getDocType() {
+        return docType;
+    }
+
+    /**
+     * Sets the document type
+     *
+     * @param docType {@link String}
+     */
+    public void setDocType(String docType) {
+        this.docType = docType;
+    }
+
+    /**
+     * Gets the signed date
+     *
+     * @return {@link Date}
+     */
+    public Date getSigned() {
+        return signed;
+    }
+
+    /**
+     * Sets the signed date
+     *
+     * @param signed {@link Date}
+     */
+    public void setSigned(Date signed) {
+        this.signed = signed;
+    }
+
+    /**
+     * Gets the date from when the signature is valid
+     *
+     * @return {@link Date}
+     */
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    /**
+     * (Mdoc) Sets the date from when the signature is valid
+     *
+     * @param validFrom {@link Date}
+     */
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    /**
+     * Gets the date from when the signature is no longer valid
+     *
+     * @return {@link Date}
+     */
+    public Date getValidUntil() {
+        return validUntil;
+    }
+
+    /**
+     * (Mdoc) Sets the date from when the signature is no longer valid
+     *
+     * @param validUntil {@link Date}
+     */
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    /**
+     * Gets the expected update date
+     *
+     * @return {@link Date}
+     */
+    public Date getExpectedUpdate() {
+        return expectedUpdate;
+    }
+
+    /**
+     * Sets the expected update date
+     *
+     * @param expectedUpdate {@link Date}
+     */
+    public void setExpectedUpdate(Date expectedUpdate) {
+        this.expectedUpdate = expectedUpdate;
+    }
+
+    /**
+     * Gets the non-selectively disclosable claims
+     *
+     * @return {@link RemoteEAAClaimParameters}
+     */
+    public RemoteEAAClaimParameters getNonSelectivelyDisclosable() {
+        return nonSelectivelyDisclosable;
+    }
+
+    /**
+     * Sets the non-selectively disclosable claims
+     *
+     * @param nonSelectivelyDisclosable {@link RemoteEAAClaimParameters}
+     */
+    public void setNonSelectivelyDisclosable(RemoteEAAClaimParameters nonSelectivelyDisclosable) {
+        this.nonSelectivelyDisclosable = nonSelectivelyDisclosable;
+    }
+
+    /**
+     * Gets the selectively disclosable claims
+     *
+     * @return {@link RemoteEAAClaimParameters}
+     */
+    public RemoteEAAClaimParameters getSelectivelyDisclosable() {
+        return selectivelyDisclosable;
+    }
+
+    /**
+     * Sets the selectively disclosable claims
+     *
+     * @param selectivelyDisclosable {@link RemoteEAAClaimParameters}
+     */
+    public void setSelectivelyDisclosable(RemoteEAAClaimParameters selectivelyDisclosable) {
+        this.selectivelyDisclosable = selectivelyDisclosable;
+    }
+
+}

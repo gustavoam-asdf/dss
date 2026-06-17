@@ -45,7 +45,7 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
 
     protected abstract SP getKeyBindingSignatureParameters();
 
-    protected abstract EAAService<SP, B, C, D, E> getService();
+    protected abstract EAAService<SP, B, D, E> getService();
 
     protected abstract MimeType getExpectedMime();
 
@@ -80,7 +80,7 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
         if (signedEAA == null) {
             B payloadParameters = getPayloadParameters();
             SP params = getSignatureParameters();
-            EAAService<SP, B, C, D, E> service = getService();
+            EAAService<SP, B, D, E> service = getService();
 
             ToBeSigned dataToSign = service.getDataToBeSigned(payloadParameters, params);
             SignatureValue signatureValue = getToken().sign(dataToSign, params.getSignatureAlgorithm(), getPrivateKeyEntry());
@@ -92,14 +92,14 @@ public abstract class AbstractEAAPresentationTestIssuance<SP extends Serializabl
 
     protected List<D> getDisclosures() {
         B payloadParameters = getPayloadParameters();
-        EAAService<SP, B, C, D, E> service = getService();
+        EAAService<SP, B, D, E> service = getService();
         return service.getDisclosures(payloadParameters);
     }
 
     protected DSSDocument createKeyBindingSignature() {
         if (includeKeyBindingSignature()) {
             SP params = getKeyBindingSignatureParameters();
-            EAAService<SP, B, C, D, E> service = getService();
+            EAAService<SP, B, D, E> service = getService();
 
             DSSDocument signedEAA = signEAA();
             List<D> disclosures = getDisclosures();

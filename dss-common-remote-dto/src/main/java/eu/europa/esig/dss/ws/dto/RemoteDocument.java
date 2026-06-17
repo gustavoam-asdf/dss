@@ -50,6 +50,17 @@ public class RemoteDocument implements Serializable {
 	/**
 	 * This constructor allows to create a new instance of RemoteDocument with the
 	 * whole document
+	 *
+	 * @param bytes
+	 *              the full document binaries
+	 */
+	public RemoteDocument(byte[] bytes) {
+		this(bytes, null);
+	}
+
+	/**
+	 * This constructor allows to create a new instance of RemoteDocument with the
+	 * whole document and name
 	 * 
 	 * @param bytes
 	 *              the full document binaries

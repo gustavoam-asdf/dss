@@ -288,6 +288,7 @@ public class RemoteDocumentSignatureServiceImpl extends AbstractRemoteSignatureS
 		Objects.requireNonNull(remoteDocument, "remoteDocument must be defined!");
 		Objects.requireNonNull(remoteParameters, "remoteParameters must be defined!");
 		Objects.requireNonNull(remoteParameters.getSignatureLevel(), "signatureLevel must be defined!");
+		Objects.requireNonNull(signatureValueDTO, "signatureValue must be defined!");
 		LOG.info("SignDocument in process...");
 		SerializableSignatureParameters parameters = createParameters(remoteParameters);
 		DocumentSignatureService service = getServiceForSignature(remoteParameters.getSignatureLevel().getSignatureForm(), remoteParameters.getAsicContainerType());

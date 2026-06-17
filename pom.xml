@@ -193,6 +193,8 @@
 		<module>dss-timestamp-remote-soap-client</module>
 		<module>dss-timestamp-remote-rest</module>
 		<module>dss-timestamp-remote-soap</module>
+		<module>dss-eaa-creation-dto</module>
+		<module>dss-eaa-creation-remote</module>
 		<module>dss-eaa-validation-dto</module>
 		<module>dss-eaa-validation-remote</module>
 		<module>dss-eaa-validation-rest-client</module>
@@ -1011,6 +1013,16 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-pki-factory-jaxb</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-dto</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-remote</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

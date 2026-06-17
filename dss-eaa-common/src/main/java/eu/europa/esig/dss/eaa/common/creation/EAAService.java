@@ -1,6 +1,5 @@
 package eu.europa.esig.dss.eaa.common.creation;
 
-import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.SerializableSignatureParameters;
 import eu.europa.esig.dss.model.SignatureValue;
@@ -20,65 +19,171 @@ import java.util.List;
  * @param <SP>
  *         implementation of signature parameters corresponding to the supported signature format
  * @param <B>
- *         implementation of EAA payload builder to the EAA format
- * @param <C>
- *         implementation of EAA claim for the EAA format
+ *         implementation of EAA payload parameters to the EAA format
  * @param <D>
  *         implementation of EAA disclosure for the EAA format
  * @param <E>
  *         implementation of EAA key binding parameters for the EAA format
  */
-public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure, E extends KeyBindingParameters> extends Serializable {
+public interface EAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, D extends EAADisclosure, E extends KeyBindingParameters> extends Serializable {
 
+    /**
+     * Prepares binaries to be used on computation of a signature value, format specific.
+     * This method takes a pre-computed payload as a parameter.
+     *
+     * @param payload
+     *            {@link DSSDocument} the payload to sign
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
+     * @return {@link ToBeSigned}
+     */
     ToBeSigned getDataToBeSigned(DSSDocument payload, SP signatureParameters);
 
+    /**
+     * Prepares binaries to be used on computation of a signature value, format specific.
+     * This method takes a configuration of payload parameters and computes a resulting payload based on it.
+     *
+     * @param payloadParameters
+     *            {@link EAAPayloadParameters} the payload parameters
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of thedriving signing parameters
+     * @return {@link ToBeSigned}
+     */
     ToBeSigned getDataToBeSigned(B payloadParameters, SP signatureParameters);
 
     /**
      * Signs an EAA with the provided signatureValue.
+     * This method takes a pre-computed payload as a parameter.
      *
      * @param payload
-     *            the EAA to sign
+     *            {@link DSSDocument} the payload to sign
      * @param signatureParameters
-     *            set of the driving signing parameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
      * @param signatureValue
-     *            the signature value to incorporate
-     * @return the signed EAA
+     *            {@link SignatureValue} the signature value to incorporate
+     * @return {@link DSSDocument} the signed EAA
      */
     DSSDocument signEAA(DSSDocument payload, SP signatureParameters, SignatureValue signatureValue);
 
     /**
      * Signs the payload with the provided signatureValue.
+     * This method takes a configuration of payload parameters and computes a resulting payload based on it.
      *
      * @param payloadParameters
-     *            the payload builder
+     *            {@link EAAPayloadParameters} the payload parameters
      * @param signatureParameters
-     *            set of the driving signing parameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
      * @param signatureValue
-     *            the signature value to incorporate
-     * @return the signed EAA
+     *            {@link SignatureValue} the signature value to incorporate
+     * @return {@link DSSDocument} the signed EAA
      */
     DSSDocument signEAA(B payloadParameters, SP signatureParameters, SignatureValue signatureValue);
 
     /**
      * Gets a list of disclosures for all selectively disclosable claims defined within the parameters
      *
-     * @param payloadParameters {@link EAAPayloadParameters}
+     * @param payloadParameters {@link EAAPayloadParameters} the payload parameters
      * @return a list of {@link EAADisclosure}s
      */
     List<D> getDisclosures(final B payloadParameters);
 
+    /**
+     * Created a DataToBeSigned (DTBS) for a key-binding signature creation, format specific.
+     * This method can be used when no disclosures are to be provided within the final EAA Presentation.
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param keyBindingParameters
+     *            {@link KeyBindingParameters} key binding signature configuration
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
+     * @return {@link ToBeSigned}
+     */
     ToBeSigned getDataToSignForKeyBindingSignature(DSSDocument eaa, E keyBindingParameters, SP signatureParameters);
 
+    /**
+     * Created a DataToBeSigned (DTBS) for a key-binding signature creation, format specific.
+     * This method can be used when selective disclosures are to be provided within the final EAA Presentation.
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param disclosures
+     *            a list of {@link EAADisclosure}s to be provided with the EAA presentation
+     * @param keyBindingParameters
+     *            {@link KeyBindingParameters} key binding signature configuration
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
+     * @return {@link ToBeSigned}
+     */
     ToBeSigned getDataToSignForKeyBindingSignature(DSSDocument eaa, List<D> disclosures, E keyBindingParameters, SP signatureParameters);
 
+    /**
+     * Creates a key-binding signature, format specific.
+     * This method can be used when no disclosures are to be provided within the final EAA Presentation.
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param keyBindingParameters
+     *            {@link KeyBindingParameters} key binding signature configuration
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
+     * @param signatureValue
+     *            {@link SignatureValue}
+     * @return {@link ToBeSigned}
+     */
     DSSDocument createKeyBindingSignature(DSSDocument eaa, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
+    /**
+     * Creates a key-binding signature, format specific.
+     * This method can be used when selective disclosures are to be provided within the final EAA Presentation.
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param disclosures
+     *            a list of {@link EAADisclosure}s to be provided with the EAA presentation
+     * @param keyBindingParameters
+     *            {@link KeyBindingParameters} key binding signature configuration
+     * @param signatureParameters
+     *            {@link SerializableSignatureParameters} set of the driving signing parameters
+     * @param signatureValue
+     *            {@link SignatureValue}
+     * @return {@link ToBeSigned}
+     */
     DSSDocument createKeyBindingSignature(DSSDocument eaa, List<D> disclosures, E keyBindingParameters, SP signatureParameters, SignatureValue signatureValue);
 
+    /**
+     * Creates an EAA Presentation, with provided selective disclosures and no key binding signature
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param disclosures
+     *            a list of {@link EAADisclosure}s to be provided with the EAA presentation
+     * @return {@link DSSDocument} EAA Presentation
+     */
     DSSDocument issuePresentation(DSSDocument eaa, List<D> disclosures);
 
-    DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keybinding);
+    /**
+     * Creates an EAA Presentation, with no selective disclosures and provided key binding signature
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param keyBinding
+     *            {@link DSSDocument} representing a key binding signature
+     * @return {@link DSSDocument} EAA Presentation
+     */
+    DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keyBinding);
 
+    /**
+     * Creates an EAA Presentation, with provided selective disclosures and key binding signature
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param disclosures
+     *            a list of {@link EAADisclosure}s to be provided with the EAA presentation
+     * @param keyBinding
+     *            {@link DSSDocument} representing a key binding signature
+     * @return {@link DSSDocument} EAA Presentation
+     */
     DSSDocument issuePresentation(DSSDocument eaa, List<D> disclosures, DSSDocument keyBinding);
+
 }

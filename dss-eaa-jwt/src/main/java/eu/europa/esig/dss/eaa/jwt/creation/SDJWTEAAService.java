@@ -178,7 +178,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     @Override
     public ToBeSigned getDataToSignForKeyBindingSignature(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures,
                                                           final SDJWTKeyBindingParameters keyBindingParameters, final JAdESSignatureParameters signatureParameters) {
-        ensureKeyBindingParameters(keyBindingParameters);
+        ensureKeyBindingParameters(keyBindingParameters, signatureParameters);
         ensureKeyBindingSignatureParameters(signatureParameters);
 
         DSSDocument keyBindingPayload = getKeyBindingPayloadBuilder().buildPayload(eaa, disclosures, keyBindingParameters);
@@ -194,7 +194,7 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     @Override
     public DSSDocument createKeyBindingSignature(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final SDJWTKeyBindingParameters keyBindingParameters,
                                                  final JAdESSignatureParameters signatureParameters, final SignatureValue signatureValue) {
-        ensureKeyBindingParameters(keyBindingParameters);
+        ensureKeyBindingParameters(keyBindingParameters, signatureParameters);
         ensureKeyBindingSignatureParameters(signatureParameters);
 
         DSSDocument keyBindingPayload = getKeyBindingPayloadBuilder().buildPayload(eaa, disclosures, keyBindingParameters);
@@ -205,12 +205,18 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
      * This method verifies validity of the parameters for the key binding
      *
      * @param keyBindingParameters {@link SDJWTKeyBindingParameters}
+     * @param signatureParameters {@link JAdESSignatureParameters}
      */
-    protected void ensureKeyBindingParameters(final SDJWTKeyBindingParameters keyBindingParameters) {
+    protected void ensureKeyBindingParameters(final SDJWTKeyBindingParameters keyBindingParameters,
+                                              final JAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(keyBindingParameters, "keyBindingParameters must not be null");
-        Objects.requireNonNull(keyBindingParameters.getIssuanceTime(), "Issuance time must not be null");
         Objects.requireNonNull(keyBindingParameters.getAudience(), "Audience must not be null");
         Objects.requireNonNull(keyBindingParameters.getNonce(), "Nonce must not be null");
+
+        if (keyBindingParameters.getIssuanceTime() == null) {
+            keyBindingParameters.setIssuanceTime(signatureParameters.bLevel().getSigningDate());
+            LOG.debug("'iat' date is absent within the key binding signature's payload and was set to {}", signatureParameters.bLevel().getSigningDate());
+        }
     }
 
     /**
@@ -260,6 +266,8 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     @Override
     public List<SDJWTEAADisclosure> getDisclosures(final SDJWTEAAPayloadParameters payloadParameters) {
         Objects.requireNonNull(payloadParameters, "SDJWTEAAPayloadParameters cannot be null!");
+        Objects.requireNonNull(payloadParameters.getNotBeforeDate(), "NotBefore date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getExpirationDate(), "Expiration date a cannot be null!");
         return getPayloadBuilder().buildDisclosures(payloadParameters);
     }
 
@@ -296,8 +304,8 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
     }
 
     @Override
-    public DSSDocument issuePresentation(final DSSDocument eaa, final DSSDocument keybinding) {
-        return issuePresentation(eaa, Collections.emptyList(), keybinding);
+    public DSSDocument issuePresentation(final DSSDocument eaa, final DSSDocument keyBinding) {
+        return issuePresentation(eaa, Collections.emptyList(), keyBinding);
     }
 
     private DSSDocument issueJWSCompactPresentation(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final DSSDocument keyBinding) {
@@ -354,7 +362,13 @@ public class SDJWTEAAService extends AbstractEAAService<JAdESSignatureParameters
         return MimeTypeEnum.JSON; // TODO : improve
     }
 
+    /**
+     * Gets a builder to create a key binding signature's payload
+     *
+     * @return {@link SDJWTEAAKeyBindingPayloadBuilder}
+     */
     protected SDJWTEAAKeyBindingPayloadBuilder getKeyBindingPayloadBuilder() {
         return new DefaultSDJWTEAAKeyBindingPayloadBuilder();
     }
+
 }

@@ -35,6 +35,7 @@ public class RemoteCertificate implements Serializable {
 	 * Empty constructor
 	 */
 	public RemoteCertificate() {
+		// empty
 	}
 
 	/**

@@ -9,6 +9,7 @@ import eu.europa.esig.dss.cbades.cbor.CBORUtils;
 import eu.europa.esig.dss.cbades.signature.CBAdESService;
 import eu.europa.esig.dss.cbades.signature.CBAdESSignatureParameters;
 import eu.europa.esig.dss.eaa.common.creation.AbstractEAAService;
+import eu.europa.esig.dss.eaa.common.creation.EAADisclosure;
 import eu.europa.esig.dss.eaa.common.creation.EAAPayloadBuilder;
 import eu.europa.esig.dss.eaa.mdoc.IssuerSignedParser;
 import eu.europa.esig.dss.eaa.mdoc.MdocConstants;
@@ -328,6 +329,11 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
 
     @Override
     public List<MdocEAADisclosure> getDisclosures(final MdocEAAPayloadParameters payloadParameters) {
+        Objects.requireNonNull(payloadParameters, "MdocEAAPayloadParameters cannot be null!");
+        Objects.requireNonNull(payloadParameters.getSigned(), "Signed date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getValidFrom(), "ValidFrom date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getValidUntil(), "ValidUntil date cannot be null!");
+        Objects.requireNonNull(payloadParameters.getDocType(), "DocType cannot be null!");
         return getPayloadBuilder().buildDisclosures(payloadParameters);
     }
 
@@ -353,8 +359,8 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
     }
 
     @Override
-    public DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keybinding) {
-        return issuePresentation(eaa, null, keybinding);
+    public DSSDocument issuePresentation(DSSDocument eaa, DSSDocument keyBinding) {
+        return issuePresentation(eaa, null, keyBinding);
     }
 
     @Override
@@ -362,6 +368,20 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
         return issuePresentation(eaa, disclosures, keyBinding, new MdocKeyBindingParameters());
     }
 
+    /**
+     * Creates an EAA Presentation, with provided selective disclosures, key binding signature and
+     * a list of device signed data elements
+     *
+     * @param eaa
+     *            {@link DSSDocument} representing a signed EAA
+     * @param disclosures
+     *            a list of {@link EAADisclosure}s to be provided with the EAA presentation
+     * @param keyBinding
+     *            {@link DSSDocument} representing a key binding signature
+     * @param deviceSignedParameters
+     *             {@link MdocEAADeviceSignedParameters} contains a list of device signed data elements
+     * @return {@link DSSDocument} EAA Presentation
+     */
     public DSSDocument issuePresentation(DSSDocument eaa, List<MdocEAADisclosure> disclosures, DSSDocument keyBinding, MdocEAADeviceSignedParameters deviceSignedParameters) {
         Objects.requireNonNull(deviceSignedParameters, "deviceSignedParameters must not be null!");
         if (!CBORUtils.isCbor(eaa)) {

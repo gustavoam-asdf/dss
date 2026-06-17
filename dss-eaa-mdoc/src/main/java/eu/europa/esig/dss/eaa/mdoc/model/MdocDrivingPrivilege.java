@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a DrivingPrivilege structure as defined in ISO/IEC 18013-5 "7.2.4 Categories of vehicles/restrictions/conditions".
@@ -185,6 +186,65 @@ public class MdocDrivingPrivilege implements Serializable {
             return value;
         }
 
+        @Override
+        public String toString() {
+            return "Code [" +
+                    "code='" + code + '\'' +
+                    ", sign='" + sign + '\'' +
+                    ", value='" + value + '\'' +
+                    ']';
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (object == null || getClass() != object.getClass()) return false;
+
+            Code code1 = (Code) object;
+            return Objects.equals(code, code1.code)
+                    && Objects.equals(sign, code1.sign)
+                    && Objects.equals(value, code1.value);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hashCode(code);
+            result = 31 * result + Objects.hashCode(sign);
+            result = 31 * result + Objects.hashCode(value);
+            return result;
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return "MdocDrivingPrivilege [" +
+                "vehicleCategoryCode='" + vehicleCategoryCode + '\'' +
+                ", issueDate=" + issueDate +
+                ", expiryDate=" + expiryDate +
+                ", codes=" + codes +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        MdocDrivingPrivilege that = (MdocDrivingPrivilege) object;
+        return Objects.equals(vehicleCategoryCode, that.vehicleCategoryCode)
+                && Objects.equals(issueDate, that.issueDate)
+                && Objects.equals(expiryDate, that.expiryDate)
+                && Objects.equals(codes, that.codes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(vehicleCategoryCode);
+        result = 31 * result + Objects.hashCode(issueDate);
+        result = 31 * result + Objects.hashCode(expiryDate);
+        result = 31 * result + Objects.hashCode(codes);
+        return result;
     }
 
 }

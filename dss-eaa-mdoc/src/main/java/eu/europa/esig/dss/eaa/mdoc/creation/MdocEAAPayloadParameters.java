@@ -46,7 +46,7 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private String docType;
 
     /**
-     * Defined when the signature of the MSO is created.
+     * Defines when the signature of the MSO is created.
      * NOTE: the value is taken from the corresponding signature parameters, if not provided explicitly.
      */
     private Date signed;

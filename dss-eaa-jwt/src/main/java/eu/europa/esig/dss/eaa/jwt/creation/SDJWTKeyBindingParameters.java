@@ -1,9 +1,9 @@
 package eu.europa.esig.dss.eaa.jwt.creation;
 
-import java.util.Date;
-
 import eu.europa.esig.dss.eaa.common.creation.KeyBindingParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+
+import java.util.Date;
 
 /**
  * Implementation of {@link KeyBindingParameters} for SD-JWT EAA
@@ -22,35 +22,83 @@ public class SDJWTKeyBindingParameters implements KeyBindingParameters {
     /** Nonce of the key binding */
     private String nonce;
 
+    /**
+     * Default constructor
+     */
+    public SDJWTKeyBindingParameters() {
+        //empty
+    }
+
+    /**
+     * Gets the digest algorithm used to compute the hash for the key binding signature
+     *
+     * @return {@link DigestAlgorithm}
+     */
     public DigestAlgorithm getDigestAlgorithm() {
         return digestAlgorithm;
     }
 
+    /**
+     * Sets the digest algorithm used to compute the hash for the key binding signature
+     *
+     * @param digestAlgorithm {@link DigestAlgorithm}
+     */
     public void setDigestAlgorithm(final DigestAlgorithm digestAlgorithm) {
         this.digestAlgorithm = digestAlgorithm;
     }
 
+    /**
+     * Gets the issuance time of the key binding signature
+     *
+     * @return {@link Date}
+     */
     public Date getIssuanceTime() {
         return issuanceTime;
     }
 
+    /**
+     * Sets the issuance time of the key binding signature
+     *
+     * @param issuanceTime {@link Date}
+     */
     public void setIssuanceTime(final Date issuanceTime) {
         this.issuanceTime = issuanceTime;
     }
 
+    /**
+     * Gets the intended receiver of the key binding
+     *
+     * @return {@link String}
+     */
     public String getAudience() {
         return audience;
     }
 
+    /**
+     * Sets the intended receiver of the key binding
+     *
+     * @param audience {@link String}
+     */
     public void setAudience(final String audience) {
         this.audience = audience;
     }
 
+    /**
+     * Gets the nonce of the key binding
+     *
+     * @return {@link String}
+     */
     public String getNonce() {
         return nonce;
     }
 
+    /**
+     * Sets the nonce of the key binding
+     *
+     * @param nonce {@link String}
+     */
     public void setNonce(final String nonce) {
         this.nonce = nonce;
     }
+
 }
