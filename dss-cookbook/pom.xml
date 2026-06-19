@@ -15,7 +15,7 @@
 	<properties>
 		<module-name>jpms_dss_cookbook</module-name>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
@@ -127,7 +127,23 @@
 			<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 			<artifactId>dss-timestamp-remote-soap</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-mdoc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-revocation-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.europa.ec.joinup.sd-dss</groupId>
+            <artifactId>dss-eaa-revocation-cwt</artifactId>
+        </dependency>
+    </dependencies>
 
 	<profiles>
 		<profile>
@@ -196,7 +212,7 @@
 							</attributes>
 					    </configuration>
 					</plugin>
-				</plugins>		
+				</plugins>
 			</build>
 		</profile>
 	</profiles>
