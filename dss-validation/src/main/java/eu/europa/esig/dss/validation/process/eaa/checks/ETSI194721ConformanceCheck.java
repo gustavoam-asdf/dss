@@ -239,7 +239,10 @@ public class ETSI194721ConformanceCheck extends ChainItem<XmlSAV> {
             errors.add(i18nProvider.getMessage(MessageTag.EAA_REV_SDJWT_CONFORMANCE));
         }
 
-        return Utils.joinStrings(errors, " - ");
+        if (Utils.isCollectionNotEmpty(errors)) {
+            return Utils.joinStrings(errors, " - ");
+        }
+        return null;
     }
 
     @Override

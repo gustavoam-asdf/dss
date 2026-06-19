@@ -9,9 +9,9 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAAPayload;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlIntegrityClaim;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStatusClaim;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlVerifiableCredentialsTypeClaim;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.EAAType;
@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
@@ -72,6 +74,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -117,6 +120,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -161,6 +165,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -205,6 +210,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -257,6 +263,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -309,6 +316,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -357,6 +365,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -406,6 +415,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -447,6 +457,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -488,6 +499,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -539,6 +551,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -590,6 +603,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -645,6 +659,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -700,6 +715,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -759,6 +775,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -818,6 +835,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -866,6 +884,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     // TODO : disabled until review in ETSI TS 119 472-1
@@ -914,6 +933,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -974,6 +994,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.OK, constraints.get(0).getStatus());
+        assertNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -1011,6 +1032,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
     @Test
@@ -1051,6 +1073,7 @@ class ETSI194721ConformanceCheckTest extends AbstractTestCheck {
 
         assertEquals(1, constraints.size());
         assertEquals(XmlStatus.NOT_OK, constraints.get(0).getStatus());
+        assertNotNull(constraints.get(0).getAdditionalInfo());
     }
 
 }
