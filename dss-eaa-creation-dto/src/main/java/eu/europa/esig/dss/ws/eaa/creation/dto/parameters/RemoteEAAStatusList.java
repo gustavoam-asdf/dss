@@ -2,11 +2,16 @@ package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
 import eu.europa.esig.dss.ws.dto.RemoteCertificate;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
  * DTO representing a Token Status List claim
  *
  */
-public class RemoteEAAStatusList {
+public class RemoteEAAStatusList implements Serializable {
+
+    private static final long serialVersionUID = -3496834119406272264L;
 
     /** Non-negative integer representing the index check for status information in the Status List */
     private Integer index;
@@ -106,6 +111,40 @@ public class RemoteEAAStatusList {
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteEAAStatusList [" +
+                "index=" + index +
+                ", uri='" + uri + '\'' +
+                ", certificate=" + certificate +
+                ", type='" + type + '\'' +
+                ", purpose='" + purpose + '\'' +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        RemoteEAAStatusList that = (RemoteEAAStatusList) object;
+        return Objects.equals(index, that.index)
+                && Objects.equals(uri, that.uri)
+                && Objects.equals(certificate, that.certificate)
+                && Objects.equals(type, that.type)
+                && Objects.equals(purpose, that.purpose);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(index);
+        result = 31 * result + Objects.hashCode(uri);
+        result = 31 * result + Objects.hashCode(certificate);
+        result = 31 * result + Objects.hashCode(type);
+        result = 31 * result + Objects.hashCode(purpose);
+        return result;
     }
 
 }

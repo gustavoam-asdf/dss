@@ -1,13 +1,18 @@
 package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DTO representing a custom claim's value
  *
  */
-public class ClaimValueDTO {
+public class ClaimValueDTO implements Serializable {
+
+    private static final long serialVersionUID = -1184176830219560884L;
 
     /** String value */
     private String stringValue;
@@ -206,6 +211,46 @@ public class ClaimValueDTO {
      */
     public void setObjectValue(List<ClaimDTO> objectValue) {
         this.objectValue = objectValue;
+    }
+
+    @Override
+    public String toString() {
+        return "ClaimValueDTO [" +
+                "stringValue='" + stringValue + '\'' +
+                ", numberValue=" + numberValue +
+                ", booleanValue=" + booleanValue +
+                ", dateValue=" + dateValue +
+                ", binaryValue=" + Arrays.toString(binaryValue) +
+                ", arrayValue=" + arrayValue +
+                ", objectValue=" + objectValue +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        ClaimValueDTO that = (ClaimValueDTO) object;
+        return Objects.equals(stringValue, that.stringValue)
+                && Objects.equals(numberValue, that.numberValue)
+                && Objects.equals(booleanValue, that.booleanValue)
+                && Objects.equals(dateValue, that.dateValue)
+                && Arrays.equals(binaryValue, that.binaryValue)
+                && Objects.equals(arrayValue, that.arrayValue)
+                && Objects.equals(objectValue, that.objectValue);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(stringValue);
+        result = 31 * result + Objects.hashCode(numberValue);
+        result = 31 * result + Objects.hashCode(booleanValue);
+        result = 31 * result + Objects.hashCode(dateValue);
+        result = 31 * result + Arrays.hashCode(binaryValue);
+        result = 31 * result + Objects.hashCode(arrayValue);
+        result = 31 * result + Objects.hashCode(objectValue);
+        return result;
     }
 
 }

@@ -1,10 +1,16 @@
 package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * DTO representing a custom claim
  *
  */
-public class ClaimDTO {
+public class ClaimDTO implements Serializable {
+
+    private static final long serialVersionUID = -8447619549334915406L;
 
     /** Namespace of the element claim (mdoc only) */
     private String namespace;
@@ -193,6 +199,43 @@ public class ClaimDTO {
      */
     public void setSalt(byte[] salt) {
         this.salt = salt;
+    }
+
+    @Override
+    public String toString() {
+        return "ClaimDTO [" +
+                "namespace='" + namespace + '\'' +
+                ", digestId=" + digestId +
+                ", name='" + name + '\'' +
+                ", value=" + value +
+                ", selectivelyDisclosable=" + selectivelyDisclosable +
+                ", salt=" + Arrays.toString(salt) +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        ClaimDTO claimDTO = (ClaimDTO) object;
+        return Objects.equals(namespace, claimDTO.namespace)
+                && Objects.equals(digestId, claimDTO.digestId)
+                && Objects.equals(name, claimDTO.name)
+                && Objects.equals(value, claimDTO.value)
+                && Objects.equals(selectivelyDisclosable, claimDTO.selectivelyDisclosable)
+                && Arrays.equals(salt, claimDTO.salt);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(namespace);
+        result = 31 * result + Objects.hashCode(digestId);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(value);
+        result = 31 * result + Objects.hashCode(selectivelyDisclosable);
+        result = 31 * result + Arrays.hashCode(salt);
+        return result;
     }
 
 }

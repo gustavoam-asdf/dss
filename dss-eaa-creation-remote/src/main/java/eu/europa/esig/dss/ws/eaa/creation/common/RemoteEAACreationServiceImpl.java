@@ -25,7 +25,7 @@ import eu.europa.esig.dss.ws.eaa.creation.common.builder.RemoteEAAPresentationPa
 import eu.europa.esig.dss.ws.eaa.creation.common.builder.RemoteKeyBindingParametersBuilder;
 import eu.europa.esig.dss.ws.eaa.creation.common.converter.DisclosureFromDTOConverter;
 import eu.europa.esig.dss.ws.eaa.creation.common.converter.DisclosureToDTOConverter;
-import eu.europa.esig.dss.ws.eaa.creation.dto.DisclosureDTO;
+import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.DisclosureDTO;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteEAAPayloadParameters;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteEAAPresentationParameters;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteKeyBindingParameters;

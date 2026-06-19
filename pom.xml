@@ -195,6 +195,10 @@
 		<module>dss-timestamp-remote-soap</module>
 		<module>dss-eaa-creation-dto</module>
 		<module>dss-eaa-creation-remote</module>
+		<module>dss-eaa-creation-rest-client</module>
+		<module>dss-eaa-creation-rest</module>
+		<module>dss-eaa-creation-soap-client</module>
+		<module>dss-eaa-creation-soap</module>
 		<module>dss-eaa-validation-dto</module>
 		<module>dss-eaa-validation-remote</module>
 		<module>dss-eaa-validation-rest-client</module>
@@ -205,7 +209,7 @@
 
 		<module>dss-jacoco-coverage</module>
 		<module>dss-bom</module>
-	</modules>
+    </modules>
 
 	<build>
 		<plugins>
@@ -1023,6 +1027,26 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-eaa-creation-remote</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-rest-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-soap-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-rest</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-soap</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

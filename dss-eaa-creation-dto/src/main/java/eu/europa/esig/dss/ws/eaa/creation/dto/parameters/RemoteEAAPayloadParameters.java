@@ -7,6 +7,7 @@ import eu.europa.esig.dss.ws.dto.RemoteDocument;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * DTO containing parameters for an EAA payload generation
@@ -569,6 +570,100 @@ public class RemoteEAAPayloadParameters implements Serializable {
      */
     public void setSelectivelyDisclosable(RemoteEAAClaimParameters selectivelyDisclosable) {
         this.selectivelyDisclosable = selectivelyDisclosable;
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteEAAPayloadParameters [" +
+                "eaaType=" + eaaType +
+                ", preComputedPayload=" + preComputedPayload +
+                ", digestAlgorithm=" + digestAlgorithm +
+                ", issuanceDate=" + issuanceDate +
+                ", notBeforeDate=" + notBeforeDate +
+                ", expirationDate=" + expirationDate +
+                ", deviceKey=" + deviceKey +
+                ", statusList=" + statusList +
+                ", identifierList=" + identifierList +
+                ", category='" + category + '\'' +
+                ", shortLived=" + shortLived +
+                ", oneTime=" + oneTime +
+                ", decoyDigestNumber=" + decoyDigestNumber +
+                ", shuffleHashes=" + shuffleHashes +
+                ", issuer='" + issuer + '\'' +
+                ", subject='" + subject + '\'' +
+                ", verifiableCredentialsType='" + verifiableCredentialsType + '\'' +
+                ", verifiableCredentialsTypeIntegrity=" + verifiableCredentialsTypeIntegrity +
+                ", docType='" + docType + '\'' +
+                ", signed=" + signed +
+                ", validFrom=" + validFrom +
+                ", validUntil=" + validUntil +
+                ", expectedUpdate=" + expectedUpdate +
+                ", nonSelectivelyDisclosable=" + nonSelectivelyDisclosable +
+                ", selectivelyDisclosable=" + selectivelyDisclosable +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        RemoteEAAPayloadParameters that = (RemoteEAAPayloadParameters) object;
+        return eaaType == that.eaaType
+                && Objects.equals(preComputedPayload, that.preComputedPayload)
+                && digestAlgorithm == that.digestAlgorithm
+                && Objects.equals(issuanceDate, that.issuanceDate)
+                && Objects.equals(notBeforeDate, that.notBeforeDate)
+                && Objects.equals(expirationDate, that.expirationDate)
+                && Objects.equals(deviceKey, that.deviceKey)
+                && Objects.equals(statusList, that.statusList)
+                && Objects.equals(identifierList, that.identifierList)
+                && Objects.equals(category, that.category)
+                && Objects.equals(shortLived, that.shortLived)
+                && Objects.equals(oneTime, that.oneTime)
+                && Objects.equals(decoyDigestNumber, that.decoyDigestNumber)
+                && Objects.equals(shuffleHashes, that.shuffleHashes)
+                && Objects.equals(issuer, that.issuer)
+                && Objects.equals(subject, that.subject)
+                && Objects.equals(verifiableCredentialsType, that.verifiableCredentialsType)
+                && Objects.equals(verifiableCredentialsTypeIntegrity, that.verifiableCredentialsTypeIntegrity)
+                && Objects.equals(docType, that.docType)
+                && Objects.equals(signed, that.signed)
+                && Objects.equals(validFrom, that.validFrom)
+                && Objects.equals(validUntil, that.validUntil)
+                && Objects.equals(expectedUpdate, that.expectedUpdate)
+                && Objects.equals(nonSelectivelyDisclosable, that.nonSelectivelyDisclosable)
+                && Objects.equals(selectivelyDisclosable, that.selectivelyDisclosable);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(eaaType);
+        result = 31 * result + Objects.hashCode(preComputedPayload);
+        result = 31 * result + Objects.hashCode(digestAlgorithm);
+        result = 31 * result + Objects.hashCode(issuanceDate);
+        result = 31 * result + Objects.hashCode(notBeforeDate);
+        result = 31 * result + Objects.hashCode(expirationDate);
+        result = 31 * result + Objects.hashCode(deviceKey);
+        result = 31 * result + Objects.hashCode(statusList);
+        result = 31 * result + Objects.hashCode(identifierList);
+        result = 31 * result + Objects.hashCode(category);
+        result = 31 * result + Objects.hashCode(shortLived);
+        result = 31 * result + Objects.hashCode(oneTime);
+        result = 31 * result + Objects.hashCode(decoyDigestNumber);
+        result = 31 * result + Objects.hashCode(shuffleHashes);
+        result = 31 * result + Objects.hashCode(issuer);
+        result = 31 * result + Objects.hashCode(subject);
+        result = 31 * result + Objects.hashCode(verifiableCredentialsType);
+        result = 31 * result + Objects.hashCode(verifiableCredentialsTypeIntegrity);
+        result = 31 * result + Objects.hashCode(docType);
+        result = 31 * result + Objects.hashCode(signed);
+        result = 31 * result + Objects.hashCode(validFrom);
+        result = 31 * result + Objects.hashCode(validUntil);
+        result = 31 * result + Objects.hashCode(expectedUpdate);
+        result = 31 * result + Objects.hashCode(nonSelectivelyDisclosable);
+        result = 31 * result + Objects.hashCode(selectivelyDisclosable);
+        return result;
     }
 
 }

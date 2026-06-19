@@ -532,6 +532,26 @@
 			</dependency>
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-rest-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-soap-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-rest</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-eaa-creation-soap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-eaa-validation-dto</artifactId>
 				<version>${project.version}</version>
 			</dependency>

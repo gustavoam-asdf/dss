@@ -30,7 +30,7 @@ import eu.europa.esig.dss.ws.dto.DigestDTO;
 import eu.europa.esig.dss.ws.dto.RemoteDocument;
 import eu.europa.esig.dss.ws.dto.SignatureValueDTO;
 import eu.europa.esig.dss.ws.dto.ToBeSignedDTO;
-import eu.europa.esig.dss.ws.eaa.creation.dto.DisclosureDTO;
+import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.DisclosureDTO;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.ClaimDTO;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.ClaimValueDTO;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.DrivingPrivilegeDTO;

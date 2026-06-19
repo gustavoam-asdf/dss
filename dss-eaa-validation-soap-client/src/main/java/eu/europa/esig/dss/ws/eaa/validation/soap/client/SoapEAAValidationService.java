@@ -12,7 +12,7 @@ import java.io.Serializable;
  * This SOAP interface provides operations for the validation of EAA presentation.
  *
  */
-@WebService(targetNamespace = "http://validation.dss.esig.europa.eu/")
+@WebService(targetNamespace = "http://eaa.validation.dss.esig.europa.eu/")
 public interface SoapEAAValidationService extends Serializable {
 
     /**

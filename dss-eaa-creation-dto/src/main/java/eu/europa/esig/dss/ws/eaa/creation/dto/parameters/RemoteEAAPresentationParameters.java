@@ -2,13 +2,17 @@ package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
 import eu.europa.esig.dss.enumerations.EAAType;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DTO containing parameters for EAA Presentation issuance
  *
  */
-public class RemoteEAAPresentationParameters {
+public class RemoteEAAPresentationParameters implements Serializable {
+
+    private static final long serialVersionUID = 9020368962150645764L;
 
     /** (Required) Type of the EAA to be created */
     private EAAType eaaType;
@@ -66,6 +70,31 @@ public class RemoteEAAPresentationParameters {
      */
     public void setDeviceSignedDataElements(final List<ClaimDTO> deviceSignedDataElements) {
         this.deviceSignedDataElements = deviceSignedDataElements;
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteEAAPresentationParameters [" +
+                "eaaType=" + eaaType +
+                ", deviceSignedDataElements=" + deviceSignedDataElements +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        RemoteEAAPresentationParameters that = (RemoteEAAPresentationParameters) object;
+        return eaaType == that.eaaType
+                && Objects.equals(deviceSignedDataElements, that.deviceSignedDataElements);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(eaaType);
+        result = 31 * result + Objects.hashCode(deviceSignedDataElements);
+        return result;
     }
 
 }

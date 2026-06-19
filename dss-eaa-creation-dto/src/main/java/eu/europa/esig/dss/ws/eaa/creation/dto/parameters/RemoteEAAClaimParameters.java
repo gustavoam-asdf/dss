@@ -1,8 +1,10 @@
 package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DTO containing claims that may be made selectively disclosable
@@ -1956,6 +1958,313 @@ public class RemoteEAAClaimParameters implements Serializable {
      */
     public void setOtherClaims(List<ClaimDTO> otherClaims) {
         this.otherClaims = otherClaims;
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteEAAClaimParameters [" +
+                "givenName='" + givenName + '\'' +
+                ", familyName='" + familyName + '\'' +
+                ", birthdate=" + birthdate +
+                ", nationalities=" + nationalities +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", postalAddress='" + postalAddress + '\'' +
+                ", addressHouseNumber='" + addressHouseNumber + '\'' +
+                ", addressStreet='" + addressStreet + '\'' +
+                ", addressCity='" + addressCity + '\'' +
+                ", addressState='" + addressState + '\'' +
+                ", addressPostalCode='" + addressPostalCode + '\'' +
+                ", addressCountry='" + addressCountry + '\'' +
+                ", placeOfBirthCountry='" + placeOfBirthCountry + '\'' +
+                ", placeOfBirthRegion='" + placeOfBirthRegion + '\'' +
+                ", placeOfBirthLocality='" + placeOfBirthLocality + '\'' +
+                ", birthGivenName='" + birthGivenName + '\'' +
+                ", birthFamilyName='" + birthFamilyName + '\'' +
+                ", title='" + title + '\'' +
+                ", mobilePhoneNumber='" + mobilePhoneNumber + '\'' +
+                ", pseudonym='" + pseudonym + '\'' +
+                ", personalAdministrativeNumber='" + personalAdministrativeNumber + '\'' +
+                ", sex=" + sex +
+                ", issuingCountry='" + issuingCountry + '\'' +
+                ", issuingAuthority='" + issuingAuthority + '\'' +
+                ", issuingJurisdiction='" + issuingJurisdiction + '\'' +
+                ", documentNumber='" + documentNumber + '\'' +
+                ", ageInYears=" + ageInYears +
+                ", ageBirthYear=" + ageBirthYear +
+                ", trustAnchor='" + trustAnchor + '\'' +
+                ", ageOverNN=" + ageOverNN +
+                ", issuingAuthorityRegistrationIdentifier='" + issuingAuthorityRegistrationIdentifier + '\'' +
+                ", administrativeIssuanceDate=" + administrativeIssuanceDate +
+                ", administrativeExpirationDate=" + administrativeExpirationDate +
+                ", picture='" + picture + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", preferredNickname='" + preferredNickname + '\'' +
+                ", name='" + name + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", profile='" + profile + '\'' +
+                ", website='" + website + '\'' +
+                ", emailVerified=" + emailVerified +
+                ", gender='" + gender + '\'' +
+                ", zoneinfo='" + zoneinfo + '\'' +
+                ", locale='" + locale + '\'' +
+                ", phoneNumberVerified=" + phoneNumberVerified +
+                ", updatedAt=" + updatedAt +
+                ", birthMiddleName='" + birthMiddleName + '\'' +
+                ", salutation='" + salutation + '\'' +
+                ", dateOfExpiry=" + dateOfExpiry +
+                ", dateOfIssuance=" + dateOfIssuance +
+                ", attestedAttributesSubjectIdentifier='" + attestedAttributesSubjectIdentifier + '\'' +
+                ", attestedAttributesSubjectPseudonym='" + attestedAttributesSubjectPseudonym + '\'' +
+                ", attestedAttributes=" + attestedAttributes +
+                ", birthdateApproximateMask='" + birthdateApproximateMask + '\'' +
+                ", placeOfBirth='" + placeOfBirth + '\'' +
+                ", nationality='" + nationality + '\'' +
+                ", portrait=" + Arrays.toString(portrait) +
+                ", drivingPrivileges=" + drivingPrivileges +
+                ", distinguishingSign='" + distinguishingSign + '\'' +
+                ", height=" + height +
+                ", weight=" + weight +
+                ", eyeColour='" + eyeColour + '\'' +
+                ", hairColour='" + hairColour + '\'' +
+                ", portraitCaptureDate=" + portraitCaptureDate +
+                ", biometricTemplate=" + biometricTemplate +
+                ", biometricTemplateFace=" + Arrays.toString(biometricTemplateFace) +
+                ", signatureUsualMark=" + Arrays.toString(signatureUsualMark) +
+                ", fingerprint=" + Arrays.toString(fingerprint) +
+                ", businessName='" + businessName + '\'' +
+                ", organizationName='" + organizationName + '\'' +
+                ", birthFullName='" + birthFullName + '\'' +
+                ", profession='" + profession + '\'' +
+                ", relationshipFather='" + relationshipFather + '\'' +
+                ", relationshipMother='" + relationshipMother + '\'' +
+                ", relationshipParent='" + relationshipParent + '\'' +
+                ", relationshipSon='" + relationshipSon + '\'' +
+                ", relationshipDaughter='" + relationshipDaughter + '\'' +
+                ", relationshipBrother='" + relationshipBrother + '\'' +
+                ", relationshipSister='" + relationshipSister + '\'' +
+                ", relationshipSibling='" + relationshipSibling + '\'' +
+                ", relationshipSpouse='" + relationshipSpouse + '\'' +
+                ", relationshipFatherInLaw='" + relationshipFatherInLaw + '\'' +
+                ", relationshipMotherInLaw='" + relationshipMotherInLaw + '\'' +
+                ", relationshipParentInLaw='" + relationshipParentInLaw + '\'' +
+                ", relationshipSonInLaw='" + relationshipSonInLaw + '\'' +
+                ", relationshipDaughterInLaw='" + relationshipDaughterInLaw + '\'' +
+                ", relationshipChildInLaw='" + relationshipChildInLaw + '\'' +
+                ", relationshipParentalAuthority='" + relationshipParentalAuthority + '\'' +
+                ", relationshipLegalRepresentative='" + relationshipLegalRepresentative + '\'' +
+                ", relationshipAgent='" + relationshipAgent + '\'' +
+                ", documentType='" + documentType + '\'' +
+                ", attestedAttributesSubjectFamilyName='" + attestedAttributesSubjectFamilyName + '\'' +
+                ", attestedAttributesSubjectGivenName='" + attestedAttributesSubjectGivenName + '\'' +
+                ", attestedAttributesSubjectDocumentNumber='" + attestedAttributesSubjectDocumentNumber + '\'' +
+                ", otherClaims=" + otherClaims +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        RemoteEAAClaimParameters that = (RemoteEAAClaimParameters) object;
+        return Objects.equals(givenName, that.givenName)
+                && Objects.equals(familyName, that.familyName)
+                && Objects.equals(birthdate, that.birthdate)
+                && Objects.equals(nationalities, that.nationalities)
+                && Objects.equals(email, that.email)
+                && Objects.equals(phoneNumber, that.phoneNumber)
+                && Objects.equals(postalAddress, that.postalAddress)
+                && Objects.equals(addressHouseNumber, that.addressHouseNumber)
+                && Objects.equals(addressStreet, that.addressStreet)
+                && Objects.equals(addressCity, that.addressCity)
+                && Objects.equals(addressState, that.addressState)
+                && Objects.equals(addressPostalCode, that.addressPostalCode)
+                && Objects.equals(addressCountry, that.addressCountry)
+                && Objects.equals(placeOfBirthCountry, that.placeOfBirthCountry)
+                && Objects.equals(placeOfBirthRegion, that.placeOfBirthRegion)
+                && Objects.equals(placeOfBirthLocality, that.placeOfBirthLocality)
+                && Objects.equals(birthGivenName, that.birthGivenName)
+                && Objects.equals(birthFamilyName, that.birthFamilyName)
+                && Objects.equals(title, that.title)
+                && Objects.equals(mobilePhoneNumber, that.mobilePhoneNumber)
+                && Objects.equals(pseudonym, that.pseudonym)
+                && Objects.equals(personalAdministrativeNumber, that.personalAdministrativeNumber)
+                && Objects.equals(sex, that.sex)
+                && Objects.equals(issuingCountry, that.issuingCountry)
+                && Objects.equals(issuingAuthority, that.issuingAuthority)
+                && Objects.equals(issuingJurisdiction, that.issuingJurisdiction)
+                && Objects.equals(documentNumber, that.documentNumber)
+                && Objects.equals(ageInYears, that.ageInYears)
+                && Objects.equals(ageBirthYear, that.ageBirthYear)
+                && Objects.equals(trustAnchor, that.trustAnchor)
+                && Objects.equals(ageOverNN, that.ageOverNN)
+                && Objects.equals(issuingAuthorityRegistrationIdentifier, that.issuingAuthorityRegistrationIdentifier)
+                && Objects.equals(administrativeIssuanceDate, that.administrativeIssuanceDate)
+                && Objects.equals(administrativeExpirationDate, that.administrativeExpirationDate)
+                && Objects.equals(picture, that.picture)
+                && Objects.equals(nickname, that.nickname)
+                && Objects.equals(preferredNickname, that.preferredNickname)
+                && Objects.equals(name, that.name)
+                && Objects.equals(middleName, that.middleName)
+                && Objects.equals(profile, that.profile)
+                && Objects.equals(website, that.website)
+                && Objects.equals(emailVerified, that.emailVerified)
+                && Objects.equals(gender, that.gender)
+                && Objects.equals(zoneinfo, that.zoneinfo)
+                && Objects.equals(locale, that.locale)
+                && Objects.equals(phoneNumberVerified, that.phoneNumberVerified)
+                && Objects.equals(updatedAt, that.updatedAt)
+                && Objects.equals(birthMiddleName, that.birthMiddleName)
+                && Objects.equals(salutation, that.salutation)
+                && Objects.equals(dateOfExpiry, that.dateOfExpiry)
+                && Objects.equals(dateOfIssuance, that.dateOfIssuance)
+                && Objects.equals(attestedAttributesSubjectIdentifier, that.attestedAttributesSubjectIdentifier)
+                && Objects.equals(attestedAttributesSubjectPseudonym, that.attestedAttributesSubjectPseudonym)
+                && Objects.equals(attestedAttributes, that.attestedAttributes)
+                && Objects.equals(birthdateApproximateMask, that.birthdateApproximateMask)
+                && Objects.equals(placeOfBirth, that.placeOfBirth)
+                && Objects.equals(nationality, that.nationality)
+                && Arrays.equals(portrait, that.portrait)
+                && Objects.equals(drivingPrivileges, that.drivingPrivileges)
+                && Objects.equals(distinguishingSign, that.distinguishingSign)
+                && Objects.equals(height, that.height)
+                && Objects.equals(weight, that.weight)
+                && Objects.equals(eyeColour, that.eyeColour)
+                && Objects.equals(hairColour, that.hairColour)
+                && Objects.equals(portraitCaptureDate, that.portraitCaptureDate)
+                && Objects.equals(biometricTemplate, that.biometricTemplate)
+                && Arrays.equals(biometricTemplateFace, that.biometricTemplateFace)
+                && Arrays.equals(signatureUsualMark, that.signatureUsualMark)
+                && Arrays.equals(fingerprint, that.fingerprint)
+                && Objects.equals(businessName, that.businessName)
+                && Objects.equals(organizationName, that.organizationName)
+                && Objects.equals(birthFullName, that.birthFullName)
+                && Objects.equals(profession, that.profession)
+                && Objects.equals(relationshipFather, that.relationshipFather)
+                && Objects.equals(relationshipMother, that.relationshipMother)
+                && Objects.equals(relationshipParent, that.relationshipParent)
+                && Objects.equals(relationshipSon, that.relationshipSon)
+                && Objects.equals(relationshipDaughter, that.relationshipDaughter)
+                && Objects.equals(relationshipBrother, that.relationshipBrother)
+                && Objects.equals(relationshipSister, that.relationshipSister)
+                && Objects.equals(relationshipSibling, that.relationshipSibling)
+                && Objects.equals(relationshipSpouse, that.relationshipSpouse)
+                && Objects.equals(relationshipFatherInLaw, that.relationshipFatherInLaw)
+                && Objects.equals(relationshipMotherInLaw, that.relationshipMotherInLaw)
+                && Objects.equals(relationshipParentInLaw, that.relationshipParentInLaw)
+                && Objects.equals(relationshipSonInLaw, that.relationshipSonInLaw)
+                && Objects.equals(relationshipDaughterInLaw, that.relationshipDaughterInLaw)
+                && Objects.equals(relationshipChildInLaw, that.relationshipChildInLaw)
+                && Objects.equals(relationshipParentalAuthority, that.relationshipParentalAuthority)
+                && Objects.equals(relationshipLegalRepresentative, that.relationshipLegalRepresentative)
+                && Objects.equals(relationshipAgent, that.relationshipAgent)
+                && Objects.equals(documentType, that.documentType)
+                && Objects.equals(attestedAttributesSubjectFamilyName, that.attestedAttributesSubjectFamilyName)
+                && Objects.equals(attestedAttributesSubjectGivenName, that.attestedAttributesSubjectGivenName)
+                && Objects.equals(attestedAttributesSubjectDocumentNumber, that.attestedAttributesSubjectDocumentNumber)
+                && Objects.equals(otherClaims, that.otherClaims);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(givenName);
+        result = 31 * result + Objects.hashCode(familyName);
+        result = 31 * result + Objects.hashCode(birthdate);
+        result = 31 * result + Objects.hashCode(nationalities);
+        result = 31 * result + Objects.hashCode(email);
+        result = 31 * result + Objects.hashCode(phoneNumber);
+        result = 31 * result + Objects.hashCode(postalAddress);
+        result = 31 * result + Objects.hashCode(addressHouseNumber);
+        result = 31 * result + Objects.hashCode(addressStreet);
+        result = 31 * result + Objects.hashCode(addressCity);
+        result = 31 * result + Objects.hashCode(addressState);
+        result = 31 * result + Objects.hashCode(addressPostalCode);
+        result = 31 * result + Objects.hashCode(addressCountry);
+        result = 31 * result + Objects.hashCode(placeOfBirthCountry);
+        result = 31 * result + Objects.hashCode(placeOfBirthRegion);
+        result = 31 * result + Objects.hashCode(placeOfBirthLocality);
+        result = 31 * result + Objects.hashCode(birthGivenName);
+        result = 31 * result + Objects.hashCode(birthFamilyName);
+        result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(mobilePhoneNumber);
+        result = 31 * result + Objects.hashCode(pseudonym);
+        result = 31 * result + Objects.hashCode(personalAdministrativeNumber);
+        result = 31 * result + Objects.hashCode(sex);
+        result = 31 * result + Objects.hashCode(issuingCountry);
+        result = 31 * result + Objects.hashCode(issuingAuthority);
+        result = 31 * result + Objects.hashCode(issuingJurisdiction);
+        result = 31 * result + Objects.hashCode(documentNumber);
+        result = 31 * result + Objects.hashCode(ageInYears);
+        result = 31 * result + Objects.hashCode(ageBirthYear);
+        result = 31 * result + Objects.hashCode(trustAnchor);
+        result = 31 * result + Objects.hashCode(ageOverNN);
+        result = 31 * result + Objects.hashCode(issuingAuthorityRegistrationIdentifier);
+        result = 31 * result + Objects.hashCode(administrativeIssuanceDate);
+        result = 31 * result + Objects.hashCode(administrativeExpirationDate);
+        result = 31 * result + Objects.hashCode(picture);
+        result = 31 * result + Objects.hashCode(nickname);
+        result = 31 * result + Objects.hashCode(preferredNickname);
+        result = 31 * result + Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(middleName);
+        result = 31 * result + Objects.hashCode(profile);
+        result = 31 * result + Objects.hashCode(website);
+        result = 31 * result + Objects.hashCode(emailVerified);
+        result = 31 * result + Objects.hashCode(gender);
+        result = 31 * result + Objects.hashCode(zoneinfo);
+        result = 31 * result + Objects.hashCode(locale);
+        result = 31 * result + Objects.hashCode(phoneNumberVerified);
+        result = 31 * result + Objects.hashCode(updatedAt);
+        result = 31 * result + Objects.hashCode(birthMiddleName);
+        result = 31 * result + Objects.hashCode(salutation);
+        result = 31 * result + Objects.hashCode(dateOfExpiry);
+        result = 31 * result + Objects.hashCode(dateOfIssuance);
+        result = 31 * result + Objects.hashCode(attestedAttributesSubjectIdentifier);
+        result = 31 * result + Objects.hashCode(attestedAttributesSubjectPseudonym);
+        result = 31 * result + Objects.hashCode(attestedAttributes);
+        result = 31 * result + Objects.hashCode(birthdateApproximateMask);
+        result = 31 * result + Objects.hashCode(placeOfBirth);
+        result = 31 * result + Objects.hashCode(nationality);
+        result = 31 * result + Arrays.hashCode(portrait);
+        result = 31 * result + Objects.hashCode(drivingPrivileges);
+        result = 31 * result + Objects.hashCode(distinguishingSign);
+        result = 31 * result + Objects.hashCode(height);
+        result = 31 * result + Objects.hashCode(weight);
+        result = 31 * result + Objects.hashCode(eyeColour);
+        result = 31 * result + Objects.hashCode(hairColour);
+        result = 31 * result + Objects.hashCode(portraitCaptureDate);
+        result = 31 * result + Objects.hashCode(biometricTemplate);
+        result = 31 * result + Arrays.hashCode(biometricTemplateFace);
+        result = 31 * result + Arrays.hashCode(signatureUsualMark);
+        result = 31 * result + Arrays.hashCode(fingerprint);
+        result = 31 * result + Objects.hashCode(businessName);
+        result = 31 * result + Objects.hashCode(organizationName);
+        result = 31 * result + Objects.hashCode(birthFullName);
+        result = 31 * result + Objects.hashCode(profession);
+        result = 31 * result + Objects.hashCode(relationshipFather);
+        result = 31 * result + Objects.hashCode(relationshipMother);
+        result = 31 * result + Objects.hashCode(relationshipParent);
+        result = 31 * result + Objects.hashCode(relationshipSon);
+        result = 31 * result + Objects.hashCode(relationshipDaughter);
+        result = 31 * result + Objects.hashCode(relationshipBrother);
+        result = 31 * result + Objects.hashCode(relationshipSister);
+        result = 31 * result + Objects.hashCode(relationshipSibling);
+        result = 31 * result + Objects.hashCode(relationshipSpouse);
+        result = 31 * result + Objects.hashCode(relationshipFatherInLaw);
+        result = 31 * result + Objects.hashCode(relationshipMotherInLaw);
+        result = 31 * result + Objects.hashCode(relationshipParentInLaw);
+        result = 31 * result + Objects.hashCode(relationshipSonInLaw);
+        result = 31 * result + Objects.hashCode(relationshipDaughterInLaw);
+        result = 31 * result + Objects.hashCode(relationshipChildInLaw);
+        result = 31 * result + Objects.hashCode(relationshipParentalAuthority);
+        result = 31 * result + Objects.hashCode(relationshipLegalRepresentative);
+        result = 31 * result + Objects.hashCode(relationshipAgent);
+        result = 31 * result + Objects.hashCode(documentType);
+        result = 31 * result + Objects.hashCode(attestedAttributesSubjectFamilyName);
+        result = 31 * result + Objects.hashCode(attestedAttributesSubjectGivenName);
+        result = 31 * result + Objects.hashCode(attestedAttributesSubjectDocumentNumber);
+        result = 31 * result + Objects.hashCode(otherClaims);
+        return result;
     }
 
 }

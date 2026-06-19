@@ -1,4 +1,4 @@
-package eu.europa.esig.dss.ws.eaa.creation.dto;
+package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
 import java.io.Serializable;
 import java.util.Objects;

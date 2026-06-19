@@ -5,7 +5,7 @@ import eu.europa.esig.dss.eaa.jwt.creation.SDJWTEAADisclosure;
 import eu.europa.esig.dss.eaa.mdoc.creation.MdocEAADisclosure;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.ws.eaa.creation.dto.DisclosureDTO;
+import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.DisclosureDTO;
 
 import java.util.Objects;
 import java.util.function.Function;

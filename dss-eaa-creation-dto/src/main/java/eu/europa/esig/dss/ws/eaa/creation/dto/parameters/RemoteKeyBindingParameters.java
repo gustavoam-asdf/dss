@@ -4,14 +4,18 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAAType;
 import eu.europa.esig.dss.ws.dto.RemoteDocument;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DTO for key binding signature parameters
  *
  */
-public class RemoteKeyBindingParameters {
+public class RemoteKeyBindingParameters implements Serializable {
+
+    private static final long serialVersionUID = 7115773287145650462L;
 
     /** (Required) Type of the EAA to be created */
     private EAAType eaaType;
@@ -197,6 +201,49 @@ public class RemoteKeyBindingParameters {
      */
     public void setDeviceSignedDataElements(final List<ClaimDTO> deviceSignedDataElements) {
         this.deviceSignedDataElements = deviceSignedDataElements;
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteKeyBindingParameters [" +
+                "eaaType=" + eaaType +
+                ", digestAlgorithm=" + digestAlgorithm +
+                ", issuanceTime=" + issuanceTime +
+                ", audience='" + audience + '\'' +
+                ", nonce='" + nonce + '\'' +
+                ", sessionTranscript=" + sessionTranscript +
+                ", docType='" + docType + '\'' +
+                ", deviceSignedDataElements=" + deviceSignedDataElements +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        RemoteKeyBindingParameters that = (RemoteKeyBindingParameters) object;
+        return eaaType == that.eaaType
+                && digestAlgorithm == that.digestAlgorithm
+                && Objects.equals(issuanceTime, that.issuanceTime)
+                && Objects.equals(audience, that.audience)
+                && Objects.equals(nonce, that.nonce)
+                && Objects.equals(sessionTranscript, that.sessionTranscript)
+                && Objects.equals(docType, that.docType)
+                && Objects.equals(deviceSignedDataElements, that.deviceSignedDataElements);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(eaaType);
+        result = 31 * result + Objects.hashCode(digestAlgorithm);
+        result = 31 * result + Objects.hashCode(issuanceTime);
+        result = 31 * result + Objects.hashCode(audience);
+        result = 31 * result + Objects.hashCode(nonce);
+        result = 31 * result + Objects.hashCode(sessionTranscript);
+        result = 31 * result + Objects.hashCode(docType);
+        result = 31 * result + Objects.hashCode(deviceSignedDataElements);
+        return result;
     }
 
 }

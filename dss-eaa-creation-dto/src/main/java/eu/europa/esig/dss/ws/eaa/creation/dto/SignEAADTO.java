@@ -1,8 +1,8 @@
 package eu.europa.esig.dss.ws.eaa.creation.dto;
 
 
-import eu.europa.esig.dss.ws.dto.RemoteDocument;
 import eu.europa.esig.dss.ws.dto.SignatureValueDTO;
+import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteEAAPayloadParameters;
 import eu.europa.esig.dss.ws.signature.dto.AbstractSignDocumentDTO;
 import eu.europa.esig.dss.ws.signature.dto.parameters.RemoteSignatureParameters;
 
@@ -18,8 +18,8 @@ public class SignEAADTO extends AbstractSignDocumentDTO {
 
     private static final long serialVersionUID = 7028088598170070790L;
 
-    /** The EAA payload */
-    private RemoteDocument payloadDocument;
+    /** The EAA payload parameters */
+    private RemoteEAAPayloadParameters payloadParameters;
 
     /**
      * Empty constructor
@@ -31,37 +31,37 @@ public class SignEAADTO extends AbstractSignDocumentDTO {
     /**
      * Default constructor
      *
-     * @param payloadDocument {@link RemoteDocument} to be signed
+     * @param payloadParameters {@link RemoteEAAPayloadParameters}
      * @param parameters {@link RemoteSignatureParameters}
      * @param signatureValue {@link SignatureValueDTO}
      */
-    public SignEAADTO(RemoteDocument payloadDocument, RemoteSignatureParameters parameters, SignatureValueDTO signatureValue) {
+    public SignEAADTO(RemoteEAAPayloadParameters payloadParameters, RemoteSignatureParameters parameters, SignatureValueDTO signatureValue) {
         super(parameters, signatureValue);
-        this.payloadDocument = payloadDocument;
+        this.payloadParameters = payloadParameters;
     }
 
     /**
-     * Gets a pre-built EAA payload document
+     * Gets the payload parameters
      *
-     * @return {@link RemoteDocument}
+     * @return {@link RemoteEAAPayloadParameters}
      */
-    public RemoteDocument getPayloadDocument() {
-        return payloadDocument;
+    public RemoteEAAPayloadParameters getPayloadParameters() {
+        return payloadParameters;
     }
 
     /**
-     * Sets a pre-built EAA payload document
+     * Sets a payload parameters
      *
-     * @param payloadDocument {@link RemoteDocument}
+     * @param payloadParameters {@link RemoteEAAPayloadParameters}
      */
-    public void setPayloadDocument(RemoteDocument payloadDocument) {
-        this.payloadDocument = payloadDocument;
+    public void setPayloadParameters(RemoteEAAPayloadParameters payloadParameters) {
+        this.payloadParameters = payloadParameters;
     }
 
     @Override
     public String toString() {
         return "SignEAADTO [" +
-                "payloadDocument=" + payloadDocument +
+                "payloadParameters=" + payloadParameters +
                 "] " + super.toString();
     }
 
@@ -72,13 +72,13 @@ public class SignEAADTO extends AbstractSignDocumentDTO {
         if (!super.equals(object)) return false;
 
         SignEAADTO that = (SignEAADTO) object;
-        return Objects.equals(payloadDocument, that.payloadDocument);
+        return Objects.equals(payloadParameters, that.payloadParameters);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + Objects.hashCode(payloadDocument);
+        result = 31 * result + Objects.hashCode(payloadParameters);
         return result;
     }
 

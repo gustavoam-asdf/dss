@@ -3,6 +3,7 @@ package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * DTO representing a driving privilege as per ISO/IEC 18013-5
@@ -68,6 +69,37 @@ public class DrivingPrivilegeDTO implements Serializable {
 
     public void setCodes(List<DrivingPrivilegeCodeDTO> codes) {
         this.codes = codes;
+    }
+
+    @Override
+    public String toString() {
+        return "DrivingPrivilegeDTO [" +
+                "vehicleCategoryCode='" + vehicleCategoryCode + '\'' +
+                ", issueDate=" + issueDate +
+                ", expiryDate=" + expiryDate +
+                ", codes=" + codes +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DrivingPrivilegeDTO that = (DrivingPrivilegeDTO) object;
+        return Objects.equals(vehicleCategoryCode, that.vehicleCategoryCode)
+                && Objects.equals(issueDate, that.issueDate)
+                && Objects.equals(expiryDate, that.expiryDate)
+                && Objects.equals(codes, that.codes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(vehicleCategoryCode);
+        result = 31 * result + Objects.hashCode(issueDate);
+        result = 31 * result + Objects.hashCode(expiryDate);
+        result = 31 * result + Objects.hashCode(codes);
+        return result;
     }
 
 }

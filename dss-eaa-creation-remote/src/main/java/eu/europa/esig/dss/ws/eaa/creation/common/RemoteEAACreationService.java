@@ -1,11 +1,10 @@
 package eu.europa.esig.dss.ws.eaa.creation.common;
 
-import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.ws.dto.RemoteDocument;
 import eu.europa.esig.dss.ws.dto.SignatureValueDTO;
 import eu.europa.esig.dss.ws.dto.ToBeSignedDTO;
-import eu.europa.esig.dss.ws.eaa.creation.dto.DisclosureDTO;
+import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.DisclosureDTO;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteEAAPayloadParameters;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteEAAPresentationParameters;
 import eu.europa.esig.dss.ws.eaa.creation.dto.parameters.RemoteKeyBindingParameters;
@@ -111,7 +110,9 @@ public interface RemoteEAACreationService extends Serializable {
      *            (optional) document representing a key binding signature
      * @param presentationParameters
      *            configuration of the EAA Presentation
-     * @return {@link DSSDocument} EAA Presentation
+     * @return the EAA Presentation
+     * @throws DSSException
+     *             if an error occurred
      */
     RemoteDocument issuePresentation(final RemoteDocument eaa, final List<DisclosureDTO> disclosures,
                                      final RemoteDocument keyBinding, final RemoteEAAPresentationParameters presentationParameters) throws DSSException;

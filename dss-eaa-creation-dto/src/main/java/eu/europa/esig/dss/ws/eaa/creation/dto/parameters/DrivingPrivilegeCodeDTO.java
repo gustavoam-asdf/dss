@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.ws.eaa.creation.dto.parameters;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * DTO representing a code of a driving privilege as per ISO/IEC 18013-5
@@ -48,6 +49,34 @@ public class DrivingPrivilegeCodeDTO implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "DrivingPrivilegeCodeDTO [" +
+                "code='" + code + '\'' +
+                ", sign='" + sign + '\'' +
+                ", value='" + value + '\'' +
+                ']';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DrivingPrivilegeCodeDTO codeDTO = (DrivingPrivilegeCodeDTO) object;
+        return Objects.equals(code, codeDTO.code)
+                && Objects.equals(sign, codeDTO.sign)
+                && Objects.equals(value, codeDTO.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(code);
+        result = 31 * result + Objects.hashCode(sign);
+        result = 31 * result + Objects.hashCode(value);
+        return result;
     }
 
 }

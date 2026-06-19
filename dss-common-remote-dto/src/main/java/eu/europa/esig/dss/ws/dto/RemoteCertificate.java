@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.ws.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * DTO containing certificateToken binaries
@@ -63,6 +64,27 @@ public class RemoteCertificate implements Serializable {
 	 */
 	public void setEncodedCertificate(byte[] encodedCertificate) {
 		this.encodedCertificate = encodedCertificate;
+	}
+
+	@Override
+	public String toString() {
+		return "RemoteCertificate [" +
+				"encodedCertificate=" + Arrays.toString(encodedCertificate) +
+				']';
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) return true;
+		if (object == null || getClass() != object.getClass()) return false;
+
+		RemoteCertificate that = (RemoteCertificate) object;
+		return Arrays.equals(encodedCertificate, that.encodedCertificate);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(encodedCertificate);
 	}
 
 }
