@@ -20,6 +20,8 @@
  */
 package eu.europa.esig.dss.policy.crypto.json;
 
+import com.github.erosb.jsonsKema.IJsonString;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonNumber;
 import com.github.erosb.jsonsKema.JsonObject;
@@ -66,7 +68,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableDigestAlgorithmsTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         JsonObject jsonObject = new JsonObject(securitySuitabilityPolicyMap);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(jsonObject));
@@ -82,23 +84,23 @@ class CryptographicSuiteJsonCatalogueTest {
         algorithmsList.add(createDigestAlgorithmJsonDefinition(DigestAlgorithm.SHA224, "2029-01-01"));
 
         cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(jsonObject));
-        
+
         List<CryptographicSuiteAlgorithm> expectedList = new ArrayList<>();
-        
+
         expectedList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224, Collections.singletonList(
                 new EvaluationDTO("2029-01-01", null)
         )));
-        
+
         assertEquals(expectedList, cryptographicSuite.buildAlgorithmList());
 
         algorithmsList.add(createDigestAlgorithmJsonDefinition(DigestAlgorithm.SHA256, null));
 
         cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(jsonObject));
-        
+
         expectedList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA256, Collections.singletonList(
                 new EvaluationDTO(null, null)
         )));
-        
+
         assertEquals(expectedList, cryptographicSuite.buildAlgorithmList());
 
         algorithmsList.add(createDigestAlgorithmJsonDefinition(DigestAlgorithm.SHA384, null));
@@ -134,7 +136,7 @@ class CryptographicSuiteJsonCatalogueTest {
         algorithmsList.add(createDigestAlgorithmJsonDefinition(DigestAlgorithm.SHA256, "invalid-date"));
 
         JsonArray algorithmsArray = new JsonArray(algorithmsList);
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         securitySuitabilityPolicyMap.put(new JsonString("Algorithm"), algorithmsArray);
         JsonObject jsonObject = new JsonObject(securitySuitabilityPolicyMap);
 
@@ -145,7 +147,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableDigestAlgorithmsWithDuplicateAlgorithmsTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
 
         securitySuitabilityPolicyMap.put(new JsonString("Algorithm"), new JsonArray(Collections.singletonList(
                 createDigestAlgorithmJsonDefinition(DigestAlgorithm.SHA224, "2021-01-01")
@@ -265,7 +267,7 @@ class CryptographicSuiteJsonCatalogueTest {
                 Collections.singletonList(new EvaluationDTO("2030-12-31", null))));
 
         JsonArray algorithmsArray = new JsonArray(algorithmsList);
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         securitySuitabilityPolicyMap.put(new JsonString("Algorithm"), algorithmsArray);
         JsonObject jsonObject = new JsonObject(securitySuitabilityPolicyMap);
 
@@ -286,7 +288,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableDigestAlgorithmsWithStartDatesTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         JsonObject jsonObject = new JsonObject(securitySuitabilityPolicyMap);
 
         List<JsonValue> algorithmsList = new ArrayList<>();
@@ -318,7 +320,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableSignatureAlgorithmsEmptyList() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         securitySuitabilityPolicyMap.put(new JsonString("Algorithm"), new JsonArray(Collections.emptyList()));
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(
@@ -335,7 +337,7 @@ class CryptographicSuiteJsonCatalogueTest {
         algorithmsList.add(createAlgorithmJsonDefinition("UNKNOWN_ALGO", null, null,
                 Collections.emptyList()));
 
-        Map<JsonString, JsonValue> policyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyMap = new HashMap<>();
         policyMap.put(new JsonString("Algorithm"), new JsonArray(algorithmsList));
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(
@@ -356,7 +358,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableSignatureAlgorithmsTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
 
         List<JsonValue> algorithmsList = new ArrayList<>();
         algorithmsList.add(createEncryptionAlgorithmJsonDefinition(EncryptionAlgorithm.DSA, Arrays.asList(
@@ -429,7 +431,7 @@ class CryptographicSuiteJsonCatalogueTest {
                         new ParameterDTO(3000, MODULES_LENGTH)
                 )))
         ));
-        
+
         assertEquals(expected, cryptographicSuite.buildAlgorithmList());
 
         // Add DigestAlgorithm definition
@@ -457,7 +459,7 @@ class CryptographicSuiteJsonCatalogueTest {
         )));
 
         JsonArray algorithmsArray = new JsonArray(algorithmsList);
-        Map<JsonString, JsonValue> policyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyMap = new HashMap<>();
         policyMap.put(new JsonString("Algorithm"), algorithmsArray);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(
@@ -503,7 +505,7 @@ class CryptographicSuiteJsonCatalogueTest {
         )));
 
         JsonArray algorithmsArray = new JsonArray(algorithmsList);
-        Map<JsonString, JsonValue> policyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyMap = new HashMap<>();
         policyMap.put(new JsonString("Algorithm"), algorithmsArray);
 
         // Add DigestAlgorithm definition
@@ -526,7 +528,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableSignatureAlgorithmsWithMinKeySizesTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
 
         List<JsonValue> algorithmsList = new ArrayList<>();
         algorithmsList.add(createEncryptionAlgorithmJsonDefinition(EncryptionAlgorithm.DSA, Arrays.asList(
@@ -624,7 +626,7 @@ class CryptographicSuiteJsonCatalogueTest {
         )));
 
         JsonArray algorithmsArray = new JsonArray(algorithmsList);
-        Map<JsonString, JsonValue> policyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyMap = new HashMap<>();
         policyMap.put(new JsonString("Algorithm"), algorithmsArray);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(
@@ -636,7 +638,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getAcceptableSignatureAlgorithmsWithStartDatesTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
 
         List<JsonValue> algorithmsList = new ArrayList<>();
         algorithmsList.add(createEncryptionAlgorithmJsonDefinition(EncryptionAlgorithm.DSA, Arrays.asList(
@@ -687,7 +689,7 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void getCryptographicSuiteUpdateDateTest() {
-        Map<JsonString, JsonValue> securitySuitabilityPolicyMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> securitySuitabilityPolicyMap = new HashMap<>();
         JsonObject jsonObject = new JsonObject(securitySuitabilityPolicyMap);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(jsonObject));
@@ -712,17 +714,17 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testBuildMetadataComplete() {
-        Map<JsonString, JsonValue> policyName = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyName = new HashMap<>();
         policyName.put(new JsonString("Name"), new JsonString("Test Policy"));
         policyName.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.3.4.5"));
         policyName.put(new JsonString("URI"), new JsonString("http://policy.example.com"));
 
-        Map<JsonString, JsonValue> publisher = new HashMap<>();
+        Map<IJsonString, IJsonValue> publisher = new HashMap<>();
         publisher.put(new JsonString("Name"), new JsonString("Example Publisher"));
         publisher.put(new JsonString("Address"), new JsonString("123 Example Street"));
         publisher.put(new JsonString("URI"), new JsonString("http://publisher.example.com"));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("PolicyName"), new JsonObject(policyName));
         root.put(new JsonString("Publisher"), new JsonObject(publisher));
         root.put(new JsonString("PolicyIssueDate"), new JsonString("2025-01-01T12:00:00+00:00"));
@@ -752,13 +754,13 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testBuildMetadataWithMissingOptionalFields() {
-        Map<JsonString, JsonValue> policyName = new HashMap<>();
+        Map<IJsonString, IJsonValue> policyName = new HashMap<>();
         policyName.put(new JsonString("Name"), new JsonString("Minimal Policy"));
 
-        Map<JsonString, JsonValue> publisher = new HashMap<>();
+        Map<IJsonString, IJsonValue> publisher = new HashMap<>();
         publisher.put(new JsonString("Name"), new JsonString("Minimal Publisher"));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("PolicyName"), new JsonObject(policyName));
         root.put(new JsonString("Publisher"), new JsonObject(publisher));
         root.put(new JsonString("PolicyIssueDate"), new JsonString("2025-01-01T12:00:00+00:00"));
@@ -783,21 +785,21 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testSingleAlgorithmWithFullDetails() {
-        Map<JsonString, JsonValue> algorithmIdentifier = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifier = new HashMap<>();
         algorithmIdentifier.put(new JsonString("Name"), new JsonString("SHA256withRSA"));
         algorithmIdentifier.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.840.113549.1.1.11"));
         algorithmIdentifier.put(new JsonString("URI"), new JsonString("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"));
 
-        Map<JsonString, JsonValue> parameter = new HashMap<>();
+        Map<IJsonString, IJsonValue> parameter = new HashMap<>();
         parameter.put(new JsonString("name"), new JsonString("moduluslength"));
         parameter.put(new JsonString("Min"), new JsonNumber(2048));
         parameter.put(new JsonString("Max"), new JsonNumber(4096));
 
-        Map<JsonString, JsonValue> validity = new HashMap<>();
+        Map<IJsonString, IJsonValue> validity = new HashMap<>();
         validity.put(new JsonString("Start"), new JsonString("2020-01-01"));
         validity.put(new JsonString("End"), new JsonString("2030-01-01"));
 
-        Map<JsonString, JsonValue> evaluation = new HashMap<>();
+        Map<IJsonString, IJsonValue> evaluation = new HashMap<>();
         evaluation.put(new JsonString("Validity"), new JsonObject(validity));
         evaluation.put(new JsonString("AlgorithmUsage"), new JsonString("http://uri.etsi.org/19322/sign_data"));
         evaluation.put(new JsonString("Recommendation"), new JsonString("R"));
@@ -805,17 +807,17 @@ class CryptographicSuiteJsonCatalogueTest {
 
         JsonArray evaluations = new JsonArray(Collections.singletonList(new JsonObject(evaluation)));
 
-        Map<JsonString, JsonValue> information = new HashMap<>();
+        Map<IJsonString, IJsonValue> information = new HashMap<>();
         information.put(new JsonString("Text"), new JsonArray(Collections.singletonList(new JsonString("Widely used secure algorithm"))));
 
-        Map<JsonString, JsonValue> algorithm = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithm = new HashMap<>();
         algorithm.put(new JsonString("AlgorithmIdentifier"), new JsonObject(algorithmIdentifier));
         algorithm.put(new JsonString("Evaluation"), evaluations);
         algorithm.put(new JsonString("Information"), new JsonObject(information));
 
         JsonArray algorithms = new JsonArray(Collections.singletonList(new JsonObject(algorithm)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -845,16 +847,16 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testAlgorithmWithoutOptionalFields() {
-        Map<JsonString, JsonValue> algorithmIdentifier = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifier = new HashMap<>();
         algorithmIdentifier.put(new JsonString("Name"), new JsonString("SHA256"));
         algorithmIdentifier.put(new JsonString("ObjectIdentifier"), new JsonString("2.16.840.1.101.3.4.2.1"));
 
-        Map<JsonString, JsonValue> algorithm = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithm = new HashMap<>();
         algorithm.put(new JsonString("AlgorithmIdentifier"), new JsonObject(algorithmIdentifier));
 
         JsonArray algorithms = new JsonArray(Collections.singletonList(new JsonObject(algorithm)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -871,23 +873,23 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testMultipleAlgorithms() {
-        Map<JsonString, JsonValue> id1 = new HashMap<>();
+        Map<IJsonString, IJsonValue> id1 = new HashMap<>();
         id1.put(new JsonString("Name"), new JsonString("RSA"));
         id1.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.840.113549.1.1.1"));
 
-        Map<JsonString, JsonValue> algorithmOne = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmOne = new HashMap<>();
         algorithmOne.put(new JsonString("AlgorithmIdentifier"), new JsonObject(id1));
 
-        Map<JsonString, JsonValue> id2 = new HashMap<>();
+        Map<IJsonString, IJsonValue> id2 = new HashMap<>();
         id2.put(new JsonString("Name"), new JsonString("ECDSA"));
         id2.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.840.10045.2.1"));
 
-        Map<JsonString, JsonValue> algorithmTwo = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmTwo = new HashMap<>();
         algorithmTwo.put(new JsonString("AlgorithmIdentifier"), new JsonObject(id2));
 
         JsonArray algorithms = new JsonArray(Arrays.asList(new JsonObject(algorithmOne), new JsonObject(algorithmTwo)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -899,23 +901,23 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testUnknownAlgorithmUsageUriResultsInNull() {
-        Map<JsonString, JsonValue> algorithmIdentifier = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifier = new HashMap<>();
         algorithmIdentifier.put(new JsonString("Name"), new JsonString("TestAlg"));
         algorithmIdentifier.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.3"));
 
-        Map<JsonString, JsonValue> eval = new HashMap<>();
+        Map<IJsonString, IJsonValue> eval = new HashMap<>();
         eval.put(new JsonString("AlgorithmUsage"), new JsonString("http://uri.etsi.org/19322/unknown_usage"));
         eval.put(new JsonString("Recommendation"), new JsonString("X"));
 
         JsonArray evaluations = new JsonArray(Collections.singletonList(new JsonObject(eval)));
 
-        Map<JsonString, JsonValue> algorithm = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithm = new HashMap<>();
         algorithm.put(new JsonString("AlgorithmIdentifier"), new JsonObject(algorithmIdentifier));
         algorithm.put(new JsonString("Evaluation"), evaluations);
 
         JsonArray algorithms = new JsonArray(Collections.singletonList(new JsonObject(algorithm)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, JsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -929,24 +931,24 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testEvaluationWithoutValidityDates() {
-        Map<JsonString, JsonValue> algorithmIdentifier = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifier = new HashMap<>();
         algorithmIdentifier.put(new JsonString("Name"), new JsonString("TestAlg"));
         algorithmIdentifier.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.3"));
 
-        Map<JsonString, JsonValue> validity = new HashMap<>(); // no start, no end
+        Map<IJsonString, IJsonValue> validity = new HashMap<>(); // no start, no end
 
-        Map<JsonString, JsonValue> eval = new HashMap<>();
+        Map<IJsonString, IJsonValue> eval = new HashMap<>();
         eval.put(new JsonString("Validity"), new JsonObject(validity));
 
         JsonArray evaluations = new JsonArray(Collections.singletonList(new JsonObject(eval)));
 
-        Map<JsonString, JsonValue> algorithm = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithm = new HashMap<>();
         algorithm.put(new JsonString("AlgorithmIdentifier"), new JsonObject(algorithmIdentifier));
         algorithm.put(new JsonString("Evaluation"), evaluations);
 
         JsonArray algorithms = new JsonArray(Collections.singletonList(new JsonObject(algorithm)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -960,31 +962,31 @@ class CryptographicSuiteJsonCatalogueTest {
 
     @Test
     void testParameterWithOnlyMinOrMax() {
-        Map<JsonString, JsonValue> algorithmIdentifier = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifier = new HashMap<>();
         algorithmIdentifier.put(new JsonString("Name"), new JsonString("TestAlg"));
         algorithmIdentifier.put(new JsonString("ObjectIdentifier"), new JsonString("1.2.3"));
 
-        Map<JsonString, JsonValue> par1 = new HashMap<>();
+        Map<IJsonString, IJsonValue> par1 = new HashMap<>();
         par1.put(new JsonString("name"), new JsonString("p1"));
         par1.put(new JsonString("Min"), new JsonNumber(1024));
 
-        Map<JsonString, JsonValue> par2 = new HashMap<>();
+        Map<IJsonString, IJsonValue> par2 = new HashMap<>();
         par2.put(new JsonString("name"), new JsonString("p2"));
         par2.put(new JsonString("Max"), new JsonNumber(8192));
 
-        Map<JsonString, JsonValue> eval = new HashMap<>();
+        Map<IJsonString, IJsonValue> eval = new HashMap<>();
         eval.put(new JsonString("Validity"), new JsonObject(new HashMap<>()));
         eval.put(new JsonString("Parameter"), new JsonArray(Arrays.asList(new JsonObject(par1), new JsonObject(par2))));
 
         JsonArray evaluations = new JsonArray(Collections.singletonList(new JsonObject(eval)));
 
-        Map<JsonString, JsonValue> algorithm = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithm = new HashMap<>();
         algorithm.put(new JsonString("AlgorithmIdentifier"), new JsonObject(algorithmIdentifier));
         algorithm.put(new JsonString("Evaluation"), evaluations);
 
         JsonArray algorithms = new JsonArray(Collections.singletonList(new JsonObject(algorithm)));
 
-        Map<JsonString, JsonValue> root = new HashMap<>();
+        Map<IJsonString, IJsonValue> root = new HashMap<>();
         root.put(new JsonString("Algorithm"), algorithms);
 
         CryptographicSuiteJsonCatalogue cryptographicSuite = new CryptographicSuiteJsonCatalogue(new JsonObjectWrapper(new JsonObject(root)));
@@ -1018,9 +1020,9 @@ class CryptographicSuiteJsonCatalogueTest {
     }
 
     private JsonObject createAlgorithmJsonDefinition(String algorithmName, String algorithmOid, String algorithmUri, List<EvaluationDTO> evaluationDTOS) {
-        Map<JsonString, JsonValue> algorithmMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmMap = new HashMap<>();
 
-        Map<JsonString, JsonValue> algorithmIdentifierMap = new HashMap<>();
+        Map<IJsonString, IJsonValue> algorithmIdentifierMap = new HashMap<>();
         algorithmIdentifierMap.put(new JsonString("Name"), new JsonString(algorithmName));
         if (algorithmOid != null) {
             algorithmIdentifierMap.put(new JsonString("ObjectIdentifier"), new JsonString(algorithmOid));
@@ -1040,8 +1042,8 @@ class CryptographicSuiteJsonCatalogueTest {
         List<JsonValue> evaluationList = new ArrayList<>();
         if (evaluationDTOS != null && !evaluationDTOS.isEmpty()) {
             for (EvaluationDTO evaluationDTO : evaluationDTOS) {
-                Map<JsonString, JsonValue> evaluationMap = new HashMap<>();
-                Map<JsonString, JsonValue> validityMap = new HashMap<>();
+                Map<IJsonString, IJsonValue> evaluationMap = new HashMap<>();
+                Map<IJsonString, IJsonValue> validityMap = new HashMap<>();
                 if (evaluationDTO.validityStart != null) {
                     validityMap.put(new JsonString("Start"), new JsonString(evaluationDTO.validityStart));
                 }
@@ -1052,7 +1054,7 @@ class CryptographicSuiteJsonCatalogueTest {
                 if (evaluationDTO.parameterList != null && !evaluationDTO.parameterList.isEmpty()) {
                     List<JsonValue> paremeterList = new ArrayList<>();
                     for (ParameterDTO parameterDTO : evaluationDTO.parameterList) {
-                        Map<JsonString, JsonValue> parameterMap = new HashMap<>();
+                        Map<IJsonString, IJsonValue> parameterMap = new HashMap<>();
                         if (parameterDTO.minKeyLength != null) {
                             parameterMap.put(new JsonString("Min"), new JsonNumber(parameterDTO.minKeyLength));
                         }
@@ -1068,8 +1070,8 @@ class CryptographicSuiteJsonCatalogueTest {
 
         } else {
             // create empty validity
-            Map<JsonString, JsonValue> evaluationMap = new HashMap<>();
-            Map<JsonString, JsonValue> validityMap = new HashMap<>();
+            Map<IJsonString, IJsonValue> evaluationMap = new HashMap<>();
+            Map<IJsonString, IJsonValue> validityMap = new HashMap<>();
             evaluationMap.put(new JsonString("Validity"), new JsonObject(validityMap));
             evaluationList.add(new JsonObject(evaluationMap));
         }

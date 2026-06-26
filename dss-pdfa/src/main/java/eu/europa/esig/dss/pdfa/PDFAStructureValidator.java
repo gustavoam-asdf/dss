@@ -67,7 +67,7 @@ public class PDFAStructureValidator {
      */
     public PDFAValidationResult validate(DSSDocument signedDocument) {
         try (InputStream is = signedDocument.openStream(); PDFAParser parser = FOUNDRY.createParser(is);
-             PDFAValidator validator = FOUNDRY.createValidator(parser.getFlavour(), false)) {
+             PDFAValidator validator = FOUNDRY.createValidator(getFlavour(parser), false)) {
 
             ValidationResult result = validator.validate(parser);
             return toPDFAValidationResult(result);
@@ -76,6 +76,10 @@ public class PDFAStructureValidator {
             LOG.error("Unable to perform PDF/A structure validation. Reason : {}", e.getMessage(), e);
             return null;
         }
+    }
+
+    private PDFAFlavour getFlavour(PDFAParser parser) {
+        return parser.getFlavours().isEmpty() ? FOUNDRY.defaultFlavour() : parser.getFlavour();
     }
 
     private PDFAValidationResult toPDFAValidationResult(ValidationResult validationResult) {
