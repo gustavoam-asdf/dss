@@ -13,14 +13,11 @@ import javax.xml.validation.SchemaFactory;
  */
 public final class SimpleReportXmlDefinedUtils {
 
-    /** JDK XPath Expression operators limit */
-    public static final String XPATH_OP_LIMIT = "jdk.xml.xpathExprOpLimit";
-
     /** Singleton */
     private static SimpleReportXmlDefinedUtils singleton;
 
     /** Builds the secure version of {@code TransformerFactory} */
-    private TransformerFactoryBuilder secureTransformerFactoryBuilder = SimpleReportTransformerFactoryBuilder.getSimpleReportSecureTransformerBuilder();
+    private TransformerFactoryBuilder secureTransformerFactoryBuilder = TransformerFactoryBuilder.getSecureTransformerBuilder();
 
     /** Builds the secure version of {@code SchemaFactory} */
     private SchemaFactoryBuilder secureSchemaFactoryBuilder = SchemaFactoryBuilder.getSecureSchemaBuilder();
@@ -80,30 +77,6 @@ public final class SimpleReportXmlDefinedUtils {
      */
     public SchemaFactory getSecureSchemaFactory() {
         return secureSchemaFactoryBuilder.build();
-    }
-
-    /**
-     * Provides a {@code TransformerFactory} builder for the DSS XML Simple Report
-     */
-    private static final class SimpleReportTransformerFactoryBuilder extends TransformerFactoryBuilder {
-
-        /**
-         * Default constructor
-         */
-        private SimpleReportTransformerFactoryBuilder() {
-            super();
-			setAttribute(XPATH_OP_LIMIT, "200"); // Increase the limit to handle bigger amount of elements
-        }
-
-        /**
-         * Instantiates a pre-configured with security features {@code SimpleReportTransformerFactoryBuilder}
-         *
-         * @return default {@link SimpleReportTransformerFactoryBuilder}
-         */
-        public static SimpleReportTransformerFactoryBuilder getSimpleReportSecureTransformerBuilder() {
-            return new SimpleReportTransformerFactoryBuilder();
-        }
-
     }
 
 }

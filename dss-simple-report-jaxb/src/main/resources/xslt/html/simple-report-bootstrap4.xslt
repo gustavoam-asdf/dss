@@ -158,7 +158,7 @@
 						<xsl:if test="$nodeName = 'EAA'">
 							<dt>
 								<xsl:attribute name="class">col-sm-3</xsl:attribute>
-								Electronic Attestation Of Attributes filename:
+								Filename:
 							</dt>
 						</xsl:if>
 			            <dd>
@@ -574,28 +574,7 @@
 		<xsl:apply-templates />
 	</xsl:template>
 
-	<xsl:template match="Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:Expiration|dss:UpdatedAt
-			|dss:NextUpdate|dss:Category|dss:VerifiableCredentialsType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
-			|dss:Nonce|dss:Version|dss:DocType|dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
-			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
-			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
-			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes|dss:FullName|dss:GivenName|dss:FamilyName
-			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
-			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:BirthdateApproximateMask|dss:Timezone|dss:Locale|dss:AddressPostalAddress
-			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
-			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirth|dss:PlaceOfBirthCountry
-			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthFamilyName|dss:BirthGivenName
-			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym|dss:IssuingCountry
-			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
-			|dss:PersonalAdministrativeNumber|dss:Height|dss:Weight|dss:EyeColor|dss:HairColor|dss:ResidentPostalAddress
-			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentAddressCity
-			|dss:ResidentAddressState|dss:ResidentAddressPostalCode|dss:ResidentAddressCountry|dss:BiometricTemplate|dss:SignatureUsualMark
-			|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession|dss:RelationshipFather
-			|dss:RelationshipMother|dss:RelationshipParent|dss:RelationshipSon|dss:RelationshipDaughter
-			|dss:RelationshipBrother|dss:RelationshipSister|dss:RelationshipSibling|dss:RelationshipSpouse|dss:RelationshipFatherInLaw
-			|dss:RelationshipMotherInLaw|dss:RelationshipParentInLaw|dss:RelationshipSonInLaw|dss:RelationshipDaughterInLaw
-			|dss:RelationshipChildInLaw|dss:RelationshipParentalAuthority|dss:RelationshipLegalRepresentative|dss:RelationshipAgent
-			|dss:DocumentType|dss:IssuingAuthorityRegistrationIdentifier|dss:TrustAnchor|dss:ResidentAddressStreet|dss:ResidentAddressHouseNumber|dss:OtherClaim">
+	<xsl:template name="printClaim">
 		<xsl:variable name="header">
 			<xsl:choose>
 				<xsl:when test="name() = 'Identifier'">Identifier</xsl:when>
@@ -617,7 +596,7 @@
 
 				<xsl:when test="name() = 'Version'">Version</xsl:when>
 				<xsl:when test="name() = 'DocType'">Document type</xsl:when>
-				
+
 				<xsl:when test="name() = 'AdministrativeIssuanceDate'">Administrative issuance date</xsl:when>
 				<xsl:when test="name() = 'AdministrativeExpirationDate'">Administrative expiration date</xsl:when>
 				<xsl:when test="name() = 'OneTimeUse'">One-time use</xsl:when>
@@ -677,8 +656,8 @@
 				<xsl:when test="name() = 'PersonalAdministrativeNumber'">Personal administrative number</xsl:when>
 				<xsl:when test="name() = 'Height'">Height</xsl:when>
 				<xsl:when test="name() = 'Weight'">Weight</xsl:when>
-				<xsl:when test="name() = 'EyeColor'">Eye color</xsl:when>
-				<xsl:when test="name() = 'HairColor'">Hair color</xsl:when>
+				<xsl:when test="name() = 'EyeColour'">Eye colour</xsl:when>
+				<xsl:when test="name() = 'HairColour'">Hair colour</xsl:when>
 				<xsl:when test="name() = 'ResidentPostalAddress'">Resident postal address</xsl:when>
 				<xsl:when test="name() = 'PortraitCaptureDate'">Portrait capture date</xsl:when>
 				<xsl:when test="name() = 'AgeInYears'">Age in years</xsl:when>
@@ -765,6 +744,48 @@
 				</xsl:choose>
 			</dd>
 		</dl>
+	</xsl:template>
+
+	<!-- Separate to avoid reaching xpath limit -->
+	<xsl:template match="dss:Identifier|dss:Issuer|dss:Subject|dss:Audience|dss:IssuedAt|dss:NotBefore|dss:Expiration|dss:UpdatedAt
+			|dss:NextUpdate|dss:Category|dss:VerifiableCredentialsType|dss:StatusIndex|dss:StatusUri|dss:StatusType|dss:StatusPurpose
+			|dss:Nonce|dss:Version|dss:DocType">
+		<xsl:call-template name="printClaim"/>
+	</xsl:template>
+
+	<xsl:template match="dss:AdministrativeIssuanceDate|dss:AdministrativeExpirationDate|dss:OneTimeUse
+			|dss:ShortLived|dss:Evidence|dss:AttestedAttributesSubjectId|dss:AttestedAttributesSubjectFamilyName
+			|dss:AttestedAttributesSubjectGivenName|dss:AttestedAttributesSubjectDocumentNumber
+			|dss:AttestedAttributesSubjectPseudonym|dss:AttestedAttributes">
+		<xsl:call-template name="printClaim"/>
+	</xsl:template>
+
+	<xsl:template match="dss:FullName|dss:GivenName|dss:FamilyName
+			|dss:MiddleName|dss:Nickname|dss:ShortName|dss:ProfileUrl|dss:PictureUrl|dss:WebsiteUrl|dss:Email
+			|dss:EmailVerified|dss:Gender|dss:Birthdate|dss:BirthdateApproximateMask|dss:Timezone|dss:Locale|dss:AddressPostalAddress
+			|dss:AddressCity|dss:AddressStateOrProvince|dss:AddressPostalCode|dss:AddressCountryName
+			|dss:AddressStreetAddress|dss:PhoneNumber|dss:PhoneNumberVerified|dss:PlaceOfBirth|dss:PlaceOfBirthCountry
+			|dss:PlaceOfBirthRegion|dss:PlaceOfBirthCity|dss:Nationalities|dss:BirthFamilyName|dss:BirthGivenName
+			|dss:BirthMiddleName|dss:Salutation|dss:Title|dss:MobilePhoneNumber|dss:Pseudonym">
+		<xsl:call-template name="printClaim"/>
+	</xsl:template>
+
+	<xsl:template match="dss:IssuingCountry
+			|dss:IssuingAuthority|dss:DocumentNumber|dss:Portrait|dss:DrivingPrivileges|dss:UNDistinguishingSign
+			|dss:PersonalAdministrativeNumber|dss:Height|dss:Weight|dss:EyeColour|dss:HairColour|dss:ResidentPostalAddress
+			|dss:PortraitCaptureDate|dss:AgeInYears|dss:AgeBirthYear|dss:AgeOverNN|dss:IssuingJurisdiction|dss:ResidentAddressCity
+			|dss:ResidentAddressState|dss:ResidentAddressPostalCode|dss:ResidentAddressCountry|dss:BiometricTemplate|dss:SignatureUsualMark
+			|dss:Fingerprint|dss:BusinessName|dss:OrganizationName|dss:BirthFullName|dss:Profession|dss:RelationshipFather
+			|dss:RelationshipMother|dss:RelationshipParent|dss:RelationshipSon|dss:RelationshipDaughter
+			|dss:RelationshipBrother|dss:RelationshipSister|dss:RelationshipSibling|dss:RelationshipSpouse|dss:RelationshipFatherInLaw
+			|dss:RelationshipMotherInLaw|dss:RelationshipParentInLaw|dss:RelationshipSonInLaw|dss:RelationshipDaughterInLaw
+			|dss:RelationshipChildInLaw|dss:RelationshipParentalAuthority|dss:RelationshipLegalRepresentative|dss:RelationshipAgent
+			|dss:DocumentType|dss:IssuingAuthorityRegistrationIdentifier|dss:TrustAnchor|dss:ResidentAddressStreet|dss:ResidentAddressHouseNumber">
+		<xsl:call-template name="printClaim"/>
+	</xsl:template>
+
+	<xsl:template match="dss:OtherClaim">
+		<xsl:call-template name="printClaim"/>
 	</xsl:template>
 
 	<xsl:template match="dss:TrustAnchors">

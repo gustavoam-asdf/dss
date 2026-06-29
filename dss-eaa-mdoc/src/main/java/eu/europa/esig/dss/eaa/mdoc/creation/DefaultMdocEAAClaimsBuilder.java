@@ -402,7 +402,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
     }
 
     /**
-     * Gets mdoc claim generated for the eye color parameter
+     * Gets mdoc claim generated for the eye colour parameter
      *
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
@@ -412,7 +412,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
     }
 
     /**
-     * Gets mdoc claim generated for the hair color parameter
+     * Gets mdoc claim generated for the hair colour parameter
      *
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}

@@ -153,8 +153,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         boolean administrativeNumberFound = false;
         boolean heightFound = false;
         boolean weightFound = false;
-        boolean eyeColorFound = false;
-        boolean hairColorFound = false;
+        boolean eyeColourFound = false;
+        boolean hairColourFound = false;
         boolean postalAddressFound = false;
         boolean portraitCaptureDateFound = false;
         boolean ageInYearsFound = false;
@@ -292,11 +292,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             } else if ("eye_colour".equals(name)) {
                 assertEquals("Brown", xmlDigestMatcher.getDisclosableClaim().getValue());
-                eyeColorFound = true;
+                eyeColourFound = true;
 
             } else if ("hair_colour".equals(name)) {
                 assertEquals("Black", xmlDigestMatcher.getDisclosableClaim().getValue());
-                hairColorFound = true;
+                hairColourFound = true;
 
             } else if ("resident_address".equals(name)) {
                 assertEquals("1 Main Street", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -504,8 +504,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         assertTrue(administrativeNumberFound);
         assertTrue(heightFound);
         assertTrue(weightFound);
-        assertTrue(eyeColorFound);
-        assertTrue(hairColorFound);
+        assertTrue(eyeColourFound);
+        assertTrue(hairColourFound);
         assertTrue(postalAddressFound);
         assertTrue(portraitCaptureDateFound);
         assertTrue(ageInYearsFound);
