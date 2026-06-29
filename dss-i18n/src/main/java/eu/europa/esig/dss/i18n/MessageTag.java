@@ -1296,7 +1296,8 @@ public enum MessageTag {
     SEMANTICS_CRYPTO_CONSTRAINTS_FAILURE_NO_POE,
     SEMANTICS_NO_POE,
     SEMANTICS_TRY_LATER,
-    SEMANTICS_SIGNED_DATA_NOT_FOUND;
+    SEMANTICS_SIGNED_DATA_NOT_FOUND,
+    SEMANTICS_EAA_CONSTRAINTS_FAILURE;
 
 	/**
 	 * This method returns the id code of the referred message.

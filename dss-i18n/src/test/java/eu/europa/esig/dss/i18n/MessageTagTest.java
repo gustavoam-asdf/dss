@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -73,10 +75,26 @@ class MessageTagTest {
 		Set<String> keySet = bundle.keySet();
 		assertNotNull(keySet);
 		assertTrue(keySet.size() > 0);
-		
+
 		MessageTag[] messageTags = MessageTag.values();
 		for (String key : keySet) {
 			assertTrue(Arrays.stream(messageTags).anyMatch(tag -> tag.getId().equals(key)), "MessageTag with a key [" + key + "] does not exist!");
+		}
+	}
+
+	@Test
+	void allIndicationsSemanticsPresent() {
+		for (Indication indication : Indication.values()) {
+			MessageTag semanticTag = MessageTag.getSemantic(indication.name());
+			assertNotNull(semanticTag, "No SEMANTICS_ MessageTag found for Indication [" + indication.name() + "]");
+		}
+	}
+
+	@Test
+	void allSubIndicationsSemanticsPresent() {
+		for (SubIndication subIndication : SubIndication.values()) {
+			MessageTag semanticTag = MessageTag.getSemantic(subIndication.name());
+			assertNotNull(semanticTag, "No SEMANTICS_ MessageTag found for SubIndication [" + subIndication.name() + "]");
 		}
 	}
 
