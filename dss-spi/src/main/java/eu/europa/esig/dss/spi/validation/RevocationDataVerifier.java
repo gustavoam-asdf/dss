@@ -313,7 +313,7 @@ public class RevocationDataVerifier {
      * NULL value is used to disable the check.
      * Default : 0 (revocation data shall be issued after the best-signature-time)
      *
-     * @param signatureMaximumRevocationFreshness {@link Long} in milliseconds to evaluate revocation freshness,
+     * @param signatureMaximumRevocationFreshness {@link Long} in milliseconds
      */
     public void setSignatureMaximumRevocationFreshness(Long signatureMaximumRevocationFreshness) {
         this.signatureMaximumRevocationFreshness = signatureMaximumRevocationFreshness;

@@ -1239,7 +1239,7 @@ public class SignatureValidationContext implements ValidationContext {
 		TokenStatus status = new TokenStatus();
 		Map<CertificateToken, List<CertificateToken>> orderedCertificateChains = getOrderedCertificateChains();
 		for (List<CertificateToken> orderedCertChain : orderedCertificateChains.values()) {
-			checkRevocationForCertificateChainAgainstBestSignatureTime(orderedCertChain, null, status);
+			checkRevocationForCertificateChainAgainstBestSignatureTime(orderedCertChain, null, status, null);
 		}
 		boolean success = status.isEmpty();
 		if (!success) {
@@ -1249,7 +1249,7 @@ public class SignatureValidationContext implements ValidationContext {
 	}
 	
 	private void checkRevocationForCertificateChainAgainstBestSignatureTime(List<CertificateToken> certificates,
-			Date bestSignatureTime, TokenStatus status) {
+			Date bestSignatureTime, TokenStatus status, Context context) {
 		for (CertificateToken certificateToken : certificates) {
 			if (isSelfSignedOrTrustedAtTime(certificateToken, bestSignatureTime)) {
 				// break on the first trusted entry
@@ -1264,7 +1264,7 @@ public class SignatureValidationContext implements ValidationContext {
 
 			List<RevocationToken<?>> relatedRevocationTokens = getRelatedRevocationTokens(certificateToken);
 			for (RevocationToken<?> revocationToken : relatedRevocationTokens) {
-				if (bestSignatureTime == null || bestSignatureTime.before(revocationToken.getThisUpdate())) {
+				if (bestSignatureTime == null || isRevocationFresh(revocationToken, bestSignatureTime, context)) {
 					found = true;
 					break;
 
@@ -1336,7 +1336,7 @@ public class SignatureValidationContext implements ValidationContext {
 			CertificateToken firstChainCertificate = entry.getKey();
 			Date lastCertUsageDate = getLatestTimestampUsageDate(firstChainCertificate);
 			if (lastCertUsageDate != null) {
-				checkRevocationForCertificateChainAgainstBestSignatureTime(entry.getValue(), lastCertUsageDate, status);
+				checkRevocationForCertificateChainAgainstBestSignatureTime(entry.getValue(), lastCertUsageDate, status, Context.TIMESTAMP);
 			}
 		}
 		if (!status.isEmpty()) {
@@ -1682,7 +1682,7 @@ public class SignatureValidationContext implements ValidationContext {
 			CertificateToken firstChainCertificate = entry.getKey();
 			if (firstChainCertificate.equals(signingCertificateToken)) {
 				Date bestSignatureTime = getEarliestTimestampTime();
-				checkRevocationForCertificateChainAgainstBestSignatureTime(entry.getValue(), bestSignatureTime, status);
+				checkRevocationForCertificateChainAgainstBestSignatureTime(entry.getValue(), bestSignatureTime, status, Context.SIGNATURE);
 			}
 		}
 	}
