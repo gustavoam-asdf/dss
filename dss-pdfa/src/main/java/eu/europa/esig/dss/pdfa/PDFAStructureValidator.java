@@ -79,6 +79,8 @@ public class PDFAStructureValidator {
     }
 
     private PDFAFlavour getFlavour(PDFAParser parser) {
+        // Previously, veraPDF returned the default flavour when none was detected, but now it returns an empty list instead.
+        // To preserve the previous behavior, as it is required by the validator, we explicitly fall back to the default flavour.
         return parser.getFlavours().isEmpty() ? FOUNDRY.defaultFlavour() : parser.getFlavour();
     }
 
