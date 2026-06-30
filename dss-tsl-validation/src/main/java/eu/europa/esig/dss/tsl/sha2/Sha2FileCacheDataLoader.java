@@ -25,6 +25,7 @@ import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.client.http.DSSCacheFileLoader;
 import eu.europa.esig.dss.spi.exception.DSSExternalResourceException;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.sha2.DocumentWithSha2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

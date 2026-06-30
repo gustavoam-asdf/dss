@@ -22,22 +22,24 @@ package eu.europa.esig.dss.tsl.cache.state;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.Indication;
+import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.client.http.MemoryDataLoader;
-import eu.europa.esig.dss.tsl.cache.CacheCleaner;
-import eu.europa.esig.dss.tsl.cache.CacheKey;
-import eu.europa.esig.dss.tsl.cache.DownloadCache;
-import eu.europa.esig.dss.tsl.cache.ParsingCache;
-import eu.europa.esig.dss.tsl.cache.ValidationCache;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
 import eu.europa.esig.dss.tsl.download.XmlDownloadResult;
 import eu.europa.esig.dss.tsl.parsing.LOTLParsingResult;
 import eu.europa.esig.dss.tsl.parsing.TLParsingResult;
-import eu.europa.esig.dss.tsl.validation.ValidationResult;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.cache.CacheKey;
+import eu.europa.esig.dss.validation.job.cache.DownloadCache;
+import eu.europa.esig.dss.validation.job.cache.ParsingCache;
+import eu.europa.esig.dss.validation.job.cache.ValidationCache;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -102,8 +105,50 @@ class CacheCleanerTest {
 		parsingCache.update(new CacheKey(LOTL_FILE_NAME), new LOTLParsingResult());
 		
 		validationCache = new ValidationCache();
-		validationCache.update(new CacheKey(SAMPLE_FILE_NAME), new ValidationResult(Indication.PASSED, null, new Date(), null, null));
-		validationCache.update(new CacheKey(LOTL_FILE_NAME), new ValidationResult(Indication.PASSED, null, new Date(), null, null));
+		validationCache.update(new CacheKey(SAMPLE_FILE_NAME), new ValidationResult() {
+			@Override
+			public Indication getIndication() {
+				return Indication.PASSED;
+			}
+			@Override
+			public SubIndication getSubIndication() {
+				return null;
+			}
+			@Override
+			public Date getSigningTime() {
+				return new Date();
+			}
+			@Override
+			public CertificateToken getSigningCertificate() {
+				return null;
+			}
+			@Override
+			public List<CertificateToken> getPotentialSigners() {
+				return null;
+			}
+		});
+		validationCache.update(new CacheKey(LOTL_FILE_NAME), new ValidationResult() {
+			@Override
+			public Indication getIndication() {
+				return Indication.PASSED;
+			}
+			@Override
+			public SubIndication getSubIndication() {
+				return null;
+			}
+			@Override
+			public Date getSigningTime() {
+				return new Date();
+			}
+			@Override
+			public CertificateToken getSigningCertificate() {
+				return null;
+			}
+			@Override
+			public List<CertificateToken> getPotentialSigners() {
+				return null;
+			}
+		});
 	}
 	
 	@Test

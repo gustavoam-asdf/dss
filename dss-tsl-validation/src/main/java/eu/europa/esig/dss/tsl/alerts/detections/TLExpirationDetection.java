@@ -21,8 +21,8 @@
 package eu.europa.esig.dss.tsl.alerts.detections;
 
 import eu.europa.esig.dss.alert.detector.AlertDetector;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 
 import java.util.Date;
 
@@ -40,7 +40,7 @@ public class TLExpirationDetection implements AlertDetector<TLInfo> {
 
 	@Override
 	public boolean detect(TLInfo info) {
-		ParsingInfoRecord parsingCacheInfo = info.getParsingCacheInfo();
+		TLParsingInfoRecord parsingCacheInfo = info.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			Date nextUpdateDate = parsingCacheInfo.getNextUpdateDate();
 			Date currentDate = new Date();

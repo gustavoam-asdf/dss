@@ -29,6 +29,7 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.exception.DSSExternalResourceException;
 import eu.europa.esig.dss.tsl.job.MockDataLoader;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.sha2.DocumentWithSha2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

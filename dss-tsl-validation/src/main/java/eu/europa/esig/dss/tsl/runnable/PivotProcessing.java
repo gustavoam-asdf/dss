@@ -23,13 +23,21 @@ package eu.europa.esig.dss.tsl.runnable;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.tsl.dto.ParsingCacheDTO;
-import eu.europa.esig.dss.tsl.parsing.AbstractParsingTask;
+import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.tsl.download.XmlDownloadTask;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
+import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
 import eu.europa.esig.dss.tsl.parsing.LOTLParsingTask;
 import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
+import eu.europa.esig.dss.tsl.validation.TLValidatorTask;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
+import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
+import eu.europa.esig.dss.validation.job.download.DownloadTask;
+import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
+import eu.europa.esig.dss.validation.job.runnable.AbstractAnalysis;
+import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -68,7 +76,8 @@ public class PivotProcessing extends AbstractAnalysis implements Callable<PivotP
 		if (pivot != null) {
 			parsing(pivot);
 
-			ParsingCacheDTO parsingResult = getCacheAccessByKey().getParsingReadOnlyResult();
+			CachedEntry<ParsingResult> parsingCacheEntry = getCacheAccessByKey().getParsingReadOnlyResult();
+			TLParsingCacheDTO parsingResult = toParsingDTO(parsingCacheEntry);
 			OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(parsingResult);
 			if (xmlLotlPointer != null) {
 				return new PivotProcessingResult(pivot, ParsingUtils.getLOTLAnnouncedCertificateSource(xmlLotlPointer), xmlLotlPointer.getTSLLocation());
@@ -77,9 +86,23 @@ public class PivotProcessing extends AbstractAnalysis implements Callable<PivotP
 		return null;
 	}
 
+	private TLParsingCacheDTO toParsingDTO(CachedEntry<ParsingResult> parsingCacheEntry) {
+		return new TLParsingCacheDTOBuilder(parsingCacheEntry).build();
+	}
+
 	@Override
-	protected AbstractParsingTask<?> getParsingTask(DSSDocument document) {
+	protected DownloadTask getDownloadTask(DSSFileLoader dssFileLoader, String url) {
+		return new XmlDownloadTask(dssFileLoader, url);
+	}
+
+	@Override
+	protected LOTLParsingTask getParsingTask(DSSDocument document) {
 		return new LOTLParsingTask(document, (LOTLSource) getSource());
+	}
+
+	@Override
+	protected ValidationTask getValidationTask(DSSDocument document, CertificateSource certificateSource) {
+		return new TLValidatorTask(document, certificateSource);
 	}
 
 	@Override

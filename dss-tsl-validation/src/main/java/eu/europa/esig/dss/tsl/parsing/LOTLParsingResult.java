@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Parsed LOTL result
  */
-public class LOTLParsingResult extends AbstractParsingResult {
+public class LOTLParsingResult extends AbstractTLParsingResult {
 
 	/** List of LOTL pointers */
 	private List<OtherTSLPointer> lotlPointers;

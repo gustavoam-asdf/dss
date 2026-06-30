@@ -20,7 +20,10 @@
  */
 package eu.europa.esig.dss.tsl.cache.state;
 
-import eu.europa.esig.dss.tsl.cache.CachedResult;
+import eu.europa.esig.dss.validation.job.cache.CachedResult;
+import eu.europa.esig.dss.validation.job.cache.state.CacheStateEnum;
+import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
+import eu.europa.esig.dss.validation.job.cache.state.CachedExceptionWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;

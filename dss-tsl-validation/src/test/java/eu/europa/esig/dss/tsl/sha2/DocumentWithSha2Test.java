@@ -24,6 +24,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
+import eu.europa.esig.dss.validation.job.sha2.DocumentWithSha2;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

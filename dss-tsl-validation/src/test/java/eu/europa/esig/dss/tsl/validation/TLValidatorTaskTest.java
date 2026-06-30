@@ -30,6 +30,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

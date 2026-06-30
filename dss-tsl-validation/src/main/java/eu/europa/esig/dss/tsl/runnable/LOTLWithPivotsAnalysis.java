@@ -22,19 +22,24 @@ package eu.europa.esig.dss.tsl.runnable;
 
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.tsl.cache.CacheKey;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessFactory;
-import eu.europa.esig.dss.tsl.cache.access.ReadOnlyCacheAccess;
-import eu.europa.esig.dss.tsl.dto.ParsingCacheDTO;
-import eu.europa.esig.dss.tsl.dto.ValidationCacheDTO;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
+import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
 import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.validation.TLValidatorTask;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.CacheKey;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessFactory;
+import eu.europa.esig.dss.validation.job.cache.access.ReadOnlyCacheAccess;
+import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
+import eu.europa.esig.dss.validation.job.dto.builder.ValidationCacheDTOBuilder;
+import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +79,7 @@ public class LOTLWithPivotsAnalysis extends LOTLAnalysis {
 	 * @param latch              {@link CountDownLatch}
 	 */
 	public LOTLWithPivotsAnalysis(final LOTLSource source, final CacheAccessByKey cacheAccess,
-								  final DSSFileLoader dssFileLoader, final CacheAccessFactory cacheAccessFactory, final CountDownLatch latch) {
+                                  final DSSFileLoader dssFileLoader, final CacheAccessFactory cacheAccessFactory, final CountDownLatch latch) {
 		super(source, cacheAccess, dssFileLoader, latch);
 		this.cacheAccessFactory = cacheAccessFactory;
 		this.dssFileLoader = dssFileLoader;
@@ -86,8 +91,9 @@ public class LOTLWithPivotsAnalysis extends LOTLAnalysis {
 
 		CertificateSource currentCertificateSource;
 
-		ParsingCacheDTO currentLOTLParsing = getCacheAccessByKey().getParsingReadOnlyResult();
-		if (currentLOTLParsing != null) {
+		CachedEntry<ParsingResult> parsingCacheEntry = getCacheAccessByKey().getParsingReadOnlyResult();
+		if (parsingCacheEntry != null && parsingCacheEntry.isResultExist()) {
+			TLParsingCacheDTO currentLOTLParsing = toParsingDTO(parsingCacheEntry);
 			List<String> pivotURLs = currentLOTLParsing.getPivotUrls();
 			if (Utils.isCollectionEmpty(pivotURLs)) {
 				LOG.trace("No pivot LOTL found");
@@ -121,14 +127,15 @@ public class LOTLWithPivotsAnalysis extends LOTLAnalysis {
 
 		CertificateSource currentCertificateSource = initialCertificateSource;
 		for (String pivotUrl : pivotUrlsReversed) {
-			CacheKey cacheKey = new CacheKey(pivotUrl);
+			CacheKey pivotCacheKey = new CacheKey(pivotUrl);
 
 			PivotProcessingResult pivotProcessingResult = processingResults.get(pivotUrl);
 			if (pivotProcessingResult != null) {
-				CacheAccessByKey pivotCacheAccess = cacheAccessFactory.getCacheAccess(cacheKey);
+				CacheAccessByKey pivotCacheAccess = cacheAccessFactory.getCacheAccess(pivotCacheKey);
 				validationPivot(pivotCacheAccess, pivotProcessingResult.getPivot(), currentCertificateSource);
 
-				ValidationCacheDTO validationResult = readOnlyCacheAccess.getValidationCacheDTO(cacheKey);
+				CachedEntry<ValidationResult> validationReadOnlyResult = readOnlyCacheAccess.getValidationCacheEntry(pivotCacheKey);
+				ValidationInfoRecord validationResult = toValidationDTO(validationReadOnlyResult);
 				if (validationResult != null) {
 					if (validationResult.isValid()) {
 						currentCertificateSource = pivotProcessingResult.getCertificateSource();
@@ -164,8 +171,9 @@ public class LOTLWithPivotsAnalysis extends LOTLAnalysis {
 	private void assertOriginalDocumentIsAccessible(CacheAccessByKey pivotCacheAccess) {
 		// set the exception in order to avoid potential deadlock (file does not exist, but download result is present)
 		try {
-			if (pivotCacheAccess.getDownloadReadOnlyResult() != null
-					&& DSSUtils.isEmpty(pivotCacheAccess.getDownloadReadOnlyResult().getDocument())) {
+			if (pivotCacheAccess.getDownloadReadOnlyResult() != null &&
+					pivotCacheAccess.getDownloadReadOnlyResult().isResultExist() &&
+					DSSUtils.isEmpty(pivotCacheAccess.getDownloadReadOnlyResult().getCachedResult().getDSSDocument())) {
 				LOG.warn("The Pivot LOTL with the cache key '{}' contains empty content", pivotCacheAccess.getCacheKey().getKey());
 				throw new DSSException("Empty content file is obtained!");
 			}

@@ -30,9 +30,9 @@ import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
 import eu.europa.esig.dss.model.lote.ListInfo;
 import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.PivotInfo;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.model.x509.X500PrincipalHelper;
@@ -441,7 +441,7 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
      */
     protected String getIdAsStringForTL(TLInfo tlInfo) {
         StringBuilder stringBuilder = new StringBuilder(getTlPrefix(tlInfo));
-        ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
+        TLParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
         if (parsingCacheInfo != null) {
             if (Utils.isStringNotBlank(parsingCacheInfo.getTerritory())) {
                 stringBuilder.append(STRING_DELIMITER);

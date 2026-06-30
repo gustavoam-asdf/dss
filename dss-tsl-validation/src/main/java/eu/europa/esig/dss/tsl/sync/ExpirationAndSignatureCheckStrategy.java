@@ -20,10 +20,11 @@
  */
 package eu.europa.esig.dss.tsl.sync;
 
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
-import eu.europa.esig.dss.model.tsl.ValidationInfoRecord;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
+import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 
 import java.util.Date;
 
@@ -31,7 +32,7 @@ import java.util.Date;
  * Allows skipping expired or invalid trusted lists
  *
  */
-public class ExpirationAndSignatureCheckStrategy implements SynchronizationStrategy {
+public class ExpirationAndSignatureCheckStrategy implements SynchronizationStrategy<TLInfo, LOTLInfo> {
 
 	/**
 	 * Define if expired trusted lists (next update after current time) are
@@ -124,7 +125,7 @@ public class ExpirationAndSignatureCheckStrategy implements SynchronizationStrat
 	private boolean isSyncSupported(TLInfo tlInfo, boolean syncExpired, boolean syncInvalid) {
 
 		if (!syncExpired) {
-			ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
+			TLParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
 			if (parsingCacheInfo != null && parsingCacheInfo.isResultExist()) {
 				Date currentDate = new Date();
 				Date nextUpdateDate = parsingCacheInfo.getNextUpdateDate();

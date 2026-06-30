@@ -20,12 +20,13 @@
  */
 package eu.europa.esig.dss.tsl.sync;
 
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.model.tsl.CertificateTrustTime;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.PivotInfo;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.tsl.TrustProperties;
 import eu.europa.esig.dss.model.tsl.TrustPropertiesCertificateSource;
@@ -33,14 +34,15 @@ import eu.europa.esig.dss.model.tsl.TrustService;
 import eu.europa.esig.dss.model.tsl.TrustServiceProvider;
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.x509.CertificateToken;
-import eu.europa.esig.dss.tsl.cache.CacheKey;
-import eu.europa.esig.dss.tsl.cache.access.SynchronizerCacheAccess;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
-import eu.europa.esig.dss.tsl.summary.ValidationJobSummaryBuilder;
+import eu.europa.esig.dss.tsl.summary.TLValidationJobSummaryBuilder;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.CacheKey;
+import eu.europa.esig.dss.validation.job.cache.access.SynchronizerCacheAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +107,7 @@ public class TrustedListCertificateSourceSynchronizer {
 	 */
 	public void sync() {
 		try {
-			ValidationJobSummaryBuilder summaryBuilder = new ValidationJobSummaryBuilder(cacheAccess, tlSources, lotlSources);
+			TLValidationJobSummaryBuilder summaryBuilder = new TLValidationJobSummaryBuilder(cacheAccess, tlSources, lotlSources);
 
 			TLValidationJobSummary summary = summaryBuilder.build();
 			if (isCertificateSyncNeeded(summary)) {
@@ -161,7 +163,7 @@ public class TrustedListCertificateSourceSynchronizer {
 
 		for (final TLInfo tlInfo : tlInfos) {
 			if (synchronizationStrategy.canBeSynchronized(tlInfo)) {
-				ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
+				TLParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
 				if (parsingCacheInfo == null || !parsingCacheInfo.isResultExist()) {
 					LOG.warn("No Parsing result for TLInfo with url [{}]", tlInfo.getUrl());
 				} else {

@@ -24,6 +24,8 @@ import eu.europa.esig.dss.enumerations.TSLType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.parsing.AbstractParsingResult;
+import eu.europa.esig.dss.validation.job.parsing.ParsingTask;
 import eu.europa.esig.dss.xades.tsl.TLStructureVerifier;
 import eu.europa.esig.trustedlist.TrustedListFacade;
 import eu.europa.esig.trustedlist.jaxb.tsl.NextUpdateType;
@@ -39,14 +41,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Abstract class to parse a LOTL/TL
  *
  * @param <T> implementation of a corresponding parsing task (TL/LOTL)
  */
-public abstract class AbstractParsingTask<T extends AbstractParsingResult> implements Supplier<T> {
+public abstract class AbstractParsingTask<T extends AbstractTLParsingResult> implements ParsingTask {
 
 	/** The document to parse */
 	private final DSSDocument document;
@@ -91,10 +92,10 @@ public abstract class AbstractParsingTask<T extends AbstractParsingResult> imple
 	/**
 	 * Extracts the common values
 	 *
-	 * @param result {@link AbstractParsingResult}
+	 * @param result {@link AbstractTLParsingResult}
 	 * @param schemeInformation {@link TSLSchemeInformationType}
 	 */
-	protected void commonParseSchemeInformation(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	protected void commonParseSchemeInformation(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		if (schemeInformation != null) {
 			extractTSLType(result, schemeInformation);
 			extractSequenceNumber(result, schemeInformation);
@@ -105,37 +106,37 @@ public abstract class AbstractParsingTask<T extends AbstractParsingResult> imple
 			extractDistributionPoints(result, schemeInformation);
 		}
 	}
-	
-	private void extractTSLType(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+
+	private void extractTSLType(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		String tslType = schemeInformation.getTSLType();
 		if (Utils.isStringNotEmpty(tslType)) {
 			result.setTSLType(TSLType.fromUri(tslType));
 		}
 	}
 
-	private void extractSequenceNumber(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractSequenceNumber(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		BigInteger tslSequenceNumber = schemeInformation.getTSLSequenceNumber();
 		if (tslSequenceNumber != null) {
 			result.setSequenceNumber(tslSequenceNumber.intValue());
 		}
 	}
 
-	private void extractTerritory(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractTerritory(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		result.setTerritory(schemeInformation.getSchemeTerritory());
 	}
 
-	private void extractVersion(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractVersion(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		BigInteger tslVersionIdentifier = schemeInformation.getTSLVersionIdentifier();
 		if (tslVersionIdentifier != null) {
 			result.setVersion(tslVersionIdentifier.intValue());
 		}
 	}
 
-	private void extractIssueDate(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractIssueDate(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		result.setIssueDate(convertToDate(schemeInformation.getListIssueDateTime()));
 	}
 
-	private void extractNextUpdateDate(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractNextUpdateDate(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		NextUpdateType nextUpdate = schemeInformation.getNextUpdate();
 		if (nextUpdate != null) {
 			result.setNextUpdateDate(convertToDate(nextUpdate.getDateTime()));
@@ -152,7 +153,7 @@ public abstract class AbstractParsingTask<T extends AbstractParsingResult> imple
 		return null;
 	}
 
-	private void extractDistributionPoints(AbstractParsingResult result, TSLSchemeInformationType schemeInformation) {
+	private void extractDistributionPoints(AbstractTLParsingResult result, TSLSchemeInformationType schemeInformation) {
 		NonEmptyURIListType distributionPoints = schemeInformation.getDistributionPoints();
 		if (distributionPoints != null && Utils.isCollectionNotEmpty(distributionPoints.getURI())) {
 			result.setDistributionPoints(Collections.unmodifiableList(distributionPoints.getURI()));

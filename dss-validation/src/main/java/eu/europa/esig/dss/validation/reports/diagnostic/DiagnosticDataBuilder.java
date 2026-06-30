@@ -83,19 +83,19 @@ import eu.europa.esig.dss.model.OidRepository;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.model.identifier.OriginalIdentifierProvider;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.lote.ListInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
 import eu.europa.esig.dss.model.tsl.CertificateTrustTime;
-import eu.europa.esig.dss.model.tsl.DownloadInfoRecord;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.tsl.TrustProperties;
 import eu.europa.esig.dss.model.tsl.TrustPropertiesCertificateSource;
 import eu.europa.esig.dss.model.tsl.TrustedCertificateSourceWithTime;
-import eu.europa.esig.dss.model.tsl.ValidationInfoRecord;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.model.x509.TokenComparator;
@@ -613,7 +613,7 @@ public abstract class DiagnosticDataBuilder {
 		if (tlInfo.getParent() != null) {
 			result.setParent(getXmlTrustSourceList(tlInfo.getParent()));
 		}
-		ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
+		TLParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getTSLType() != null) {
 				result.setType(parsingCacheInfo.getTSLType().getUri());

@@ -21,33 +21,21 @@
 package eu.europa.esig.dss.tsl.source;
 
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
-import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.tsl.cache.CacheKey;
+import eu.europa.esig.dss.validation.job.source.DocumentSource;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPServiceType;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
  * Represent a Trusted List source
  */
-public class TLSource {
+public class TLSource extends DocumentSource {
 
 	/** List of default supported TL versions */
 	private static final List<Integer> DEFAULT_SUPPORTED_TL_VERSIONS = Arrays.asList(5, 6);
-
-	/**
-	 * URL
-	 */
-	private String url;
-
-	/**
-	 * Signing certificates for the current TL
-	 */
-	private CertificateSource certificateSource;
 
 	/**
 	 * Allow to filter the collected trust service provider(s) with a predicate
@@ -72,55 +60,12 @@ public class TLSource {
 	 * List of TL Versions accepted for the current TLSource. When defined, an error is returned on structure validation.
 	 */
 	private List<Integer> tlVersions = DEFAULT_SUPPORTED_TL_VERSIONS;
-	
-	/**
-	 * The cached CacheKey value (the key is computed from url parameter)
-	 */
-	private CacheKey cacheKey;
 
 	/**
 	 * Default constructor instantiating object with null values
 	 */
 	public TLSource() {
 		// empty
-	}
-
-	/**
-	 * Gets the TL URL
-	 *
-	 * @return {@link String}
-	 */
-	public String getUrl() {
-		return url;
-	}
-
-	/**
-	 * Sets the TL access URL
-	 *
-	 * @param url {@link String}
-	 */
-	public void setUrl(String url) {
-		Objects.requireNonNull(url, "URL cannot be null.");
-		this.url = url;
-	}
-
-	/**
-	 * Gets the certificate source to be used for TL validation
-	 *
-	 * @return {@link CertificateSource}
-	 */
-	public CertificateSource getCertificateSource() {
-		return certificateSource;
-	}
-
-	/**
-	 * Sets the certificate source to be used for TL validation
-	 *
-	 * @param certificateSource {@link CertificateSource}
-	 */
-	public void setCertificateSource(CertificateSource certificateSource) {
-		Objects.requireNonNull(certificateSource);
-		this.certificateSource = certificateSource;
 	}
 
 	/**
@@ -201,18 +146,6 @@ public class TLSource {
 	 */
 	public void setTLVersions(List<Integer> tlVersions) {
 		this.tlVersions = tlVersions;
-	}
-
-	/**
-	 * Gets the TL cache key
-	 *
-	 * @return {@link CacheKey}
-	 */
-	public CacheKey getCacheKey() {
-		if (cacheKey == null) {
-			cacheKey = new CacheKey(url);
-		}
-		return cacheKey;
 	}
 
 }

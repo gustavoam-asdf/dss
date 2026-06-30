@@ -20,14 +20,17 @@
  */
 package eu.europa.esig.dss.tsl.job;
 
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
-import eu.europa.esig.dss.tsl.cache.CacheKey;
-import eu.europa.esig.dss.tsl.dto.ParsingCacheDTO;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
+import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
+import eu.europa.esig.dss.validation.job.cache.CacheKey;
+import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
+import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +45,7 @@ public class TLSourceBuilder {
 	private final List<LOTLSource> lotlList;
 
 	/** The parsing LOTL results */
-	private final Map<CacheKey, ParsingCacheDTO> parsingResults;
+	private final Map<CacheKey, CachedEntry<ParsingResult>> parsingResults;
 
 	/**
 	 * Default constructor
@@ -50,7 +53,7 @@ public class TLSourceBuilder {
 	 * @param lotlList a list of {@link LOTLSource}s
 	 * @param parsingResults a map of LOTL parsing results
 	 */
-	public TLSourceBuilder(List<LOTLSource> lotlList, Map<CacheKey, ParsingCacheDTO> parsingResults) {
+	public TLSourceBuilder(List<LOTLSource> lotlList, Map<CacheKey, CachedEntry<ParsingResult>> parsingResults) {
 		this.lotlList = lotlList;
 		this.parsingResults = parsingResults;
 	}
@@ -64,9 +67,10 @@ public class TLSourceBuilder {
 		List<TLSource> result = new ArrayList<>();
 		if (lotlList != null) {
 			for (LOTLSource lotlSource : lotlList) {
-				ParsingCacheDTO cachedResult = parsingResults.get(lotlSource.getCacheKey());
-				if (cachedResult != null && cachedResult.isResultExist()) {
-					List<OtherTSLPointer> tlPointers = cachedResult.getTlOtherPointers();
+				CachedEntry<ParsingResult> cachedResult = parsingResults.get(lotlSource.getCacheKey());
+				TLParsingCacheDTO parsingCacheDTO = toParsingDTO(cachedResult);
+				if (parsingCacheDTO != null && parsingCacheDTO.isResultExist()) {
+					List<OtherTSLPointer> tlPointers = parsingCacheDTO.getTlOtherPointers();
 					for (OtherTSLPointer otherTSLPointerDTO : tlPointers) {
 						result.add(getTLSource(otherTSLPointerDTO, lotlSource));
 					}
@@ -74,6 +78,10 @@ public class TLSourceBuilder {
 			}
 		}
 		return result;
+	}
+
+	private TLParsingCacheDTO toParsingDTO(CachedEntry<ParsingResult> parsingCacheEntry) {
+		return new TLParsingCacheDTOBuilder(parsingCacheEntry).build();
 	}
 
 	private TLSource getTLSource(OtherTSLPointer otherTSLPointerDTO, LOTLSource lotlSource) {

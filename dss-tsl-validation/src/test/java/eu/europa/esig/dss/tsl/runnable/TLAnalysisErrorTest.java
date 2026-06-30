@@ -23,8 +23,8 @@ package eu.europa.esig.dss.tsl.runnable;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
 import eu.europa.esig.dss.tsl.source.TLSource;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;

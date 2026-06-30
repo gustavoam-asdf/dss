@@ -21,6 +21,7 @@
 package eu.europa.esig.dss.model.tsl;
 
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.model.job.ValidationJobSummary;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  * Computes summary for TLValidationJob
  *
  */
-public class TLValidationJobSummary implements Serializable {
+public class TLValidationJobSummary implements ValidationJobSummary<TLInfo, LOTLInfo>, Serializable {
 
 	private static final long serialVersionUID = -1035891155378415013L;
 
@@ -151,6 +152,16 @@ public class TLValidationJobSummary implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public List<LOTLInfo> getDocumentListInfos() {
+		return getLOTLInfos();
+	}
+
+	@Override
+	public List<TLInfo> getOtherDocumentInfos() {
+		return getOtherTLInfos();
 	}
 
 }

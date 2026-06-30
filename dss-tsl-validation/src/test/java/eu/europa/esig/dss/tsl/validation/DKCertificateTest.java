@@ -27,6 +27,7 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

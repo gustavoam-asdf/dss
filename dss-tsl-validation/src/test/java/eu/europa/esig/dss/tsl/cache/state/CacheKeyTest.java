@@ -20,12 +20,11 @@
  */
 package eu.europa.esig.dss.tsl.cache.state;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
+import eu.europa.esig.dss.validation.job.cache.CacheKey;
 import org.junit.jupiter.api.Test;
 
-import eu.europa.esig.dss.tsl.cache.CacheKey;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class CacheKeyTest {
 	

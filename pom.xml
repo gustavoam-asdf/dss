@@ -148,6 +148,7 @@
 		<module>dss-asic-common</module>
 		<module>dss-asic-xades</module>
 		<module>dss-asic-cades</module>
+		<module>dss-validation-job</module>
 		<module>dss-lote-validation</module>
 		<module>dss-lote-validation-xml</module>
 		<module>dss-lote-validation-json</module>
@@ -209,7 +210,7 @@
 
 		<module>dss-jacoco-coverage</module>
 		<module>dss-bom</module>
-    </modules>
+	</modules>
 
 	<build>
 		<plugins>
@@ -889,6 +890,11 @@
 			<dependency>
 				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
 				<artifactId>dss-timestamp-remote-soap</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>eu.europa.ec.joinup.sd-dss</groupId>
+				<artifactId>dss-validation-job</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
