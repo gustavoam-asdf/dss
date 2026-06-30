@@ -111,6 +111,8 @@ public class MdocDeviceResponseEAAPresentationAnalyzer extends AbstractMdocEAAPr
      * Gets a keyBinding signature embedded within a 'deviceSigned'/'deviceAuth' header
      *
      * @param deviceSigned {@link MdocDeviceSigned}
+     * @param docType {@link String}
+     * @param deviceNameSpaces {@link MdocDeviceNameSpaces}
      * @return {@link AdvancedSignature}
      */
     protected AdvancedSignature getKeyBindingSignature(MdocDeviceSigned deviceSigned, String docType, MdocDeviceNameSpaces deviceNameSpaces) {

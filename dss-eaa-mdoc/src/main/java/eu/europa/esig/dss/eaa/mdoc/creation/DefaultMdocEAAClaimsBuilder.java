@@ -274,7 +274,8 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
 
     /**
      * Gets mdoc claim generated for the birth last name parameter
-     *v
+     *
+     * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
      * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getBirthFamilyName(MdocEAAClaimParameters selectivelyDisclosable) {
@@ -535,7 +536,7 @@ public abstract class DefaultMdocEAAClaimsBuilder implements MdocEAAClaimsBuilde
      * Gets mdoc claim generated for the biometric template face
      *
      * @param selectivelyDisclosable {@link MdocEAAClaimParameters}
-     * @return {@link MdocEAAClaim
+     * @return {@link MdocEAAClaim}
      */
     protected MdocEAAClaim getBiometricTemplateFace(MdocEAAClaimParameters selectivelyDisclosable) {
         return ISO232201MIDEAAClaimsBuilder.getInstance().getBiometricTemplateFace(selectivelyDisclosable);

@@ -31,6 +31,7 @@ public class MdocEAADisclosure extends AbstractEAADisclosure {
     /**
      * Constructor to instantiate a void
      *
+     * @param digestId unique integer identifying the element within the EAA namespace
      * @param issuerSignedItemBytes serialized IssuerSignedItemBytes object
      */
     protected MdocEAADisclosure(final int digestId, final CBORByteString issuerSignedItemBytes) {

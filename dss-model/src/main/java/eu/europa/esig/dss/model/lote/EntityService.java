@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Contains information about an entity service
  *
+ * @param <S> implementation of {@link ServiceStatusAndInformationExtensions}
  */
 public interface EntityService<S extends ServiceStatusAndInformationExtensions> extends Serializable {
 

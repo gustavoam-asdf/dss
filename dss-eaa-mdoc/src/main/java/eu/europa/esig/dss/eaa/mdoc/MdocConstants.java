@@ -9,6 +9,13 @@ import eu.europa.esig.dss.cbades.cbor.CBORObjectFactory;
  */
 public class MdocConstants {
 
+    /**
+     * Utils class
+     */
+    private MdocConstants() {
+        // singleton
+    }
+
     /* List of supported mdoc document types */
 
     /** mdoc document type as defined in ISO/IEC 18013-5 */

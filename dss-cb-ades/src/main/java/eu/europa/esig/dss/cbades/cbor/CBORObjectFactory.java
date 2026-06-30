@@ -73,6 +73,7 @@ public class CBORObjectFactory {
      * This method coverts the given object to a DataItem instance, corresponding to the object's format
      *
      * @param object to be converted
+     * @return {@link DataItem}
      */
     public static DataItem toDataItem(Object object) {
         if (object == null) {

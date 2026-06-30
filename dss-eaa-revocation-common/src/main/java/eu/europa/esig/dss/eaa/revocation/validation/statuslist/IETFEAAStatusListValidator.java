@@ -17,7 +17,7 @@ import java.util.ServiceLoader;
 
 /**
  * Performs validation of the EAA status using the Token Status List mechanism, as defined in
- * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
+ * <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>.
  *
  */
 public class IETFEAAStatusListValidator implements EAARevocationValidator {

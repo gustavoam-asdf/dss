@@ -51,6 +51,7 @@ public class ClaimNull extends AbstractClaim {
      * Constructor with claim name, namespace and selectively disclosable status and a parent claim provided
      *
      * @param name {@link String}
+     * @param namespace {@link String}
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      * @param parent {@link Claim} representing the parent claim, when applicable

@@ -31,7 +31,9 @@ public class JWTStatusListValidator extends AbstractEAAStatusListValidator {
     }
 
     /**
-     * Empty constructor
+     * Constructor with the status list
+     *
+     * @param statusListDocument byte array of the status list document
      */
     public JWTStatusListValidator(final byte[] statusListDocument) {
         super(statusListDocument);

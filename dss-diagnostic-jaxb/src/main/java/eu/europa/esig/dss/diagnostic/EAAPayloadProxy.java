@@ -800,7 +800,7 @@ public class EAAPayloadProxy {
 
     /**
      * Gets the map of claims attesting whether the User to whom the person identification data relates is
-     * at least NN years old. N <> 18. Multiple instances of this attribute may be present, provided the value
+     * at least NN years old. N &lt;&gt; 18. Multiple instances of this attribute may be present, provided the value
      * of NN is different in each of them. If present, the requirements in clause 7.2.5 of ISO/IEC 18013-5
      * are applicable for these attributes.
      *

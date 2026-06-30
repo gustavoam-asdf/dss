@@ -5,7 +5,7 @@ import eu.europa.esig.dss.spi.eaa.EAARevocationToken;
 
 /**
  * Executes an EAA Status request for the given EAA token using the Status List Token mechanism, as defined in
- * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
+ * <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>.
  *
  */
 public interface EAARevocationSource {

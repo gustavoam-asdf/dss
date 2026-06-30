@@ -7,6 +7,7 @@ import java.util.Map;
 /**
  * This class is a DTO containing information extracted for a trusted entity (TS 119 602)
  *
+ * @param <S> implementation of {@link EntityService}
  */
 public class TrustedEntity<S extends EntityService> implements Serializable {
 

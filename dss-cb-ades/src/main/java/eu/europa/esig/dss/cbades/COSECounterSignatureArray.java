@@ -31,6 +31,13 @@ public class COSECounterSignatureArray implements COSECounterSignStructure {
     }
 
     /**
+     * Default constructor
+     */
+    public COSECounterSignatureArray() {
+        // empty
+    }
+
+    /**
      * Sets the context of the COSE counter signature
      *
      * @param context {@link COSESignatureType}

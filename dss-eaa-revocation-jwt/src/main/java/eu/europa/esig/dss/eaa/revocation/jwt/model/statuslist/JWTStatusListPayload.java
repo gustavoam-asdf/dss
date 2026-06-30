@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Represents a payload of a Token Status List (TLS), as defined in
- * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
+ * <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>.
  */
 public class JWTStatusListPayload extends JWTPayload implements StatusListPayload {
 

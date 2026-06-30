@@ -15,6 +15,7 @@ import java.util.Objects;
 /**
  * An abstract implementation of a CBOR object wrapper
  *
+ * @param <D> the implementation of {@link DataItem}
  */
 public abstract class AbstractCBORObject<D extends DataItem> implements CBORObject {
 

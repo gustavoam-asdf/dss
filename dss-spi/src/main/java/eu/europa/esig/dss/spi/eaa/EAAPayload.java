@@ -438,7 +438,7 @@ public interface EAAPayload extends Claim {
 
     /**
      * Gets a map of elements attesting whether the User to whom the person identification data relates is
-     * at least NN years old. N <> 18. Multiple instances of this attribute may be present, provided the value of
+     * at least NN years old. N &lt;&gt; 18. Multiple instances of this attribute may be present, provided the value of
      * NN is different in each of them. If present, the requirements in clause 7.2.5 of ISO/IEC 18013-5 are
      * applicable for these attributes.
      *

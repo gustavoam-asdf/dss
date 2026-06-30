@@ -10,6 +10,8 @@ public class XPathQueryIdentifierParameter extends XPathQueryAttributeParameter 
 
     /**
      * Default constructor
+     *
+     * @param idValue {@link String}
      */
     public XPathQueryIdentifierParameter(final String idValue) {
         super(XMLDSigAttribute.ID, idValue, true);

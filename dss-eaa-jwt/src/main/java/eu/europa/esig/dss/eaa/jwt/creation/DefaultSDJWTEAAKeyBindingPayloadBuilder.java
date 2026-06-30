@@ -25,6 +25,13 @@ import java.util.Map;
  */
 public class DefaultSDJWTEAAKeyBindingPayloadBuilder implements SDJWTEAAKeyBindingPayloadBuilder {
 
+    /**
+     * Default constructor
+     */
+    public DefaultSDJWTEAAKeyBindingPayloadBuilder() {
+        // empty
+    }
+
     @Override
     public DSSDocument buildPayload(final DSSDocument eaa, final List<SDJWTEAADisclosure> disclosures, final SDJWTKeyBindingParameters keyBindingParameters) {
         StringBuilder signedJWT = new StringBuilder();

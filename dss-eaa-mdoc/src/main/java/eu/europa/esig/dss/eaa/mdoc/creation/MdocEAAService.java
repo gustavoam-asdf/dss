@@ -278,6 +278,11 @@ public class MdocEAAService extends AbstractEAAService<CBAdESSignatureParameters
         return getCBAdESService().signDocument(deviceAuthentication, signatureParameters, signatureValue);
     }
 
+    /**
+     * This method verifies the validity of the key binding signature parameters
+     *
+     * @param signatureParameters {@link CBAdESSignatureParameters}
+     */
     protected void ensureKeyBindingSignatureParameters(final CBAdESSignatureParameters signatureParameters) {
         Objects.requireNonNull(signatureParameters, "signatureParameters cannot be null!");
 

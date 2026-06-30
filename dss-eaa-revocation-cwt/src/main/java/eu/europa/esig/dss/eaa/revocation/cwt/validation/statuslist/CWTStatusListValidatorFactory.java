@@ -4,9 +4,9 @@ import eu.europa.esig.dss.eaa.revocation.validation.statuslist.StatusListValidat
 import eu.europa.esig.dss.eaa.revocation.validation.statuslist.StatusListValidatorFactory;
 
 /**
- * Loads a corresponding validator for a Token Status List (TSL) provided in CWT Format, 
+ * Loads a corresponding validator for a Token Status List (TSL) provided in CWT Format,
  * as defined in "5.2. Status List Token in CWT Format" of
- * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
+ * <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>.
  */
 public class CWTStatusListValidatorFactory implements StatusListValidatorFactory {
 

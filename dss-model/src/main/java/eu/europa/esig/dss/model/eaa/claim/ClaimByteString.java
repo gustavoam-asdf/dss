@@ -8,7 +8,7 @@ import java.util.Base64;
  *
  */
 public class ClaimByteString extends AbstractClaim {
-    
+
     private static final long serialVersionUID = -8229099082350076412L;
 
     /** byte[] value of the claim */
@@ -17,7 +17,7 @@ public class ClaimByteString extends AbstractClaim {
     /**
      * Default constructor
      *
-     * @param value {@link byte[]} value of the claim
+     * @param value byte array of the value of the claim
      */
     public ClaimByteString(final byte[] value) {
         this(null, value);
@@ -27,7 +27,7 @@ public class ClaimByteString extends AbstractClaim {
      * Constructor with claim name provided
      *
      * @param name {@link String} claim header name
-     * @param value {@link byte[]} value of the claim
+     * @param value byte array of the value of the claim
      */
     public ClaimByteString(final String name, final byte[] value) {
         this(name, value, false);
@@ -37,7 +37,7 @@ public class ClaimByteString extends AbstractClaim {
      * Constructor with claim name and selectively disclosable status provided
      *
      * @param name {@link String} claim header name
-     * @param value {@link byte[]} value of the claim
+     * @param value byte array of the value of the claim
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      */
@@ -49,7 +49,7 @@ public class ClaimByteString extends AbstractClaim {
      * Constructor with claim name and selectively disclosable status and a parent claim provided
      *
      * @param name {@link String} claim header name
-     * @param value {@link byte[]} value of the claim
+     * @param value byte array of the value of the claim
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      * @param parent {@link Claim} representing the parent claim, when applicable
@@ -63,7 +63,7 @@ public class ClaimByteString extends AbstractClaim {
      *
      * @param name {@link String} claim header name
      * @param namespace {@link String} representing the original namespace (NOTE: used in mdoc)
-     * @param value {@link byte[]} value of the claim
+     * @param value byte array of the value of the claim
      * @param selectivelyDisclosable whether the claim is selectively disclosable
      *                               (can be TRUE only when the value of claim is provided in a form of disclosure)
      * @param parent {@link Claim} representing the parent claim, when applicable

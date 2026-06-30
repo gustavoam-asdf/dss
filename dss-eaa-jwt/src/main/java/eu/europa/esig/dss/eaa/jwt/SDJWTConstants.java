@@ -25,6 +25,7 @@ public class SDJWTConstants {
 
     // Key Binding payload parameters
 
+    /** SD-JWT key binding payload "sd_hash" header */
     public static final String SD_HASH = "sd_hash";
 
     // RFC 9901 payload header parameters

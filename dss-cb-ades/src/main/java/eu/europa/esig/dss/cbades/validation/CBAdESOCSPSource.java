@@ -29,6 +29,8 @@ public class CBAdESOCSPSource extends OfflineOCSPSource {
 
     /**
      * Default constructor
+     *
+     * @param uHeaders {@link CBAdESUHeaders}
      */
     public CBAdESOCSPSource(final CBAdESUHeaders uHeaders) {
         this.uHeaders = uHeaders;

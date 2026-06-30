@@ -68,6 +68,13 @@ public class MdocEAAPayloadParameters extends AbstractEAAPayloadParameters {
     private MdocEAAClaimParameters selectivelyDisclosableParameters;
 
     /**
+     * Default constructor to instantiate ISO/IEC 18013-5 mdoc Payload parameters
+     */
+    public MdocEAAPayloadParameters() {
+        // empty
+    }
+
+    /**
      * Gets version of the "MobileSecurityObject" structure.
      *
      * @return {@link String}

@@ -34,6 +34,8 @@ public abstract class COSEKeyParser {
 
     /**
      * Default constructor
+     *
+     * @param coseKey {@link MdocClaimDeviceKey}
      */
     protected COSEKeyParser(final MdocClaimDeviceKey coseKey) {
         this.coseKey = coseKey;

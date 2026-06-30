@@ -48,7 +48,9 @@ public class CWTIdentifierListValidator implements IdentifierListValidator {
     }
 
     /**
-     * Empty constructor
+     * Constructor with the identifier list
+     *
+     * @param identifierListDocument byte array of the identifier list document
      */
     public CWTIdentifierListValidator(final byte[] identifierListDocument) {
         this.identifierListDocument = identifierListDocument;
@@ -161,6 +163,7 @@ public class CWTIdentifierListValidator implements IdentifierListValidator {
      * Gets the EAA Status for the given {@code eaa} based on the information retrieved from {@code identifierListPayload}
      *
      * @param identifierListPayload {@link IdentifierListPayload} of the retrieved token
+     * @param identifier byte array of the identifier of the EAA
      * @return {@link EAAStatus}
      */
     protected EAAStatus getEAAStatus(IdentifierListPayload identifierListPayload, byte[] identifier) {

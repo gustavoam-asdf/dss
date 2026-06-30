@@ -294,7 +294,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Gets a reproduction of the mDL holder’s portrait.
      *
-     * @return {@link byte[]}
+     * @return byte array of the portrait
      */
     public byte[] getPortrait() {
         return portrait;
@@ -303,7 +303,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Sets a reproduction of the mDL holder’s portrait.
      *
-     * @param portrait {@link byte[]}
+     * @param portrait byte array of the portrait
      */
     public void setPortrait(byte[] portrait) {
         this.portrait = portrait;
@@ -509,7 +509,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Gets an image of the signature or usual mark of the mDL holder, see 7.2.7 ISO/IEC 18013-5.
      *
-     * @return {@link byte[]}
+     * @return byte array
      */
     public byte[] getSignatureUsualMark() {
         return signatureUsualMark;
@@ -518,7 +518,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Sets an image of the signature or usual mark of the mDL holder, see 7.2.7 ISO/IEC 18013-5.
      *
-     * @param signatureUsualMark {@link byte[]}
+     * @param signatureUsualMark byte array
      */
     public void setSignatureUsualMark(byte[] signatureUsualMark) {
         this.signatureUsualMark = signatureUsualMark;
@@ -527,7 +527,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Gets a reproduction of the holder’s fingerprint data (TBC).
      *
-     * @return {@link byte[]}
+     * @return the bytes of the fingerprint
      */
     public byte[] getFingerprint() {
         return fingerprint;
@@ -536,7 +536,7 @@ public class MdocEAAClaimParameters extends AbstractEAAClaimParameters<MdocEAACl
     /**
      * Sets a reproduction of the holder’s fingerprint data (TBC).
      *
-     * @param fingerprint {@link byte[]}
+     * @param fingerprint the bytes of the fingerprint
      */
     public void setFingerprint(byte[] fingerprint) {
         this.fingerprint = fingerprint;

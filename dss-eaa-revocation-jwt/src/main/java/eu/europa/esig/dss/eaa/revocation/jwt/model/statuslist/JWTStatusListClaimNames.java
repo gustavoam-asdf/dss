@@ -2,7 +2,7 @@ package eu.europa.esig.dss.eaa.revocation.jwt.model.statuslist;
 
 /**
  * Contains a list of claim names specified within the
- * {@link <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>}.
+ * <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-20.html">IETF Token Status List (TSL)</a>.
  */
 public final class JWTStatusListClaimNames {
 

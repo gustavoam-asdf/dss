@@ -1,5 +1,14 @@
 package eu.europa.esig.dss.diagnostic;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import eu.europa.esig.dss.diagnostic.claim.AddressClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeEqualOrOverClaimWrapper;
 import eu.europa.esig.dss.diagnostic.claim.AgeOverNNClaimWrapper;
@@ -18,22 +27,13 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlClaim;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestAlgoAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlDigestMatcher;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAA;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlEAARevocationStatus;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlEAASignature;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EAACategory;
 import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.EAAType;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Provides a user-friendly interface for information extraction from a {@code eu.europa.esig.dss.diagnostic.jaxb.XmlEAA} JAXB object
@@ -255,6 +255,12 @@ public class EAAWrapper extends AbstractTokenProxy {
         return null;
     }
 
+    /**
+     * Gets a list of claims incorporated within the key binding payload,
+     * which are not (yet) directly supported by the implementation.
+     *
+     * @return a list of {@link ClaimWrapper}s
+     */
     public List<ClaimWrapper> getOtherKeyBindingPayloadClaims() {
         if (eaa.getKeyBindingPayload() != null && eaa.getKeyBindingPayload().getOtherClaim() != null) {
             return eaa.getKeyBindingPayload().getOtherClaim().stream().map(ClaimWrapper::new).collect(Collectors.toList());
@@ -380,6 +386,11 @@ public class EAAWrapper extends AbstractTokenProxy {
         return getPayloadClaimTextValue(getEAAPayload().getEAACategory());
     }
 
+    /**
+     * Gets the EAA Qualification based on the category URN provided in the EAA payload
+     *
+     * @return {@link EAAQualification}
+     */
     public EAAQualification getCategoryQualification() {
         String eaaCategory = getEAACategory();
         if (EAACategory.EU_QEAA.getUrn().equals(eaaCategory)) {
@@ -1288,9 +1299,9 @@ public class EAAWrapper extends AbstractTokenProxy {
             return null;
         }
         /*
-         * A biometric template identifier has the format biometric_template_xx 
-         * where xx shall be replaced with the corresponding “Abstract value name” found in ISO/IEC 19785-3:2020, 
-         * Table 7, according to the following convention: capitalized characters are replaced with their 
+         * A biometric template identifier has the format biometric_template_xx
+         * where xx shall be replaced with the corresponding “Abstract value name” found in ISO/IEC 19785-3:2020,
+         * Table 7, according to the following convention: capitalized characters are replaced with their
          * lowercase equivalent and spaces or non-alphanumeric characters are replaced by underscores (_).
          */
         type = normalizeType(type);
@@ -1304,7 +1315,7 @@ public class EAAWrapper extends AbstractTokenProxy {
         }
         return null;
     }
-    
+
     private String normalizeType(String type) {
         if (type == null) {
             return null;
@@ -1725,7 +1736,7 @@ public class EAAWrapper extends AbstractTokenProxy {
      * Gets a list of claims incorporated within the EAA Payload or provided as disclosures,
      * which are not (yet) directly supported by the implementation.
      *
-     * @return a lust of {@link ClaimWrapper}s
+     * @return a list of {@link ClaimWrapper}s
      */
     public List<ClaimWrapper> getOtherClaims() {
         return getEAAPayload().getOtherClaims();
@@ -1769,7 +1780,7 @@ public class EAAWrapper extends AbstractTokenProxy {
         return result;
     }
 
-    public List<ClaimWrapper> getSelectivelyDisclosableClaimsRecursively(ClaimWrapper claimWrapper) {
+    private List<ClaimWrapper> getSelectivelyDisclosableClaimsRecursively(ClaimWrapper claimWrapper) {
         List<ClaimWrapper> result = new ArrayList<>();
         if (claimWrapper.isSelectivelyDisclosable()) {
             result.add(claimWrapper);

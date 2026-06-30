@@ -7,8 +7,16 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 
+/**
+ * Implementation of {@link EAAKeyBindingPayload} for ISO/IEC 18013-5 mdoc
+ */
 public class MdocKeyBindingPayload extends MdocClaimMap implements EAAKeyBindingPayload {
 
+    /**
+     * Default constructor
+     *
+     * @param payload {@link Map}
+     */
     public MdocKeyBindingPayload(final Map<?, ?> payload) {
         super(payload);
     }

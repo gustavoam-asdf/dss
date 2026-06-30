@@ -69,7 +69,7 @@ public class ClaimWrapper {
     /**
      * Gets the claim's namespace (used for mdoc)
      *
-     * @return {@link String)
+     * @return {@link String}
      */
     public String getNamespace() {
         return wrapped.getNamespace();

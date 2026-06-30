@@ -109,6 +109,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
      * @return {@link CBORMap}
      */
     protected CBORMap buildMobileSecurityObject(MdocEAAPayloadParameters payloadParameters) {
@@ -138,6 +139,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
      * @return {@link CBORMap}
      */
     protected CBORMap buildValueDigests(MdocEAAPayloadParameters payloadParameters) {
@@ -290,6 +292,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   proprietary use
      * }
      *
+     * @param keyInfoMap the keyInfo map
      * @return {@link CBORMap}
      */
     protected CBORMap buildKeyInfo(Map<Integer, Object> keyInfoMap) {
@@ -312,6 +315,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param payloadParameters {@link MdocEAAPayloadParameters}
      * @return {@link CBORMap}
      */
     protected CBORMap buildValidityInfo(MdocEAAPayloadParameters payloadParameters) {
@@ -341,6 +345,8 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param identifierList {@link MdocIdentifierList}
+     * @param statusList {@link EAAStatusList}
      * @return {@link CBORMap}
      */
     protected CBORMap buildStatus(MdocIdentifierList identifierList, EAAStatusList statusList) {
@@ -373,6 +379,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   Certificate = bstr
      * }
      *
+     * @param identifierList {@link MdocIdentifierList}
      * @return {@link CBORMap}
      */
     protected CBORMap buildIdentifierListInfo(MdocIdentifierList identifierList) {
@@ -398,6 +405,7 @@ public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayload
      *   }
      * }
      *
+     * @param statusList {@link EAAStatusList}
      * @return {@link CBORMap}
      */
     protected CBORMap buildStatusListInfo(EAAStatusList statusList) {

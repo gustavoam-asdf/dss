@@ -15,6 +15,13 @@ import eu.europa.esig.dss.model.InMemoryDocument;
  */
 public class DefaultMdocEAADeviceAuthenticationBuilder implements MdocEAADeviceAuthenticationBuilder {
 
+    /**
+     * Default constructor
+     */
+    public DefaultMdocEAADeviceAuthenticationBuilder() {
+        // empty
+    }
+
     @Override
     public DSSDocument build(final MdocKeyBindingParameters keyBindingParameters) {
         ensureKeyBindingParameters(keyBindingParameters);
@@ -33,6 +40,11 @@ public class DefaultMdocEAADeviceAuthenticationBuilder implements MdocEAADeviceA
         return new InMemoryDocument(CBORUtils.serializeCborObject(deviceAuthenticationBytes));
     }
 
+    /**
+     * This method verifies the validity the key binding parameters.
+     *
+     * @param keyBindingParameters {@link MdocKeyBindingParameters}
+     */
     protected void ensureKeyBindingParameters(final MdocKeyBindingParameters keyBindingParameters) {
         Objects.requireNonNull(keyBindingParameters, "keyBindingParameters must not be null");
         Objects.requireNonNull(keyBindingParameters.getSessionTranscript(), "SessionTranscript() must not be null");
@@ -43,6 +55,11 @@ public class DefaultMdocEAADeviceAuthenticationBuilder implements MdocEAADeviceA
         }
     }
 
+    /**
+     * Gets the {@link MdocEAADeviceNameSpacesBuilder}
+     *
+     * @return {@link MdocEAADeviceNameSpacesBuilder}
+     */
     protected MdocEAADeviceNameSpacesBuilder getDeviceNameSpacesBuilder(){
         return new DefaultMdocEAADeviceNameSpacesBuilder();
     }

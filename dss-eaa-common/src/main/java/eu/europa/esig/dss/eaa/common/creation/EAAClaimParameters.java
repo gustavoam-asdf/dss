@@ -10,6 +10,7 @@ import java.util.Map;
  * Contains parameters for individual claims to be included within EAA either as selectively disclosable
  * or non-selectively disclosable claims
  *
+ * @param <C> implementation of {@link EAAClaim} for the EAA format
  */
 public interface EAAClaimParameters<C extends EAAClaim> {
 

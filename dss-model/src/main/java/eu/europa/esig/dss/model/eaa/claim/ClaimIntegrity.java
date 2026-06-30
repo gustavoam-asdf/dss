@@ -4,7 +4,7 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 
 /**
  * This claims represents a claim integrity definition, when applicable.
- * This definition is based on {@link <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/">W3C Subresource Integrity</a>}
+ * This definition is based on <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/">W3C Subresource Integrity</a>
  *
  */
 public interface ClaimIntegrity extends Claim {

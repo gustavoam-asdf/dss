@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Contains information about List of Lists (e.g. EU List of Trusted Lists, List of Lists of Trusted Entities, etc.)
  *
+ * @param <L> implementation of {@link ListInfo}
  */
 public interface ListOfListsInfo<L extends ListInfo> extends ListInfo {
 

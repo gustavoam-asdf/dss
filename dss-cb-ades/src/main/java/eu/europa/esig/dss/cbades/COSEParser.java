@@ -100,6 +100,7 @@ public class COSEParser extends AbstractCOSEParser {
      *
      * @param inputStream {@link InputStream} to be validated
      * @return TRUE if the InputStream is supported, FALSE otherwise
+     * @throws IOException if an error occurs on InputStream reading
      */
     public static boolean isSupported(InputStream inputStream) throws IOException {
         try (InputStream is = inputStream) {

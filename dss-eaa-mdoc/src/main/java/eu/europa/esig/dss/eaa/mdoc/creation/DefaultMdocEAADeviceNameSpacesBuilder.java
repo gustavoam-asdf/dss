@@ -17,6 +17,13 @@ import eu.europa.esig.dss.eaa.mdoc.creation.claim.MdocEAAClaim;
  */
 public class DefaultMdocEAADeviceNameSpacesBuilder implements MdocEAADeviceNameSpacesBuilder {
 
+    /**
+     * Default constructor
+     */
+    public DefaultMdocEAADeviceNameSpacesBuilder(){
+        //empty
+    }
+
     @Override
     public CBORByteString buildDeviceNameSpacesBytes(final MdocEAADeviceSignedParameters mdocEAADeviceSignedParameters) {
         Map<String, List<MdocEAAClaim>> groupedClaims = mdocEAADeviceSignedParameters.getDeviceSignedDataElements()

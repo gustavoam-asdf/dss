@@ -6,6 +6,10 @@ import eu.europa.esig.dss.spi.WebTokenPayload;
 
 import java.util.Date;
 
+/**
+ * Represents a payload of the RFC 8392 "CBOR Web Token (CWT)"
+ *
+ */
 public class CWTPayload implements WebTokenPayload {
 
     /** Map representing a CWT payload */

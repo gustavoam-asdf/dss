@@ -35,7 +35,9 @@ public class CWTStatusListValidator extends AbstractEAAStatusListValidator {
     }
 
     /**
-     * Empty constructor
+     * Constructor with the status list
+     *
+     * @param statusListDocument byte array of the status list document
      */
     public CWTStatusListValidator(final byte[] statusListDocument) {
         super(statusListDocument);

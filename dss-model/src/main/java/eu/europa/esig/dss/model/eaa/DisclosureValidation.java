@@ -32,6 +32,8 @@ public class DisclosureValidation extends ReferenceValidation {
 
     /**
      * Constructor with a provided disclosure
+     *
+     * @param disclosure {@link ValidationDisclosure}
      */
     public DisclosureValidation(ValidationDisclosure disclosure) {
         Objects.requireNonNull(disclosure, "Disclosure cannot be null!");

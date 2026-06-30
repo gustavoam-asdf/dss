@@ -35,6 +35,13 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     private SDJWTEAAClaimBuilder claimBuilder = new DefaultSDJWTEAAClaimBuilder();
 
     /**
+     * Default constructor
+     */
+    public SDJWTPayloadBuilder() {
+        // empty
+    }
+
+    /**
      * Sets a disclosure builder.
      * Default : {@code eu.europa.esig.dss.eaa.jwt.creation.DefaultSDJWTDisclosureBuilder}
      *
@@ -235,11 +242,12 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
     /**
      * Build the disclosure for the given claim
      *
-     * @param claim
-     *         the claim
-     * @param digestAlgorithm
-     *         the digest algorithm
-     * @return {@link String}
+     * @param dtx {@link DisclosureTraversalContext}
+     * @param claim the claim
+     * @param digestAlgorithm the digest algorithm
+     * @param secureRandom {@link SecureRandom}
+     * @param shuffleHashes if the hashes should be shuffled
+     * @return {@link SDJWTEAADisclosure}
      */
     protected SDJWTEAADisclosure buildDisclosure(DisclosureTraversalContext dtx, SDJWTEAAClaim claim, DigestAlgorithm digestAlgorithm, SecureRandom secureRandom, boolean shuffleHashes) {
         Object claimValue = getClaimValue(dtx, claim, digestAlgorithm, secureRandom, shuffleHashes);

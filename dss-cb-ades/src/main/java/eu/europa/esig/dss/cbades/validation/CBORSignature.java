@@ -746,7 +746,7 @@ public class CBORSignature {
      * provided there is no conflicting information.
      *
      * @param headerKey {@link CBORObject} identifier of the header
-     * @return {@link CBORArray) value if header is identified, NULL otherwise
+     * @return {@link CBORArray} value if header is identified, NULL otherwise
      */
     public CBORArray getProtectedHeaderValueAsArray(CBORObject headerKey) {
         CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
@@ -762,7 +762,7 @@ public class CBORSignature {
      * provided there is no conflicting information.
      *
      * @param headerKey {@link CBORObject} identifier of the header
-     * @return {@link CBORMap) value if header is identified, NULL otherwise
+     * @return {@link CBORMap} value if header is identified, NULL otherwise
      */
     public CBORMap getProtectedHeaderValueAsMap(CBORObject headerKey) {
         CBORObject protectedHeaderValue = getProtectedHeaderValue(headerKey);
@@ -872,7 +872,7 @@ public class CBORSignature {
      * This method returns a CBORArray value extracted from unprotected header of the signature
      *
      * @param headerKey {@link CBORObject} identifier of the header
-     * @return {@link CBORArray) value if header is identified, NULL otherwise
+     * @return {@link CBORArray} value if header is identified, NULL otherwise
      */
     public CBORArray getUnprotectedHeaderValueAsArray(CBORObject headerKey) {
         CBORObject unprotectedHeaderValue = getUnprotectedHeaderValue(headerKey);

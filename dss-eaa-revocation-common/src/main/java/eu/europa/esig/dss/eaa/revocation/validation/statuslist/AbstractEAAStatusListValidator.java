@@ -30,14 +30,16 @@ public abstract class AbstractEAAStatusListValidator implements StatusListValida
     /**
      * Empty constructor
      */
-    public AbstractEAAStatusListValidator() {
+    protected AbstractEAAStatusListValidator() {
         // empty
     }
 
     /**
-     * Empty constructor
+     * Constructor with the status list
+     *
+     * @param statusListDocument byte array of the status list document
      */
-    public AbstractEAAStatusListValidator(final byte[] statusListDocument) {
+    protected AbstractEAAStatusListValidator(final byte[] statusListDocument) {
         this.statusListDocument = statusListDocument;
     }
 
@@ -97,6 +99,7 @@ public abstract class AbstractEAAStatusListValidator implements StatusListValida
      * Gets the EAA Status for the given {@code eaa} based on the information retrieved from {@code statusListPayload}
      *
      * @param statusListPayload {@link StatusListPayload} of the retrieved token
+     * @param index position of the status of the token in question
      * @return {@link EAAStatus}
      */
     protected EAAStatus getEAAStatus(StatusListPayload statusListPayload, int index) {

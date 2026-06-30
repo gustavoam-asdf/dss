@@ -74,6 +74,7 @@ public class CBAdESBuilder {
      * Generic builder for a custom implementation
      *
      * @param parameters {@link CBAdESSignatureParameters}
+     * @param cbadesLevelBaselineB {@link CBAdESLevelBaselineB}
      */
     protected CBAdESBuilder(final CBAdESSignatureParameters parameters, final CBAdESLevelBaselineB cbadesLevelBaselineB) {
         Objects.requireNonNull(parameters, "SignatureParameters must be defined!");

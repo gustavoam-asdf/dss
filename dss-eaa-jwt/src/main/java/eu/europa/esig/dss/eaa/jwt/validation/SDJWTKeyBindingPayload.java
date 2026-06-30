@@ -8,6 +8,9 @@ import eu.europa.esig.dss.model.eaa.claim.ClaimDate;
 import eu.europa.esig.dss.model.eaa.claim.ClaimString;
 import eu.europa.esig.dss.spi.eaa.EAAKeyBindingPayload;
 
+/**
+ * Implementation of {@link EAAKeyBindingPayload} for SD-JWT EAA
+ */
 public class SDJWTKeyBindingPayload extends SDJWTClaimMap implements EAAKeyBindingPayload {
 
     SDJWTKeyBindingPayload(final Map<String, Object> payload) {

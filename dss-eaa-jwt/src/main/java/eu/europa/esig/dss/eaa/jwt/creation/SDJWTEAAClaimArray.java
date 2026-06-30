@@ -124,10 +124,20 @@ public class SDJWTEAAClaimArray extends SDJWTEAAClaim implements EAAClaimArray<S
         return (List<SDJWTEAAClaim>) getValue();
     }
 
+    /**
+     * Adds a decoy digest to the claim.
+     *
+     * @param digest the decoy digest to add
+     */
     public void addDecoyDigest(String digest) {
         decoyDigests.add(digest);
     }
 
+    /**
+     * Gets the decoy digests of this claim
+     *
+     * @return The list of decoy digests
+     */
     public List<String> getDecoyDigests() {
         return Collections.unmodifiableList(decoyDigests);
     }

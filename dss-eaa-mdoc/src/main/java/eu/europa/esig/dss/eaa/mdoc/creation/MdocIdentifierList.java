@@ -36,6 +36,7 @@ public class MdocIdentifierList implements Serializable {
      * Constructor with a certificate
      *
      * @param identifier integer
+     * @param certificate {@link CertificateToken}
      * @param uri {@link String}
      */
     public MdocIdentifierList(final byte[] identifier, final String uri, final CertificateToken certificate) {
