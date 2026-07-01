@@ -5,6 +5,8 @@ import eu.europa.esig.dss.eaa.common.creation.claim.EAAClaim;
 /**
  * Builds selective disclosure objects for the given EAA format
  *
+ * @param <C> The implementation of {@link EAAClaim} for the EAA format
+ * @param <D> The implementation of {@link EAADisclosure} for the EAA format
  */
 public interface EAADisclosureBuilder<C extends EAAClaim, D extends EAADisclosure> {
 

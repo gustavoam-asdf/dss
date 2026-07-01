@@ -11,7 +11,11 @@ import java.security.SecureRandom;
 import java.util.Objects;
 
 /**
+ * Abstract implementation of an EAA payload builder.
  *
+ * @param <P> implementation of {@link EAAPayloadParameters} for the EAA format
+ * @param <C> implementation of {@link EAAClaim} for the EAA format
+ * @param <D> implementation of {@link EAADisclosure} for the EAA format
  */
 public abstract class AbstractEAAPayloadBuilder<P extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure> implements EAAPayloadBuilder<P, C, D> {
 

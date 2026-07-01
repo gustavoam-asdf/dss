@@ -371,7 +371,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 
 	/**
 	 * Returns the digest algorithm associated to the algorithm identifiers used within SD-JWT tokens.
-	 * See {@link <a href="https://www.iana.org/assignments/named-information/named-information.xhtml">IANA "Named Information Hash Algorithm" registry</a>}
+	 * See <a href="https://www.iana.org/assignments/named-information/named-information.xhtml">IANA "Named Information Hash Algorithm" registry</a>.
 	 *
 	 * @param sdJwtId the algorithm name according to IANA "Named Information Hash Algorithm" registry
 	 * @return the digest algorithm linked to the given name
@@ -388,9 +388,9 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 
 	/**
 	 * Returns the digest algorithm associated to a subresource integrity definition as defined in
-	 * {@link <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata">W3C Subresource Integrity</a>}.
+	 * <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata">W3C Subresource Integrity</a>.
 	 * The algorithm identifiers are defined in
-	 * {@link <a href="https://www.w3.org/TR/CSP2/#source-list-valid-hashes">W3C Content Security Policy Level 2</a>}.
+	 * <a href="https://www.w3.org/TR/CSP2/#source-list-valid-hashes">W3C Content Security Policy Level 2</a>.
 	 *
 	 * @param srIntegrityId the algorithm name according to W3C "Subresource Integrity"
 	 * @return the digest algorithm linked to the given name
@@ -407,7 +407,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 
 	/**
 	 * Returns the digest algorithm associated with the given identifier, according to
-	 * {@link <a href="https://www.iana.org/assignments/cose/cose.xhtml">IANA CBOR Object Signing and Encryption (COSE)</a>}
+	 * <a href="https://www.iana.org/assignments/cose/cose.xhtml">IANA CBOR Object Signing and Encryption (COSE)</a>.
 	 *
 	 * @param algoId {@link Long} COSE algorithm identifier
 	 * @return the digest algorithm linked to the given identifier
@@ -616,7 +616,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 * Get the algorithm id used for claims integrity definition within SD-JWT.
 	 * <p>
 	 * The allowed values are available at
-	 * {@link <a href="IANA Named Information">https://www.iana.org/assignments/named-information/named-information.xhtml</a>}
+	 * <a href="https://www.iana.org/assignments/named-information/named-information.xhtml">IANA Named Information</a>.
 	 *
 	 * @return the algorithm SD-JWT claim hash identifier
 	 */
@@ -628,7 +628,7 @@ public enum DigestAlgorithm implements OidAndUriBasedEnum {
 	 * Get the algorithm id used for subresource integrity calculation.
 	 * <p>
 	 * The allowed values are available at
-	 * {@link <a href="W3C Subresource Integrity">https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata</a>}
+	 * <a href="https://www.w3.org/TR/2016/REC-SRI-20160623/#integrity-metadata">W3C Subresource Integrity</a>.
 	 *
 	 * @return the algorithm subresource integrity claim id
 	 */

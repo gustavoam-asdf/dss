@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * Contains common parameters used within SD-JWT VC and mdoc implementations
  *
+ * @param <C> implementation of {@link EAAClaim} for the EAA format
  */
 public abstract class AbstractEAAClaimParameters<C extends EAAClaim> implements EAAClaimParameters<C> {
 

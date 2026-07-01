@@ -1,10 +1,11 @@
 package eu.europa.esig.dss.eaa.common.creation.claim;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Interface representing an object claim
+ *
+ * @param <T> The implementation of {@link EAAClaim} for the EAA format
  */
 public interface EAAClaimObject <T extends EAAClaim> extends EAAClaim {
 

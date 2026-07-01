@@ -13,6 +13,16 @@ import java.util.Objects;
 /**
  * Abstract implementation of an EAA creation service.
  *
+ * @param <SP>
+ *         implementation of signature parameters corresponding to the supported signature format
+ * @param <B>
+ *         implementation of EAA payload parameters to the EAA format
+ * @param <C>
+ *         implementation of EAA Claim for the EAA format
+ * @param <D>
+ *         implementation of EAA disclosure for the EAA format
+ * @param <E>
+ *         implementation of EAA key binding parameters for the EAA format
  */
 public abstract class AbstractEAAService<SP extends SerializableSignatureParameters, B extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure, E extends KeyBindingParameters> implements EAAService<SP, B, D, E> {
 

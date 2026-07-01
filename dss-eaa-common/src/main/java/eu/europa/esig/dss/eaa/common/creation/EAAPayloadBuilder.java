@@ -8,6 +8,9 @@ import java.util.List;
 /**
  * Builds the EAA payload according to the provided configuration
  *
+ * @param <P> implementation of {@link EAAPayloadParameters} for the EAA format
+ * @param <C> implementation of {@link EAAClaim} for the EAA format
+ * @param <D> implementation of {@link EAADisclosure} for the EAA format
  */
 public interface EAAPayloadBuilder<P extends EAAPayloadParameters, C extends EAAClaim, D extends EAADisclosure> {
 
