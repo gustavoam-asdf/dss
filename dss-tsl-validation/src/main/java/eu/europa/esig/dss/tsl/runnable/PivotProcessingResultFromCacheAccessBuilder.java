@@ -23,12 +23,10 @@ package eu.europa.esig.dss.tsl.runnable;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.tsl.cache.access.TLCacheAccessByKey;
 import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
-import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
 import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
-import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
+import eu.europa.esig.dss.validation.job.cache.access.AbstractCacheAccessByKey;
 
 /**
  * This class creates an instance of {@code eu.europa.esig.dss.tsl.runnable.PivotProcessingResult}
@@ -38,14 +36,14 @@ import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 public class PivotProcessingResultFromCacheAccessBuilder {
 
     /** Cache access to the given pivot */
-    private final CacheAccessByKey cacheAccessByKey;
+    private final TLCacheAccessByKey cacheAccessByKey;
 
     /**
      * Default constructor
      *
-     * @param cacheAccessByKey {@link CacheAccessByKey}
+     * @param cacheAccessByKey {@link AbstractCacheAccessByKey}
      */
-    public PivotProcessingResultFromCacheAccessBuilder(final CacheAccessByKey cacheAccessByKey) {
+    public PivotProcessingResultFromCacheAccessBuilder(final TLCacheAccessByKey cacheAccessByKey) {
         this.cacheAccessByKey = cacheAccessByKey;
     }
 
@@ -55,18 +53,14 @@ public class PivotProcessingResultFromCacheAccessBuilder {
      * @return {@link PivotProcessingResult}
      */
     public PivotProcessingResult build() {
-        CachedEntry<ParsingResult> parsingCacheEntry = cacheAccessByKey.getParsingReadOnlyResult();
-        OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(toParsingDTO(parsingCacheEntry));
+        TLParsingCacheDTO parsingCacheEntry = cacheAccessByKey.getParsingReadOnlyResult();
+        OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(parsingCacheEntry);
         return new PivotProcessingResult(getDocument(), getCertificateSource(xmlLotlPointer), getLotlLocation(xmlLotlPointer));
-    }
-
-    private TLParsingCacheDTO toParsingDTO(CachedEntry<ParsingResult> parsingCacheEntry) {
-        return new TLParsingCacheDTOBuilder(parsingCacheEntry).build();
     }
 
     private DSSDocument getDocument() {
         if (cacheAccessByKey.getDownloadReadOnlyResult() != null && cacheAccessByKey.getDownloadReadOnlyResult().isResultExist()) {
-            return cacheAccessByKey.getDownloadReadOnlyResult().getCachedResult().getDSSDocument();
+            return cacheAccessByKey.getDownloadReadOnlyResult().getDocument();
         }
         return null;
     }

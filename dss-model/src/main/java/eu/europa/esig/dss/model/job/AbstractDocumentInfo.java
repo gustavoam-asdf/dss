@@ -5,6 +5,12 @@ import eu.europa.esig.dss.model.identifier.Identifier;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Abstract representation of a document validation result,
+ * containing information abour the downoad, parsing and validation statuses.
+ *
+ * @param <P> {@link DocumentInfo}
+ */
 public abstract class AbstractDocumentInfo<P extends DocumentInfo<P>> implements DocumentInfo<P>, Serializable {
 
     private static final long serialVersionUID = -5439324653080984894L;

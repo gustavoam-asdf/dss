@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Synchronizes all caches for the given key
  */
-public class SynchronizerCacheAccess extends ReadOnlyCacheAccess {
+public class SynchronizerCacheAccess extends AbstractCacheAccess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SynchronizerCacheAccess.class);
 
@@ -42,7 +42,7 @@ public class SynchronizerCacheAccess extends ReadOnlyCacheAccess {
 	 * @param validationCache {@link ValidationCache}
 	 */
 	public SynchronizerCacheAccess(final DownloadCache downloadCache, final ParsingCache parsingCache,
-								   final ValidationCache validationCache) {
+	                               final ValidationCache validationCache) {
 		super(downloadCache, parsingCache, validationCache);
 	}
 

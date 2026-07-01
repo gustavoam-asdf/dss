@@ -6,6 +6,10 @@ import eu.europa.esig.dss.validation.job.cache.CachedResult;
 
 import java.util.List;
 
+/**
+ * Interface providing methods to extract information about a download job
+ *
+ */
 public interface DownloadResult extends CachedResult {
 
     /**

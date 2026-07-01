@@ -44,7 +44,7 @@ public class TLAnalysis extends AbstractRunnableTLAnalysis {
 	 * @param latch {@link CountDownLatch}
 	 */
 	public TLAnalysis(TLSource source, CacheAccessByKey cacheAccess, DSSFileLoader dssFileLoader,
-	                  CountDownLatch latch) {
+                      CountDownLatch latch) {
 		super(source, cacheAccess, dssFileLoader, latch);
 	}
 

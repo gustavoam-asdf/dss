@@ -24,18 +24,16 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
+import eu.europa.esig.dss.tsl.cache.access.TLCacheAccessByKey;
 import eu.europa.esig.dss.tsl.download.XmlDownloadTask;
 import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
-import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
 import eu.europa.esig.dss.tsl.parsing.LOTLParsingTask;
 import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.validation.TLValidatorTask;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
+import eu.europa.esig.dss.validation.job.cache.access.AbstractCacheAccessByKey;
 import eu.europa.esig.dss.validation.job.download.DownloadTask;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 import eu.europa.esig.dss.validation.job.runnable.AbstractAnalysis;
 import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 
@@ -48,23 +46,23 @@ import java.util.concurrent.Callable;
 public class PivotProcessing extends AbstractAnalysis implements Callable<PivotProcessingResult> {
 
 	/** The cache access of the LOTL */
-	private final CacheAccessByKey lotlCacheAccess;
+	private final TLCacheAccessByKey lotlCacheAccess;
 
 	/** List of other pivots, to be updated in case of current pivot update */
-	private final List<CacheAccessByKey> preceedingPivotCacheAccessByKeyList;
+	private final List<TLCacheAccessByKey> preceedingPivotCacheAccessByKeyList;
 
 	/**
 	 * Default constructor
 	 *
 	 * @param pivotSource {@link LOTLSource} pivot source
-	 * @param pivotCacheAccess {@link CacheAccessByKey} cache access of the current Pivot to process
-	 * @param lotlCacheAccess {@link CacheAccessByKey} cache access of the corresponding LOTL
-	 * @param preceedingPivotCacheAccessByKeyList a list of {@link CacheAccessByKey} to access other pivots
+	 * @param pivotCacheAccess {@link AbstractCacheAccessByKey} cache access of the current Pivot to process
+	 * @param lotlCacheAccess {@link AbstractCacheAccessByKey} cache access of the corresponding LOTL
+	 * @param preceedingPivotCacheAccessByKeyList a list of {@link AbstractCacheAccessByKey} to access other pivots
 	 * @param dssFileLoader {@link DSSFileLoader}
 	 */
-	public PivotProcessing(final LOTLSource pivotSource, final CacheAccessByKey pivotCacheAccess,
-						   final CacheAccessByKey lotlCacheAccess, List<CacheAccessByKey> preceedingPivotCacheAccessByKeyList,
-						   final DSSFileLoader dssFileLoader) {
+	public PivotProcessing(final LOTLSource pivotSource, final TLCacheAccessByKey pivotCacheAccess,
+	                       final TLCacheAccessByKey lotlCacheAccess, List<TLCacheAccessByKey> preceedingPivotCacheAccessByKeyList,
+	                       final DSSFileLoader dssFileLoader) {
 		super(pivotSource, pivotCacheAccess, dssFileLoader);
 		this.lotlCacheAccess = lotlCacheAccess;
 		this.preceedingPivotCacheAccessByKeyList = preceedingPivotCacheAccessByKeyList;
@@ -76,18 +74,14 @@ public class PivotProcessing extends AbstractAnalysis implements Callable<PivotP
 		if (pivot != null) {
 			parsing(pivot);
 
-			CachedEntry<ParsingResult> parsingCacheEntry = getCacheAccessByKey().getParsingReadOnlyResult();
-			TLParsingCacheDTO parsingResult = toParsingDTO(parsingCacheEntry);
+			TLCacheAccessByKey cacheAccessByKey = (TLCacheAccessByKey) getCacheAccessByKey();
+			TLParsingCacheDTO parsingResult = cacheAccessByKey.getParsingReadOnlyResult();
 			OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(parsingResult);
 			if (xmlLotlPointer != null) {
 				return new PivotProcessingResult(pivot, ParsingUtils.getLOTLAnnouncedCertificateSource(xmlLotlPointer), xmlLotlPointer.getTSLLocation());
 			}
 		}
 		return null;
-	}
-
-	private TLParsingCacheDTO toParsingDTO(CachedEntry<ParsingResult> parsingCacheEntry) {
-		return new TLParsingCacheDTOBuilder(parsingCacheEntry).build();
 	}
 
 	@Override
@@ -111,7 +105,7 @@ public class PivotProcessing extends AbstractAnalysis implements Callable<PivotP
 		lotlCacheAccess.expireValidation(); // ensure LOTL will be updated in case of pivot refresh
 		// expire Pivots before the current
 		if (Utils.isCollectionNotEmpty(preceedingPivotCacheAccessByKeyList)) {
-			for (CacheAccessByKey pivotCacheAccessByKey : preceedingPivotCacheAccessByKeyList) {
+			for (AbstractCacheAccessByKey pivotCacheAccessByKey : preceedingPivotCacheAccessByKeyList) {
 				pivotCacheAccessByKey.expireValidation();
 			}
 		}

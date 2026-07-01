@@ -1,114 +1,47 @@
-/**
- * DSS - Digital Signature Services
- * Copyright (C) 2015 European Commission, provided under the CEF programme
- * <p>
- * This file is part of the "DSS - Digital Signature Services" project.
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
 package eu.europa.esig.dss.validation.job.cache.access;
 
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.validation.job.cache.CacheKey;
-import eu.europa.esig.dss.validation.job.cache.DownloadCache;
-import eu.europa.esig.dss.validation.job.cache.ParsingCache;
-import eu.europa.esig.dss.validation.job.cache.ValidationCache;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.download.DownloadResult;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
-import eu.europa.esig.dss.validation.job.validation.ValidationResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Reads the relevant cache by the given key
+ * Access cache in read-only mode
+ *
  */
-public class ReadOnlyCacheAccess {
+public interface ReadOnlyCacheAccess {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ReadOnlyCacheAccess.class);
+    /**
+     * Returns download cache DTO result
+     *
+     * @param key {@link CacheKey} to extract download result for
+     * @return {@link DownloadInfoRecord}
+     */
+    DownloadInfoRecord getDownloadInfoRecord(final CacheKey key);
 
-	/** Global download Cache */
-	protected final DownloadCache downloadCache;
+    /**
+     * Returns download cache DTO result
+     *
+     * @param key {@link CacheKey} to extract parsing result for
+     * @return {@link ParsingInfoRecord}
+     */
+    ParsingInfoRecord getParsingInfoRecord(final CacheKey key);
 
-	/** Global parsing Cache */
-	protected final ParsingCache parsingCache;
+    /**
+     * Returns download cache DTO result
+     *
+     * @param key {@link CacheKey} to extract validation result for
+     * @return {@link ValidationInfoRecord}
+     */
+    ValidationInfoRecord getValidationInfoRecord(final CacheKey key);
 
-	/** Global validation Cache */
-	protected final ValidationCache validationCache;
-
-	/**
-	 * Default constructor
-	 *
-	 * @param fileCache {@link DownloadCache}
-	 * @param parsingCache {@link ParsingCache}
-	 * @param validationCache {@link ValidationCache}
-	 */
-	public ReadOnlyCacheAccess(final DownloadCache fileCache, final ParsingCache parsingCache,
-							   final ValidationCache validationCache) {
-		this.downloadCache = fileCache;
-		this.parsingCache = parsingCache;
-		this.validationCache = validationCache;
-	}
-
-	// TODO : return dedicated interfaces
-	/**
-	 * Returns download cache DTO result
-	 * 
-	 * @param key {@link CacheKey} to extract download result for
-	 * @return {@link CachedEntry}
-	 */
-	public CachedEntry<DownloadResult> getDownloadCacheEntry(final CacheKey key) {
-		LOG.trace("Extracting a download cache for an entry with the key [{}]", key);
-		return downloadCache.get(key);
-	}
-
-	/**
-	 * Returns download cache DTO result
-	 * 
-	 * @param key {@link CacheKey} to extract parsing result for
-	 * @return {@link ParsingResult}
-	 */
-	public CachedEntry<ParsingResult> getParsingCacheEntry(final CacheKey key) {
-		LOG.trace("Extracting a parsing cache for an entry with the key [{}]", key);
-		return parsingCache.get(key);
-	}
-
-	/**
-	 * Returns download cache DTO result
-	 * 
-	 * @param key {@link CacheKey} to extract validation result for
-	 * @return {@link ValidationResult}
-	 */
-	public CachedEntry<ValidationResult> getValidationCacheEntry(final CacheKey key) {
-		LOG.trace("Extracting a validation cache for an entry with the key [{}]", key);
-		return validationCache.get(key);
-	}
-
-	/**
-	 * This method returns all found keys in any cache
-	 * 
-	 * @return a set of cache keys
-	 */
-	public Set<CacheKey> getAllCacheKeys() {
-		Set<CacheKey> keys = new HashSet<>();
-		keys.addAll(downloadCache.getKeys());
-		keys.addAll(parsingCache.getKeys());
-		keys.addAll(validationCache.getKeys());
-		return keys;
-	}
+    /**
+     * This method returns all found keys in any cache
+     *
+     * @return a set of cache keys
+     */
+    Set<CacheKey> getAllCacheKeys();
 
 }

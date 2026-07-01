@@ -18,7 +18,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.validation.job.sha2;
+package eu.europa.esig.dss.tsl.sha2;
 
 import eu.europa.esig.dss.model.CommonDocument;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -52,7 +52,7 @@ public class DocumentWithSha2 extends CommonDocument {
      * @param document {@link DSSDocument} original downloaded document
      * @param sha2Document {@link DSSDocument} corresponding sha2 document, containing digests of the {@code document}
      */
-    public DocumentWithSha2(final DSSDocument document, final DSSDocument sha2Document) {
+    protected DocumentWithSha2(final DSSDocument document, final DSSDocument sha2Document) {
         this.document = document;
         this.sha2Document = sha2Document;
     }
@@ -80,7 +80,7 @@ public class DocumentWithSha2 extends CommonDocument {
      *
      * @param errorMessage {@link String} error
      */
-    public void addErrorMessage(String errorMessage) {
+    protected void addErrorMessage(String errorMessage) {
         getErrors().add(errorMessage);
     }
 

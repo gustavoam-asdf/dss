@@ -18,36 +18,35 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.validation.job.alerts.detections;
+package eu.europa.esig.dss.validation.job.runnable;
 
-import eu.europa.esig.dss.alert.detector.AlertDetector;
-import eu.europa.esig.dss.model.job.DownloadInfoRecord;
-import eu.europa.esig.dss.model.job.ValidationInfoRecord;
-import eu.europa.esig.dss.model.tsl.TLInfo;
+import org.junit.jupiter.api.Test;
 
-/**
- * Detects if an error in a TL validation occurred
- */
-public class DocumentSignatureErrorDetection implements AlertDetector<TLInfo> {
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-	/**
-	 * Default constructor
-	 */
-	public DocumentSignatureErrorDetection() {
-		// empty
-	}
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-	@Override
-	public boolean detect(TLInfo info) {
-		DownloadInfoRecord downloadCacheInfo = info.getDownloadCacheInfo();
-		if (downloadCacheInfo != null && downloadCacheInfo.isDesynchronized()) {
-			ValidationInfoRecord validationCacheInfo = info.getValidationCacheInfo();
-			if (validationCacheInfo != null && !validationCacheInfo.isValid()) {
-				return true;
-			}
-		}
+class CallableWithErrorTest extends AbstractTestRunnable {
 
-		return false;
-	}
+    @Test
+    void test() {
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
 
+        Callable<Object> process = (Callable<Object>) () -> {
+            throw new RuntimeException("Error occurred.");
+        };
+        assertNotNull(process);
+
+        Future<Object> future = executorService.submit(process);
+
+        assertThrows(ExecutionException.class, future::get);
+
+        shutdownNowAndAwaitTermination(executorService);
+    }
+    
 }

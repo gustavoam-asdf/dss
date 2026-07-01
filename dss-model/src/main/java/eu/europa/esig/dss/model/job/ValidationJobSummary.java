@@ -2,6 +2,12 @@ package eu.europa.esig.dss.model.job;
 
 import java.util.List;
 
+/**
+ * Contains a summary of the validation job, with validation information for every document or/and a document list
+ *
+ * @param <D> {@link DocumentInfo}
+ * @param <L> {@link DocumentListInfo}
+ */
 public interface ValidationJobSummary<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> {
 
     /**

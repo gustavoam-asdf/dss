@@ -36,7 +36,7 @@ public class DocumentSource {
 	private String url;
 
 	/**
-	 * Signing certificates for the current TL
+	 * Signing certificates for the current document
 	 */
 	private CertificateSource certificateSource;
 	
@@ -53,7 +53,7 @@ public class DocumentSource {
 	}
 
 	/**
-	 * Gets the TL URL
+	 * Gets the document URL
 	 *
 	 * @return {@link String}
 	 */
@@ -62,7 +62,7 @@ public class DocumentSource {
 	}
 
 	/**
-	 * Sets the TL access URL
+	 * Sets the document access URL
 	 *
 	 * @param url {@link String}
 	 */
@@ -72,7 +72,7 @@ public class DocumentSource {
 	}
 
 	/**
-	 * Gets the certificate source to be used for TL validation
+	 * Gets the certificate source to be used for document validation
 	 *
 	 * @return {@link CertificateSource}
 	 */
@@ -81,7 +81,7 @@ public class DocumentSource {
 	}
 
 	/**
-	 * Sets the certificate source to be used for TL validation
+	 * Sets the certificate source to be used for document validation
 	 *
 	 * @param certificateSource {@link CertificateSource}
 	 */
@@ -91,7 +91,7 @@ public class DocumentSource {
 	}
 
 	/**
-	 * Gets the TL cache key
+	 * Gets the document cache key
 	 *
 	 * @return {@link CacheKey}
 	 */

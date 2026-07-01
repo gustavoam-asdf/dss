@@ -4,6 +4,10 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 
 import java.util.List;
 
+/**
+ * Contains a pointer to another document to be processes
+ *
+ */
 public interface OtherDocumentPointer {
 
     /**

@@ -8,6 +8,10 @@ import eu.europa.esig.dss.validation.job.cache.CachedResult;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Provides an interface for extraction of information about validation task result
+ *
+ */
 public interface ValidationResult extends CachedResult {
 
     /**

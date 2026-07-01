@@ -2,6 +2,10 @@ package eu.europa.esig.dss.model.job;
 
 import java.util.List;
 
+/**
+ * Defines a parsing result record
+ *
+ */
 public interface ParsingInfoRecord extends InfoRecord {
 
     /**

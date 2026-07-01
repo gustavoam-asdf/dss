@@ -23,7 +23,7 @@ package eu.europa.esig.dss.tsl.download;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.validation.job.download.DownloadResult;
-import eu.europa.esig.dss.validation.job.sha2.DocumentWithSha2;
+import eu.europa.esig.dss.tsl.sha2.DocumentWithSha2;
 
 import java.util.Collections;
 import java.util.List;

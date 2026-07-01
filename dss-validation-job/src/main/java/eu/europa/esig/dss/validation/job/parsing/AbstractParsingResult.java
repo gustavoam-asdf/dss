@@ -20,17 +20,12 @@
  */
 package eu.europa.esig.dss.validation.job.parsing;
 
-import eu.europa.esig.dss.model.job.OtherDocumentPointer;
-
 import java.util.List;
 
 /**
  * Abstract parsing result
  */
 public abstract class AbstractParsingResult implements ParsingResult {
-
-	/** List of TL pointers */
-	private List<OtherDocumentPointer> otherDocumentPointers;
 
 	/** A list of error messages occurred during a structure validation */
 	protected List<String> structureValidationMessages;
@@ -40,15 +35,6 @@ public abstract class AbstractParsingResult implements ParsingResult {
 	 */
 	protected AbstractParsingResult() {
 		// empty
-	}
-
-	@Override
-	public List<OtherDocumentPointer> getOtherDocumentPointers() {
-		return otherDocumentPointers;
-	}
-
-	public void setOtherDocumentPointers(List<OtherDocumentPointer> otherDocumentPointers) {
-		this.otherDocumentPointers = otherDocumentPointers;
 	}
 
 	@Override

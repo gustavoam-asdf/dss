@@ -34,6 +34,7 @@ import eu.europa.esig.dss.model.tsl.TrustService;
 import eu.europa.esig.dss.model.tsl.TrustServiceProvider;
 import eu.europa.esig.dss.model.tsl.TrustServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.tsl.job.TLReadOnlyCacheAccess;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
 import eu.europa.esig.dss.tsl.summary.TLValidationJobSummaryBuilder;
@@ -71,7 +72,7 @@ public class TrustedListCertificateSourceSynchronizer {
 	/**
 	 * The strategy to follow for the certificate synchronization
 	 */
-	private final SynchronizationStrategy synchronizationStrategy;
+	private final SynchronizationStrategy<TLInfo, LOTLInfo> synchronizationStrategy;
 
 	/**
 	 * The certificate source to be synchronized
@@ -81,7 +82,12 @@ public class TrustedListCertificateSourceSynchronizer {
 	/**
 	 * The cache access
 	 */
-	private final SynchronizerCacheAccess cacheAccess;
+	private final SynchronizerCacheAccess syncCacheAccess;
+
+	/**
+	 * The cache access
+	 */
+	private final TLReadOnlyCacheAccess readOnlyCacheAccess;
 
 	/**
 	 * Default constructor
@@ -90,16 +96,17 @@ public class TrustedListCertificateSourceSynchronizer {
 	 * @param lotlSources {@link LOTLSource}s
 	 * @param certificateSource {@link TrustPropertiesCertificateSource}
 	 * @param synchronizationStrategy {@link SynchronizationStrategy}
-	 * @param cacheAccess {@link SynchronizerCacheAccess}
+	 * @param syncCacheAccess {@link SynchronizerCacheAccess}
 	 */
 	public TrustedListCertificateSourceSynchronizer(TLSource[] tlSources, LOTLSource[] lotlSources,
-			TrustPropertiesCertificateSource certificateSource, SynchronizationStrategy synchronizationStrategy,
-			SynchronizerCacheAccess cacheAccess) {
+			TrustPropertiesCertificateSource certificateSource, SynchronizationStrategy<TLInfo, LOTLInfo> synchronizationStrategy,
+			SynchronizerCacheAccess syncCacheAccess, TLReadOnlyCacheAccess readOnlyCacheAccess) {
 		this.tlSources = tlSources;
 		this.lotlSources = lotlSources;
 		this.synchronizationStrategy = synchronizationStrategy;
 		this.certificateSource = certificateSource;
-		this.cacheAccess = cacheAccess;
+		this.syncCacheAccess = syncCacheAccess;
+		this.readOnlyCacheAccess =readOnlyCacheAccess;
 	}
 
 	/**
@@ -107,7 +114,7 @@ public class TrustedListCertificateSourceSynchronizer {
 	 */
 	public void sync() {
 		try {
-			TLValidationJobSummaryBuilder summaryBuilder = new TLValidationJobSummaryBuilder(cacheAccess, tlSources, lotlSources);
+			TLValidationJobSummaryBuilder summaryBuilder = new TLValidationJobSummaryBuilder(readOnlyCacheAccess, tlSources, lotlSources);
 
 			TLValidationJobSummary summary = summaryBuilder.build();
 			if (isCertificateSyncNeeded(summary)) {
@@ -217,20 +224,20 @@ public class TrustedListCertificateSourceSynchronizer {
 		for (LOTLInfo lotlInfo : summary.getLOTLInfos()) {
 			syncTLInfosCache(lotlInfo.getTLInfos());
 			syncPivotsCache(lotlInfo.getPivotInfos());
-			cacheAccess.sync(new CacheKey(lotlInfo.getUrl()));
+			syncCacheAccess.sync(new CacheKey(lotlInfo.getUrl()));
 		}
 		syncTLInfosCache(summary.getOtherTLInfos());
 	}
 
 	private void syncPivotsCache(List<PivotInfo> pivotInfos) {
 		for (PivotInfo pivotInfo : pivotInfos) {
-			cacheAccess.sync(new CacheKey(pivotInfo.getUrl()));
+			syncCacheAccess.sync(new CacheKey(pivotInfo.getUrl()));
 		}
 	}
 
 	private void syncTLInfosCache(List<TLInfo> tlInfos) {
 		for (TLInfo tlInfo : tlInfos) {
-			cacheAccess.sync(new CacheKey(tlInfo.getUrl()));
+			syncCacheAccess.sync(new CacheKey(tlInfo.getUrl()));
 		}
 	}
 

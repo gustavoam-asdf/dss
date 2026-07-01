@@ -38,21 +38,21 @@ public class ValidationJobAlerter<D extends DocumentInfo<L>, L extends DocumentL
 
 	private static final Logger LOG = LoggerFactory.getLogger(ValidationJobAlerter.class);
 
-	/** Contains a list of LOTL alerts */
-	private final List<Alert<L>> lotlAlerts;
+	/** Contains a list for document lists alerts */
+	private final List<Alert<L>> documentListAlerts;
 
-	/** Contains a list of TL alerts */
-	private final List<Alert<D>> tlAlerts;
+	/** Contains a list for document alerts */
+	private final List<Alert<D>> documentAlerts;
 
 	/**
-	 * The constructor to instantiate a TLValidationJobAlerter
+	 * The constructor to instantiate a ValidationJobAlerter
 	 * 
-	 * @param lotlAlerts a list of {@link DocumentListAlert}s to be applied on LOTL changes
-	 * @param tlAlerts a list of {@link DocumentAlert}s to be applied on TL changes
+	 * @param documentListAlerts a list of {@link Alert}s to be applied on document list changes
+	 * @param documentAlerts a list of {@link Alert}s to be applied on document changes
 	 */
-	public ValidationJobAlerter(final List<Alert<L>> lotlAlerts, final List<Alert<D>> tlAlerts) {
-		this.lotlAlerts = lotlAlerts;
-		this.tlAlerts = tlAlerts;
+	public ValidationJobAlerter(final List<Alert<L>> documentListAlerts, final List<Alert<D>> documentAlerts) {
+		this.documentListAlerts = documentListAlerts;
+		this.documentAlerts = documentAlerts;
 	}
 	
 	/**
@@ -61,33 +61,33 @@ public class ValidationJobAlerter<D extends DocumentInfo<L>, L extends DocumentL
 	 * @param jobSummary {@link ValidationJobSummary} to execute alerts on
 	 */
 	public void detectChanges(final ValidationJobSummary<D, L> jobSummary) {
-		for (L lotlInfo : jobSummary.getDocumentListInfos()) {
-			// run LOTL alerts
-			if (Utils.isCollectionNotEmpty(lotlAlerts)) {
-				for (Alert<L> lotlAlert : lotlAlerts) {
-					execute(lotlAlert, lotlInfo);
+		for (L docListInfo : jobSummary.getDocumentListInfos()) {
+			// run document list alerts
+			if (Utils.isCollectionNotEmpty(documentListAlerts)) {
+				for (Alert<L> docListAlert : documentListAlerts) {
+					execute(docListAlert, docListInfo);
 				}
 			}
-			// run TL alerts
-			if (Utils.isCollectionNotEmpty(tlAlerts)) {
-				for (D tlInfo : lotlInfo.getChildrenInfos()) {
-					for (Alert<D> tlAlert : tlAlerts) {
-						execute(tlAlert, tlInfo);
+			// run document alerts
+			if (Utils.isCollectionNotEmpty(documentAlerts)) {
+				for (D docInfo : docListInfo.getChildrenInfos()) {
+					for (Alert<D> docAlert : documentAlerts) {
+						execute(docAlert, docInfo);
 					}
 				}
 			}
 		}
-		// other TLs
-		if (Utils.isCollectionNotEmpty(tlAlerts)) {
-			for (D tlInfo : jobSummary.getOtherDocumentInfos()) {
-				for (Alert<D> tlAlert : tlAlerts) {
-					execute(tlAlert, tlInfo);
+		// other documents
+		if (Utils.isCollectionNotEmpty(documentAlerts)) {
+			for (D docInfo : jobSummary.getOtherDocumentInfos()) {
+				for (Alert<D> docAlert : documentAlerts) {
+					execute(docAlert, docInfo);
 				}
 			}
 		}
 	}
 	
-	private <T extends DocumentInfo> void execute(Alert<T> alert, T info) {
+	private <T extends DocumentInfo<R>, R extends DocumentInfo<R>> void execute(Alert<T> alert, T info) {
 		try {
 			alert.alert(info);
 		} catch (Exception e) {

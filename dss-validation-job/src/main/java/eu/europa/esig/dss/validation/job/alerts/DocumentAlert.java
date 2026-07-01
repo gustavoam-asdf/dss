@@ -28,7 +28,7 @@ import eu.europa.esig.dss.model.job.DocumentInfo;
 /**
  * The class to process events on document processing
  */
-public class DocumentAlert extends AbstractAlert<DocumentInfo> {
+public class DocumentAlert<D extends DocumentInfo<P>, P extends DocumentInfo<P>> extends AbstractAlert<D> {
 
 	/**
 	 * Default constructor
@@ -36,7 +36,7 @@ public class DocumentAlert extends AbstractAlert<DocumentInfo> {
 	 * @param detection {@link AlertDetector}
 	 * @param handler {@link AlertHandler}
 	 */
-	public DocumentAlert(AlertDetector<DocumentInfo> detection, AlertHandler<DocumentInfo> handler) {
+	public DocumentAlert(AlertDetector<D> detection, AlertHandler<D> handler) {
 		super(detection, handler);
 	}
 

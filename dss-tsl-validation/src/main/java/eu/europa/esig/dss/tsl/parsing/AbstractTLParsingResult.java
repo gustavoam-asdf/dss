@@ -29,9 +29,6 @@ public abstract class AbstractTLParsingResult extends AbstractParsingResult {
     /** The distribution points urls */
     private List<String> distributionPoints;
 
-    /** A list of error messages occurred during a structure validation */
-    protected List<String> structureValidationMessages;
-
     /**
      * Default constructor instantiating object with null values
      */

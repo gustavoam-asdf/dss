@@ -18,36 +18,24 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.tsl.cache.state;
+package eu.europa.esig.dss.validation.job.cache;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.Indication;
-import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.InMemoryDocument;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.client.http.MemoryDataLoader;
-import eu.europa.esig.dss.tsl.download.XmlDownloadResult;
-import eu.europa.esig.dss.tsl.parsing.LOTLParsingResult;
-import eu.europa.esig.dss.tsl.parsing.TLParsingResult;
-import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
-import eu.europa.esig.dss.validation.job.cache.CacheKey;
-import eu.europa.esig.dss.validation.job.cache.DownloadCache;
-import eu.europa.esig.dss.validation.job.cache.ParsingCache;
-import eu.europa.esig.dss.validation.job.cache.ValidationCache;
+import eu.europa.esig.dss.validation.job.AbstractTestValidationJob;
 import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -56,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CacheCleanerTest {
+class CacheCleanerTest extends AbstractTestValidationJob {
 	
 	private CacheCleaner cacheCleaner;
 	private FileCacheDataLoader fileLoader;
@@ -95,60 +83,18 @@ class CacheCleanerTest {
 		cacheCleaner = new CacheCleaner();
 		
 		downloadCache = new DownloadCache();
-		downloadCache.update(new CacheKey(SAMPLE_FILE_NAME), new XmlDownloadResult(sampleDocument, 
+		downloadCache.update(new CacheKey(SAMPLE_FILE_NAME), getDownloadResult(sampleDocument,
 				new Digest(DigestAlgorithm.SHA1, DSSUtils.digest(DigestAlgorithm.SHA1, sampleDocument))));
-		downloadCache.update(new CacheKey(LOTL_FILE_NAME), new XmlDownloadResult(lotlDocument, 
+		downloadCache.update(new CacheKey(LOTL_FILE_NAME), getDownloadResult(lotlDocument,
 				new Digest(DigestAlgorithm.SHA1, DSSUtils.digest(DigestAlgorithm.SHA1, lotlDocument))));
 		
 		parsingCache = new ParsingCache();
-		parsingCache.update(new CacheKey(SAMPLE_FILE_NAME), new TLParsingResult());
-		parsingCache.update(new CacheKey(LOTL_FILE_NAME), new LOTLParsingResult());
+		parsingCache.update(new CacheKey(SAMPLE_FILE_NAME), getParsingResult());
+		parsingCache.update(new CacheKey(LOTL_FILE_NAME), getParsingResult());
 		
 		validationCache = new ValidationCache();
-		validationCache.update(new CacheKey(SAMPLE_FILE_NAME), new ValidationResult() {
-			@Override
-			public Indication getIndication() {
-				return Indication.PASSED;
-			}
-			@Override
-			public SubIndication getSubIndication() {
-				return null;
-			}
-			@Override
-			public Date getSigningTime() {
-				return new Date();
-			}
-			@Override
-			public CertificateToken getSigningCertificate() {
-				return null;
-			}
-			@Override
-			public List<CertificateToken> getPotentialSigners() {
-				return null;
-			}
-		});
-		validationCache.update(new CacheKey(LOTL_FILE_NAME), new ValidationResult() {
-			@Override
-			public Indication getIndication() {
-				return Indication.PASSED;
-			}
-			@Override
-			public SubIndication getSubIndication() {
-				return null;
-			}
-			@Override
-			public Date getSigningTime() {
-				return new Date();
-			}
-			@Override
-			public CertificateToken getSigningCertificate() {
-				return null;
-			}
-			@Override
-			public List<CertificateToken> getPotentialSigners() {
-				return null;
-			}
-		});
+		validationCache.update(new CacheKey(SAMPLE_FILE_NAME), getValidationResult(Indication.PASSED));
+		validationCache.update(new CacheKey(LOTL_FILE_NAME), getValidationResult(Indication.PASSED));
 	}
 	
 	@Test
@@ -174,8 +120,8 @@ class CacheCleanerTest {
 		
 		validateEntries(sampleCacheKey, false, false);
 		validateEntries(lotlCacheKey, false, false);
-		
-		CacheAccessByKey cacheAccessByKey = new CacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
+
+		CacheAccessByKey cacheAccessByKey = getCacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
 		cacheCleaner.clean(cacheAccessByKey);
 
 		// need TO_BE_DELETED to be set
@@ -226,7 +172,7 @@ class CacheCleanerTest {
 		assertFalse(sampleFile.exists());
 		assertTrue(lotlFile.exists());
 
-		cacheAccessByKey = new CacheAccessByKey(new CacheKey(LOTL_FILE_NAME), downloadCache, parsingCache, validationCache);
+		cacheAccessByKey = getCacheAccessByKey(new CacheKey(LOTL_FILE_NAME), downloadCache, parsingCache, validationCache);
 		cacheCleaner.clean(cacheAccessByKey);
 		
 		validateEntries(sampleCacheKey, true, true);
@@ -235,7 +181,7 @@ class CacheCleanerTest {
 		assertFalse(sampleFile.exists());
 		assertFalse(lotlFile.exists());
 	}
-	
+
 	@Test
 	void cacheCleanerNoDeleteTest() {
 		cacheCleaner.setDSSFileLoader(fileLoader);
@@ -271,9 +217,9 @@ class CacheCleanerTest {
 		assertTrue(parsingCache.isToBeDeleted(lotlCacheKey));
 		assertFalse(validationCache.isToBeDeleted(lotlCacheKey));
 
-		CacheAccessByKey cacheAccessByKey = new CacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
+		CacheAccessByKey cacheAccessByKey = getCacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
 		cacheCleaner.clean(cacheAccessByKey);
-		cacheAccessByKey = new CacheAccessByKey(new CacheKey(LOTL_FILE_NAME), downloadCache, parsingCache, validationCache);
+		cacheAccessByKey = getCacheAccessByKey(new CacheKey(LOTL_FILE_NAME), downloadCache, parsingCache, validationCache);
 		cacheCleaner.clean(cacheAccessByKey);
 		
 		validateEntries(sampleCacheKey, false, false);
@@ -297,7 +243,7 @@ class CacheCleanerTest {
 	
 	@Test
 	void noFileLoaderDefinedTest() {
-		CacheAccessByKey cacheAccessByKey = new CacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
+		CacheAccessByKey cacheAccessByKey = getCacheAccessByKey(new CacheKey(SAMPLE_FILE_NAME), downloadCache, parsingCache, validationCache);
 		cacheCleaner.clean(cacheAccessByKey);
 		
 		cacheCleaner.setCleanFileSystem(true);
@@ -314,5 +260,5 @@ class CacheCleanerTest {
 		assertEquals(isEmpty, validationCache.isEmpty(cacheKey));
 		assertEquals(isRefreshNeeded, validationCache.isRefreshNeeded(cacheKey));
 	}
-	
+
 }

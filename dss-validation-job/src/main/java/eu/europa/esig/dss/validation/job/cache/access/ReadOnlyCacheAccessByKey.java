@@ -1,96 +1,34 @@
-/**
- * DSS - Digital Signature Services
- * Copyright (C) 2015 European Commission, provided under the CEF programme
- * <p>
- * This file is part of the "DSS - Digital Signature Services" project.
- * <p>
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- * <p>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- */
 package eu.europa.esig.dss.validation.job.cache.access;
 
-import eu.europa.esig.dss.validation.job.cache.CacheKey;
-import eu.europa.esig.dss.validation.job.cache.DownloadCache;
-import eu.europa.esig.dss.validation.job.cache.ParsingCache;
-import eu.europa.esig.dss.validation.job.cache.ValidationCache;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.download.DownloadResult;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
-import eu.europa.esig.dss.validation.job.validation.ValidationResult;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 
 /**
- * The class prevents reading of other records but the one with defined key
+ * Provides a read only interface for cache by key
+ *
  */
-public class ReadOnlyCacheAccessByKey {
+public interface ReadOnlyCacheAccessByKey {
 
-	/** Key of the CacheEntry */
-	protected final CacheKey key;
+    /**
+     * Returns the cached read-only download result DTO
+     *
+     * @return {@link DownloadInfoRecord}
+     */
+    DownloadInfoRecord getDownloadReadOnlyResult();
 
-	/** Global download Cache */
-	protected final DownloadCache downloadCache;
+    /**
+     * Returns the cached read-only parsing result DTO
+     *
+     * @return {@link ParsingInfoRecord}
+     */
+    ParsingInfoRecord getParsingReadOnlyResult();
 
-	/** Global parsing Cache */
-	protected final ParsingCache parsingCache;
-
-	/** Global validation Cache */
-	protected final ValidationCache validationCache;
-
-	/** Reads a cache by the given key */
-	private final ReadOnlyCacheAccess readOnlyCacheAccess;
-
-	/**
-	 * Default constructor
-	 *
-	 * @param key {@link CacheKey} to read
-	 * @param downloadCache {@link DownloadCache}
-	 * @param parsingCache {@link ParsingCache}
-	 * @param validationCache {@link ValidationCache}
-	 */
-	public ReadOnlyCacheAccessByKey(final CacheKey key, final DownloadCache downloadCache,
-                                    final ParsingCache parsingCache, final ValidationCache validationCache) {
-		this.key = key;
-		this.downloadCache = downloadCache;
-		this.parsingCache = parsingCache;
-		this.validationCache = validationCache;
-		this.readOnlyCacheAccess = new ReadOnlyCacheAccess(downloadCache, parsingCache, validationCache);
-	}
-
-	/**
-	 * Returns the cached read-only download result DTO
-	 * 
-	 * @return {@link CachedEntry}
-	 */
-	public CachedEntry<DownloadResult> getDownloadReadOnlyResult() {
-		return readOnlyCacheAccess.getDownloadCacheEntry(key);
-	}
-
-	/**
-	 * Returns the cached read-only parsing result DTO
-	 * 
-	 * @return {@link CachedEntry}
-	 */
-	public CachedEntry<ParsingResult> getParsingReadOnlyResult() {
-		return readOnlyCacheAccess.getParsingCacheEntry(key);
-	}
-
-	/**
-	 * Returns the cached read-only validation result DTO
-	 * 
-	 * @return {@link CachedEntry}
-	 */
-	public CachedEntry<ValidationResult> getValidationReadOnlyResult() {
-		return readOnlyCacheAccess.getValidationCacheEntry(key);
-	}
+    /**
+     * Returns the cached read-only validation result DTO
+     *
+     * @return {@link ValidationInfoRecord}
+     */
+    ValidationInfoRecord getValidationReadOnlyResult();
 
 }

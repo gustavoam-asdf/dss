@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.model.tsl;
 
+import eu.europa.esig.dss.model.job.OtherDocumentPointer;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
 import java.io.Serializable;
@@ -29,7 +30,7 @@ import java.util.Map;
 /**
  * Contains certificates for the url location
  */
-public class OtherTSLPointer implements Serializable {
+public class OtherTSLPointer implements OtherDocumentPointer, Serializable {
 
 	private static final long serialVersionUID = 3015076999802292662L;
 
@@ -78,6 +79,11 @@ public class OtherTSLPointer implements Serializable {
 		this.schemeOperatorNames = builder.getSchemeOperatorNames();
 		this.schemeTypeCommunityRules = builder.getSchemeTypeCommunityRules();
 		this.mra = builder.getMra();
+	}
+
+	@Override
+	public String getLocation() {
+		return getTSLLocation();
 	}
 
 	/**

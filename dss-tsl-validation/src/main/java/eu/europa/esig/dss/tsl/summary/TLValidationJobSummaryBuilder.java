@@ -20,8 +20,6 @@
  */
 package eu.europa.esig.dss.tsl.summary;
 
-import eu.europa.esig.dss.model.job.DownloadInfoRecord;
-import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.tsl.CertificatePivotStatus;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
@@ -31,20 +29,13 @@ import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
-import eu.europa.esig.dss.tsl.dto.builder.TLParsingCacheDTOBuilder;
+import eu.europa.esig.dss.tsl.job.TLReadOnlyCacheAccess;
 import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.job.cache.CacheKey;
-import eu.europa.esig.dss.validation.job.cache.access.ReadOnlyCacheAccess;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.download.DownloadResult;
-import eu.europa.esig.dss.validation.job.dto.builder.DownloadCacheDTOBuilder;
-import eu.europa.esig.dss.validation.job.dto.builder.ValidationCacheDTOBuilder;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 import eu.europa.esig.dss.validation.job.summary.ValidationJobSummaryBuilder;
-import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +57,7 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 	/**
 	 * A read-only access for the cache of the current Validation Job
 	 */
-	private final ReadOnlyCacheAccess readOnlyCacheAccess;
+	private final TLReadOnlyCacheAccess readOnlyCacheAccess;
 
 	/**
 	 * List of TLSources to extract summary for
@@ -81,11 +72,11 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 	/**
 	 * Default constructor
 	 *
-	 * @param readOnlyCacheAccess {@link ReadOnlyCacheAccess}
+	 * @param readOnlyCacheAccess {@link TLReadOnlyCacheAccess}
 	 * @param tlSources {@link TLSource}s
 	 * @param lotlSources {@link LOTLSource}s
 	 */
-	public TLValidationJobSummaryBuilder(final ReadOnlyCacheAccess readOnlyCacheAccess, final TLSource[] tlSources,
+	public TLValidationJobSummaryBuilder(final TLReadOnlyCacheAccess readOnlyCacheAccess, final TLSource[] tlSources,
 	                                     final LOTLSource[] lotlSources) {
 		this.readOnlyCacheAccess = readOnlyCacheAccess;
 		this.tlSources = tlSources;
@@ -110,7 +101,7 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 		if (Utils.isArrayNotEmpty(lotlSources)) {
 
 			for (LOTLSource lotlSource : lotlSources) {
-				TLParsingCacheDTO lotlParsingResult = toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(lotlSource.getCacheKey()));
+				TLParsingCacheDTO lotlParsingResult = readOnlyCacheAccess.getParsingInfoRecord(lotlSource.getCacheKey());
 
 				LOTLInfo lotlInfo = buildLOTLInfo(lotlSource);
 
@@ -133,7 +124,7 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 					
 					List<LOTLSource> pivotSources = extractPivotSources(lotlParsingResult);
 					for (LOTLSource pivotSource : pivotSources) {
-						TLParsingCacheDTO pivotParsingCacheDTO = toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(pivotSource.getCacheKey()));
+						TLParsingCacheDTO pivotParsingCacheDTO = readOnlyCacheAccess.getParsingInfoRecord(pivotSource.getCacheKey());
 						List<CertificateToken> pivotCertificateTokens = getPivotCertificateTokens(pivotParsingCacheDTO);
 						Map<CertificateToken, CertificatePivotStatus> certificateChangesMap = getCertificateChangesMap(
 								pivotCertificateTokens, currentCertificates);
@@ -161,49 +152,38 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 	private LOTLInfo buildLOTLInfo(LOTLSource lotlSource) {
 		CacheKey cacheKey = lotlSource.getCacheKey();
 		return new LOTLInfo(
-				toDownloadDTO(readOnlyCacheAccess.getDownloadCacheEntry(cacheKey)),
-				toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(cacheKey)),
-				toValidationDTO(readOnlyCacheAccess.getValidationCacheEntry(cacheKey)), lotlSource.getUrl()
+				readOnlyCacheAccess.getDownloadInfoRecord(cacheKey),
+				readOnlyCacheAccess.getParsingInfoRecord(cacheKey),
+				readOnlyCacheAccess.getValidationInfoRecord(cacheKey), lotlSource.getUrl()
 		);
 	}
 
 	private TLInfo buildTLInfo(TLSource tlSource) {
 		CacheKey cacheKey = tlSource.getCacheKey();
 		return new TLInfo(
-				toDownloadDTO(readOnlyCacheAccess.getDownloadCacheEntry(cacheKey)),
-				toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(cacheKey)),
-				toValidationDTO(readOnlyCacheAccess.getValidationCacheEntry(cacheKey)), tlSource.getUrl()
+				readOnlyCacheAccess.getDownloadInfoRecord(cacheKey),
+				readOnlyCacheAccess.getParsingInfoRecord(cacheKey),
+				readOnlyCacheAccess.getValidationInfoRecord(cacheKey), tlSource.getUrl()
 		);
 	}
 
 	private TLInfo buildTLInfo(TLSource tlSource, LOTLInfo lotlInfo, OtherTSLPointer otherTSLPointer) {
 		CacheKey cacheKey = tlSource.getCacheKey();
 		return new TLInfo(
-				toDownloadDTO(readOnlyCacheAccess.getDownloadCacheEntry(cacheKey)),
-				toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(cacheKey)),
-				toValidationDTO(readOnlyCacheAccess.getValidationCacheEntry(cacheKey)), tlSource.getUrl(), lotlInfo, otherTSLPointer
+				readOnlyCacheAccess.getDownloadInfoRecord(cacheKey),
+				readOnlyCacheAccess.getParsingInfoRecord(cacheKey),
+				readOnlyCacheAccess.getValidationInfoRecord(cacheKey), tlSource.getUrl(), lotlInfo, otherTSLPointer
 		);
 	}
 
 	private PivotInfo buildPivotInfo(LOTLSource pivotSource, Map<CertificateToken, CertificatePivotStatus> certificateChangesMap, 
 			String associatedLOTLLocation) {
 		CacheKey cacheKey = pivotSource.getCacheKey();
-		return new PivotInfo(toDownloadDTO(readOnlyCacheAccess.getDownloadCacheEntry(cacheKey)),
-				toParsingDTO(readOnlyCacheAccess.getParsingCacheEntry(cacheKey)),
-				toValidationDTO(readOnlyCacheAccess.getValidationCacheEntry(cacheKey)), pivotSource.getUrl(),
+		return new PivotInfo(
+				readOnlyCacheAccess.getDownloadInfoRecord(cacheKey),
+				readOnlyCacheAccess.getParsingInfoRecord(cacheKey),
+				readOnlyCacheAccess.getValidationInfoRecord(cacheKey), pivotSource.getUrl(),
 				certificateChangesMap, associatedLOTLLocation);
-	}
-
-	private DownloadInfoRecord toDownloadDTO(CachedEntry<DownloadResult> downloadCacheEntry) {
-		return new DownloadCacheDTOBuilder(downloadCacheEntry).build();
-	}
-
-	private TLParsingCacheDTO toParsingDTO(CachedEntry<ParsingResult> parsingCacheEntry) {
-		return new TLParsingCacheDTOBuilder(parsingCacheEntry).build();
-	}
-
-	private ValidationInfoRecord toValidationDTO(CachedEntry<ValidationResult> validationCacheEntry) {
-		return new ValidationCacheDTOBuilder(validationCacheEntry).build();
 	}
 
 	private OtherTSLPointer getOtherTSLPointer(List<OtherTSLPointer> tlOtherPointers, String tslPointerLocation) {

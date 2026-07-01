@@ -24,7 +24,6 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.validation.job.sha2.DocumentWithSha2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

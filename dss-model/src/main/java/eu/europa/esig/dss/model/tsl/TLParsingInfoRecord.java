@@ -1,6 +1,7 @@
 package eu.europa.esig.dss.model.tsl;
 
 import eu.europa.esig.dss.enumerations.TSLType;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
 
 import java.util.Date;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  * Represents a Trusted List parsing result record
  *
  */
-public interface TLParsingInfoRecord extends eu.europa.esig.dss.model.job.ParsingInfoRecord {
+public interface TLParsingInfoRecord extends ParsingInfoRecord {
 
     /**
      * Gets the LOTL/TL TSLType

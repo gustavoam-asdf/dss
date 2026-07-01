@@ -3,7 +3,12 @@ package eu.europa.esig.dss.model.job;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.model.identifier.IdentifierBasedObject;
 
-public interface DocumentInfo<P extends DocumentInfo> extends IdentifierBasedObject {
+/**
+ * Contains a validation result for a document.
+ *
+ * @param <P> parent {@link DocumentInfo}
+ */
+public interface DocumentInfo<P extends DocumentInfo<P>> extends IdentifierBasedObject {
 
     /**
      * Returns Download Cache Info

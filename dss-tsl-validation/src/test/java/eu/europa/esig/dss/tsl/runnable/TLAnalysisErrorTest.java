@@ -26,6 +26,8 @@ import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.tsl.source.TLSource;
 import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +37,9 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class TLAnalysisErrorTest extends AbstractTestRunnable {
+class TLAnalysisErrorTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TLAnalysisErrorTest.class);
 
     @Test
     void test() throws Exception {
@@ -61,7 +65,19 @@ class TLAnalysisErrorTest extends AbstractTestRunnable {
         shutdownNowAndAwaitTermination(executorService);
     }
 
-    private class MockTLAnalysis extends TLAnalysis {
+    protected void shutdownNowAndAwaitTermination(ExecutorService executorService) {
+        executorService.shutdownNow();
+        try {
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                LOG.warn("More than 10s to terminate the service executor");
+            }
+        } catch (InterruptedException e) {
+            LOG.warn("Unable to interrupt the service executor", e);
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static class MockTLAnalysis extends TLAnalysis {
 
         /**
          * Default constructor

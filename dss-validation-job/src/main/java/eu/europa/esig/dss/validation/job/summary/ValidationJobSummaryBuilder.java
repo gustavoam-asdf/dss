@@ -25,7 +25,7 @@ import eu.europa.esig.dss.model.job.DocumentListInfo;
 import eu.europa.esig.dss.model.job.ValidationJobSummary;
 
 /**
- * Builds a {@code TLValidationJobSummary}
+ * Builds a {@code ValidationJobSummary}
  */
 public interface ValidationJobSummaryBuilder<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> {
 

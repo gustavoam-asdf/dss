@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Runnable facade to Processes the LOTL/TL validation job (download - parse - validate)
+ * Runnable facade to Processes the document validation job (download - parse - validate)
  *
  */
 public abstract class AbstractRunnableAnalysis extends AbstractAnalysis implements Runnable {
@@ -46,14 +46,14 @@ public abstract class AbstractRunnableAnalysis extends AbstractAnalysis implemen
 	/**
 	 * Default constructor
 	 *
-	 * @param source {@link DocumentSource} representing a TL or LOTL
+	 * @param source {@link DocumentSource} representing a document
 	 * @param cacheAccess {@link CacheAccessByKey}
 	 * @param dssFileLoader {@link DSSFileLoader}
 	 * @param latch {@link CountDownLatch}
 	 */
 	protected AbstractRunnableAnalysis(final DocumentSource source, final CacheAccessByKey cacheAccess,
                                        final DSSFileLoader dssFileLoader, CountDownLatch latch) {
-		super(source, cacheAccess,dssFileLoader);
+		super(source, cacheAccess, dssFileLoader);
 		this.latch = latch;
 	}
 
@@ -69,7 +69,7 @@ public abstract class AbstractRunnableAnalysis extends AbstractAnalysis implemen
 	}
 
 	/**
-	 * Returns the certificate source to be used to validate TL/LOTL
+	 * Returns the certificate source to be used to validate document
 	 *
 	 * @return {@link CertificateSource}
 	 */

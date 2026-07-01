@@ -24,6 +24,7 @@ import eu.europa.esig.dss.alert.Alert;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.job.DocumentInfo;
 import eu.europa.esig.dss.model.job.DocumentListInfo;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
 import eu.europa.esig.dss.model.job.ValidationJobSummary;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
 import eu.europa.esig.dss.utils.Utils;
@@ -33,8 +34,6 @@ import eu.europa.esig.dss.validation.job.cache.CacheKey;
 import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
 import eu.europa.esig.dss.validation.job.cache.access.CacheAccessFactory;
 import eu.europa.esig.dss.validation.job.cache.access.ReadOnlyCacheAccess;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 import eu.europa.esig.dss.validation.job.source.DocumentSource;
 import eu.europa.esig.dss.validation.job.summary.ValidationJobSummaryBuilder;
 import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
@@ -58,14 +57,14 @@ import java.util.stream.Collectors;
  * The main class performing the document download / parsing / validation tasks
  *
  */
-public abstract class ValidationJob<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> {
+public abstract class ValidationJob<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>, C extends CacheAccessFactory> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ValidationJob.class);
 
 	/**
 	 * Contains all caches for the current validation job
 	 */
-	private final CacheAccessFactory cacheAccessFactory = new CacheAccessFactory();
+	private final C cacheAccessFactory;
 
 	/**
 	 * Provides methods to manage the asynchronous behaviour
@@ -73,14 +72,14 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	private ExecutorService executorService = Executors.newCachedThreadPool();
 
 	/**
-	 * Array of zero, one or more Trusted List (TL) sources.
+	 * Array of zero, one or more document sources.
 	 * <p>
-	 * These trusted lists are not referenced in a List Of Trusted Lists (LOTL)
+	 * These trusted lists are not referenced in a document list(s).
 	 */
 	private DocumentSource[] documentSources;
 
 	/**
-	 * Array of zero, one or more List Of Trusted List (LOTL) sources.
+	 * Array of zero, one or more document list sources.
 	 */
 	private DocumentSource[] documentListSources;
 	
@@ -102,9 +101,9 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	/**
 	 * The strategy to follow to synchronize the certificates.
 	 * <p>
-	 * Default : all trusted lists and LOTLs are synchronized
+	 * Default : all documents and document lists are synchronized
 	 */
-	private SynchronizationStrategy synchronizationStrategy = new AcceptAllStrategy();
+	private SynchronizationStrategy<D, L> synchronizationStrategy = new AcceptAllStrategy<D, L>();
 
 	/**
 	 * This property allows printing the cache content before and after the
@@ -113,20 +112,22 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	private boolean debug = false;
 	
 	/**
-     * List of LOTL info alerts
+     * List of document list info alerts
      */
     private List<Alert<L>> documentListAlerts;
 	
 	/**
-     * List of TL info alerts
+     * List of document info alerts
      */
     private List<Alert<D>> documentAlerts;
 
 	/**
 	 * Default constructor instantiating object with null configuration
+	 *
+	 * @param cacheAccessFactory {@link CacheAccessFactory}
 	 */
-	protected ValidationJob() {
-		// empty
+	protected ValidationJob(final C cacheAccessFactory) {
+		this.cacheAccessFactory = cacheAccessFactory;
 	}
 
 	/**
@@ -134,7 +135,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	 *
 	 * @return {@link CacheAccessFactory}
 	 */
-	protected CacheAccessFactory getCacheAccessFactory() {
+	protected C getCacheAccessFactory() {
 		return cacheAccessFactory;
 	}
 
@@ -148,11 +149,11 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 
 	/**
-	 * Sets the additional TL Sources
+	 * Sets the additional document sources
 	 *
 	 * @param documentSources {@link DocumentSource}s
 	 */
-	public void setDocumentSources(DocumentSource... documentSources) {
+	protected void setDocumentSources(DocumentSource... documentSources) {
 		this.documentSources = documentSources;
 	}
 
@@ -166,11 +167,11 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 
 	/**
-	 * Sets the LOTL Sources
+	 * Sets the document lists sources
 	 *
 	 * @param documentListSources {@link DocumentSource}s
 	 */
-	public void setDocumentListSources(DocumentSource... documentListSources) {
+	protected void setDocumentListSources(DocumentSource... documentListSources) {
 		this.documentListSources = documentListSources;
 	}
 
@@ -215,7 +216,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	 *
 	 * @return {@link SynchronizationStrategy}
 	 */
-	protected SynchronizationStrategy getSynchronizationStrategy() {
+	protected SynchronizationStrategy<D, L> getSynchronizationStrategy() {
 		return synchronizationStrategy;
 	}
 
@@ -226,7 +227,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	 *                                the different options for the certificate
 	 *                                synchronization
 	 */
-	public void setSynchronizationStrategy(SynchronizationStrategy synchronizationStrategy) {
+	public void setSynchronizationStrategy(SynchronizationStrategy<D, L> synchronizationStrategy) {
 		Objects.requireNonNull(synchronizationStrategy, "The SynchronizationStrategy cannot be null");
 		this.synchronizationStrategy = synchronizationStrategy;
 	}
@@ -243,7 +244,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 	
 	/**
-	 * Sets the LOTL alerts to be processed
+	 * Sets the document list alerts to be processed
 	 * 
 	 * @param documentListAlerts a list of {@link Alert}s
 	 */
@@ -252,7 +253,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 	
 	/**
-	 * Sets the TL alerts to be processed
+	 * Sets the document alerts to be processed
 	 * 
 	 * @param documentAlerts a list of {@link Alert}s
 	 */
@@ -261,13 +262,18 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 
 	/**
-	 * Returns validation job summary for all processed LOTL / TLs
+	 * Returns validation job summary for all processed documents / document lists
 	 * @return {@link ValidationJobSummary}
 	 */
 	public synchronized ValidationJobSummary<D, L> getSummary() {
 		return getValidationJobSummaryBuilder().build();
 	}
 
+	/**
+	 * Instantiates a builder to create a {@code ValidationJobSummary}
+	 *
+	 * @return {@link ValidationJobSummaryBuilder}
+	 */
 	protected abstract ValidationJobSummaryBuilder<D, L> getValidationJobSummaryBuilder();
 
 	/**
@@ -294,25 +300,25 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 
 	private void refresh(DSSFileLoader dssFileLoader) {
 
-		List<DocumentSource> currentTLSources = new ArrayList<>();
+		List<DocumentSource> currentDocSources = new ArrayList<>();
 		if (documentSources != null) {
-			currentTLSources.addAll(Arrays.asList(documentSources));
+			currentDocSources.addAll(Arrays.asList(documentSources));
 		}
 
 		// Execute all LOTLs
 		if (Utils.isArrayNotEmpty(documentListSources)) {
-			final List<DocumentSource> lotlList = Arrays.asList(documentListSources);
+			final List<DocumentSource> docLists = Arrays.asList(documentListSources);
 
-			executeLOTLSourcesAnalysis(lotlList, dssFileLoader);
+			executeDocumentListSourcesAnalysis(docLists, dssFileLoader);
 
-			// Check LOTLs consistency
+			// Check document lists consistency
 
-			// extract TLSources from cached LOTLs
-			currentTLSources.addAll(extractOtherDocumentSources());
+			// extract document sources from cached document lists
+			currentDocSources.addAll(extractOtherDocumentSources());
 		}
 
-		// And then, execute all TLs (manual configs + TLs from LOTLs)
-		executeTLSourcesAnalysis(currentTLSources, dssFileLoader);
+		// And then, execute all TLs (manual configs + documents from document lists)
+		executeDocumentSourcesAnalysis(currentDocSources, dssFileLoader);
 
 		// alerts()
 		if (Utils.isCollectionNotEmpty(documentListAlerts) || Utils.isCollectionNotEmpty(documentAlerts)) {
@@ -323,86 +329,120 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 
 		if (debug) {
 			LOG.info("Dump before synchronization");
-			cacheAccessFactory.getDebugCacheAccess().dump();
+			getCacheAccessFactory().getDebugCacheAccess().dump();
 		}
 
-		// TLCerSource sync + cache sync if needed
+		// certificate source sync + cache sync if needed
 		synchronizeCertificateSources();
 
 		executeCacheCleaner();
 
 		if (debug) {
 			LOG.info("Dump after synchronization");
-			cacheAccessFactory.getDebugCacheAccess().dump();
+			getCacheAccessFactory().getDebugCacheAccess().dump();
 		}
 	}
 
-	private void executeLOTLSourcesAnalysis(List<DocumentSource> lotlSources, DSSFileLoader dssFileLoader) {
-		checkNoDuplicateUrls(lotlSources);
-
-		int nbLOTLSources = lotlSources.size();
-
-		LOG.info("Running analysis for {} LOTLSource(s)", nbLOTLSources);
-
-		Map<CacheKey, CachedEntry<ParsingResult>> oldParsingValues = extractParsingCache(lotlSources);
-
-		CountDownLatch latch = new CountDownLatch(nbLOTLSources);
-		for (DocumentSource lotlSource : lotlSources) {
-			executorService.submit(getDocumentListAnalysis(lotlSource, dssFileLoader, latch));
-		}
-
-		try {
-			latch.await();
-			LOG.info("Analysis is DONE for {} LOTLSource(s)", nbLOTLSources);
-		} catch (InterruptedException e) {
-			LOG.error("Interruption in the LOTLSource process", e);
-			Thread.currentThread().interrupt();
-		}
-
-		Map<CacheKey, CachedEntry<ParsingResult>> newParsingValues = extractParsingCache(lotlSources);
-
-		// Analyze introduced changes for TLs + adapt cache for TLs (EXPIRED)
-		final DocumentChangeApplier lotlChangeApplier = new DocumentChangeApplier(cacheAccessFactory.getTLChangesCacheAccess(), oldParsingValues, newParsingValues);
-		lotlChangeApplier.analyzeAndApply();
-	}
-
-	protected abstract Runnable getDocumentAnalysis(DocumentSource documentSource, DSSFileLoader dssFileLoader, CountDownLatch latch);
-
-	protected abstract Runnable getDocumentListAnalysis(DocumentSource documentSource, DSSFileLoader dssFileLoader, CountDownLatch latch);
-	
-	protected abstract List<? extends DocumentSource> extractOtherDocumentSources();
-	
-    private Map<CacheKey, CachedEntry<ParsingResult>> extractParsingCache(List<DocumentSource> lotlSources) {
-        final ReadOnlyCacheAccess readOnlyCacheAccess = cacheAccessFactory.getReadOnlyCacheAccess();
-        return lotlSources.stream().collect(Collectors.toMap(DocumentSource::getCacheKey,
-				s -> readOnlyCacheAccess.getParsingCacheEntry(s.getCacheKey())));
-    }
-
-	private void executeTLSourcesAnalysis(List<DocumentSource> tlSources, DSSFileLoader dssFileLoader) {
-		int nbTLSources = tlSources.size();
-		if (nbTLSources == 0) {
-			LOG.info("No TL to be analyzed");
+	private void executeDocumentListSourcesAnalysis(List<DocumentSource> docListSources, DSSFileLoader dssFileLoader) {
+		int nbDocListSources = docListSources.size();
+		if (nbDocListSources == 0) {
+			LOG.debug("No document list sources are to be analyzed");
 			return;
 		}
 
-		checkNoDuplicateUrls(tlSources);
+		checkNoDuplicateUrls(docListSources);
 
-		LOG.info("Running analysis for {} TLSource(s)", nbTLSources);
+		LOG.info("Running analysis for {} {}(s)", nbDocListSources, docListSources.get(0).getClass().getSimpleName());
 
-		CountDownLatch latch = new CountDownLatch(nbTLSources);
-		for (DocumentSource tlSource : tlSources) {
-			executorService.submit(getDocumentAnalysis(tlSource, dssFileLoader, latch));
+		Map<CacheKey, ParsingInfoRecord> oldParsingValues = extractParsingCache(docListSources);
+
+		CountDownLatch latch = new CountDownLatch(nbDocListSources);
+		for (DocumentSource docListSource : docListSources) {
+			executorService.submit(getDocumentListAnalysis(docListSource, dssFileLoader, latch));
 		}
 
 		try {
 			latch.await();
-			LOG.info("Analysis is DONE for {} TLSource(s)", nbTLSources);
+			LOG.info("Analysis is DONE for {} {}(s)", nbDocListSources, docListSources.get(0).getClass().getSimpleName());
 		} catch (InterruptedException e) {
-			LOG.error("Interruption in the TLAnalysis process", e);
+			LOG.error("Interruption in the document list analysis process", e);
+			Thread.currentThread().interrupt();
+		}
+
+		Map<CacheKey, ParsingInfoRecord> newParsingValues = extractParsingCache(docListSources);
+
+		handleDocumentChanges(oldParsingValues, newParsingValues);
+	}
+
+	/**
+	 * Gets a Runnable object to perform an analysis of a document
+	 *
+	 * @param documentSource {@link DocumentSource}
+	 * @param dssFileLoader {@link DSSFileLoader}
+	 * @param latch {@link CountDownLatch}
+	 * @return {@link Runnable}
+	 */
+	protected abstract Runnable getDocumentAnalysis(DocumentSource documentSource, DSSFileLoader dssFileLoader, CountDownLatch latch);
+
+	/**
+	 * Gets a Runnable object to perform an analysis of a document list
+	 *
+	 * @param documentSource {@link DocumentSource}
+	 * @param dssFileLoader {@link DSSFileLoader}
+	 * @param latch {@link CountDownLatch}
+	 * @return {@link Runnable}
+	 */
+	protected abstract Runnable getDocumentListAnalysis(DocumentSource documentSource, DSSFileLoader dssFileLoader, CountDownLatch latch);
+
+	/**
+	 * Extracts other document sources from a collection of document lists
+	 *
+	 * @return a list of {@link DocumentSource}s
+	 */
+	protected abstract List<? extends DocumentSource> extractOtherDocumentSources();
+
+	/**
+	 * Executes logic on occurred document changes
+	 *
+	 * @param oldParsingValues old map between document cache keys and parsing results
+	 * @param newParsingValues new map between document cache keys and parsing results
+	 */
+	protected abstract void handleDocumentChanges(Map<CacheKey, ParsingInfoRecord> oldParsingValues, Map<CacheKey, ParsingInfoRecord> newParsingValues);
+	
+    private Map<CacheKey, ParsingInfoRecord> extractParsingCache(List<DocumentSource> docListSources) {
+        final ReadOnlyCacheAccess readOnlyCacheAccess = getCacheAccessFactory().getReadOnlyCacheAccess();
+        return docListSources.stream().collect(Collectors.toMap(DocumentSource::getCacheKey,
+				s -> readOnlyCacheAccess.getParsingInfoRecord(s.getCacheKey())));
+    }
+
+	private void executeDocumentSourcesAnalysis(List<DocumentSource> docSources, DSSFileLoader dssFileLoader) {
+		int nbDocSources = docSources.size();
+		if (nbDocSources == 0) {
+			LOG.info("No document sources are to be analyzed");
+			return;
+		}
+
+		checkNoDuplicateUrls(docSources);
+
+		LOG.info("Running analysis for {} {}(s)", nbDocSources, docSources.get(0).getClass().getSimpleName());
+
+		CountDownLatch latch = new CountDownLatch(nbDocSources);
+		for (DocumentSource docSource : docSources) {
+			executorService.submit(getDocumentAnalysis(docSource, dssFileLoader, latch));
+		}
+
+		try {
+			latch.await();
+			LOG.info("Analysis is DONE for {} {}(s)", nbDocSources, docSources.get(0).getClass().getSimpleName());
+		} catch (InterruptedException e) {
+			LOG.error("Interruption in the document analysis process", e);
 			Thread.currentThread().interrupt();
 		}
 	}
 
+	/**
+	 * Synchronizes the certificate source, if applicable
+	 */
 	protected abstract void synchronizeCertificateSources();
 
 	private void executeCacheCleaner() {
@@ -424,7 +464,7 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	 * Duplicate urls mean cache conflict.
 	 * 
 	 * @param sources
-	 *                a list of TLSource
+	 *                a list of document sources
 	 */
 	private void checkNoDuplicateUrls(List<DocumentSource> sources) {
 		List<String> allUrls = sources.stream().map(DocumentSource::getUrl).collect(Collectors.toList());

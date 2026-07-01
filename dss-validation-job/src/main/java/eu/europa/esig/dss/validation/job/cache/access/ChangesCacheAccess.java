@@ -29,7 +29,7 @@ import eu.europa.esig.dss.validation.job.cache.ValidationCache;
  * Forces an update of a document cache information
  *
  */
-public class DocumentChangesCacheAccess {
+public class ChangesCacheAccess {
 
 	/** Global download Cache */
 	private final DownloadCache downloadCache;
@@ -47,8 +47,8 @@ public class DocumentChangesCacheAccess {
 	 * @param parsingCache {@link ParsingCache}
 	 * @param validationCache {@link ValidationCache}
 	 */
-	public DocumentChangesCacheAccess(final DownloadCache downloadCache, final ParsingCache parsingCache,
-	                                  final ValidationCache validationCache) {
+	public ChangesCacheAccess(final DownloadCache downloadCache, final ParsingCache parsingCache,
+	                          final ValidationCache validationCache) {
 		this.downloadCache = downloadCache;
 		this.parsingCache = parsingCache;
 		this.validationCache = validationCache;

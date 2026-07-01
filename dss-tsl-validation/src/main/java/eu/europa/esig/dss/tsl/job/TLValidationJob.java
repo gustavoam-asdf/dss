@@ -21,11 +21,15 @@
 package eu.europa.esig.dss.tsl.job;
 
 import eu.europa.esig.dss.alert.Alert;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
 import eu.europa.esig.dss.model.tsl.TLInfo;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.tsl.TrustPropertiesCertificateSource;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
+import eu.europa.esig.dss.tsl.cache.access.TLCacheAccessByKey;
+import eu.europa.esig.dss.tsl.cache.access.TLCacheAccessFactory;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
 import eu.europa.esig.dss.tsl.runnable.LOTLAnalysis;
 import eu.europa.esig.dss.tsl.runnable.LOTLWithPivotsAnalysis;
 import eu.europa.esig.dss.tsl.runnable.TLAnalysis;
@@ -35,10 +39,6 @@ import eu.europa.esig.dss.tsl.summary.TLValidationJobSummaryBuilder;
 import eu.europa.esig.dss.tsl.sync.TrustedListCertificateSourceSynchronizer;
 import eu.europa.esig.dss.validation.job.ValidationJob;
 import eu.europa.esig.dss.validation.job.cache.CacheKey;
-import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.validation.job.cache.access.ReadOnlyCacheAccess;
-import eu.europa.esig.dss.validation.job.cache.state.CachedEntry;
-import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 import eu.europa.esig.dss.validation.job.source.DocumentSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * The main class performing the TL/LOTL download / parsing / validation tasks
  *
  */
-public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
+public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo, TLCacheAccessFactory> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TLValidationJob.class);
 
@@ -66,7 +66,7 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
 	 * Default constructor instantiating object with null configuration
 	 */
 	public TLValidationJob() {
-		// empty
+		super(new TLCacheAccessFactory());
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
 			throw new IllegalArgumentException("The provided document source is not a TLSource!");
 		}
 		TLSource tlSource = (TLSource) documentSource;
-		final CacheAccessByKey cacheAccess = getCacheAccessFactory().getCacheAccess(tlSource.getCacheKey());
+		final TLCacheAccessByKey cacheAccess = getCacheAccessFactory().getCacheAccess(tlSource.getCacheKey());
 		return new TLAnalysis(tlSource, cacheAccess, dssFileLoader, latch);
 	}
 
@@ -155,7 +155,7 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
 			throw new IllegalArgumentException("The provided document source is not a LOTLSource!");
 		}
 		LOTLSource lotlSource = (LOTLSource) documentSource;
-		final CacheAccessByKey cacheAccess = getCacheAccessFactory().getCacheAccess(documentSource.getCacheKey());
+		final TLCacheAccessByKey cacheAccess = getCacheAccessFactory().getCacheAccess(documentSource.getCacheKey());
 		if (lotlSource.isPivotSupport()) {
 			return new LOTLWithPivotsAnalysis(lotlSource, cacheAccess, dssFileLoader, getCacheAccessFactory(), latch);
 		} else {
@@ -171,9 +171,9 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
 		return tlSourceBuilder.build();
 	}
 
-	private Map<CacheKey, CachedEntry<ParsingResult>> extractParsingCache(List<LOTLSource> lotlSources) {
-		final ReadOnlyCacheAccess readOnlyCacheAccess = getCacheAccessFactory().getReadOnlyCacheAccess();
-		return lotlSources.stream().collect(Collectors.toMap(DocumentSource::getCacheKey, s -> readOnlyCacheAccess.getParsingCacheEntry(s.getCacheKey())));
+	private Map<CacheKey, TLParsingCacheDTO> extractParsingCache(List<LOTLSource> lotlSources) {
+		final TLReadOnlyCacheAccess readOnlyCacheAccess = getCacheAccessFactory().getReadOnlyCacheAccess();
+		return lotlSources.stream().collect(Collectors.toMap(DocumentSource::getCacheKey, s -> readOnlyCacheAccess.getParsingInfoRecord(s.getCacheKey())));
 	}
 
 
@@ -186,8 +186,15 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo> {
 
 		TrustedListCertificateSourceSynchronizer synchronizer = new TrustedListCertificateSourceSynchronizer(
 				getDocumentSources(), getDocumentListSources(), trustPropertiesCertificateSource, getSynchronizationStrategy(),
-				getCacheAccessFactory().getSynchronizerCacheAccess());
+				getCacheAccessFactory().getSynchronizerCacheAccess(), getCacheAccessFactory().getReadOnlyCacheAccess());
 		synchronizer.sync();
+	}
+
+	@Override
+	protected void handleDocumentChanges(Map<CacheKey, ParsingInfoRecord> oldParsingValues, Map<CacheKey, ParsingInfoRecord> newParsingValues) {
+		// Analyze introduced changes for TLs + adapt cache for TLs (EXPIRED)
+		final LOTLChangeApplier lotlChangeApplier = new LOTLChangeApplier(getCacheAccessFactory().getDocumentChangesCacheAccess(), oldParsingValues, newParsingValues);
+		lotlChangeApplier.analyzeAndApply();
 	}
 
 }

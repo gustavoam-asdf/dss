@@ -23,7 +23,7 @@ package eu.europa.esig.dss.validation.job.cache;
 import eu.europa.esig.dss.validation.job.parsing.ParsingResult;
 
 /**
- * Contains results of TL/LOTL/pivot parsings
+ * Contains results of document parsings
  *
  */
 public class ParsingCache extends AbstractCache<ParsingResult> {
