@@ -21,7 +21,6 @@
 package eu.europa.esig.dss.service.http.commons;
 
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
