@@ -32,7 +32,7 @@ public abstract class AbstractEAAService<SP extends SerializableSignatureParamet
     protected final CertificateVerifier certificateVerifier;
 
     /** Builds the EAA payload */
-    protected EAAPayloadBuilder<B, C, D> payloadBuilder;
+    protected EAAPayloadBuilder<B, D> payloadBuilder;
 
     /**
      * Default constructor
@@ -49,7 +49,7 @@ public abstract class AbstractEAAService<SP extends SerializableSignatureParamet
      *
      * @return {@link EAAPayloadBuilder}
      */
-    protected EAAPayloadBuilder<B, C, D> getPayloadBuilder() {
+    protected EAAPayloadBuilder<B, D> getPayloadBuilder() {
         if (payloadBuilder == null) {
             payloadBuilder = initDefaultPayloadBuilder();
         }
@@ -61,7 +61,7 @@ public abstract class AbstractEAAService<SP extends SerializableSignatureParamet
      *
      * @return {@link EAAPayloadBuilder}
      */
-    protected abstract EAAPayloadBuilder<B, C, D> initDefaultPayloadBuilder();
+    protected abstract EAAPayloadBuilder<B, D> initDefaultPayloadBuilder();
 
     /**
      * Sets the builder used to create an EAA Payload based on the input parameters.
@@ -69,7 +69,7 @@ public abstract class AbstractEAAService<SP extends SerializableSignatureParamet
      *
      * @param payloadBuilder {@link EAAPayloadBuilder}
      */
-    public void setPayloadBuilder(EAAPayloadBuilder<B, C, D> payloadBuilder) {
+    public void setPayloadBuilder(EAAPayloadBuilder<B, D> payloadBuilder) {
         Objects.requireNonNull(payloadBuilder, "EAAPayloadBuilder cannot be null!");
         this.payloadBuilder = payloadBuilder;
     }

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * This class provides access to a configuration to build a payload for an ISO/IEC 18013-5 mdoc EAA.
  *
  */
-public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAAClaim, MdocEAADisclosure> {
+public class MdocPayloadBuilder extends AbstractEAAPayloadBuilder<MdocEAAPayloadParameters, MdocEAADisclosure> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MdocPayloadBuilder.class);
 
