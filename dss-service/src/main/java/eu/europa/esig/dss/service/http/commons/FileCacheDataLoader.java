@@ -286,28 +286,24 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 		byte[] bytes;
 		if (!isNetworkProtocol(url)) {
 			bytes = getLocalFileContent(url);
-			
 		} else {
 			bytes = dataLoader.get(url);
-			
 		}
 
 		if (Utils.isArrayEmpty(bytes)) {
-			throw new DSSExternalResourceException(String.format("Cannot retrieve data from url [%s]. Empty content is obtained!", url));
-		}
-		if (toBeCached(bytes)) {
+			LOG.warn("Empty array obtained for url [{}].", url);
+		} else if (toBeCached(bytes)) {
 			final File out = createFile(fileName, bytes);
+			LOG.debug("The retrieved data from url [{}] was added to the cache.", url);
 			return new FileDocument(out);
-		}
-		if (fileExists) {
-			LOG.warn("Data retrieved from url [{}] did not pass cache conditions! Returning earlier cached data", url);
-			return new FileDocument(file);
+		} else {
+			LOG.warn("The retrieved data from url [{}] did not pass the cache condition!", url);
 		}
 		if (fallbackDataLoader != null) {
-			LOG.warn("Data retrieved from url [{}] did not pass cache conditions! Returning data from fallback data loader", url);
+			LOG.debug("Returning data from url [{}] using fallback data loader...", url);
 			return new InMemoryDocument(fallbackDataLoader.get(url));
 		}
-		throw new DSSExternalResourceException(String.format("Data retrieved from url [%s] did not pass cache conditions!", url));
+		throw new DSSExternalResourceException(String.format("Cannot retrieve data from URL [%s]", url));
 	}
 
 	/**
@@ -447,21 +443,19 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 		}
 		
 		if (Utils.isArrayEmpty(returnedBytes)) {
-			throw new DSSExternalResourceException(String.format("Cannot retrieve data from url [%s]. Empty content is obtained!", urlString));
-		}
-		if (toBeCached(returnedBytes)) {
+			LOG.warn("Empty array obtained for url [{}].", urlString);
+		} else if (toBeCached(returnedBytes)) {
 			createFile(cacheFileName, returnedBytes);
+			LOG.debug("The retrieved data from url [{}] was added to the cache.", urlString);
 			return returnedBytes;
-		}
-		if (fileExists) {
-			LOG.warn("Data retrieved from url [{}] did not pass cache conditions! Returning earlier cached data", urlString);
-			return DSSUtils.toByteArray(file);
+		} else {
+			LOG.warn("The retrieved data from url [{}] did not pass the cache condition!", urlString);
 		}
 		if (fallbackDataLoader != null) {
-			LOG.warn("Data retrieved from url [{}] did not pass cache conditions! Returning data from fallback data loader", urlString);
+			LOG.debug("Returning data from url [{}] using fallback data loader...", urlString);
 			return fallbackDataLoader.get(urlString);
 		}
-		throw new DSSExternalResourceException(String.format("Data retrieved from url [%s] did not pass cache conditions!", urlString));
+		throw new DSSExternalResourceException(String.format("Cannot retrieve data from URL [%s]", urlString));
 	}
 
 	private boolean isCacheExpired(File file) {
