@@ -3443,6 +3443,8 @@ The `<eIDAS>` element defines constraint for checking applicability rules for co
 </ConstraintsParameters>
 ----
 
+====== TL validation constraints
+
 * `TLFreshness` - this constraint checks whether the Trusted List has been issued not before than the validation time minus the defined time value. If the Trusted List has been issued before than the validation time minus the defined time value (i.e. not fresh enough), the check will fail.
 
 Default: `WARN` (`HOURS=6`)
@@ -3513,6 +3515,81 @@ Default: `WARN`
 <eIDAS>
     ...
     <TLStructure Level="WARN" />
+    ...
+</eIDAS>
+----
+
+====== LoTE validation constraints
+
+* `LoTEFreshness` - this constraint checks whether the List of Trusted Entities has been issued not before than the validation time minus the defined time value. If the List of Trusted Entities has been issued before than the validation time minus the defined time value (i.e. not fresh enough), the check will fail.
+
+Default: `WARN` (`HOURS=6`)
+
+[source,xml,indent=0]
+.Example of LoTEFreshness usage (with WARN validation level)
+----
+<eIDAS>
+    ...
+    <LoTEFreshness Level="WARN" Unit="HOURS" Value="6" />
+    ...
+</eIDAS>
+----
+
+* `LoTENotExpired` - this constraint checks whether the "nextUpdate" attribute defined within the List of Trusted Entities is not before the validation time. If the List of Trusted Entities's "nextUpdate" attribute has the value before the validation time, the check will fail.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of LoTENotExpired usage (with WARN validation level)
+----
+<eIDAS>
+    ...
+    <LoTENotExpired Level="WARN" />
+    ...
+</eIDAS>
+----
+
+* `LoTEWellSigned` - this constraint checks whether the signature of the List of Trusted Entities is valid according the signature validation process. If the List of Trusted Entities's signature is not valid, the check will fail.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of LoTEWellSigned usage (with WARN validation level)
+----
+<eIDAS>
+    ...
+    <LoTEWellSigned Level="WARN" />
+    ...
+</eIDAS>
+----
+
+* `LoTEVersion` - this constraint checks whether the "version" attribute of the List of Trusted Entities corresponds to the defined value. If the version of the List of Trusted Entities matches the expected value, the check will fail.
+
+Default: `FAIL` (`1`)
+
+[source,xml,indent=0]
+.Example of LoTEVersion usage (with FAIL validation level)
+----
+<eIDAS>
+    ...
+    <LoTEVersion Level="FAIL">
+        <Id>1</Id>
+    </LoTEVersion>
+    ...
+</eIDAS>
+----
+
+* `LoTEStructure` - this constraint checks whether the structure of the List of Trusted Entities is valid according to
+the definition of the corresponding List of Trusted Entities verison and its XSD. If the List of Trusted Entities's structure is not valid, the check will fail.
+
+Default: `WARN`
+
+[source,xml,indent=0]
+.Example of LoTEStructure usage (with WARN validation level)
+----
+<eIDAS>
+    ...
+    <LoTEStructure Level="WARN" />
     ...
 </eIDAS>
 ----
@@ -3752,8 +3829,13 @@ This table defines the correspondence between the enforced validation policy con
                                                                                                                               CRYPTO_CONSTRAINTS_FAILURE
                                   |AlgoExpirationDate              |AlgoExpirationDate                |INDETERMINATE         |CRYPTO_CONSTRAINTS_FAILURE_NO_POE +
                                                                                                                               CRYPTO_CONSTRAINTS_FAILURE
-.5+|eIDAS                         |TLFreshness                     |TimeConstraint                    |FAILED                |-
+.10+|eIDAS                        |TLFreshness                     |TimeConstraint                    |FAILED                |-
                                   |TLNotExpired                    |LevelConstraint                   |FAILED                |-
                                   |TLWellSigned                    |LevelConstraint                   |FAILED                |-
                                   |TLVersion                       |ValueConstraint                   |FAILED                |-
                                   |TLStructure                     |LevelConstraint                   |FAILED                |-
+                                  |LoTEFreshness                   |TimeConstraint                    |FAILED                |-
+                                  |LoTENotExpired                  |LevelConstraint                   |FAILED                |-
+                                  |LoTEWellSigned                  |LevelConstraint                   |FAILED                |-
+                                  |LoTEVersion                     |ValueConstraint                   |FAILED                |-
+                                  |LoTEStructure                   |LevelConstraint                   |FAILED                |-
