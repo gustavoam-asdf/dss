@@ -177,6 +177,7 @@ On initialization, a `SignedDocumentExtender` will identify the format of the or
 * `CAdESDocumentExtender` - extends signature documents of CAdES (CMS) format;
 * `PAdESDocumentExtender` - extends signature documents of PAdES (PDF) format;
 * `JAdESDocumentExtender` - extends signature documents of JAdES (JSON/JOSE) format;
+* `CBAdESDocumentExtender` - extends signature documents of CB-AdES (CBOR) format;
 * `ASiCWithXAdESDocumentExtender` - extends signature containers of XAdES format (ASiC-S and ASiC-E);
 * `ASiCWithCAdESDocumentExtender` - extends signature containers of CAdES format (ASiC-S and ASiC-E).
 
@@ -196,6 +197,7 @@ The following factories are provided within the framework:
 * `CAdESDocumentExtenderFactory`: loads `CAdESDocumentExtender`, used for a CAdES signature augmentation (delivered in `dss-cades` module);
 * `PAdESDocumentExtenderFactory`: loads `PAdESDocumentExtender`, used for a PAdES signature augmentation (delivered in `dss-pades` module);
 * `JAdESDocumentExtenderFactory`: loads `JAdESDocumentExtender`, used for a JAdES signature augmentation (delivered in `dss-jades` module);
+* `CBAdESDocumentExtenderFactory`: loads `CBAdESDocumentExtender`, used for a CB-AdES signature augmentation (delivered in `dss-cb-ades` module);
 * `ASiCWithXAdESDocumentExtenderFactory` - loads `ASiCWithXAdESDocumentExtender`, used for an ASiC with XAdES signature container augmentation (delivered in `dss-asic-xades` module);
 * `ASiCWithCAdESDocumentExtenderFactory` - loads `ASiCWithCAdESDocumentExtender`, used for an ASiC with CAdES signature container augmentation (delivered in `dss-asic-cades` module).
 
@@ -297,6 +299,10 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/SignPdfPadesBT
 ----
 
 NOTE: The `/VRI` dictionary should not be used for `PAdES-BASELINE-*` signatures, as defined by ETSI EN 319 142-1 (cf. <<R03>>).
+
+==== Validation data for CB-AdES
+
+For CB-AdES signatures there is no configuration of the validation data incorporation placement, all validation data is added within a `valData` entry of the `uHeaders` unsigned header parameter.
 
 === Creating a baseline T signature
 

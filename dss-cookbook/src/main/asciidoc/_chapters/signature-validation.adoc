@@ -505,6 +505,7 @@ For execution of the validation process, DSS uses the `SignedDocumentValidator` 
 * `PDFDocumentValidator` - validates documents in PDF format (PADES format);
 * `JWSCompactDocumentValidator` - validates documents with base64url encoded content (JAdES compact format);
 * `JWSSerializationDocumentValidator` - validates documents in JSON format (JAdES serialization formats);
+* `COSEDocumentValidator` - validates documents in COSE (CBOR) format (CB-AdES format);
 * `ASiCContainerWithXAdESValidator` - validates ASiC with XAdES containers;
 * `ASiCContainerWithCAdESValidator` - validates ASiC with CAdES containers;
 * `DetachedTimestampValidator` - validates CMS timestamps provided alone.
@@ -929,6 +930,7 @@ The following implementations are present in DSS:
 * `XMLDocumentValidatorFactory`: loads `XMLDocumentValidator`, used for a XAdES validation (delivered in `dss-xades` module);
 * `PDFDocumentValidatorFactory`: loads `PDFDocumentValidator`, used for a PAdES validation (delivered in `dss-pades` module);
 * `JAdESDocumentValidatorFactory`: loads `JWSCompactDocumentValidator` or `JWSSerializationDocumentValidator`, depending on provided JSON signature type (delivered in `dss-jades` module);
+* `COSEDocumentValidatorFactory`: loads `COSEDocumentValidator`, used for a COSE (CBOR) validation (delivered in `dss-cb-ades` module);
 * `ASiCContainerWithCAdESValidatorFactory`: loads `ASiCContainerWithCAdESValidator` (delivered in `dss-asic-cades` module);
 * `ASiCContainerWithXAdESValidatorFactory`: loads `ASiCContainerWithXAdESValidator` (delivered in `dss-asic-xades` module);
 * `DetachedTimestampValidatorFactory`: loads `DetachedTimestampValidator`, for an independent timestamp validation (delivered in `dss-document` module).

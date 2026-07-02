@@ -110,6 +110,20 @@ SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider();
 padesSignatureService.setSecureRandomProvider(secureRandomProvider);
 ----
 
+a|TLValidationJob management classes          a|
+[source,java]
+----
+import eu.europa.esig.dss.tsl.cache.CacheCleaner;
+import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
+...
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
+----
+
 |===
 
 .Code changes from version 6.3 to 6.4

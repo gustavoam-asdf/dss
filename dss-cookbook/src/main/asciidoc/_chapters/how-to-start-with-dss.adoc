@@ -377,6 +377,7 @@ dss-policy-crypto-json:: Model for the JSON Cryptographic Suite as per ETSI TS 1
 
 dss-xades:: Implementation of the XAdES signature, augmentation and validation.
 dss-cades:: Implementation of the CAdES signature, augmentation and validation.
+dss-cb-ades:: Implementation of the CB-AdES signature, augmentation and validation.
 dss-cms:: Provides interfaces and utility methods for working with CMS objects (see RFC 5652, cf. <<R31>>).
 dss-cms-object:: Implementation of 'dss-cms' module, processing the data objects and files in memory.
 dss-cms-stream:: Implementation of 'dss-cms' module, processing the data objects and files using streaming.

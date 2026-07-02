@@ -28,7 +28,7 @@ Three main features can be distinguished within the framework :
 
 In a more detailed manner the following concepts and features are addressed in this document:
 
-* Forms of digital signatures: XAdES, CAdES, PAdES, JAdES and ASiC-S/ASiC-E;
+* Forms of digital signatures: XAdES, CAdES, PAdES, JAdES, CB-AdES and ASiC-S/ASiC-E;
 * Formats of the signed documents: XML, JSON, PDF, DOC, TXT, ZIP, etc.;
 * Packaging structures: enveloping, enveloped, detached and internally-detached;
 * Profiles associated to each form of the digital signature;
@@ -80,6 +80,7 @@ For the DSS demo: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html[GNU
 |BBB			|Basic Building Block (cf. <<R09>>)
 |CA				|Certificate authority
 |CAdES			|CMS Advanced Electronic Signatures
+|CB-AdES		|CBOR Advanced Electronic Signatures
 |CMS			|Cryptographic Message Syntax
 |CRL			|Certificate Revocation List
 |CSP			|Cryptographic Service Provider
@@ -88,6 +89,7 @@ For the DSS demo: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html[GNU
 |DSA			|Digital Signature Algorithm - an algorithm for public-key cryptography
 |DSS			|Digital Signature Service
 |EAA            |Electronic Attestations of Attributes
+|EAAP           |Electronic Attestations of Attributes Presentation
 |EC				|European Commission
 |ESI			|Electronic Signatures and Infrastructures
 |ETSI			|European Telecommunications Standards Institute
@@ -186,6 +188,9 @@ For the DSS demo: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html[GNU
 |[[R38]]    R38 |ISO/IEC 18013-5 - Personal identification — ISO-compliant driving licence — Part 5: Mobile driving licence (mDL) application |   |First edition (2021-09)
 |[[R39]]	R39	|ESI - Lists of trusted entities; Procedures for using and interpreting lists of trusted entities           |ETSI TS 119 605                                                                                                                    |Draft 0.0.2 (2026-06)
 |[[R40]]	R40	|eIDAS Regulation No 2024/1183                                                  |https://eur-lex.europa.eu/eli/reg/2024/1183/oj/eng[Regulation (EU) No 2024/1183]                                                                               |eIDAS 2.0
+|[[R41]]	R41	|ESI - CB AdES (CBOR-AdES) digital signatures									|https://www.etsi.org/deliver/etsi_ts/119100_119199/11915201/01.01.01_60/ts_11915201v010101p.pdf[ETSI TS 119 152 part 1]                                    	|1.1.1 (2026-03)
+|[[R42]]	R42	|Internet RFC 9052: CBOR Object Signing and Encryption (COSE): Structures and Process						|https://www.ietf.org/rfc/rfc9052.txt[RFC 9052]                                                                                  	|
+|[[R43]]	R43	|Internet RFC 9338: CBOR Object Signing and Encryption (COSE): Countersignatures						    |https://www.ietf.org/rfc/rfc9338.txt[RFC 9338]                                                                                 	|
 
 |=======================
 

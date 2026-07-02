@@ -506,6 +506,7 @@ DSS implements the following ETSI standards for various signature forms:
 * CAdES digital signatures are compliant with ETSI EN 319 122 part 1-2 (<<R02>>);
 * PAdES digital signatures are compliant with ETSI EN 319 142 part 1-2 (<<R03>>);
 * JAdES digital signatures are compliant with ETSI TS 119 182 part 1 (<<R05>>);
+* CB-AdES digital signatures are compliant with ETSI TS 119 152 part 1 (<<R41>>);
 * ASiC signature containers are compliant with ETSI EN 319 162 part 1-2 (<<R04>>).
 
 but also claims:
