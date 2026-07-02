@@ -445,7 +445,8 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 		if (Utils.isArrayEmpty(returnedBytes)) {
 			LOG.warn("Empty array obtained for url [{}].", urlString);
 		} else if (toBeCached(returnedBytes)) {
-			createFile(cacheFileName, returnedBytes);
+			final File cacheFile = getCacheFile(cacheFileName);
+			DSSUtils.saveToFile(returnedBytes, cacheFile);
 			LOG.debug("The retrieved data from url [{}] was added to the cache.", urlString);
 			return returnedBytes;
 		} else {
