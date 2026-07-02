@@ -90,7 +90,8 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 
 NOTE: `Sha2FileCacheDataLoader` is meant to be used for downloading of Trusted Lists implementing the ETSI TS 119 612 standard (cf. <<R11>>). There is no guarantee the class will work as intended in any other scope. Thus, it is use is not recommended outside of `TLValidationJob`. If needed, please use `FileCacheDataLoader` instead.
 
-==== The SynchronizationStrategy
+[[SynchronizationStrategy]]
+==== SynchronizationStrategy
 
 The `SynchronizationStrategy` defines the trusted lists or list(s) of trusted lists to be synchronized. By default, DSS synchronizes all of them and DSS does not reject any trusted lists (e.g. expired, invalid, etc.). The default behavior can be customized with implementation of the `SynchronizationStrategy`.
 
@@ -115,7 +116,8 @@ An example of a custom implementation of `SynchronizationStrategy` can be found 
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidationJobSnippets.java[tags=custom-strategy]
 ----
 
-==== The CacheCleaner
+[[CacheCleaner]]
+==== CacheCleaner
 
 The `CacheCleaner` specifies how DSS clears the cache (e.g. in case of expired URL, etc.). Two cleaning options are available : memory and file system.
 
@@ -309,6 +311,7 @@ Below you may find an example of `TrustAnchorValidityPredicate` configuration:
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidationJobSnippets.java[tags=trust-anchor-validity-predicate]
 ----
 
+[[ExecutorService]]
 ==== Executor Service
 
 An Executor Service allows you to customize a way of the program execution on your Java machine, by configuring a number of possible threads to be running, await time and so on.
@@ -330,6 +333,7 @@ Below, you can find a complete configuration for the European List Of Trusted Li
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/EuropeanLOTLSnippets.java[tags=complete-european-lotl-config]
 ----
 
+[[TLRefresh]]
 ==== The TL / LOTL refresh
 
 The TL / LOTL loading in DSS works as below :

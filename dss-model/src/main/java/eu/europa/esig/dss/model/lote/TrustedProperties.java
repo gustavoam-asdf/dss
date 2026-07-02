@@ -13,8 +13,11 @@ public class TrustedProperties implements Serializable {
 
     private static final long serialVersionUID = -3151960723009323199L;
 
-    /** The TL id */
-    private final ListInfo listInfo;
+    /** The LoLoTE id */
+    private final LoLoTEInfo loloteInfo;
+
+    /** The LoTE id */
+    private final LoTEInfo listInfo;
 
     /** The trustedEntity */
     private final TrustedEntity trustedEntity;
@@ -23,28 +26,51 @@ public class TrustedProperties implements Serializable {
     private final TimeDependentValues<ServiceStatusAndInformationExtensions> trustedServices;
 
     /**
-     * Constructor for extracted information from an "independent" trusted list
+     * Constructor for extracted information from an "independent" list
      *
-     * @param listInfo               {@link ListInfo}
+     * @param listInfo             {@link LoTEInfo}
      * @param trustedEntity        {@link TrustedEntity}
-     * @param trustedServices         the current trust service
+     * @param trustedServices      the current trust service
      */
-    public TrustedProperties(ListInfo listInfo, TrustedEntity trustedEntity,
+    public TrustedProperties(LoTEInfo listInfo, TrustedEntity trustedEntity,
+                             TimeDependentValues<ServiceStatusAndInformationExtensions> trustedServices) {
+        this(null, listInfo, trustedEntity, trustedServices);
+    }
+
+    /**
+     * Constructor for extracted information with a related List of Lists
+     *
+     * @param loloteInfo           {@link LoLoTEInfo}
+     * @param listInfo             {@link LoTEInfo}
+     * @param trustedEntity        {@link TrustedEntity}
+     * @param trustedServices      the current trust service
+     */
+    public TrustedProperties(LoLoTEInfo loloteInfo, LoTEInfo listInfo, TrustedEntity trustedEntity,
                              TimeDependentValues<ServiceStatusAndInformationExtensions> trustedServices) {
         Objects.requireNonNull(listInfo, "tlInfo cannot be null!");
         Objects.requireNonNull(trustedEntity, "trustedEntity cannot be null!");
         Objects.requireNonNull(trustedServices, "trustedServices cannot be null!");
+        this.loloteInfo = loloteInfo;
         this.listInfo = listInfo;
         this.trustedEntity = trustedEntity;
         this.trustedServices = trustedServices;
     }
 
     /**
+     * Gets LoLoTE
+     *
+     * @return {@link LoLoTEInfo}
+     */
+    public LoLoTEInfo getLoLoTEInfo() {
+        return loloteInfo;
+    }
+
+    /**
      * Gets List
      *
-     * @return {@link ListInfo}
+     * @return {@link LoTEInfo}
      */
-    public ListInfo getListInfo() {
+    public LoTEInfo getLoTEInfo() {
         return listInfo;
     }
 

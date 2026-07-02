@@ -31,8 +31,8 @@ import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.http.ResponseEnvelope;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.tsl.TrustProperties;
 import eu.europa.esig.dss.model.tsl.TrustService;
@@ -121,7 +121,7 @@ class QWACValidatorTest {
         when(tlInfo.getDSSId()).thenReturn(tlIdentifier);
         when(tlInfo.getDSSIdAsString()).thenReturn("TL-ID");
 
-        ParsingInfoRecord parsingInfoRecord = Mockito.mock(ParsingInfoRecord.class);
+        TLParsingInfoRecord parsingInfoRecord = Mockito.mock(TLParsingInfoRecord.class);
         when(parsingInfoRecord.getTerritory()).thenReturn("EL");
         when(parsingInfoRecord.getTSLType()).thenReturn(TSLType.fromUri("http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric"));
         when(parsingInfoRecord.getSequenceNumber()).thenReturn(1);

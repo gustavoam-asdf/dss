@@ -43,7 +43,7 @@ public enum EAAQualification {
      * Electronic attestation of attributes issued by or on behalf of a public sector body responsible
      * for an authentic source as defined in Regulation EU 2024/1183, Article 45f.
      */
-    PUBEAA("Pub-EAA", "Electronic Attestation of Attributes issued by or on behalf of a public sector body", "urn:cef:dss:eaaQualification:PUBEAA"),
+    PUBEAA("PuB-EAA", "Electronic Attestation of Attributes issued by or on behalf of a public sector body", "urn:cef:dss:eaaQualification:PUBEAA"),
 
     /**
      * Personal Identification Data (PID)

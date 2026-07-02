@@ -47,6 +47,8 @@ import java.util.Objects;
  */
 public class TrustedEntitiesCertificateSource extends CommonTrustedCertificateSource implements TrustedPropertiesCertificateSource {
 
+    private static final long serialVersionUID = 1928774883535280047L;
+
     private static final Logger LOG = LoggerFactory.getLogger(TrustedEntitiesCertificateSource.class);
 
     /** The TL Validation job summary */

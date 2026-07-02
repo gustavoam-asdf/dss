@@ -31,9 +31,9 @@ import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
-import eu.europa.esig.dss.tsl.cache.CacheCleaner;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
-import eu.europa.esig.dss.tsl.sync.SynchronizationStrategy;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -73,7 +73,7 @@ class LOTLChangesTest {
 		cacheCleaner.setDSSFileLoader(offlineFileLoader);
 		job.setCacheCleaner(cacheCleaner);
 
-		SynchronizationStrategy rejectAll = new SynchronizationStrategy() {
+		SynchronizationStrategy<TLInfo, LOTLInfo> rejectAll = new SynchronizationStrategy<TLInfo, LOTLInfo>() {
 
 			@Override
 			public boolean canBeSynchronized(LOTLInfo listOfTrustedList) {

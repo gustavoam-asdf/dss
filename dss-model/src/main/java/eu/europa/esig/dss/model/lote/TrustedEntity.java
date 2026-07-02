@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @param <S> implementation of {@link EntityService}
  */
-public class TrustedEntity<S extends EntityService> implements Serializable {
+public class TrustedEntity implements Serializable {
 
     private static final long serialVersionUID = 8226814037598715986L;
 
@@ -38,7 +38,7 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
     private Map<String, List<String>> information;
 
     /** The list of trusted entity services */
-    private List<S> services;
+    private List<TrustedEntityService> services;
 
     /** The territory (country) */
     private String territory;
@@ -162,9 +162,9 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
     /**
      * Gets a list of trusted entity services
      *
-     * @return a list of {@link S}s
+     * @return a list of {@link TrustedEntityService}s
      */
-    public List<S> getServices() {
+    public List<TrustedEntityService> getServices() {
         return services;
     }
 
@@ -173,7 +173,7 @@ public class TrustedEntity<S extends EntityService> implements Serializable {
      *
      * @param services a list of trusted entity services
      */
-    public void setServices(List<S> services) {
+    public void setServices(List<TrustedEntityService> services) {
         this.services = services;
     }
 

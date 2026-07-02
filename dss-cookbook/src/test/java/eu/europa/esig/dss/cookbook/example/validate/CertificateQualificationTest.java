@@ -107,7 +107,7 @@ class CertificateQualificationTest {
         cv.setOcspSource(ocspSource); // configured OCSP Access
         cv.setCrlSource(crlSource); // configured CRL Access
 
-        // Create an instance of CertificateValidator for the SSL Certificate with the
+        // Create an instance of CertificateValidator for the Certificate with the
         // CertificateVerifier
         CertificateValidator validator = CertificateValidator.fromCertificate(certificate);
         validator.setCertificateVerifier(cv);

@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.lote.json.download;
 
-import eu.europa.esig.dss.lote.download.DownloadResult;
+import eu.europa.esig.dss.lote.download.LoTEDownloadResult;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.DigestDocument;
@@ -22,8 +22,8 @@ class LoTEJWSCompactDownloadTaskTest {
     @Test
     void testValid() {
         DSSDocument trustedList = new FileDocument("src/test/resources/pid-providers.json");
-        LoTEJWSCompactDownloadTask task = new LoTEJWSCompactDownloadTask(trustedList, "https://dss.nowina.lu/pid-providers.json");
-        DownloadResult result = task.get();
+        JsonLoTEDownloadTask task = new JsonLoTEDownloadTask(trustedList, "https://dss.nowina.lu/pid-providers.json");
+        LoTEDownloadResult result = task.get();
         assertNotNull(result);
         assertNotNull(result.getDSSDocument());
         assertNotNull(result.getDigest());
@@ -32,7 +32,7 @@ class LoTEJWSCompactDownloadTaskTest {
 
     @Test
     void nullResultTest() {
-        Exception exception = assertThrows(NullPointerException.class, () -> new LoTEJWSCompactDownloadTask(null, null));
+        Exception exception = assertThrows(NullPointerException.class, () -> new JsonLoTEDownloadTask(null, null));
         assertEquals("The url is null", exception.getMessage());
 
         Map<String, DSSDocument> dataMap = new HashMap<>();
@@ -42,7 +42,7 @@ class LoTEJWSCompactDownloadTaskTest {
         dataMap.put("0", new InMemoryDocument(new byte[] { 0 }));
         dataMap.put("digestDoc", new DigestDocument());
         for (Map.Entry<String, DSSDocument> entry : dataMap.entrySet()) {
-            LoTEJWSCompactDownloadTask task = new LoTEJWSCompactDownloadTask(entry.getValue(), entry.getKey());
+            JsonLoTEDownloadTask task = new JsonLoTEDownloadTask(entry.getValue(), entry.getKey());
             assertThrows(DSSException.class, task::get);
         }
     }
@@ -55,7 +55,7 @@ class LoTEJWSCompactDownloadTaskTest {
         dataMap.put("json", new InMemoryDocument("{ \"hello\" : \"world\" }".getBytes()));
         dataMap.put("sd-jwt", new InMemoryDocument("ey.ey.ey~".getBytes()));
         for (Map.Entry<String, DSSDocument> entry : dataMap.entrySet()) {
-            LoTEJWSCompactDownloadTask task = new LoTEJWSCompactDownloadTask(entry.getValue(), entry.getKey());
+            JsonLoTEDownloadTask task = new JsonLoTEDownloadTask(entry.getValue(), entry.getKey());
             assertThrows(DSSException.class, task::get);
         }
     }

@@ -1,56 +1,145 @@
 package eu.europa.esig.dss.model.lote;
 
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.model.job.ValidationJobSummary;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Contains summary of the validation result of a List of Trusted Entities validation job
  *
  */
-public class LoTEValidationJobSummary implements ListValidationJobSummary {
+public class LoTEValidationJobSummary implements ValidationJobSummary<LoTEInfo, LoLoTEInfo>, Serializable {
+
+    private static final long serialVersionUID = 8797791787153723132L;
 
     /**
-     * List of infos for processed ListSource's
+     * List of infos for processed LoLoTESource's
      */
-    private final List<ListInfo> listsInfos;
+    private final List<LoLoTEInfo> loloteInfos;
+
+    /**
+     * List of infos for processed other LoTESource's
+     */
+    private final List<LoTEInfo> otherLoTEInfos;
 
     /**
      * The default constructor
      *
-     * @param listsInfos a list of {@link ListInfo}s
+     * @param otherLoTEInfos a list of {@link LoTEInfo}s
      */
-    public LoTEValidationJobSummary( final List<ListInfo> listsInfos) {
-        if ((listsInfos == null || listsInfos.isEmpty())) {
-            throw new IllegalArgumentException("List Info shall be provided!");
+    public LoTEValidationJobSummary(final List<LoLoTEInfo> loloteInfos, final List<LoTEInfo> otherLoTEInfos) {
+        if ((loloteInfos == null || loloteInfos.isEmpty()) && (otherLoTEInfos == null || otherLoTEInfos.isEmpty())) {
+            throw new IllegalArgumentException("LoTE Info shall be provided!");
         }
-        this.listsInfos = listsInfos;
+        this.loloteInfos = loloteInfos;
+        this.otherLoTEInfos = otherLoTEInfos;
     }
 
-    @Override
-    public List<ListInfo> getListInfos() {
-        return listsInfos;
+    /**
+     * Gets a list of LoLoTE infos
+     *
+     * @return a list of {@link LoLoTEInfo}s
+     */
+    public List<LoLoTEInfo> getLoLoTEInfos() {
+        return loloteInfos;
     }
 
-    @Override
-    public int getNumberOfProcessedLists() {
+    /**
+     * Gets a list of other LoTE infos
+     *
+     * @return a list of {@link LoTEInfo}s
+     */
+    public List<LoTEInfo> getOtherLoTEInfos() {
+        return otherLoTEInfos;
+    }
+
+    /**
+     * Gets a number of processed LoTEs
+     *
+     * @return number of processed LoTEs
+     */
+    public int getNumberOfProcessedLoTEs() {
         int amount = 0;
-        if (listsInfos != null && !listsInfos.isEmpty()) {
-            amount += listsInfos.size();
+        if (otherLoTEInfos != null && !otherLoTEInfos.isEmpty()) {
+            amount += otherLoTEInfos.size();
+        }
+        if (loloteInfos != null && !loloteInfos.isEmpty()) {
+            for (LoLoTEInfo loloteInfo : loloteInfos) {
+                amount += loloteInfo.getChildrenInfos().size();
+            }
         }
         return amount;
     }
 
-    @Override
-    public ListInfo getListInfoById(Identifier identifier) {
-        if (listsInfos != null && !listsInfos.isEmpty()) {
-            for (ListInfo listInfo : listsInfos) {
+    /**
+     * Returns an amount of processed LoLoTEs
+     * @return {@code int} number of processed LoLoTEs
+     */
+    public int getNumberOfProcessedLoLoTEs() {
+        if (loloteInfos != null && !loloteInfos.isEmpty()) {
+            return loloteInfos.size();
+        }
+        return 0;
+    }
+
+    /**
+     * Gets a LoTE by a unique identifier
+     *
+     * @param identifier {@link Identifier}
+     * @return {@link LoTEInfo}
+     */
+    public LoTEInfo getLoTEInfoById(Identifier identifier) {
+        if (otherLoTEInfos != null && !otherLoTEInfos.isEmpty()) {
+            for (LoTEInfo listInfo : otherLoTEInfos) {
                 if (identifier.equals(listInfo.getDSSId())) {
                     return listInfo;
                 }
             }
         }
+
+        if (loloteInfos != null && !loloteInfos.isEmpty()) {
+            for (LoLoTEInfo loloteInfo : loloteInfos) {
+                if (loloteInfo.getChildrenInfos() != null && !loloteInfo.getChildrenInfos().isEmpty()) {
+                    for (LoTEInfo loteInfo : loloteInfo.getChildrenInfos()) {
+                        if (identifier.equals(loteInfo.getDSSId())) {
+                            return loteInfo;
+                        }
+                    }
+                }
+            }
+        }
+
         return null;
     }
-    
+
+    /**
+     * Returns a LoLoTEInfo object by Identifier
+     *
+     * @param identifier
+     *            the Identifier of the searched LoLoTE
+     * @return a LoLoTEInfo or null
+     */
+    public LoLoTEInfo getLoLoTEInfoById(Identifier identifier) {
+        if (loloteInfos != null && !loloteInfos.isEmpty()) {
+            for (LoLoTEInfo lotlInfo : loloteInfos) {
+                if (identifier.equals(lotlInfo.getDSSId())) {
+                    return lotlInfo;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<LoLoTEInfo> getDocumentListInfos() {
+        return getLoLoTEInfos();
+    }
+
+    @Override
+    public List<LoTEInfo> getOtherDocumentInfos() {
+        return getOtherLoTEInfos();
+    }
+
 }

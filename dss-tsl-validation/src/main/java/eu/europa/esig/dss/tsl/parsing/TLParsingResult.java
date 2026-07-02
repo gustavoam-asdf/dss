@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Parsed TL result
  */
-public class TLParsingResult extends AbstractParsingResult {
+public class TLParsingResult extends AbstractTLParsingResult {
 
 	/** List of found trust service providers */
 	private List<TrustServiceProvider> trustServiceProviders;

@@ -62,9 +62,9 @@ import eu.europa.esig.dss.test.validation.AbstractDocumentTestValidation;
 import eu.europa.esig.dss.tsl.function.GrantedOrRecognizedAtNationalLevelTrustAnchorPeriodPredicate;
 import eu.europa.esig.dss.tsl.job.TLValidationJob;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.validationreport.ValidationReportUtils;
 import eu.europa.esig.validationreport.jaxb.SAContactInfoType;
@@ -133,7 +133,7 @@ class SignaturePoolTest extends AbstractDocumentTestValidation {
 		
 		TLValidationJob tlValidationJob = new TLValidationJob();
 		tlValidationJob.setTrustedListCertificateSource(trustedCertSource);
-		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy());
+		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy<>());
 		
 		LOTLSource lotlSource = new LOTLSource();
 		lotlSource.setUrl("https://ec.europa.eu/tools/lotl/eu-lotl.xml");

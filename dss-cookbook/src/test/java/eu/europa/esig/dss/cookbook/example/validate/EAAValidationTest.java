@@ -43,6 +43,7 @@ import eu.europa.esig.dss.eaa.mdoc.validation.MdocDeviceResponseEAAPresentationV
 import eu.europa.esig.dss.eaa.mdoc.validation.MdocIssuerSignedEAAPresentationValidator;
 import eu.europa.esig.dss.eaa.mdoc.validation.MdocValidationParameters;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.EAAStatus;
 import eu.europa.esig.dss.enumerations.EllipticCurve;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
@@ -115,9 +116,13 @@ class EAAValidationTest extends CookbookTools {
             DSSDocument presentationDocument = service.issuePresentation(signedEAA, disclosures, keyBindingJWT);
             // end::sdjwt-presentation-document[]
 
+            // tag::eaa-qualification[]
+            // import import eu.europa.esig.dss.enumerations.EAAQualification;
+            // end::eaa-qualification[]
             // tag::eaa-validation-auto[]
             // import eu.europa.esig.dss.detailedreport.DetailedReport;
             // import eu.europa.esig.dss.diagnostic.DiagnosticData;
+            // tag::eaa-qualification[]
             // import eu.europa.esig.dss.eaa.common.validation.DefaultEAAPresentationValidator;
             // import eu.europa.esig.dss.simplereport.SimpleReport;
             // import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
@@ -132,9 +137,12 @@ class EAAValidationTest extends CookbookTools {
 
             // Validate and retrieve the reports
             Reports reports = validator.validateDocument();
+            // end::eaa-qualification[]
 
             DiagnosticData diagnosticData = reports.getDiagnosticData();
+            // tag::eaa-qualification[]
             SimpleReport simpleReport = reports.getSimpleReport();
+            // end::eaa-qualification[]
             DetailedReport detailedReport = reports.getDetailedReport();
             // end::eaa-validation-auto[]
 
@@ -189,6 +197,17 @@ class EAAValidationTest extends CookbookTools {
                 EAAStatus status = revocation.getStatus();
             }
             // end::eaa-diagnostic-eaa-data[]
+
+            // tag::eaa-qualification[]
+            // Extract EAA qualification:
+
+            // a) Get the first qualification result
+            EAAQualification eaaQualification = simpleReport.getEAAQualification(simpleReport.getFirstEAAId());
+
+            // b) Get all qualification results (may be useful when both
+            //    QEAA/PuB-EAA and PID qualification levels are expected.
+            List<EAAQualification> eaaQualifications = simpleReport.getEAAQualifications(simpleReport.getFirstEAAId());
+            // end::eaa-qualification[]
         }
     }
 

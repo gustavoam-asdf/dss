@@ -6,7 +6,7 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
@@ -119,23 +119,23 @@ class LoTEXmlGenerationTest extends PKIFactoryAccess {
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
 
         LoTEValidationJob validationJob = new LoTEValidationJob();
-        validationJob.setTrustedListCertificateSource(trustedEntitiesCertificateSource);
+        validationJob.setTrustedEntitiesCertificateSource(trustedEntitiesCertificateSource);
 
         urlMap.put(LOTE_LOCATION_URL, loTE);
         validationJob.setOnlineDataLoader(onlineFileLoader);
 
-        ListSource listSource = new ListSource();
-        listSource.setUrl(LOTE_LOCATION_URL);
+        LoTESource loTESource = new LoTESource();
+        loTESource.setUrl(LOTE_LOCATION_URL);
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
         trustedCertificateSource.addCertificate(loteSignerCertificate);
-        listSource.setCertificateSource(trustedCertificateSource);
-        validationJob.setListSources(listSource);
+        loTESource.setCertificateSource(trustedCertificateSource);
+        validationJob.setLoTESources(loTESource);
 
         validationJob.onlineRefresh();
 
         LoTEValidationJobSummary summary = validationJob.getSummary();
         assertEquals(1, trustedEntitiesCertificateSource.getNumberOfCertificates());
-        assertEquals(Indication.TOTAL_PASSED, summary.getListInfos().get(0).getValidationCacheInfo().getIndication());
+        assertEquals(Indication.TOTAL_PASSED, summary.getOtherLoTEInfos().get(0).getValidationCacheInfo().getIndication());
 
         assertEquals(1, trustedEntitiesCertificateSource.getCertificates().size());
 

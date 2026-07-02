@@ -40,6 +40,8 @@ import eu.europa.esig.dss.spi.validation.executor.SkipValidationContextExecutor;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.spi.x509.TrustedCertificateSource;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
+import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
@@ -48,12 +50,11 @@ import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * This class allows to validate TL or LOTL.
  */
-public class TLValidatorTask implements Supplier<ValidationResult> {
+public class TLValidatorTask implements ValidationTask {
 
 	/** The path for a LOTL/TL validation policy */
 	private static final String TRUSTED_LIST_VALIDATION_POLICY_LOCATION = "/policy/tsl-constraint.xml";
@@ -101,7 +102,7 @@ public class TLValidatorTask implements Supplier<ValidationResult> {
 		return xmlDocumentValidator.validateDocument(getTrustedListValidationPolicy());
 	}
 
-	private ValidationResult fillResult(Reports reports) {
+	private TLValidationResult fillResult(Reports reports) {
 		SimpleReport simpleReport = reports.getSimpleReport();
 		if (simpleReport.getSignaturesCount() != 1) {
 			throw new DSSException(String.format("Number of signatures must be equal to 1 (currently : %s)", simpleReport.getSignaturesCount()));
@@ -119,7 +120,7 @@ public class TLValidatorTask implements Supplier<ValidationResult> {
 			signingCertificate = DSSUtils.loadCertificate(signingCertificateWrapper.getBinaries());
 		}
 
-		return new ValidationResult(indication, subIndication, signingTime, signingCertificate, certificateSource);
+		return new TLValidationResult(indication, subIndication, signingTime, signingCertificate, certificateSource);
 	}
 
 	private TrustedCertificateSource buildTrustedCertificateSource(CertificateSource certificateSource) {

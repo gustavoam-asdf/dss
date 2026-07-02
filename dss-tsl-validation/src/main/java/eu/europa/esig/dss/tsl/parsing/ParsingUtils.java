@@ -24,7 +24,7 @@ import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonCertificateSource;
-import eu.europa.esig.dss.tsl.dto.ParsingCacheDTO;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
 import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +45,14 @@ public class ParsingUtils {
 	private ParsingUtils() {
 		// empty
 	}
-	
+
 	/**
 	 * Extracts XML LOTL Pointer from a parsing cache of a pivot
-	 * @param parsingCacheDTO {@link ParsingCacheDTO} to extract value from
+	 *
+	 * @param parsingCacheDTO {@link TLParsingCacheDTO} to extract value from
 	 * @return {@link OtherTSLPointer} XML LOTL Pointer
 	 */
-	public static OtherTSLPointer getXMLLOTLPointer(final ParsingCacheDTO parsingCacheDTO) {
+	public static OtherTSLPointer getXMLLOTLPointer(final TLParsingCacheDTO parsingCacheDTO) {
 		int nbLOTLPointersInPivot = 0;
 		if (parsingCacheDTO != null && parsingCacheDTO.isResultExist()) {
 			List<OtherTSLPointer> lotlOtherPointers = parsingCacheDTO.getLotlOtherPointers();

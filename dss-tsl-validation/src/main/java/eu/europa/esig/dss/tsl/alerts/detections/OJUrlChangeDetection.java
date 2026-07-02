@@ -22,7 +22,7 @@ package eu.europa.esig.dss.tsl.alerts.detections;
 
 import eu.europa.esig.dss.alert.detector.AlertDetector;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.tsl.function.LOTLSigningCertificatesAnnouncementSchemeInformationURI;
 import eu.europa.esig.dss.tsl.function.OfficialJournalSchemeInformationURI;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
@@ -52,7 +52,7 @@ public class OJUrlChangeDetection implements AlertDetector<LOTLInfo> {
 			return false;
 		}
 
-		ParsingInfoRecord parsingCacheInfo = info.getParsingCacheInfo();
+		TLParsingInfoRecord parsingCacheInfo = info.getParsingCacheInfo();
 		if (parsingCacheInfo != null && parsingCacheInfo.isDesynchronized()) {
 			LOTLSigningCertificatesAnnouncementSchemeInformationURI signingCertificatesAnnouncementPredicate = lotlSource
 					.getSigningCertificatesAnnouncementPredicate();

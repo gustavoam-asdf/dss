@@ -295,6 +295,7 @@ Two types of mdoc presentation can be issued:
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/EAACreationTest.java[tags=mdoc-issuance]
 ----
 
+[[EAAValidation]]
 === Validation
 
 ==== EAA presentation validation

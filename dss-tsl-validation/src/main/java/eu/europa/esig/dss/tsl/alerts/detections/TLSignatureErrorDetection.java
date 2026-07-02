@@ -21,9 +21,9 @@
 package eu.europa.esig.dss.tsl.alerts.detections;
 
 import eu.europa.esig.dss.alert.detector.AlertDetector;
-import eu.europa.esig.dss.model.tsl.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
-import eu.europa.esig.dss.model.tsl.ValidationInfoRecord;
 
 /**
  * Detects if an error in a TL validation occurred

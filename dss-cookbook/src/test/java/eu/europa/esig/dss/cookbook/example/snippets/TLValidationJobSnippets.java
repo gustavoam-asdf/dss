@@ -22,13 +22,13 @@ package eu.europa.esig.dss.cookbook.example.snippets;
 
 import eu.europa.esig.dss.alert.handler.AlertHandler;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.tsl.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ParsingInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.PivotInfo;
 import eu.europa.esig.dss.model.tsl.TLInfo;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
-import eu.europa.esig.dss.model.tsl.ValidationInfoRecord;
 import eu.europa.esig.dss.service.http.commons.CommonsDataLoader;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -48,7 +48,6 @@ import eu.europa.esig.dss.tsl.alerts.detections.LOTLLocationChangeDetection;
 import eu.europa.esig.dss.tsl.alerts.detections.OJUrlChangeDetection;
 import eu.europa.esig.dss.tsl.alerts.detections.TLSignatureErrorDetection;
 import eu.europa.esig.dss.tsl.alerts.handlers.log.LogTLSignatureErrorAlertHandler;
-import eu.europa.esig.dss.tsl.cache.CacheCleaner;
 import eu.europa.esig.dss.tsl.function.EUTLOtherTSLPointer;
 import eu.europa.esig.dss.tsl.function.GrantedOrRecognizedAtNationalLevelTrustAnchorPeriodPredicate;
 import eu.europa.esig.dss.tsl.function.GrantedTrustAnchorPeriodPredicate;
@@ -64,10 +63,11 @@ import eu.europa.esig.dss.tsl.job.TLValidationJob;
 import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.tsl.sync.ExpirationAndSignatureCheckStrategy;
-import eu.europa.esig.dss.tsl.sync.SynchronizationStrategy;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
+import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 import eu.europa.esig.trustedlist.jaxb.tsl.InternationalNamesType;
 import eu.europa.esig.trustedlist.jaxb.tsl.MultiLangNormStringType;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPInformationType;
@@ -177,13 +177,13 @@ public class TLValidationJobSnippets {
 	public void synchronizationStrategyConfiguration() {
 		// tag::synchronization-strategy[]
 		// import eu.europa.esig.dss.tsl.job.TLValidationJob;
-		// import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 		// import eu.europa.esig.dss.tsl.sync.ExpirationAndSignatureCheckStrategy;
+		// import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
 
 		TLValidationJob tlValidationJob = new TLValidationJob();
 
 		// AcceptAllStrategy will accept all Trusted Lists, despite its signature validation status (used by default)
-		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy());
+		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy<>());
 
 		// ExpirationAndSignatureCheckStrategy allow configuring acceptance of various checks to be performed on Trusted Lists
 		ExpirationAndSignatureCheckStrategy checkStrategy = new ExpirationAndSignatureCheckStrategy();
@@ -204,13 +204,13 @@ public class TLValidationJobSnippets {
 		TLValidationJob tlValidationJob = new TLValidationJob();
 
 		// tag::custom-strategy[]
-		// import eu.europa.esig.dss.tsl.sync.SynchronizationStrategy;
+		// import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 		// import eu.europa.esig.dss.spi.tsl.TLInfo;
 		// import eu.europa.esig.dss.spi.tsl.LOTLInfo;
 
 		// Create a custom strategy by implementing the interface
 		// This strategy will accept only LOTL/TLs with valid signatures
-		SynchronizationStrategy customStrategy = new SynchronizationStrategy() {
+		SynchronizationStrategy<TLInfo, LOTLInfo> customStrategy = new SynchronizationStrategy<TLInfo, LOTLInfo>() {
 
 			@Override
 			public boolean canBeSynchronized(TLInfo trustedList) {
@@ -272,7 +272,7 @@ public class TLValidationJobSnippets {
 
 	public CacheCleaner cacheCleaner() {
 		// tag::cache-cleaner[]
-		// import eu.europa.esig.dss.tsl.cache.CacheCleaner;
+		// import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
 
 		// Create CacheCleaner
 		CacheCleaner cacheCleaner = new CacheCleaner();
@@ -442,13 +442,13 @@ public class TLValidationJobSnippets {
 
 	public void summary() {
 		// tag::tl-summary[]
+		// import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+		// import eu.europa.esig.dss.model.job.ParsingInfoRecord;
+		// import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 		// import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
 		// import eu.europa.esig.dss.tsl.job.TLValidationJob;
 		// import eu.europa.esig.dss.spi.tsl.TLValidationJobSummary;
 		// import eu.europa.esig.dss.spi.tsl.LOTLInfo;
-		// import eu.europa.esig.dss.spi.tsl.DownloadInfoRecord;
-		// import eu.europa.esig.dss.spi.tsl.ParsingInfoRecord;
-		// import eu.europa.esig.dss.spi.tsl.ValidationInfoRecord;
 		// import eu.europa.esig.dss.spi.tsl.TLInfo;
 		// import java.util.List;
 

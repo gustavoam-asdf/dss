@@ -1,13 +1,13 @@
 package eu.europa.esig.dss.lote.json.parsing;
 
-import eu.europa.esig.dss.lote.parsing.ParsingResult;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.parsing.AbstractLoTEParsingResult;
+import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.lote.EntityService;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
+import eu.europa.esig.dss.model.lote.TrustedEntityService;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.Test;
@@ -25,8 +25,8 @@ class LoTEJWSCompactParsingTaskTest {
     @Test
     void testValid() {
         DSSDocument trustedList = new FileDocument("src/test/resources/pid-providers.json");
-        LoTEJWSCompactParsingTask task = new LoTEJWSCompactParsingTask(trustedList, new ListSource());
-        ParsingResult result = task.get();
+        JsonLoTEParsingTask task = new JsonLoTEParsingTask(trustedList, new LoTESource());
+        AbstractLoTEParsingResult result = task.get();
         assertNotNull(result);
         assertEquals(1, result.getVersion());
         assertEquals(1, result.getSequenceNumber());
@@ -55,7 +55,7 @@ class LoTEJWSCompactParsingTaskTest {
     @Test
     void testWrongPayload() {
         DSSDocument trustedList = new FileDocument("src/test/resources/pid-providers-broken-json.json");
-        LoTEJWSCompactParsingTask task = new LoTEJWSCompactParsingTask(trustedList, new ListSource());
+        JsonLoTEParsingTask task = new JsonLoTEParsingTask(trustedList, new LoTESource());
         Exception exception = assertThrows(DSSException.class, task::get);
         assertTrue(exception.getMessage().contains("Unable to parse binaries."));
     }
@@ -63,8 +63,8 @@ class LoTEJWSCompactParsingTaskTest {
     @Test
     void testStructureError() {
         DSSDocument trustedList = new FileDocument("src/test/resources/pid-providers-structure-error.json");
-        LoTEJWSCompactParsingTask task = new LoTEJWSCompactParsingTask(trustedList, new ListSource());
-        ParsingResult result = task.get();
+        JsonLoTEParsingTask task = new JsonLoTEParsingTask(trustedList, new LoTESource());
+        AbstractLoTEParsingResult result = task.get();
         assertNotNull(result);
         assertEquals(1, result.getVersion());
         assertEquals(1, result.getSequenceNumber());
@@ -104,8 +104,8 @@ class LoTEJWSCompactParsingTaskTest {
         }
     }
 
-    private void checkServices(List<EntityService> services) {
-        for (EntityService entityService : services) {
+    private void checkServices(List<TrustedEntityService> services) {
+        for (TrustedEntityService entityService : services) {
             assertNotNull(entityService.getCertificates());
             assertFalse(entityService.getCertificates().isEmpty());
 

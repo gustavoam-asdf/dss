@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * Parses a TL and returns {@code TLParsingResult}
  */
-public class TLParsingTask extends AbstractParsingTask<TLParsingResult> {
+public class TLParsingTask extends AbstractParsingTask {
 
 	/** The TLSource to parse */
 	private final TLSource tlSource;

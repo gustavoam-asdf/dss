@@ -83,19 +83,21 @@ import eu.europa.esig.dss.model.OidRepository;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.model.identifier.OriginalIdentifierProvider;
 import eu.europa.esig.dss.model.identifier.TokenIdentifierProvider;
-import eu.europa.esig.dss.model.lote.ListInfo;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
+import eu.europa.esig.dss.model.lote.LoLoTEInfo;
+import eu.europa.esig.dss.model.lote.LoTEInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
+import eu.europa.esig.dss.model.lote.record.LoTEParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.CertificateTrustTime;
-import eu.europa.esig.dss.model.tsl.DownloadInfoRecord;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
-import eu.europa.esig.dss.model.tsl.ParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.model.tsl.TLParsingInfoRecord;
 import eu.europa.esig.dss.model.tsl.TLValidationJobSummary;
 import eu.europa.esig.dss.model.tsl.TrustProperties;
 import eu.europa.esig.dss.model.tsl.TrustPropertiesCertificateSource;
 import eu.europa.esig.dss.model.tsl.TrustedCertificateSourceWithTime;
-import eu.europa.esig.dss.model.tsl.ValidationInfoRecord;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.model.x509.TokenComparator;
@@ -229,9 +231,9 @@ public abstract class DiagnosticDataBuilder {
 	protected Map<String, TLInfo> tlInfoMap = new HashMap<>();
 
 	/**
-	 * The cached map of lists of trusted entities with corresponding ListInfo
+	 * The cached map of lists of trusted entities with corresponding LoTEInfo
 	 */
-	protected Map<String, ListInfo> loteInfoMap = new HashMap<>();
+	protected Map<String, LoTEInfo> loteInfoMap = new HashMap<>();
 
 	/**
 	 * Default constructor instantiating object with null values
@@ -559,21 +561,6 @@ public abstract class DiagnosticDataBuilder {
 		return mapTrustedLists;
 	}
 
-	private Map<Identifier, XmlTrustedList> getListOfTrustedListsMap(TrustPropertiesCertificateSource tlCertSource,
-																	 TLValidationJobSummary summary) {
-		Map<Identifier, XmlTrustedList> mapListOfTrustedLists = new HashMap<>();
-		Set<Identifier> lotlIdentifiers = getLOTLIdentifiers(tlCertSource);
-		for (Identifier lotlId : lotlIdentifiers) {
-			if (!mapListOfTrustedLists.containsKey(lotlId)) {
-				LOTLInfo lotlInfoById = summary.getLOTLInfoById(lotlId);
-				if (lotlInfoById != null) {
-					mapListOfTrustedLists.put(lotlId, getXmlTrustSourceList(lotlInfoById));
-				}
-			}
-		}
-		return mapListOfTrustedLists;
-	}
-
 	private Set<Identifier> getTLIdentifiers(TrustPropertiesCertificateSource tlCS) {
 		Set<Identifier> tlIdentifiers = new HashSet<>();
 		for (CertificateToken certificateToken : usedCertificates) {
@@ -586,6 +573,21 @@ public abstract class DiagnosticDataBuilder {
 			}
 		}
 		return tlIdentifiers;
+	}
+
+	private Map<Identifier, XmlTrustedList> getListOfTrustedListsMap(TrustPropertiesCertificateSource tlCertSource,
+	                                                                 TLValidationJobSummary summary) {
+		Map<Identifier, XmlTrustedList> mapListOfTrustedLists = new HashMap<>();
+		Set<Identifier> lotlIdentifiers = getLOTLIdentifiers(tlCertSource);
+		for (Identifier lotlId : lotlIdentifiers) {
+			if (!mapListOfTrustedLists.containsKey(lotlId)) {
+				LOTLInfo lotlInfoById = summary.getLOTLInfoById(lotlId);
+				if (lotlInfoById != null) {
+					mapListOfTrustedLists.put(lotlId, getXmlTrustSourceList(lotlInfoById));
+				}
+			}
+		}
+		return mapListOfTrustedLists;
 	}
 
 	private Set<Identifier> getLOTLIdentifiers(TrustPropertiesCertificateSource tlCS) {
@@ -613,7 +615,7 @@ public abstract class DiagnosticDataBuilder {
 		if (tlInfo.getParent() != null) {
 			result.setParent(getXmlTrustSourceList(tlInfo.getParent()));
 		}
-		ParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
+		TLParsingInfoRecord parsingCacheInfo = tlInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getTSLType() != null) {
 				result.setType(parsingCacheInfo.getTSLType().getUri());
@@ -691,6 +693,7 @@ public abstract class DiagnosticDataBuilder {
 		List<XmlListOfTrustedEntities> trustSourceLists = new ArrayList<>();
 
 		Map<Identifier, XmlListOfTrustedEntities> mapLists = new HashMap<>();
+		Map<Identifier, XmlListOfTrustedEntities> mapListOfLists = new HashMap<>();
 
 		for (CertificateSource certificateSource : trustedCertificateSources.getSources()) {
 			if (certificateSource instanceof TrustedEntitiesCertificateSource) {
@@ -698,6 +701,7 @@ public abstract class DiagnosticDataBuilder {
 				LoTEValidationJobSummary summary = teCertSource.getSummary();
 				if (summary != null) {
 					mapLists.putAll(getLoTEMap(teCertSource, summary));
+					mapListOfLists.putAll(getListOfLoTEMap(teCertSource, summary));
 
 				} else {
 					LOG.warn("The TrustedEntitiesCertificateSource does not contain LoTEValidationJobSummary. " +
@@ -707,22 +711,23 @@ public abstract class DiagnosticDataBuilder {
 		}
 
 		trustSourceLists.addAll(mapLists.values());
+		trustSourceLists.addAll(mapListOfLists.values());
 		return trustSourceLists;
 	}
 
 	private Map<Identifier, XmlListOfTrustedEntities> getLoTEMap(TrustedEntitiesCertificateSource teCertSource,
 													   LoTEValidationJobSummary summary) {
-		Map<Identifier, XmlListOfTrustedEntities> mapTrustedLists = new HashMap<>();
+		Map<Identifier, XmlListOfTrustedEntities> mapTrustedEntitiesLists = new HashMap<>();
 		Set<Identifier> loteIdentifiers = getLOTEIdentifiers(teCertSource);
 		for (Identifier loteId : loteIdentifiers) {
-			if (!mapTrustedLists.containsKey(loteId)) {
-				ListInfo listInfoById = summary.getListInfoById(loteId);
+			if (!mapTrustedEntitiesLists.containsKey(loteId)) {
+				LoTEInfo listInfoById = summary.getLoTEInfoById(loteId);
 				if (listInfoById != null) {
-					mapTrustedLists.put(loteId, getXmlTrustSourceList(listInfoById));
+					mapTrustedEntitiesLists.put(loteId, getXmlTrustSourceList(listInfoById));
 				}
 			}
 		}
-		return mapTrustedLists;
+		return mapTrustedEntitiesLists;
 	}
 
 	private Set<Identifier> getLOTEIdentifiers(TrustedEntitiesCertificateSource teCertSource) {
@@ -730,7 +735,7 @@ public abstract class DiagnosticDataBuilder {
 		for (CertificateToken certificateToken : usedCertificates) {
 			List<TrustedProperties> trustedServices = teCertSource.getTrustedProperties(certificateToken);
 			for (TrustedProperties trustedProperties : trustedServices) {
-				ListInfo listInfo = trustedProperties.getListInfo();
+				LoTEInfo listInfo = trustedProperties.getLoTEInfo();
 				if (listInfo != null) {
 					loteIdentifiers.add(listInfo.getDSSId());
 					if (listInfo.getParent() != null) {
@@ -742,7 +747,36 @@ public abstract class DiagnosticDataBuilder {
 		return loteIdentifiers;
 	}
 
-	private XmlListOfTrustedEntities getXmlTrustSourceList(ListInfo loteInfo) {
+	private Map<Identifier, XmlListOfTrustedEntities> getListOfLoTEMap(TrustedEntitiesCertificateSource teCertSource,
+	                                                         LoTEValidationJobSummary summary) {
+		Map<Identifier, XmlListOfTrustedEntities> mapListsOfTrustedEntitiesLists = new HashMap<>();
+		Set<Identifier> loloteIdentifiers = getLoLoTEIdentifiers(teCertSource);
+		for (Identifier loloteId : loloteIdentifiers) {
+			if (!mapListsOfTrustedEntitiesLists.containsKey(loloteId)) {
+				LoLoTEInfo listOfListsInfoById = summary.getLoLoTEInfoById(loloteId);
+				if (listOfListsInfoById != null) {
+					mapListsOfTrustedEntitiesLists.put(loloteId, getXmlTrustSourceList(listOfListsInfoById));
+				}
+			}
+		}
+		return mapListsOfTrustedEntitiesLists;
+	}
+
+	private Set<Identifier> getLoLoTEIdentifiers(TrustedEntitiesCertificateSource loteCS) {
+		Set<Identifier> loloteIdentifiers = new HashSet<>();
+		for (CertificateToken certificateToken : usedCertificates) {
+			List<TrustedProperties> trustedServices = loteCS.getTrustedProperties(certificateToken);
+			for (TrustedProperties trustedProperties : trustedServices) {
+				LoLoTEInfo loloteInfo = trustedProperties.getLoLoTEInfo();
+				if (loloteInfo != null) {
+					loloteIdentifiers.add(loloteInfo.getDSSId());
+				}
+			}
+		}
+		return loloteIdentifiers;
+	}
+
+	private XmlListOfTrustedEntities getXmlTrustSourceList(LoTEInfo loteInfo) {
 		String id = loteInfo.getDSSIdAsString();
 		XmlListOfTrustedEntities result = xmlTrustSourceMap.computeIfAbsent(id, v -> new XmlListOfTrustedEntities());
 		result.setId(identifierProvider.getIdAsString(loteInfo));
@@ -750,7 +784,7 @@ public abstract class DiagnosticDataBuilder {
 		if (loteInfo.getParent() != null) {
 			result.setParent(getXmlTrustSourceList(loteInfo.getParent()));
 		}
-		eu.europa.esig.dss.model.lote.record.ParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
+		LoTEParsingInfoRecord parsingCacheInfo = loteInfo.getParsingCacheInfo();
 		if (parsingCacheInfo != null) {
 			if (parsingCacheInfo.getType() != null) {
 				result.setType(parsingCacheInfo.getType().getUri());
@@ -762,11 +796,11 @@ public abstract class DiagnosticDataBuilder {
 			result.setVersion(parsingCacheInfo.getVersion());
 			result.setStructuralValidation(getXmlStructuralValidation(parsingCacheInfo.getStructureValidationMessages()));
 		}
-		eu.europa.esig.dss.model.lote.record.DownloadInfoRecord downloadCacheInfo = loteInfo.getDownloadCacheInfo();
+		DownloadInfoRecord downloadCacheInfo = loteInfo.getDownloadCacheInfo();
 		if (downloadCacheInfo != null) {
 			result.setLastLoading(downloadCacheInfo.getLastSuccessSynchronizationTime());
 		}
-		eu.europa.esig.dss.model.lote.record.ValidationInfoRecord validationCacheInfo = loteInfo.getValidationCacheInfo();
+		ValidationInfoRecord validationCacheInfo = loteInfo.getValidationCacheInfo();
 		if (validationCacheInfo != null) {
 			result.setWellSigned(validationCacheInfo.isValid());
 		}

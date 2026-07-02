@@ -22,10 +22,10 @@ package eu.europa.esig.dss.tsl.runnable;
 
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
-import eu.europa.esig.dss.tsl.parsing.AbstractParsingTask;
 import eu.europa.esig.dss.tsl.parsing.TLParsingTask;
 import eu.europa.esig.dss.tsl.source.TLSource;
+import eu.europa.esig.dss.validation.job.cache.access.CacheAccessByKey;
+import eu.europa.esig.dss.validation.job.parsing.ParsingTask;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.CountDownLatch;
  * Runs the job for a TL analysis
  *
  */
-public class TLAnalysis extends AbstractRunnableAnalysis {
+public class TLAnalysis extends AbstractRunnableTLAnalysis {
 
 	/**
 	 * Default constructor
@@ -44,13 +44,13 @@ public class TLAnalysis extends AbstractRunnableAnalysis {
 	 * @param latch {@link CountDownLatch}
 	 */
 	public TLAnalysis(TLSource source, CacheAccessByKey cacheAccess, DSSFileLoader dssFileLoader,
-					  CountDownLatch latch) {
+                      CountDownLatch latch) {
 		super(source, cacheAccess, dssFileLoader, latch);
 	}
 
 	@Override
-	protected AbstractParsingTask<?> getParsingTask(DSSDocument document) {
-		return new TLParsingTask(document, getSource());
+	protected ParsingTask getParsingTask(DSSDocument document) {
+		return new TLParsingTask(document, (TLSource) getSource());
 	}
 
 }

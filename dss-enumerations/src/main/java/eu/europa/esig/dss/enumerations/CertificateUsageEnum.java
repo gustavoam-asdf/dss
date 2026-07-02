@@ -26,16 +26,16 @@ package eu.europa.esig.dss.enumerations;
  */
 public enum CertificateUsageEnum implements CertificateUsage {
 
-    /** Represents a PID provider certificate, as defined in the ETSI TS 119 605, Annex C */
+    /** Represents a PID provider certificate, as defined in the ETSI TS 119 605, Annex C.1 */
     PID_PROVIDER("PID Provider", LoTETypeEnum.EUPIDProvidersList, LoTEServiceTypeIdentifierEnum.PID_ISSUANCE, null),
 
-    /** Represents a certificate for PID revocation, according to the profile defined in ETSI TS 119 602, Annex D */
+    /** Represents a certificate for PID revocation, according to the profile defined in ETSI TS 119 602, Annex C.1 */
     CERT_FOR_PID_REVOCATION("Certificate for PID Revocation", LoTETypeEnum.EUPIDProvidersList, LoTEServiceTypeIdentifierEnum.PID_REVOCATION, null),
 
-    /** Represents a certificate for Wallet solution issuance, according to the profile defined in ETSI TS 119 602, Annex E */
+    /** Represents a certificate for Wallet solution issuance, according to the profile defined in ETSI TS 119 602, Annex C.2 */
     CERT_FOR_WALLET_ISSUANCE("Certificate for Wallet Solution Issuance", LoTETypeEnum.EUWalletProvidersList, LoTEServiceTypeIdentifierEnum.WALLET_ISSUANCE, null),
 
-    /** Represents a certificate for Wallet solution revocation, according to the profile defined in ETSI TS 119 602, Annex E */
+    /** Represents a certificate for Wallet solution revocation, according to the profile defined in ETSI TS 119 602, Annex C.2 */
     CERT_FOR_WALLET_REVOCATION("Certificate for Wallet Solution Revocation", LoTETypeEnum.EUWalletProvidersList, LoTEServiceTypeIdentifierEnum.WALLET_REVOCATION, null),
 
     /** Represents a certificate for WRPAC issuance, according to the profile defined in ETSI TS 119 602, Annex F */

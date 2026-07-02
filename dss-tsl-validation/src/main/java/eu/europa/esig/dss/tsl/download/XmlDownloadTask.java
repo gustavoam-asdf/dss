@@ -25,17 +25,17 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.client.http.DSSFileLoader;
+import eu.europa.esig.dss.validation.job.download.DownloadTask;
 import eu.europa.esig.dss.xades.DSSXMLUtils;
 import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.xml.utils.XMLCanonicalizer;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Downloads the document and returns a {@code XmlDownloadResult}
  */
-public class XmlDownloadTask implements Supplier<XmlDownloadResult> {
+public class XmlDownloadTask implements DownloadTask {
 
 	/** Default digest algorithm used for document integrity identification */
 	private static final DigestAlgorithm DEFAULT_DIGEST_ALGORITHM = DigestAlgorithm.SHA256;

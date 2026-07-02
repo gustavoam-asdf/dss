@@ -20,15 +20,15 @@
  */
 package eu.europa.esig.dss.tsl.alerts;
 
-import eu.europa.esig.dss.alert.AbstractAlert;
 import eu.europa.esig.dss.alert.detector.AlertDetector;
 import eu.europa.esig.dss.alert.handler.AlertHandler;
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
+import eu.europa.esig.dss.validation.job.alerts.DocumentAlert;
 
 /**
  * The class to process events on LOTL
  */
-public class LOTLAlert extends AbstractAlert<LOTLInfo> {
+public class LOTLAlert extends DocumentAlert<LOTLInfo, LOTLInfo> {
 
 	/**
 	 * Default constructor

@@ -22,11 +22,15 @@ package eu.europa.esig.dss.tsl.sync;
 
 import eu.europa.esig.dss.model.tsl.LOTLInfo;
 import eu.europa.esig.dss.model.tsl.TLInfo;
+import eu.europa.esig.dss.validation.job.sync.SynchronizationStrategy;
 
 /**
  * Accepts all trusted lists
+ *
+ * @deprecated since DSS 6.5. Please use {@code eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy} instead
  */
-public class AcceptAllStrategy implements SynchronizationStrategy {
+@Deprecated
+public class AcceptAllStrategy implements SynchronizationStrategy<TLInfo, LOTLInfo> {
 
 	/**
 	 * Default constructor
