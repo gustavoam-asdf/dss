@@ -20,8 +20,8 @@
  */
 package eu.europa.esig.dss.tsl.job;
 
-import eu.europa.esig.dss.model.job.OtherDocumentPointer;
 import eu.europa.esig.dss.model.job.ParsingInfoRecord;
+import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
 import eu.europa.esig.dss.utils.Utils;
@@ -84,13 +84,13 @@ public class LOTLChangeApplier {
 			return Collections.emptyMap();
 		}
 		if (!(parsingCache instanceof TLParsingCacheDTO)) {
-			throw new IllegalStateException("ParsingCacheDTO is not a TLParsingCacheDTO");
+			throw new IllegalStateException("Parsing cache is not a TLParsingCacheDTO");
 		}
 
 		TLParsingCacheDTO tlParsingCacheDTO = (TLParsingCacheDTO) parsingCache;
-		List<? extends OtherDocumentPointer> tlOtherPointers = tlParsingCacheDTO.getTlOtherPointers();
+		List<OtherTSLPointer> tlOtherPointers = tlParsingCacheDTO.getTlOtherPointers();
 		if (Utils.isCollectionNotEmpty(tlOtherPointers)) {
-			return tlOtherPointers.stream().collect(Collectors.toMap(OtherDocumentPointer::getLocation, OtherDocumentPointer::getSdiCertificates));
+			return tlOtherPointers.stream().collect(Collectors.toMap(OtherTSLPointer::getTSLLocation, OtherTSLPointer::getSdiCertificates));
 		}
 		return Collections.emptyMap();
 	}

@@ -1,19 +1,19 @@
 package eu.europa.esig.dss.lote.json.job;
 
 import eu.europa.esig.dss.enumerations.Indication;
-import eu.europa.esig.dss.lote.cache.CacheCleaner;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
 import eu.europa.esig.dss.lote.json.MockDataLoader;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
-import eu.europa.esig.dss.model.lote.ListInfo;
+import eu.europa.esig.dss.model.lote.LoTEInfo;
 import eu.europa.esig.dss.model.lote.LoTEValidationJobSummary;
 import eu.europa.esig.dss.service.http.commons.FileCacheDataLoader;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.utils.Utils;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,17 +71,17 @@ class JsonLoTEValidationJobTest {
 
     @Test
     void pidProviderListTest() {
-        ListSource pidProvidersListSource = getPIDProviderListSource();
+        LoTESource pidProvidersLoTESource = getPIDProviderListSource();
 
         loteValidationJob = new LoTEValidationJob();
         loteValidationJob.setOfflineDataLoader(offlineFileLoader);
-        loteValidationJob.setListSources(pidProvidersListSource);
+        loteValidationJob.setLoTESources(pidProvidersLoTESource);
         loteValidationJob.offlineRefresh();
 
         LoTEValidationJobSummary summary = loteValidationJob.getSummary();
-        assertEquals(1, summary.getListInfos().size());
+        assertEquals(1, summary.getOtherLoTEInfos().size());
 
-        ListInfo loteInfo = summary.getListInfos().get(0);
+        LoTEInfo loteInfo = summary.getOtherLoTEInfos().get(0);
         assertTrue(loteInfo.getDownloadCacheInfo().isResultExist());
         assertFalse(loteInfo.getDownloadCacheInfo().isError());
         assertTrue(loteInfo.getParsingCacheInfo().isResultExist());
@@ -95,8 +95,8 @@ class JsonLoTEValidationJobTest {
         assertEquals(Indication.TOTAL_PASSED, loteInfo.getValidationCacheInfo().getIndication());
     }
 
-    private ListSource getPIDProviderListSource() {
-        ListSource pidProviderList = new ListSource();
+    private LoTESource getPIDProviderListSource() {
+        LoTESource pidProviderList = new LoTESource();
         pidProviderList.setUrl("http://dss.nowina.lu/pid-providers.json");
         CertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
         trustedCertificateSource.addCertificate(DSSUtils.loadCertificate(new File("src/test/resources/pid-providers-cert.cer")));

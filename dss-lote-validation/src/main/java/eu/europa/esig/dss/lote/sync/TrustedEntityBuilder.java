@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Builds a {@code eu.europa.esig.dss.model.lote.TrustedEntity}
+ *
+ */
 public class TrustedEntityBuilder {
 
     /** Map of names (the key is the language) */

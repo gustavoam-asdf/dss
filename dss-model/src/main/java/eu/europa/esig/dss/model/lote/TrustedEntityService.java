@@ -3,13 +3,14 @@ package eu.europa.esig.dss.model.lote;
 import eu.europa.esig.dss.model.timedependent.TimeDependentValues;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * This class contains information about a single trusted entity's service
  *
  */
-public class TrustedEntityService implements EntityService<ServiceStatusAndInformationExtensions> {
+public class TrustedEntityService implements Serializable {
 
     private static final long serialVersionUID = -2657583530747203938L;
 

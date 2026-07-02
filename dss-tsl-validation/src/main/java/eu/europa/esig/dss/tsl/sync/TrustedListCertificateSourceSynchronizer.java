@@ -243,10 +243,10 @@ public class TrustedListCertificateSourceSynchronizer {
 
 	private TrustProperties getTrustProperties(LOTLInfo relatedLOTL, TLInfo tlInfo, TrustServiceProvider detached,
 			TimeDependentValues<TrustServiceStatusAndInformationExtensions> statusAndInformationExtensions) {
-		if (relatedLOTL == null) {
-			return new TrustProperties(tlInfo, detached, statusAndInformationExtensions);
+		if (relatedLOTL != null) {
+			return new TrustProperties(relatedLOTL, tlInfo, detached, statusAndInformationExtensions);
 		}
-		return new TrustProperties(relatedLOTL, tlInfo, detached, statusAndInformationExtensions);
+		return new TrustProperties(tlInfo, detached, statusAndInformationExtensions);
 	}
 
 	private List<CertificateTrustTime> getCertificateTrustTimes(

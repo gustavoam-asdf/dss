@@ -31,6 +31,6 @@ public interface DownloadResult extends CachedResult {
      *
      * @return a list of {@link String}s if errors occurred during sha2 processing, empty list otherwise
      */
-    List<String> getSha2ErrorMessages();
+    List<String> getSha2ErrorMessages(); // TODO : remove from the interface
 
 }

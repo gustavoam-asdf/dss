@@ -1,22 +1,22 @@
 package eu.europa.esig.dss.lote.xml.download;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.lote.download.DownloadResult;
+import eu.europa.esig.dss.lote.download.LoTEDownloadResult;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.Digest;
+import eu.europa.esig.dss.validation.job.download.DownloadTask;
 import eu.europa.esig.dss.xades.DSSXMLUtils;
 import eu.europa.esig.dss.xml.utils.DomUtils;
 import eu.europa.esig.dss.xml.utils.XMLCanonicalizer;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * This class is used to process the result of document download process for XML LoTE processing
  *
  */
-public class LoTEXmlDownloadTask implements Supplier<DownloadResult> {
+public class LoTEXmlDownloadTask implements DownloadTask {
 
     /** Default digest algorithm used for document integrity identification */
     private static final DigestAlgorithm DEFAULT_DIGEST_ALGORITHM = DigestAlgorithm.SHA256;
@@ -43,13 +43,13 @@ public class LoTEXmlDownloadTask implements Supplier<DownloadResult> {
     }
 
     @Override
-    public DownloadResult get() {
+    public LoTEDownloadResult get() {
         try {
             assertDocumentIsValidXML(document);
 
             final Digest digest = DSSXMLUtils.getDigestOnCanonicalizedInputStream(document.openStream(),
                     DEFAULT_DIGEST_ALGORITHM, DEFAULT_CANONICALIZATION_METHOD);
-            return new DownloadResult(document, digest);
+            return new LoTEDownloadResult(document, digest);
         } catch (DSSException e) {
             throw e;
         } catch (Exception e) {

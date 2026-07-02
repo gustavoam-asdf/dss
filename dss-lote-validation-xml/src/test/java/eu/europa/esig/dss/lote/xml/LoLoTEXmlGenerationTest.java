@@ -14,7 +14,7 @@ import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoLoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
@@ -137,26 +137,26 @@ class LoLoTEXmlGenerationTest extends PKIFactoryAccess {
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
 
         LoTEValidationJob validationJob = new LoTEValidationJob();
-        validationJob.setTrustedListCertificateSource(trustedEntitiesCertificateSource);
+        validationJob.setTrustedEntitiesCertificateSource(trustedEntitiesCertificateSource);
 
         urlMap.put(LOLOTE_LOCATION_URL, loloTE);
         urlMap.put(LOTE_LOCATION_URL, loTE);
         validationJob.setOnlineDataLoader(onlineFileLoader);
 
-        ListSource loloteSource = new ListSource();
+        LoLoTESource loloteSource = new LoLoTESource();
         loloteSource.setUrl(LOLOTE_LOCATION_URL);
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
         trustedCertificateSource.addCertificate(getCertificate(LOLOTE_SIGNER_CERTIFICATE));
         loloteSource.setCertificateSource(trustedCertificateSource);
-        loloteSource.setOtherListPointerPredicate(otherListPointer ->
+        loloteSource.setLotePredicate(otherListPointer ->
                 "http://uri.etsi.org/19602/LoTEType/EUPubEAAProvidersList".equals(otherListPointer.getType()));
-        validationJob.setListSources(loloteSource);
+        validationJob.setLoLoTESources(loloteSource);
 
         validationJob.onlineRefresh();
 
         LoTEValidationJobSummary summary = validationJob.getSummary();
         assertEquals(1, trustedEntitiesCertificateSource.getNumberOfCertificates());
-        assertEquals(Indication.TOTAL_PASSED, summary.getListInfos().get(0).getValidationCacheInfo().getIndication());
+        assertEquals(Indication.TOTAL_PASSED, summary.getLoLoTEInfos().get(0).getValidationCacheInfo().getIndication());
 
         assertEquals(1, trustedEntitiesCertificateSource.getCertificates().size());
 

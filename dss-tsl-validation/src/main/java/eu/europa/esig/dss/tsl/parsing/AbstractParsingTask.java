@@ -45,9 +45,8 @@ import java.util.Objects;
 /**
  * Abstract class to parse a LOTL/TL
  *
- * @param <T> implementation of a corresponding parsing task (TL/LOTL)
  */
-public abstract class AbstractParsingTask<T extends AbstractTLParsingResult> implements ParsingTask {
+public abstract class AbstractParsingTask implements ParsingTask {
 
 	/** The document to parse */
 	private final DSSDocument document;

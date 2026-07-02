@@ -7,7 +7,7 @@ import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.enumerations.TokenExtractionStrategy;
 import eu.europa.esig.dss.enumerations.ValidationLevel;
-import eu.europa.esig.dss.lote.validation.ValidationResult;
+import eu.europa.esig.dss.lote.validation.LoTEValidationResult;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
@@ -21,6 +21,7 @@ import eu.europa.esig.dss.spi.validation.executor.SkipValidationContextExecutor;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.spi.x509.TrustedCertificateSource;
+import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.Reports;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
@@ -29,13 +30,12 @@ import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * This class is used to validate a TS 119 602 XML List of Trusted Entities
  *
  */
-public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
+public class LoTEXmlValidationTask implements ValidationTask {
 
     /** The path for a LoTE validation policy */
     private static final String LoTE_VALIDATION_POLICY_LOCATION = "/policy/te-xml-constraint.xml";
@@ -60,7 +60,7 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
     }
 
     @Override
-    public ValidationResult get() {
+    public LoTEValidationResult get() {
         Reports reports = validate();
         return fillResult(reports);
     }
@@ -82,7 +82,7 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
         return xmlDocumentValidator.validateDocument(getValidationPolicy());
     }
 
-    private ValidationResult fillResult(Reports reports) {
+    private LoTEValidationResult fillResult(Reports reports) {
         SimpleReport simpleReport = reports.getSimpleReport();
         if (simpleReport.getSignaturesCount() != 1) {
             throw new DSSException(String.format("Number of signatures must be equal to 1 (currently : %s)", simpleReport.getSignaturesCount()));
@@ -100,7 +100,7 @@ public class LoTEXmlValidationTask implements Supplier<ValidationResult> {
             signingCertificate = DSSUtils.loadCertificate(signingCertificateWrapper.getBinaries());
         }
 
-        return new ValidationResult(indication, subIndication, signingTime, signingCertificate, signingCertificateSource);
+        return new LoTEValidationResult(indication, subIndication, signingTime, signingCertificate, signingCertificateSource);
     }
 
     private TrustedCertificateSource buildTrustedCertificateSource(CertificateSource certificateSource) {

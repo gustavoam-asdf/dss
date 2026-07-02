@@ -10,7 +10,7 @@ import eu.europa.esig.dss.enumerations.CertificateQualification;
 import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -56,10 +56,10 @@ class PIDProviderTest {
 
         LoTEValidationJob validationJob = new LoTEValidationJob();
 
-        ListSource listSource = new ListSource();
-        listSource.setUrl(PID_LOTE_URL);
-        listSource.setCertificateSource(certificateSource);
-        validationJob.setListSources(listSource);
+        LoTESource loteSource = new LoTESource();
+        loteSource.setUrl(PID_LOTE_URL);
+        loteSource.setCertificateSource(certificateSource);
+        validationJob.setLoTESources(loteSource);
 
         Map<String, byte[]> tlMap = new HashMap<>();
         tlMap.put(PID_LOTE_URL, DSSUtils.toByteArray(LOTE_DOC));
@@ -71,7 +71,7 @@ class PIDProviderTest {
         validationJob.setOfflineDataLoader(fileCacheDataLoader);
 
         TrustedEntitiesCertificateSource trustedCertificateSource = new TrustedEntitiesCertificateSource();
-        validationJob.setTrustedListCertificateSource(trustedCertificateSource);
+        validationJob.setTrustedEntitiesCertificateSource(trustedCertificateSource);
 
         validationJob.offlineRefresh();
 

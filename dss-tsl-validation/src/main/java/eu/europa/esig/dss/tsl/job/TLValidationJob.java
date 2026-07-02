@@ -37,6 +37,7 @@ import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
 import eu.europa.esig.dss.tsl.summary.TLValidationJobSummaryBuilder;
 import eu.europa.esig.dss.tsl.sync.TrustedListCertificateSourceSynchronizer;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.job.ValidationJob;
 import eu.europa.esig.dss.validation.job.cache.CacheKey;
 import eu.europa.esig.dss.validation.job.source.DocumentSource;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -166,9 +168,12 @@ public class TLValidationJob extends ValidationJob<TLInfo, LOTLInfo, TLCacheAcce
 	@Override
 	protected List<? extends DocumentSource> extractOtherDocumentSources() {
 		LOTLSource[] lotlSources = getDocumentListSources();
-		List<LOTLSource> lotlList = Arrays.asList(lotlSources);
-		TLSourceBuilder tlSourceBuilder = new TLSourceBuilder(lotlList, extractParsingCache(lotlList));
-		return tlSourceBuilder.build();
+		if (Utils.isArrayNotEmpty(lotlSources)) {
+			List<LOTLSource> lotlList = Arrays.asList(lotlSources);
+			TLSourceBuilder tlSourceBuilder = new TLSourceBuilder(lotlList, extractParsingCache(lotlList));
+			return tlSourceBuilder.build();
+		}
+		return Collections.emptyList();
 	}
 
 	private Map<CacheKey, TLParsingCacheDTO> extractParsingCache(List<LOTLSource> lotlSources) {

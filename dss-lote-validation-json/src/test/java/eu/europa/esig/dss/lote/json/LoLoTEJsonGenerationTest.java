@@ -20,7 +20,7 @@ import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JsonObject;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoLoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
@@ -99,32 +99,32 @@ class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
 
     @Test
     void test() {
-        DSSDocument loloTE = createLoLoTE();
-        DSSDocument loTE = createLoTE();
+        DSSDocument lolote = createLoLoTE();
+        DSSDocument lote = createLoTE();
 
         TrustedEntitiesCertificateSource trustedEntitiesCertificateSource = new TrustedEntitiesCertificateSource();
 
         LoTEValidationJob validationJob = new LoTEValidationJob();
-        validationJob.setTrustedListCertificateSource(trustedEntitiesCertificateSource);
+        validationJob.setTrustedEntitiesCertificateSource(trustedEntitiesCertificateSource);
 
-        urlMap.put(LOLOTE_LOCATION_URL, loloTE);
-        urlMap.put(LOTE_LOCATION_URL, loTE);
+        urlMap.put(LOLOTE_LOCATION_URL, lolote);
+        urlMap.put(LOTE_LOCATION_URL, lote);
         validationJob.setOnlineDataLoader(onlineFileLoader);
 
-        ListSource listSource = new ListSource();
-        listSource.setUrl(LOLOTE_LOCATION_URL);
+        LoLoTESource loloteSource = new LoLoTESource();
+        loloteSource.setUrl(LOLOTE_LOCATION_URL);
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
         trustedCertificateSource.addCertificate(getCertificate(LOLOTE_SIGNER_CERTIFICATE));
-        listSource.setCertificateSource(trustedCertificateSource);
-        listSource.setOtherListPointerPredicate(otherListPointer ->
+        loloteSource.setCertificateSource(trustedCertificateSource);
+        loloteSource.setLotePredicate(otherListPointer ->
                 PID_PROVIDERS_LIST_TYPE.equals(otherListPointer.getType()));
-        validationJob.setListSources(listSource);
+        validationJob.setLoLoTESources(loloteSource);
 
         validationJob.onlineRefresh();
 
         LoTEValidationJobSummary summary = validationJob.getSummary();
         assertEquals(1, trustedEntitiesCertificateSource.getNumberOfCertificates());
-        assertEquals(Indication.TOTAL_PASSED, summary.getListInfos().get(0).getValidationCacheInfo().getIndication());
+        assertEquals(Indication.TOTAL_PASSED, summary.getLoLoTEInfos().get(0).getValidationCacheInfo().getIndication());
 
         assertEquals(1, trustedEntitiesCertificateSource.getCertificates().size());
 

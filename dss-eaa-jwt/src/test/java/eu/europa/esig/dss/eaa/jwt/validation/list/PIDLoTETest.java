@@ -13,7 +13,7 @@ import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JsonObject;
 import eu.europa.esig.dss.jades.signature.JAdESService;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
-import eu.europa.esig.dss.lote.source.ListSource;
+import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
@@ -119,7 +119,7 @@ class PIDLoTETest extends PKIFactoryAccess {
             trustedCertificateSource = new TrustedEntitiesCertificateSource();
 
             LoTEValidationJob validationJob = new LoTEValidationJob();
-            validationJob.setTrustedListCertificateSource(trustedCertificateSource);
+            validationJob.setTrustedEntitiesCertificateSource(trustedCertificateSource);
 
             signer = LOTE_SIGNER_CERTIFICATE;
             DSSDocument pidProvidersLoTE = createLoTE();
@@ -127,18 +127,18 @@ class PIDLoTETest extends PKIFactoryAccess {
             urlMap.put(LoTE_LOCATION_URL, pidProvidersLoTE);
             validationJob.setOnlineDataLoader(onlineFileLoader);
 
-            ListSource listSource = new ListSource();
-            listSource.setUrl(LoTE_LOCATION_URL);
+            LoTESource loteSource = new LoTESource();
+            loteSource.setUrl(LoTE_LOCATION_URL);
             CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
             trustedCertificateSource.addCertificate(loteSignerCertificate);
-            listSource.setCertificateSource(trustedCertificateSource);
-            validationJob.setListSources(listSource);
+            loteSource.setCertificateSource(trustedCertificateSource);
+            validationJob.setLoTESources(loteSource);
 
             validationJob.onlineRefresh();
 
             LoTEValidationJobSummary summary = validationJob.getSummary();
             assertEquals(1, trustedCertificateSource.getNumberOfCertificates());
-            assertEquals(Indication.TOTAL_PASSED, summary.getListInfos().get(0).getValidationCacheInfo().getIndication());
+            assertEquals(Indication.TOTAL_PASSED, summary.getOtherLoTEInfos().get(0).getValidationCacheInfo().getIndication());
         }
         return trustedCertificateSource;
     }

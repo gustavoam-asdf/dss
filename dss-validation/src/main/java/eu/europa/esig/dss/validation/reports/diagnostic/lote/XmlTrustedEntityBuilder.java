@@ -3,10 +3,10 @@ package eu.europa.esig.dss.validation.reports.diagnostic.lote;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlLangAndValue;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
-import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
-import eu.europa.esig.dss.model.lote.ListInfo;
+import eu.europa.esig.dss.model.lote.LoLoTEInfo;
+import eu.europa.esig.dss.model.lote.LoTEInfo;
 import eu.europa.esig.dss.model.lote.ServiceStatusAndInformationExtensions;
 import eu.europa.esig.dss.model.lote.TrustedEntity;
 import eu.europa.esig.dss.model.lote.TrustedProperties;
@@ -95,26 +95,24 @@ public class XmlTrustedEntityBuilder {
         TrustedProperties trustProperties = trustServices.iterator().next();
 
         final XmlTrustedEntity result = new XmlTrustedEntity();
-        ListInfo listInfo = trustProperties.getListInfo();
-        if (listInfo != null) {
-            XmlTrustSourceList xmlList = xmlTrustSourceListsMap.get(listInfo.getDSSIdAsString());
-            if (xmlList == null) {
-                throw new IllegalStateException(String.format("LoTE with Id '%s' has not been found! " +
-                        "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listInfo.getDSSIdAsString()));
-            }
-            result.setLoTE(xmlList);
 
-            if (listInfo.getParent() != null) {
-                ListInfo listOfListsInfo = listInfo.getParent();
-                if (listOfListsInfo != null) {
-                    XmlTrustSourceList xmllistOfLists = xmlTrustSourceListsMap.get(listOfListsInfo.getDSSIdAsString());
-                    if (xmllistOfLists == null) {
-                        throw new IllegalStateException(String.format("LoLoTE with Id '%s' has not been found! " +
-                                "Please verify TrustedListsCertificateSource contains TLValidationSummary.", listOfListsInfo.getDSSIdAsString()));
-                    }
-                    result.setLoLoTE(xmllistOfLists);
-                }
+        LoLoTEInfo loloteInfo = trustProperties.getLoLoTEInfo();
+        if (loloteInfo != null) {
+            XmlListOfTrustedEntities xmlLoLoTE = xmlTrustSourceListsMap.get(loloteInfo.getDSSIdAsString());
+            if (xmlLoLoTE == null) {
+                throw new IllegalStateException(String.format("LOTL with Id '%s' has not been found! " +
+                        "Please verify TrustedPropertiesCertificateSource contains LoTEValidationSummary.", loloteInfo.getDSSIdAsString()));
             }
+            result.setLoLoTE(xmlLoLoTE);
+        }
+        LoTEInfo loteInfo = trustProperties.getLoTEInfo();
+        if (loteInfo != null) {
+            XmlListOfTrustedEntities xmlLoTE = xmlTrustSourceListsMap.get(loteInfo.getDSSIdAsString());
+            if (xmlLoTE == null) {
+                throw new IllegalStateException(String.format("TL with Id '%s' has not been found! " +
+                        "Please verify TrustedPropertiesCertificateSource contains LoTEValidationSummary.", loteInfo.getDSSIdAsString()));
+            }
+            result.setLoTE(xmlLoTE);
         }
 
         TrustedEntity tsp = trustProperties.getTrustedEntity();

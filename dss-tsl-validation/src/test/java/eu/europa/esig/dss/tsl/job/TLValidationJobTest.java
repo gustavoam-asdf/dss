@@ -51,11 +51,11 @@ import eu.europa.esig.dss.tsl.function.TrustServicePredicate;
 import eu.europa.esig.dss.tsl.function.TrustServiceProviderPredicate;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
 import eu.europa.esig.dss.tsl.source.TLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
 import eu.europa.esig.dss.tsl.sync.ExpirationAndSignatureCheckStrategy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
 import eu.europa.esig.dss.validation.job.cache.state.CacheStateEnum;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPServiceType;
 import eu.europa.esig.trustedlist.jaxb.tsl.TSPType;
 import org.junit.jupiter.api.AfterEach;
@@ -1210,7 +1210,7 @@ class TLValidationJobTest {
 		tlValidationJob.setCacheCleaner(cacheCleaner);
 		tlValidationJob.setListOfTrustedListSources(lotlSource);
 		tlValidationJob.setTrustedListCertificateSource(trustedListsCertificateSource);
-		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy());
+		tlValidationJob.setSynchronizationStrategy(new AcceptAllStrategy<>());
 		tlValidationJob.onlineRefresh();
 
 		TLValidationJobSummary summary = tlValidationJob.getSummary();

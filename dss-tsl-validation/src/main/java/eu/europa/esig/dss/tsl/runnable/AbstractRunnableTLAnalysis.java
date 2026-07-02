@@ -14,6 +14,10 @@ import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * Abstract implementation for performing a Trusted List analysis
+ *
+ */
 public abstract class AbstractRunnableTLAnalysis extends AbstractRunnableAnalysis {
 
     /**

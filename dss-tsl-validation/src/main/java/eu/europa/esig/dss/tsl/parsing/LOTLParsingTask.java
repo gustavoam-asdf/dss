@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Parses a LOTL and returns {@code LOTLParsingResult}
  */
-public class LOTLParsingTask extends AbstractParsingTask<LOTLParsingResult> {
+public class LOTLParsingTask extends AbstractParsingTask {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LOTLParsingTask.class);
 

@@ -199,10 +199,12 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 		List<TLSource> result = new ArrayList<>();
 		if (lotlParsingResult != null && lotlParsingResult.isResultExist()) {
 			List<OtherTSLPointer> tlPointers = lotlParsingResult.getTlOtherPointers();
-			for (OtherTSLPointer otherTSLPointerDTO : tlPointers) {
-				TLSource tlSource = new TLSource();
-				tlSource.setUrl(otherTSLPointerDTO.getTSLLocation());
-				result.add(tlSource);
+			if (Utils.isCollectionNotEmpty(tlPointers)) {
+				for (OtherTSLPointer otherTSLPointerDTO : tlPointers) {
+					TLSource tlSource = new TLSource();
+					tlSource.setUrl(otherTSLPointerDTO.getTSLLocation());
+					result.add(tlSource);
+				}
 			}
 		}
 		return result;
@@ -222,10 +224,12 @@ public class TLValidationJobSummaryBuilder implements ValidationJobSummaryBuilde
 		List<LOTLSource> result = new LinkedList<>();
 		if (lotlParsingResult != null && lotlParsingResult.isResultExist()) {
 			List<String> pivotUrls = lotlParsingResult.getPivotUrls();
-			for (String pivotUrl : pivotUrls) {
-				LOTLSource pivotSource = new LOTLSource();
-				pivotSource.setUrl(pivotUrl);
-				result.add(pivotSource);
+			if (Utils.isCollectionNotEmpty(pivotUrls)) {
+				for (String pivotUrl : pivotUrls) {
+					LOTLSource pivotSource = new LOTLSource();
+					pivotSource.setUrl(pivotUrl);
+					result.add(pivotSource);
+				}
 			}
 		}
 		return Utils.reverseList(result);

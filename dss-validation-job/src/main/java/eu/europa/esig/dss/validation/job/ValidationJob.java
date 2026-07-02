@@ -299,13 +299,12 @@ public abstract class ValidationJob<D extends DocumentInfo<L>, L extends Documen
 	}
 
 	private void refresh(DSSFileLoader dssFileLoader) {
-
 		List<DocumentSource> currentDocSources = new ArrayList<>();
 		if (documentSources != null) {
 			currentDocSources.addAll(Arrays.asList(documentSources));
 		}
 
-		// Execute all LOTLs
+		// Execute all document lists
 		if (Utils.isArrayNotEmpty(documentListSources)) {
 			final List<DocumentSource> docLists = Arrays.asList(documentListSources);
 
