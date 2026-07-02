@@ -125,7 +125,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/AIASourceS
 
 ==== Caching trusted lists
 
-Trusted Lists and List(s) of Trusted Lists are cached automatically as a part if `ValidationJob` (see <<tlValidationJob>>). To configure it you may use `FileCacheDataLoader` (see <<DSSFileLoader>>).
+Trusted Lists and List(s) of Trusted Lists are cached automatically as a part if `TLValidationJob` (see <<tlValidationJob>>). To configure it you may use `FileCacheDataLoader` (see <<DSSFileLoader>>).
 
 To load Trusted Lists from a cache, the offline loader shall be configured, and the action can be performed with the method:
 

@@ -22,7 +22,7 @@ For signing a Trusted List of v5 or v6, please see the chapter <<TLSigning>>.
 [[tlValidationJob]]
 === Configuration of TL validation job
 
-The `ValidationJob` allows downloading, parsing and validating the Trusted List(s) (TL) (cf. <<EUTL>>) and List(s) Of Trusted Lists (LOTL) (cf. <<LOTL>>). Once the task is done, its result is stored in the `TrustedListsCertificateSource`. The job uses 3 different caches (download, parsing and validation) and a state-machine to be efficient.
+The `TLValidationJob` allows downloading, parsing and validating the Trusted List(s) (TL) (cf. <<EUTL>>) and List(s) Of Trusted Lists (LOTL) (cf. <<LOTL>>). Once the task is done, its result is stored in the `TrustedListsCertificateSource`. The job uses 3 different caches (download, parsing and validation) and a state-machine to be efficient.
 
 Trusted lists are stored in the file system. That offers the possibility to run the validation job in offline mode with the stored trusted lists. Trusted Lists can be loaded from the file system and/or from Internet.
 
@@ -30,7 +30,7 @@ In the next sections the different configurations will be covered.
 
 ==== TLSource and LOTLSource
 
-Several TLSources and several LOTLSources can be injected in a `ValidationJob`. The only constraint is the uniqueness of the Trusted List URLs.
+Several TLSources and several LOTLSources can be injected in a `TLValidationJob`. The only constraint is the uniqueness of the Trusted List URLs.
 
 [source,java,indent=0]
 .Multiple TLSources and multiple LOTLSources configuration
@@ -40,7 +40,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 
 ===== Trusted List Source (TLSource)
 
-A `DocumentSource` allows quickly setting up a trusted list configuration. The URL and the signing certificates for this TL are mandatory. Optionally, predicates or/and filters can be configured to retrieve only a part of the trust service providers or trust services.
+A `TLSource` allows quickly setting up a trusted list configuration. The URL and the signing certificates for this TL are mandatory. Optionally, predicates or/and filters can be configured to retrieve only a part of the trust service providers or trust services.
 
 [source,java,indent=0]
 .TLSource configuration
@@ -64,14 +64,14 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 The `DSSFileLoader` represents an interface for accessing documents from a file system. DSS provides the following implementations of the interface:
 
 * `FileCacheDataLoader` - returns a cached document from a file system when available, otherwise performs a request to a provided `DataLoader` (e.g. to download the content from a remote source);
-* `Sha2FileCacheDataLoader` (available since DSS `6.1`) - implements a Trusted List download logic defined within ETSI TS 119 612 (cf. <<R11>>), using a ".sha2" file, containing digest of the corresponding Trusted List. When digest is updated or a NextUpdate is reached, re-downloads the XML Trusted List. This class is meant to save bandwidth on `ValidationJob`, as well as to improve performance.
+* `Sha2FileCacheDataLoader` (available since DSS `6.1`) - implements a Trusted List download logic defined within ETSI TS 119 612 (cf. <<R11>>), using a ".sha2" file, containing digest of the corresponding Trusted List. When digest is updated or a NextUpdate is reached, re-downloads the XML Trusted List. This class is meant to save bandwidth on `TLValidationJob`, as well as to improve performance.
 
-`ValidationJob` requires two objects for configuration of the Trusted Lists download process, namely:
+`TLValidationJob` requires two objects for configuration of the Trusted Lists download process, namely:
 
 * *offline refresh* is used to load a document from a local file system, without querying online sources, providing an unlimited cache expiration. Usually is used on an application's build;
 * *online refresh* is used to download a document from a remote source, using none or a limited cache expiration. Usually is used within a cron job, updating content of Trusted Lists regularly (e.g. every hour).
 
-The snippets below provide an example of a basic configuration of offline and online `DSSFileLoader` for configuration of `ValidationJob`.
+The snippets below provide an example of a basic configuration of offline and online `DSSFileLoader` for configuration of `TLValidationJob`.
 
 [source,java,indent=0]
 .Offline and Online refresh configuration
@@ -88,9 +88,10 @@ DSS provides multiple ways to configure the class, see examples below:
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidationJobSnippets.java[tags=sha2-loaders]
 ----
 
-NOTE: `Sha2FileCacheDataLoader` is meant to be used for downloading of Trusted Lists implementing the ETSI TS 119 612 standard (cf. <<R11>>). There is no guarantee the class will work as intended in any other scope. Thus, it is use is not recommended outside of `ValidationJob`. If needed, please use `FileCacheDataLoader` instead.
+NOTE: `Sha2FileCacheDataLoader` is meant to be used for downloading of Trusted Lists implementing the ETSI TS 119 612 standard (cf. <<R11>>). There is no guarantee the class will work as intended in any other scope. Thus, it is use is not recommended outside of `TLValidationJob`. If needed, please use `FileCacheDataLoader` instead.
 
-==== The SynchronizationStrategy
+[[SynchronizationStrategy]]
+==== SynchronizationStrategy
 
 The `SynchronizationStrategy` defines the trusted lists or list(s) of trusted lists to be synchronized. By default, DSS synchronizes all of them and DSS does not reject any trusted lists (e.g. expired, invalid, etc.). The default behavior can be customized with implementation of the `SynchronizationStrategy`.
 
@@ -115,7 +116,8 @@ An example of a custom implementation of `SynchronizationStrategy` can be found 
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidationJobSnippets.java[tags=custom-strategy]
 ----
 
-==== The CacheCleaner
+[[CacheCleaner]]
+==== CacheCleaner
 
 The `CacheCleaner` specifies how DSS clears the cache (e.g. in case of expired URL, etc.). Two cleaning options are available : memory and file system.
 
@@ -162,7 +164,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 
 ==== Trust Service Provider predicates
 
-Defined within `DocumentSource` predicated allow filtering of `TrustServiceProvider` elements based on the JAXB object containing information extracted about the `TrustServiceProvider` from an XML Trusted List.
+Defined within `TLSource` predicated allow filtering of `TrustServiceProvider` elements based on the JAXB object containing information extracted about the `TrustServiceProvider` from an XML Trusted List.
 
 The Trusted Service Provider predicates are not enforced by default, therefore in a plain configuration, DSS would accept all found Trust Service Providers and extract the corresponding information from them.
 
@@ -189,7 +191,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 
 ==== TSP Service predicates
 
-Defined within `DocumentSource` predicated allow filtering of specific `TSPService` elements based on the JAXB object containing information extracted about the `TSPService` from an XML Trusted List.
+Defined within `TLSource` predicated allow filtering of specific `TSPService` elements based on the JAXB object containing information extracted about the `TSPService` from an XML Trusted List.
 
 The TSP Service predicates are not enforced by default, therefore in a plain configuration, DSS would accept all found TSP Services and extract the corresponding information from them.
 
@@ -228,7 +230,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 
 To validate the signature of a Trusted List (TL) or a List of Trusted Lists (LOTL), DSS requires a collection of signing certificate candidates. These certificates act as trust anchors for verifying the authenticity of the TL/LOTL.
 
-These certificates must be supplied in a form of `CertificateSource` and associated with the corresponding `DocumentSource` or `LOTLSource` instance:
+These certificates must be supplied in a form of `CertificateSource` and associated with the corresponding `TLSource` or `LOTLSource` instance:
 
 [source,java,indent=0]
 .LOTL signing-certificates configuration
@@ -238,7 +240,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/EuropeanLO
 
 ===== LOTL keystore configuration
 
-When using a `ValidationJob` configured with a LOTL, only the certificates for the initial LOTL (or pivot LOTL) should be provided, as shown above. Certificates required for validating referenced Trusted Lists are automatically extracted from the LOTL content. See chapters below for LOTL-related specifics.
+When using a `TLValidationJob` configured with a LOTL, only the certificates for the initial LOTL (or pivot LOTL) should be provided, as shown above. Certificates required for validating referenced Trusted Lists are automatically extracted from the LOTL content. See chapters below for LOTL-related specifics.
 
 ====== Pivot mechanism
 
@@ -309,6 +311,7 @@ Below you may find an example of `TrustAnchorValidityPredicate` configuration:
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidationJobSnippets.java[tags=trust-anchor-validity-predicate]
 ----
 
+[[ExecutorService]]
 ==== Executor Service
 
 An Executor Service allows you to customize a way of the program execution on your Java machine, by configuring a number of possible threads to be running, await time and so on.
@@ -330,6 +333,7 @@ Below, you can find a complete configuration for the European List Of Trusted Li
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/EuropeanLOTLSnippets.java[tags=complete-european-lotl-config]
 ----
 
+[[TLRefresh]]
 ==== The TL / LOTL refresh
 
 The TL / LOTL loading in DSS works as below :
@@ -356,7 +360,7 @@ include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/TLValidati
 [[KeyStore]]
 ===== Java Keystore Management
 
-Generally (like in case of European LOTL) DSS downloads Trusted Lists by using the SSL protocol (for resources using HTTPS extension), that requires to have a certificate of a remote source in the Java trust store. The certificates have their own validity period and can expire. If a certificate is expired, it will be replaced on a server by a new one in order to support a secure SSL connection. The easiest way to know if your Java trust store is outdated and new certificates need to be added is to check your logs during a `ValidationJob` update :
+Generally (like in case of European LOTL) DSS downloads Trusted Lists by using the SSL protocol (for resources using HTTPS extension), that requires to have a certificate of a remote source in the Java trust store. The certificates have their own validity period and can expire. If a certificate is expired, it will be replaced on a server by a new one in order to support a secure SSL connection. The easiest way to know if your Java trust store is outdated and new certificates need to be added is to check your logs during a `TLValidationJob` update :
 
 [source]
 --
@@ -383,7 +387,7 @@ The default password for a Java keystore is `changeit`. Ensure that you have a d
 
 NOTE: In order to apply changes, the application using Java must be rebooted.
 
-After these steps the `ValidationJob` will successfully download the target Trusted List (i.e. Estonian in our example).
+After these steps the `TLValidationJob` will successfully download the target Trusted List (i.e. Estonian in our example).
 
 NOTE: This described algorithm is not only one available solution, if you have difficulties with this, you can search in the Internet for another working for you solution.
 
@@ -429,7 +433,7 @@ The two trust service equivalence mapping schemes are supported:
 
 A Pilot for the International Compatibility of Trust Services based on the Mutual Recognition Agreement (as per Article 14 of eIDAS Regulation) can be found by the https://eidas.ec.europa.eu/efda/intl-pilot/#/screen/home/demo[link].
 
-To enable Trust Service Equivalence Mapping in DSS, the corresponding instance of `LOTLSource` supporting the MRA-equivalence scheme has to be configured and provided within `ValidationJob`:
+To enable Trust Service Equivalence Mapping in DSS, the corresponding instance of `LOTLSource` supporting the MRA-equivalence scheme has to be configured and provided within `TLValidationJob`:
 
 [source,java,indent=0]
 .Sign a Trusted List with the TrustedListSignatureParametersBuilder

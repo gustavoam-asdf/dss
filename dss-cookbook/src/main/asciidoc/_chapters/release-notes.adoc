@@ -105,7 +105,7 @@ Bug fixes :
                                             * `RevocationIssuerNotExpired` policy constraint is not used during LTV process;
                                             * `xVals` entries are not considered as candidates for a signing certificate for JAdES signature;
                                             * Improve CryptoInformation element within ETSI VR for multiple signing-certificate references;
-                                            * Certificate Synchronization Issue with `ValidationJob` when a custom synchronization strategy is used;
+                                            * Certificate Synchronization Issue with `TLValidationJob` when a custom synchronization strategy is used;
                                             * DSS fails to read `FieldMDP` or `Lock` dictionary when defined as indirect reference;
                                             * DSS fails to create a visual signature field for a PDF page with negative coordinates.
 

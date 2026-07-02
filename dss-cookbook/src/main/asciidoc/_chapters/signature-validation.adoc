@@ -45,7 +45,7 @@ In several countries, a list of Trust Service Providers (TSP) is published. This
 
 DSS contains all needed resources to download, parse, validate and interpret the trusted list contents. In DSS, it is possible to configure one or more independent trusted list(s) (aka not linked to a list of trusted lists) and/or one or more list of trusted lists.
 
-If you want to collect your trusted certificates from trusted list(s), the `TrustedListsCertificateSource` is required. The trusted list(s) loading can require some time (connection time-out, xml parsing, xml validation, etc.). This process is usually executed in background. An instance of `TrustedListsCertificateSource` needs to be created. That will be synchronized with the `ValidationJob`.
+If you want to collect your trusted certificates from trusted list(s), the `TrustedListsCertificateSource` is required. The trusted list(s) loading can require some time (connection time-out, xml parsing, xml validation, etc.). This process is usually executed in background. An instance of `TrustedListsCertificateSource` needs to be created. That will be synchronized with the `TLValidationJob`.
 
 [source,java,indent=0]
 .Trusted List Certificate Source

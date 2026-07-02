@@ -189,6 +189,27 @@ image::LOTL-TLs.jpg[LOTL TLs, width="70%", height="70%", align="center"]
 
 When the LOTL-signing certificates or the location of the LOTL changes, the modification needs to be published by the Commission. The update is done in the form of a “pivot LOTL”, which is a specific instance of a LOTL. Each new modification will create a new pivot LOTL. The pivot LOTLs are grouped in the current LOTL itself, under the < SchemeInformationURI> field. Consulting all the pivot LOTL from the most recent to the oldest gives a trace of all the signing certificates and locations of the LOTL back to the initial ones.
 
+[[LoTE]]
+==== List of Trusted Entities
+
+The List of Trusted Entities (LoTE), as specified in ETSI TS 119 602 <<R33>>, is a standardized mechanism aiming to support the production of the EUDI Wallet lists published by the European Commission as required under Regulation (EU) 910/2014 <<R12>> and CIR 2024/2980 . Unlike <<EUTL>>, which are primarily focused on (qualified) trust service providers under the eIDAS framework, a LoTE provides a flexible and extensible data model that can be applied to a broad range of use cases, both inside and outside regulated environments.
+
+Technically, a LoTE may be represented as a digitally signed XML or JSON document whose structure and processing rules are defined by ETSI TS 119 602 <<R33>>.
+
+Typical use cases of a LoTE include the list of providers of person identity data, wallet
+providers, providers of wallet relying party access certificates, and public sector bodies issuing electronic attestations of attributes.
+
+Although both LoTEs and EU Trusted Lists provide authenticated trust information, they serve different purposes and exhibit several important differences:
+
+* LoTE is a generic data model and is not limited to (qualified) trust services or the legal framework established by eIDAS.
+* The semantics of the information published in a LoTE are defined by the framework using the list, allowing the same format to support multiple domains and trust models.
+* LoTE can describe many different categories of trusted entities, including services, organizations, issuers, or other entities relevant to a specific ecosystem.
+* Each listed entity may contain one or more digital identities, such as X.509 certificates, public keys, or other identifiers.
+* LoTE may include validity periods, status information, service metadata, and additional descriptive information that enables relying parties to make informed trust decisions based on current and historical information where supported by the framework.
+* LoTE is digitally signed by the list operator, using either ETSI EN 319 132-1 <<R01>> XAdES-BASELINE signature or ETSI TS 119 182-1 <<R05>> JAdES-BASELINE compact serialization signature.
+
+Similarly to a <<LOTL>>, a List of Lists of Trusted Entities (LoLoTE) may also take a place, providing pointers to a list of LoTEs. The validation mechanism of a LoLoTE and reference LoTEs is specified in ETSI TS 119 605 <<R39>>.
+
 [[CertificatePathValidation]]
 ==== Certificate Chain and Certification Path Validation
 
