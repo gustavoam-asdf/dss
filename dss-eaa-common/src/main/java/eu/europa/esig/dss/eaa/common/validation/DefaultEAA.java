@@ -131,9 +131,9 @@ public abstract class DefaultEAA implements EAA {
 
     @Override
     public CertificateSource getDeviceKeyCertificateSource() {
-        AdvancedSignature keyBindingSignature = getKeyBindingSignature();
-        if (keyBindingSignature != null) {
-            return getProofOfPossessionCertificateSource(keyBindingSignature.getSigningCertificateSource());
+        AdvancedSignature kbSignature = getKeyBindingSignature();
+        if (kbSignature != null) {
+            return getProofOfPossessionCertificateSource(kbSignature.getSigningCertificateSource());
         }
         return null;
     }

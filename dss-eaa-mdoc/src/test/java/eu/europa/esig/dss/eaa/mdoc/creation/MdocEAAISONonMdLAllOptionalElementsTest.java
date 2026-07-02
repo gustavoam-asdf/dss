@@ -152,8 +152,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
         List<XmlDigestMatcher> digestMatchers = eaa.getDigestMatchers();
         assertEquals(68, digestMatchers.size());
 
-        boolean GivenNameFound = false;
-        boolean FamilyNameFound = false;
+        boolean givenNameFound = false;
+        boolean familyNameFound = false;
         boolean emailFound = false;
         boolean genderFound = false;
         boolean birthdateFound = false;
@@ -228,11 +228,11 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
 
             if ("given_name".equals(name)) {
                 assertEquals("John", xmlDigestMatcher.getDisclosableClaim().getValue());
-                GivenNameFound = true;
+                givenNameFound = true;
 
             } else if ("family_name".equals(name)) {
                 assertEquals("Doe", xmlDigestMatcher.getDisclosableClaim().getValue());
-                FamilyNameFound = true;
+                familyNameFound = true;
 
             } else if ("email_address".equals(name)) {
                 assertEquals("john.doe@example.com", xmlDigestMatcher.getDisclosableClaim().getValue());
@@ -503,8 +503,8 @@ class MdocEAAISONonMdLAllOptionalElementsTest extends AbstractMdocEAAPresentatio
             }
         }
 
-        assertTrue(GivenNameFound);
-        assertTrue(FamilyNameFound);
+        assertTrue(givenNameFound);
+        assertTrue(familyNameFound);
         assertTrue(emailFound);
         assertTrue(genderFound);
         assertTrue(birthdateFound);

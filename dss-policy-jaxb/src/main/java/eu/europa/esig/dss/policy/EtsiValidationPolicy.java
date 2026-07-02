@@ -1674,9 +1674,9 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 			case EAA:
 				return null;
 			case EAA_REVOCATION:
-				EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-				if (EAARevocationConstraints != null) {
-					return EAARevocationConstraints.getBasicSignatureConstraints();
+				EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+				if (eaaRevocationConstraints != null) {
+					return eaaRevocationConstraints.getBasicSignatureConstraints();
 				}
 				break;
 			default:
@@ -2081,7 +2081,7 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	public LevelRule getAcceptableEAARevocationFoundConstraint() {
 		EAAConstraints eaaConstraints = getEAAConstraints();
 		if (eaaConstraints != null) {
-			return toLevelRule(eaaConstraints.getEAARevocationAvailable());
+			return toLevelRule(eaaConstraints.getAcceptableEAARevocationFound());
 		}
 		return null;
 	}
@@ -2178,72 +2178,72 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 	@Override
 	public MultiValuesRule getEAARevocationTokenTypeConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toRule(EAARevocationConstraints.getType());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toRule(eaaRevocationConstraints.getType());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationUnknownStatusConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getUnknownStatus());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getUnknownStatus());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationIssuanceTimeConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getIssuanceTime());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getIssuanceTime());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationExpirationTimeConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getExpirationTime());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getExpirationTime());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationNotExpiredConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getNotExpired());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getNotExpired());
 		}
 		return null;
 	}
 
 	@Override
 	public MultiValuesRule getEAARevocationSubjectConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toRule(EAARevocationConstraints.getSubject());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toRule(eaaRevocationConstraints.getSubject());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationSubjectMatchConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getSubjectMatch());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getSubjectMatch());
 		}
 		return null;
 	}
 
 	@Override
 	public LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint() {
-		EAARevocationConstraints EAARevocationConstraints = getEAARevocationConstraints();
-		if (EAARevocationConstraints != null) {
-			return toLevelRule(EAARevocationConstraints.getIssuerValidAtIssuanceTime());
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getIssuerValidAtIssuanceTime());
 		}
 		return null;
 	}

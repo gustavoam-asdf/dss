@@ -544,10 +544,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      */
     public byte[] getEAAIdentifierListId() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
-        if (eaaStatus != null) {
-            if (eaaStatus.getIdentifierList() != null) {
-                return getPayloadClaimByteValue(eaaStatus.getIdentifierList().getIdentifier());
-            }
+        if (eaaStatus != null && eaaStatus.getIdentifierList() != null) {
+            return getPayloadClaimByteValue(eaaStatus.getIdentifierList().getIdentifier());
         }
         return null;
     }
@@ -559,10 +557,8 @@ public class EAAWrapper extends AbstractTokenProxy {
      */
     public String getEAAIdentifierListUri() {
         StatusClaimWrapper eaaStatus = getEAAPayload().getEAAStatus();
-        if (eaaStatus != null) {
-            if (eaaStatus.getIdentifierList() != null) {
-                return getPayloadClaimTextValue(eaaStatus.getIdentifierList().getUri());
-            }
+        if (eaaStatus != null && eaaStatus.getIdentifierList() != null) {
+            return getPayloadClaimTextValue(eaaStatus.getIdentifierList().getUri());
         }
         return null;
     }

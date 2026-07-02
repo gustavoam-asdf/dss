@@ -53,7 +53,7 @@ import java.util.Objects;
 public class CWTIdentifierListValidator implements IdentifierListValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(CWTIdentifierListValidator.class);
-    
+
     /** Binaries of the retrieved status list */
     protected byte[] identifierListDocument;
 
@@ -188,12 +188,11 @@ public class CWTIdentifierListValidator implements IdentifierListValidator {
      */
     protected EAAStatus getEAAStatus(IdentifierListPayload identifierListPayload, byte[] identifier) {
         List<byte[]> identifierListIdentifiers = identifierListPayload.getIdentifierListIdentifiers();
-        if (Utils.isCollectionNotEmpty(identifierListIdentifiers)) {
-            if (identifierListIdentifiers.stream().anyMatch(i -> Arrays.equals(identifier, i))) {
+        if (Utils.isCollectionNotEmpty(identifierListIdentifiers)
+            && identifierListIdentifiers.stream().anyMatch(i -> Arrays.equals(identifier, i))) {
                 return EAAStatus.INVALID;
-            }
         }
         return EAAStatus.VALID;
     }
-    
+
 }

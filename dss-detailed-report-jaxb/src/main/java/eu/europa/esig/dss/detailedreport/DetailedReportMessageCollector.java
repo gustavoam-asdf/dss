@@ -565,18 +565,12 @@ public class DetailedReportMessageCollector {
 
 	private List<Message> collectCertificateUsageAtIssuanceTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
 		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
-		if (certificateUsageProcess != null) {
-			return collectCertificateUsageAtIssuanceTime(type, certificateUsageProcess);
-		}
-		return Collections.emptyList();
+        return collectCertificateUsageAtIssuanceTime(type, certificateUsageProcess);
 	}
 
 	private List<Message> collectCertificateUsageAtValidationTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
 		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
-		if (certificateUsageProcess != null) {
-			return collectCertificateUsageAtValidationTime(type, certificateUsageProcess);
-		}
-		return Collections.emptyList();
+        return collectCertificateUsageAtValidationTime(type, certificateUsageProcess);
 	}
 
 	private List<XmlValidationCertificateUsage> getCertificateUsageProcess(String certificateId, CertificateUsage certificateUsage) {

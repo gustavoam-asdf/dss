@@ -344,13 +344,11 @@ public class SDJWTPayloadBuilder extends AbstractEAAPayloadBuilder<SDJWTEAAPaylo
          * @return the cached or newly created disclosure
          */
         public SDJWTEAADisclosure getDisclosure(SDJWTEAAClaim claim, Supplier<SDJWTEAADisclosure> supplier) {
-            SDJWTEAADisclosure disclosure = disclosuresMap.get(claim);
-            if (disclosure == null) {
-                disclosure = supplier.get();
-                disclosuresMap.put(claim, disclosure);
+            return disclosuresMap.computeIfAbsent(claim, c -> {
+                SDJWTEAADisclosure disclosure = supplier.get();
                 disclosuresList.add(disclosure);
-            }
-            return disclosure;
+                return disclosure;
+            });
         }
 
         /**

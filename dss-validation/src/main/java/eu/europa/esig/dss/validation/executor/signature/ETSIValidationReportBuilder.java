@@ -454,9 +454,9 @@ public class ETSIValidationReportBuilder {
 		}
 
 		for (EAAWrapper EAA : diagnosticData.getEAAs()) {
-			ValidationObjectType EAAValidationObject = getEAAValidationObject(EAA);
-			EAAValidationObject.setPOE(getPOE(EAA.getId(), poeExtraction));
-			validationObjectListType.getValidationObject().add(EAAValidationObject);
+			ValidationObjectType eaaValidationObject = getEAAValidationObject(EAA);
+            eaaValidationObject.setPOE(getPOE(EAA.getId(), poeExtraction));
+			validationObjectListType.getValidationObject().add(eaaValidationObject);
 		}
 
 		for (CertificateWrapper certificate : diagnosticData.getUsedCertificates()) {
@@ -619,25 +619,25 @@ public class ETSIValidationReportBuilder {
 		return poeProvisioning;
 	}
 
-	private ValidationObjectType getEAAValidationObject(EAAWrapper EAA) {
-		ValidationObjectType validationObject = validationObjectMap.get(EAA.getId());
+	private ValidationObjectType getEAAValidationObject(EAAWrapper eaa) {
+		ValidationObjectType validationObject = validationObjectMap.get(eaa.getId());
 		if (validationObject == null) {
 			validationObject = objectFactory.createValidationObjectType();
-			validationObjectMap.put(EAA.getId(), validationObject);
+			validationObjectMap.put(eaa.getId(), validationObject);
 
-			validationObject.setId(EAA.getId());
+			validationObject.setId(eaa.getId());
 			validationObject.setObjectType(ObjectType.OTHER); // TODO : no EAA specific type is available
 			ValidationObjectRepresentationType representation = objectFactory.createValidationObjectRepresentationType();
-			representation.getDirectOrBase64OrDigestAlgAndValue().add(getURI(EAA)); // TODO : fill representation (base64/digest) ?
+			representation.getDirectOrBase64OrDigestAlgAndValue().add(getURI(eaa)); // TODO : fill representation (base64/digest) ?
 			validationObject.setValidationObjectRepresentation(representation);
-			validationObject.setValidationReport(getValidationReport(EAA));
+			validationObject.setValidationReport(getValidationReport(eaa));
 		}
 		return validationObject;
 	}
 
-	private String getURI(EAAWrapper EAA) {
-		if (Utils.isStringNotEmpty(EAA.getFilename())) {
-			return EAA.getFilename();
+	private String getURI(EAAWrapper eaa) {
+		if (Utils.isStringNotEmpty(eaa.getFilename())) {
+			return eaa.getFilename();
 		}
 		return "?";
 	}

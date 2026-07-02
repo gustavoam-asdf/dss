@@ -48,7 +48,7 @@ class CBAdESLevelBX5ChainUHeadersPlacementNotIncludedCertChainTest extends Abstr
     private CBAdESSignatureParameters signatureParameters;
 
     @BeforeEach
-    void init() throws Exception {
+    void init() {
         service = new CBAdESService(getCompleteCertificateVerifier());
         service.setTspSource(getGoodTsa());
         documentToSign = new InMemoryDocument("Hello world!".getBytes());

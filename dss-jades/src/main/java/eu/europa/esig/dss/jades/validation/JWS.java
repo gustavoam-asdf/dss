@@ -26,8 +26,6 @@ import eu.europa.esig.dss.jades.JWSJsonSerializationObject;
 import eu.europa.esig.dss.spi.exception.IllegalInputException;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.lang.JoseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -41,8 +39,6 @@ import java.util.Objects;
 public class JWS extends JsonWebSignature implements Serializable {
 
 	private static final long serialVersionUID = -3465226120689258742L;
-
-	private static final Logger LOG = LoggerFactory.getLogger(JWS.class);
 
 	/**
 	 * The unprotected header map

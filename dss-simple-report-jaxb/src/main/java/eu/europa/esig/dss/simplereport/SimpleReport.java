@@ -576,9 +576,9 @@ public class SimpleReport {
 	 * @return {@link EAAQualification} for a given EAA
 	 */
 	public EAAQualification getEAAQualification(final String eaaPresentationId) {
-		XmlEAA XmlEAA = getEAAById(eaaPresentationId);
-		if (XmlEAA != null && XmlEAA.getEAALevel() != null && !XmlEAA.getEAALevel().isEmpty()) {
-			return XmlEAA.getEAALevel().iterator().next().getValue();
+		XmlEAA xmlEAA = getEAAById(eaaPresentationId);
+		if (xmlEAA != null && xmlEAA.getEAALevel() != null && !xmlEAA.getEAALevel().isEmpty()) {
+			return xmlEAA.getEAALevel().iterator().next().getValue();
 		}
 		return null;
 	}
@@ -594,9 +594,9 @@ public class SimpleReport {
 	 * @return a list of {@link EAAQualification}s for a given EAA
 	 */
 	public List<EAAQualification> getEAAQualifications(final String eaaPresentationId) {
-		XmlEAA XmlEAA = getEAAById(eaaPresentationId);
-		if (XmlEAA != null && XmlEAA.getEAALevel() != null && !XmlEAA.getEAALevel().isEmpty()) {
-			return XmlEAA.getEAALevel().stream().map(XmlEAALevel::getValue).collect(Collectors.toList());
+		XmlEAA xmlEAA = getEAAById(eaaPresentationId);
+		if (xmlEAA != null && xmlEAA.getEAALevel() != null && !xmlEAA.getEAALevel().isEmpty()) {
+			return xmlEAA.getEAALevel().stream().map(XmlEAALevel::getValue).collect(Collectors.toList());
 		}
 		return null;
 	}

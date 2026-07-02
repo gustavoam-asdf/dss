@@ -89,8 +89,9 @@ class COSEKeyBuilderTest {
             }
         };
 
-        Exception exception = assertThrows(UnsupportedOperationException.class, () -> new COSEKeyBuilder(unsupported).create());
+        COSEKeyBuilder coseKeyBuilder = new COSEKeyBuilder(unsupported);
+        Exception exception = assertThrows(UnsupportedOperationException.class, coseKeyBuilder::create);
         assertEquals("Unsupported key info type: ''", exception.getMessage());
     }
-    
+
 }

@@ -1043,7 +1043,7 @@ public final class DSSASN1Utils {
 	public static byte[] toPlainDSASignatureValue(byte[] asn1SignatureValue) {
 		try {
 			BigInteger order = getOrderFromSignatureValue(asn1SignatureValue);
-			ASN1Sequence seq = (ASN1Sequence) ASN1Sequence.fromByteArray(asn1SignatureValue);
+			ASN1Sequence seq = (ASN1Sequence) ASN1Primitive.fromByteArray(asn1SignatureValue);
 			ASN1Integer r = (ASN1Integer) seq.getObjectAt(0);
 			ASN1Integer s = (ASN1Integer) seq.getObjectAt(1);
 			return PlainDSAEncoding.INSTANCE.encode(order, r.getValue(), s.getValue());

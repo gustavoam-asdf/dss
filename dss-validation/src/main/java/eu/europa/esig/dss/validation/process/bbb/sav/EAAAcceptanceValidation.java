@@ -51,7 +51,7 @@ import java.util.Map;
 
 /**
  * Performs verification of EAA against the validationPolicy defined acceptance criteria
- * 
+ *
  */
 public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWrapper> {
 
@@ -149,19 +149,18 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
                 lastAcceptableStatus = null;
                 for (EAARevocationWrapper EAARevocationWrapper : token.getEAARevocations()) {
 
-                    XmlBasicBuildingBlocks EAARevocationBBB = bbbs.get(EAARevocationWrapper.getId());
-                    if (EAARevocationBBB == null) {
+                    XmlBasicBuildingBlocks eaaRevocationBBB = bbbs.get(EAARevocationWrapper.getId());
+                    if (eaaRevocationBBB == null) {
                         throw new IllegalStateException(String.format("No BasicBuildingBlock found for token with Id '%s'", EAARevocationWrapper.getId()));
                     }
 
                     item = item.setNextItem(statusKnown(EAARevocationWrapper));
 
-                    item = item.setNextItem(statusAcceptable(EAARevocationWrapper, EAARevocationBBB.getConclusion()));
+                    item = item.setNextItem(statusAcceptable(EAARevocationWrapper, eaaRevocationBBB.getConclusion()));
 
-                    if (isValidConclusion(EAARevocationBBB.getConclusion())) {
-                        if (lastAcceptableStatus == null || lastAcceptableStatus.getIssuedAt().before(EAARevocationWrapper.getIssuedAt())) {
-                            lastAcceptableStatus = EAARevocationWrapper;
-                        }
+                    if (isValidConclusion(eaaRevocationBBB.getConclusion())
+                            && (lastAcceptableStatus == null || lastAcceptableStatus.getIssuedAt().before(EAARevocationWrapper.getIssuedAt()))) {
+                        lastAcceptableStatus = EAARevocationWrapper;
                     }
 
                 }
@@ -288,13 +287,13 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new EAARevocationAvailableCheck(i18nProvider, result, token, constraint);
     }
 
-    private ChainItem<XmlSAV> statusKnown(EAARevocationWrapper EAARevocationWrapper) {
+    private ChainItem<XmlSAV> statusKnown(EAARevocationWrapper eaaRevocationWrapper) {
         LevelRule constraint = validationPolicy.getEAARevocationUnknownStatusConstraint();
-        return new EAARevocationStatusKnownCheck(i18nProvider, result, EAARevocationWrapper, constraint);
+        return new EAARevocationStatusKnownCheck(i18nProvider, result, eaaRevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> statusAcceptable(EAARevocationWrapper EAARevocationWrapper, XmlConclusion xmlConclusion) {
-        return new EAARevocationAcceptableCheck(i18nProvider, result, EAARevocationWrapper, xmlConclusion, getWarnLevelRule());
+    private ChainItem<XmlSAV> statusAcceptable(EAARevocationWrapper eaaRevocationWrapper, XmlConclusion xmlConclusion) {
+        return new EAARevocationAcceptableCheck(i18nProvider, result, eaaRevocationWrapper, xmlConclusion, getWarnLevelRule());
     }
 
     private ChainItem<XmlSAV> acceptableStatusFound(EAARevocationWrapper acceptableEAARevocationWrapper) {
@@ -302,14 +301,14 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
         return new AcceptableEAARevocationFoundCheck(i18nProvider, result, acceptableEAARevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> notRevoked(EAARevocationWrapper EAARevocationWrapper) {
+    private ChainItem<XmlSAV> notRevoked(EAARevocationWrapper eaaRevocationWrapper) {
         LevelRule constraint = validationPolicy.getEAARevocationNotRevokedConstraint();
-        return new EAANotRevokedCheck(i18nProvider, result, EAARevocationWrapper, constraint);
+        return new EAANotRevokedCheck(i18nProvider, result, eaaRevocationWrapper, constraint);
     }
 
-    private ChainItem<XmlSAV> notOnHold(EAARevocationWrapper EAARevocationWrapper) {
+    private ChainItem<XmlSAV> notOnHold(EAARevocationWrapper eaaRevocationWrapper) {
         LevelRule constraint = validationPolicy.getEAARevocationNotOnHoldConstraint();
-        return new EAANotOnHoldCheck(i18nProvider, result, EAARevocationWrapper, constraint);
+        return new EAANotOnHoldCheck(i18nProvider, result, eaaRevocationWrapper, constraint);
     }
 
     private ChainItem<XmlSAV> shortLived() {

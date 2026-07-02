@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class EAARevocationValidationProcessExecutorTest extends AbstractTestValidationExecutor {
+class EAARevocationValidationProcessExecutorTest extends AbstractTestValidationExecutor {
 
     private static final String EAA_POLICY_LOCATION = "/policy/eaa-constraint.xml";
 
@@ -62,7 +62,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
         xmlEAARevocationStatus.setStatus(EAAStatus.UNKNOWN);
 
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -144,7 +144,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -171,17 +171,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
@@ -190,7 +190,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -202,8 +202,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -214,11 +214,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -226,7 +226,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -238,8 +238,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
-        EAARevocationToken.setIssuedAt(null);
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        eaaRevocationToken.setIssuedAt(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -314,7 +314,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -341,17 +341,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -361,7 +361,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -374,8 +374,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -386,11 +386,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -398,7 +398,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertFalse(notExpiredCheckFound);
         assertFalse(subjectCheckFound);
         assertFalse(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -410,8 +410,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
-        EAARevocationToken.setIssuedAt(null);
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        eaaRevocationToken.setIssuedAt(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -481,11 +481,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -507,17 +507,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
 
@@ -526,7 +526,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
@@ -539,8 +539,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -551,11 +551,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -563,7 +563,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -575,8 +575,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
-        EAARevocationToken.setExpirationTime(null);
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        eaaRevocationToken.setExpirationTime(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -652,7 +652,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -679,17 +679,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -700,7 +700,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -713,8 +713,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -725,11 +725,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -737,7 +737,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertFalse(notExpiredCheckFound);
         assertFalse(subjectCheckFound);
         assertFalse(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -749,8 +749,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
-        EAARevocationToken.setExpirationTime(null);
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        eaaRevocationToken.setExpirationTime(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -820,11 +820,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -846,17 +846,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
         assertTrue(checkMessageValuePresence(convert(xmlSAV.getConclusion().getWarnings()), i18nProvider.getMessage(MessageTag.EAA_REV_EXP_ANS)));
@@ -866,7 +866,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -879,8 +879,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -891,11 +891,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -903,7 +903,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertFalse(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -915,12 +915,12 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(diagnosticData.getValidationDate());
         calendar.add(Calendar.HOUR, -1);
-        EAARevocationToken.setExpirationTime(calendar.getTime());
+        eaaRevocationToken.setExpirationTime(calendar.getTime());
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -996,7 +996,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -1023,17 +1023,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -1044,7 +1044,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1057,8 +1057,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(MessageTag.EAA_REV_NOT_EXP_ANS.getId(), xmlConstraint.getError().getKey());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1069,11 +1069,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1081,7 +1081,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertFalse(subjectCheckFound);
         assertFalse(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1093,12 +1093,12 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(diagnosticData.getValidationDate());
         calendar.add(Calendar.HOUR, -1);
-        EAARevocationToken.setExpirationTime(calendar.getTime());
+        eaaRevocationToken.setExpirationTime(calendar.getTime());
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -1168,11 +1168,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1194,17 +1194,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
         assertTrue(checkMessageValuePresence(convert(xmlSAV.getConclusion().getWarnings()), i18nProvider.getMessage(MessageTag.EAA_REV_NOT_EXP_ANS)));
@@ -1214,7 +1214,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1227,8 +1227,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(MessageTag.EAA_REV_NOT_EXP_ANS.getId(), xmlConstraint.getWarning().getKey());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1239,11 +1239,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1251,7 +1251,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1263,9 +1263,9 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
-        EAARevocationToken.setSubject(null);
+        eaaRevocationToken.setSubject(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -1342,7 +1342,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -1369,17 +1369,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -1390,7 +1390,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1402,8 +1402,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -1415,11 +1415,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1427,7 +1427,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertFalse(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1439,9 +1439,9 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
-        EAARevocationToken.setSubject(null);
+        eaaRevocationToken.setSubject(null);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -1511,11 +1511,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1537,17 +1537,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
         assertTrue(checkMessageValuePresence(convert(xmlSAV.getConclusion().getWarnings()), i18nProvider.getMessage(MessageTag.EAA_REV_SUB_ANS)));
@@ -1557,7 +1557,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1569,8 +1569,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
@@ -1582,11 +1582,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1594,7 +1594,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertFalse(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1606,9 +1606,9 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
-        EAARevocationToken.getSubject().setMatch(false);
+        eaaRevocationToken.getSubject().setMatch(false);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -1684,7 +1684,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -1711,17 +1711,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -1732,7 +1732,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1744,8 +1744,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1757,11 +1757,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1769,7 +1769,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertFalse(EAARevocationIssuerCheckFound);
+        assertFalse(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1781,9 +1781,9 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
-        EAARevocationToken.getSubject().setMatch(false);
+        eaaRevocationToken.getSubject().setMatch(false);
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -1852,11 +1852,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1878,17 +1878,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
         assertTrue(checkMessageValuePresence(convert(xmlSAV.getConclusion().getWarnings()), i18nProvider.getMessage(MessageTag.EAA_REV_SUB_MATCH_ANS)));
@@ -1898,7 +1898,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1910,8 +1910,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -1923,11 +1923,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ISS_VALID.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -1935,7 +1935,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -1947,12 +1947,12 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore());
+        calendar.setTime(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore());
         calendar.add(Calendar.DATE, -1);
-        EAARevocationToken.setIssuedAt(calendar.getTime());
+        eaaRevocationToken.setIssuedAt(calendar.getTime());
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -2028,7 +2028,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ACC_ANS.getId(), xmlConstraint.getWarning().getKey());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
@@ -2055,17 +2055,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.INDETERMINATE, xmlSAV.getConclusion().getIndication());
         assertEquals(SubIndication.EAA_CONSTRAINTS_FAILURE, xmlSAV.getConclusion().getSubIndication());
@@ -2076,7 +2076,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -2088,8 +2088,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -2101,11 +2101,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.NOT_OK, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ISS_VALID_ANS.getId(), xmlConstraint.getError().getKey());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -2113,7 +2113,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }
@@ -2125,12 +2125,12 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNotNull(diagnosticData);
 
         XmlEAARevocationStatus xmlEAARevocationStatus = diagnosticData.getEAAs().get(0).getEAARevocations().get(0);
-        XmlEAARevocationToken EAARevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
+        XmlEAARevocationToken eaaRevocationToken = xmlEAARevocationStatus.getEAARevocationToken();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore());
+        calendar.setTime(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore());
         calendar.add(Calendar.DATE, -1);
-        EAARevocationToken.setIssuedAt(calendar.getTime());
+        eaaRevocationToken.setIssuedAt(calendar.getTime());
 
         EtsiValidationPolicy validationPolicy = loadDefaultPolicy();
 
@@ -2199,11 +2199,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 statusAvailableCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusCheckFound = true;
             } else if (MessageTag.EAA_REV_ACC_FND.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
-                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, EAARevocationToken.getId()), xmlConstraint.getAdditionalInfo());
+                assertEquals(i18nProvider.getMessage(MessageTag.TOKEN_ID, eaaRevocationToken.getId()), xmlConstraint.getAdditionalInfo());
                 acceptableStatusFoundCheckFound = true;
             } else if (MessageTag.EAA_REV_NOT_REV.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -2225,17 +2225,17 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertNull(eaaBBB.getVCI());
         assertNull(eaaBBB.getXCV());
 
-        XmlBasicBuildingBlocks EAARevocationBBB = detailedReport.getBasicBuildingBlockById(EAARevocationToken.getId());
-        assertNotNull(EAARevocationBBB);
+        XmlBasicBuildingBlocks eaaRevocationBBB = detailedReport.getBasicBuildingBlockById(eaaRevocationToken.getId());
+        assertNotNull(eaaRevocationBBB);
 
-        assertNotNull(EAARevocationBBB.getFC());
-        assertNotNull(EAARevocationBBB.getISC());
-        assertNotNull(EAARevocationBBB.getXCV());
-        assertNotNull(EAARevocationBBB.getCV());
-        assertNotNull(EAARevocationBBB.getAOV());
-        assertNull(EAARevocationBBB.getVCI());
+        assertNotNull(eaaRevocationBBB.getFC());
+        assertNotNull(eaaRevocationBBB.getISC());
+        assertNotNull(eaaRevocationBBB.getXCV());
+        assertNotNull(eaaRevocationBBB.getCV());
+        assertNotNull(eaaRevocationBBB.getAOV());
+        assertNull(eaaRevocationBBB.getVCI());
 
-        xmlSAV = EAARevocationBBB.getSAV();
+        xmlSAV = eaaRevocationBBB.getSAV();
         assertNotNull(xmlSAV);
         assertEquals(Indication.PASSED, xmlSAV.getConclusion().getIndication());
         assertTrue(checkMessageValuePresence(convert(xmlSAV.getConclusion().getWarnings()), i18nProvider.getMessage(MessageTag.EAA_REV_ISS_VALID_ANS)));
@@ -2245,7 +2245,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         boolean notExpiredCheckFound = false;
         boolean subjectCheckFound = false;
         boolean subjectMatchCheckFound = false;
-        boolean EAARevocationIssuerCheckFound = false;
+        boolean eaaRevocationIssuerCheckFound = false;
         for (XmlConstraint xmlConstraint : xmlSAV.getConstraint()) {
             if (MessageTag.EAA_REV_ISS.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -2257,8 +2257,8 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_TIME,
                         ValidationProcessUtils.getFormattedDate(diagnosticData.getValidationDate()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                        ValidationProcessUtils.getFormattedDate(EAARevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                        ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getExpirationTime())), xmlConstraint.getAdditionalInfo());
                 notExpiredCheckFound = true;
             } else if (MessageTag.EAA_REV_SUB.getId().equals(xmlConstraint.getName().getKey())) {
                 assertEquals(XmlStatus.OK, xmlConstraint.getStatus());
@@ -2270,11 +2270,11 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
                 assertEquals(XmlStatus.WARNING, xmlConstraint.getStatus());
                 assertEquals(MessageTag.EAA_REV_ISS_VALID_ANS.getId(), xmlConstraint.getWarning().getKey());
                 assertEquals(i18nProvider.getMessage(MessageTag.EAA_REV_ISS_CERT,
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getIssuedAt()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
-                                ValidationProcessUtils.getFormattedDate(EAARevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getIssuedAt()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotBefore()),
+                                ValidationProcessUtils.getFormattedDate(eaaRevocationToken.getSigningCertificate().getCertificate().getNotAfter())),
                         xmlConstraint.getAdditionalInfo());
-                EAARevocationIssuerCheckFound = true;
+                eaaRevocationIssuerCheckFound = true;
             }
         }
         assertTrue(issTimeCheckFound);
@@ -2282,7 +2282,7 @@ public class EAARevocationValidationProcessExecutorTest extends AbstractTestVali
         assertTrue(notExpiredCheckFound);
         assertTrue(subjectCheckFound);
         assertTrue(subjectMatchCheckFound);
-        assertTrue(EAARevocationIssuerCheckFound);
+        assertTrue(eaaRevocationIssuerCheckFound);
 
         checkReports(reports);
     }

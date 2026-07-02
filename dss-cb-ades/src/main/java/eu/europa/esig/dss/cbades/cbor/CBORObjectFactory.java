@@ -84,6 +84,7 @@ public class CBORObjectFactory {
                         return new CBORNull(simpleValue);
                     }
                 }
+                return new CBORSimpleObject(dataItem);
             default:
                 return new CBORSimpleObject(dataItem);
         }

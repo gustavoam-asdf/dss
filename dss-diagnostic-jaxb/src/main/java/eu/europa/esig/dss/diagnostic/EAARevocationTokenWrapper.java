@@ -33,7 +33,7 @@ import java.util.Objects;
 
 /**
  * Wraps validation information of the EAA revocation token
- * 
+ *
  */
 public class EAARevocationTokenWrapper extends AbstractTokenProxy {
 
@@ -117,8 +117,7 @@ public class EAARevocationTokenWrapper extends AbstractTokenProxy {
      * @return TRUE if the subject matches, FALSE otherwise
      */
     public boolean getSubjectMatch() {
-        return eaaStatusToken.getSubject() != null && eaaStatusToken.getSubject().isMatch() != null ?
-                eaaStatusToken.getSubject().isMatch() : false;
+        return eaaStatusToken.getSubject() != null && Boolean.TRUE.equals(eaaStatusToken.getSubject().isMatch());
     }
 
     /**

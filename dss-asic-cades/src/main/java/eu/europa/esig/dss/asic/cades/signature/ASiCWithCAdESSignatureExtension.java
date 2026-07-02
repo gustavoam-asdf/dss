@@ -27,7 +27,6 @@ import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESLevelBaselineLT;
 import eu.europa.esig.dss.cades.signature.CAdESLevelBaselineLTA;
 import eu.europa.esig.dss.cades.signature.CAdESLevelBaselineT;
-import eu.europa.esig.dss.cades.signature.CAdESService;
 import eu.europa.esig.dss.cades.signature.CAdESSignatureExtension;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
@@ -59,9 +58,6 @@ public class ASiCWithCAdESSignatureExtension implements Serializable {
 
     /** The TSPSource to use for timestamp requests */
     protected final TSPSource tspSource;
-
-    /** The CAdESService to be used for a CAdES signature extension */
-    private CAdESService cadesService;
 
     /** This object is used to create data container objects such as an OutputStream or a DSSDocument */
     protected DSSResourcesHandlerBuilder resourcesHandlerBuilder;

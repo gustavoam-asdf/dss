@@ -164,7 +164,7 @@ class MdocIssuerSignedEAAValidationTest extends AbstractMdocEAAPresentationTestV
         boolean versionClaimFound = false;
         boolean docTypeClaimFound = false;
         boolean deviceKeyClaimFound = false;
-        boolean GivenNameClaimFound = false;
+        boolean givenNameClaimFound = false;
         boolean secondNameClaimFound = false;
         boolean birthdayClaimFound = false;
         for (ClaimWrapper disclosableClaim : payloadClaims) {
@@ -191,7 +191,7 @@ class MdocIssuerSignedEAAValidationTest extends AbstractMdocEAAPresentationTestV
             } else if ("given_name".equals(disclosableClaim.getName())) {
                 assertEquals("John", disclosableClaim.getDisplayValue());
                 assertTrue(disclosableClaim.isSelectivelyDisclosable());
-                GivenNameClaimFound = true;
+                givenNameClaimFound = true;
 
             } else if ("family_name".equals(disclosableClaim.getName())) {
                 assertEquals("Doe", disclosableClaim.getDisplayValue());
@@ -211,7 +211,7 @@ class MdocIssuerSignedEAAValidationTest extends AbstractMdocEAAPresentationTestV
         assertTrue(versionClaimFound);
         assertTrue(docTypeClaimFound);
         assertTrue(deviceKeyClaimFound);
-        assertTrue(GivenNameClaimFound);
+        assertTrue(givenNameClaimFound);
         assertTrue(secondNameClaimFound);
         assertTrue(birthdayClaimFound);
     }

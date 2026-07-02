@@ -637,13 +637,11 @@ public class DSSJsonUtils {
 	 * @return {@link IssuerSerial}
 	 */
 	public static IssuerSerial getIssuerSerial(String value) {
-		if (Utils.isStringNotEmpty(value)) {
-			if (Utils.isBase64Encoded(value)) {
-				byte[] binary = Utils.fromBase64(value);
-				if (DSSASN1Utils.isAsn1Encoded(binary)) {
-					return DSSASN1Utils.getIssuerSerial(binary);
-				}
-			}
+		if (Utils.isStringNotEmpty(value) && Utils.isBase64Encoded(value)) {
+            byte[] binary = Utils.fromBase64(value);
+            if (DSSASN1Utils.isAsn1Encoded(binary)) {
+                return DSSASN1Utils.getIssuerSerial(binary);
+            }
 		}
 		// process silently
 		return null;
