@@ -286,7 +286,7 @@
     
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessBasicTimestamp|dss:ValidationProcessLongTermData
 			|dss:ValidationProcessArchivalData|dss:ValidationProcessArchivalDataTimestamp|dss:ValidationProcessEvidenceRecord
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess|dss:ValidationProcessEAA">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateApprovalStatusProcess|dss:ValidationProcessEAA">
 
 		<xsl:variable name="poeStringValue">
 			<xsl:choose>
@@ -458,7 +458,7 @@
 
     </xsl:template>
 
-	<xsl:template match="dss:ValidationCertificateQualification|dss:ValidationCertificateUsage">
+	<xsl:template match="dss:ValidationCertificateQualification|dss:ValidationCertificateApprovalStatus">
 
 		<fo:table table-layout="fixed">
 			<xsl:attribute name="keep-with-next">always</xsl:attribute>
@@ -503,8 +503,8 @@
 								<xsl:when test="@CertificateQualification">
 									<xsl:value-of select="@CertificateQualification"/>
 								</xsl:when>
-								<xsl:when test="dss:CertificateUsage">
-									<xsl:for-each select="dss:CertificateUsage">
+								<xsl:when test="dss:CertificateApprovalStatus">
+									<xsl:for-each select="dss:CertificateApprovalStatus">
 										<xsl:text>&#xa;</xsl:text>
 										<xsl:choose>
 											<xsl:when test="@label">

@@ -1,6 +1,6 @@
 package eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatusProcess;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.enumerations.SubIndication;
@@ -9,7 +9,7 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
-public class ListTypeKnownCheck extends ChainItem<XmlCertificateUsageProcess> {
+public class ListTypeKnownCheck extends ChainItem<XmlCertificateApprovalStatusProcess> {
 
     /** List Type URI */
     private final String listTypeUri;
@@ -18,11 +18,11 @@ public class ListTypeKnownCheck extends ChainItem<XmlCertificateUsageProcess> {
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlCertificateUsageProcess}
+     * @param result {@link XmlCertificateApprovalStatusProcess}
      * @param listTypeUri {@link String}
      * @param constraint {@link LevelRule}
      */
-    public ListTypeKnownCheck(I18nProvider i18nProvider, XmlCertificateUsageProcess result,
+    public ListTypeKnownCheck(I18nProvider i18nProvider, XmlCertificateApprovalStatusProcess result,
                               String listTypeUri, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.listTypeUri = listTypeUri;

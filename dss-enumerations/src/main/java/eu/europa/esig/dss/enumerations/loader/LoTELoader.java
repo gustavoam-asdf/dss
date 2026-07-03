@@ -20,7 +20,7 @@
  */
 package eu.europa.esig.dss.enumerations.loader;
 
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.enumerations.LoTEServiceStatus;
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
@@ -56,21 +56,21 @@ public interface LoTELoader {
     LoTEServiceStatus serviceStatusFromUri(String uri);
 
     /**
-     * Gets a {@code CertificateUsage} from the given label String
+     * Gets a {@code CertificateApprovalStatus} from the given label String
      *
      * @param label {@link String}
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    CertificateUsage certificateUsageFromLabel(String label);
+    CertificateApprovalStatus certificateApprovalStatusFromLabel(String label);
 
     /**
-     * Gets a {@code CertificateUsage} from the given label String
+     * Gets a {@code CertificateApprovalStatus} from the given label String
      *
      * @param listType {@link ListType}
      * @param sti {@link LoTEServiceTypeIdentifier}
      * @param status {@link LoTEServiceStatus}
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    CertificateUsage certificateUsageFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status);
+    CertificateApprovalStatus certificateApprovalStatusFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status);
 
 }

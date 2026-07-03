@@ -22,7 +22,7 @@ package eu.europa.esig.dss.detailedreport;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraintsConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlEAA;
@@ -33,13 +33,13 @@ import eu.europa.esig.dss.detailedreport.jaxb.XmlSignature;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateQualification;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateApprovalStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessArchivalDataTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessBasicTimestamp;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEAA;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationProcessEvidenceRecord;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationSignatureQualification;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.MessageType;
 import eu.europa.esig.dss.enumerations.ValidationTime;
@@ -237,87 +237,87 @@ public class DetailedReportMessageCollector {
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation errors for a certificate with
-	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation errors for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageErrorsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtIssuanceTime(MessageType.ERROR, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusErrorsAtIssuanceTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtIssuanceTime(MessageType.ERROR, certificateId, certificateApprovalStatus);
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation warnings for a certificate with
-	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation warnings for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageWarningsAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtIssuanceTime(MessageType.WARN, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusWarningsAtIssuanceTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtIssuanceTime(MessageType.WARN, certificateId, certificateApprovalStatus);
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation information messages for a certificate with
-	 * the given id at certificate issuance time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation information messages for a certificate with
+	 * the given id at certificate issuance time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageInfosAtIssuanceTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtIssuanceTime(MessageType.INFO, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusInfosAtIssuanceTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtIssuanceTime(MessageType.INFO, certificateId, certificateApprovalStatus);
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation errors for a certificate with
-	 * the given id at validation time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation errors for a certificate with
+	 * the given id at validation time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageErrorsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtValidationTime(MessageType.ERROR, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusErrorsAtValidationTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtValidationTime(MessageType.ERROR, certificateId, certificateApprovalStatus);
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation warnings for a certificate with
-	 * the given id at validation time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation warnings for a certificate with
+	 * the given id at validation time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageWarningsAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtValidationTime(MessageType.WARN, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusWarningsAtValidationTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtValidationTime(MessageType.WARN, certificateId, certificateApprovalStatus);
 	}
 
 	/**
-	 * Returns a list of TS 119 602 certificate usage validation information messages for a certificate with
-	 * the given id at validation time and the given {@code certificateUsage}
+	 * Returns a list of TS 119 602 certificate approval status validation information messages for a certificate with
+	 * the given id at validation time and the given {@code certificateApprovalStatus}
 	 * <p>
 	 * NOTE: applicable only for certificate validation
 	 *
 	 * @param certificateId {@link String} id of a certificate to get qualification errors for
-	 * @param certificateUsage {@link CertificateUsage}
+	 * @param certificateApprovalStatus {@link CertificateApprovalStatus}
 	 * @return a list of {@link Message}s
 	 */
-	List<Message> getCertificateUsageInfosAtValidationTime(String certificateId, CertificateUsage certificateUsage) {
-		return collectCertificateUsageAtValidationTime(MessageType.INFO, certificateId, certificateUsage);
+	List<Message> getCertificateApprovalStatusInfosAtValidationTime(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		return collectCertificateApprovalStatusAtValidationTime(MessageType.INFO, certificateId, certificateApprovalStatus);
 	}
 
 	private List<Message> collectAdESValidationMessages(MessageType type, String tokenId) {
@@ -563,30 +563,30 @@ public class DetailedReportMessageCollector {
 		}
 	}
 
-	private List<Message> collectCertificateUsageAtIssuanceTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
-		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
-        return collectCertificateUsageAtIssuanceTime(type, certificateUsageProcess);
+	private List<Message> collectCertificateApprovalStatusAtIssuanceTime(MessageType type, String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		List<XmlValidationCertificateApprovalStatus> certificateApprovalStatusProcess = getCertificateApprovalStatusProcess(certificateId, certificateApprovalStatus);
+        return collectCertificateApprovalStatusAtIssuanceTime(type, certificateApprovalStatusProcess);
 	}
 
-	private List<Message> collectCertificateUsageAtValidationTime(MessageType type, String certificateId, CertificateUsage certificateUsage) {
-		List<XmlValidationCertificateUsage> certificateUsageProcess = getCertificateUsageProcess(certificateId, certificateUsage);
-        return collectCertificateUsageAtValidationTime(type, certificateUsageProcess);
+	private List<Message> collectCertificateApprovalStatusAtValidationTime(MessageType type, String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		List<XmlValidationCertificateApprovalStatus> certificateApprovalStatusProcess = getCertificateApprovalStatusProcess(certificateId, certificateApprovalStatus);
+        return collectCertificateApprovalStatusAtValidationTime(type, certificateApprovalStatusProcess);
 	}
 
-	private List<XmlValidationCertificateUsage> getCertificateUsageProcess(String certificateId, CertificateUsage certificateUsage) {
-		final List<XmlValidationCertificateUsage> result = new ArrayList<>();
+	private List<XmlValidationCertificateApprovalStatus> getCertificateApprovalStatusProcess(String certificateId, CertificateApprovalStatus certificateApprovalStatus) {
+		final List<XmlValidationCertificateApprovalStatus> result = new ArrayList<>();
 
 		XmlCertificate xmlCertificate = detailedReport.getXmlCertificateById(certificateId);
-		if (xmlCertificate != null && xmlCertificate.getCertificateUsageProcess() != null) {
-			List<XmlValidationCertificateUsage> validationCertificateUsages = xmlCertificate.getCertificateUsageProcess().getValidationCertificateUsage();
-			for (XmlValidationCertificateUsage validationCertificateUsage : validationCertificateUsages) {
-				XmlCertificateUsage xmlCertificateUsage = validationCertificateUsage.getCertificateUsage();
-				if (xmlCertificateUsage != null &&
-						certificateUsage.getListType() != null && certificateUsage.getListType().getUri() != null
-						&& xmlCertificateUsage.getListType() != null && certificateUsage.getListType().getUri().equals(xmlCertificateUsage.getListType().getUri()) &&
-						certificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri() != null
-						&& xmlCertificateUsage.getServiceTypeIdentifier() != null && certificateUsage.getServiceTypeIdentifier().getUri().equals(xmlCertificateUsage.getServiceTypeIdentifier().getUri())) {
-					result.add(validationCertificateUsage);
+		if (xmlCertificate != null && xmlCertificate.getCertificateApprovalStatusProcess() != null) {
+			List<XmlValidationCertificateApprovalStatus> validationCertificateApprovalStatuss = xmlCertificate.getCertificateApprovalStatusProcess().getValidationCertificateApprovalStatus();
+			for (XmlValidationCertificateApprovalStatus validationCertificateApprovalStatus : validationCertificateApprovalStatuss) {
+				XmlCertificateApprovalStatus xmlCertificateApprovalStatus = validationCertificateApprovalStatus.getCertificateApprovalStatus();
+				if (xmlCertificateApprovalStatus != null &&
+						certificateApprovalStatus.getListType() != null && certificateApprovalStatus.getListType().getUri() != null
+						&& xmlCertificateApprovalStatus.getListType() != null && certificateApprovalStatus.getListType().getUri().equals(xmlCertificateApprovalStatus.getListType().getUri()) &&
+						certificateApprovalStatus.getServiceTypeIdentifier() != null && certificateApprovalStatus.getServiceTypeIdentifier().getUri() != null
+						&& xmlCertificateApprovalStatus.getServiceTypeIdentifier() != null && certificateApprovalStatus.getServiceTypeIdentifier().getUri().equals(xmlCertificateApprovalStatus.getServiceTypeIdentifier().getUri())) {
+					result.add(validationCertificateApprovalStatus);
 				}
 			}
 		}
@@ -594,27 +594,27 @@ public class DetailedReportMessageCollector {
 		return result;
 	}
 
-	private List<Message> collectCertificateUsageAtIssuanceTime(
-			MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses) {
-		return collectCertificateUsageAtTime(type, certificateUsageProcesses, ValidationTime.CERTIFICATE_ISSUANCE_TIME);
+	private List<Message> collectCertificateApprovalStatusAtIssuanceTime(
+			MessageType type, List<XmlValidationCertificateApprovalStatus> certificateApprovalStatusProcesses) {
+		return collectCertificateApprovalStatusAtTime(type, certificateApprovalStatusProcesses, ValidationTime.CERTIFICATE_ISSUANCE_TIME);
 	}
 
-	private List<Message> collectCertificateUsageAtValidationTime(
-			MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses) {
-		return collectCertificateUsageAtTime(type, certificateUsageProcesses, ValidationTime.VALIDATION_TIME);
+	private List<Message> collectCertificateApprovalStatusAtValidationTime(
+			MessageType type, List<XmlValidationCertificateApprovalStatus> certificateApprovalStatusProcesses) {
+		return collectCertificateApprovalStatusAtTime(type, certificateApprovalStatusProcesses, ValidationTime.VALIDATION_TIME);
 	}
 
-	private List<Message> collectCertificateUsageAtTime(MessageType type, List<XmlValidationCertificateUsage> certificateUsageProcesses,
+	private List<Message> collectCertificateApprovalStatusAtTime(MessageType type, List<XmlValidationCertificateApprovalStatus> certificateApprovalStatusProcesses,
 														ValidationTime validationTime) {
-		if (certificateUsageProcesses != null) {
-			for (XmlValidationCertificateUsage certificateUsageProcess : certificateUsageProcesses) {
-				if (validationTime.equals(certificateUsageProcess.getValidationTime())) {
-					return getMessages(type,certificateUsageProcess);
+		if (certificateApprovalStatusProcesses != null) {
+			for (XmlValidationCertificateApprovalStatus certificateApprovalStatusProcess : certificateApprovalStatusProcesses) {
+				if (validationTime.equals(certificateApprovalStatusProcess.getValidationTime())) {
+					return getMessages(type,certificateApprovalStatusProcess);
 				}
 			}
 		}
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("The certificate usage validation at time '{}' is not found or not performed!", validationTime);
+			LOG.debug("The certificate approval status validation at time '{}' is not found or not performed!", validationTime);
 		}
 		return Collections.emptyList();
 	}

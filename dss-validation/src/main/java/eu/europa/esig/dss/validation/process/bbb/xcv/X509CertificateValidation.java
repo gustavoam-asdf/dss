@@ -68,7 +68,7 @@ public class X509CertificateValidation extends Chain<XmlXCV> {
 	/** The validation time */
 	private final Date currentTime;
 
-	/** The certificate usage time */
+	/** The certificate approval status time */
 	private final Date usageTime;
 
 	/** The validation context */

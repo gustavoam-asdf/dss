@@ -21,10 +21,10 @@
 package eu.europa.esig.dss.enumerations;
 
 /**
- * Contains a list of known and supported certificate usages, based on the ETSI TS 119 602 profile definitions
+ * Contains a list of known and supported certificate approval statuss, based on the ETSI TS 119 602 profile definitions
  *
  */
-public enum CertificateUsageEnum implements CertificateUsage {
+public enum CertificateApprovalStatusEnum implements CertificateApprovalStatus {
 
     /** Represents a PID provider certificate, as defined in the ETSI TS 119 605, Annex C.1 */
     PID_PROVIDER("PID Provider", LoTETypeEnum.EUPIDProvidersList, LoTEServiceTypeIdentifierEnum.PID_ISSUANCE, null),
@@ -91,8 +91,8 @@ public enum CertificateUsageEnum implements CertificateUsage {
      * @param sti {@link LoTEServiceTypeIdentifier}
      * @param status {@link LoTEServiceStatus}
      */
-    CertificateUsageEnum(final String label, final ListType listType, final LoTEServiceTypeIdentifier sti,
-                         final LoTEServiceStatus status) {
+    CertificateApprovalStatusEnum(final String label, final ListType listType, final LoTEServiceTypeIdentifier sti,
+                                  final LoTEServiceStatus status) {
         this.label = label;
         this.listType = listType;
         this.sti = sti;

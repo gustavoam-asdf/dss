@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateApprovalStatus;
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -15,7 +15,7 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.List;
 
-public class TrustedEntityServiceWithStiCheck extends ChainItem<XmlValidationCertificateUsage> {
+public class TrustedEntityServiceWithStiCheck extends ChainItem<XmlValidationCertificateApprovalStatus> {
 
     /** List of {@code TrustedEntityServiceWrapper}s at control time */
     private final List<TrustedEntityServiceWrapper> trustedServicesWithSti;
@@ -27,12 +27,12 @@ public class TrustedEntityServiceWithStiCheck extends ChainItem<XmlValidationCer
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationCertificateUsage}
+     * @param result {@link XmlValidationCertificateApprovalStatus}
      * @param trustedServicesWithSti list of {@link TrustServiceWrapper}s
      * @param stiUri {@link String}
      * @param constraint {@link LevelRule}
      */
-    public TrustedEntityServiceWithStiCheck(I18nProvider i18nProvider, XmlValidationCertificateUsage result,
+    public TrustedEntityServiceWithStiCheck(I18nProvider i18nProvider, XmlValidationCertificateApprovalStatus result,
                                             List<TrustedEntityServiceWrapper> trustedServicesWithSti, String stiUri, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.trustedServicesWithSti = trustedServicesWithSti;

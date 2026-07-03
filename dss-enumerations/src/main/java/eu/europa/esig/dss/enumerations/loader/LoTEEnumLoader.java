@@ -20,8 +20,8 @@
  */
 package eu.europa.esig.dss.enumerations.loader;
 
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.enumerations.LoTEServiceStatus;
 import eu.europa.esig.dss.enumerations.LoTEServiceStatusEnum;
@@ -69,8 +69,8 @@ public class LoTEEnumLoader implements LoTELoader {
     }
 
     @Override
-    public CertificateUsage certificateUsageFromLabel(String label) {
-        for (CertificateUsage certUsage : CertificateUsageEnum.values()) {
+    public CertificateApprovalStatus certificateApprovalStatusFromLabel(String label) {
+        for (CertificateApprovalStatus certUsage : CertificateApprovalStatusEnum.values()) {
             if (label.equalsIgnoreCase(certUsage.getLabel())) {
                 return certUsage;
             }
@@ -79,15 +79,15 @@ public class LoTEEnumLoader implements LoTELoader {
     }
 
     @Override
-    public CertificateUsage certificateUsageFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
-        for (CertificateUsage certUsage : CertificateUsageEnum.values()) {
+    public CertificateApprovalStatus certificateApprovalStatusFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
+        for (CertificateApprovalStatus certUsage : CertificateApprovalStatusEnum.values()) {
             if (((listType == null && certUsage.getListType() == null) || (listType != null && listType.equals(certUsage.getListType())) &&
                     (sti == null && certUsage.getServiceTypeIdentifier() == null) || (sti != null && sti.equals(certUsage.getServiceTypeIdentifier())) &&
                     (status == null && certUsage.getServiceStatus() == null) || (status != null && status.equals(certUsage.getServiceStatus())))) {
                 return certUsage;
             }
         }
-        return CertificateUsageEnum.CERT_FOR_UNKNOWN;
+        return CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN;
     }
 
 }

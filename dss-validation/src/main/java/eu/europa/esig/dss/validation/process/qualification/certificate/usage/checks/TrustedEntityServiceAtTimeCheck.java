@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlMessage;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateApprovalStatus;
 import eu.europa.esig.dss.diagnostic.TrustServiceWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -16,7 +16,7 @@ import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 
 import java.util.List;
 
-public class TrustedEntityServiceAtTimeCheck extends ChainItem<XmlValidationCertificateUsage> {
+public class TrustedEntityServiceAtTimeCheck extends ChainItem<XmlValidationCertificateApprovalStatus> {
 
     /** List of {@code TrustedEntityServiceWrapper}s at control time */
     private final List<TrustedEntityServiceWrapper> trustedServicesAtTime;
@@ -28,12 +28,12 @@ public class TrustedEntityServiceAtTimeCheck extends ChainItem<XmlValidationCert
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
-     * @param result {@link XmlValidationCertificateUsage}
+     * @param result {@link XmlValidationCertificateApprovalStatus}
      * @param trustedServicesAtTime list of {@link TrustServiceWrapper}s
      * @param validationTime {@link ValidationTime}
      * @param constraint {@link LevelRule}
      */
-    public TrustedEntityServiceAtTimeCheck(I18nProvider i18nProvider, XmlValidationCertificateUsage result,
+    public TrustedEntityServiceAtTimeCheck(I18nProvider i18nProvider, XmlValidationCertificateApprovalStatus result,
             List<TrustedEntityServiceWrapper> trustedServicesAtTime, ValidationTime validationTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
         this.trustedServicesAtTime = trustedServicesAtTime;

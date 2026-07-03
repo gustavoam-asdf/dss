@@ -20,7 +20,7 @@
  */
 package eu.europa.esig.dss.enumerations.loader;
 
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.enumerations.LoTEServiceStatus;
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
@@ -92,8 +92,8 @@ public class LoTEEmptyLoader implements LoTELoader {
     }
 
     @Override
-    public CertificateUsage certificateUsageFromLabel(String label) {
-        return new CertificateUsage() {
+    public CertificateApprovalStatus certificateApprovalStatusFromLabel(String label) {
+        return new CertificateApprovalStatus() {
 
             @Override
             public ListType getListType() {
@@ -119,7 +119,7 @@ public class LoTEEmptyLoader implements LoTELoader {
     }
 
     @Override
-    public CertificateUsage certificateUsageFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
+    public CertificateApprovalStatus certificateApprovalStatusFromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
         // not supported
         return null;
     }

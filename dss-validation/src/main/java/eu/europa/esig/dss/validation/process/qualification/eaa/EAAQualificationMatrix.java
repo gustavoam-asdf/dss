@@ -1,7 +1,7 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa;
 
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SignatureQualification;
@@ -185,11 +185,11 @@ public final class EAAQualificationMatrix {
      * Gets PID qualification based on the given parameters
      *
      * @param indication {@link Indication} representing the final result of validation process for EAA presentation
-     * @param certificateUsage {@link CertificateUsage} determined certificate usage
+     * @param certificateApprovalStatus {@link CertificateApprovalStatus} determined certificate approval status
      * @return {@link EAAQualification}
      */
-    public static EAAQualification getPIDQualification(Indication indication, CertificateUsage certificateUsage) {
-        return PID_QUALIFS[getInt(indication)][getInt(certificateUsage)];
+    public static EAAQualification getPIDQualification(Indication indication, CertificateApprovalStatus certificateApprovalStatus) {
+        return PID_QUALIFS[getInt(indication)][getInt(certificateApprovalStatus)];
     }
 
     private static int getInt(Indication indication) {
@@ -239,10 +239,10 @@ public final class EAAQualificationMatrix {
         }
     }
 
-    private static int getInt(CertificateUsage certificateUsage) {
-        if (CertificateUsageEnum.PID_PROVIDER == certificateUsage) {
+    private static int getInt(CertificateApprovalStatus certificateApprovalStatus) {
+        if (CertificateApprovalStatusEnum.PID_PROVIDER == certificateApprovalStatus) {
             return CERT_USAGE_PID;
-        } else if (CertificateUsageEnum.NA == certificateUsage) {
+        } else if (CertificateApprovalStatusEnum.NA == certificateApprovalStatus) {
             return CERT_USAGE_NA;
         } else {
             return CERT_USAGE_OTHER;

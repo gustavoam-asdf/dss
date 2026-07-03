@@ -10442,21 +10442,21 @@
           </xs:extension>
         </xs:complexContent>
       </xs:complexType>
-      <xs:complexType name="CertificateUsageProcess">
+      <xs:complexType name="CertificateApprovalStatusProcess">
         <xs:complexContent>
           <xs:extension base="tns:ConstraintsConclusion">
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" minOccurs="0" name="ValidationCertificateUsage" type="tns:ValidationCertificateUsage"/>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="ValidationCertificateApprovalStatus" type="tns:ValidationCertificateApprovalStatus"/>
             </xs:sequence>
             <xs:attribute name="Id" type="xs:string"/>
           </xs:extension>
         </xs:complexContent>
       </xs:complexType>
-      <xs:complexType name="ValidationCertificateUsage">
+      <xs:complexType name="ValidationCertificateApprovalStatus">
         <xs:complexContent>
           <xs:extension base="tns:ConstraintsConclusion">
             <xs:sequence>
-              <xs:element name="CertificateUsage" type="tns:CertificateUsage"/>
+              <xs:element name="CertificateApprovalStatus" type="tns:CertificateApprovalStatus"/>
             </xs:sequence>
             <xs:attribute name="Id" type="xs:string" use="required"/>
             <xs:attribute name="DateTime" type="xs:dateTime"/>
@@ -10464,7 +10464,7 @@
           </xs:extension>
         </xs:complexContent>
       </xs:complexType>
-      <xs:complexType name="CertificateUsage">
+      <xs:complexType name="CertificateApprovalStatus">
         <xs:sequence>
           <xs:element minOccurs="0" name="ListType" type="xs:string"/>
           <xs:element minOccurs="0" name="ServiceTypeIdentifier" type="xs:string"/>
@@ -10572,7 +10572,7 @@
         <xs:complexContent>
           <xs:extension base="tns:ConstraintsConclusion">
             <xs:sequence>
-              <xs:element maxOccurs="unbounded" minOccurs="0" name="ValidationCertificateUsage" type="tns:ValidationCertificateUsage"/>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="ValidationCertificateApprovalStatus" type="tns:ValidationCertificateApprovalStatus"/>
             </xs:sequence>
             <xs:attribute name="EAAQualification" type="xs:string" use="required"/>
           </xs:extension>
@@ -10860,7 +10860,7 @@
       <xs:complexType name="Certificate">
         <xs:sequence>
           <xs:element name="CertificateQualificationProcess" type="tns:CertificateQualificationProcess"/>
-          <xs:element minOccurs="0" name="CertificateUsageProcess" type="tns:CertificateUsageProcess"/>
+          <xs:element minOccurs="0" name="CertificateApprovalStatusProcess" type="tns:CertificateApprovalStatusProcess"/>
           <xs:element minOccurs="0" name="QWACProcess" type="tns:QWACProcess"/>
         </xs:sequence>
         <xs:attribute name="Id" type="xs:string"/>

@@ -63,19 +63,19 @@
 						   printMethod="eu.europa.esig.dss.jaxb.parsers.SignatureScopeTypeParser.print" />
 		</jaxb:bindings>
 
-		<jaxb:bindings node="//xs:complexType[@name='CertificateUsage']//xs:element[@name='ListType']">
+		<jaxb:bindings node="//xs:complexType[@name='CertificateApprovalStatus']//xs:element[@name='ListType']">
 			<jaxb:javaType name="eu.europa.esig.dss.enumerations.ListType"
 						   parseMethod="eu.europa.esig.dss.jaxb.parsers.ListTypeParser.parse"
 						   printMethod="eu.europa.esig.dss.jaxb.parsers.ListTypeParser.print" />
 		</jaxb:bindings>
 
-		<jaxb:bindings node="//xs:complexType[@name='CertificateUsage']//xs:element[@name='ServiceTypeIdentifier']">
+		<jaxb:bindings node="//xs:complexType[@name='CertificateApprovalStatus']//xs:element[@name='ServiceTypeIdentifier']">
 			<jaxb:javaType name="eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier"
 						   parseMethod="eu.europa.esig.dss.jaxb.parsers.LoTEServiceTypeIdentifierParser.parse"
 						   printMethod="eu.europa.esig.dss.jaxb.parsers.LoTEServiceTypeIdentifierParser.print" />
 		</jaxb:bindings>
 
-		<jaxb:bindings node="//xs:complexType[@name='CertificateUsage']//xs:element[@name='ServiceStatus']">
+		<jaxb:bindings node="//xs:complexType[@name='CertificateApprovalStatus']//xs:element[@name='ServiceStatus']">
 			<jaxb:javaType name="eu.europa.esig.dss.enumerations.LoTEServiceStatus"
 						   parseMethod="eu.europa.esig.dss.jaxb.parsers.LoTEServiceStatusParser.parse"
 						   printMethod="eu.europa.esig.dss.jaxb.parsers.LoTEServiceStatusParser.print" />

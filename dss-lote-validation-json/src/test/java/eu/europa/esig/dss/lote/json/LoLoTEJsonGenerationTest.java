@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatusProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConstraint;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlStatus;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
@@ -139,19 +139,19 @@ class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
         String certId = pidCertificate.getDSSIdAsString();
         SimpleCertificateReport simpleReport = reports.getSimpleReport();
 
-        List<CertificateUsage> certificateUsageAtCertificateIssuance = simpleReport.getCertificateUsageAtCertificateIssuance();
-        assertEquals(1, certificateUsageAtCertificateIssuance.size());
-        assertEquals(CertificateUsageEnum.PID_PROVIDER, certificateUsageAtCertificateIssuance.get(0));
-        assertEquals(0, simpleReport.getCertificateUsageErrorsAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
-        assertEquals(0, simpleReport.getCertificateUsageWarningsAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
-        assertEquals(0, simpleReport.getCertificateUsageInfoAtIssuanceTime(certId, certificateUsageAtCertificateIssuance.get(0)).size());
+        List<CertificateApprovalStatus> certificateApprovalStatusAtCertificateIssuance = simpleReport.getCertificateApprovalStatusAtCertificateIssuance();
+        assertEquals(1, certificateApprovalStatusAtCertificateIssuance.size());
+        assertEquals(CertificateApprovalStatusEnum.PID_PROVIDER, certificateApprovalStatusAtCertificateIssuance.get(0));
+        assertEquals(0, simpleReport.getCertificateApprovalStatusErrorsAtIssuanceTime(certId, certificateApprovalStatusAtCertificateIssuance.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateApprovalStatusWarningsAtIssuanceTime(certId, certificateApprovalStatusAtCertificateIssuance.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateApprovalStatusInfoAtIssuanceTime(certId, certificateApprovalStatusAtCertificateIssuance.get(0)).size());
 
-        List<CertificateUsage> certificateUsageAtValidationTime = simpleReport.getCertificateUsageAtValidationTime();
-        assertEquals(1, certificateUsageAtValidationTime.size());
-        assertEquals(CertificateUsageEnum.PID_PROVIDER, certificateUsageAtValidationTime.get(0));
-        assertEquals(0, simpleReport.getCertificateUsageErrorsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
-        assertEquals(0, simpleReport.getCertificateUsageWarningsAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
-        assertEquals(0, simpleReport.getCertificateUsageInfoAtValidationTime(certId, certificateUsageAtValidationTime.get(0)).size());
+        List<CertificateApprovalStatus> certificateApprovalStatusAtValidationTime = simpleReport.getCertificateApprovalStatusAtValidationTime();
+        assertEquals(1, certificateApprovalStatusAtValidationTime.size());
+        assertEquals(CertificateApprovalStatusEnum.PID_PROVIDER, certificateApprovalStatusAtValidationTime.get(0));
+        assertEquals(0, simpleReport.getCertificateApprovalStatusErrorsAtValidationTime(certId, certificateApprovalStatusAtValidationTime.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateApprovalStatusWarningsAtValidationTime(certId, certificateApprovalStatusAtValidationTime.get(0)).size());
+        assertEquals(0, simpleReport.getCertificateApprovalStatusInfoAtValidationTime(certId, certificateApprovalStatusAtValidationTime.get(0)).size());
 
         DiagnosticData diagnosticData = reports.getDiagnosticData();
         List<XmlListOfTrustedEntities> listsOfTrustedEntities = diagnosticData.getListsOfTrustedEntities();
@@ -171,11 +171,11 @@ class LoLoTEJsonGenerationTest extends PKIFactoryAccess {
 
         DetailedReport detailedReport = reports.getDetailedReport();
         XmlCertificate xmlCertificate = detailedReport.getXmlCertificateById(pidCertificate.getDSSIdAsString());
-        XmlCertificateUsageProcess certificateUsageProcess = xmlCertificate.getCertificateUsageProcess();
+        XmlCertificateApprovalStatusProcess certificateApprovalStatusProcess = xmlCertificate.getCertificateApprovalStatusProcess();
 
         boolean loloteCheckFound = false;
         boolean loteCheckFound = false;
-        for (XmlConstraint constraint : certificateUsageProcess.getConstraint()) {
+        for (XmlConstraint constraint : certificateApprovalStatusProcess.getConstraint()) {
             if (MessageTag.CERT_USAGE_LOLOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {
                 loloteCheckFound = true;
             } else if (MessageTag.CERT_USAGE_LOTE_ACCEPT.getId().equals(constraint.getName().getKey())) {

@@ -32,20 +32,20 @@
         </aiaUrls>
         <qualificationAtIssuance>N/A</qualificationAtIssuance>
         <qualificationAtValidation>N/A</qualificationAtValidation>
-        <certificateUsageAtIssuanceTime>
-            <certificateUsage label="PID Provider">
+        <certificateApprovalStatusAtIssuanceTime>
+            <certificateApprovalStatus label="PID Provider">
                 <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                 <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
                 <Details/>
-            </certificateUsage>
-        </certificateUsageAtIssuanceTime>
-        <certificateUsageAtValidationTime>
-            <certificateUsage label="PID Provider">
+            </certificateApprovalStatus>
+        </certificateApprovalStatusAtIssuanceTime>
+        <certificateApprovalStatusAtValidationTime>
+            <certificateApprovalStatus label="PID Provider">
                 <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                 <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
                 <Details/>
-            </certificateUsage>
-        </certificateUsageAtValidationTime>
+            </certificateApprovalStatus>
+        </certificateApprovalStatusAtValidationTime>
         <revocation>
             <thisUpdate>2026-02-25T13:32:38Z</thisUpdate>
         </revocation>

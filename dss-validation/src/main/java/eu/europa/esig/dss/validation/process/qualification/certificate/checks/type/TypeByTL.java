@@ -30,12 +30,12 @@ import eu.europa.esig.dss.validation.process.qualification.EIDASUtils;
 import java.util.List;
 
 /**
- * Gets certificate usage type based on the information extracted from a TrustService
+ * Gets certificate approval status type based on the information extracted from a TrustService
  *
  */
 class TypeByTL implements TypeStrategy {
 
-	/** Trusted Service to get certificate usage type from */
+	/** Trusted Service to get certificate approval status type from */
 	private final TrustServiceWrapper trustService;
 
 	/** Certificate qualified status */

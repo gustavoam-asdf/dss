@@ -23,7 +23,7 @@ package eu.europa.esig.dss.validation.executor.certificate;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificate;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateQualificationProcess;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatusProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
@@ -33,7 +33,7 @@ import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.executor.AbstractDetailedReportBuilder;
 import eu.europa.esig.dss.validation.process.qualification.certificate.CertificateQualificationBlock;
-import eu.europa.esig.dss.validation.process.qualification.certificate.usage.CertificateUsageBlock;
+import eu.europa.esig.dss.validation.process.qualification.certificate.usage.CertificateApprovalStatusBlock;
 
 import java.util.Collections;
 import java.util.Date;
@@ -130,10 +130,10 @@ public class DetailedReportForCertificateBuilder extends AbstractDetailedReportB
 		XmlCertificateQualificationProcess xmlCertificateQualificationProcess = cqb.execute();
 		xmlCertificate.setCertificateQualificationProcess(xmlCertificateQualificationProcess);
 
-		if (validateCertificateUsage()) {
-			CertificateUsageBlock cub = getCertificateUsageBlock(detailedReport, basicBuildingBlocks);
-			XmlCertificateUsageProcess xmlCertificateUsageProcess = cub.execute();
-			xmlCertificate.setCertificateUsageProcess(xmlCertificateUsageProcess);
+		if (validateCertificateApprovalStatus()) {
+			CertificateApprovalStatusBlock cub = getCertificateApprovalStatusBlock(detailedReport, basicBuildingBlocks);
+			XmlCertificateApprovalStatusProcess xmlCertificateApprovalStatusProcess = cub.execute();
+			xmlCertificate.setCertificateApprovalStatusProcess(xmlCertificateApprovalStatusProcess);
 		}
 
 		detailedReport.getSignatureOrTimestampOrEvidenceRecord().add(xmlCertificate);
@@ -154,23 +154,23 @@ public class DetailedReportForCertificateBuilder extends AbstractDetailedReportB
 	}
 
 	/**
-	 * Gets the certificate usage block
+	 * Gets the certificate approval status block
 	 *
 	 * @param detailedReport {@link XmlDetailedReport}
 	 * @param basicBuildingBlocks {@link XmlBasicBuildingBlocks}
-	 * @return {@link CertificateUsageBlock}
+	 * @return {@link CertificateApprovalStatusBlock}
 	 */
-	protected CertificateUsageBlock getCertificateUsageBlock(XmlDetailedReport detailedReport, XmlBasicBuildingBlocks basicBuildingBlocks) {
-		return new CertificateUsageBlock(i18nProvider, basicBuildingBlocks.getConclusion(), currentTime,
+	protected CertificateApprovalStatusBlock getCertificateApprovalStatusBlock(XmlDetailedReport detailedReport, XmlBasicBuildingBlocks basicBuildingBlocks) {
+		return new CertificateApprovalStatusBlock(i18nProvider, basicBuildingBlocks.getConclusion(), currentTime,
 				getCertificate(), detailedReport.getLoTEAnalysis());
 	}
 
 	/**
-	 * Checks if the certificate usage is to be validated
+	 * Checks if the certificate approval status is to be validated
 	 *
-	 * @return TRUE if to validate the certificate usage, FALSE otherwise
+	 * @return TRUE if to validate the certificate approval status, FALSE otherwise
 	 */
-	protected boolean validateCertificateUsage() {
+	protected boolean validateCertificateApprovalStatus() {
 		return Utils.isCollectionNotEmpty(diagnosticData.getListsOfTrustedEntities());
 	}
 

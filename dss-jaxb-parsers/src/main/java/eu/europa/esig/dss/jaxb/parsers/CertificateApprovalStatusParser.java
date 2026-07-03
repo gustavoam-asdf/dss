@@ -20,26 +20,30 @@
  */
 package eu.europa.esig.dss.jaxb.parsers;
 
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
 
-public class CertificateUsageParser {
+/**
+ * Parses the {@code eu.europa.esig.dss.enumerations.CertificateApprovalStatus}
+ * 
+ */
+public class CertificateApprovalStatusParser {
 
     /**
      * Default constructor
      */
-    private CertificateUsageParser() {
+    private CertificateApprovalStatusParser() {
         // empty
     }
 
     /**
-     * Parses the value and returns {@code CertificateUsage}
+     * Parses the value and returns {@code CertificateApprovalStatus}
      *
      * @param v {@link String} to parse
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    public static CertificateUsage parse(String v) {
-        return CertificateUsage.fromLabel(v);
+    public static CertificateApprovalStatus parse(String v) {
+        return CertificateApprovalStatus.fromLabel(v);
     }
 
     /**
@@ -48,7 +52,7 @@ public class CertificateUsageParser {
      * @param v {@link LoTEServiceTypeIdentifier}
      * @return {@link String}
      */
-    public static String print(CertificateUsage v) {
+    public static String print(CertificateApprovalStatus v) {
         return v.getLabel();
     }
 

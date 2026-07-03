@@ -1,8 +1,8 @@
 package eu.europa.esig.dss.validation.process.qualification.eaa.pid.checks;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationPIDQualificationProcess;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.i18n.I18nProvider;
@@ -17,25 +17,25 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 public class PIDProviderCertificateAtIssuanceTimeCheck extends ChainItem<XmlValidationPIDQualificationProcess> {
 
     /** Certificate qualification at signing time */
-    private final CertificateUsage certificateUsageAtIssuanceTime;
+    private final CertificateApprovalStatus certificateApprovalStatusAtIssuanceTime;
 
     /**
      * Default constructor
      *
      * @param i18nProvider {@link I18nProvider}
      * @param result {@link XmlValidationPIDQualificationProcess}
-     * @param certificateUsageAtIssuanceTime {@link CertificateUsage}
+     * @param certificateApprovalStatusAtIssuanceTime {@link CertificateApprovalStatus}
      * @param constraint {@link LevelRule}
      */
     public PIDProviderCertificateAtIssuanceTimeCheck(I18nProvider i18nProvider, XmlValidationPIDQualificationProcess result,
-                                                     CertificateUsage certificateUsageAtIssuanceTime, LevelRule constraint) {
+                                                     CertificateApprovalStatus certificateApprovalStatusAtIssuanceTime, LevelRule constraint) {
         super(i18nProvider, result, constraint);
-        this.certificateUsageAtIssuanceTime = certificateUsageAtIssuanceTime;
+        this.certificateApprovalStatusAtIssuanceTime = certificateApprovalStatusAtIssuanceTime;
     }
 
     @Override
     protected boolean process() {
-        return CertificateUsageEnum.PID_PROVIDER == certificateUsageAtIssuanceTime;
+        return CertificateApprovalStatusEnum.PID_PROVIDER == certificateApprovalStatusAtIssuanceTime;
     }
 
     @Override

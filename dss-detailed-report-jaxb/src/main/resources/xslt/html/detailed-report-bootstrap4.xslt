@@ -267,7 +267,7 @@
 					<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
 					<xsl:attribute name="id">collapseCertificate<xsl:value-of select="$idToken"/></xsl:attribute>
 					<xsl:apply-templates select="dss:CertificateQualificationProcess" />
-					<xsl:apply-templates select="dss:CertificateUsageProcess" />
+					<xsl:apply-templates select="dss:CertificateApprovalStatusProcess" />
 					<xsl:apply-templates select="dss:QWACProcess" />
 				</div>
 			</xsl:if>
@@ -334,10 +334,10 @@
     </xsl:template>
 
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessLongTermData|dss:ValidationProcessArchivalData
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateUsageProcess|dss:ValidationProcessEAA">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateApprovalStatusProcess|dss:ValidationProcessEAA">
 		<div>
 			<xsl:choose>
-				<xsl:when test="name()='ValidationQWACProcess' or name()='CertificateUsageProcess'">
+				<xsl:when test="name()='ValidationQWACProcess' or name()='CertificateApprovalStatusProcess'">
 					<xsl:attribute name="class">card mt-3</xsl:attribute>
 				</xsl:when>
 				<xsl:otherwise>
@@ -674,7 +674,7 @@
    		</div>
     </xsl:template>
 
-	<xsl:template match="dss:ValidationCertificateUsage">
+	<xsl:template match="dss:ValidationCertificateApprovalStatus">
 		<div>
 			<xsl:attribute name="class">card mt-3</xsl:attribute>
 			<div>
@@ -685,11 +685,11 @@
 				<span>
 					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
 					<xsl:choose>
-						<xsl:when test="dss:CertificateUsage/@label">
-							<xsl:value-of select="dss:CertificateUsage/@label"/>
+						<xsl:when test="dss:CertificateApprovalStatus/@label">
+							<xsl:value-of select="dss:CertificateApprovalStatus/@label"/>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="dss:CertificateUsage/dss:ServiceTypeIdentifier"/>
+							<xsl:value-of select="dss:CertificateApprovalStatus/dss:ServiceTypeIdentifier"/>
 						</xsl:otherwise>
 					</xsl:choose>
 				</span>

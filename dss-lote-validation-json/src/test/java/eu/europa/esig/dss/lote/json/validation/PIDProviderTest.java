@@ -7,7 +7,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
 import eu.europa.esig.dss.enumerations.CertificateQualification;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
 import eu.europa.esig.dss.lote.source.LoTESource;
@@ -88,10 +88,10 @@ class PIDProviderTest {
         assertEquals(Indication.PASSED, simpleReport.getCertificateIndication(CERTIFICATE.getDSSIdAsString()));
         assertEquals(CertificateQualification.NA, simpleReport.getQualificationAtCertificateIssuance());
         assertEquals(CertificateQualification.NA, simpleReport.getQualificationAtValidationTime());
-        assertEquals(1, simpleReport.getCertificateUsageAtCertificateIssuance().size());
-        assertEquals(CertificateUsageEnum.PID_PROVIDER, simpleReport.getCertificateUsageAtCertificateIssuance().get(0));
-        assertEquals(1, simpleReport.getCertificateUsageAtValidationTime().size());
-        assertEquals(CertificateUsageEnum.PID_PROVIDER, simpleReport.getCertificateUsageAtValidationTime().get(0));
+        assertEquals(1, simpleReport.getCertificateApprovalStatusAtCertificateIssuance().size());
+        assertEquals(CertificateApprovalStatusEnum.PID_PROVIDER, simpleReport.getCertificateApprovalStatusAtCertificateIssuance().get(0));
+        assertEquals(1, simpleReport.getCertificateApprovalStatusAtValidationTime().size());
+        assertEquals(CertificateApprovalStatusEnum.PID_PROVIDER, simpleReport.getCertificateApprovalStatusAtValidationTime().get(0));
 
         DiagnosticData diagnosticData = reports.getDiagnosticData();
         assertNotNull(diagnosticData);
