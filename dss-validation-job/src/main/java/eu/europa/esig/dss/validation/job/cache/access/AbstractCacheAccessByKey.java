@@ -34,6 +34,9 @@ import eu.europa.esig.dss.validation.job.validation.ValidationResult;
 /**
  * Abstract implementation to access a cache record by a specified key
  *
+ * @param <D> {@link DownloadInfoRecord}
+ * @param <P> {@link ParsingInfoRecord}
+ * @param <V> {@link ValidationInfoRecord}
  */
 public abstract class AbstractCacheAccessByKey<D extends DownloadInfoRecord, P extends ParsingInfoRecord, V extends ValidationInfoRecord>
 		extends AbstractReadOnlyCacheAccessByKey<D, P, V> implements CacheAccessByKey {
@@ -54,6 +57,7 @@ public abstract class AbstractCacheAccessByKey<D extends DownloadInfoRecord, P e
 	 * @param downloadCache {@link DownloadCache}
 	 * @param parsingCache {@link ParsingCache}
 	 * @param validationCache {@link ValidationCache}
+	 * @param readOnlyCacheAccess {@link ParametrizedReadOnlyCacheAccess}
 	 */
 	protected AbstractCacheAccessByKey(final CacheKey key, final DownloadCache downloadCache, final ParsingCache parsingCache,
 	                                   final ValidationCache validationCache, final ParametrizedReadOnlyCacheAccess<D, P, V> readOnlyCacheAccess) {

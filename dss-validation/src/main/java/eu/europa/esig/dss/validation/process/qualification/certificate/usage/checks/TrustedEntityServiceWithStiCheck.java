@@ -15,6 +15,10 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.List;
 
+/**
+ * Verifies whether the trusted enbtity services with the given STI exist
+ *
+ */
 public class TrustedEntityServiceWithStiCheck extends ChainItem<XmlValidationCertificateApprovalStatus> {
 
     /** List of {@code TrustedEntityServiceWrapper}s at control time */

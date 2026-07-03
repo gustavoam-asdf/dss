@@ -2,6 +2,10 @@ package eu.europa.esig.dss.validation.process.qualification.trust.filter;
 
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 
+/**
+ * Filters trusted entity services by a status URI
+ *
+ */
 public class TrustedEntityServiceByStatusFilter extends AbstractTrustedEntityServiceFilter {
 
     /** Service Status Uri to filter by */

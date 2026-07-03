@@ -6,6 +6,10 @@ import eu.europa.esig.dss.validation.job.parsing.AbstractParsingResult;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Abstract class for a Trusted Lists parsing analysis result
+ *
+ */
 public abstract class AbstractTLParsingResult extends AbstractParsingResult {
 
     /** The LOTL/TL TSLType */

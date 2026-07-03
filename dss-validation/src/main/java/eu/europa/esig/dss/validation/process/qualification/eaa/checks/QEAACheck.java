@@ -12,6 +12,10 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.List;
 
+/**
+ * Checks whether the EAA is qualified
+ *
+ */
 public class QEAACheck extends ChainItem<XmlValidationEAAQualificationProcess> {
 
     /**

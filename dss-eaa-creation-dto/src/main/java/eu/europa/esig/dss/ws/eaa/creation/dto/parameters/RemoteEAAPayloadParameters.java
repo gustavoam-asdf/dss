@@ -113,6 +113,8 @@ public class RemoteEAAPayloadParameters implements Serializable {
 
     /**
      * Constructor with EAA type provided
+     *
+     * @param eaaType {@link EAAType}
      */
     public RemoteEAAPayloadParameters(EAAType eaaType) {
         this(eaaType, null);

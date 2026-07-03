@@ -50,8 +50,19 @@ public abstract class AbstractParsingCacheDTOBuilder extends AbstractCacheDTOBui
 		return parsingCacheDTO;
 	}
 
+	/**
+	 * Instantiates a new {@code AbstractParsingCacheDTO} from {@link AbstractCacheDTO}
+	 *
+	 * @param abstractCacheDTO {@link AbstractCacheDTO}
+	 * @return {@link AbstractParsingCacheDTO}
+	 */
 	protected abstract AbstractParsingCacheDTO init(AbstractCacheDTO abstractCacheDTO);
 
+	/**
+	 * Builds {@link AbstractParsingCacheDTO}
+	 *
+	 * @param parsingCacheDTO {@link AbstractParsingCacheDTO} to fill
+	 */
 	protected void build(AbstractParsingCacheDTO parsingCacheDTO) {
 		parsingCacheDTO.setStructureValidationMessages(getStructureValidationMessages());
 	}

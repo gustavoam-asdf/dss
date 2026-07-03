@@ -52,6 +52,7 @@ public class EAAValidationProcess extends AbstractBasicValidationProcess<XmlVali
      * @param i18nProvider the access to translations
      * @param eaa {@link EAAWrapper} to be validated
      * @param xmlSignatures a map of {@link XmlSignature} validations
+     * @param bbbs a map of {@link XmlBasicBuildingBlocks}s
      * @param validationPolicy {@link ValidationPolicy} to be used
      */
     public EAAValidationProcess(final I18nProvider i18nProvider, final EAAWrapper eaa,

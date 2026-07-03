@@ -31,6 +31,7 @@ public class EAARevocationNotExpiredCheck extends ChainItem<XmlSAV> {
      * @param i18nProvider {@link I18nProvider}
      * @param result {@link XmlSAV}
      * @param eaaStatusToken {@link EAARevocationWrapper}
+     * @param validationTime {@link Date}
      * @param constraint {@link LevelRule}
      */
     public EAARevocationNotExpiredCheck(I18nProvider i18nProvider, XmlSAV result, EAARevocationTokenWrapper eaaStatusToken,

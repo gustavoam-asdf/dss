@@ -85,6 +85,7 @@ public class CBORArray extends AbstractCBORObject<Array> {
      * Constructor to create a CBORArray from an array of objects
      *
      * @param array {@link List}
+     * @param <T> generic type
      */
     public <T> CBORArray(final T[] array) {
         this(toArray(array));

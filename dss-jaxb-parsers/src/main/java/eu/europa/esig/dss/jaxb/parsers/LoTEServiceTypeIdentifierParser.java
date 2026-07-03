@@ -22,6 +22,10 @@ package eu.europa.esig.dss.jaxb.parsers;
 
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
 
+/**
+ * Parses a {@code eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier}
+ *
+ */
 public class LoTEServiceTypeIdentifierParser {
 
     /**

@@ -9,6 +9,10 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
+/**
+ * Verifies whether the type identifier of the trusted entity service is known
+ *
+ */
 public class TrustedEntityServiceTypeIdentifierKnownCheck extends ChainItem<XmlValidationCertificateApprovalStatus> {
 
     /** Service Type Identifier URI */

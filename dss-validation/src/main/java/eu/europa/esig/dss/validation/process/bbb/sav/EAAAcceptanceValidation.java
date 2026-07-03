@@ -67,6 +67,7 @@ public class EAAAcceptanceValidation extends AbstractAcceptanceValidation<EAAWra
      * @param i18nProvider {@link I18nProvider}
      * @param currentTime {@link Date} validation time
      * @param eaaWrapper {@link EAAWrapper}
+     * @param bbbs a map of {@link XmlBasicBuildingBlocks}s
      * @param aov {@link XmlAOV}
      * @param validationPolicy {@link ValidationPolicy}
      */

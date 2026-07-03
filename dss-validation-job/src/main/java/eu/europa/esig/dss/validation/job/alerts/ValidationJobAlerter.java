@@ -33,6 +33,8 @@ import java.util.List;
 /**
  * The class to process alerts on ValidationJob
  *
+ * @param <D> current {@link DocumentInfo}
+ * @param <L> parent {@link DocumentListInfo}
  */
 public class ValidationJobAlerter<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> {
 

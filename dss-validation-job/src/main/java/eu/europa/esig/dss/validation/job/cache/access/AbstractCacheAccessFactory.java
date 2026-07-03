@@ -30,6 +30,10 @@ import eu.europa.esig.dss.validation.job.cache.ValidationCache;
 
 /**
  * Builds the classes to deal with the cache
+ *
+ * @param <D> {@link DownloadInfoRecord}
+ * @param <P> {@link ParsingInfoRecord}
+ * @param <V> {@link ValidationInfoRecord}
  */
 public abstract class AbstractCacheAccessFactory<D extends DownloadInfoRecord, P extends ParsingInfoRecord, V extends ValidationInfoRecord> implements CacheAccessFactory {
 

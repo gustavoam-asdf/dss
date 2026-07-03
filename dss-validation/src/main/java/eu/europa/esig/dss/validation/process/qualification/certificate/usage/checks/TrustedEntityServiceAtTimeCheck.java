@@ -16,6 +16,10 @@ import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 
 import java.util.List;
 
+/**
+ * Verifies whether the filtered trusted entity services exist at the given time
+ *
+ */
 public class TrustedEntityServiceAtTimeCheck extends ChainItem<XmlValidationCertificateApprovalStatus> {
 
     /** List of {@code TrustedEntityServiceWrapper}s at control time */

@@ -25,6 +25,9 @@ import eu.europa.esig.dss.model.job.DocumentListInfo;
 
 /**
  * Accepts all trusted lists
+ *
+ * @param <D> current {@link DocumentInfo}
+ * @param <L> parent {@link DocumentListInfo}
  */
 public class AcceptAllStrategy<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> implements SynchronizationStrategy<D, L> {
 

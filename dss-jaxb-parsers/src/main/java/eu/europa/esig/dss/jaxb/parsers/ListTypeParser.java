@@ -22,6 +22,10 @@ package eu.europa.esig.dss.jaxb.parsers;
 
 import eu.europa.esig.dss.enumerations.ListType;
 
+/**
+ * Parses a List type
+ *
+ */
 public class ListTypeParser {
 
     /**

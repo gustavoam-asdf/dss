@@ -4,6 +4,10 @@ import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 
 import java.util.Date;
 
+/**
+ * Filters trusted entity services by date
+ *
+ */
 public class TrustedEntityServiceByDateFilter extends AbstractTrustedEntityServiceFilter {
 
     /** Time to filter by */

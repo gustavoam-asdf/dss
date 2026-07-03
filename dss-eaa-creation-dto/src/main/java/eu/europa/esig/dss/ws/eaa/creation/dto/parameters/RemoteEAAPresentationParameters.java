@@ -51,6 +51,8 @@ public class RemoteEAAPresentationParameters implements Serializable {
 
     /**
      * Constructor with EAA type provided
+     *
+     * @param eaaType {@link EAAType}
      */
     public RemoteEAAPresentationParameters(EAAType eaaType) {
         this.eaaType = eaaType;

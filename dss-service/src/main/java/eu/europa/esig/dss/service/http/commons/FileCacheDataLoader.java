@@ -303,7 +303,7 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 			LOG.debug("Returning data from url [{}] using fallback data loader...", url);
 			return new InMemoryDocument(fallbackDataLoader.get(url));
 		}
-		throw new DSSExternalResourceException(String.format("Cannot retrieve data from URL [%s]", url));
+		throw new DSSExternalResourceException(String.format("Cannot retrieve data from url [%s]", url));
 	}
 
 	/**
@@ -456,7 +456,7 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 			LOG.debug("Returning data from url [{}] using fallback data loader...", urlString);
 			return fallbackDataLoader.get(urlString);
 		}
-		throw new DSSExternalResourceException(String.format("Cannot retrieve data from URL [%s]", urlString));
+		throw new DSSExternalResourceException(String.format("Cannot retrieve data from url [%s]", urlString));
 	}
 
 	private boolean isCacheExpired(File file) {
@@ -486,7 +486,7 @@ public class FileCacheDataLoader implements DataLoader, DSSCacheFileLoader {
 			try {
 				final byte[] bytes = get(urlString);
 				if (Utils.isArrayEmpty(bytes)) {
-					LOG.debug("The retrieved content from URL [{}] is empty. Continue with other URLs...", urlString);
+					LOG.debug("The retrieved content from url [{}] is empty. Continue with other URLs...", urlString);
 					continue;
 				}
 				return new DataAndUrl(urlString, bytes);

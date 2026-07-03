@@ -3,6 +3,10 @@ package eu.europa.esig.dss.tsl.definition.mra;
 import eu.europa.esig.dss.xml.common.definition.DSSElement;
 import eu.europa.esig.dss.xml.common.definition.DSSNamespace;
 
+/**
+ * Contains a list of MRA elements
+ *
+ */
 public enum MRAElement implements DSSElement {
 
     /** CertificateContentDeclarationPointedParty */

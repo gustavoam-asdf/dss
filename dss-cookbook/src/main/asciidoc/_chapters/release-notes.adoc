@@ -38,13 +38,13 @@
 
 Bug fixes:
 
-                                            * Add missing i18n messages for validation indication semantics;
-                                            * CAdES validation : fix extraction of timestamped references from ats-hash-index tables which are not -v3;
-                                            * PAdES : Fix final image position computation when using the ImageScaling.CENTER with an image+text combination;
-                                            * TL signature may be validated successfully against CA certificate;
-                                            * TrustAnchorBPPolicy does not include signing-certificate when trusted;
-                                            * Make `CertificateToken.checkIsSignedBy` thread safe;
-                                            * Fixed eSignature validation tests for empty or corrupted documents.
+* Add missing i18n messages for validation indication semantics;
+* CAdES validation : fix extraction of timestamped references from ats-hash-index tables which are not -v3;
+* PAdES : Fix final image position computation when using the ImageScaling.CENTER with an image+text combination;
+* TL signature may be validated successfully against CA certificate;
+* TrustAnchorBPPolicy does not include signing-certificate when trusted;
+* Make `CertificateToken.checkIsSignedBy` thread safe;
+* Fixed eSignature validation tests for empty or corrupted documents.
 
 |v6.4              |March 2026             a|Main new features / improvements :
 

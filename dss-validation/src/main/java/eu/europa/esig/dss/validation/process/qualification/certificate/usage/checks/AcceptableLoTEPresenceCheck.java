@@ -12,6 +12,11 @@ import eu.europa.esig.dss.validation.process.ChainItem;
 
 import java.util.Set;
 
+/**
+ * Checks if an acceptable LoTE has been found
+ *
+ * @param <T> {@link XmlConstraintsConclusion}
+ */
 public class AcceptableLoTEPresenceCheck<T extends XmlConstraintsConclusion> extends ChainItem<T> {
 
     /** Set of acceptable Lists of Trusted Entities */

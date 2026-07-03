@@ -68,6 +68,11 @@ public abstract class AbstractCOSEParser {
      */
     protected static class DSSArrayDecoder extends ArrayDecoder {
 
+        /**
+         * Default constructor
+         *
+         * @param inputStream {@link InputStream}
+         */
         public DSSArrayDecoder(InputStream inputStream) {
             super(null, inputStream);
         }

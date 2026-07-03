@@ -54,6 +54,7 @@ public abstract class AbstractJsonLoTEParsingTask implements ParsingTask {
     /**
      * Gets the LoTE payload map representing the signed content of the JSON LoTE
      *
+     * @param payloadString {@link String}
      * @return {@link Map}
      */
     protected Map<?, ?> getJsonLoTEPayload(String payloadString) {
@@ -153,6 +154,7 @@ public abstract class AbstractJsonLoTEParsingTask implements ParsingTask {
      * Verifies the structure conformity of the List of Trusted Entities
      *
      * @param result {@link LoTEParsingResult}
+     * @param payload {@link String}
      */
     protected void verifyStructure(AbstractLoTEParsingResult result, String payload) {
         JsonObjectWrapper jsonObject = new JSONParser().parse(payload);

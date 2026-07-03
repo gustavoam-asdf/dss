@@ -73,26 +73,56 @@ public class RemoteEAAIdentifierList implements Serializable {
         this.certificate = certificate;
     }
 
+    /**
+     * Returns the EAA identifier
+     *
+     * @return the EAA identifier
+     */
     public byte[] getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Sets the EAA identifier
+     *
+     * @param identifier the EAA identifier to set
+     */
     public void setIdentifier(byte[] identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Returns the URI
+     *
+     * @return the URI
+     */
     public String getUri() {
         return uri;
     }
 
+    /**
+     * Sets the URI
+     *
+     * @param uri the URI to set
+     */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
+    /**
+     * Returns the certificate
+     *
+     * @return the certificate
+     */
     public RemoteCertificate getCertificate() {
         return certificate;
     }
 
+    /**
+     * Sets the certificate
+     *
+     * @param certificate the certificate to set
+     */
     public void setCertificate(RemoteCertificate certificate) {
         this.certificate = certificate;
     }

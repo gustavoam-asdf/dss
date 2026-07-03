@@ -97,6 +97,7 @@ public class LoTECertificateSourceSynchronizer {
 	 * @param certificateSource {@link TrustPropertiesCertificateSource}
 	 * @param synchronizationStrategy {@link SynchronizationStrategy}
 	 * @param syncCacheAccess {@link SynchronizerCacheAccess}
+	 * @param readOnlyCacheAccess {@link LoTEReadOnlyCacheAccess}
 	 */
 	public LoTECertificateSourceSynchronizer(LoTESource[] loteSources, LoLoTESource[] loloteSources, TrustedEntitiesCertificateSource certificateSource,
 											 SynchronizationStrategy<LoTEInfo, LoLoTEInfo> synchronizationStrategy,

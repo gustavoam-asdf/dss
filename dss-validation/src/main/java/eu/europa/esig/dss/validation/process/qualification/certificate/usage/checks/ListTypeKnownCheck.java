@@ -9,6 +9,10 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.validation.process.ChainItem;
 
+/**
+ * Verifies whether the list type is known
+ *
+ */
 public class ListTypeKnownCheck extends ChainItem<XmlCertificateApprovalStatusProcess> {
 
     /** List Type URI */
