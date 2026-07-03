@@ -167,11 +167,11 @@ public class CertificateApprovalStatusAtTimeBlock extends Chain<XmlValidationCer
         LoTEServiceStatus status = LoTEServiceStatus.fromUri(serviceStatusUri);
         certificateApprovalStatus.setServiceStatus(status);
 
-        CertificateApprovalStatus certUsage = CertificateApprovalStatus.fromDefinition(listType, sti, status);
-        if (certUsage == null) {
-            certUsage = CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN;
+        CertificateApprovalStatus certApprovalStatus = CertificateApprovalStatus.fromDefinition(listType, sti, status);
+        if (certApprovalStatus == null) {
+            certApprovalStatus = CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN;
         }
-        certificateApprovalStatus.setLabel(certUsage.getLabel());
+        certificateApprovalStatus.setLabel(certApprovalStatus.getLabel());
         result.setCertificateApprovalStatus(certificateApprovalStatus);
 
         result.setValidationTime(validationTime);

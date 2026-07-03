@@ -170,20 +170,20 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
 
                     if (Utils.isCollectionNotEmpty(relatedServices)) {
 
-                        CertificateApprovalStatusAtTimeBlock certUsageAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(signingCertificate, relatedServices);
-                        XmlValidationCertificateApprovalStatus certUsageAtIssuanceResult = certUsageAtIssuanceBlock.execute();
-                        result.getValidationCertificateApprovalStatus().add(certUsageAtIssuanceResult);
+                        CertificateApprovalStatusAtTimeBlock certApprovalStatusAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(signingCertificate, relatedServices);
+                        XmlValidationCertificateApprovalStatus certApprovalStatusAtIssuanceResult = certApprovalStatusAtIssuanceBlock.execute();
+                        result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtIssuanceResult);
 
-                        CertificateApprovalStatusAtTimeBlock certUsageAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(signingCertificate, relatedServices);
-                        XmlValidationCertificateApprovalStatus certUsageAtValidationTimeResult = certUsageAtValidationTimeBlock.execute();
-                        result.getValidationCertificateApprovalStatus().add(certUsageAtValidationTimeResult);
+                        CertificateApprovalStatusAtTimeBlock certApprovalStatusAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(signingCertificate, relatedServices);
+                        XmlValidationCertificateApprovalStatus certApprovalStatusAtValidationTimeResult = certApprovalStatusAtValidationTimeBlock.execute();
+                        result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtValidationTimeResult);
 
                         if (pidDocumentTypeAcceptableCheck.process()) {
 
-                            certificateApprovalStatusAtIssuanceTime = getCertificateApprovalStatus(certUsageAtIssuanceResult);
+                            certificateApprovalStatusAtIssuanceTime = getCertificateApprovalStatus(certApprovalStatusAtIssuanceResult);
                             item = item.setNextItem(pidProviderAtIssuanceTime(certificateApprovalStatusAtIssuanceTime));
 
-                            certificateApprovalStatusAtValidationTime = getCertificateApprovalStatus(certUsageAtValidationTimeResult);
+                            certificateApprovalStatusAtValidationTime = getCertificateApprovalStatus(certApprovalStatusAtValidationTimeResult);
                             item = item.setNextItem(pidProviderAtValidationTime(certificateApprovalStatusAtValidationTime));
 
                         }

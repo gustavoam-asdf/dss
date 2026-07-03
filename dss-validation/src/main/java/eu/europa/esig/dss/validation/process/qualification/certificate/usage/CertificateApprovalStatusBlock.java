@@ -146,11 +146,11 @@ public class CertificateApprovalStatusBlock extends Chain<XmlCertificateApproval
                 List<String> applicableStiUris = getApplicableStiUris(relatedServices);
 
                 for (String stiUri : applicableStiUris) {
-                    CertificateApprovalStatusAtTimeBlock certUsageAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(listTypeUri, stiUri, relatedServices);
-                    result.getValidationCertificateApprovalStatus().add(certUsageAtIssuanceBlock.execute());
+                    CertificateApprovalStatusAtTimeBlock certApprovalStatusAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(listTypeUri, stiUri, relatedServices);
+                    result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtIssuanceBlock.execute());
 
-                    CertificateApprovalStatusAtTimeBlock certUsageAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(listTypeUri, stiUri, relatedServices);
-                    result.getValidationCertificateApprovalStatus().add(certUsageAtValidationTimeBlock.execute());
+                    CertificateApprovalStatusAtTimeBlock certApprovalStatusAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(listTypeUri, stiUri, relatedServices);
+                    result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtValidationTimeBlock.execute());
                 }
 
             }

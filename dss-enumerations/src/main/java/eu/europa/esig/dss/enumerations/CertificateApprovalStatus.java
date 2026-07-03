@@ -69,9 +69,9 @@ public interface CertificateApprovalStatus {
         Objects.requireNonNull(label, "URI cannot be null!");
 
         for (LoTELoader loader : loaders()) {
-            CertificateApprovalStatus certUsage = loader.certificateApprovalStatusFromLabel(label);
-            if (certUsage != null) {
-                return certUsage;
+            CertificateApprovalStatus certApprovalStatus = loader.certificateApprovalStatusFromLabel(label);
+            if (certApprovalStatus != null) {
+                return certApprovalStatus;
             }
         }
         return null;
@@ -87,9 +87,9 @@ public interface CertificateApprovalStatus {
      */
     static CertificateApprovalStatus fromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
         for (LoTELoader loader : loaders()) {
-            CertificateApprovalStatus certUsage = loader.certificateApprovalStatusFromDefinition(listType, sti, status);
-            if (certUsage != null) {
-                return certUsage;
+            CertificateApprovalStatus certApprovalStatus = loader.certificateApprovalStatusFromDefinition(listType, sti, status);
+            if (certApprovalStatus != null) {
+                return certApprovalStatus;
             }
         }
         return null;
