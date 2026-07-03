@@ -42,15 +42,15 @@ import eu.europa.esig.dss.pdf.PAdESConstants;
 import eu.europa.esig.dss.pdf.PDFServiceMode;
 import eu.europa.esig.dss.pdf.PdfAnnotation;
 import eu.europa.esig.dss.pdf.PdfDocumentReader;
-import eu.europa.esig.dss.pdf.encryption.DSSSecureRandomProvider;
-import eu.europa.esig.dss.pdf.encryption.SecureRandomProvider;
 import eu.europa.esig.dss.pdf.pdfbox.visible.PdfBoxSignatureDrawer;
 import eu.europa.esig.dss.pdf.pdfbox.visible.PdfBoxSignatureDrawerFactory;
 import eu.europa.esig.dss.pdf.pdfbox.visible.nativedrawer.NativePdfBoxVisibleSignatureDrawer;
 import eu.europa.esig.dss.pdf.visible.ImageUtils;
-import eu.europa.esig.dss.spi.signature.resources.DSSResourcesHandler;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.random.DSSSecureRandomProvider;
+import eu.europa.esig.dss.spi.random.SecureRandomProvider;
 import eu.europa.esig.dss.spi.signature.AdvancedSignature;
+import eu.europa.esig.dss.spi.signature.resources.DSSResourcesHandler;
 import eu.europa.esig.dss.spi.validation.ValidationData;
 import eu.europa.esig.dss.spi.x509.revocation.crl.CRLToken;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPToken;
@@ -82,6 +82,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,6 +91,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -462,12 +464,45 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 												   PAdESCommonParameters parameters) {
 		try {
 			if (pdDocument.isEncrypted()) {
-				SecureRandom secureRandom = getSecureRandomProvider(parameters).getSecureRandom();
+				byte[] seed = buildSeed(parameters);
+				SecureRandom secureRandom = getSecureRandomProvider().getSecureRandom(seed);
 				pdDocument.getEncryption().getSecurityHandler().setCustomSecureRandom(secureRandom);
 			}
 			saveDocumentIncrementally(pdDocument, outputStream);
 		} catch (IOException e) {
 			throw new DSSException(String.format("Unable to save a document. Reason : %s", e.getMessage()), e);
+		}
+	}
+
+	private byte[] buildSeed(PAdESCommonParameters parameters) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			if (parameters != null) {
+				baos.write(parameters.getContentSize());
+				DigestAlgorithm parametersDigestAlgorithm = parameters.getDigestAlgorithm();
+				if (parametersDigestAlgorithm != null) {
+					baos.write(parametersDigestAlgorithm.getName().getBytes());
+				}
+				String filter = parameters.getFilter();
+				if (filter != null) {
+					baos.write(filter.getBytes());
+				}
+				SignatureImageParameters parametersImageParameters = parameters.getImageParameters();
+				if (parametersImageParameters != null) {
+					baos.write(parametersImageParameters.toString().getBytes());
+				}
+				Date signingDate = parameters.getSigningDate();
+				if (signingDate != null) {
+					baos.write((int)signingDate.getTime());
+				}
+				String subFilter = parameters.getSubFilter();
+				if (subFilter != null) {
+					baos.write(subFilter.getBytes());
+				}
+			}
+			return baos.toByteArray();
+
+		} catch (IOException e) {
+			throw new DSSException(String.format("Unable to build a seed value. Reason : %s", e.getMessage()), e);
 		}
 	}
 
@@ -484,10 +519,15 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 			throw new DSSException(String.format("Unable to save a document. Reason : %s", e.getMessage()), e);
 		}
 	}
-	
-	private SecureRandomProvider getSecureRandomProvider(PAdESCommonParameters parameters) {
+
+	/**
+	 * Gets a class to generate an instance of {@code SecureRandom} for signing/augmentation of protected PDF files
+	 *
+	 * @return {@link SecureRandomProvider}
+	 */
+	protected SecureRandomProvider getSecureRandomProvider() {
 		if (secureRandomProvider == null) {
-			secureRandomProvider = new DSSSecureRandomProvider(parameters);
+			secureRandomProvider = new DSSSecureRandomProvider();
 		}
 		return secureRandomProvider;
 	}

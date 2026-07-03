@@ -37,12 +37,13 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.Token;
 import eu.europa.esig.dss.simplereport.SimpleReport;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.validation.CertificateVerifier;
+import eu.europa.esig.dss.spi.validation.RevocationDataVerifier;
+import eu.europa.esig.dss.spi.validation.status.RevocationFreshnessStatus;
 import eu.europa.esig.dss.test.PKIFactoryAccess;
 import eu.europa.esig.dss.utils.Utils;
-import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import eu.europa.esig.dss.validation.reports.Reports;
-import eu.europa.esig.dss.spi.validation.status.RevocationFreshnessStatus;
 import eu.europa.esig.dss.xades.XAdESSignatureParameters;
 import eu.europa.esig.dss.xades.signature.XAdESService;
 import org.junit.jupiter.api.AfterEach;
@@ -151,6 +152,20 @@ class XAdESExtensionRevocationFreshnessTest extends PKIFactoryAccess {
 		assertTrue(exception.getMessage().contains("Fresh revocation data is missing for one or more certificate(s)."));
 		assertTrue(exception.getMessage().contains(getSigningCert().getDSSIdAsString()));
 		assertTrue(exception.getMessage().contains("No revocation data found after the best signature time"));
+
+		RevocationDataVerifier revocationDataVerifier = RevocationDataVerifier.createDefaultRevocationDataVerifier();
+		certificateVerifier.setRevocationDataVerifier(revocationDataVerifier);
+
+		exception = assertThrows(AlertException.class, () ->
+				service.extendDocument(signedDocument, signatureParameters));
+		assertTrue(exception.getMessage().contains("Fresh revocation data is missing for one or more certificate(s)."));
+		assertTrue(exception.getMessage().contains(getSigningCert().getDSSIdAsString()));
+		assertTrue(exception.getMessage().contains("No revocation data found after the best signature time"));
+
+		revocationDataVerifier.setSignatureMaximumRevocationFreshness(7889400L * 1000); // 3 months
+		DSSDocument extendedDocument = service.extendDocument(signedDocument, signatureParameters);
+
+		validate(extendedDocument);
 	}
 
 	@Test

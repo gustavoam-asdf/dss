@@ -150,12 +150,6 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
         return validationPolicy.getSigningCertificateDigestAlgorithmConstraint(context);
     }
 
-    @Deprecated
-    @Override
-    public LevelRule getSigningDurationRule(Context context) {
-        return getSigningTimeConstraint(context);
-    }
-
     @Override
     public LevelRule getSigningTimeConstraint(Context context) {
         return validationPolicy.getSigningTimeConstraint(context);
@@ -164,6 +158,11 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getSigningTimeInCertRangeConstraint(Context context) {
         return validationPolicy.getSigningTimeInCertRangeConstraint(context);
+    }
+
+    @Override
+    public MultiValuesRule getSignatureTypeConstraint(Context context) {
+        return validationPolicy.getSignatureTypeConstraint(context);
     }
 
     @Override
@@ -244,6 +243,15 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
         CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EVIDENCE_RECORD, null);
         if (cryptographicSuite == null) {
             cryptographicSuite = validationPolicy.getEvidenceRecordCryptographicConstraint();
+        }
+        return cryptographicSuite;
+    }
+
+    @Override
+    public CryptographicSuite getEAACryptographicConstraint() {
+        CryptographicSuite cryptographicSuite = getCryptographicSuite(Context.EAA, null);
+        if (cryptographicSuite == null) {
+            cryptographicSuite = validationPolicy.getEAACryptographicConstraint();
         }
         return cryptographicSuite;
     }
@@ -561,6 +569,21 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBCountryOfLegislationConstraint(context, subContext);
+    }
+
+    @Override
+    public MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBAuthSourceIdentificationConstraint(context, subContext);
+    }
+
+    @Override
+    public MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext) {
+        return validationPolicy.getCertificateQcPSBLegislationIdentificationConstraint(context, subContext);
+    }
+
+    @Override
     public LevelRule getSigningCertificateRecognitionConstraint(Context context) {
         return validationPolicy.getSigningCertificateRecognitionConstraint(context);
     }
@@ -598,6 +621,16 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getKeyIdentifierMatch(Context context) {
         return validationPolicy.getKeyIdentifierMatch(context);
+    }
+
+    @Override
+    public LevelRule getX509UrlPresent(Context context) {
+        return validationPolicy.getX509UrlPresent(context);
+    }
+
+    @Override
+    public LevelRule getX509UrlMatch(Context context) {
+        return validationPolicy.getX509UrlMatch(context);
     }
 
     @Override
@@ -758,12 +791,6 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getTimestampContainerSignedAndTimestampedFilesCoveredConstraint() {
         return validationPolicy.getTimestampContainerSignedAndTimestampedFilesCoveredConstraint();
-    }
-
-    @Deprecated
-    @Override
-    public LevelRule getRevocationTimeAgainstBestSignatureDurationRule() {
-        return getRevocationTimeAgainstBestSignatureTimeConstraint();
     }
 
     @Override
@@ -1007,6 +1034,221 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     }
 
     @Override
+    public LevelRule getEAASignatureUnicityConstraint() {
+        return validationPolicy.getEAASignatureUnicityConstraint();
+    }
+
+    @Override
+    public LevelRule getEAASignatureValidConstraint() {
+        return validationPolicy.getEAASignatureValidConstraint();
+    }
+
+    @Override
+    public LevelRule getEAADisclosurePresentConstraint() {
+        return validationPolicy.getEAADisclosurePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAADisclosureFoundConstraint() {
+        return validationPolicy.getEAADisclosureFoundConstraint();
+    }
+
+    @Override
+    public LevelRule getEAADisclosureIntactConstraint() {
+        return validationPolicy.getEAADisclosureIntactConstraint();
+    }
+
+    @Override
+    public LevelRule getEAADisclosureListExhaustiveConstraint() {
+        return validationPolicy.getEAADisclosureListExhaustiveConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAKeyBindingSignaturePresentConstraint() {
+        return validationPolicy.getEAAKeyBindingSignaturePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAKeyBindingSignatureValidConstraint() {
+        return validationPolicy.getEAAKeyBindingSignatureValidConstraint();
+    }
+
+    @Override
+    public LevelRule getEAATypeIntegrityPresentConstraint() {
+        return validationPolicy.getEAATypeIntegrityPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAIdentifierPresentConstraint() {
+        return validationPolicy.getEAAIdentifierPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAIssuanceDatePresentConstraint() {
+        return validationPolicy.getEAAIssuanceDatePresentConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAACategoryConstraint() {
+        return validationPolicy.getEAACategoryConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAASubjectConstraint() {
+        return validationPolicy.getEAASubjectConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAASubjectPseudonymConstraint() {
+        return validationPolicy.getEAASubjectPseudonymConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingCountryConstraint() {
+        return validationPolicy.getEAAIssuingCountryConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingAuthorityConstraint() {
+        return validationPolicy.getEAAIssuingAuthorityConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint() {
+        return validationPolicy.getEAAIssuingAuthorityRegistrationIdentifierConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationPresentConstraint() {
+        return validationPolicy.getEAARevocationPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAShortLivedConstraint() {
+        return validationPolicy.getEAAShortLivedConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAOneTimeUseConstraint() {
+        return validationPolicy.getEAAOneTimeUseConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAUsePseudonymConstraint() {
+        return validationPolicy.getEAAUsePseudonymConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAAClaimsConstraint() {
+        return validationPolicy.getEAAClaimsConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAASupportedClaimsConstraint() {
+        return validationPolicy.getEAASupportedClaimsConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationAvailableConstraint() {
+        return validationPolicy.getEAARevocationAvailableConstraint();
+    }
+
+    @Override
+    public LevelRule getAcceptableEAARevocationFoundConstraint() {
+        return validationPolicy.getAcceptableEAARevocationFoundConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationNotRevokedConstraint() {
+        return validationPolicy.getEAARevocationNotRevokedConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationNotOnHoldConstraint() {
+        return validationPolicy.getEAARevocationNotOnHoldConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAATypeConstraint() {
+        return validationPolicy.getEAATypeConstraint();
+    }
+
+    @Override
+    public LevelRule getEAANotBeforePresentConstraint() {
+        return validationPolicy.getEAANotBeforePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAExpirationPresentConstraint() {
+        return validationPolicy.getEAAExpirationPresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAANotExpiredConstraint() {
+        return validationPolicy.getEAANotExpiredConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
+        return validationPolicy.getEAAAdministrativeIssuanceDatePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAAdministrativeExpirationDatePresentConstraint() {
+        return validationPolicy.getEAAAdministrativeExpirationDatePresentConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAAdministrativePeriodNotExpiredConstraint() {
+        return validationPolicy.getEAAAdministrativePeriodNotExpiredConstraint();
+    }
+
+    @Override
+    public LevelRule getEAAETSI194721ConformanceConstraint() {
+        return validationPolicy.getEAAETSI194721ConformanceConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAARevocationTokenTypeConstraint() {
+        return validationPolicy.getEAARevocationTokenTypeConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationUnknownStatusConstraint() {
+        return validationPolicy.getEAARevocationUnknownStatusConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationIssuanceTimeConstraint() {
+        return validationPolicy.getEAARevocationIssuanceTimeConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationExpirationTimeConstraint() {
+        return validationPolicy.getEAARevocationExpirationTimeConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationNotExpiredConstraint() {
+        return validationPolicy.getEAARevocationNotExpiredConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getEAARevocationSubjectConstraint() {
+        return validationPolicy.getEAARevocationSubjectConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationSubjectMatchConstraint() {
+        return validationPolicy.getEAARevocationSubjectMatchConstraint();
+    }
+
+    @Override
+    public LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint() {
+        return validationPolicy.getEAARevocationIssuerValidAtIssuanceTimeConstraint();
+    }
+
+    @Override
     public boolean isEIDASConstraintPresent() {
         return validationPolicy.isEIDASConstraintPresent();
     }
@@ -1034,6 +1276,31 @@ public class ValidationPolicyWithCryptographicSuite implements ValidationPolicy 
     @Override
     public LevelRule getTLStructureConstraint() {
         return validationPolicy.getTLStructureConstraint();
+    }
+
+    @Override
+    public DurationRule getLoTEFreshnessConstraint() {
+        return validationPolicy.getLoTEFreshnessConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTEWellSignedConstraint() {
+        return validationPolicy.getLoTEWellSignedConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTENotExpiredConstraint() {
+        return validationPolicy.getLoTENotExpiredConstraint();
+    }
+
+    @Override
+    public MultiValuesRule getLoTEVersionConstraint() {
+        return validationPolicy.getLoTEVersionConstraint();
+    }
+
+    @Override
+    public LevelRule getLoTEStructureConstraint() {
+        return validationPolicy.getLoTEStructureConstraint();
     }
 
     @Override

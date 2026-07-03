@@ -23,8 +23,10 @@ package eu.europa.esig.dss.tsl.runnable;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.tsl.OtherTSLPointer;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
-import eu.europa.esig.dss.tsl.cache.access.CacheAccessByKey;
+import eu.europa.esig.dss.tsl.cache.access.TLCacheAccessByKey;
+import eu.europa.esig.dss.tsl.dto.TLParsingCacheDTO;
 import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
+import eu.europa.esig.dss.validation.job.cache.access.AbstractCacheAccessByKey;
 
 /**
  * This class creates an instance of {@code eu.europa.esig.dss.tsl.runnable.PivotProcessingResult}
@@ -34,14 +36,14 @@ import eu.europa.esig.dss.tsl.parsing.ParsingUtils;
 public class PivotProcessingResultFromCacheAccessBuilder {
 
     /** Cache access to the given pivot */
-    private final CacheAccessByKey cacheAccessByKey;
+    private final TLCacheAccessByKey cacheAccessByKey;
 
     /**
      * Default constructor
      *
-     * @param cacheAccessByKey {@link CacheAccessByKey}
+     * @param cacheAccessByKey {@link AbstractCacheAccessByKey}
      */
-    public PivotProcessingResultFromCacheAccessBuilder(final CacheAccessByKey cacheAccessByKey) {
+    public PivotProcessingResultFromCacheAccessBuilder(final TLCacheAccessByKey cacheAccessByKey) {
         this.cacheAccessByKey = cacheAccessByKey;
     }
 
@@ -51,12 +53,13 @@ public class PivotProcessingResultFromCacheAccessBuilder {
      * @return {@link PivotProcessingResult}
      */
     public PivotProcessingResult build() {
-        OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(cacheAccessByKey.getParsingReadOnlyResult());
+        TLParsingCacheDTO parsingCacheEntry = cacheAccessByKey.getParsingReadOnlyResult();
+        OtherTSLPointer xmlLotlPointer = ParsingUtils.getXMLLOTLPointer(parsingCacheEntry);
         return new PivotProcessingResult(getDocument(), getCertificateSource(xmlLotlPointer), getLotlLocation(xmlLotlPointer));
     }
 
     private DSSDocument getDocument() {
-        if (cacheAccessByKey.getDownloadReadOnlyResult() != null) {
+        if (cacheAccessByKey.getDownloadReadOnlyResult() != null && cacheAccessByKey.getDownloadReadOnlyResult().isResultExist()) {
             return cacheAccessByKey.getDownloadReadOnlyResult().getDocument();
         }
         return null;

@@ -20,10 +20,14 @@
  */
 package eu.europa.esig.dss.ws.signature.common;
 
+import eu.europa.esig.dss.cbades.validation.COSEDocumentValidator;
+import eu.europa.esig.dss.diagnostic.CertificateRefWrapper;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignatureScope;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlSignerRole;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
+import eu.europa.esig.dss.enumerations.COSEStructureType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.Indication;
@@ -91,6 +95,7 @@ class RemoteDocumentSignatureServiceTest extends AbstractRemoteSignatureServiceT
 		signatureService.setCadesService(getCAdESService());
 		signatureService.setPadesService(getPAdESService());
 		signatureService.setJadesService(getJAdESService());
+		signatureService.setCbadesService(getCBAdESService());
 	}
 
 	@Test
@@ -774,6 +779,124 @@ class RemoteDocumentSignatureServiceTest extends AbstractRemoteSignatureServiceT
 
 		InMemoryDocument iMD = new InMemoryDocument(extendedDocument.getBytes());
 		validate(iMD, Collections.singletonList(fileToSign));
+	}
+
+	@Test
+	void testSignCBAdES() throws Exception {
+		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+		parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+		parameters.setSigningCertificate(RemoteCertificateConverter.toRemoteCertificate(getSigningCert()));
+		parameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+		parameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+
+		RemoteBLevelParameters bLevelParameters = new RemoteBLevelParameters();
+		bLevelParameters.setClaimedSignerRoles(Arrays.asList("Manager", "Administrator"));
+		parameters.setBLevelParams(bLevelParameters);
+
+		DSSDocument fileToSign = new InMemoryDocument("HelloWorld".getBytes());
+		RemoteDocument toSignDocument = new RemoteDocument(Utils.toByteArray(fileToSign.openStream()), fileToSign.getName());
+		ToBeSignedDTO dataToSign = signatureService.getDataToSign(toSignDocument, parameters);
+		assertNotNull(dataToSign);
+
+		SignatureValue signatureValue = getToken().sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, getPrivateKeyEntry());
+		RemoteDocument signedDocument = signatureService.signDocument(toSignDocument, parameters,
+				new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+
+		assertNotNull(signedDocument);
+		InMemoryDocument iMD = new InMemoryDocument(signedDocument.getBytes());
+		DiagnosticData diagnosticData = validate(iMD, null);
+
+		SignatureWrapper signatureWrapper = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
+		assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+		assertTrue(signatureWrapper.isBLevelTechnicallyValid());
+
+		List<XmlSignerRole> claimedRoles = signatureWrapper.getClaimedRoles();
+		assertEquals(2, Utils.collectionSize(claimedRoles));
+		assertEquals(bLevelParameters.getClaimedSignerRoles(), claimedRoles.stream().map(XmlSignerRole::getRole).collect(Collectors.toList()));
+	}
+
+	@Test
+	void testSignDetachedCBAdES() throws Exception {
+		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+		parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+		parameters.setSigningCertificate(RemoteCertificateConverter.toRemoteCertificate(getSigningCert()));
+		parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+		parameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH);
+		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+		parameters.setCoseStructureType(COSEStructureType.COSE_SIGN);
+		parameters.setTagged(false);
+
+		RemoteDocument externallySuppliedData = new RemoteDocument(new byte[]{0, 1, 2, 3}, "externalDoc");
+		parameters.setExternallySuppliedData(externallySuppliedData);
+
+		DSSDocument fileToSign = new InMemoryDocument("HelloWorld".getBytes(), "helloWorld");
+		RemoteDocument toSignDocument = new RemoteDocument(Utils.toByteArray(fileToSign.openStream()), fileToSign.getName());
+		ToBeSignedDTO dataToSign = signatureService.getDataToSign(toSignDocument, parameters);
+		assertNotNull(dataToSign);
+
+		SignatureValue signatureValue = getToken().sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, getPrivateKeyEntry());
+		RemoteDocument signedDocument = signatureService.signDocument(toSignDocument, parameters,
+				new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+
+		assertNotNull(signedDocument);
+		InMemoryDocument iMD = new InMemoryDocument(signedDocument.getBytes());
+
+		COSEDocumentValidator validator = new COSEDocumentValidator(iMD);
+		validator.setCertificateVerifier(getCompleteCertificateVerifier());
+		validator.setDetachedContents(Collections.singletonList(fileToSign));
+		validator.setExternallySuppliedData(RemoteDocumentConverter.toDSSDocument(externallySuppliedData));
+
+		Reports reports = validator.validateDocument();
+		SimpleReport simpleReport = reports.getSimpleReport();
+		assertEquals(Indication.TOTAL_PASSED, simpleReport.getIndication(simpleReport.getFirstSignatureId()));
+
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
+		assertEquals(COSESignatureType.COSE_SIGN, signature.getCOSESignatureType());
+		assertFalse(signature.isCOSETagged());
+	}
+
+	@Test
+	void testSignCBAdESWithParams() throws Exception {
+		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+		parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+		parameters.setSigningCertificate(RemoteCertificateConverter.toRemoteCertificate(getSigningCert()));
+		parameters.setSignaturePackaging(SignaturePackaging.ENVELOPING);
+		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+		parameters.setCoseStructureType(COSEStructureType.COSE_SIGN1);
+
+		parameters.setKeyIdentifier("KID");
+		parameters.setX509Url("https://dss.nowina.lu/pki-factory/good-pki/good-user");
+		parameters.setSignatureType("application/sig-type");
+
+		DSSDocument fileToSign = new InMemoryDocument("HelloWorld".getBytes());
+		RemoteDocument toSignDocument = new RemoteDocument(Utils.toByteArray(fileToSign.openStream()), fileToSign.getName());
+		ToBeSignedDTO dataToSign = signatureService.getDataToSign(toSignDocument, parameters);
+		assertNotNull(dataToSign);
+
+		SignatureValue signatureValue = getToken().sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, getPrivateKeyEntry());
+		RemoteDocument signedDocument = signatureService.signDocument(toSignDocument, parameters,
+				new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+
+		assertNotNull(signedDocument);
+		InMemoryDocument iMD = new InMemoryDocument(signedDocument.getBytes());
+
+		DiagnosticData diagnosticData = validate(iMD, null);
+
+		SignatureWrapper signatureWrapper = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
+		assertEquals(SignatureLevel.CB_AdES_BASELINE_B, signatureWrapper.getSignatureFormat());
+		assertTrue(signatureWrapper.isBLevelTechnicallyValid());
+
+		CertificateRefWrapper keyIdentifierReference = signatureWrapper.getKeyIdentifierReference();
+		assertNotNull(keyIdentifierReference);
+		assertEquals("KID", new String(Utils.fromBase64(keyIdentifierReference.getKid())));
+
+		List<CertificateRefWrapper> x509UrlReferences = signatureWrapper.getX509UrlReferences();
+		assertEquals(1, x509UrlReferences.size());
+		assertEquals("https://dss.nowina.lu/pki-factory/good-pki/good-user", x509UrlReferences.get(0).getX509Url());
+
+		assertEquals("application/sig-type", signatureWrapper.getSignatureType());
 	}
 
 }

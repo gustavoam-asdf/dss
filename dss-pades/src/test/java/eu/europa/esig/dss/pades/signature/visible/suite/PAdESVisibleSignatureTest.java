@@ -105,6 +105,7 @@ class PAdESVisibleSignatureTest extends PKIFactoryAccess {
 	void testGeneratedImageOnlyPNG() throws IOException {
 		SignatureImageParameters imageParameters = new SignatureImageParameters();
 		imageParameters.setImage(getPngPicture());
+		imageParameters.setLegacyDPIHandling(true);
 
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
 		fieldParameters.setOriginX(100);
@@ -144,7 +145,7 @@ class PAdESVisibleSignatureTest extends PKIFactoryAccess {
 		imageParameters.setImage(getPngPicture());
 
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
-		fieldParameters.setOriginX(100);
+		fieldParameters.setOriginX(50);
 		fieldParameters.setOriginY(100);
 		imageParameters.setFieldParameters(fieldParameters);
 

@@ -77,7 +77,7 @@ public class CAdESLevelBaselineLTA extends CAdESLevelBaselineLT {
 
 		final List<SignerInformation> newSignerInformationList = new ArrayList<>();
 
-		CMSDocumentAnalyzer documentAnalyzer = getDocumentValidator(cms, parameters);
+		CMSDocumentAnalyzer documentAnalyzer = getDocumentAnalyzer(cms, parameters);
 		List<AdvancedSignature> signatures = documentAnalyzer.getSignatures();
 
 		final List<AdvancedSignature> signaturesToExtend = getExtendToLTLevelSignatures(signatures, signatureIdsToExtend);

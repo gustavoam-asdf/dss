@@ -20,15 +20,12 @@
  */
 package eu.europa.esig.dss.cades;
 
-import eu.europa.esig.dss.cms.operator.CustomMessageDigestCalculatorProvider;
-import eu.europa.esig.dss.cms.operator.PrecomputedDigestCalculatorProvider;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EvidenceRecordIncorporationType;
 import eu.europa.esig.dss.enumerations.TimestampType;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
-import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.signature.resources.InMemoryResourcesHandlerBuilder;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
@@ -63,8 +60,6 @@ import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.operator.DigestCalculatorProvider;
-import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.slf4j.Logger;
@@ -76,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 
@@ -346,25 +340,6 @@ public final class CAdESUtils {
 		} else {
 			throw new DSSException("Detached content is not provided or cannot be identified (only one document shall be provided)!");
 		}
-	}
-
-	/**
-	 * Returns a {@code DigestCalculatorProvider}
-	 *
-	 * @param toSignDocument {@link DSSDocument} to sign
-	 * @param digestAlgorithm {@link DigestAlgorithm} to use
-	 * @return {@link DigestCalculatorProvider}
-	 * @deprecated since DSS 6.4. To be removed
-	 */
-	@Deprecated
-	public static DigestCalculatorProvider getDigestCalculatorProvider(DSSDocument toSignDocument,
-																	   DigestAlgorithm digestAlgorithm) {
-		if (digestAlgorithm != null) {
-			return new CustomMessageDigestCalculatorProvider(digestAlgorithm, toSignDocument.getDigestValue(digestAlgorithm));
-		} else if (toSignDocument instanceof DigestDocument) {
-			return new PrecomputedDigestCalculatorProvider(toSignDocument);
-		}
-		return new BcDigestCalculatorProvider();
 	}
 
 	/**
@@ -704,50 +679,6 @@ public final class CAdESUtils {
             }
         }
 		return null;
-	}
-
-	/**
-	 * Checks if the {@code attributeTable} is empty
-	 *
-	 * @param attributeTable {@link AttributeTable}
-	 * @return TRUE if the attribute table is empty, FALSE otherwise
-	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#isEmpty} method instead.
-	 */
-	@Deprecated
-	public static boolean isEmpty(AttributeTable attributeTable) {
-		return (attributeTable == null) || (attributeTable.size() == 0);
-	}
-
-	/**
-	 * Returns the current {@code originalAttributeTable} if instantiated, an empty {@code AttributeTable} if null
-	 *
-	 * @param originalAttributeTable {@link AttributeTable}
-	 * @return {@link AttributeTable}
-	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#emptyIfNull} method instead.
-	 */
-	@Deprecated
-	public static AttributeTable emptyIfNull(AttributeTable originalAttributeTable) {
-		if (originalAttributeTable != null) {
-			return originalAttributeTable;
-		}
-		return new AttributeTable(new Hashtable<ASN1ObjectIdentifier, Attribute>());
-	}
-
-	/**
-	 * Checks if the given attribute is an instance of the expected asn1ObjectIdentifier type
-	 *
-	 * @param attribute {@link Attribute} to check
-	 * @param asn1ObjectIdentifier {@link ASN1ObjectIdentifier} type to check against
-	 * @return TRUE if the attribute is of type asn1ObjectIdentifier, FALSE otherwise
-	 * @deprecated since DSS 6.4. Please use {@code eu.europa.esig.dss.spi.DSSASN1Utils#isAttributeOfType} method instead.
-	 */
-	@Deprecated
-	public static boolean isAttributeOfType(Attribute attribute, ASN1ObjectIdentifier asn1ObjectIdentifier) {
-		if (attribute == null) {
-			return false;
-		}
-		ASN1ObjectIdentifier objectIdentifier = attribute.getAttrType();
-		return asn1ObjectIdentifier.equals(objectIdentifier);
 	}
 
 	/**

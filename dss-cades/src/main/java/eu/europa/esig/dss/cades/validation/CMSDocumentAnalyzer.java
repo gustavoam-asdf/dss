@@ -21,7 +21,6 @@
 package eu.europa.esig.dss.cades.validation;
 
 import eu.europa.esig.dss.cades.validation.scope.CAdESEvidenceRecordScopeFinder;
-import eu.europa.esig.dss.cades.validation.scope.CAdESSignatureScopeFinder;
 import eu.europa.esig.dss.cms.CMS;
 import eu.europa.esig.dss.cms.CMSUtils;
 import eu.europa.esig.dss.enumerations.TimestampedObjectType;
@@ -60,7 +59,7 @@ public class CMSDocumentAnalyzer extends DefaultDocumentAnalyzer {
 	protected CMS cms;
 
 	/**
-	 * The empty constructor, instantiate {@link CAdESSignatureScopeFinder}
+	 * The empty constructor
 	 */
 	CMSDocumentAnalyzer() {
 		// empty

@@ -388,7 +388,7 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 			ValidationPolicyLoader validationPolicyLoader;
 			if (policyDocument == null) {
 				LOG.debug("No provided validation policy : use the default policy");
-				validationPolicyLoader = ValidationPolicyLoader.fromDefaultValidationPolicy();
+				validationPolicyLoader = fromDefaultValidationPolicyLoader();
 			} else {
 				validationPolicyLoader = ValidationPolicyLoader.fromValidationPolicy(policyDocument);
 			}
@@ -401,6 +401,15 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 		} catch (Exception e) {
 			throw new IllegalInputException("Unable to load the policy", e);
 		}
+	}
+
+	/**
+	 * Gets a default validation policy loader for a signature validation
+	 *
+	 * @return {@link ValidationPolicyLoader}
+	 */
+	protected ValidationPolicyLoader fromDefaultValidationPolicyLoader() {
+		return ValidationPolicyLoader.fromDefaultValidationPolicy();
 	}
 
 	@Override
@@ -450,7 +459,7 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 	public final XmlDiagnosticData getDiagnosticData() {
 		ValidationContext validationContext = documentAnalyzer.validate();
 		SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder = initializeDiagnosticDataBuilder();
-		return new XmlDiagnosticDataFactory(diagnosticDataBuilder)
+		return initDiagnosticDataFactory(diagnosticDataBuilder)
 				.setDocument(documentAnalyzer.getDocument())
 				.setValidationTime(documentAnalyzer.getValidationTime())
 				.setTokenIdentifierProvider(documentAnalyzer.getTokenIdentifierProvider())
@@ -458,6 +467,16 @@ public abstract class SignedDocumentValidator implements DocumentValidator {
 				.setDefaultDigestAlgorithm(defaultDigestAlgorithm)
 				.setTokenExtractionStrategy(tokenExtractionStrategy)
 				.create();
+	}
+
+	/**
+	 * Creates a new instance of a factory used to create a Diagnostic Data
+	 *
+	 * @param diagnosticDataBuilder {@link SignedDocumentDiagnosticDataBuilder}
+	 * @return {@link XmlDiagnosticDataFactory}
+	 */
+	protected XmlDiagnosticDataFactory initDiagnosticDataFactory(SignedDocumentDiagnosticDataBuilder diagnosticDataBuilder) {
+		return new XmlDiagnosticDataFactory(diagnosticDataBuilder);
 	}
 
 	/**

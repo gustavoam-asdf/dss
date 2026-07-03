@@ -23,9 +23,11 @@ package eu.europa.esig.dss.service.http.commons;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DSSException;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.client.http.DataLoader;
 import eu.europa.esig.dss.spi.client.http.DataLoader.DataAndUrl;
 import eu.europa.esig.dss.spi.client.http.IgnoreDataLoader;
 import eu.europa.esig.dss.spi.client.http.MemoryDataLoader;
+import eu.europa.esig.dss.spi.exception.DSSExternalResourceException;
 import eu.europa.esig.dss.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,10 +43,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -179,6 +184,61 @@ class FileCacheDataLoaderTest {
 		assertNotNull(dataAndUrl.getData());
 	}
 
+	@Test
+	void testCacheConditions() {
+		dataLoader.setCachePredicate(it -> false);
+		assertThrows(DSSExternalResourceException.class, () -> dataLoader.get(URL_TO_LOAD));
+		assertNull(getCachedFile(cacheDirectory));
+	}
+
+	@Test
+	void testCacheConditionsMultiplePredicatesFalse() {
+		Predicate<byte[]> predicate = new Predicate<byte[]>() {
+			@Override
+			public boolean test(byte[] bytes) {
+				return true;
+			}
+		}.and(new Predicate<byte[]>() {
+			@Override
+			public boolean test(byte[] bytes) {
+				return false;
+			}
+		});
+		dataLoader.setCachePredicate(predicate);
+		assertThrows(DSSExternalResourceException.class, () -> dataLoader.get(URL_TO_LOAD));
+		assertNull(getCachedFile(cacheDirectory));
+	}
+
+	@Test
+	void testCacheConditionsMultiplePredicatesTrue() {
+		Predicate<byte[]> predicate = new Predicate<byte[]>() {
+			@Override
+			public boolean test(byte[] bytes) {
+				return true;
+			}
+		}.or(new Predicate<byte[]>() {
+			@Override
+			public boolean test(byte[] bytes) {
+				return false;
+			}
+		});
+		dataLoader.setCachePredicate(predicate);
+		assertNotNull(dataLoader.get(URL_TO_LOAD));
+		assertNotNull(getCachedFile(cacheDirectory));
+	}
+
+	@Test
+	void testFallbackDataLoader() {
+		Map<String, byte[]> dataMap = new HashMap<>();
+		dataMap.put(URL_TO_LOAD, URL_TO_LOAD.getBytes());
+		DataLoader fallbackDataLoader = new MemoryDataLoader(dataMap);
+		dataLoader.setCachePredicate(it -> false);
+		dataLoader.setFallbackDataLoader(fallbackDataLoader);
+
+		assertArrayEquals(URL_TO_LOAD.getBytes(), dataLoader.get(URL_TO_LOAD));
+		assertNull(getCachedFile(cacheDirectory));
+	}
+
 	private long getUrlAndReturnCacheCreationTime() {
 		byte[] bytesArray = dataLoader.get(URL_TO_LOAD);
 		assertTrue(bytesArray.length > 0);
@@ -208,4 +268,5 @@ class FileCacheDataLoaderTest {
 		nextSecond.add(Calendar.SECOND, 1);
 		await().atMost(2, TimeUnit.SECONDS).until(() -> Calendar.getInstance().getTime().compareTo(nextSecond.getTime()) > 0);
 	}
+
 }

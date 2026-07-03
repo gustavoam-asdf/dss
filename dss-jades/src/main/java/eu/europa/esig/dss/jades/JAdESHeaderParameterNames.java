@@ -20,6 +20,8 @@
  */
 package eu.europa.esig.dss.jades;
 
+import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
+
 /**
  * Defines a list of JAdES header names as in ETSI TS 119 182-1
  */
@@ -483,7 +485,10 @@ public final class JAdESHeaderParameterNames {
 	 * Implementers MAY provide for some small leeway, usually no more than
 	 * a few minutes, to account for clock skew. Its value MUST be a number
 	 * containing a NumericDate value. Use of this claim is OPTIONAL.
+	 *
+	 * @deprecated since DSS 6.5. Please use {@link JWTClaimNames#EXP} instead
 	 */
+	@Deprecated
 	public static final String EXP = "exp";
 
 	/**
@@ -492,7 +497,10 @@ public final class JAdESHeaderParameterNames {
 	 * issued. This claim can be used to determine the age of the JWT. Its
 	 * value MUST be a number containing a NumericDate value. Use of this
 	 * claim is OPTIONAL.
+	 *
+	 * @deprecated since DSS 6.5. Please use {@link JWTClaimNames#IAT} instead
 	 */
+	@Deprecated
 	public static final String IAT = "iat";
 
 }

@@ -300,6 +300,11 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertNull(policy.getCertificatePS2DQcTypeRolesOfPSPConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificatePS2DQcCompetentAuthorityNameConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
         assertNull(policy.getCertificatePS2DQcCompetentAuthorityIdConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
+        assertNull(policy.getCertificateQcQSCDLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
+        assertNull(policy.getCertificateQcIdentificationMethodConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
+        assertNull(policy.getCertificateQcPSBCountryOfLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
+        assertNull(policy.getCertificateQcPSBAuthSourceIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
+        assertNull(policy.getCertificateQcPSBLegislationIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT));
 
         certificateConstraints.setCA(level);
         certificateConstraints.setIssuerName(level);
@@ -368,6 +373,11 @@ class ValidationPolicyWithCryptographicSuiteTest {
         certificateConstraints.setPSD2QcTypeRolesOfPSP(multi);
         certificateConstraints.setPSD2QcCompetentAuthorityName(multi);
         certificateConstraints.setPSD2QcCompetentAuthorityId(multi);
+        certificateConstraints.setQcQSCDLegislation(multi);
+        certificateConstraints.setQcIdentificationMethod(multi);
+        certificateConstraints.setQcPSBCountryOfLegislation(multi);
+        certificateConstraints.setQcPSBAuthSourceIdentification(multi);
+        certificateConstraints.setQcPSBLegislationIdentification(multi);
 
         assertEquals(Arrays.asList("1", "2"), policy.getCertificatePolicyIdsConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
         assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcEuPDSLocationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
@@ -377,6 +387,11 @@ class ValidationPolicyWithCryptographicSuiteTest {
         assertEquals(Arrays.asList("1", "2"), policy.getCertificatePS2DQcTypeRolesOfPSPConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
         assertEquals(Arrays.asList("1", "2"), policy.getCertificatePS2DQcCompetentAuthorityNameConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
         assertEquals(Arrays.asList("1", "2"), policy.getCertificatePS2DQcCompetentAuthorityIdConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
+        assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcQSCDLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
+        assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcIdentificationMethodConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
+        assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcPSBCountryOfLegislationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
+        assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcPSBAuthSourceIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
+        assertEquals(Arrays.asList("1", "2"), policy.getCertificateQcPSBLegislationIdentificationConstraint(Context.CERTIFICATE, SubContext.SIGNING_CERT).getValues());
 
 
         // Set up and test ValueConstraint

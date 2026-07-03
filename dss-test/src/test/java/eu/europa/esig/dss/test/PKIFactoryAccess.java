@@ -175,6 +175,7 @@ public abstract class PKIFactoryAccess {
     protected static final String OCSP_SKIP_CA = "ocsp-skip-valid-ca";
     protected static final String OCSP_EXPIRED_RESPONDER_USER = "ocsp-skip-expired-ocsp-user";
     protected static final String OCSP_NOT_YET_VALID_CA_USER = "ocsp-skip-not-yet-valid-ca-user";
+    protected static final String GOOD_CA = "good-ca";
     protected static final String ROOT_CA = "root-ca";
 
     private static final String DEFAULT_TSA_DATE_FORMAT = "yyyy-MM-dd-HH-mm";
@@ -372,7 +373,11 @@ public abstract class PKIFactoryAccess {
     }
 
     protected CertEntity getCertEntity() {
-        return getXMLCertificateLoader().loadCertificateEntityFromXml(getSigningAlias());
+        return getCertEntity(getSigningAlias());
+    }
+
+    protected CertEntity getCertEntity(String alias) {
+        return getXMLCertificateLoader().loadCertificateEntityFromXml(alias);
     }
 
     protected AbstractSignatureTokenConnection getToken() {
@@ -408,9 +413,9 @@ public abstract class PKIFactoryAccess {
         return getTrustedCertificateSourceByPKIName("good-pki");
     }
 
-    private CertificateSource getTrustedCertificateSourceByPKIName(String pkiName) {
+    protected CertificateSource getTrustedCertificateSourceByPKIName(String pkiName) {
         CommonTrustedCertificateSource trustedCertificateSource = new CommonTrustedCertificateSource();
-        List<JAXBCertEntity> certEntities = certEntityRepository.getByPkiName(pkiName);
+        List<JAXBCertEntity> certEntities = getCertEntityRepository().getByPkiName(pkiName);
         if (Utils.isCollectionNotEmpty(certEntities)) {
             certEntities.stream().filter(JAXBCertEntity::isTrustAnchor).map(JAXBCertEntity::getCertificateToken).forEach(trustedCertificateSource::addCertificate);
         }

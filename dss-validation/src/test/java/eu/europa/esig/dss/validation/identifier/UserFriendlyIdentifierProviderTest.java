@@ -55,11 +55,11 @@ class UserFriendlyIdentifierProviderTest {
     void certificateRefTest() {
         CertificateRef certificateRef = new CertificateRef();
         Exception exception = assertThrows(DSSException.class, () -> new UserFriendlyIdentifierProvider().getIdAsString(certificateRef));
-        assertEquals("One of [certDigest, publicKeyDigest, issuerInfo, x509Uri] must be defined for a CertificateRef!", exception.getMessage());
+        assertEquals("One of [certDigest, publicKeyDigest, issuerInfo, kid, x509Uri, publicKey] must be defined for a CertificateRef!", exception.getMessage());
 
         certificateRef.setResponderId(new ResponderId(null, null));
         exception = assertThrows(DSSException.class, () -> new UserFriendlyIdentifierProvider().getIdAsString(certificateRef));
-        assertEquals("One of [certDigest, publicKeyDigest, issuerInfo, x509Uri] must be defined for a CertificateRef!", exception.getMessage());
+        assertEquals("One of [certDigest, publicKeyDigest, issuerInfo, kid, x509Uri, publicKey] must be defined for a CertificateRef!", exception.getMessage());
 
         certificateRef.setResponderId(new ResponderId(new X500Principal("CN=CommonName"), null));
         assertEquals("CERTIFICATE_CommonName", new UserFriendlyIdentifierProvider().getIdAsString(certificateRef));

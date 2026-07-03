@@ -43,6 +43,7 @@ public class DigestDTO implements Serializable {
 	 * The empty constructor
 	 */
 	public DigestDTO() {
+		// empty
 	}
 
 	/**

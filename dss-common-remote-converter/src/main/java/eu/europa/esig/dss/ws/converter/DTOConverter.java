@@ -32,7 +32,11 @@ import eu.europa.esig.dss.ws.dto.ToBeSignedDTO;
  */
 public class DTOConverter {
 
+	/**
+	 * Default constructor
+	 */
 	private DTOConverter() {
+		// empty
 	}
 
 	/**

@@ -40,21 +40,21 @@ import eu.europa.esig.dss.spi.validation.executor.SkipValidationContextExecutor;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.CommonTrustedCertificateSource;
 import eu.europa.esig.dss.spi.x509.TrustedCertificateSource;
+import eu.europa.esig.dss.validation.job.validation.ValidationResult;
+import eu.europa.esig.dss.validation.job.validation.ValidationTask;
 import eu.europa.esig.dss.validation.policy.ValidationPolicyLoader;
 import eu.europa.esig.dss.validation.reports.Reports;
-import eu.europa.esig.dss.xades.definition.XAdESPath;
 import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
 import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
 
+import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * This class allows to validate TL or LOTL.
  */
-public class TLValidatorTask implements Supplier<ValidationResult> {
+public class TLValidatorTask implements ValidationTask {
 
 	/** The path for a LOTL/TL validation policy */
 	private static final String TRUSTED_LIST_VALIDATION_POLICY_LOCATION = "/policy/tsl-constraint.xml";
@@ -89,7 +89,8 @@ public class TLValidatorTask implements Supplier<ValidationResult> {
 		final CertificateVerifier certificateVerifier = new CommonCertificateVerifier(true);
 		certificateVerifier.setTrustedCertSources(buildTrustedCertificateSource(certificateSource));
 
-		final XMLDocumentValidator xmlDocumentValidator = new XMLDocumentValidator(trustedList);
+		// To increase the security: the default {@code XAdESPaths} is used.
+		final XMLDocumentValidator xmlDocumentValidator = new XMLDocumentValidator(trustedList, Collections.singletonList(new XAdES132Path()));
 
 		xmlDocumentValidator.setCertificateVerifier(certificateVerifier);
 		xmlDocumentValidator.setTokenExtractionStrategy(TokenExtractionStrategy.EXTRACT_CERTIFICATES_ONLY);
@@ -98,15 +99,10 @@ public class TLValidatorTask implements Supplier<ValidationResult> {
 		xmlDocumentValidator.setValidationContextExecutor(SkipValidationContextExecutor.INSTANCE); // Only need to validate against the trusted certificate source
 		xmlDocumentValidator.setSignaturePolicyProvider(new SignaturePolicyProvider()); // ignore signature policy loading
 
-		// To increase the security: the default {@code XAdESPaths} is used.
-		List<XAdESPath> xadesPathsHolders = xmlDocumentValidator.getXAdESPathsHolder();
-		xadesPathsHolders.clear();
-		xadesPathsHolders.add(new XAdES132Path());
-
 		return xmlDocumentValidator.validateDocument(getTrustedListValidationPolicy());
 	}
 
-	private ValidationResult fillResult(Reports reports) {
+	private TLValidationResult fillResult(Reports reports) {
 		SimpleReport simpleReport = reports.getSimpleReport();
 		if (simpleReport.getSignaturesCount() != 1) {
 			throw new DSSException(String.format("Number of signatures must be equal to 1 (currently : %s)", simpleReport.getSignaturesCount()));
@@ -124,7 +120,7 @@ public class TLValidatorTask implements Supplier<ValidationResult> {
 			signingCertificate = DSSUtils.loadCertificate(signingCertificateWrapper.getBinaries());
 		}
 
-		return new ValidationResult(indication, subIndication, signingTime, signingCertificate, certificateSource);
+		return new TLValidationResult(indication, subIndication, signingTime, signingCertificate, certificateSource);
 	}
 
 	private TrustedCertificateSource buildTrustedCertificateSource(CertificateSource certificateSource) {

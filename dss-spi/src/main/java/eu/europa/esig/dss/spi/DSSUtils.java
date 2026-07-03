@@ -22,6 +22,7 @@ package eu.europa.esig.dss.spi;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.ObjectIdentifier;
 import eu.europa.esig.dss.enumerations.ObjectIdentifierQualifier;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -37,6 +38,7 @@ import eu.europa.esig.dss.spi.security.DSSCertificateTokenSecurityFactory;
 import eu.europa.esig.dss.spi.security.DSSP7CCertificatesSecurityFactory;
 import eu.europa.esig.dss.utils.Utils;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataParser;
@@ -50,7 +52,6 @@ import org.bouncycastle.util.io.pem.PemWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.x500.X500Principal;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -73,6 +74,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,6 +112,9 @@ public final class DSSUtils {
 	/** RFC 3339 DateTime format used by default */
 	public static final String RFC3339_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
+	/** Format date-time as specified in ISO 8601-1 */
+	public static final String ISO8601_DATE_FORMAT = "yyyy-MM-dd";
+
 	/** The UTC timezone (GMT+0), used by default */
 	public static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone("UTC");
 
@@ -146,20 +151,101 @@ public final class DSSUtils {
 	}
 
 	/**
+	 * This method checks silently whether the date is conformant to the RFC 3339 date-time
+	 * pattern "yyyy-MM-dd'T'HH:mm:ss'Z'".
+	 *
+	 * @param dateTimeString {@link String} to check
+	 * @return TRUE if the string is confofmant to the RFC 3339 date-time pattern definition, FALSE otherwise
+	 */
+	public static boolean isRFCDate(final String dateTimeString) {
+		if (Utils.isStringNotEmpty(dateTimeString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				sdf.parse(dateTimeString);
+				return true;
+
+			} catch (ParseException e) {
+				// skip silently
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Parses a {@code String} date to {@code Date}
 	 *
-	 * @param str {@link String} in RFC format, e.g. "2019-11-19T17:28:15Z"
+	 * @param dateTimeString {@link String} in RFC format, e.g. "2019-11-19T17:28:15Z"
 	 * @return {@link Date}
 	 */
-	public static Date parseRFCDate(final String str) {
-		try {
-			SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
-			sdf.setTimeZone(UTC_TIMEZONE);
-			sdf.setLenient(false);
-			return sdf.parse(str);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("String '%s' doesn't follow the pattern '%s'", str, RFC3339_TIME_FORMAT));
+	public static Date parseRFCDate(final String dateTimeString) {
+		if (Utils.isStringNotEmpty(dateTimeString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(RFC3339_TIME_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				return sdf.parse(dateTimeString);
+			} catch (ParseException e) {
+				LOG.warn("Unable to parse date with value '{}' as RFC 3339 : {}", dateTimeString, e.getMessage());
+			}
 		}
+		return null;
+	}
+
+	/**
+	 * Formats a date to use according to ISO/IEC 8601-1 date pattern "yyyy-MM-dd".
+	 * Example: "2019-11-19"
+	 *
+	 * @param date
+	 *            the date to be converted
+	 * @return the textual representation (a null date will result in "N/A")
+	 */
+	public static String formatDateToISO8601(final Date date) {
+		return formatDateWithCustomFormat(date, ISO8601_DATE_FORMAT);
+	}
+
+	/**
+	 * This method checks silently whether the date is conformant to the ISO/IEC 8601-1 date
+	 * pattern "yyyy-MM-dd".
+	 *
+	 * @param dateString {@link String} to check
+	 * @return TRUE if the string is confofmant to the ISO/IEC 8601-1 date pattern definition, FALSE otherwise
+	 */
+	public static boolean isISO8601Date(final String dateString) {
+		if (Utils.isStringNotEmpty(dateString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_DATE_FORMAT);
+				sdf.setTimeZone(UTC_TIMEZONE);
+				sdf.setLenient(false);
+				sdf.parse(dateString);
+				return true;
+
+			} catch (ParseException e) {
+				// skip silently
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Parses an ISO 8601-1 date String
+	 *
+	 * @param dateString {@link String} in the ISO 8601-1 format to parse, e.g. "2001-01-01"
+	 * @return {@link Date}
+	 */
+	public static Date parseISO8601Date(String dateString) {
+		if (Utils.isStringNotEmpty(dateString)) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(ISO8601_DATE_FORMAT);
+				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+				sdf.setLenient(false);
+				return sdf.parse(dateString);
+			} catch (ParseException e) {
+				LOG.warn("Unable to parse date with value '{}' as ISO 8601-1 : {}", dateString, e.getMessage());
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -795,20 +881,6 @@ public final class DSSUtils {
 	}
 
 	/**
-	 * This method returns the {@code X500Principal} corresponding to the given string or {@code null} if the conversion
-	 * is not possible.
-	 *
-	 * @param x500PrincipalString
-	 *            a {@code String} representation of the {@code X500Principal}
-	 * @return {@code X500Principal} or null
-	 * @deprecated since DSS 6.4. Please use {@code DSSASN1Utils#getX500PrincipalOrNull} method instead.
-	 */
-	@Deprecated
-	public static X500Principal getX500PrincipalOrNull(final String x500PrincipalString) {
-		return DSSASN1Utils.getX500PrincipalOrNull(x500PrincipalString);
-	}
-
-	/**
 	 * This method returns an UTC date base on the year, the month and the day. 
 	 * The year must be encoded as 1978... and not 78
 	 *
@@ -1048,6 +1120,25 @@ public final class DSSUtils {
 	 */
 	public static String toUrnOid(String oid) {
 		return OID_NAMESPACE_PREFIX + oid;
+	}
+
+	/**
+	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
+	 * Returns NULL if non of them is present
+	 *
+	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
+	 * @return {@link String} URI
+	 */
+	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
+		/*
+		 * TS 119 182-1 : 5.4.1 The oId data type
+		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
+		 */
+		String uri = objectIdentifier.getUri();
+		if (uri == null && objectIdentifier.getOid() != null) {
+			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
+		}
+		return uri;
 	}
 	
 	/**
@@ -1292,6 +1383,71 @@ public final class DSSUtils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Generates the 'kid' value as in IETF RFC 5035
+	 *
+	 * @param signingCertificate {@link CertificateToken} representing the singing
+	 *                           certificate
+	 * @return byte array 'kid' header value
+	 */
+	public static byte[] generateKid(CertificateToken signingCertificate) {
+		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
+		return DSSASN1Utils.getDEREncoded(issuerSerial);
+	}
+
+	/**
+	 * This method cleans millis from the given time
+	 *
+	 * @param timeInMillis time with millis
+	 * @return time without millis
+	 */
+	public static long getTimeValueInSeconds(long timeInMillis) {
+		return timeInMillis / 1000L;
+	}
+
+	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
+		return timeWithoutMillis * 1000L;
+	}
+
+	/**
+	 * This method adds millis to the given time in seconds
+	 *
+	 * @param timeWithoutMillis time without millis
+	 * @return time with millis
+	 */
+	public static long getTimeValueInMilliseconds(double timeWithoutMillis) {
+		return (long) (timeWithoutMillis * 1000);
+	}
+
+	/**
+	 * Creates a Date based from milliseconds (starting from 1970-01-01T00:00Z)
+	 *
+	 * @param dateTimeNumber {@link Number} milliseconds
+	 * @return {@link Date}
+	 */
+	public static Date getDateFromMilliseconds(Number dateTimeNumber) {
+		/*
+		 * A JSON numeric value representing the number of seconds from
+		 * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
+		 * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,
+		 * 2013 Edition [POSIX.1] definition "Seconds Since the Epoch", in
+		 * which each day is accounted for by exactly 86400 seconds, other
+		 * than that non-integer values can be represented.  See RFC 3339
+		 * [RFC3339] for details regarding date/times in general and UTC in
+		 * particular.
+		 */
+		if (dateTimeNumber != null) {
+			return new Date(dateTimeNumber.longValue());
+		}
+		return null;
 	}
 
 	/**

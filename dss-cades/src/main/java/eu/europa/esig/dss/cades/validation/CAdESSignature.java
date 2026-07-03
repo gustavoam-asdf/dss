@@ -927,7 +927,7 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 	 * instances of SignedInfo type present within the CMS structure. 
 	 */
 	@Override
-	public SignatureDigestReference getSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
+	public SignatureDigestReference buildSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
 		byte[] derEncodedSignerInfo = DSSASN1Utils.getDEREncoded(signerInformation.toASN1Structure());
 		byte[] digestValue = DSSUtils.digest(digestAlgorithm, derEncodedSignerInfo);
 		return new SignatureDigestReference(new Digest(digestAlgorithm, digestValue));
@@ -1055,6 +1055,12 @@ public class CAdESSignature extends DefaultAdvancedSignature {
 			return null;
 		}
 		return DSSASN1Utils.getString(attrValue);
+	}
+
+	@Override
+	public String getSignatureType() {
+		// not supported
+		return null;
 	}
 
 	/**

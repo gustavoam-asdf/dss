@@ -50,8 +50,20 @@ public enum MimeTypeEnum implements MimeType {
     /** jose+json */
     JOSE_JSON("application/jose+json", "json"),
 
+    /** dc+sd-jwt */
+    SD_JWT_VC("application/dc+sd-jwt", "json"),
+
+    /** kb+jwt */
+    KB_JWT("application/kb+jwt", "json"),
+
     /** pkcs7-signature */
     PKCS7("application/pkcs7-signature", "pkcs7", "p7m", "p7s"),
+
+    /** cbor */
+    CBOR("application/cbor", "cbor"),
+
+    /** cose-sign or cose-sign1 */
+    COSE("application/cose", "cose"),
 
     /** timestamp-token */
     TST("application/vnd.etsi.timestamp-token", "tst"),

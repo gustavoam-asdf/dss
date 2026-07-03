@@ -25,7 +25,9 @@ import java.security.SecureRandom;
 /**
  * The class is used to provide a {@code SecureRandom} to be used for encrypted PDF signing/extension
  *
+ * @deprecated since DSS 6.5. Please use {@code eu.europa.esig.dss.spi.random.SecureRandomProvider} instead.
  */
+@Deprecated
 public interface SecureRandomProvider {
 	
 	/**

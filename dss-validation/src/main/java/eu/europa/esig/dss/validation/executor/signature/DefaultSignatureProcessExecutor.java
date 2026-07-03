@@ -95,24 +95,56 @@ public class DefaultSignatureProcessExecutor extends AbstractProcessExecutor imp
 	 */
 	protected Reports buildReports(final DiagnosticData diagnosticData) {
 
-		DetailedReportBuilder detailedReportBuilder = new DetailedReportBuilder(getI18nProvider(), currentTime, policy,
-				validationLevel, diagnosticData, includeSemantics);
+		DetailedReportBuilder detailedReportBuilder = getDetailedReportBuilder(diagnosticData);
 		XmlDetailedReport jaxbDetailedReport = detailedReportBuilder.build();
 
 		DetailedReport detailedReportWrapper = new DetailedReport(jaxbDetailedReport);
 
-		SimpleReportBuilder simpleReportBuilder = new SimpleReportBuilder(getI18nProvider(), currentTime, policy,
-				diagnosticData, detailedReportWrapper, includeSemantics);
+		SimpleReportBuilder simpleReportBuilder = getSimpleReportBuilder(diagnosticData, detailedReportWrapper);
 		XmlSimpleReport simpleReport = simpleReportBuilder.build();
 
 		ValidationReportType validationReport = null;
 		if (enableEtsiValidationReport) {
-			ETSIValidationReportBuilder etsiValidationReportBuilder = new ETSIValidationReportBuilder(currentTime,
-					diagnosticData, detailedReportWrapper);
+			ETSIValidationReportBuilder etsiValidationReportBuilder = getETSIValidationReportBuilder(diagnosticData, detailedReportWrapper);
 			validationReport = etsiValidationReportBuilder.build();
 		}
 
 		return new Reports(jaxbDiagnosticData, jaxbDetailedReport, simpleReport, validationReport);
+	}
+
+	/**
+	 * Instantiates a builder for Detailed Report
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @return {@link DetailedReportBuilder}
+	 */
+	protected DetailedReportBuilder getDetailedReportBuilder(final DiagnosticData diagnosticData) {
+		return new DetailedReportBuilder(getI18nProvider(), currentTime, policy,
+				validationLevel, diagnosticData, includeSemantics);
+	}
+
+	/**
+	 * Instantiates a builder for Simple Report
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @param detailedReport {@link DetailedReport}
+	 * @return {@link SimpleReportBuilder}
+	 */
+	protected SimpleReportBuilder getSimpleReportBuilder(final DiagnosticData diagnosticData, final DetailedReport detailedReport) {
+		return new SimpleReportBuilder(getI18nProvider(), currentTime, policy,
+				diagnosticData, detailedReport, includeSemantics);
+	}
+
+	/**
+	 * Instantiates a builder for ETSI Validation Report 102-2
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @param detailedReport {@link DetailedReport}
+	 * @return {@link ETSIValidationReportBuilder}
+	 */
+	protected ETSIValidationReportBuilder getETSIValidationReportBuilder(final DiagnosticData diagnosticData,
+																		 final DetailedReport detailedReport) {
+		return new ETSIValidationReportBuilder(currentTime, diagnosticData, detailedReport);
 	}
 
 }

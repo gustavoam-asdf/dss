@@ -240,6 +240,7 @@ public class GoogleGuavaUtils implements IUtils {
 		if (array == null) {
 			return null;
 		}
+		length = Math.min(array.length, length);
 		return Arrays.copyOfRange(array, start, length);
 	}
 
@@ -261,6 +262,15 @@ public class GoogleGuavaUtils implements IUtils {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
+	public int collectionSize(Collection collection) {
+		if (collection == null) {
+			return 0;
+		}
+		return collection.size();
+	}
+
+	@Override
 	public boolean isMapEmpty(Map<?,?> map) {
 		return map == null || map.isEmpty();
 	}
@@ -271,12 +281,11 @@ public class GoogleGuavaUtils implements IUtils {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public int collectionSize(Collection collection) {
-		if (collection == null) {
+	public int mapSize(Map<?, ?> map) {
+		if (map == null) {
 			return 0;
 		}
-		return collection.size();
+		return map.size();
 	}
 
 	@Override

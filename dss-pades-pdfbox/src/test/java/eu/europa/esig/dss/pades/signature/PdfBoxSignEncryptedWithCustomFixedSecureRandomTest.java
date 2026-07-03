@@ -30,11 +30,11 @@ import eu.europa.esig.dss.pades.PAdESTimestampParameters;
 import eu.europa.esig.dss.pades.signature.suite.AbstractPAdESTestSignature;
 import eu.europa.esig.dss.pades.validation.PDFDocumentValidator;
 import eu.europa.esig.dss.pdf.PDFSignatureService;
-import eu.europa.esig.dss.pdf.encryption.SecureRandomProvider;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxDefaultObjectFactory;
 import eu.europa.esig.dss.pdf.pdfbox.PdfBoxSignatureService;
 import eu.europa.esig.dss.signature.DocumentSignatureService;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.random.SecureRandomProvider;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
 import org.bouncycastle.util.test.FixedSecureRandom;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,15 +94,10 @@ class PdfBoxSignEncryptedWithCustomFixedSecureRandomTest extends AbstractPAdESTe
 	}
 	
 	private static class MockFixedSecureRandomProvider implements SecureRandomProvider {
-		
-		private final byte[] seed;
-		
-		public MockFixedSecureRandomProvider(byte[] seed) {
-			this.seed = seed;
-		}
 
 		@Override
-		public SecureRandom getSecureRandom() {
+		public SecureRandom getSecureRandom(byte[] seed) {
+			seed = DSSUtils.digest(DigestAlgorithm.SHA512, "Random seed value".getBytes());
 			return new FixedSecureRandom(seed);
 		}
 		
@@ -114,8 +109,7 @@ class PdfBoxSignEncryptedWithCustomFixedSecureRandomTest extends AbstractPAdESTe
 		
 		private SecureRandomProvider getSecureRandomProvider() {
 			if (secureRandomProvider == null) {
-				byte[] seed = DSSUtils.digest(DigestAlgorithm.SHA512, "Random seed value".getBytes());
-				secureRandomProvider = new MockFixedSecureRandomProvider(seed);
+				secureRandomProvider = new MockFixedSecureRandomProvider();
 			}
 			return secureRandomProvider;
 		}

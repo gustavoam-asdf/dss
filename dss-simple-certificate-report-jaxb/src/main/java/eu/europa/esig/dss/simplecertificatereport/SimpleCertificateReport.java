@@ -20,12 +20,16 @@
  */
 package eu.europa.esig.dss.simplecertificatereport;
 
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.CertificateQualification;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.QWACProfile;
 import eu.europa.esig.dss.enumerations.RevocationReason;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateApprovalStatus;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateApprovalStatusAtTime;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlMessage;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlRevocation;
@@ -586,6 +590,120 @@ public class SimpleCertificateReport {
 		return Collections.emptyList();
 	}
 
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's errors for
+	 * a given certificate by id at issuance time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusErrorsAtIssuanceTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtIssuanceTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtIssuanceTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getError());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's warnings for
+	 * a given certificate by id at issuance time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusWarningsAtIssuanceTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtIssuanceTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtIssuanceTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getWarning());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's information messages for
+	 * a given certificate by id at issuance time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusInfoAtIssuanceTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtIssuanceTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtIssuanceTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getInfo());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's errors for
+	 * a given certificate by id at validation time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusErrorsAtValidationTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtValidationTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtValidationTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getError());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's warnings for
+	 * a given certificate by id at validation time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusWarningsAtValidationTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtValidationTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtValidationTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getWarning());
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * This method retrieve the TS 119 602/605 certificate approval status process's information messages for
+	 * a given certificate by id at validation time for the given {@code CertificateApprovalStatus}
+	 *
+	 * @param certificateId
+	 *            {@link String} certificate id
+	 * @return the linked errors
+	 */
+	public List<Message> getCertificateApprovalStatusInfoAtValidationTime(final String certificateId, final CertificateApprovalStatus certificateApprovalStatus) {
+		XmlChainItem certificate = getCertificate(certificateId);
+		if (certificate != null && certificate.getCertificateApprovalStatusAtValidationTime() != null) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = getXmlCertificateApprovalStatus(certificate.getCertificateApprovalStatusAtValidationTime(), certificateApprovalStatus);
+			if (xmlCertificateApprovalStatus != null && xmlCertificateApprovalStatus.getDetails() != null) {
+				return convert(xmlCertificateApprovalStatus.getDetails().getInfo());
+			}
+		}
+		return Collections.emptyList();
+	}
+
 	private Message convert(XmlMessage v) {
 		if (v != null) {
 			return new Message(v.getKey(), v.getValue());
@@ -618,6 +736,70 @@ public class SimpleCertificateReport {
 	public CertificateQualification getQualificationAtValidationTime() {
 		XmlChainItem cert = getFirstCertificate();
 		return cert.getQualificationAtValidation();
+	}
+
+	/**
+	 * This method returns the qualification of the first certificate at its issuance
+	 *
+	 * @return the qualification at the certificate creation
+	 */
+	public List<CertificateApprovalStatus> getCertificateApprovalStatusAtCertificateIssuance() {
+		XmlChainItem cert = getFirstCertificate();
+		return toCertificateApprovalStatusList(cert.getCertificateApprovalStatusAtIssuanceTime());
+	}
+
+	/**
+	 * This method returns the qualification of the first certificate at the validation time
+	 *
+	 * @return the qualification at the validation time
+	 */
+	public List<CertificateApprovalStatus> getCertificateApprovalStatusAtValidationTime() {
+		XmlChainItem cert = getFirstCertificate();
+		return toCertificateApprovalStatusList(cert.getCertificateApprovalStatusAtValidationTime());
+	}
+
+	private List<CertificateApprovalStatus> toCertificateApprovalStatusList(XmlCertificateApprovalStatusAtTime xmlCertificateApprovalStatusAtTime) {
+		if (xmlCertificateApprovalStatusAtTime == null) {
+			return null;
+		}
+		List<XmlCertificateApprovalStatus> xmlCertificateApprovalStatuss = xmlCertificateApprovalStatusAtTime.getCertificateApprovalStatus();
+		if (xmlCertificateApprovalStatuss == null || xmlCertificateApprovalStatuss.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		final List<CertificateApprovalStatus> usages = new ArrayList<>();
+		for (XmlCertificateApprovalStatus xmlCertificateApprovalStatus : xmlCertificateApprovalStatuss) {
+			usages.add(toCertificateApprovalStatus(xmlCertificateApprovalStatus));
+		}
+		return usages;
+	}
+
+	private CertificateApprovalStatus toCertificateApprovalStatus(XmlCertificateApprovalStatus xmlCertificateApprovalStatus) {
+		if (xmlCertificateApprovalStatus == null) {
+			return null;
+		}
+		CertificateApprovalStatus result = CertificateApprovalStatus.fromDefinition(xmlCertificateApprovalStatus.getListType(),
+				xmlCertificateApprovalStatus.getServiceTypeIdentifier(), xmlCertificateApprovalStatus.getServiceStatus());
+		if (result != null && result.getLabel() != null && CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN != result) {
+			return result;
+		}
+		return CertificateApprovalStatus.create(CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN.getLabel(), xmlCertificateApprovalStatus.getListType(),
+				xmlCertificateApprovalStatus.getServiceTypeIdentifier(), xmlCertificateApprovalStatus.getServiceStatus());
+	}
+
+	private XmlCertificateApprovalStatus getXmlCertificateApprovalStatus(XmlCertificateApprovalStatusAtTime xmlCertificateApprovalStatusAtTime, CertificateApprovalStatus certificateApprovalStatus) {
+		if (xmlCertificateApprovalStatusAtTime != null && xmlCertificateApprovalStatusAtTime.getCertificateApprovalStatus() != null) {
+			for (XmlCertificateApprovalStatus xmlCertificateApprovalStatus : xmlCertificateApprovalStatusAtTime.getCertificateApprovalStatus()) {
+				if (xmlCertificateApprovalStatus != null &&
+						certificateApprovalStatus.getListType() != null && certificateApprovalStatus.getListType().getUri() != null
+						&& xmlCertificateApprovalStatus.getListType() != null && certificateApprovalStatus.getListType().getUri().equals(xmlCertificateApprovalStatus.getListType().getUri()) &&
+						certificateApprovalStatus.getServiceTypeIdentifier() != null && certificateApprovalStatus.getServiceTypeIdentifier().getUri() != null
+						&& xmlCertificateApprovalStatus.getServiceTypeIdentifier() != null && certificateApprovalStatus.getServiceTypeIdentifier().getUri().equals(xmlCertificateApprovalStatus.getServiceTypeIdentifier().getUri())) {
+					return xmlCertificateApprovalStatus;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

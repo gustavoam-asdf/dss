@@ -20,11 +20,12 @@
  */
 package eu.europa.esig.json;
 
+import com.github.erosb.jsonsKema.IJsonString;
+import com.github.erosb.jsonsKema.IJsonValue;
 import com.github.erosb.jsonsKema.JsonArray;
 import com.github.erosb.jsonsKema.JsonNumber;
 import com.github.erosb.jsonsKema.JsonObject;
 import com.github.erosb.jsonsKema.JsonString;
-import com.github.erosb.jsonsKema.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +64,11 @@ public class JsonObjectWrapper {
      * @return {@link JsonObjectWrapper}
      */
     public JsonObjectWrapper getAsObject(String name) {
-        JsonValue jsonValue = jsonObject.get(name);
+        IJsonValue jsonValue = jsonObject.get(name);
         return toObject(jsonValue);
     }
 
-    private JsonObjectWrapper toObject(JsonValue jsonValue) {
+    private JsonObjectWrapper toObject(IJsonValue jsonValue) {
         if (jsonValue == null) {
             // continue
 
@@ -92,11 +93,11 @@ public class JsonObjectWrapper {
      * @return {@link String}
      */
     public String getAsString(String name) {
-        JsonValue jsonValue = jsonObject.get(name);
+        IJsonValue jsonValue = jsonObject.get(name);
         return toString(jsonValue);
     }
 
-    private String toString(JsonValue jsonValue) {
+    private String toString(IJsonValue jsonValue) {
         if (jsonValue == null) {
             // continue
 
@@ -121,7 +122,7 @@ public class JsonObjectWrapper {
      * @return {@link Number}
      */
     public Number getAsNumber(String name) {
-        JsonValue jsonValue = jsonObject.get(name);
+        IJsonValue jsonValue = jsonObject.get(name);
         if (jsonValue == null) {
             // continue
 
@@ -147,12 +148,12 @@ public class JsonObjectWrapper {
      * @return a list of {@link JsonObjectWrapper}s
      */
     public List<JsonObjectWrapper> getAsObjectList(String name) {
-        JsonValue jsonValue = jsonObject.get(name);
+        IJsonValue jsonValue = jsonObject.get(name);
         if (jsonValue == null) {
             // continue
 
         } else if (jsonValue instanceof JsonArray) {
-            List<JsonValue> elements = ((JsonArray) jsonValue).getElements();
+            List<IJsonValue> elements = ((JsonArray) jsonValue).getElements();
             if (elements != null && !elements.isEmpty()) {
                 return elements.stream().map(this::toObject).filter(Objects::nonNull).collect(Collectors.toList());
             }
@@ -176,12 +177,12 @@ public class JsonObjectWrapper {
      * @return a list of {@link String}s
      */
     public List<String> getAsStringList(String name) {
-        JsonValue jsonValue = jsonObject.get(name);
+        IJsonValue jsonValue = jsonObject.get(name);
         if (jsonValue == null) {
             // continue
 
         } else if (jsonValue instanceof JsonArray) {
-            List<JsonValue> elements = ((JsonArray) jsonValue).getElements();
+            List<IJsonValue> elements = ((JsonArray) jsonValue).getElements();
             if (elements != null && !elements.isEmpty()) {
                 return elements.stream().map(this::toString).filter(Objects::nonNull).collect(Collectors.toList());
             }
@@ -203,7 +204,7 @@ public class JsonObjectWrapper {
      * @return TRUE if the JSON object does not contain any properties, FALSE otherwise
      */
     public boolean isEmpty() {
-        Map<JsonString, JsonValue> properties = jsonObject.getProperties();
+        Map<IJsonString, IJsonValue> properties = jsonObject.getProperties();
         return properties == null || properties.isEmpty();
     }
 

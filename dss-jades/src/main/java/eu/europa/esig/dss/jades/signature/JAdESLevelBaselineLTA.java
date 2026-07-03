@@ -80,7 +80,7 @@ public class JAdESLevelBaselineLTA extends JAdESLevelBaselineLT {
 		// Perform signature validation
 		ValidationDataContainer validationDataContainer = null;
 		if (addTimestampValidationData) {
-			validationDataContainer = documentValidator.getValidationData(signatures);
+			validationDataContainer = documentAnalyzer.getValidationData(signatures);
 		}
 
 		for (AdvancedSignature signature : signatures) {

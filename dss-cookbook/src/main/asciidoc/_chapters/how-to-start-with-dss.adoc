@@ -19,7 +19,7 @@ This section explains the usage and build requirements for https://github.com/es
 
 The latest version of DSS framework has the following minimal requirements:
 
-* Java 8 or higher (tested up to Java 25) is required for usage;
+* Java 8 or higher (tested up to Java 26) is required for usage;
 * Java 11 or higher is required for the build. Java 15 is the minimal requirement for a build with unit tests;
 * Maven 3.6.3 and higher (if build required);
 * Memory and Disk: see minimal requirements for the used JVM. In general the higher available is better;
@@ -44,12 +44,12 @@ The simplest way to include DSS to your project is to use https://central.sonaty
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-xades</artifactId>
-        <version>6.4</version>
+        <version>6.5.RC1</version>
     </dependency>
     <dependency>
         <groupId>eu.europa.ec.joinup.sd-dss</groupId>
         <artifactId>dss-validation</artifactId>
-        <version>6.4</version>
+        <version>6.5.RC1</version>
     </dependency>
     ...
 </dependencies>
@@ -94,7 +94,7 @@ The root `pom.xml` of `dss-bom` defines versions of all modules within DSS-libra
         <dependency>
             <groupId>eu.europa.ec.joinup.sd-dss</groupId>
             <artifactId>dss-bom</artifactId>
-            <version>6.4</version>
+            <version>6.5.RC1</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -176,7 +176,7 @@ This section explains the build and use requirements for the https://github.com/
 
 The minimal requirements to build/run DSS Demonstrations:
 
-* Java 17 or higher (tested up to Java 25) is required;
+* Java 17 or higher (tested up to Java 26) is required;
 * Maven 3.6 or higher (if build required);
 * Tomcat 10 or higher (for Web-application);
 * Memory and Disk: see minimal requirements for the used JVM. In general the highest available is the best;
@@ -246,7 +246,7 @@ mvn clean install -P jar
 
 If you continue with a default `war` packaging option, you may benefit from `dss-demo-bundle` module, encapsulating the created package within a Tomcat 11 bundle. After a successful build, in the directory `/dss-demo-bundle/target/` you will be able to find two containers: `dss-demo-bundle.zip` and `dss-demo-bundle.tar.gz`. Despite the different container type, the content of both containers is the same. After extracting the content, you will need to run the file `Webapp-Startup.bat` in order to launch the server and the file `Webapp-Shutdown.bat` to stop the server. After running the server, the web-application will be available at the address `http://localhost:8080/`.
 
-NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 25. For other possibilities, please see options below in this section.
+NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 26. For other possibilities, please see options below in this section.
 
 If during TL/LOTL loading you experience problems with some particular Trusted Lists, please refer the <<KeyStore>> chapter for a resolution.
 
@@ -268,6 +268,13 @@ DSS webapp version with JDK 21 can be created with a command below:
 .Maven command to create a JDK 21 bundle
 ----
 mvn clean install -P java21
+----
+
+DSS webapp version with JDK 25 can be created with a command below:
+
+.Maven command to create a JDK 25 bundle
+----
+mvn clean install -P java25
 ----
 
 ====== Integration tests
@@ -359,7 +366,13 @@ dss-service:: Implementations to communicate with online resources (TSP, CRL, OC
 dss-token:: Token definitions and implementations for MS CAPI, MacOS Keychain, PKCS#11, PKCS#12.
 dss-document:: Common module to sign or extend a document.
 dss-validation:: Business logic for the signature and certificate validation (ETSI EN 319 102 / TS 119 615).
-dss-tsl-validation:: Module which allows loading / parsing / validating of LOTL and TSLs.
+
+'''
+dss-validation-job:: Generic module for performing a document validation, implements cache management and business logic of validation job.
+dss-tsl-validation:: Module which allows downloading / parsing / validating of LOTL and TLs (ETSI TS 119 612).
+dss-lote-validation:: Module containing generic interfaces for validating of LoTE (ETSI TS 119 602).
+dss-lote-validation-json:: Processes LoTE in the JSON format.
+dss-lote-validation-xml:: Processes LoTE in the XML format.
 
 ===== Validation policy modules
 
@@ -371,6 +384,7 @@ dss-policy-crypto-json:: Model for the JSON Cryptographic Suite as per ETSI TS 1
 
 dss-xades:: Implementation of the XAdES signature, augmentation and validation.
 dss-cades:: Implementation of the CAdES signature, augmentation and validation.
+dss-cb-ades:: Implementation of the CB-AdES signature, augmentation and validation.
 dss-cms:: Provides interfaces and utility methods for working with CMS objects (see RFC 5652, cf. <<R31>>).
 dss-cms-object:: Implementation of 'dss-cms' module, processing the data objects and files in memory.
 dss-cms-stream:: Implementation of 'dss-cms' module, processing the data objects and files using streaming.
@@ -388,6 +402,15 @@ dss-asic-xades:: Implementation of the ASiC-S and ASiC-E signature, augmentation
 dss-evidence-record-common:: Common code and interfaces for validation of evidence records.
 dss-evidence-record-xml:: Code for validation of RFC 6283 XML Evidence Records (cf. <<R23>>).
 dss-evidence-record-asn1:: Code for validation of RFC 4998 Evidence Records (ASN.1 format) (cf. <<R24>>).
+
+===== Electronic Attestations of Attributes (EAA) modules
+
+dss-eaa-common:: Common code and interfaces for EAA.
+dss-eaa-jwt:: Code for creation and validation of EAAs based on JWTs (i.e. SD-JWT VC, etc.).
+dss-eaa-mdoc:: Code for creation and validation of EAAs based on mdoc specification as per ISO 18013-5.
+dss-eaa-revocation-common:: Common code and interfaces for EAA revocation.
+dss-eaa-revocation-jwt:: Code for the validation of EAA based on JWT tokens.
+dss-eaa-revocation-cwt:: Code for the validation of EAA based on CWT tokens.
 
 ===== WebServices
 
@@ -433,6 +456,22 @@ dss-timestamp-remote-rest-client:: Client for the REST timestamp webservice.
 dss-timestamp-remote-soap-client:: Client for the SOAP timestamp webservice.
 dss-timestamp-remote-rest:: REST webservice to create a timestamp.
 dss-timestamp-remote-soap:: SOAP webservice to create a timestamp.
+
+'''
+dss-eaa-creation-dto:: Data Transfer Objects used for EAA and/or EAAP creation.
+dss-eaa-creation-remote:: Common classes between dss-eaa-creation-rest and dss-eaa-creation-soap.
+dss-eaa-creation-rest-client:: Client for the REST EAA and/or EAAP creation webservice.
+dss-eaa-creation-soap-client:: Client for the SOAP EAA and/or EAAP creation webservice.
+dss-eaa-creation-rest:: REST webservice to create EAA and/or EAAP.
+dss-eaa-creation-soap:: SOAP webservice to create EAA and/or EAAP.
+
+'''
+dss-eaa-validation-dto:: Data Transfer Objects used for EAA validation (REST and SOAP).
+dss-eaa-validation-common:: Common classes between dss-eaa-validation-rest and dss-eaa-validation-soap.
+dss-eaa-validation-rest-client:: Client for the REST EAA validation webservices.
+dss-eaa-validation-soap-client:: Client for the SOAP EAA validation webservices.
+dss-eaa-validation-rest:: REST webservices to validate an EAA.
+dss-eaa-validation-soap:: SOAP webservices to validate an EAA.
 
 ===== Other modules
 

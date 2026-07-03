@@ -16,6 +16,8 @@ The different webservices are :
 * *Signature validation webservices* (`dss-validation-soap` / `dss-validation-rest`) and their clients: expose methods to allow signature validation, with an optional detached file and an optional validation policy.
 * *Certificate validation webservices* (`dss-certificate-validation-soap` / `dss-certificate-validation-rest`) and their clients: expose methods to allow certificate validation, with an optional provided certificate chain and custom validation time.
 * *Timestamp webservices* (`dss-timestamp-remote-soap` / `dss-timestamp-remote-rest`) and their clients: expose methods to allow remote timestamp creation, by providing digest value to be timestamped and a digest algorithm, used for the digest calculation.
+* *EAA creation webservices* (`dss-eaa-creation-soap` / `dss-eaa-creation-rest`) and their clients: expose methods to allow remote EAA creation, by providing payload or payload configuration and signature parameters, disclosures extraction based on parameters, key binding signature creation and EAA Presentation issuance.
+* *EAA validation webservices* (`dss-eaa-validation-soap` / `dss-eaa-validation-rest`) and their clients: expose methods to allow validation of EAA Presentations.
 
 The data structure in webservices is similar in both REST and SOAP modules.
 
@@ -407,6 +409,111 @@ Samples:
 * *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/get-timestamp-response/1/httpie-request.adoc[Request]
 * *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/get-timestamp-response/1/curl-request.adoc[Request]
 
+[[RestEAACreationService]]
+==== REST EAA creation service
+
+This service implements a creation of EAAs, as well as issuance of EAA presentations.
+
+[source,java,indent=0]
+.Rest EAA creation service
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/ws/rest/RestEAACreationServiceSnippet.java[tags=demo]
+----
+
+===== EAA creation
+
+Creation of an EAA may be done either based on a provided payload, or parameters used to define the payload to be generated.
+The signature of an EAA is done in 3 stateless steps, similarly to a signature creation as explained in <<SignatureCreationInDSS>>.
+The two methods, namely "get data to sign" and "sign EAA" are exposed to the API within the current module.
+
+====== Get data to sign
+
+The method allows retrieving the data to be signed. The user sends the payload parameters (pre-computed payload or payload generation parameters) and the signature parameters (signature level, signing-certificate, etc.).
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/1/curl-request.adoc[Request]
+
+====== Sign EAA
+
+The method allows generation of a signed EAA. The user sends the payload parameters (pre-computed payload or payload generation parameters), the signature parameters (signature level, signing-certificate, etc.) and the signature value.
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/2/curl-request.adoc[Request]
+
+====== Get disclosures
+
+The method allows retrieving of disclosures used to generate hashes for selectively disclosable claims within the signed EAA. The user provided payload parameters (same as the ones used in the steps above).
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/3/curl-request.adoc[Request]
+
+====== Get data to sign for key binding signature
+
+The method allows retrieving the data to be signed for a key binding signature generation. The user sends the signed EAA, (optionally) disclosures to be included in the EAA presentation, key binding signature payload parameters (e.g. nonce) and the signature parameters (signature level, signing-certificate, etc.).
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/4/curl-request.adoc[Request]
+
+====== Create key binding signature
+
+The method allows generation of a key binding signature. The user sends the signed EAA, (optionally) disclosures to be included in the EAA presentation, key binding signature payload parameters (e.g. nonce), the signature parameters (signature level, signing-certificate, etc.) and a signature value.
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/5/curl-request.adoc[Request]
+
+====== Issue presentation
+
+The method allows generation of an EAA Presentation. The user sends the signed EAA, (optionally) disclosures to be included, (optionally) key binding signature and the parameters (format of EAA Presentation, etc.).
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-and-eaa-presentation/6/curl-request.adoc[Request]
+
+[[RestEAAValidationService]]
+==== REST EAA validation service
+
+This service performs a validation of EAA Presentations.
+
+[source,java,indent=0]
+.Rest EAA validation service
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/ws/rest/RestEAAValidationServiceSnippet.java[tags=demo]
+----
+
+===== EAA validation
+
+This service allows a validation of an EAA Presentation, or EAAs of a certain format.
+
+Samples:
+
+* *JSON*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/request-body.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/response-body.adoc[Response]
+* *HTTP*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/http-request.adoc[Request] | https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/http-response.adoc[Response]
+* *HTTPie*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/httpie-request.adoc[Request]
+* *Curl*: https://github.com/esig/dss/blob/master/dss-cookbook/src/main/asciidoc/_restdocs/eaa-validation/1/curl-request.adoc[Request]
+
 [[SOAP]]
 === SOAP
 The use of SOAP webServices is very similar to the <<REST>> implementation explained above. The main difference is the used implementation of the service. All methods, used parameters and output objects are aligned between both REST and SOAP implementations.
@@ -467,6 +574,26 @@ SOAP validation service's client is initialized using `SoapTimestampService` cla
 .Soap timestamp service
 ----
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/ws/soap/SoapTimestampServiceSnippet.java[tags=demo]
+----
+
+==== SOAP EAA creation service
+
+SOAP EAA creation service's client is initialized using `SoapEAACreationService` class.
+
+[source,java,indent=0]
+.Soap EAA creation service
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/ws/soap/SoapEAACreationServiceSnippet.java[tags=demo]
+----
+
+==== SOAP EAA validation service
+
+SOAP EAA validation service's client is initialized using `SoapEAAValidationService` class.
+
+[source,java,indent=0]
+.Soap EAA validation service
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/ws/soap/SoapEAAValidationServiceSnippet.java[tags=demo]
 ----
 
 The use of the client is similar to <<RestTimestampService>>.

@@ -79,6 +79,9 @@ import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcCom
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcEuLimitValueCurrencyCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcEuPDSLocationCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcIdentificationMethodCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcPSBAuthSourceIdentificationCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcPSBCountryOfLegislationCheck;
+import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcPSBLegislationIdentificationCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcQSCDLegislationCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcSSCDCheck;
 import eu.europa.esig.dss.validation.process.bbb.xcv.sub.checks.CertificateQcTypeCheck;
@@ -272,6 +275,12 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 		item = item.setNextItem(certificateQcQCSDLegislation(currentCertificate, subContext));
 
 		item = item.setNextItem(certificateQcIdentificationMethod(currentCertificate, subContext));
+
+		item = item.setNextItem(certificateQcPSBCountryOfLegislation(currentCertificate, subContext));
+
+		item = item.setNextItem(certificateQcPSBAuthSourceIdentification(currentCertificate, subContext));
+
+		item = item.setNextItem(certificateQcPSBLegislationIdentification(currentCertificate, subContext));
 
 		item = item.setNextItem(certificateSignatureValid(currentCertificate, subContext));
 
@@ -713,6 +722,21 @@ public class SubX509CertificateValidation extends Chain<XmlSubXCV> {
 	private ChainItem<XmlSubXCV> certificateQcIdentificationMethod(CertificateWrapper certificate, SubContext subContext) {
 		MultiValuesRule constraint = validationPolicy.getCertificateQcIdentificationMethodConstraint(context, subContext);
 		return new CertificateQcIdentificationMethodCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> certificateQcPSBCountryOfLegislation(CertificateWrapper certificate, SubContext subContext) {
+		MultiValuesRule constraint = validationPolicy.getCertificateQcPSBCountryOfLegislationConstraint(context, subContext);
+		return new CertificateQcPSBCountryOfLegislationCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> certificateQcPSBAuthSourceIdentification(CertificateWrapper certificate, SubContext subContext) {
+		MultiValuesRule constraint = validationPolicy.getCertificateQcPSBAuthSourceIdentificationConstraint(context, subContext);
+		return new CertificateQcPSBAuthSourceIdentificationCheck(i18nProvider, result, certificate, constraint);
+	}
+
+	private ChainItem<XmlSubXCV> certificateQcPSBLegislationIdentification(CertificateWrapper certificate, SubContext subContext) {
+		MultiValuesRule constraint = validationPolicy.getCertificateQcPSBLegislationIdentificationConstraint(context, subContext);
+		return new CertificateQcPSBLegislationIdentificationCheck(i18nProvider, result, certificate, constraint);
 	}
 
 	private ChainItem<XmlSubXCV> certificateCryptographic() {

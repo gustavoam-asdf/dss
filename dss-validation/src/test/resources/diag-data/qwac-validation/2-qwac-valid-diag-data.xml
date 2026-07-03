@@ -15,7 +15,7 @@
             <JWSSerializationType>COMPACT_SERIALIZATION</JWSSerializationType>
             <StructuralValidation valid="true"/>
             <DigestMatchers>
-                <DigestMatcher type="JWS_SIGNING_INPUT_DIGEST">
+                <DigestMatcher type="JWS_SIGNING_INPUT">
                     <DigestMethod>SHA512</DigestMethod>
                     <DigestValue>KLt5AbtqzxJANxf7a94rWRPvSlF+jh0eEVWEJ4l1YLhAvP7vQb/s9QBeS8DVAYKl+DzOsnPwzhNKO68AqCrKhQ==</DigestValue>
                     <DataFound>true</DataFound>
@@ -665,7 +665,7 @@
         <TrustedList Id="TL-B25B1B2D1186D1AD071A5D9DC3BC5DF944E3C9BD19A00F0DF9C251823613C076">
             <CountryCode>ZZ</CountryCode>
             <Url>ZZ.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>1</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2025-11-12T14:40:00</LastLoading>

@@ -37,7 +37,9 @@ import eu.europa.esig.dss.policy.jaxb.CertificateValuesConstraint;
 import eu.europa.esig.dss.policy.jaxb.ConstraintsParameters;
 import eu.europa.esig.dss.policy.jaxb.ContainerConstraints;
 import eu.europa.esig.dss.policy.jaxb.CryptographicConstraint;
+import eu.europa.esig.dss.policy.jaxb.EAARevocationConstraints;
 import eu.europa.esig.dss.policy.jaxb.EIDAS;
+import eu.europa.esig.dss.policy.jaxb.EAAConstraints;
 import eu.europa.esig.dss.policy.jaxb.EvidenceRecordConstraints;
 import eu.europa.esig.dss.policy.jaxb.IntValueConstraint;
 import eu.europa.esig.dss.policy.jaxb.LevelConstraint;
@@ -286,12 +288,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return null;
 	}
 
-	@Deprecated
-	@Override
-	public LevelRule getSigningDurationRule(Context context) {
-		return getSigningTimeConstraint(context);
-	}
-
 	@Override
 	public LevelRule getSigningTimeConstraint(Context context) {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
@@ -306,6 +302,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
 		if (signedAttributeConstraints != null) {
 			return toLevelRule(signedAttributeConstraints.getSigningTimeInCertRange());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getSignatureTypeConstraint(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toRule(signedAttributeConstraints.getSignatureType());
 		}
 		return null;
 	}
@@ -1208,6 +1213,33 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBCountryOfLegislation());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBAuthSourceIdentification());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext) {
+		CertificateConstraints certificateConstraints = getCertificateConstraints(context, subContext);
+		if (certificateConstraints != null) {
+			return toRule(certificateConstraints.getQcPSBLegislationIdentification());
+		}
+		return null;
+	}
+
+	@Override
 	public LevelRule getSigningCertificateRecognitionConstraint(Context context) {
 		CertificateConstraints certificateConstraints = getSigningCertificateByContext(context);
 		if (certificateConstraints != null) {
@@ -1275,6 +1307,24 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
 		if (signedAttributeConstraints != null) {
 			return toLevelRule(signedAttributeConstraints.getKeyIdentifierMatch());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getX509UrlPresent(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toLevelRule(signedAttributeConstraints.getX509UrlPresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getX509UrlMatch(Context context) {
+		SignedAttributesConstraints signedAttributeConstraints = getSignedAttributeConstraints(context);
+		if (signedAttributeConstraints != null) {
+			return toLevelRule(signedAttributeConstraints.getX509UrlMatch());
 		}
 		return null;
 	}
@@ -1368,12 +1418,6 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 			return toLevelRule(timestamp.getBestSignatureTimeBeforeExpirationDateOfSigningCertificate());
 		}
 		return null;
-	}
-
-	@Deprecated
-	@Override
-	public LevelRule getRevocationTimeAgainstBestSignatureDurationRule() {
-		return getRevocationTimeAgainstBestSignatureTimeConstraint();
 	}
 
 	@Override
@@ -1567,6 +1611,17 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 		return toCryptographicSuite(evidenceRecordCryptographic);
 	}
 
+	@Override
+	public CryptographicSuite getEAACryptographicConstraint() {
+		CryptographicConstraint eaaPresentationCryptographic = new CryptographicConstraint();
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null && eaaConstraints.getCryptographic() != null) {
+			eaaPresentationCryptographic = eaaConstraints.getCryptographic();
+		}
+		initializeCryptographicSuite(eaaPresentationCryptographic, getCryptographic());
+		return toCryptographicSuite(eaaPresentationCryptographic);
+	}
+
 	private CertificateConstraints getSigningCertificateByContext(Context context) {
 		return getCertificateConstraints(context, SubContext.SIGNING_CERT);
 	}
@@ -1598,6 +1653,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return counterSignature.getBasicSignatureConstraints();
 				}
 				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getBasicSignatureConstraints();
+				}
+				break;
 			case TIMESTAMP:
 				TimestampConstraints timestampConstraints = getTimestampConstraints();
 				if (timestampConstraints != null) {
@@ -1610,6 +1671,14 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return revocationConstraints.getBasicSignatureConstraints();
 				}
 				break;
+			case EAA:
+				return null;
+			case EAA_REVOCATION:
+				EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+				if (eaaRevocationConstraints != null) {
+					return eaaRevocationConstraints.getBasicSignatureConstraints();
+				}
+				break;
 			default:
 				throw new UnsupportedOperationException(String.format("Unsupported context '%s'", context));
 		}
@@ -1618,29 +1687,35 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 	private SignedAttributesConstraints getSignedAttributeConstraints(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case CERTIFICATE: // TODO improve
-			SignatureConstraints mainSignature = getSignatureConstraints();
-			if (mainSignature != null) {
-				return mainSignature.getSignedAttributes();
+			case SIGNATURE:
+			case CERTIFICATE: // TODO improve
+				SignatureConstraints mainSignature = getSignatureConstraints();
+				if (mainSignature != null) {
+					return mainSignature.getSignedAttributes();
+				}
+				break;
+			case COUNTER_SIGNATURE:
+				SignatureConstraints counterSignature = getCounterSignatureConstraints();
+				if (counterSignature != null) {
+					return counterSignature.getSignedAttributes();
+				}
+				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getSignedAttributes();
+				}
+				break;
+			case TIMESTAMP:
+				TimestampConstraints timestampConstraints = getTimestampConstraints();
+				if (timestampConstraints != null) {
+					return timestampConstraints.getSignedAttributes();
+				}
+				break;
+			default:
+				LOG.warn("Unsupported context {}", context);
+				break;
 			}
-			break;
-		case COUNTER_SIGNATURE:
-			SignatureConstraints counterSignature = getCounterSignatureConstraints();
-			if (counterSignature != null) {
-				return counterSignature.getSignedAttributes();
-			}
-			break;
-		case TIMESTAMP:
-			TimestampConstraints timestampConstraints = getTimestampConstraints();
-			if (timestampConstraints != null) {
-				return timestampConstraints.getSignedAttributes();
-			}
-			break;
-		default:
-			LOG.warn("Unsupported context {}", context);
-			break;
-		}
 		return null;
 	}
 
@@ -1658,6 +1733,12 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 					return counterSignature.getUnsignedAttributes();
 				}
 				break;
+			case KEY_BINDING_SIGNATURE:
+				SignatureConstraints keyBindingSignature = getKeyBindingSignatureConstraints();
+				if (keyBindingSignature != null) {
+					return keyBindingSignature.getUnsignedAttributes();
+				}
+				break;
 			default:
 				LOG.warn("Unsupported context {}", context);
 				break;
@@ -1667,15 +1748,17 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 
 	private SignatureConstraints getSignatureConstraintsByContext(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case CERTIFICATE: // TODO improve
-			return getSignatureConstraints();
-		case COUNTER_SIGNATURE:
-			return getCounterSignatureConstraints();
-		default:
-			LOG.warn("Unsupported context {}", context);
-			break;
-		}
+			case SIGNATURE:
+			case CERTIFICATE: // TODO improve
+				return getSignatureConstraints();
+			case COUNTER_SIGNATURE:
+				return getCounterSignatureConstraints();
+			case KEY_BINDING_SIGNATURE:
+				return getKeyBindingSignatureConstraints();
+			default:
+				LOG.warn("Unsupported context {}", context);
+				break;
+			}
 		return null;
 	}
 
@@ -1779,6 +1862,393 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public LevelRule getEAASignatureUnicityConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAASignatureUnicity());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAASignatureValidConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAASignatureValid());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAADisclosurePresentConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getDisclosurePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAADisclosureFoundConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getDisclosureFound());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAADisclosureIntactConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getDisclosureIntact());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAADisclosureListExhaustiveConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getDisclosureListExhaustive());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAKeyBindingSignaturePresentConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getKeyBindingSignaturePresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAKeyBindingSignatureValidConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getKeyBindingSignatureValid());
+		}
+		return null;
+	}
+
+    @Override
+    public LevelRule getEAATypeIntegrityPresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAATypeIntegrityPresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAIdentifierPresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAAIdentifierPresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAIssuanceDatePresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAAIssuanceDatePresent());
+        }
+        return null;
+    }
+
+	@Override
+	public MultiValuesRule getEAACategoryConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAACategory());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAASubjectConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAASubject());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAASubjectPseudonymConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAASubjectPseudonym());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAAIssuingCountryConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAAIssuingCountry());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAAIssuingAuthorityConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAAIssuingAuthority());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAAIssuingAuthorityRegistrationIdentifier());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationPresentConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAARevocationPresent());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAShortLivedConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAShortLived());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAOneTimeUseConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAOneTimeUse());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAAUsePseudonymConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAUsePseudonym());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAAClaimsConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toRule(eaaConstraints.getEAAClaims());
+		}
+		return null;
+	}
+
+	@Override
+    public MultiValuesRule getEAASupportedClaimsConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toRule(eaaConstraints.getEAASupportedClaims());
+        }
+        return null;
+    }
+
+	@Override
+	public LevelRule getEAARevocationAvailableConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAARevocationAvailable());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getAcceptableEAARevocationFoundConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getAcceptableEAARevocationFound());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationNotRevokedConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getNotRevoked());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationNotOnHoldConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getNotOnHold());
+		}
+		return null;
+	}
+
+	@Override
+    public MultiValuesRule getEAATypeConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toRule(eaaConstraints.getEAAType());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAANotBeforePresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAANotBeforePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAExpirationPresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAAExpirationPresent());
+        }
+        return null;
+    }
+
+	@Override
+	public LevelRule getEAANotExpiredConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAANotExpired());
+		}
+		return null;
+	}
+
+	@Override
+    public LevelRule getEAAAdministrativeIssuanceDatePresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAAAdministrativeIssuanceDatePresent());
+        }
+        return null;
+    }
+
+    @Override
+    public LevelRule getEAAAdministrativeExpirationDatePresentConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getEAAAdministrativeExpirationDatePresent());
+        }
+        return null;
+    }
+
+	@Override
+	public LevelRule getEAAAdministrativePeriodNotExpiredConstraint() {
+		EAAConstraints eaaConstraints = getEAAConstraints();
+		if (eaaConstraints != null) {
+			return toLevelRule(eaaConstraints.getEAAAdministrativePeriodNotExpired());
+		}
+		return null;
+	}
+
+	@Override
+    public LevelRule getEAAETSI194721ConformanceConstraint() {
+        EAAConstraints eaaConstraints = getEAAConstraints();
+        if (eaaConstraints != null) {
+            return toLevelRule(eaaConstraints.getETSI194721Conformance());
+        }
+        return null;
+    }
+
+	@Override
+	public MultiValuesRule getEAARevocationTokenTypeConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toRule(eaaRevocationConstraints.getType());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationUnknownStatusConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getUnknownStatus());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationIssuanceTimeConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getIssuanceTime());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationExpirationTimeConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getExpirationTime());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationNotExpiredConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getNotExpired());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getEAARevocationSubjectConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toRule(eaaRevocationConstraints.getSubject());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationSubjectMatchConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getSubjectMatch());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint() {
+		EAARevocationConstraints eaaRevocationConstraints = getEAARevocationConstraints();
+		if (eaaRevocationConstraints != null) {
+			return toLevelRule(eaaRevocationConstraints.getIssuerValidAtIssuanceTime());
+		}
+		return null;
+	}
+
+	@Override
 	public boolean isEIDASConstraintPresent() {
 		return getEIDASConstraints() != null;
 	}
@@ -1829,6 +2299,51 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	@Override
+	public DurationRule getLoTEFreshnessConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toRule(eIDASConstraints.getLoTEFreshness());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTEWellSignedConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTEWellSigned());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTENotExpiredConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTENotExpired());
+		}
+		return null;
+	}
+
+	@Override
+	public MultiValuesRule getLoTEVersionConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toRule(eIDASConstraints.getLoTEVersion());
+		}
+		return null;
+	}
+
+	@Override
+	public LevelRule getLoTEStructureConstraint() {
+		EIDAS eIDASConstraints = getEIDASConstraints();
+		if (eIDASConstraints != null) {
+			return toLevelRule(eIDASConstraints.getLoTEStructure());
+		}
+		return null;
+	}
+
+	@Override
 	public ValidationModel getValidationModel() {
 		ValidationModel currentModel = DEFAULT_VALIDATION_MODEL;
 		ModelConstraint modelConstraint = policy.getModel();
@@ -1857,6 +2372,15 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	}
 
 	/**
+	 * Returns the constraint used for Key Binding Signature validation
+	 *
+	 * @return {@link SignatureConstraints}
+	 */
+	public SignatureConstraints getKeyBindingSignatureConstraints() {
+		return policy.getKeyBindingSignatureConstraints();
+	}
+
+	/**
 	 * Returns the constraint used for Timestamp validation
 	 *
 	 * @return {@link TimestampConstraints}
@@ -1881,6 +2405,25 @@ public class EtsiValidationPolicy implements ValidationPolicy {
 	 */
 	public EvidenceRecordConstraints getEvidenceRecordConstraints() {
 		return policy.getEvidenceRecord();
+	}
+
+	/**
+	 * Returns the constraint used for EAA validation
+	 *
+	 * @return {@code EAAConstraints}
+	 */
+	public EAAConstraints getEAAConstraints() {
+		return policy.getEAA();
+	}
+
+
+	/**
+	 * Returns the constraint used for EAA revocation token validation
+	 *
+	 * @return {@code EAARevocationConstraints}
+	 */
+	public EAARevocationConstraints getEAARevocationConstraints() {
+		return policy.getEAARevocation();
 	}
 
 	/**

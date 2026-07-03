@@ -166,6 +166,11 @@ public class CAdESBaselineRequirementsChecker extends BaselineRequirementsChecke
     }
 
     @Override
+    public boolean hasAdESProfile() {
+        return hasExtendedBESProfile() || hasBaselineBProfile();
+    }
+
+    @Override
     public boolean hasBaselineBProfile() {
         if (!cmsBaselineBRequirements()) {
             return false;

@@ -289,6 +289,15 @@ public interface IUtils {
 	boolean isCollectionNotEmpty(Collection collection);
 
 	/**
+	 * Gets the size of the collection
+	 *
+	 * @param collection {@link Collection}
+	 * @return size of the collection
+	 */
+	@SuppressWarnings("rawtypes")
+	int collectionSize(Collection collection);
+
+	/**
 	 * Checks if the map is null or empty
 	 *
 	 * @param map to check
@@ -305,13 +314,13 @@ public interface IUtils {
 	boolean isMapNotEmpty(Map<?,?> map);
 
 	/**
-	 * Gets the size of the collection
+	 * Gets the size of the map
 	 *
-	 * @param collection {@link Collection}
-	 * @return size of the collection
+	 * @param map {@link Map}
+	 * @return size of the map
 	 */
 	@SuppressWarnings("rawtypes")
-	int collectionSize(Collection collection);
+	int mapSize(Map<?,?> map);
 
 	/**
 	 * Checks if the string is HEX (base16) encoded

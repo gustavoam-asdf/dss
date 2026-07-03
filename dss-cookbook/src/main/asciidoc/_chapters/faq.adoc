@@ -4,6 +4,7 @@
 :samplesdir: ../_samples
 :imagesdir: ../images/
 
+[[FAQ]]
 === Frequently asked questions and implementation issues
 
 This chapter covers the most frequently asked questions and issues occurring in implementations using DSS.
@@ -12,6 +13,12 @@ This chapter covers the most frequently asked questions and issues occurring in 
 .Possible problems and solutions
 |===
 |Version                    |Description                                   |Solution
+
+|v6.5+                      a|Different image size on visual PDF signature creation    a|In version `6.5` we have reviewed image DPI handling, which previously applied an additional zoom relatively to the default PDF page DPI value (which was assumed to be equal to 72). Starting from now, an image, by default, will be placed in a PDF document according to its original size (i.e. width and height), with the original DPI staying intact. This may change the produced visual signature representation, subject to a configuration. Therefore, it is recommended for all developers to review their implementations and adapt if needed. Please see <<PdfDPI>> for more information.
+
+|v6.5                      a|I receive the message "The new signature field position is outside the page dimensions!", but it was working before.    a|It is very likely the change in the signature field dimensions computation is caused by the rework of image DPI handling we did in DSS `6.5`. Please see the question above for more information and instructions for resolving the issue.
+
+|v6.5                      a|XAdES validation takes a lot of time for big XML files    a|While it is expected for a large XML file to take longer on document validation, in DSS `6.5` we have re-viewed some XAdES processing parts aiming to improve their performance. Should you want to achieve a better performance on XML processing, please try to switch to the `NativeDOMXPathQueryExecutor` implementation for XPath expressions execution, as explained in <<XPathQueryExpressions>>.
 
 |v6.3                      a|"No ValidationPolicyFactory has been found!" exception is returned on a validation.    a|Since version `6.3` DSS separates the JAXB validation policy implementation from the validation algorithm, making it more configurable. In order to enable the support of XML validation policy, please add the following module within a `pom.xml` file of you project, as below:
 

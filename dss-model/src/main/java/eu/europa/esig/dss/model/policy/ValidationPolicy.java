@@ -127,17 +127,6 @@ public interface ValidationPolicy {
 	 *
 	 * @param context {@link Context}
 	 * @return {@code LevelRule} if SigningTime element is present in the constraint file, null otherwise.
-	 * @deprecated since DSS 6.4. Please use {@code #getSigningTimeConstraint} method instead.
-	 */
-	@Deprecated
-	LevelRule getSigningDurationRule(Context context);
-
-	/**
-	 * Indicates if the signed property: signing-time should be checked. If SigningTime element is absent within the
-	 * constraint file then null is returned.
-	 *
-	 * @param context {@link Context}
-	 * @return {@code LevelRule} if SigningTime element is present in the constraint file, null otherwise.
 	 */
 	LevelRule getSigningTimeConstraint(Context context);
 
@@ -149,6 +138,15 @@ public interface ValidationPolicy {
 	 * @return {@code LevelRule} if SigningTimeInCertRange element is present in the constraint file, null otherwise.
 	 */
 	LevelRule getSigningTimeInCertRangeConstraint(Context context);
+
+	/**
+	 * Indicates if the signed property: signature type should be checked. If SignatureType element is absent within the
+	 * constraint file then null is returned.
+	 *
+	 * @param context {@link Context}
+	 * @return {@code MultiValuesRule} if SignatureType element is present in the constraint file, null otherwise.
+	 */
+	MultiValuesRule getSignatureTypeConstraint(Context context);
 
 	/**
 	 * Indicates if the signed property: content-type should be checked. If ContentType element is absent within the
@@ -287,6 +285,13 @@ public interface ValidationPolicy {
 	 * @return {@link CryptographicSuite}
 	 */
 	CryptographicSuite getEvidenceRecordCryptographicConstraint();
+
+	/**
+	 * This method returns cryptographic constraints for validation of EAA
+	 *
+	 * @return {@link CryptographicSuite}
+	 */
+	CryptographicSuite getEAACryptographicConstraint();
 
 	/**
 	 * Returns certificate CA constraint
@@ -741,7 +746,7 @@ public interface ValidationPolicy {
 	 * Indicates the country or set of countries under the legislation of which the certificate is issued as a
 	 * qualified certificate is present.
 	 * <p>
-	 * NOTE: in order to verify the EU compliance, the value shall be empty (no QcCCLegislation is allowed)
+	 * NOTE: in order to verify the EU compliance, the value shall be empty (no QcCClegislation is allowed)
 	 *
 	 * @param context {@link Context}
 	 * @param subContext {@link SubContext}
@@ -829,6 +834,33 @@ public interface ValidationPolicy {
 	MultiValuesRule getCertificateQcIdentificationMethodConstraint(Context context, SubContext subContext);
 
 	/**
+	 * Indicates the verification method used for country of legislation of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for country of legislation of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBCountryOfLegislationConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for authentic source of identification of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for authentic source of identification of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBAuthSourceIdentificationConstraint(Context context, SubContext subContext);
+
+	/**
+	 * Indicates the verification method used for legislation identification of the QcPSB QcStatement
+	 *
+	 * @param context {@link Context}
+	 * @param subContext {@link SubContext}
+	 * @return {@code MultiValuesRule} the verification method for legislation identification of the QcPSB QcStatement
+	 */
+	MultiValuesRule getCertificateQcPSBLegislationIdentificationConstraint(Context context, SubContext subContext);
+
+	/**
 	 * Indicates if signing-certificate has been identified.
 	 *
 	 * @param context {@link Context}
@@ -900,6 +932,25 @@ public interface ValidationPolicy {
 	 *         in the constraint file, null otherwise.
 	 */
 	LevelRule getKeyIdentifierMatch(Context context);
+
+	/**
+	 * Indicates if the value of 'x5u' (X.509 URL) header parameter is present within the protected header of the signature
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if X509UrlPresent for a given context element is present
+	 *         in the constraint file, null otherwise.
+	 */
+	LevelRule getX509UrlPresent(Context context);
+
+	/**
+	 * Indicates if the application is able to derive the signing-certificate using the value indicated within
+	 * the 'x5u' header parameter of the protected header of the signature
+	 *
+	 * @param context {@link Context}
+	 * @return {@code LevelRule} if X509UrlMatch for a given context element is present
+	 *         in the constraint file, null otherwise.
+	 */
+	LevelRule getX509UrlMatch(Context context);
 
 	/**
 	 * Indicates if the referenced data is found
@@ -1189,16 +1240,6 @@ public interface ValidationPolicy {
 	 *                                 in the constraint file, null otherwise.
 	 */
 	LevelRule getTimestampContainerSignedAndTimestampedFilesCoveredConstraint();
-
-	/**
-	 * Returns RevocationTimeAgainstBestSignatureTime constraint if present in the policy, null otherwise
-	 *
-	 * @return {@code LevelRule} if RevocationTimeAgainstBestSignatureTime element is present
-	 *                                 in the constraint file, null otherwise.
-	 * @deprecated since DSS 6.4. Please use {@code #getRevocationTimeAgainstBestSignatureTimeConstraint} method instead.
-	 */
-	@Deprecated
-	LevelRule getRevocationTimeAgainstBestSignatureDurationRule();
 
 	/**
 	 * Returns RevocationTimeAgainstBestSignatureTime constraint if present in the policy, null otherwise
@@ -1623,6 +1664,308 @@ public interface ValidationPolicy {
 	 */
 	LevelRule getPDFACompliantConstraint();
 
+	/**
+	 * Returns EAASignatureUnicity constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAASignatureUnicity element is present
+	 */
+	LevelRule getEAASignatureUnicityConstraint();
+
+	/**
+	 * Returns EAASignatureValid constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAASignatureValid element is present
+	 */
+	LevelRule getEAASignatureValidConstraint();
+
+	/**
+	 * Returns DisclosurePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosurePresent element is present
+	 */
+	LevelRule getEAADisclosurePresentConstraint();
+
+	/**
+	 * Returns DisclosureFound constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureFound element is present
+	 */
+	LevelRule getEAADisclosureFoundConstraint();
+
+	/**
+	 * Returns DisclosureIntact constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureIntact element is present
+	 */
+	LevelRule getEAADisclosureIntactConstraint();
+
+	/**
+	 * Returns DisclosureListExhaustive constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if DisclosureListExhaustive element is present
+	 */
+	LevelRule getEAADisclosureListExhaustiveConstraint();
+
+	/**
+	 * Returns KeyBindingSignaturePresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if KeyBindingSignaturePresent element is present
+	 */
+	LevelRule getEAAKeyBindingSignaturePresentConstraint();
+
+	/**
+	 * Returns KeyBindingSignatureValid constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if KeyBindingSignatureValid element is present
+	 */
+	LevelRule getEAAKeyBindingSignatureValidConstraint();
+
+    /**
+     * Returns EAATypeIntegrityPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAATypeIntegrityPresent element is present
+     */
+    LevelRule getEAATypeIntegrityPresentConstraint();
+
+    /**
+     * Returns EAAIdentifierPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAIdentifierPresent element is present
+     */
+    LevelRule getEAAIdentifierPresentConstraint();
+
+    /**
+     * Returns EAAIssuanceDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAIssuanceDatePresent element is present
+     */
+    LevelRule getEAAIssuanceDatePresentConstraint();
+
+	/**
+	 * Returns EAACategory constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAACategory element is present
+	 */
+	MultiValuesRule getEAACategoryConstraint();
+
+	/**
+	 * Returns EAASubject constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAASubject element is present
+	 */
+	MultiValuesRule getEAASubjectConstraint();
+
+	/**
+	 * Returns EAASubjectPseudonym constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAASubjectPseudonym element is present
+	 */
+	MultiValuesRule getEAASubjectPseudonymConstraint();
+
+	/**
+	 * Returns EAAIssuingCountry constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingCountry element is present
+	 */
+	MultiValuesRule getEAAIssuingCountryConstraint();
+
+	/**
+	 * Returns EAAIssuingAuthority constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingAuthority element is present
+	 */
+	MultiValuesRule getEAAIssuingAuthorityConstraint();
+
+	/**
+	 * Returns EAAIssuingAuthorityRegistrationIdentifier constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAIssuingAuthorityRegistrationIdentifier element is present
+	 */
+	MultiValuesRule getEAAIssuingAuthorityRegistrationIdentifierConstraint();
+
+	/**
+	 * Returns EAARevocationPresent constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAARevocationPresent element is present
+	 */
+	LevelRule getEAARevocationPresentConstraint();
+
+	/**
+	 * Returns EAAShortLived constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAShortLived element is present
+	 */
+	LevelRule getEAAShortLivedConstraint();
+
+	/**
+	 * Returns EAAOneTimeUse constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAOneTimeUse element is present
+	 */
+	LevelRule getEAAOneTimeUseConstraint();
+
+	/**
+	 * Returns EAAUsePseudonym constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelConstraint} if EAAUsePseudonym element is present
+	 */
+	LevelRule getEAAUsePseudonymConstraint();
+
+	/**
+	 * Returns EAAClaims constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAAClaims element is present
+	 */
+	MultiValuesRule getEAAClaimsConstraint();
+
+    /**
+     * Returns EAASupportedClaims constraint if present in the policy, null otherwise
+     *
+     * @return {@code MultiValuesRule} if EAASupportedClaims element is present
+     */
+	MultiValuesRule getEAASupportedClaimsConstraint();
+
+	/**
+	 * Returns EAARevocationAvailable constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAARevocationAvailable element is present
+	 */
+	LevelRule getEAARevocationAvailableConstraint();
+
+	/**
+	 * Returns AcceptableEAARevocationFound constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if AcceptableEAARevocationFound element is present
+	 */
+	LevelRule getAcceptableEAARevocationFoundConstraint();
+
+	/**
+	 * Returns NotRevoked constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if NotRevoked element is present
+	 */
+	LevelRule getEAARevocationNotRevokedConstraint();
+
+	/**
+	 * Returns NotOnHold constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if NotOnHold element is present
+	 */
+	LevelRule getEAARevocationNotOnHoldConstraint();
+
+    /**
+     * Returns EAAType constraint if present in the policy, null otherwise
+     *
+     * @return {@code MultiValuesRule} if EAAType element is present
+     */
+    MultiValuesRule getEAATypeConstraint();
+
+    /**
+     * Returns EAANotBeforePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAANotBeforePresent element is present
+     */
+    LevelRule getEAANotBeforePresentConstraint();
+
+    /**
+     * Returns EAAExpirationPresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAExpirationPresent element is present
+     */
+    LevelRule getEAAExpirationPresentConstraint();
+
+	/**
+	 * Returns EAANotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAANotExpired element is present
+	 */
+	LevelRule getEAANotExpiredConstraint();
+
+    /**
+     * Returns EAAAdministrativeIssuanceDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAAdministrativeIssuanceDatePresent element is present
+     */
+    LevelRule getEAAAdministrativeIssuanceDatePresentConstraint();
+
+    /**
+     * Returns EAAAdministrativeExpirationDatePresent constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if EAAAdministrativeExpirationDatePresent element is present
+     */
+    LevelRule getEAAAdministrativeExpirationDatePresentConstraint();
+
+	/**
+	 * Returns EAAAdministrativePeriodNotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAAAdministrativePeriodNotExpired element is present
+	 */
+	LevelRule getEAAAdministrativePeriodNotExpiredConstraint();
+
+    /**
+     * Returns ETSI194721Conformance constraint if present in the policy, null otherwise
+     *
+     * @return {@code LevelRule} if ETSI194721Conformance element is present
+     */
+    LevelRule getEAAETSI194721ConformanceConstraint();
+
+	/**
+	 * Returns StatusTokenType constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if StatusTokenType element is present
+	 */
+	MultiValuesRule getEAARevocationTokenTypeConstraint();
+
+	/**
+	 * Returns UnknownStatus constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if UnknownStatus element is present
+	 */
+	LevelRule getEAARevocationUnknownStatusConstraint();
+
+	/**
+	 * Returns IssuanceTime constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if IssuanceTime element is present
+	 */
+	LevelRule getEAARevocationIssuanceTimeConstraint();
+
+	/**
+	 * Returns ExpirationTime constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if ExpirationTime element is present
+	 */
+	LevelRule getEAARevocationExpirationTimeConstraint();
+
+	/**
+	 * Returns NotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if NotExpired element is present
+	 */
+	LevelRule getEAARevocationNotExpiredConstraint();
+
+	/**
+	 * Returns EAARevocationSubject constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if EAARevocationSubject element is present
+	 */
+	MultiValuesRule getEAARevocationSubjectConstraint();
+
+	/**
+	 * Returns EAARevocationSubjectMatch constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAARevocationSubjectMatch element is present
+	 */
+	LevelRule getEAARevocationSubjectMatchConstraint();
+
+	/**
+	 * Returns EAARevocationIssuerValidAtIssuanceTime constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if EAARevocationIssuerValidAtIssuanceTime element is present
+	 */
+	LevelRule getEAARevocationIssuerValidAtIssuanceTimeConstraint();
+
+
 	/* Article 32 */
 
 	/**
@@ -1671,6 +2014,46 @@ public interface ValidationPolicy {
 	 *                                 in the constraint file, null otherwise.
 	 */
 	LevelRule getTLStructureConstraint();
+
+	/**
+	 * Returns LoTEFreshness constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEFreshness element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	DurationRule getLoTEFreshnessConstraint();
+
+	/**
+	 * Returns LoTEWellSigned constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEWellSigned element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTEWellSignedConstraint();
+
+	/**
+	 * Returns LoTENotExpired constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTENotExpired element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTENotExpiredConstraint();
+
+	/**
+	 * Returns LoTEVersion constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code MultiValuesRule} if LoTEVersion element is present
+	 *                                       in the constraint file, null otherwise.
+	 */
+	MultiValuesRule getLoTEVersionConstraint();
+
+	/**
+	 * Returns LoTEStructure constraint if present in the policy, null otherwise
+	 *
+	 * @return {@code LevelRule} if LoTEStructure element is present
+	 *                                 in the constraint file, null otherwise.
+	 */
+	LevelRule getLoTEStructureConstraint();
 
 	/**
 	 * Returns the used validation model (default is SHELL). Alternatives are CHAIN and HYBRID

@@ -31,7 +31,7 @@ import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.bbb.AbstractMultiValuesCheckItem;
 
 /**
- * Checks if the country code or set of country codes defined in QcCCLegislation is supported by the policy
+ * Checks if the country code or set of country codes defined in QcCClegislation is supported by the policy
  *
  */
 public class CertificateQcCCLegislationCheck extends AbstractMultiValuesCheckItem<XmlSubXCV> {

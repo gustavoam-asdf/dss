@@ -51,6 +51,9 @@ public final class CRLRef extends RevocationRef<CRL> {
 	/** CRL number */
 	private BigInteger crlNumber;
 
+	/** URI reference to the CRL (a hint) */
+	private String crlUri;
+
 	/**
 	 * The default constructor for CRLRef.
 	 *
@@ -117,45 +120,12 @@ public final class CRLRef extends RevocationRef<CRL> {
 	}
 
 	/**
-	 * Sets CRL Issuer
-	 *
-	 * @param crlIssuer {@link X500Principal}
-	 * @deprecated since DSS 6.4. To be removed.
-	 */
-	@Deprecated
-	public void setCrlIssuer(X500Principal crlIssuer) {
-		this.crlIssuer = crlIssuer;
-	}
-
-	/**
-	 * Gets CRL Issued time
-	 *
-	 * @return {@link Date}
-	 * @deprecated since DSS 6.4. Please use {@code #getCrlIssueTime} method instead.
-	 */
-	@Deprecated
-	public Date getCrlIssuedTime() {
-		return crlIssueTime;
-	}
-
-	/**
 	 * Gets CRL Issue time
 	 *
 	 * @return {@link Date}
 	 */
 	public Date getCrlIssueTime() {
 		return crlIssueTime;
-	}
-
-	/**
-	 * Sets CRL Issued time
-	 *
-	 * @param crlIssueTime {@link Date}
-	 * @deprecated since DSS 6.4. To be removed.
-	 */
-	@Deprecated
-	public void setCrlIssuedTime(Date crlIssueTime) {
-		this.crlIssueTime = crlIssueTime;
 	}
 
 	/**
@@ -168,14 +138,21 @@ public final class CRLRef extends RevocationRef<CRL> {
 	}
 
 	/**
-	 * Sets CRL number
+	 * Gets the URI reference to the CRL (a hint)
 	 *
-	 * @param crlNumber {@link BigInteger}
-	 * @deprecated since DSS 6.4. To be removed.
+	 * @return {@link String}
 	 */
-	@Deprecated
-	public void setCrlNumber(BigInteger crlNumber) {
-		this.crlNumber = crlNumber;
+	public String getCrlUri() {
+		return crlUri;
+	}
+
+	/**
+	 * Sets a URI reference to the CRL (a hint)
+	 *
+	 * @param crlUri {@link String}
+	 */
+	public void setCrlUri(String crlUri) {
+		this.crlUri = crlUri;
 	}
 
 	@Override

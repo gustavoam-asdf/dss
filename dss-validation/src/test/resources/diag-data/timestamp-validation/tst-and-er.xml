@@ -805,7 +805,7 @@
         <TrustedList Id="TL_DE_20231127-1300" parent="LOTL_EU_20240123-1300">
             <CountryCode>DE</CountryCode>
             <Url>https://tl.bundesnetzagentur.de/TL-DE.XML</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>125</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-02-01T15:32:50Z</LastLoading>
@@ -816,7 +816,7 @@
         <TrustedList Id="TL_FR_20231124-1603" parent="LOTL_EU_20240123-1300">
             <CountryCode>FR</CountryCode>
             <Url>https://cyber.gouv.fr/sites/default/files/document/tl-fr.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>127</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-02-01T15:32:48Z</LastLoading>
@@ -827,7 +827,7 @@
         <TrustedList Id="LOTL_EU_20240123-1300" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://ec.europa.eu/tools/lotl/eu-lotl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>337</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-02-01T15:32:43Z</LastLoading>

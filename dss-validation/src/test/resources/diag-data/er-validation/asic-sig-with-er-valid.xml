@@ -1527,7 +1527,7 @@
         <TrustedList Id="TL-E2B75237132EC314181C5C5543DC53B00D4472899A8999B8943491CCB54AB6D2" parent="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
             <CountryCode>LU</CountryCode>
             <Url>https://trusted-list.lu/tsl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>56</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-10-10T13:11:31Z</LastLoading>
@@ -1538,7 +1538,7 @@
         <TrustedList Id="TL-601C9A35A8A350C6212D8D10F0B7EAA147964904DBE39329ADD6AF6F343F5BCE" parent="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
             <CountryCode>EL</CountryCode>
             <Url>https://www.eett.gr/tsl/EL-TSL.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>79</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-10-10T13:11:32Z</LastLoading>
@@ -1549,7 +1549,7 @@
         <TrustedList Id="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://ec.europa.eu/tools/lotl/eu-lotl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>346</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2024-10-10T13:11:31Z</LastLoading>

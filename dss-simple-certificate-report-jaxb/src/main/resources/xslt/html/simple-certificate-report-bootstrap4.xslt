@@ -163,6 +163,45 @@
 		        	</dl>
 	        	</xsl:if>
 
+				<xsl:if test="dss:certificateApprovalStatusAtIssuanceTime or dss:certificateApprovalStatusAtValidationTime">
+					<dl>
+						<xsl:attribute name="class">row mb-0</xsl:attribute>
+
+						<dt>
+							<xsl:attribute name="class">col-sm-3</xsl:attribute>
+							Certificate approval status:
+						</dt>
+
+						<dd>
+							<xsl:attribute name="class">col-sm-9</xsl:attribute>
+
+							<ul>
+								<xsl:attribute name="class">list-unstyled mb-0</xsl:attribute>
+
+								<xsl:if test="dss:certificateApprovalStatusAtIssuanceTime">
+									<li>
+										<xsl:attribute name="class">mb-1</xsl:attribute>
+
+										Issuance Time (<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="dss:notBefore"/></xsl:call-template>) :
+
+										<xsl:apply-templates select="dss:certificateApprovalStatusAtIssuanceTime"/>
+									</li>
+								</xsl:if>
+
+								<xsl:if test="dss:certificateApprovalStatusAtValidationTime">
+									<li>
+										<xsl:attribute name="class">mb-1</xsl:attribute>
+
+										Validation Time (<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="$validationTime"/></xsl:call-template>) :
+
+										<xsl:apply-templates select="dss:certificateApprovalStatusAtValidationTime"/>
+									</li>
+								</xsl:if>
+							</ul>
+						</dd>
+					</dl>
+				</xsl:if>
+
 				<xsl:if test="dss:qwacProfile">
 					<dl>
 						<xsl:attribute name="class">row mb-0</xsl:attribute>
@@ -398,7 +437,42 @@
 		</dl>
 	</xsl:template>
 
-	<xsl:template match="dss:qualificationDetailsAtIssuance|dss:qualificationDetailsAtValidation|dss:qwacDetails">
+	<xsl:template match="dss:certificateApprovalStatusAtIssuanceTime|dss:certificateApprovalStatusAtValidationTime">
+		<ul>
+			<xsl:attribute name="class">list-unstyled</xsl:attribute>
+
+			<li>
+				<xsl:attribute name="class">mb-1</xsl:attribute>
+				<xsl:apply-templates select="dss:certificateApprovalStatus"/>
+			</li>
+		</ul>
+	</xsl:template>
+
+	<xsl:template match="dss:certificateApprovalStatus">
+		<span>
+			<xsl:attribute name="class">
+				<xsl:choose>
+					<xsl:when test="@label and contains(@label,'unknown')">badge badge-secondary</xsl:when>
+					<xsl:otherwise>badge badge-primary</xsl:otherwise>
+				</xsl:choose>
+			</xsl:attribute>
+
+			<xsl:choose>
+				<xsl:when test="@label">
+					<xsl:value-of select="@label"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="dss:ServiceTypeIdentifier"/> - <xsl:value-of select="dss:ServiceStatus"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</span>
+
+		<span>
+			<xsl:apply-templates select="dss:Details"/>
+		</span>
+	</xsl:template>
+
+	<xsl:template match="dss:qualificationDetailsAtIssuance|dss:qualificationDetailsAtValidation|dss:qwacDetails|dss:Details">
 		<ul>
 			<xsl:attribute name="class">list-unstyled</xsl:attribute>
 

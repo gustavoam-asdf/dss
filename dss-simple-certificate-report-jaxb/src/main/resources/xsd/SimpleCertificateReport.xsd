@@ -79,6 +79,8 @@
 			<xs:element name="qualificationDetailsAtValidation" type="Details" minOccurs="0" />
 			<xs:element name="qwacProfile" type="QWACProfile" minOccurs="0" />
 			<xs:element name="qwacDetails" type="Details" minOccurs="0" />
+			<xs:element name="certificateApprovalStatusAtIssuanceTime" type="CertificateApprovalStatusAtIssuanceTime" minOccurs="0" />
+			<xs:element name="certificateApprovalStatusAtValidationTime" type="CertificateApprovalStatusAtValidationTime" minOccurs="0" />
 			<xs:element name="enactedMRA" type="xs:boolean" minOccurs="0" />
 			<xs:element name="revocation" type="Revocation" minOccurs="0" />
 			<xs:element name="trustAnchors" type="TrustAnchors" minOccurs="0" />
@@ -170,7 +172,7 @@
 			<xs:element name="countryCode" type="xs:string" />
 			<xs:element name="tslType" type="xs:string" minOccurs="0" />
 			<xs:element name="trustServiceProvider" type="xs:string" />
-			<xs:element name="trustServiceProviderRegistrationId" type="xs:string" />
+			<xs:element name="trustServiceProviderRegistrationId" type="xs:string" minOccurs="0" />
 			<xs:element name="trustServiceName" type="xs:string" />
 		</xs:sequence>
 	</xs:complexType>
@@ -246,6 +248,34 @@
 			<xs:enumeration value="UNEXPECTED_ERROR" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="CertificateApprovalStatusAtIssuanceTime">
+		<xs:complexContent>
+			<xs:extension base="CertificateApprovalStatusAtTime" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateApprovalStatusAtValidationTime">
+		<xs:complexContent>
+			<xs:extension base="CertificateApprovalStatusAtTime" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateApprovalStatusAtTime">
+		<xs:sequence>
+			<xs:element name="certificateApprovalStatus" type="CertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateApprovalStatus">
+		<xs:sequence>
+			<xs:element name="ListType" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceTypeIdentifier" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceStatus" type="xs:string" minOccurs="0" />
+			<xs:element name="Details" type="Details" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="label" type="xs:string" />
+	</xs:complexType>
 
 	<xs:complexType name="Details">
 		<xs:sequence>

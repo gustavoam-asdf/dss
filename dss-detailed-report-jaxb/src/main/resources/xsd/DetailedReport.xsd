@@ -12,11 +12,13 @@
 					<xs:element name="Signature" type="Signature" />
 					<xs:element name="Timestamp" type="Timestamp" />
 					<xs:element name="EvidenceRecord" type="EvidenceRecord" />
+					<xs:element name="EAA" type="EAA" />
 					<xs:element name="Certificate" type="Certificate" />
 				</xs:choice>
 			</xs:sequence>
 			<xs:element type="BasicBuildingBlocks" name="BasicBuildingBlocks" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="TLAnalysis" type="TLAnalysis" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="LoTEAnalysis" type="LoTEAnalysis" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="Semantic" type="Semantic" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<xs:attribute name="ValidationTime" type="xs:dateTime" />
@@ -62,10 +64,24 @@
 		</xs:sequence>
 		<xs:attribute name="Id" type="xs:string" />
 	</xs:complexType>
+
+	<xs:complexType name="EAA">
+		<xs:sequence>
+			<xs:element name="ValidationProcessEAA" type="ValidationProcessEAA"  />
+			<xs:element name="Signature" type="Signature" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="KeyBindingSignature" type="Signature" minOccurs="0" />
+
+			<xs:element name="ValidationEAAQualification" type="ValidationEAAQualification" minOccurs="0" />
+
+			<xs:element name="Conclusion" type="Conclusion" />
+		</xs:sequence>
+		<xs:attribute name="Id" type="xs:string" />
+	</xs:complexType>
 	
 	<xs:complexType name="Certificate">
 		<xs:sequence>
 			<xs:element name="CertificateQualificationProcess" type="CertificateQualificationProcess" />
+			<xs:element name="CertificateApprovalStatusProcess" type="CertificateApprovalStatusProcess" minOccurs="0" />
 			<xs:element name="QWACProcess" type="QWACProcess" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="Id" type="xs:string" />
@@ -76,6 +92,17 @@
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
 					<xs:element name="ValidationCertificateQualification" type="ValidationCertificateQualification" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="Id" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateApprovalStatusProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="ValidationCertificateApprovalStatus" type="ValidationCertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:attribute name="Id" type="xs:string" />
 			</xs:extension>
@@ -103,6 +130,12 @@
 	</xs:complexType>
 	
 	<xs:complexType name="TLAnalysis">
+		<xs:complexContent>
+			<xs:extension base="LoTEAnalysis" />
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="LoTEAnalysis">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:attribute name="CountryCode" type="xs:string" use="optional" /> <!-- can be null in case of parsing task failure -->
@@ -133,6 +166,28 @@
 				<xs:attribute name="CertificateQualification" type="CertificateQualification" use="optional" />
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationCertificateApprovalStatus">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="CertificateApprovalStatus" type="CertificateApprovalStatus" />
+				</xs:sequence>
+				<xs:attribute name="Id" type="xs:string" use="required" />
+				<xs:attribute name="DateTime" type="xs:dateTime" />
+				<xs:attribute name="ValidationTime" type="ValidationTime" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="CertificateApprovalStatus">
+		<xs:sequence>
+			<xs:element name="ListType" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceTypeIdentifier" type="xs:string" minOccurs="0" />
+			<xs:element name="ServiceStatus" type="xs:string" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute name="label" type="xs:string" />
 	</xs:complexType>
 
 	<xs:complexType name="QWACProcess">
@@ -233,6 +288,39 @@
 		</xs:complexContent>
 	</xs:complexType>
 
+	<xs:complexType name="ValidationEAAQualification">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<!-- Processes -->
+					<xs:element name="ValidationEAAQualificationProcess" type="ValidationEAAQualificationProcess" minOccurs="0" />
+					<xs:element name="ValidationPIDQualificationProcess" type="ValidationPIDQualificationProcess" minOccurs="0" />
+					<!-- Result -->
+					<xs:element name="EAAQualification" type="EAAQualification" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationEAAQualificationProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationPIDQualificationProcess">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusion">
+				<xs:sequence>
+					<xs:element name="ValidationCertificateApprovalStatus" type="ValidationCertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:complexType name="ValidationProcessEvidenceRecord">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusionWithProofOfExistence">
@@ -240,6 +328,12 @@
 					<xs:element name="AOV" type="AOV" />
 				</xs:sequence>
 			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ValidationProcessEAA">
+		<xs:complexContent>
+			<xs:extension base="ConstraintsConclusionWithProofOfExistence" />
 		</xs:complexContent>
 	</xs:complexType>
 
@@ -522,6 +616,7 @@
 			<xs:enumeration value="NO_POE" />
 			<xs:enumeration value="CERTIFICATE_CHAIN_GENERAL_FAILURE" />
 			<xs:enumeration value="UNEXPECTED_ERROR" />
+			<xs:enumeration value="EAA_CONSTRAINTS_FAILURE" />
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -585,14 +680,36 @@
 			<xs:enumeration value="N/A" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:simpleType name="EAAQualification" final="restriction">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="QEAA" />
+			<xs:enumeration value="EAA" />
+			<xs:enumeration value="Pub-EAA" />
+			<xs:enumeration value="PID" />
+			<xs:enumeration value="Unknown" />
+
+			<xs:enumeration value="Indeterminate QEAA" />
+			<xs:enumeration value="Indeterminate EAA" />
+			<xs:enumeration value="Indeterminate Pub-EAA" />
+			<xs:enumeration value="Indeterminate PID" />
+			<xs:enumeration value="Indeterminate Unknown" />
+
+			<xs:enumeration value="Not EAA" />
+			<xs:enumeration value="N/A" />
+		</xs:restriction>
+	</xs:simpleType>
 	
 	<xs:simpleType name="Context" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="SIGNATURE" />
 			<xs:enumeration value="COUNTER_SIGNATURE" />
+			<xs:enumeration value="KEY_BINDING_SIGNATURE" />
 			<xs:enumeration value="TIMESTAMP" />
 			<xs:enumeration value="REVOCATION" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="EAA" />
+			<xs:enumeration value="EAA_REVOCATION" />
 			<!-- For Qualification -->
 			<xs:enumeration value="CERTIFICATE" />
 		</xs:restriction>
@@ -640,6 +757,7 @@
 			<xs:enumeration value="AIA" />
 			<xs:enumeration value="TIMESTAMP" />
 			<xs:enumeration value="EVIDENCE_RECORD" />
+			<xs:enumeration value="EAA" />
 			<xs:enumeration value="UNKNOWN" />
 		</xs:restriction>
 	</xs:simpleType>

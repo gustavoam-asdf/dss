@@ -454,11 +454,12 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 	}
 
 	private boolean hasDuplicate(AdvancedSignature currentSignature) {
+		// NOTE: with DSS-3847 we introduce a stricter verification of the signature duplication,
+		// verifying by DSS and DA identifiers across all signature files, as well as a SignatureDigestReference
 		for (AdvancedSignature signature : signatures) {
-			if (currentSignature != signature
-					&& (currentSignature.getId().equals(signature.getId()) ||
-					(currentSignature.getDAIdentifier() != null && currentSignature.getDAIdentifier().equals(signature.getDAIdentifier())
-							&& currentSignature.getFilename() != null && currentSignature.getFilename().equals(signature.getFilename())))) {
+			if (currentSignature != signature && (currentSignature.getId().equals(signature.getId()) ||
+					(currentSignature.getDAIdentifier() != null && currentSignature.getDAIdentifier().equals(signature.getDAIdentifier())) ||
+							currentSignature.getSignatureDigestReference(defaultDigestAlgorithm).equals(signature.getSignatureDigestReference(defaultDigestAlgorithm))) ) {
 				return true;
 			}
 		}
@@ -509,6 +510,7 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 				getXmlCommitmentTypeIndications(signature.getCommitmentTypeIndications()));
 		xmlSignature.getSignerRole().addAll(getXmlSignerRoles(signature.getSignerRoles()));
 
+		xmlSignature.setSignatureType(signature.getSignatureType());
 		xmlSignature.setContentType(signature.getContentType());
 		xmlSignature.setMimeType(signature.getMimeType());
 
@@ -522,7 +524,13 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 		return xmlSignature;
 	}
 
-	private XmlStructuralValidation getXmlStructuralValidation(AdvancedSignature signature) {
+	/**
+	 * Gets structural validation result of advanced signature
+	 *
+	 * @param signature {@link AdvancedSignature}
+	 * @return {@link XmlStructuralValidation}
+	 */
+	protected XmlStructuralValidation getXmlStructuralValidation(AdvancedSignature signature) {
 		return getXmlStructuralValidation(signature.getStructureValidationResult());
 	}
 
@@ -597,7 +605,14 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 		return xmlSignerRoles;
 	}
 
-	private XmlBasicSignature getXmlBasicSignature(AdvancedSignature signature, PublicKey signingCertificatePublicKey) {
+	/**
+	 * Gets {@code XmlBasicSignature} for a signature
+	 *
+	 * @param signature {@link AdvancedSignature}
+	 * @param signingCertificatePublicKey {@link PublicKey}
+	 * @return {@link XmlBasicSignature}
+	 */
+	protected XmlBasicSignature getXmlBasicSignature(AdvancedSignature signature, PublicKey signingCertificatePublicKey) {
 		XmlBasicSignature xmlBasicSignature = new XmlBasicSignature();
 		xmlBasicSignature.setEncryptionAlgoUsedToSignThisToken(signature.getEncryptionAlgorithm());
 		xmlBasicSignature.setKeyLengthUsedToSignThisToken(DSSPKUtils.getStringPublicKeySize(signingCertificatePublicKey));
@@ -692,8 +707,7 @@ public class SignedDocumentDiagnosticDataBuilder extends DiagnosticDataBuilder {
 	}
 
 	private XmlSignatureDigestReference getXmlSignatureDigestReference(AdvancedSignature signature) {
-		SignatureDigestReference signatureDigestReference = signature
-				.getSignatureDigestReference(defaultDigestAlgorithm);
+		SignatureDigestReference signatureDigestReference = signature.getSignatureDigestReference(defaultDigestAlgorithm);
 		if (signatureDigestReference != null) {
 			XmlSignatureDigestReference xmlDigestReference = new XmlSignatureDigestReference();
 			xmlDigestReference.setCanonicalizationMethod(signatureDigestReference.getCanonicalizationMethod());

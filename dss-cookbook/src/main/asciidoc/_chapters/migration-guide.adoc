@@ -14,6 +14,118 @@ For changes within Diagnostic Data XSD please refer <<DiagnosticDataChanges>>.
 For changes within XML Signature Policy please refer <<ValidationPolicyChanges>>.
 
 [cols="2,5,5"]
+.Code changes from version 6.4 to 6.5
+|===
+|Title                               |v6.4                            |v6.5
+a|DPI handling on PDF visual signature creation          a|
+Image is zoomed inversely to the PDF DPI, when no field dimensions defined.
+                                                                     a|
+Image is created keeping the original dimensions, when new DPI behavior is enabled.
+
+Please see the section <<PdfDPI>> for more information.
+
+a|XML Namespace registration          a|
+[source,java]
+----
+import eu.europa.esig.dss.xml.common.definition.DSSNamespace;
+import eu.europa.esig.dss.xml.utils.DomUtils;
+
+DSSNamespace namespace = new DSSNamespace("http://uri.etsi.org/01903/v1.3.2#", "xades");
+Element element = DomUtils.registerNamespace(namespace);
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.xml.common.definition.DSSNamespace;
+import eu.europa.esig.dss.xml.utils.xpath.XPathUtils;
+
+DSSNamespace namespace = new DSSNamespace("http://uri.etsi.org/01903/v1.3.2#", "xades");
+Element element = XPathUtils.registerNamespace(namespace);
+----
+
+a|Selected Namespace validation           a|
+[source,java]
+----
+import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
+import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
+
+XMLDocumentValidator xmlDocumentValidator = new XMLDocumentValidator(xmlDocument);
+...
+List<XAdESPath> xadesPathsHolders = xmlDocumentValidator.getXAdESPathsHolder();
+xadesPathsHolders.clear();
+xadesPathsHolders.add(new XAdES132Path());
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.xades.definition.xades132.XAdES132Path;
+import eu.europa.esig.dss.xades.validation.XMLDocumentValidator;
+import java.util.Collections;
+
+XMLDocumentValidator xmlDocumentValidator = new XMLDocumentValidator(
+        xmlDocument, Collections.singletonList(new XAdES132Path()));
+----
+
+a|XPath DOM lookup          a|
+[source,java]
+----
+import eu.europa.esig.dss.xml.utils.DomUtils;
+import org.w3c.dom.Element;
+
+Element element = DomUtils.getElement(document, "./ds:Signature");
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.xml.common.definition.xmldsig.XMLDSigElement;
+import eu.europa.esig.dss.xml.common.xpath.XPathQuery;
+import eu.europa.esig.dss.xml.common.xpath.XPathQueryBuilder;
+import eu.europa.esig.dss.xml.utils.xpath.XPathUtils;
+import org.w3c.dom.Element;
+
+XPathQuery query = XPathQueryBuilder.fromCurrentPosition().element(XMLDSigElement.SIGNATURE).build();
+Element element = XPathUtils.getElement(document, query);
+----
+
+a|PAdES SecureRandom          a|
+[source,java]
+----
+import eu.europa.esig.dss.pdf.encryption.DSSSecureRandomProvider;
+import eu.europa.esig.dss.pdf.encryption.SecureRandomProvider;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxSignatureService;
+
+PdfBoxSignatureService padesSignatureService = ...
+SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider(parameters);
+padesSignatureService.setSecureRandomProvider(secureRandomProvider);
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxSignatureService;
+import eu.europa.esig.dss.spi.random.DSSSecureRandomProvider;
+import eu.europa.esig.dss.spi.random.SecureRandomProvider;
+
+PdfBoxSignatureService padesSignatureService = ...
+SecureRandomProvider secureRandomProvider = new DSSSecureRandomProvider();
+padesSignatureService.setSecureRandomProvider(secureRandomProvider);
+----
+
+a|TLValidationJob management classes          a|
+[source,java]
+----
+import eu.europa.esig.dss.tsl.cache.CacheCleaner;
+import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
+...
+----
+a|
+[source,java]
+----
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
+----
+
+|===
+
 .Code changes from version 6.3 to 6.4
 |===
 |Title                               |v6.3                            |v6.4

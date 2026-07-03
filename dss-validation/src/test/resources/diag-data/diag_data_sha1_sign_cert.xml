@@ -879,7 +879,7 @@
         <TrustedList Id="TL-90DCC256A302389275B5C190995F4D7FF6D3F088E104789C0E22C15071291BA1" parent="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
             <CountryCode>LT</CountryCode>
             <Url>https://elektroninisparasas.lt/LT-TSL.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>76</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2025-03-18T11:33:04Z</LastLoading>
@@ -891,7 +891,7 @@
         <TrustedList Id="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://ec.europa.eu/tools/lotl/eu-lotl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>360</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2025-03-18T11:33:02Z</LastLoading>

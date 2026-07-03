@@ -20,55 +20,100 @@
  */
 package eu.europa.esig.dss.enumerations;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * This Enumeration defines a list of algorithm described in ETSI TS 119 182-1
- * for incorporation of 'sigD' dictionary (see 5.2.8 The sigD header parameter)
+ * This Enumeration defines a list of algorithm described in ETSI TS 119 182-1 and TS 119 152-1
+ * for incorporation of 'sigD' dictionary
+ * (see 5.2.8 The sigD header parameter and 5.2.9 The sigD header parameter, respectively)
  *
  */
-public enum SigDMechanism implements UriBasedEnum {
+public enum SigDMechanism {
 	
 	/**
-	 * 5.2.8.2	Mechanism HttpHeaders
+	 * 5.2.8.2 Mechanism HttpHeaders
 	 */
-	HTTP_HEADERS("http://uri.etsi.org/19182/HttpHeaders"),
+	HTTP_HEADERS("http://uri.etsi.org/19182/HttpHeaders", null),
 
 	/**
-	 * 5.2.8.3.2	Mechanism ObjectIdByURI
+	 * 5.2.8.3.2 Mechanism ObjectIdByURI
 	 */
-	OBJECT_ID_BY_URI("http://uri.etsi.org/19182/ObjectIdByURI"),
+	OBJECT_ID_BY_URI("http://uri.etsi.org/19182/ObjectIdByURI", "http://uri.etsi.org/19152/ObjectIdByURI"),
 
 	/**
-	 * 5.2.8.3.3	Mechanism ObjectIdByURIHash
-	 * 
+	 * 5.2.8.3.3 Mechanism ObjectIdByURIHash
+	 * <p>
 	 * NOTE: the default signature creation mechanism used by DSS
 	 */
-	OBJECT_ID_BY_URI_HASH("http://uri.etsi.org/19182/ObjectIdByURIHash"),
+	OBJECT_ID_BY_URI_HASH("http://uri.etsi.org/19182/ObjectIdByURIHash", "http://uri.etsi.org/19152/ObjectIdByURIHash"),
 	
 	/**
 	 * Creates a simple DETACHED signature with omitted payload (without SigD element)
 	 */
-	NO_SIG_D("");
-	
-	private final String uri;
-	
-	SigDMechanism(final String uri) {
-		this.uri = uri;
+	NO_SIG_D("", "");
+
+	private static final Logger LOG = LoggerFactory.getLogger(SigDMechanism.class);
+
+	/** JAdES ETSI TS 119 182-1 URI */
+	private final String jadesUri;
+
+	/** CB-AdES ETSI TS 119 152-1 URI */
+	private final String cbadesUri;
+
+	/**
+	 * Default constructor
+	 *
+	 * @param jadesUri {@link String} JAdES ETSI TS 119 182-1 URI
+	 * @param cbadesUri {@link String} CB-AdES ETSI TS 119 152-1 URI
+	 */
+	SigDMechanism(final String jadesUri, final String cbadesUri) {
+		this.jadesUri = jadesUri;
+		this.cbadesUri = cbadesUri;
 	}
 
-	@Override
-	public String getUri() {
-		return uri;
-	}
-	
 	/**
-	 * Returns a SigDMechanism for the given URI
-	 * 
+	 * Returns a JAdES ETSI TS 119 182-1 URI
+	 *
+	 * @return {@link String}
+	 */
+	public String getJAdESUri() {
+		return jadesUri;
+	}
+
+	/**
+	 * Returns a CB-AdES ETSI TS 119 152-1 URI
+	 *
+	 * @return {@link String}
+	 */
+	public String getCBAdESUri() {
+		return cbadesUri;
+	}
+
+	/**
+	 * Returns a SigDMechanism for the given JAdES ETSI TS 119 182-1 URI
+	 *
 	 * @param uri {@link String} URI representing a SigDMechanism
 	 * @return {@link SigDMechanism}
 	 */
-	public static SigDMechanism forUri(final String uri) {
+	public static SigDMechanism forJAdESUri(final String uri) {
 		for (SigDMechanism sigDMechanism : values()) {
-			if (sigDMechanism.getUri().equals(uri)) {
+			if (sigDMechanism.getJAdESUri().equals(uri)) {
+				return sigDMechanism;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns a SigDMechanism for the given CB-AdES ETSI TS 119 152-1 URI
+	 *
+	 * @param uri {@link String} URI representing a SigDMechanism
+	 * @return {@link SigDMechanism}
+	 */
+	public static SigDMechanism forCBAdESUri(final String uri) {
+		for (SigDMechanism sigDMechanism : values()) {
+			if (sigDMechanism.getCBAdESUri() != null && sigDMechanism.getCBAdESUri().equals(uri)) {
 				return sigDMechanism;
 			}
 		}

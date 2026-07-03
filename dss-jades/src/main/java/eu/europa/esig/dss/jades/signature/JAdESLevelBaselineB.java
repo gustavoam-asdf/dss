@@ -31,6 +31,7 @@ import eu.europa.esig.dss.jades.HTTPHeader;
 import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JsonObject;
+import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
 import eu.europa.esig.dss.model.CommitmentQualifier;
 import eu.europa.esig.dss.model.CommonCommitmentType;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -66,7 +67,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The class builds a JOSE header according to EN 119-182
+ * The class builds a JOSE header according to TS 119-182
  *
  */
 public class JAdESLevelBaselineB {
@@ -124,12 +125,12 @@ public class JAdESLevelBaselineB {
 		// RFC 7797
 		incorporateB64();
 		
-		// EN 119-182 headers
+		// TS 119-182 headers
 		incorporateSigningTime();
 		incorporateX509CertificateDigests();
 		incorporateSignerCommitments();
 		incorporateSignatureProductionPlace();
-		incorporateSignerRoles();
+		incorporateSignerAttributes();
 		incorporateContentTimestamps();
 		incorporateSignaturePolicy();
 		incorporateDetachedContents();
@@ -194,8 +195,15 @@ public class JAdESLevelBaselineB {
 	 * Incorporates 5.1.4 The kid (key identifier) header parameter
 	 */
 	protected void incorporateKeyIdentifier() {
-		if (parameters.isIncludeKeyIdentifier() && parameters.getSigningCertificate() != null) {
-			addHeader(HeaderParameterNames.KEY_ID, DSSJsonUtils.generateKid(parameters.getSigningCertificate()));
+		if (parameters.isIncludeKeyIdentifier()) {
+			String kid = parameters.getKeyIdentifier();
+			if (kid == null && parameters.getSigningCertificate() != null) {
+				byte[] issuerSerial = DSSUtils.generateKid(parameters.getSigningCertificate());
+				kid = Utils.toBase64(issuerSerial);
+			}
+			if (kid != null) {
+				addHeader(HeaderParameterNames.KEY_ID, kid);
+			}
 		}
 	}
 
@@ -283,32 +291,36 @@ public class JAdESLevelBaselineB {
 	 */
 	protected void incorporateType() {
 		if (parameters.isIncludeSignatureType()) {
-			
-			/*
-			 * RFC 7515 : 4.1.9. "typ" (Type) Header Parameter
-			 * 
-			 * The "typ" value "JOSE" can be used by applications to indicate that
-			 * this object is a JWS or JWE using the JWS Compact Serialization or
-			 * the JWE Compact Serialization.  The "typ" value "JOSE+JSON" can be
-			 * used by applications to indicate that this object is a JWS or JWE
-			 * using the JWS JSON Serialization or the JWE JSON Serialization.
-			 */
-			
-			MimeType signatureMimeType;
-			switch (parameters.getJwsSerializationType()) {
-				case COMPACT_SERIALIZATION:
-					signatureMimeType = MimeTypeEnum.JOSE;
-					break;
-				case JSON_SERIALIZATION:
-				case FLATTENED_JSON_SERIALIZATION:
-					signatureMimeType = MimeTypeEnum.JOSE_JSON;
-					break;
-				default:
-					throw new DSSException(String.format("The given JWS serialization type '%s' is not supported!", 
-							parameters.getJwsSerializationType()));
+
+			String signatureType = parameters.getSignatureType();
+			if (Utils.isStringEmpty(signatureType)) {
+				/*
+				 * RFC 7515 : 4.1.9. "typ" (Type) Header Parameter
+				 *
+				 * The "typ" value "JOSE" can be used by applications to indicate that
+				 * this object is a JWS or JWE using the JWS Compact Serialization or
+				 * the JWE Compact Serialization.  The "typ" value "JOSE+JSON" can be
+				 * used by applications to indicate that this object is a JWS or JWE
+				 * using the JWS JSON Serialization or the JWE JSON Serialization.
+				 */
+
+				MimeType signatureMimeType;
+				switch (parameters.getJwsSerializationType()) {
+					case COMPACT_SERIALIZATION:
+						signatureMimeType = MimeTypeEnum.JOSE;
+						break;
+					case JSON_SERIALIZATION:
+					case FLATTENED_JSON_SERIALIZATION:
+						signatureMimeType = MimeTypeEnum.JOSE_JSON;
+						break;
+					default:
+						throw new DSSException(String.format("The given JWS serialization type '%s' is not supported!",
+								parameters.getJwsSerializationType()));
+				}
+				signatureType = signatureMimeType.getMimeTypeString();
 			}
 			
-			String type = getRFC7515ConformantMimeTypeString(signatureMimeType.getMimeTypeString());
+			String type = getRFC7515ConformantMimeTypeString(signatureType);
 			addHeader(HeaderParameterNames.TYPE, type);
 		}
 	}
@@ -355,21 +367,24 @@ public class JAdESLevelBaselineB {
 
 		}
 	}
-	
+
 	/**
 	 * Incorporates 5.1.11 iat or 5.2.1 sigT (claimed signing time) header parameter
 	 */
 	protected void incorporateSigningTime() {
-		final Date signingDate = parameters.bLevel().getSigningDate();
-		switch (parameters.getJadesSigningTimeType()) {
+        final Date signingDate = parameters.bLevel().getSigningDate();
+        switch (parameters.getJadesSigningTimeType()) {
 			case IAT:
-				long signedTimeInSeconds = DSSJsonUtils.getTimeValueInSeconds(signingDate.getTime());
-				addHeader(JAdESHeaderParameterNames.IAT, signedTimeInSeconds);
+				long signedTimeInSeconds = DSSUtils.getTimeValueInSeconds(signingDate.getTime());
+				addHeader(JWTClaimNames.IAT, signedTimeInSeconds);
 				break;
 			case SIG_T:
 				final String stringSigningTime = DSSUtils.formatDateToRFC(signingDate);
 				addHeader(JAdESHeaderParameterNames.SIG_T, stringSigningTime);
 				break;
+            case NONE:
+                // No signing time header to incorporate
+                break;
 			default:
 				throw new UnsupportedOperationException(String.format(
 						"The JAdESSigningTimeType '%s' is not supported!", parameters.getJadesSigningTimeType()));
@@ -510,7 +525,7 @@ public class JAdESLevelBaselineB {
 	/**
 	 * Incorporates 5.2.5 The srAts (signer attributes) header parameter
 	 */
-	protected void incorporateSignerRoles() {
+	protected void incorporateSignerAttributes() {
 		Map<String, Object> srAtsParams = new LinkedHashMap<>();
 
 		// TODO : certified are not supported
@@ -657,7 +672,7 @@ public class JAdESLevelBaselineB {
 
 	private void assertSignaturePolicyValid(Policy signaturePolicy) {
 		if (Utils.isStringEmpty(signaturePolicy.getId())) {
-			// see EN 119-182 ch. 5.2.7.1 Semantics and syntax ('id' is required)
+			// see TS 119-182 ch. 5.2.7.1 Semantics and syntax ('id' is required)
 			throw new IllegalArgumentException("Implicit policy is not allowed in JAdES! The signaturePolicyId attribute is required!");
 		}
 		if (signaturePolicy.isHashAsInTechnicalSpecification() &&
@@ -668,10 +683,10 @@ public class JAdESLevelBaselineB {
 
 	private List<JsonObject> getSignaturePolicyQualifiers(Policy signaturePolicy) {
 		List<JsonObject> sigPQualifiers = new ArrayList<>();
-		/**
+		/*
 		 * NOTE: Intermediate objects are created in order to allow multiple instances of the same qualifiers
 		 *
-		 * EN 119-182 ch. 5.2.7.1 Semantics and syntax:
+		 * TS 119-182 ch. 5.2.7.1 Semantics and syntax:
 		 * The sigPQuals member may contain one or more qualifiers of the same type.
 		 */
 		final String spuri = signaturePolicy.getSpuri();
@@ -787,14 +802,14 @@ public class JAdESLevelBaselineB {
 		 */
 		if (SigDMechanism.HTTP_HEADERS.equals(parameters.getSigDMechanism()) && parameters.isBase64UrlEncodedPayload()) {
 			throw new IllegalArgumentException(String.format("'%s' SigD Mechanism can be used only with non-base64url encoded payload! "
-					+ "Set JAdESSignatureParameters.setBase64UrlEncodedPayload(false).", SigDMechanism.HTTP_HEADERS.getUri()));
+					+ "Set JAdESSignatureParameters.setBase64UrlEncodedPayload(false).", SigDMechanism.HTTP_HEADERS.getJAdESUri()));
 		}
 	}
 
 	private Map<String, Object> getSigDForHttpHeadersMechanism(List<DSSDocument> detachedContents) {
 		Map<String, Object> sigDParams = new LinkedHashMap<>();
 
-		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.HTTP_HEADERS.getUri());
+		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.HTTP_HEADERS.getJAdESUri());
 		sigDParams.put(JAdESHeaderParameterNames.PARS, getHttpHeaderNames(detachedContents));
 
 		return sigDParams;
@@ -803,7 +818,7 @@ public class JAdESLevelBaselineB {
 	private Map<String, Object> getSigDForObjectIdByUriMechanism(List<DSSDocument> detachedContents) {
 		Map<String, Object> sigDParams = new LinkedHashMap<>();
 		
-		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.OBJECT_ID_BY_URI.getUri());
+		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.OBJECT_ID_BY_URI.getJAdESUri());
 		sigDParams.put(JAdESHeaderParameterNames.PARS, getSignedDataReferences(detachedContents));
 
 		sigDParams.put(JAdESHeaderParameterNames.CTYS, getSignedDataMimeTypesIfPresent(detachedContents));
@@ -814,7 +829,7 @@ public class JAdESLevelBaselineB {
 	private Map<String, Object> getSigDForObjectIdByUriHashMechanism(List<DSSDocument> detachedContents) {
 		Map<String, Object> sigDParams = new LinkedHashMap<>();
 		
-		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.OBJECT_ID_BY_URI_HASH.getUri());
+		sigDParams.put(JAdESHeaderParameterNames.M_ID, SigDMechanism.OBJECT_ID_BY_URI_HASH.getJAdESUri());
 		sigDParams.put(JAdESHeaderParameterNames.PARS, getSignedDataReferences(detachedContents));
 		
 		DigestAlgorithm digestAlgorithm = getReferenceDigestAlgorithmOrDefault();
@@ -921,8 +936,8 @@ public class JAdESLevelBaselineB {
 	 */
 	private void incorporateExpirationTime() {
 		if (parameters.getExpirationTime() != null) {
-			long expirationTimeInSeconds = DSSJsonUtils.getTimeValueInSeconds(parameters.getExpirationTime().getTime());
-			addHeader(JAdESHeaderParameterNames.EXP, expirationTimeInSeconds);
+			long expirationTimeInSeconds = DSSUtils.getTimeValueInSeconds(parameters.getExpirationTime().getTime());
+			addHeader(JWTClaimNames.EXP, expirationTimeInSeconds);
 		}
 	}
 	

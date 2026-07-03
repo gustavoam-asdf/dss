@@ -42,9 +42,9 @@ public class ITextDefaultSignatureDrawerFactory implements ITextSignatureDrawerF
 		final SignatureImageTextParameters textParameters = imageParameters.getTextParameters();
 
 		if ((image == null) && !textParameters.isEmpty()) {
-			return new TextOnlySignatureDrawer();
+			return getTextOnlySignatureDrawer();
 		} else if ((image != null) && textParameters.isEmpty()) {
-			return new ImageOnlySignatureDrawer();
+			return getImageOnlySignatureDrawer();
 		} else if (image == null && textParameters.isEmpty()) {
 			throw new IllegalArgumentException("Neither image nor text parameters are defined!");
 		} else {
@@ -52,6 +52,24 @@ public class ITextDefaultSignatureDrawerFactory implements ITextSignatureDrawerF
 			// IPdfObjFactory
 			throw new UnsupportedOperationException("Image with Text visual signature is not supported for OpenPDF module!");
 		}
+	}
+
+	/**
+	 * Gets a visual signature drawer with text only visual data
+	 *
+	 * @return {@link ITextSignatureDrawer}
+	 */
+	protected ITextSignatureDrawer getTextOnlySignatureDrawer() {
+		return new TextOnlySignatureDrawer();
+	}
+
+	/**
+	 * Gets a visual signature drawer with image only visual data
+	 *
+	 * @return {@link ITextSignatureDrawer}
+	 */
+	protected ITextSignatureDrawer getImageOnlySignatureDrawer() {
+		return new ImageOnlySignatureDrawer();
 	}
 
 }

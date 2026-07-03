@@ -518,6 +518,7 @@ For execution of the validation process, DSS uses the `SignedDocumentValidator` 
 * `PDFDocumentValidator` - validates documents in PDF format (PADES format);
 * `JWSCompactDocumentValidator` - validates documents with base64url encoded content (JAdES compact format);
 * `JWSSerializationDocumentValidator` - validates documents in JSON format (JAdES serialization formats);
+* `COSEDocumentValidator` - validates documents in COSE (CBOR) format (CB-AdES format);
 * `ASiCContainerWithXAdESValidator` - validates ASiC with XAdES containers;
 * `ASiCContainerWithCAdESValidator` - validates ASiC with CAdES containers;
 * `DetachedTimestampValidator` - validates CMS timestamps provided alone.
@@ -647,6 +648,19 @@ DSS allows adding the certificate that was used to sign the document to the inpu
 .Provide signing-certificate to the validation
 ----
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/SignedDocumentValidatorTest.java[tags=demo-signing-certificate]
+----
+
+While any implementation of a `CertificateSource` can be used to provide a source of signing certificates, DSS provides a few format specific implementations, such as:
+
+* `KidCertificateSource` - allow providing a collection of certificates by a unique `kid` (key identifier) value. The certificate source can be used for referencing certificates in JAdES and CB-AdES signature formats by the corresponding signed header parameter.
+* `X509URLCertificateSource` - allow providing a collection of certificates by a unique `x5u` (X509 URL) value. The certificate source can be used for referencing certificates in JAdES and CB-AdES signature formats by the corresponding signed header parameter.
+* `CommonX509URLCertificateSource` - Default implementation of the `X509URLCertificateSource` allowing manual configuration of the URL to certificate(s) mapping or dynamically by using a `DataLoader` (see an example below).
+* `COSEX509URLCertificateSource` - Implementation of the `X509URLCertificateSource` allowing extraction of CBOR encoded certificates, as defined in RFC 9360 (used in CB-AdES).
+
+[source,java,indent=0]
+.Provide X509URLCertificateSource to the validation
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/SignedDocumentValidatorTest.java[tags=x509CertSource]
 ----
 
 ==== Trusted Certificates
@@ -929,6 +943,7 @@ The following implementations are present in DSS:
 * `XMLDocumentValidatorFactory`: loads `XMLDocumentValidator`, used for a XAdES validation (delivered in `dss-xades` module);
 * `PDFDocumentValidatorFactory`: loads `PDFDocumentValidator`, used for a PAdES validation (delivered in `dss-pades` module);
 * `JAdESDocumentValidatorFactory`: loads `JWSCompactDocumentValidator` or `JWSSerializationDocumentValidator`, depending on provided JSON signature type (delivered in `dss-jades` module);
+* `COSEDocumentValidatorFactory`: loads `COSEDocumentValidator`, used for a COSE (CBOR) validation (delivered in `dss-cb-ades` module);
 * `ASiCContainerWithCAdESValidatorFactory`: loads `ASiCContainerWithCAdESValidator` (delivered in `dss-asic-cades` module);
 * `ASiCContainerWithXAdESValidatorFactory`: loads `ASiCContainerWithXAdESValidator` (delivered in `dss-asic-xades` module);
 * `DetachedTimestampValidatorFactory`: loads `DetachedTimestampValidator`, for an independent timestamp validation (delivered in `dss-document` module).
@@ -984,6 +999,48 @@ Within the framework code, DSS delivers a `DefaultSignaturePolicyValidatorLoader
 If a more advanced configuration of the `SignaturePolicyValidator` loading process is required, a custom implementation of the `SignaturePolicyValidatorLoader` can be created.
 
 === Format specificities
+
+==== XAdES
+
+[[XPathQueryExpressions]]
+===== XPath query expressions
+
+Since version `6.5` DSS provides a customization of XPath queries execution, used on a XAdES processing for elements of interest lookup and extraction (mainly in augmentation and validation processes).
+
+The configuration of the default behavior can be useful on processing of large XML documents with many XML nodes inside in order to improve performance of a XAdES augmentation and/or validation.
+
+For customization of the behavior, DSS provides the following interfaces:
+
+* `eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor` - performs node extraction based on XPath expressions execution on XAdES processing, including augmentation and validation processes (less on signing, as it is required only occasionally).
+* `eu.europa.esig.dss.xml.utils.xpath.XPathStringExecutor` - performs string XPath queries execution. Currently only used in pair with the `XAdESSignatureParameters#setXPathLocationString` method usage.
+
+NOTE: The scope of the XPath executors is limited to the aforementioned components. As such, the XPath executors do not currently apply on XPath transform processing within a `ds:Reference` element.
+
+Alternative implementations shall implement the target interface. Within DSS package the following implementations are provided:
+
+* `JavaXmlXPathQueryExecutor` _(Default)_ - The XPath expressions processing implementation based on the `javax.xml.xpath` package classes. This implementation replicates the behavior on XPath processing in previous versions of DSS, before `6.4` (inclusive).
+* `NativeDOMXPathQueryExecutor` _(Experimental)_ - Alternative implementation of XPath expressions handling, aiming to improve the performance of XPath queries execution. This implementation works on pure `org.w3c.dom` package elements, such as `Node` lookup and processing.
+
+NOTE: DSS `6.5` uses the _legacy_ implementation of XPath expressions execution. We aim to switch the default implementation to the `NativeDOMXPathQueryExecutor` in the future version of DSS, thus improving XML processing performance out of the box.
+
+DSS provides two ways of the implementation configuration:
+
+1) Using a `ServiceLoader` _(recommended)_. A definition of the class implementation shall be provided in the folder `META-INF/services` within the root directory of the project, in a file with a name corresponding to the full path of the target interface. For instance, for a `XPathQueryExecutor` implementation configuration, the filename `eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor` shall be used. The file itself shall contain a selected implementation, as shown below for an example:
+[source,indent=0]
+./META-INF/services/eu.europa.esig.dss.xml.utils.xpath.XPathQueryExecutor
+----
+eu.europa.esig.dss.xml.utils.xpath.NativeDOMXPathQueryExecutor
+----
+
+2) Using `XPathUtils` (for `XPathQueryExecutor` only). The chosen implementation can be provided directly using a corresponding setter within the `XPathUtils` class, as shown below:
+
+[source,java,indent=0]
+.XPathQueryExecutor configuration using XPathUtils
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/XPathSnippet.java[tags=demo]
+----
+
+NOTE: It is also possible to integrate a third-party dependency to be used within a custom alternative XPath executor implementation. As such, successful tests have been performed on using a `Saxon-HE` library for XPath execution.
 
 ==== PAdES
 

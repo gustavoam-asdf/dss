@@ -40,6 +40,11 @@ public enum JAdESSigningTimeType {
      * Instead, the iaT header parameter should be included.
      * Starting at 2025-07-15T00:00:00Z this header parameter shall not be incorporated in new JAdES signatures.
      */
-    SIG_T
+    SIG_T,
+
+    /**
+     * No signing time header
+     */
+    NONE
 
 }

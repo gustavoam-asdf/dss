@@ -38,14 +38,16 @@ import eu.europa.esig.dss.pades.DSSFont;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pdf.AnnotationBox;
-import eu.europa.esig.dss.pdf.encryption.DSSSecureRandomProvider;
 import eu.europa.esig.dss.pdf.visible.ImageRotationUtils;
 import eu.europa.esig.dss.pdf.visible.ImageUtils;
 import eu.europa.esig.dss.pdf.visible.SignatureFieldDimensionAndPosition;
 import eu.europa.esig.dss.spi.DSSUtils;
+import eu.europa.esig.dss.spi.random.DSSSecureRandomProvider;
+import eu.europa.esig.dss.spi.random.SecureRandomProvider;
 import eu.europa.esig.dss.utils.Utils;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SecureRandom;
@@ -62,11 +64,26 @@ public class TextOnlySignatureDrawer extends AbstractITextSignatureDrawer {
 	 */
 	private Font iTextFont;
 
+	/** Used to generate encrypted content for protected documents */
+	private SecureRandomProvider secureRandomProvider;
+
 	/**
 	 * Default constructor with null font
 	 */
 	public TextOnlySignatureDrawer() {
 		// empty
+	}
+
+	/**
+	 * Gets a class to generate an instance of {@code SecureRandom} for signing/augmentation of protected PDF files
+	 *
+	 * @return {@link SecureRandomProvider}
+	 */
+	protected SecureRandomProvider getSecureRandomProvider() {
+		if (secureRandomProvider == null) {
+			secureRandomProvider = new DSSSecureRandomProvider();
+		}
+		return secureRandomProvider;
 	}
 	
 	@Override
@@ -114,7 +131,8 @@ public class TextOnlySignatureDrawer extends AbstractITextSignatureDrawer {
 				baseFont.setSubset(fileFont.isEmbedFontSubset());
 
 				// Provide SecureRandom to ensure deterministic computation
-				SecureRandom secureRandom = new DSSSecureRandomProvider(parameters).getSecureRandom();
+				byte[] seed = buildSeed(parameters);
+				SecureRandom secureRandom = getSecureRandomProvider().getSecureRandom(seed);
 				baseFont.setSecureRandom(secureRandom);
 
 				return baseFont;
@@ -126,6 +144,18 @@ public class TextOnlySignatureDrawer extends AbstractITextSignatureDrawer {
 		} else {
 			DefaultFontMapper fontMapper = new DefaultFontMapper();
 			return fontMapper.awtToPdf(dssFont.getJavaFont());
+		}
+	}
+
+	private byte[] buildSeed(SignatureImageParameters parameters) {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			if (parameters != null) {
+				baos.write(parameters.toString().getBytes());
+			}
+			return baos.toByteArray();
+
+		} catch (IOException e) {
+			throw new DSSException(String.format("Unable to build a seed value. Reason : %s", e.getMessage()), e);
 		}
 	}
 

@@ -65,7 +65,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -80,7 +81,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -95,7 +97,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -110,7 +113,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -125,7 +129,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -140,7 +145,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -155,7 +161,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -170,7 +177,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -185,7 +193,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -200,7 +209,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
 
         // add global
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA256,
@@ -218,7 +228,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(fullSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
-        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableDigestAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableDigestAlgorithms().keySet());
     }
 
     @Test
@@ -243,7 +254,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -258,7 +270,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -273,7 +286,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -288,7 +302,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -303,7 +318,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -318,7 +334,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -333,7 +350,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -348,7 +366,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -363,7 +382,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA224,
@@ -378,7 +398,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         // add global
         algorithmList.add(createSignatureAlgorithmDefinition(SignatureAlgorithm.RSA_SHA256,
@@ -396,7 +417,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(fullSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
     }
 
     @Test
@@ -423,7 +445,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -440,7 +463,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -457,7 +481,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -474,7 +499,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -491,7 +517,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(expectedSet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -508,7 +535,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -525,7 +553,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -542,7 +571,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -559,7 +589,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         algorithmList.clear();
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA224,
@@ -576,7 +607,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         // add global
         algorithmList.add(createDigestAlgorithmDefinition(DigestAlgorithm.SHA256,
@@ -594,7 +626,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(fullSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(fullSet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(sha256Set, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         // same definitions
         algorithmList.clear();
@@ -612,7 +645,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         // same inclusive
         algorithmList.clear();
@@ -630,7 +664,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(expectedSet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
 
         // different
         algorithmList.clear();
@@ -648,7 +683,8 @@ public class CryptographicSuiteCatalogueTest {
         assertEquals(emptySet, cryptographicSuiteCatalogue.getRevocationCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
         assertEquals(emptySet, cryptographicSuiteCatalogue.getTimestampCertificatesCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
-        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordSignatureCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEvidenceRecordCryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
+        assertEquals(emptySet, cryptographicSuiteCatalogue.getEAACryptographicSuite().getAcceptableSignatureAlgorithms().keySet());
     }
 
     private CryptographicSuiteAlgorithm createDigestAlgorithmDefinition(DigestAlgorithm digestAlgorithm, List<EvaluationDTO> evaluationList) {

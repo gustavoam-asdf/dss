@@ -24,6 +24,7 @@ package eu.europa.esig.dss.pdf.pdfbox;
 import eu.europa.esig.dss.pdf.AbstractPdfObjFactory;
 import eu.europa.esig.dss.pdf.PDFServiceMode;
 import eu.europa.esig.dss.pdf.PDFSignatureService;
+import eu.europa.esig.dss.pdf.pdfbox.visible.PdfBoxSignatureDrawerFactory;
 import eu.europa.esig.dss.pdf.pdfbox.visible.nativedrawer.PdfBoxNativeSignatureDrawerFactory;
 
 /**
@@ -41,22 +42,31 @@ public class PdfBoxNativeObjectFactory extends AbstractPdfObjFactory {
 
 	@Override
 	public PDFSignatureService newPAdESSignatureService() {
-		return configure(new PdfBoxSignatureService(PDFServiceMode.SIGNATURE, new PdfBoxNativeSignatureDrawerFactory()));
+		return configure(new PdfBoxSignatureService(PDFServiceMode.SIGNATURE, getSignatureDrawerFactory()));
 	}
 
 	@Override
 	public PDFSignatureService newContentTimestampService() {
-		return configure(new PdfBoxSignatureService(PDFServiceMode.CONTENT_TIMESTAMP, new PdfBoxNativeSignatureDrawerFactory()));
+		return configure(new PdfBoxSignatureService(PDFServiceMode.CONTENT_TIMESTAMP, getSignatureDrawerFactory()));
 	}
 
 	@Override
 	public PDFSignatureService newSignatureTimestampService() {
-		return configure(new PdfBoxSignatureService(PDFServiceMode.SIGNATURE_TIMESTAMP, new PdfBoxNativeSignatureDrawerFactory()));
+		return configure(new PdfBoxSignatureService(PDFServiceMode.SIGNATURE_TIMESTAMP, getSignatureDrawerFactory()));
 	}
 
 	@Override
 	public PDFSignatureService newArchiveTimestampService() {
-		return configure(new PdfBoxSignatureService(PDFServiceMode.ARCHIVE_TIMESTAMP, new PdfBoxNativeSignatureDrawerFactory()));
+		return configure(new PdfBoxSignatureService(PDFServiceMode.ARCHIVE_TIMESTAMP, getSignatureDrawerFactory()));
+	}
+
+	/**
+	 * Gets signature drawer factory
+	 *
+	 * @return {@link PdfBoxSignatureDrawerFactory}
+	 */
+	protected PdfBoxSignatureDrawerFactory getSignatureDrawerFactory() {
+		return new PdfBoxNativeSignatureDrawerFactory();
 	}
 
 }

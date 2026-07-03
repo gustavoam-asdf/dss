@@ -28,6 +28,7 @@ import eu.europa.esig.dss.enumerations.QCTypeEnum;
 import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pki.jaxb.XmlGeneralName;
+import eu.europa.esig.dss.pki.jaxb.XmlQcPSB;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.OID;
@@ -39,6 +40,7 @@ import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERPrintableString;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AccessDescription;
@@ -149,6 +151,9 @@ public class X509CertificateBuilder {
     /** List of QcQSCDlegislations */
     private List<String> qcQSCDlegislations;
 
+    /** Defined a certificate for Pub-EAA */
+    private XmlQcPSB qcPSB;
+
     /** Whether the ocsp-no-check extension should be present */
     private boolean ocspNoCheck;
 
@@ -183,28 +188,6 @@ public class X509CertificateBuilder {
      * Sets mandatory information about the certificate's issuer to sign the created certificate
      *
      * @param issuerName {@link X500Name} representing a DN issuer name of the certificate to be created
-     * @param issuerPrivateKey {@link PrivateKey} of the issuer certificate to sign the certificate
-     * @param signatureAlgorithm {@link SignatureAlgorithm} to be used on signature creation
-     * @return {@link X509CertificateBuilder} this
-     * @deprecated since DSS 6.4. Please use {@code #issuer(X500Name issuerName, KeyPair issuerKeyPair, SignatureAlgorithm signatureAlgorithm)}
-     *             method instead
-     */
-    @Deprecated
-    public X509CertificateBuilder issuer(X500Name issuerName, PrivateKey issuerPrivateKey, SignatureAlgorithm signatureAlgorithm) {
-        Objects.requireNonNull(issuerName, "IssuerName cannot be null!");
-        Objects.requireNonNull(issuerPrivateKey, "issuerPrivateKey cannot be null!");
-        Objects.requireNonNull(signatureAlgorithm, "SignatureAlgorithm cannot be null!");
-
-        this.issuerName = issuerName;
-        this.issuerKey = issuerPrivateKey;
-        this.signatureAlgorithm = signatureAlgorithm;
-        return this;
-    }
-
-    /**
-     * Sets mandatory information about the certificate's issuer to sign the created certificate
-     *
-     * @param issuerName {@link X500Name} representing a DN issuer name of the certificate to be created
      * @param issuerKeyPair {@link KeyPair} of the issuer certificate
      * @param signatureAlgorithm {@link SignatureAlgorithm} to be used on signature creation
      * @return {@link X509CertificateBuilder} this
@@ -218,23 +201,6 @@ public class X509CertificateBuilder {
         this.issuerKeyPair = issuerKeyPair;
         this.signatureAlgorithm = signatureAlgorithm;
         return this;
-    }
-
-    /**
-     * Sets mandatory information about the certificate's issuer to sign the created certificate
-     * with a CertificateToken of the issuer
-     *
-     * @param issuerCertificate {@link CertificateToken} representing a certificate token of the issuer
-     * @param issuerPrivateKey {@link PrivateKey} of the issuer certificate to sign the certificate
-     * @param signatureAlgorithm {@link SignatureAlgorithm} to be used on signature creation
-     * @return {@link X509CertificateBuilder} this
-     * @deprecated since DSS 6.4. Please use {@code #issuer(CertificateToken issuerCertificate, KeyPair issuerKeyPair, SignatureAlgorithm signatureAlgorithm)}
-     *             method instead
-     */
-    @Deprecated
-    public X509CertificateBuilder issuer(CertificateToken issuerCertificate, PrivateKey issuerPrivateKey, SignatureAlgorithm signatureAlgorithm) {
-        Objects.requireNonNull(issuerCertificate, "CertificateToken cannot be null!");
-        return issuer(DSSASN1Utils.getX509CertificateHolder(issuerCertificate).getSubject(), issuerPrivateKey, signatureAlgorithm);
     }
 
     /**
@@ -353,6 +319,17 @@ public class X509CertificateBuilder {
     }
 
     /**
+     * Sets definition for a Public Sector Body certificate
+     *
+     * @param qcPSB {@link XmlQcPSB}
+     * @return {@link X509CertificateBuilder} this
+     */
+    public X509CertificateBuilder qcPSB(XmlQcPSB qcPSB) {
+        this.qcPSB = qcPSB;
+        return this;
+    }
+
+    /**
      * Sets whether the certificate is a CA certificate
      *
      * @param ca whether the certificate is a CA certificate
@@ -462,7 +439,7 @@ public class X509CertificateBuilder {
             addSubjectAlternativeNames(certBuilder);
         }
 
-        if (qcStatements != null || qcTypes != null || qcCClegislations != null || qcQSCDlegislations != null) {
+        if (qcStatements != null || qcTypes != null || qcCClegislations != null || qcQSCDlegislations != null || qcPSB != null) {
             addQCStatementIds(certBuilder);
         }
 
@@ -548,7 +525,7 @@ public class X509CertificateBuilder {
 
     private void addQCStatementIds(X509v3CertificateBuilder certBuilder) throws CertIOException {
         if (Utils.isCollectionNotEmpty(qcStatements) || Utils.isCollectionNotEmpty(qcTypes)
-                || Utils.isCollectionNotEmpty(qcCClegislations) || Utils.isCollectionNotEmpty(qcQSCDlegislations)) {
+                || Utils.isCollectionNotEmpty(qcCClegislations) || Utils.isCollectionNotEmpty(qcQSCDlegislations) || qcPSB != null) {
             certBuilder.addExtension(Extension.qCStatements, false, getQCStatementsIds());
         }
     }
@@ -595,6 +572,17 @@ public class X509CertificateBuilder {
 
             QCStatement qcQSCDlegislation = new QCStatement(OID.id_etsi_qcs_QcQSCDlegislation, new DERSequence(qscdlegislationVector));
             vector.add(qcQSCDlegislation);
+        }
+
+        // QC PSB
+        if (qcPSB != null) {
+            ASN1EncodableVector qcPSBVector = new ASN1EncodableVector();
+            qcPSBVector.add(new DERPrintableString(qcPSB.getCountryName()));
+            qcPSBVector.add(new DERUTF8String(qcPSB.getAuthSourceIdentification()));
+            qcPSBVector.add(new DERUTF8String(qcPSB.getLegislationIdentification()));
+
+            QCStatement qcPSBQcStatement = new QCStatement(OID.id_etsi_qcs_QcPSB, new DERSequence(qcPSBVector));
+            vector.add(qcPSBQcStatement);
         }
 
         return new DERSequence(vector);

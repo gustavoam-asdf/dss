@@ -22,15 +22,18 @@ package eu.europa.esig.dss.validation.executor;
 
 import eu.europa.esig.dss.detailedreport.jaxb.XmlBasicBuildingBlocks;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlDetailedReport;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlTLAnalysis;
 import eu.europa.esig.dss.diagnostic.AbstractTokenProxy;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
+import eu.europa.esig.dss.diagnostic.jaxb.XmlListOfTrustedEntities;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedList;
 import eu.europa.esig.dss.enumerations.Context;
 import eu.europa.esig.dss.i18n.I18nProvider;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.bbb.BasicBuildingBlocks;
+import eu.europa.esig.dss.validation.process.qualification.trust.LoTEValidationBlock;
 import eu.europa.esig.dss.validation.process.qualification.trust.TLValidationBlock;
 
 import java.util.ArrayList;
@@ -82,7 +85,8 @@ public abstract class AbstractDetailedReportBuilder {
 		detailedReport.setValidationTime(currentTime);
 
 		if (policy.isEIDASConstraintPresent()) {
-			detailedReport.getTLAnalysis().addAll(executeAllTlAnalysis(diagnosticData, policy, currentTime));
+			detailedReport.getTLAnalysis().addAll(executeAllTLAnalysis(diagnosticData, policy, currentTime));
+			detailedReport.getLoTEAnalysis().addAll(executeAllLoTEAnalysis(diagnosticData, policy, currentTime));
 		}
 
 		return detailedReport;
@@ -96,7 +100,7 @@ public abstract class AbstractDetailedReportBuilder {
 	 * @param currentTime {@link Date} validation time
 	 * @return a list of {@link XmlTLAnalysis}
 	 */
-	protected List<XmlTLAnalysis> executeAllTlAnalysis(DiagnosticData diagnosticData, ValidationPolicy policy,
+	protected List<XmlTLAnalysis> executeAllTLAnalysis(DiagnosticData diagnosticData, ValidationPolicy policy,
 													   Date currentTime) {
 		List<XmlTLAnalysis> result = new ArrayList<>();
 		result.addAll(validateTL(policy, currentTime, diagnosticData.getListOfTrustedLists()));
@@ -110,6 +114,33 @@ public abstract class AbstractDetailedReportBuilder {
 			for (XmlTrustedList xmlTrustedList : trustedLists) {
 				TLValidationBlock tlValidation = new TLValidationBlock(i18nProvider, xmlTrustedList, currentTime, policy);
 				result.add(tlValidation.execute());
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Executes the TL analysis
+	 *
+	 * @param diagnosticData {@link DiagnosticData}
+	 * @param policy {@link ValidationPolicy}
+	 * @param currentTime {@link Date} validation time
+	 * @return a list of {@link XmlLoTEAnalysis}
+	 */
+	protected List<XmlLoTEAnalysis> executeAllLoTEAnalysis(DiagnosticData diagnosticData, ValidationPolicy policy,
+														   Date currentTime) {
+		List<XmlLoTEAnalysis> result = new ArrayList<>();
+		result.addAll(validateLoTE(policy, currentTime, diagnosticData.getListsOfListsOfTrustedEntities()));
+		result.addAll(validateLoTE(policy, currentTime, diagnosticData.getListsOfTrustedEntities()));
+		return result;
+	}
+
+	private List<XmlLoTEAnalysis> validateLoTE(ValidationPolicy policy, Date currentTime, List<XmlListOfTrustedEntities> trustedLists) {
+		List<XmlLoTEAnalysis> result = new ArrayList<>();
+		if (Utils.isCollectionNotEmpty(trustedLists)) {
+			for (XmlListOfTrustedEntities xmlTrustedList : trustedLists) {
+				LoTEValidationBlock loteValidation = new LoTEValidationBlock(i18nProvider, xmlTrustedList, currentTime, policy);
+				result.add(loteValidation.execute());
 			}
 		}
 		return result;

@@ -290,6 +290,16 @@ A typical example of a `JAdES-BASELINE-B` signature creation is represented belo
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/SignXmlJadesBTest.java[tags=demo]
 ----
 
+[[CBAdES]]
+==== CB-AdES
+A typical example of a `CB-AdES-BASELINE-B` signature creation is represented below:
+
+[source,java,indent=0]
+.Signing a file with CB-AdES
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/sign/SignXmlCbadesBTest.java[tags=demo]
+----
+
 [[ASiC]]
 ==== ASiC
 

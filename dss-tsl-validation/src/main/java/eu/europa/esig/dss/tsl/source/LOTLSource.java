@@ -43,14 +43,14 @@ public class LOTLSource extends TLSource {
 
 	/**
 	 * Predicate which filters the LOTL
-	 * 
+	 * <p>
 	 * Default : filter the XML European list of trusted list (LOTL)
 	 */
 	private Predicate<OtherTSLPointerType> lotlPredicate = TLPredicateFactory.createEULOTLPredicate();
 
 	/**
 	 * Predicate which filters the TLs
-	 * 
+	 * <p>
 	 * Default : filter all XML trusted lists (TL) for European countries
 	 */
 	private Predicate<OtherTSLPointerType> tlPredicate = TLPredicateFactory.createEUTLPredicate();
@@ -98,10 +98,10 @@ public class LOTLSource extends TLSource {
 	/**
 	 * Sets if the LOTL shall support MRA (Mutual Recognition Agreement) scheme defining trust service equivalence
 	 * mapping between the LOTL and a third-country Trusted List
-	 *
+	 * <p>
 	 * Setting this condition to TRUE will allow to process LOTL containing pointers to a third-country trusted lists,
 	 * including a special scheme for transition the qualification scope rules.
-	 *
+	 * <p>
 	 * Default : FALSE (LOTL MRA is not supported)
 	 *
 	 * @param mraSupport if LOTL shall support MRA

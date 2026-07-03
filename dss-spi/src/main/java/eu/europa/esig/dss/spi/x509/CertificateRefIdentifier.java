@@ -26,6 +26,8 @@ import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.model.identifier.Identifier;
 import eu.europa.esig.dss.spi.DSSUtils;
 
+import java.security.PublicKey;
+
 /**
  * An identifier for a certificate token reference
  *
@@ -73,11 +75,19 @@ public class CertificateRefIdentifier extends Identifier {
 				return new Digest(DIGEST_ALGO, DSSUtils.digest(DIGEST_ALGO, responderId.getX500Principal().getEncoded()));
 			}
 		}
+		String kid = certificateRef.getKid();
+		if (kid != null) {
+			return new Digest(DIGEST_ALGO, DSSUtils.digest(DIGEST_ALGO, kid.getBytes()));
+		}
 		String x509Url = certificateRef.getX509Url();
 		if (x509Url != null) {
 			return new Digest(DIGEST_ALGO, DSSUtils.digest(DIGEST_ALGO, x509Url.getBytes()));
 		}
-		throw new DSSException("One of [certDigest, publicKeyDigest, issuerInfo, x509Uri] must be defined for a CertificateRef!");
+		PublicKey publicKey = certificateRef.getPublicKey();
+		if (publicKey != null) {
+			return new Digest(DIGEST_ALGO, DSSUtils.digest(DIGEST_ALGO, publicKey.getEncoded()));
+		}
+		throw new DSSException("One of [certDigest, publicKeyDigest, issuerInfo, kid, x509Uri, publicKey] must be defined for a CertificateRef!");
 	}
 
 }

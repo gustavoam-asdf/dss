@@ -159,6 +159,8 @@ public class ValidationProcessForSignaturesWithLongTermValidationData extends Ch
 		Context currentContext = Context.SIGNATURE;
 		if (currentSignature.isCounterSignature()) {
 			currentContext = Context.COUNTER_SIGNATURE;
+		} else if (currentSignature.isKeyBindingSignature()) {
+			currentContext = Context.KEY_BINDING_SIGNATURE;
 		}
 
 		/*

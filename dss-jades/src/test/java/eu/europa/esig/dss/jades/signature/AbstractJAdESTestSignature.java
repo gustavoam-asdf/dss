@@ -182,7 +182,7 @@ public abstract class AbstractJAdESTestSignature
 
 		for (SignatureWrapper signatureWrapper : diagnosticData.getSignatures()) {
 			for (XmlDigestMatcher xmlDigestMatcher : signatureWrapper.getDigestMatchers()) {
-				if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST == xmlDigestMatcher.getType() && SigDMechanism.OBJECT_ID_BY_URI == getSignatureParameters().getSigDMechanism()) {
+				if (DigestMatcherType.JWS_SIGNING_INPUT == xmlDigestMatcher.getType() && SigDMechanism.OBJECT_ID_BY_URI == getSignatureParameters().getSigDMechanism()) {
 					assertTrue(Utils.isCollectionNotEmpty(xmlDigestMatcher.getDataObjectReferences()));
 				} else {
 					assertFalse(Utils.isCollectionNotEmpty(xmlDigestMatcher.getDataObjectReferences()));
@@ -257,10 +257,18 @@ public abstract class AbstractJAdESTestSignature
 
 				} else if (CertificateRefOrigin.KEY_IDENTIFIER.equals(certificateRef.getOrigin())) {
 					assertNotNull(certificateRef.getCertificateId());
-					assertNotNull(certificateRef.getIssuerSerial());
-					assertTrue(certificateRef.isIssuerSerialPresent());
-					assertTrue(certificateRef.isIssuerSerialMatch());
+					if (certificateRef.getIssuerSerial() != null) {
+						assertNotNull(certificateRef.getIssuerSerial());
+						assertTrue(certificateRef.isIssuerSerialPresent());
+						assertTrue(certificateRef.isIssuerSerialMatch());
+					} else {
+						assertNotNull(certificateRef.getKid());
+					}
 					assertNull(certificateRef.getDigestAlgoAndValue());
+
+				} else if (CertificateRefOrigin.X509_URL.equals(certificateRef.getOrigin())) {
+					assertNotNull(certificateRef.getCertificateId());
+					assertNotNull(certificateRef.getX509Url());
 				}
 			}
 		}
@@ -283,7 +291,7 @@ public abstract class AbstractJAdESTestSignature
 	
 	@Override
 	protected void checkSignatureType(DiagnosticData diagnosticData) {
-		super.checkMimeType(diagnosticData);
+		super.checkSignatureType(diagnosticData);
 
 		SignatureWrapper signature = diagnosticData.getSignatureById(diagnosticData.getFirstSignatureId());
 		if (getSignatureParameters().isIncludeSignatureType()) {

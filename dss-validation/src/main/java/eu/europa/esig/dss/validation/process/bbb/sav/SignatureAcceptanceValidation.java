@@ -36,6 +36,7 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.model.policy.LevelRule;
 import eu.europa.esig.dss.model.policy.MultiValuesRule;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
+import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.ChainItem;
 import eu.europa.esig.dss.validation.process.ValidationProcessUtils;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ArchiveTimeStampCheck;
@@ -53,12 +54,15 @@ import eu.europa.esig.dss.validation.process.bbb.sav.checks.KeyIdentifierMatchCh
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.KeyIdentifierPresentCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.MessageDigestOrSignedPropertiesCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignatureTimeStampCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignatureTypeCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SignerLocationCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SigningTimeCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.SigningTimeInCertificateValidityRangeCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.StructuralValidationCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ValidationDataRefsOnlyTimeStampCheck;
 import eu.europa.esig.dss.validation.process.bbb.sav.checks.ValidationDataTimeStampCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.X509UrlMatchCheck;
+import eu.europa.esig.dss.validation.process.bbb.sav.checks.X509UrlPresentCheck;
 import eu.europa.esig.dss.validation.process.vpfltvd.checks.TimestampMessageImprintWithIdCheck;
 
 import java.util.Date;
@@ -105,42 +109,54 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 	@Override
 	protected void initChain() {
 
+		SignatureForm signatureForm = token.getSignatureFormat().getSignatureForm();
+
 		ChainItem<XmlSAV> item = firstItem = structuralValidation();
 
-		item = item.setNextItem(signingCertificateAttributePresent());
+		if (token.getSigningCertificate() != null) {
 
-		if (token.isSigningCertificateReferencePresent()) {
-			/*
-			 * 5.2.8.4.2.1 Processing signing certificate reference constraint
-			 *
-			 * If the Signing Certificate Identifier attribute contains references to
-			 * other certificates in the path, the building block shall check each of
-			 * the certificates in the certification path against these references.
-			 *
-			 * When this property contains one or more references to certificates other than
-			 * those present in the certification path, the building block shall return
-			 * the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
-			 */
-			item = item.setNextItem(unicitySigningCertificateAttribute());
+			item = item.setNextItem(signingCertificateAttributePresent());
 
-			item = item.setNextItem(signingCertificateReferencesValidity());
+			if (token.isSigningCertificateReferencePresent()) {
+				/*
+				 * 5.2.8.4.2.1 Processing signing certificate reference constraint
+				 *
+				 * If the Signing Certificate Identifier attribute contains references to
+				 * other certificates in the path, the building block shall check each of
+				 * the certificates in the certification path against these references.
+				 *
+				 * When this property contains one or more references to certificates other than
+				 * those present in the certification path, the building block shall return
+				 * the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
+				 */
+				item = item.setNextItem(unicitySigningCertificateAttribute());
 
-			/*
-			 * When one or more certificates in the certification path are not referenced
-			 * by this property, and the signature policy mandates references to all
-			 * the certificates in the certification path to be present, the building block shall
-			 * return the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
-			 */
-			item = item.setNextItem(allCertificatesInPathReferenced());
-		}
+				item = item.setNextItem(signingCertificateReferencesValidity());
 
-		// 'kid' (key identifier) verification for JAdES
-		if (SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+				/*
+				 * When one or more certificates in the certification path are not referenced
+				 * by this property, and the signature policy mandates references to all
+				 * the certificates in the certification path to be present, the building block shall
+				 * return the indication INDETERMINATE with the sub-indication SIG_CONSTRAINTS_FAILURE.
+				 */
+				item = item.setNextItem(allCertificatesInPathReferenced());
+			}
 
-			item = item.setNextItem(keyIdentifierPresent());
+			// verification for JAdES / CB-AdES
+			if (SignatureForm.JAdES.equals(signatureForm) || SignatureForm.CBAdES.equals(signatureForm)) {
 
-			if (token.getKeyIdentifierReference() != null) {
-				item = item.setNextItem(keyIdentifierMatch());
+				item = item.setNextItem(keyIdentifierPresent());
+
+				if (token.getKeyIdentifierReference() != null) {
+					item = item.setNextItem(keyIdentifierMatch());
+				}
+
+				item = item.setNextItem(x509UrlPresent());
+
+				if (Utils.isCollectionNotEmpty(token.getX509UrlReferences())) {
+					item = item.setNextItem(x509UrlMatch());
+				}
+
 			}
 
 		}
@@ -152,6 +168,10 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 			item = item.setNextItem(signingTimeInCertificateValidityRange());
 		}
 
+		if (SignatureForm.JAdES.equals(signatureForm)) {
+			item = item.setNextItem(signatureType());
+		}
+
 		// content-type
 		item = item.setNextItem(contentType());
 
@@ -159,7 +179,7 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		item = item.setNextItem(contentHints());
 		
 		// message-digest for CAdES/PAdES and SignedProperties for XAdES are present
-		if (!SignatureForm.JAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+		if (!SignatureForm.JAdES.equals(signatureForm) && !SignatureForm.CBAdES.equals(signatureForm)) {
 			item = item.setNextItem(messageDigestOrSignedProperties());
 		}
 
@@ -214,7 +234,7 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		item = item.setNextItem(archiveTimeStamp());
 
 		// document-time-stamp (PAdES only)
-		if (SignatureForm.PAdES.equals(token.getSignatureFormat().getSignatureForm())) {
+		if (SignatureForm.PAdES.equals(signatureForm)) {
 			item = item.setNextItem(documentTimeStamp());
 		}
 
@@ -237,6 +257,16 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 		return new KeyIdentifierMatchCheck(i18nProvider, result, token, constraint);
 	}
 
+	private ChainItem<XmlSAV> x509UrlPresent() {
+		LevelRule constraint = validationPolicy.getX509UrlPresent(context);
+		return new X509UrlPresentCheck(i18nProvider, result, token, constraint);
+	}
+
+	private ChainItem<XmlSAV> x509UrlMatch() {
+		LevelRule constraint = validationPolicy.getX509UrlMatch(context);
+		return new X509UrlMatchCheck(i18nProvider, result, token, constraint);
+	}
+
 	private ChainItem<XmlSAV> signingTime() {
 		LevelRule constraint = validationPolicy.getSigningTimeConstraint(context);
 		return new SigningTimeCheck(i18nProvider, result, token, constraint);
@@ -245,6 +275,11 @@ public class SignatureAcceptanceValidation extends AbstractAcceptanceValidation<
 	private ChainItem<XmlSAV> signingTimeInCertificateValidityRange() {
 		LevelRule constraint = validationPolicy.getSigningTimeInCertRangeConstraint(context);
 		return new SigningTimeInCertificateValidityRangeCheck<>(i18nProvider, result, token, constraint);
+	}
+
+	private ChainItem<XmlSAV> signatureType() {
+		MultiValuesRule constraint = validationPolicy.getSignatureTypeConstraint(context);
+		return new SignatureTypeCheck(i18nProvider, result, token, constraint);
 	}
 
 	private ChainItem<XmlSAV> contentType() {

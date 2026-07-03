@@ -55,8 +55,8 @@ public abstract class JSONSchemaAbstractUtils {
     /** The JSON Draft 07 schema name URI */
     private static final String JSON_DRAFT_07_SCHEMA_URI = "http://json-schema.org/draft-07/schema#";
 
-    /** JSON Schema validator */
-    private Validator validator;
+    /** JSON Schema */
+    private Schema schema;
 
     /** Map of used definition schemas */
     private Map<URI, String> definitions;
@@ -135,7 +135,10 @@ public abstract class JSONSchemaAbstractUtils {
      * @return {@link Schema}
      */
     protected Schema getSchema() {
-        return loadSchema(getSchemaURI(), getSchemaDefinitions());
+        if (schema == null) {
+            schema = loadSchema(getSchemaURI(), getSchemaDefinitions());
+        }
+        return schema;
     }
 
     /**
@@ -158,10 +161,7 @@ public abstract class JSONSchemaAbstractUtils {
      * @return {@link Validator}
      */
     protected Validator getValidator() {
-        if (validator == null) {
-            validator = Validator.forSchema(getSchema());
-        }
-        return validator;
+        return Validator.forSchema(getSchema());
     }
 
     /**

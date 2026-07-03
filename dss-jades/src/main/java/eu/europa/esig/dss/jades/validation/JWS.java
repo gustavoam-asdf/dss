@@ -44,6 +44,11 @@ public class JWS extends JsonWebSignature implements Serializable {
 	 * The unprotected header map
 	 */
 	private Map<String, Object> unprotected;
+
+	/**
+	 * Stores a cached parsed payload as a Map, when applicable
+	 */
+	private Map<String, Object> decodedPayload;
 	
 	/**
 	 * The parent {@code JWSJsonSerializationObject}
@@ -156,6 +161,21 @@ public class JWS extends JsonWebSignature implements Serializable {
 	 */
 	public void setUnprotected(Map<String, Object> unprotected) {
 		this.unprotected = unprotected;
+	}
+
+	/**
+	 * Gets verified payload as a Map, when applicable
+	 *
+	 * @return a map representing a parsed JWS payload
+	 */
+	public Map<String, Object> getDecodedPayload() {
+		if (decodedPayload == null) {
+			String unverifiedPayload = getUnverifiedPayload();
+			if (unverifiedPayload != null) {
+				decodedPayload = DSSJsonUtils.parseJsonStringToMap(unverifiedPayload);
+			}
+		}
+		return decodedPayload;
 	}
 
 	/**

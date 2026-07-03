@@ -24,6 +24,7 @@ import eu.europa.esig.dss.jades.DSSJsonUtils;
 import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
 import eu.europa.esig.dss.model.Digest;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
+import eu.europa.esig.dss.spi.DSSUtils;
 import eu.europa.esig.dss.spi.x509.ResponderId;
 import eu.europa.esig.dss.spi.x509.revocation.crl.CRLRef;
 import eu.europa.esig.dss.spi.x509.revocation.ocsp.OCSPRef;
@@ -60,7 +61,7 @@ public final class JAdESRevocationRefExtractionUtils {
 		try {
 			Map<?, ?> ocspId = (Map<?, ?>) ocpRef.get(JAdESHeaderParameterNames.OCSP_ID);
 			if (Utils.isMapNotEmpty(ocspId)) {
-				producedAt = DSSJsonUtils.getDate((String) ocspId.get(JAdESHeaderParameterNames.PRODUCED_AT));
+				producedAt = DSSUtils.parseRFCDate((String) ocspId.get(JAdESHeaderParameterNames.PRODUCED_AT));
 				responderId = getResponderId(ocspId);
 			}
 
@@ -123,7 +124,7 @@ public final class JAdESRevocationRefExtractionUtils {
 
 				String issueTimeStr = (String) crlId.get(JAdESHeaderParameterNames.ISSUE_TIME);
 				if (Utils.isStringNotEmpty(issueTimeStr)) {
-					crlIssuedTime = DSSJsonUtils.getDate(issueTimeStr);
+					crlIssuedTime = DSSUtils.parseRFCDate(issueTimeStr);
 				}
 
 				String crlNumberString = (String) crlId.get(JAdESHeaderParameterNames.NUMBER);

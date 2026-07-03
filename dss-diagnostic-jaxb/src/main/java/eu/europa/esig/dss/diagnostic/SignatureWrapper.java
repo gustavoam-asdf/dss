@@ -41,6 +41,7 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlSigningCertificate;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlStructuralValidation;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlUserNotice;
 import eu.europa.esig.dss.enumerations.ArchiveTimestampType;
+import eu.europa.esig.dss.enumerations.COSESignatureType;
 import eu.europa.esig.dss.enumerations.CertificateOrigin;
 import eu.europa.esig.dss.enumerations.CertificateRefOrigin;
 import eu.europa.esig.dss.enumerations.DigestMatcherType;
@@ -240,6 +241,15 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	 */
 	public boolean isCounterSignature() {
 		return signature.isCounterSignature() != null && signature.isCounterSignature();
+	}
+
+	/**
+	 * Gets if the current signature is a key binding signature used to verify the authenticity of the token's holder
+	 *
+	 * @return TRUE if the signature is key binding signature, FALSE otherwise
+	 */
+	public boolean isKeyBindingSignature() {
+		return signature.isKeyBindingSignature() != null && signature.isKeyBindingSignature();
 	}
 
 	/**
@@ -475,6 +485,30 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	 */
 	public JWSSerializationType getJWSSerializationType() {
 		return signature.getJWSSerializationType();
+	}
+
+	/**
+	 * Gets COSE signature structure's type, when applicable (CB-AdES only)
+	 *
+	 * @return {@link COSESignatureType}
+	 */
+	public COSESignatureType getCOSESignatureType() {
+		if (signature.getCOSESignatureType() != null) {
+			return signature.getCOSESignatureType().getValue();
+		}
+		return null;
+	}
+
+	/**
+	 * Gets whether the COSE signature structure is tagged
+	 *
+	 * @return TRUE if the COSE signature structure is tagged, FALSE otherwise
+	 */
+	public boolean isCOSETagged() {
+		if (signature.getCOSESignatureType() != null) {
+			return signature.getCOSESignatureType().isTagged();
+		}
+		return false;
 	}
 
 	/**
@@ -895,7 +929,7 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 	}
 
 	/**
-	 * This method returns a reference extracted from a 'kid' (key identifier) header (used in JAdES)
+	 * This method returns a reference extracted from a 'kid' (key identifier) header (used in JAdES, CB-AdES)
 	 *
 	 * @return {@link CertificateRefWrapper}
 	 */
@@ -908,6 +942,18 @@ public class SignatureWrapper extends AbstractSignatureWrapper {
 			return certificateRefs.iterator().next();
 		}
 		return null;
+	}
+
+	/**
+	 * This method returns a list of references extracted from a 'x5u' (X.509 URL) header (used in JAdES, CB-AdES)
+	 *
+	 * @return a list of {@link CertificateRefWrapper}s
+	 */
+	public List<CertificateRefWrapper> getX509UrlReferences() {
+		List<CertificateRefWrapper> certificateRefs = new ArrayList<>();
+		certificateRefs.addAll(foundCertificates().getRelatedCertificateRefsByRefOrigin(CertificateRefOrigin.X509_URL));
+		certificateRefs.addAll(foundCertificates().getOrphanCertificateRefsByRefOrigin(CertificateRefOrigin.X509_URL));
+		return certificateRefs;
 	}
 
 	/**

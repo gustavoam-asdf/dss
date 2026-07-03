@@ -400,7 +400,7 @@
         <TrustedList Id="TL-601C9A35A8A350C6212D8D10F0B7EAA147964904DBE39329ADD6AF6F343F5BCE" parent="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B">
             <CountryCode>EL</CountryCode>
             <Url>https://www.eett.gr/tsl/EL-TSL.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric</Type>
             <SequenceNumber>81</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2025-11-11T15:48:39Z</LastLoading>
@@ -412,7 +412,7 @@
         <TrustedList Id="LOTL-EC2AE37FE9A43B48B1CFE2A57EBEE2BD6373EDFF36537EB1BC905747ACBF4C3B" LOTL="true">
             <CountryCode>EU</CountryCode>
             <Url>https://ec.europa.eu/tools/lotl/eu-lotl.xml</Url>
-            <TSLType>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</TSLType>
+            <Type>http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUlistofthelists</Type>
             <SequenceNumber>373</SequenceNumber>
             <Version>5</Version>
             <LastLoading>2025-11-11T15:48:38Z</LastLoading>

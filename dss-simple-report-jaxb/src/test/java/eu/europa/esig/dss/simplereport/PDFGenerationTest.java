@@ -96,6 +96,21 @@ class PDFGenerationTest {
 	}
 
 	@Test
+	void generateQEAASimpleReport() throws Exception {
+		createAndValidate("sr-qeaa.xml");
+	}
+
+	@Test
+	void generateMdocSimpleReport() throws Exception {
+		createAndValidate("sr-mdoc.xml");
+	}
+
+	@Test
+	void generatePIDSimpleReport() throws Exception {
+		createAndValidate("sr-pid.xml");
+	}
+
+	@Test
 	void generateSemantics() throws Exception {
 		createAndValidate("sr-semantics.xml");
 	}

@@ -22,6 +22,7 @@ package eu.europa.esig.dss.jades;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.ObjectIdentifier;
+import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
 import eu.europa.esig.dss.jades.validation.EtsiUComponent;
 import eu.europa.esig.dss.jades.validation.JAdESEtsiUHeader;
 import eu.europa.esig.dss.jades.validation.JAdESSignature;
@@ -34,7 +35,6 @@ import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SpDocSpecification;
 import eu.europa.esig.dss.model.TimestampBinary;
-import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.spi.DSSASN1Utils;
 import eu.europa.esig.dss.spi.DSSMessageDigestCalculator;
 import eu.europa.esig.dss.spi.DSSUtils;
@@ -49,7 +49,7 @@ import org.jose4j.base64url.Base64Url;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.json.internal.json_simple.JSONArray;
 import org.jose4j.json.internal.json_simple.JSONValue;
-import org.jose4j.jwt.NumericDate;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
 import org.jose4j.jwx.CompactSerializer;
 import org.jose4j.lang.JoseException;
 import org.jose4j.lang.StringUtil;
@@ -62,8 +62,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,13 +74,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.ADO_TST;
-import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.EXP;
-import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.IAT;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_D;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_PID;
 import static eu.europa.esig.dss.jades.JAdESHeaderParameterNames.SIG_PL;
@@ -129,9 +124,6 @@ public class DSSJsonUtils {
 
 	/** The binary content encoding (RFC 2045) */
 	public static final String CONTENT_ENCODING_BINARY = "binary";
-
-	/** Format date-time as specified in RFC 3339 5.6 */
-	private static final String DATE_TIME_FORMAT_RFC3339 = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 	
 	/**
 	 * Copied from org.jose4j.base64url.internal.apache.commons.codec.binary.Base64
@@ -165,10 +157,10 @@ public class DSSJsonUtils {
 	
 	static {
 		protectedCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_T, X5T_O, SIG_X5T_S, SR_CMS, SIG_PL, SR_ATS, ADO_TST, SIG_PID, SIG_D,
 				/* RFC 7519 'iat' */
-				IAT, EXP,
+				JWTClaimNames.IAT, JWTClaimNames.EXP,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD
 		).collect(Collectors.toSet());
@@ -182,7 +174,7 @@ public class DSSJsonUtils {
 				PBES2_SALT_INPUT, PBES2_ITERATION_COUNT, ENCRYPTION_METHOD, ZIP ).collect(Collectors.toSet());
 
 		requiredCriticalHeaders = Stream.of(
-				/* JAdES EN 119-812 constraints */
+				/* JAdES TS 119 182-1 constraints */
 				SIG_D,
 				/* RFC7797 'b64' */
 				BASE64URL_ENCODE_PAYLOAD ).collect(Collectors.toSet());
@@ -395,37 +387,18 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * Creates an 'oid' LinkedJSONObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' LinkedJSONObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param objectIdentifier {@link ObjectIdentifier} to create an 'oid' from
 	 * @return 'oid' {@link JsonObject}
 	 */
 	public static JsonObject getOidObject(ObjectIdentifier objectIdentifier) {
-		return getOidObject(getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
+		return getOidObject(DSSUtils.getUriOrUrnOid(objectIdentifier), objectIdentifier.getDescription(),
 				objectIdentifier.getDocumentationReferences());
 	}
 
 	/**
-	 * Returns URI if present, otherwise URN encoded OID (see RFC 3061)
-	 * Returns NULL if non of them is present
-	 *
-	 * @param objectIdentifier {@link ObjectIdentifier} used to build an object of 'oid' type
-	 * @return {@link String} URI
-	 */
-	public static String getUriOrUrnOid(ObjectIdentifier objectIdentifier) {
-		/*
-		 * TS 119 182-1 : 5.4.1 The oId data type
-		 * If both an OID and a URI exist identifying one object, the URI value should be used in the id member.
-		 */
-		String uri = objectIdentifier.getUri();
-		if (uri == null && objectIdentifier.getOid() != null) {
-			uri = DSSUtils.toUrnOid(objectIdentifier.getOid());
-		}
-		return uri;
-	}
-
-	/**
-	 * Creates an 'oid' JsonObject according to EN 119-182 ch. 5.4.1 The oId data type
+	 * Creates an 'oid' JsonObject according to TS 119-182 ch. 5.4.1 The oId data type
 	 * 
 	 * @param uri {@link String} URI defining the object. The property is REQUIRED.
 	 * @param desc {@link String} the object description. The property is OPTIONAL.
@@ -449,7 +422,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstContainer' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstContainer' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinaries a list of {@link TimestampBinary}s to incorporate
 	 * @param canonicalizationMethodUri a canonicalization method (OPTIONAL, e.g. shall not be present for content timestamps)
@@ -476,7 +449,7 @@ public class DSSJsonUtils {
 	}
 	
 	/**
-	 * Creates a 'tstToken' JsonObject according to EN 119-182 ch. 5.4.3.3 The tstContainer type
+	 * Creates a 'tstToken' JsonObject according to TS 119-182 ch. 5.4.3.3 The tstContainer type
 	 * 
 	 * @param timestampBinary {@link TimestampBinary}s to incorporate
 	 * @return 'tstToken' {@link JsonObject}
@@ -486,7 +459,7 @@ public class DSSJsonUtils {
 		
 		Map<String, Object> tstTokenParams = new HashMap<>();
 		// only RFC 3161 TimestampTokens are supported
-		// 'type', 'encoding' and 'specRef' params are not need to be defined (see EN 119-182 ch. 5.4.3.3)
+		// 'type', 'encoding' and 'specRef' params are not need to be defined (see TS 119-182 ch. 5.4.3.3)
 		tstTokenParams.put(JAdESHeaderParameterNames.VAL, Utils.toBase64(timestampBinary.getBytes()));
 		
 		return new JsonObject(tstTokenParams);
@@ -531,16 +504,10 @@ public class DSSJsonUtils {
 			throw new IllegalArgumentException("Unable to build a message-digest. Reason : the detached content is not provided!");
 		}
 
-		byte[] octets = null;
-		if (documents.size() == 1) {
-			octets = getDocumentOctets(documents.get(0), isBase64UrlEncoded);
+		byte[] octets;
+		for (DSSDocument document : documents) {
+			octets = getDocumentOctets(document, isBase64UrlEncoded);
 			digestCalculator.update(octets);
-
-		} else {
-			for (DSSDocument document : documents) {
-				octets = getDocumentOctets(document, isBase64UrlEncoded);
-				digestCalculator.update(octets);
-			}
 		}
 	}
 
@@ -621,7 +588,9 @@ public class DSSJsonUtils {
 		}
 		Object etsiU = unprotected.get(JAdESHeaderParameterNames.ETSI_U);
 		if (!(etsiU instanceof List)) {
-			LOG.warn("Unable to extract 'etsiU' header : the obtained entry is not an array!");
+			if (etsiU != null) {
+				LOG.warn("Unable to extract 'etsiU' header : the obtained entry is not an array!");
+			}
 			return Collections.emptyList();
 		}
 		return (List<Object>) etsiU;
@@ -654,41 +623,11 @@ public class DSSJsonUtils {
 	 * 
 	 * @param dateTimeString {@link String} in the RFC 3339 format to parse
 	 * @return {@link Date}
+	 * @deprecated since DSS 6.5. Please use {@code eu.europa.esig.dss.spi.DSSUtils#parseRFCDate} method instead.
 	 */
+	@Deprecated
 	public static Date getDate(String dateTimeString) {
-		if (Utils.isStringNotEmpty(dateTimeString)) {
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat(DATE_TIME_FORMAT_RFC3339);
-				sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-				return sdf.parse(dateTimeString);
-			} catch (ParseException e) {
-				LOG.warn("Unable to parse date with value '{}' : {}", dateTimeString, e.getMessage());
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Parses a IETF RFC 7519 dateTime NumericDate
-	 *
-	 * @param dateTimeNumber {@link Number} in the RFC 7519 NumericDate format to parse
-	 * @return {@link Date}
-	 */
-	public static Date getDate(Number dateTimeNumber) {
-		/*
-		 * A JSON numeric value representing the number of seconds from
-		 * 1970-01-01T00:00:00Z UTC until the specified UTC date/time,
-		 * ignoring leap seconds.  This is equivalent to the IEEE Std 1003.1,
-		 * 2013 Edition [POSIX.1] definition "Seconds Since the Epoch", in
-		 * which each day is accounted for by exactly 86400 seconds, other
-		 * than that non-integer values can be represented.  See RFC 3339
-		 * [RFC3339] for details regarding date/times in general and UTC in
-		 * particular.
-		 */
-		if (dateTimeNumber != null) {
-			return new Date(dateTimeNumber.longValue());
-		}
-		return null;
+		return DSSUtils.parseRFCDate(dateTimeString);
 	}
 
 	/**
@@ -698,27 +637,14 @@ public class DSSJsonUtils {
 	 * @return {@link IssuerSerial}
 	 */
 	public static IssuerSerial getIssuerSerial(String value) {
-		if (Utils.isStringNotEmpty(value)) {
-			if (Utils.isBase64Encoded(value)) {
-				byte[] binary = Utils.fromBase64(value);
-				return DSSASN1Utils.getIssuerSerial(binary);
-			} else {
-				LOG.warn("The IssuerSerial value is not base64-encoded!");
-			}
+		if (Utils.isStringNotEmpty(value) && Utils.isBase64Encoded(value)) {
+            byte[] binary = Utils.fromBase64(value);
+            if (DSSASN1Utils.isAsn1Encoded(binary)) {
+                return DSSASN1Utils.getIssuerSerial(binary);
+            }
 		}
+		// process silently
 		return null;
-	}
-
-	/**
-	 * Generates the 'kid' value as in IETF RFC 5035
-	 * 
-	 * @param signingCertificate {@link CertificateToken} representing the singing
-	 *                           certificate
-	 * @return {@link String} 'kid' header value
-	 */
-	public static String generateKid(CertificateToken signingCertificate) {
-		IssuerSerial issuerSerial = DSSASN1Utils.getIssuerSerial(signingCertificate);
-		return Utils.toBase64(DSSASN1Utils.getDEREncoded(issuerSerial));
 	}
 	
 	/**
@@ -750,8 +676,8 @@ public class DSSJsonUtils {
 			
 			JWSDocumentAnalyzerFactory factory = new JWSDocumentAnalyzerFactory();
 			if (factory.isSupported(cSigDocument)) {
-				DocumentAnalyzer validator = factory.create(cSigDocument);
-				List<AdvancedSignature> signatures = validator.getSignatures();
+				DocumentAnalyzer analyzer = factory.create(cSigDocument);
+				List<AdvancedSignature> signatures = analyzer.getSignatures();
 
 				/*
 				 * 5.3.2 The cSig (counter signature) JSON object
@@ -1135,6 +1061,17 @@ public class DSSJsonUtils {
 	}
 
 	/**
+	 * Gets a value from the {@code map} under the given {@code key} as {@code Number}
+	 *
+	 * @param map {@link Map} to extract the value from
+	 * @param key {@link String} key
+	 * @return {@link Number} value when found, empty string otherwise
+	 */
+	public static Number getAsNumber(Map<?, ?> map, String key) {
+		return toNumber(map.get(key), key);
+	}
+
+	/**
 	 * Method safely converts {@code Object} to {@code Number} if possible
 	 *
 	 * @param object {@link Object} to convert
@@ -1329,6 +1266,63 @@ public class DSSJsonUtils {
 	}
 
 	/**
+	 * Gets a value from the {@code map} under the given {@code key} as {@code Date}
+	 *
+	 * @param map {@link Map} to extract the value from
+	 * @param key {@link String} key
+	 * @return {@link Date} value when found, empty list otherwise
+	 */
+	public static Date getAsNumericDate(Map<?, ?> map, String key) {
+		return toNumericDate(map.get(key), key);
+	}
+
+	/**
+	 * Method safely converts {@code Object} to {@code Date} if possible.
+	 *
+	 * @param object {@link Object} to convert
+	 * @return {@link Date} if able to convert, empty map otherwise
+	 */
+	public static Date toNumericDate(Object object) {
+		return toNumericDate(object, null);
+	}
+
+	/**
+	 * Method safely converts {@code Object} to {@code Date} if possible.
+	 * The method also provides a user-friendly message explaining the origin of the unexpected variable.
+	 *
+	 * @param object {@link Object} to convert
+	 * @param headerName {@link String} name of the header attribute with the extracted value
+	 * @return {@link Date} if able to convert, empty map otherwise
+	 */
+	public static Date toNumericDate(Object object, String headerName) {
+		if (object == null) {
+			// continue
+
+		} else if (object instanceof Number) {
+			Number number = (Number) object;
+			long timeValueInMilliseconds = DSSUtils.getTimeValueInMilliseconds(number.longValue());
+			return DSSUtils.getDateFromMilliseconds(timeValueInMilliseconds);
+
+		} else if (Utils.isStringNotEmpty(headerName)) {
+			if (LOG.isDebugEnabled()) {
+				LOG.warn("Unable to process '{}' header parameter with value : '{}'. The JSON Number type is expected!",
+						headerName, object);
+			} else {
+				LOG.warn("Unable to process '{}' header parameter. The JSON Number type is expected!", headerName);
+			}
+
+		} else {
+			if (LOG.isDebugEnabled()) {
+				LOG.warn("Unable to process an obtained item with value : '{}'. The JSON Number type is expected!", object);
+			} else {
+				LOG.warn("Unable to process an obtained item. The JSON Number type is expected!");
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Returns a complete mime type string.
 	 * The method adds "application/" prefix when required.
 	 *
@@ -1343,23 +1337,54 @@ public class DSSJsonUtils {
 	}
 
 	/**
-	 * This method cleans millis from the given time
+	 * Parses provided base64url encoded string and returns the corresponding object.
+	 * The string shall conform to a JSON object specification, but not necessarily be a root element (i.e. a map).
 	 *
-	 * @param timeInMillis time with millis
-	 * @return time without millis
+	 * @param base64UrlEncodedString {@link String} to decode
+	 * @return {@link Object}
 	 */
-	public static long getTimeValueInSeconds(long timeInMillis) {
-		return NumericDate.fromMilliseconds(timeInMillis).getValue();
+	public static Object parseBase64UrlEncoded(String base64UrlEncodedString) {
+		if (base64UrlEncodedString == null) {
+			return null;
+		}
+		if (!DSSJsonUtils.isBase64UrlEncoded(base64UrlEncodedString)) {
+			throw new IllegalArgumentException("Base64Url encoded string is expected.");
+		}
+		try {
+			String decodedString = new String(DSSJsonUtils.fromBase64Url(base64UrlEncodedString));
+			return parseJsonString(decodedString);
+
+		} catch (Exception e) {
+			throw new DSSException(String.format("An error occurred on decoding the string. Reason : %s", e.getMessage()), e);
+		}
 	}
 
 	/**
-	 * This method adds millis to the given time in seconds
+	 * This method parses a plain String containing a JSON value
 	 *
-	 * @param timeWithoutMillis time without millis
-	 * @return time with millis
+	 * @param jsonString {@link String} to parse
+	 * @return {@link Object}
 	 */
-	public static long getTimeValueInMilliseconds(long timeWithoutMillis) {
-		return NumericDate.fromSeconds(timeWithoutMillis).getValueInMillis();
+	public static Object parseJsonString(String jsonString) {
+		try {
+			return new JSONParser().parse(jsonString);
+		} catch (Exception e) {
+			throw new DSSException(String.format("An error occurred on parsing the string. Reason : %s", e.getMessage()), e);
+		}
+	}
+
+	/**
+	 * This method parses JSON string to a JSON map
+	 *
+	 * @param jsonString {@link String}
+	 * @return {@link Map}
+	 */
+	public static Map<String, Object> parseJsonStringToMap(String jsonString) {
+		try {
+			return JsonUtil.parseJson(jsonString);
+		} catch (JoseException e) {
+			throw new DSSException(String.format("Unable to parse string : %s", e.getMessage()), e);
+		}
 	}
 
 }

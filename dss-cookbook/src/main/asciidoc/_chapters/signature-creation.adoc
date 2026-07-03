@@ -15,6 +15,7 @@ The different digital signature formats make it possible to cover a wide range o
 * *CAdES* - for CMS Advanced Electronic Signatures (cf. <<R02>>);
 * *PAdES* - for PDF Advanced Electronic Signatures (cf. <<R03>>);
 * *JAdES* - for JSON Advanced Electronic Signatures (cf. <<R05>>);
+* *CB-AdES* - for CBOR Advanced Electronic Signatures (cf. <<R41>>);
 * *ASIC* - for Associated Signature Containers (cf. <<R04>>). XAdES and CAdES combinations are possible.
 
 ==== Signature profiles
@@ -33,20 +34,20 @@ The baseline profile for a certain signature format provides the basic features 
 Before the introduction of the baseline profiles, old extended profiles were used.
 Below is a comparative table of old extended profiles and new baseline profiles for each signature format:
 
-[%header,cols=7*^.^]
+[%header,cols=8*^.^]
 .Signature supported profiles
 |=======================
-2+|XAdES				       2+|CAdES				             2+|PAdES                           |JAdES
-|*EXTENDED* 	   |*BASELINE*	 |*EXTENDED*       |*BASELINE* 	   |*EXTENDED*	    |*BASELINE*     |*BASELINE*
-|XAdES-E-BES 	.2+|XAdES-B-B	 |CAdES-E-BES 	.2+|CAdES-B-B 	   |PAdES-E-BES    .2+|PAdES-B-B .2+|JAdES-B-B
+2+|XAdES				       2+|CAdES				             2+|PAdES                           |JAdES        |CB-AdES
+|*EXTENDED* 	   |*BASELINE*	 |*EXTENDED*       |*BASELINE* 	   |*EXTENDED*	    |*BASELINE*     |*BASELINE*   |*BASELINE*
+|XAdES-E-BES 	.2+|XAdES-B-B	 |CAdES-E-BES 	.2+|CAdES-B-B 	   |PAdES-E-BES  .2+|PAdES-B-B   .2+|JAdES-B-  .2+|CB-AdES-B-B
 |XAdES-E-EPES					 |CAdES-E-EPES	 			       |PAdES-E-EPES
 
-|XAdES-E-T 		.3+|XAdES-B-T    |CAdES-E-T 	    .3+|CAdES-B-T   .3+| 	         .3+|PAdES-B-T   .3+|JAdES-B-T
+|XAdES-E-T 		.3+|XAdES-B-T    |CAdES-E-T 	.3+|CAdES-B-T   .3+| 	         .3+|PAdES-B-T   .3+|JAdES-B-T .3+|CB-AdES-B-T
 |XAdES-E-C 		                 |CAdES-E-C
 |XAdES-E-X 		                 |CAdES-E-X
 
-|XAdES-E-X-L 	   |XAdES-B-LT   |CAdES-E-X-L      |CAdES-B-LT 	   |        	    |PAdES-B-LT       |JAdES-B-LT
-|XAdES-E-A 		   |XAdES-B-LTA	 |CAdES-E-A 	       |CAdES-B-LTA    |PAdES-E-LTV 	    |PAdES-B-LTA      |JAdES-B-LTA
+|XAdES-E-X-L 	   |XAdES-B-LT   |CAdES-E-X-L      |CAdES-B-LT 	   |        	    |PAdES-B-LT     |JAdES-B-LT   |CB-AdES-B-LT
+|XAdES-E-A 		   |XAdES-B-LTA	 |CAdES-E-A 	   |CAdES-B-LTA    |PAdES-E-LTV 	|PAdES-B-LTA    |JAdES-B-LTA  |CB-AdES-B-LTA
 
 |=======================
 
@@ -121,6 +122,10 @@ The vertical column specifies available signature profiles and their extensions.
              .3+|Detached    |Compact Serialization            |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |SigD only                      |icon:times-circle[role="red"]  |icon:times-circle[role="red"]  |icon:times-circle[role="red"]  |icon:times-circle[role="red"]
                              |Flattened JSON Serialization     |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |SigD only                      |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]
                              |JSON Serialization               |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |SigD only                      |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]
+.4+|CB-AdES  .2+|Enveloping  |COSE_Sign1                       |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]  |icon:times-circle[role="red"]  |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"]  |icon:times-circle[role="red"]
+                             |COSE_Sign                        |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]  |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]
+             .2+|Detached    |COSE_Sign1                       |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |SigD only                      |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]
+                             |COSE_Sign                        |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |SigD only                      |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]
 .2+|ASiC        |ASiCS       |CAdES / XAdES                    |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"]
                 |ASiCE       |CAdES / XAdES                    |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:times-circle[role="red"]  |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"] |icon:check-circle[role="lime"]
 |===
@@ -149,6 +154,8 @@ NOTE: SmartCards/HSMs don't allow signing with all digest algorithms. Please ref
 
 | JAdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
 
+| CB-AdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
+
 14+|*RSA-PSS*
 
 | XAdES | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | |
@@ -156,6 +163,8 @@ NOTE: SmartCards/HSMs don't allow signing with all digest algorithms. Please ref
 | CAdES | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | |
 
 | JAdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
+
+| CB-AdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
 
 14+|*ECDSA*
 
@@ -165,6 +174,8 @@ NOTE: SmartCards/HSMs don't allow signing with all digest algorithms. Please ref
 
 | JAdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
 
+| CB-AdES | | | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | icon:check-circle[role="lime"] | | | | | | | |
+
 14+|*Ed25519*
 
 | XAdES | | | | | icon:check-circle[role="lime"] | | | | | | | |
@@ -172,6 +183,8 @@ NOTE: SmartCards/HSMs don't allow signing with all digest algorithms. Please ref
 | CAdES | | | | | icon:check-circle[role="lime"] | | | | | | | |
 
 | JAdES | | | | | icon:check-circle[role="lime"] | | | | | | | |
+
+| CB-AdES | | | | | icon:check-circle[role="lime"] | | | | | | | |
 
 14+|*Ed448*
 
@@ -205,6 +218,7 @@ DSS allows creation of different kinds of DSSDocument :
 * `FileDocument` : created from an existing local file.
 * `DigestDocument` : only contains pre-computed digest values for a given document. That allows a user to avoid sending the full document (detached signatures).
 * `DOMDocument` : provides a way to create a document from a `org.w3c.dom.Node` object.
+* `XAdESDOMDocument` : internal implementation, used for caching XAdES related objects for performance improvement.
 * `CMSSignedDocument` : an internal implementation of a `DSSDocument`, loading a CMS Signed Data object.
 * `HTTPHeader` : represents an HTTP Header used as a signed object within a JAdES implementation (see <<JAdESDetachedPackaging, JAdES Detached Packaging>>).
 * `HTTPHeaderDigest` : represents an HTTP body message's digest to be used as a signed HTTP Header within <<JAdESDetachedPackaging, JAdES Detached Packaging>>. The object is built from another `DSSDocument` (e.g. from binaries, digest document, etc.);
@@ -575,9 +589,11 @@ Unsigned attributes are not obligatory and can be added after the signature crea
 .5+|B-Level      .5+|Signed attributes                         |_class JAdESSignatureParameters_ +
                                                                 *#setIncludeCertificateChain*                           |/                                    |/                                        |/                                                          |x5c
                                                                |_class JAdESSignatureParameters_ +
-                                                                *#setIncludeSignatureType*                              |/                                    |/                                        |/                                                          |typ
+                                                                *#setIncludeSignatureType*       +
+                                                                *#setSignatureType*                                     |/                                    |/                                        |/                                                          |typ
                                                                |_class JAdESSignatureParameters_ +
-                                                                *#setIncludeKeyIdentifier*                              |/                                    |/                                        |/                                                          |kid
+                                                                *#setIncludeKeyIdentifier*       +
+                                                                *#setKeyIdentifier*                                     |/                                    |/                                        |/                                                          |kid
                                                                |_class JAdESSignatureParameters_ +
                                                                 *#setX509Url*                                           |/                                    |/                                        |/                                                          |x5u
                                                                |_class JAdESSignatureParameters_ +

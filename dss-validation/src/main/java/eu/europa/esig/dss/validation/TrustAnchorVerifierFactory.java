@@ -74,6 +74,7 @@ public class TrustAnchorVerifierFactory {
     private void instantiateUseSunsetDate(TrustAnchorVerifier trustAnchorVerifier, ValidationPolicy validationPolicy) {
         boolean useSunsetDate = getUseSunsetDate(validationPolicy, Context.SIGNATURE);
         useSunsetDate = useSunsetDate || getUseSunsetDate(validationPolicy, Context.COUNTER_SIGNATURE);
+        useSunsetDate = useSunsetDate || getUseSunsetDate(validationPolicy, Context.KEY_BINDING_SIGNATURE);
         useSunsetDate = useSunsetDate || getUseSunsetDate(validationPolicy, Context.TIMESTAMP);
         useSunsetDate = useSunsetDate || getUseSunsetDate(validationPolicy, Context.REVOCATION);
         trustAnchorVerifier.setUseSunsetDate(useSunsetDate);

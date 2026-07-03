@@ -42,6 +42,7 @@ import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifier;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
 import eu.europa.esig.dss.spi.x509.CandidatesForSigningCertificate;
@@ -121,6 +122,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 *            {@code ManifestFile}
 	 */
 	void setManifestFile(ManifestFile manifestFile);
+
+	/**
+	 * Gets a signing certificate source, when provided
+	 *
+	 * @return {@link CertificateSource}
+	 */
+	CertificateSource getSigningCertificateSource();
 
 	/**
 	 * Set a certificate source which allows to find the signing certificate by kid
@@ -238,6 +246,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	void initBaselineRequirementsChecker(CertificateVerifier certificateVerifier);
 
 	/**
+	 * Gets master signature
+	 *
+	 * @return {@code AdvancedSignature}
+	 */
+	AdvancedSignature getMasterSignature();
+
+	/**
 	 * This setter allows to indicate the master signature. It means that this is a countersignature.
 	 *
 	 * @param masterSignature
@@ -246,11 +261,18 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	void setMasterSignature(final AdvancedSignature masterSignature);
 
 	/**
-	 * Gets master signature
+	 * Gets the EAA of an EAA issuing or key binding signature
 	 *
-	 * @return {@code AdvancedSignature}
+	 * @return {@link EAA}
 	 */
-	AdvancedSignature getMasterSignature();
+	EAA getEAA();
+
+	/**
+	 * Sets EAA presentation of the EAA issuing or key binging signature
+	 *
+	 * @param eaa {@link EAA}
+	 */
+	void setEAA(EAA eaa);
 	
 	/**
 	 * Checks if the current signature is a counter signature (i.e. has a Master signature)
@@ -258,6 +280,22 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 * @return TRUE if it is a counter signature, FALSE otherwise
 	 */
 	boolean isCounterSignature();
+
+	/**
+	 * Checks if the current signature is a key binding signature.
+	 * NOTE: Used for EAA tokens.
+	 *
+	 * @return TRUE if it is a key binding signature, FALSE otherwise
+	 */
+	boolean isKeyBindingSignature();
+
+	/**
+	 * Sets whether the current signature is a key binding signature.
+	 * NOTE: Used for EAA tokens.
+	 *
+	 * @param keyBindingSignature whether the current signature is a key binding signature
+	 */
+	void setKeyBindingSignature(boolean keyBindingSignature);
 
 	/**
 	 * This method returns the signing certificate token or null if there is no valid signing certificate. Note that to
@@ -324,6 +362,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 * @return mime type as {@code String}
 	 */
 	String getMimeType();
+
+	/**
+	 * Returns the value of the signature type protected header (JAdES, CB-AdES)
+	 *
+	 * @return {@code String}
+	 */
+	String getSignatureType();
 
 	/**
 	 * Returns the list of roles of the signer.
@@ -496,6 +541,13 @@ public interface AdvancedSignature extends IdentifierBasedObject, Serializable {
 	 * @return a value of {@link SignatureLevel}
 	 */
 	SignatureLevel getDataFoundUpToLevel();
+
+	/**
+	 * Checks if the signature is conformant to the corresponding AdES profile
+	 *
+	 * @return TRUE if the signature is AdES, FALSE otherwise
+	 */
+	boolean hasAdESProfile();
 
 	/**
 	 * Checks if the signature is conformant to AdES-BASELINE-B level

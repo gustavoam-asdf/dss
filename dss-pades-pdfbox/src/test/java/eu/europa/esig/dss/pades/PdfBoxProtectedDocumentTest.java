@@ -43,7 +43,6 @@ class PdfBoxProtectedDocumentTest extends AbstractPAdESTestValidation {
 	private final DSSDocument openProtected = new InMemoryDocument(
 			getClass().getResourceAsStream("/protected/open_protected.pdf"), "sample.pdf", MimeTypeEnum.PDF);
 
-	// TODO : OpenPdf does not keep the same identifier on protected documents signing
 	@Test
 	void recreateParamsTest() throws Exception {
 		Date date = new Date();

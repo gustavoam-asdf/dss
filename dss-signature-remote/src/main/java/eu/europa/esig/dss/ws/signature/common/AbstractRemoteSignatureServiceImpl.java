@@ -26,6 +26,8 @@ import eu.europa.esig.dss.asic.xades.ASiCWithXAdESSignatureParameters;
 import eu.europa.esig.dss.cades.CAdESSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESCounterSignatureParameters;
 import eu.europa.esig.dss.cades.signature.CAdESTimestampParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESCounterSignatureParameters;
+import eu.europa.esig.dss.cbades.signature.CBAdESTimestampParameters;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.CommitmentType;
 import eu.europa.esig.dss.enumerations.CommitmentTypeEnum;
@@ -149,6 +151,8 @@ public abstract class AbstractRemoteSignatureServiceImpl {
 				return getPAdESSignatureParameters(remoteParameters);
 			case JAdES:
 				return getJAdESSignatureParameters(remoteParameters);
+			case CBAdES:
+				return getCBAdESSignatureParameters(remoteParameters);
 			default:
 				throw new UnsupportedOperationException("Unsupported signature form : " + signatureForm);
 		}
@@ -222,7 +226,50 @@ public abstract class AbstractRemoteSignatureServiceImpl {
 		if (remoteParameters.isBase64UrlEncodedEtsiUComponents() != null) {
 			jadesParameters.setBase64UrlEncodedEtsiUComponents(remoteParameters.isBase64UrlEncodedEtsiUComponents());
 		}
+		if (remoteParameters.getSignatureType() != null) {
+			jadesParameters.setSignatureType(remoteParameters.getSignatureType());
+		}
+		if (remoteParameters.getKeyIdentifier() != null) {
+			jadesParameters.setKeyIdentifier(remoteParameters.getKeyIdentifier());
+		}
+		if (remoteParameters.getX509Url() != null) {
+			jadesParameters.setX509Url(remoteParameters.getX509Url());
+		}
 		return jadesParameters;
+	}
+
+	/**
+	 * Return {@code SerializableCounterSignatureParameters} in order to support
+	 * counter signature
+	 *
+	 * @param remoteParameters {@link RemoteSignatureParameters}
+	 * @return {@link SerializableCounterSignatureParameters}
+	 */
+	protected SerializableCounterSignatureParameters getCBAdESSignatureParameters(
+			RemoteSignatureParameters remoteParameters) {
+		CBAdESCounterSignatureParameters cbadesParameters = new CBAdESCounterSignatureParameters();
+		if (remoteParameters.getCoseStructureType() != null) {
+			cbadesParameters.setCoseStructureType(remoteParameters.getCoseStructureType());
+		}
+		if (remoteParameters.getTagged() != null) {
+			cbadesParameters.setTagged(remoteParameters.getTagged());
+		}
+		if (remoteParameters.getExternallySuppliedData() != null) {
+			cbadesParameters.setExternallySuppliedData(RemoteDocumentConverter.toDSSDocument(remoteParameters.getExternallySuppliedData()));
+		}
+		if (remoteParameters.getSigDMechanism() != null) {
+			cbadesParameters.setSigDMechanism(remoteParameters.getSigDMechanism());
+		}
+		if (remoteParameters.getSignatureType() != null) {
+			cbadesParameters.setSignatureType(remoteParameters.getSignatureType());
+		}
+		if (remoteParameters.getKeyIdentifier() != null) {
+			cbadesParameters.setKeyIdentifier(remoteParameters.getKeyIdentifier().getBytes());
+		}
+		if (remoteParameters.getX509Url() != null) {
+			cbadesParameters.setX509Url(remoteParameters.getX509Url());
+		}
+		return cbadesParameters;
 	}
 
 	/**
@@ -390,6 +437,9 @@ public abstract class AbstractRemoteSignatureServiceImpl {
 					break;
 				case JAdES:
 					timestampParameters = new JAdESTimestampParameters(remoteTimestampParameters.getDigestAlgorithm());
+					break;
+				case CBAdES:
+					timestampParameters = new CBAdESTimestampParameters(remoteTimestampParameters.getDigestAlgorithm());
 					break;
 				default:
 					throw new UnsupportedOperationException("Unsupported signature form : " + signatureForm);
@@ -562,6 +612,9 @@ public abstract class AbstractRemoteSignatureServiceImpl {
 				break;
 			case JAdES:
 				parameters = getJAdESSignatureParameters(remoteParameters);
+				break;
+			case CBAdES:
+				parameters = getCBAdESSignatureParameters(remoteParameters);
 				break;
 			default:
 				throw new UnsupportedOperationException("Unsupported signature form for counter signature : " + signatureForm);

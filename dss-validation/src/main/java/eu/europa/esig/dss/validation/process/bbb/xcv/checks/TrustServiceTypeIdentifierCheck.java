@@ -109,15 +109,16 @@ public class TrustServiceTypeIdentifierCheck extends AbstractMultiValuesCheckIte
 	@Override
 	protected MessageTag getErrorMessageTag() {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.XCV_TSL_ETIP_SIG_ANS;
-		case TIMESTAMP:
-			return MessageTag.XCV_TSL_ETIP_TSP_ANS;
-		case REVOCATION:
-			return MessageTag.XCV_TSL_ETIP_REV_ANS;
-		default:
-			return MessageTag.XCV_TSL_ETIP_ANS;
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.XCV_TSL_ETIP_SIG_ANS;
+			case TIMESTAMP:
+				return MessageTag.XCV_TSL_ETIP_TSP_ANS;
+			case REVOCATION:
+				return MessageTag.XCV_TSL_ETIP_REV_ANS;
+			default:
+				return MessageTag.XCV_TSL_ETIP_ANS;
 		}
 	}
 

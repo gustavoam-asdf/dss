@@ -58,7 +58,7 @@ public class JSONParser {
      * @param json {@link String} to parse
      * @return {@link JsonObjectWrapper}
      */
-    protected JsonObjectWrapper parse(String json) {
+    public JsonObjectWrapper parse(String json) {
         return parse(json, EMPTY_URI);
     }
 
@@ -70,7 +70,7 @@ public class JSONParser {
      * @param uri {@link URI} of the schema
      * @return {@link JsonObjectWrapper}
      */
-    protected JsonObjectWrapper parse(String json, URI uri) {
+    public JsonObjectWrapper parse(String json, URI uri) {
         Objects.requireNonNull(json, "JSON String cannot be null!");
         Objects.requireNonNull(uri, "URI cannot be null!");
         try {

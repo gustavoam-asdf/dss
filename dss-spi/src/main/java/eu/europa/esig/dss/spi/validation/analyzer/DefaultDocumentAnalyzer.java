@@ -619,7 +619,6 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
         if (signatures == null) {
             signatures = buildSignatures();
         }
-        // delegated in CommonSignatureValidator
         return signatures;
     }
 
@@ -654,7 +653,9 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      * Returns a list of timestamp validators for timestamps embedded into the container
      *
      * @return a list of {@link TimestampAnalyzer}s
+     * @deprecated since DSS 6.5. To be removed.
      */
+    @Deprecated
     protected List<TimestampAnalyzer> getTimestampReaders() {
         // nothing by default
         return Collections.emptyList();
@@ -754,6 +755,18 @@ public abstract class DefaultDocumentAnalyzer implements DocumentAnalyzer {
      */
     protected <T extends AdvancedSignature> void processSignaturesValidation(Collection<T> allSignatureList) {
         for (final AdvancedSignature signature : allSignatureList) {
+            processSignatureValidation(signature);
+        }
+    }
+
+    /**
+     * Performs cryptographic validation of the signature
+     *
+     * @param signature {@link AdvancedSignature}
+     * @param <T> {@link AdvancedSignature}
+     */
+    protected <T extends AdvancedSignature> void processSignatureValidation(T signature) {
+        if (signature != null) {
             signature.checkSignatureIntegrity();
         }
     }

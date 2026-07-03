@@ -30,13 +30,18 @@
 				<xsl:apply-templates select="dss:Signature"/>
 				<xsl:apply-templates select="dss:Timestamp"/>
 				<xsl:apply-templates select="dss:EvidenceRecord"/>
+				<xsl:apply-templates select="dss:EAA"/>
+				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA']"/>
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='SIGNATURE']"/>
+				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EAA_STATUS']"/>
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='COUNTER_SIGNATURE']"/>
+				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='KEY_BINDING_SIGNATURE']"/>
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='TIMESTAMP']"/>
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='REVOCATION']"/>
 				<xsl:apply-templates select="dss:BasicBuildingBlocks[@Type='EVIDENCE_RECORD']"/>
 				
 				<xsl:apply-templates select="dss:TLAnalysis" />
+				<xsl:apply-templates select="dss:LoTEAnalysis" />
 			</div>
 	    </div>
 	    		
@@ -190,6 +195,46 @@
 		</div>
 	</xsl:template>
 
+	<xsl:template match="dss:EAA">
+
+		<xsl:variable name="idToken"><xsl:value-of select="@Id" /></xsl:variable>
+
+		<div>
+			<xsl:attribute name="class">card mb-2 mb-sm-3</xsl:attribute>
+			<xsl:attribute name="id"><xsl:value-of select="$idToken"/></xsl:attribute>
+
+			<div>
+				<xsl:attribute name="class">card-header bg-primary</xsl:attribute>
+				<xsl:attribute name="data-target">#collapseEAA<xsl:value-of select="$idToken"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<xsl:call-template name="badge-conclusion">
+					<xsl:with-param name="Conclusion" select="dss:Conclusion" />
+					<xsl:with-param name="AdditionalClass" select="' float-right ml-2'" />
+				</xsl:call-template>
+
+				<span>Electronic Attestation Of Attributes <xsl:value-of select="@Id"/></span>
+				<i>
+					<xsl:attribute name="class">id-copy fa fa-clipboard btn btn-outline-light cursor-pointer text-light border-0 p-2 ml-1 mr-1</xsl:attribute>
+					<xsl:attribute name="data-id"><xsl:value-of select="@Id"/></xsl:attribute>
+					<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
+					<xsl:attribute name="data-placement">right</xsl:attribute>
+					<xsl:attribute name="data-success-text">Id copied successfully!</xsl:attribute>
+					<xsl:attribute name="title">Copy Id to clipboard</xsl:attribute>
+				</i>
+			</div>
+			<xsl:if test="count(child::*[name(.)!='Conclusion']) &gt; 0">
+				<div>
+					<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+					<xsl:attribute name="id">collapseEAA<xsl:value-of select="$idToken"/></xsl:attribute>
+					<xsl:apply-templates select="dss:ValidationProcessEAA" />
+					<xsl:apply-templates select="dss:Signature" />
+					<xsl:apply-templates select="dss:ValidationEAAQualification" />
+				</div>
+			</xsl:if>
+		</div>
+	</xsl:template>
+
 	<xsl:template match="dss:Certificate">
 		<xsl:variable name="idToken"><xsl:value-of select="@Id" /></xsl:variable>
 
@@ -222,6 +267,7 @@
 					<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
 					<xsl:attribute name="id">collapseCertificate<xsl:value-of select="$idToken"/></xsl:attribute>
 					<xsl:apply-templates select="dss:CertificateQualificationProcess" />
+					<xsl:apply-templates select="dss:CertificateApprovalStatusProcess" />
 					<xsl:apply-templates select="dss:QWACProcess" />
 				</div>
 			</xsl:if>
@@ -288,10 +334,10 @@
     </xsl:template>
 
 	<xsl:template match="dss:ValidationProcessBasicSignature|dss:ValidationProcessLongTermData|dss:ValidationProcessArchivalData
-			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess">
+			|dss:CertificateQualificationProcess|dss:ValidationQWACProcess|dss:CertificateApprovalStatusProcess|dss:ValidationProcessEAA">
 		<div>
 			<xsl:choose>
-				<xsl:when test="name()='ValidationQWACProcess'">
+				<xsl:when test="name()='ValidationQWACProcess' or name()='CertificateApprovalStatusProcess'">
 					<xsl:attribute name="class">card mt-3</xsl:attribute>
 				</xsl:when>
 				<xsl:otherwise>
@@ -397,7 +443,7 @@
     	</div>
     </xsl:template>
     
-    <xsl:template match="dss:TLAnalysis">
+    <xsl:template match="dss:TLAnalysis|dss:LoTEAnalysis">
  		<div>
 	  		<xsl:if test="@Id != ''">
 	  			<xsl:attribute name="id"><xsl:value-of select="@Id"/></xsl:attribute>
@@ -405,7 +451,7 @@
  			<xsl:attribute name="class">card mb-2 mb-sm-3</xsl:attribute>
 	   		<div>
 	   			<xsl:attribute name="class">card-header</xsl:attribute>
-	    		<xsl:attribute name="data-target">#collapseTL<xsl:value-of select="@CountryCode"/></xsl:attribute>
+	    		<xsl:attribute name="data-target">#collapseTL-<xsl:value-of select="@Id"/></xsl:attribute>
 		       	<xsl:attribute name="data-toggle">collapse</xsl:attribute>
 		       	
 				<xsl:call-template name="badge-conclusion">
@@ -429,7 +475,7 @@
 			<xsl:if test="count(child::*[name(.)!='Conclusion']) &gt; 0">
 	    		<div>
 	    			<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
-		        	<xsl:attribute name="id">collapseTL<xsl:value-of select="@CountryCode"/></xsl:attribute>
+		        	<xsl:attribute name="id">collapseTL-<xsl:value-of select="@Id"/></xsl:attribute>
 		        	<xsl:apply-templates/>
 	    		</div>
 	    	</xsl:if>
@@ -458,6 +504,77 @@
     		</div>
    		</div>
     </xsl:template>
+
+	<xsl:template match="dss:ValidationEAAQualification">
+		<div>
+			<xsl:attribute name="class">card</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#collapseEAAAnalysis<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<xsl:for-each select="dss:EAAQualification">
+					<span>
+						<xsl:attribute name="class">badge badge-secondary float-right mr-1</xsl:attribute>
+						<xsl:value-of select="."/>
+					</span>
+				</xsl:for-each>
+
+				<xsl:value-of select="@Title"/>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">collapseEAAAnalysis<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template match="dss:ValidationEAAQualificationProcess">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#collapseEAAQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<span>
+					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
+					<xsl:value-of select="@EAAQualification"/>
+				</span>
+
+				<xsl:value-of select="@Title"/>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">collapseEAAQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
+
+	<xsl:template match="dss:ValidationPIDQualificationProcess">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#collapsePIDQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<span>
+					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
+					<xsl:value-of select="@EAAQualification"/>
+				</span>
+
+				<xsl:value-of select="@Title"/>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">collapsePIDQualProcess<xsl:value-of select="@Id"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
     
     <xsl:template match="dss:ValidationTimestampQualification">
    		<div>
@@ -556,6 +673,56 @@
     		</div>
    		</div>
     </xsl:template>
+
+	<xsl:template match="dss:ValidationCertificateApprovalStatus">
+		<div>
+			<xsl:attribute name="class">card mt-3</xsl:attribute>
+			<div>
+				<xsl:attribute name="class">card-header</xsl:attribute>
+				<xsl:attribute name="data-target">#cert-qual-<xsl:value-of select="generate-id(.)"/></xsl:attribute>
+				<xsl:attribute name="data-toggle">collapse</xsl:attribute>
+
+				<span>
+					<xsl:attribute name="class">badge badge-secondary float-right</xsl:attribute>
+					<xsl:choose>
+						<xsl:when test="dss:CertificateApprovalStatus/@label">
+							<xsl:value-of select="dss:CertificateApprovalStatus/@label"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="dss:CertificateApprovalStatus/dss:ServiceTypeIdentifier"/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</span>
+
+				<xsl:value-of select="concat(@Title, ' ')"/>
+
+				<i>
+					<xsl:attribute name="class">constraint-tooltip fa fa-clock-o</xsl:attribute>
+					<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
+					<xsl:attribute name="data-placement">top</xsl:attribute>
+					<xsl:attribute name="title"><xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="@DateTime"/></xsl:call-template></xsl:attribute>
+				</i>
+				<span class="constraint-text d-none">(<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="@DateTime"/></xsl:call-template>)</span>
+				<xsl:if test="@Id">
+					<br />
+					<span><xsl:value-of select="concat('Id = ', @Id)"/></span>
+					<i>
+						<xsl:attribute name="class">id-copy fa fa-clipboard btn btn-outline-light cursor-pointer text-dark border-0 p-2 ml-1 mr-1</xsl:attribute>
+						<xsl:attribute name="data-id"><xsl:value-of select="@Id"/></xsl:attribute>
+						<xsl:attribute name="data-toggle">tooltip</xsl:attribute>
+						<xsl:attribute name="data-placement">right</xsl:attribute>
+						<xsl:attribute name="data-success-text">Id copied successfully!</xsl:attribute>
+						<xsl:attribute name="title">Copy Id to clipboard</xsl:attribute>
+					</i>
+				</xsl:if>
+			</div>
+			<div>
+				<xsl:attribute name="class">card-body p-2 p-sm-3 collapse show</xsl:attribute>
+				<xsl:attribute name="id">cert-qual-<xsl:value-of select="generate-id(.)"/></xsl:attribute>
+				<xsl:apply-templates/>
+			</div>
+		</div>
+	</xsl:template>
 
 	<xsl:template match="dss:QWACProcess">
 		<div>

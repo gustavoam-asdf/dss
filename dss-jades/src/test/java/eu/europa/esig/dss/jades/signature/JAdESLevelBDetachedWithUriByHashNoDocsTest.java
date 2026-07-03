@@ -84,7 +84,7 @@ class JAdESLevelBDetachedWithUriByHashNoDocsTest extends AbstractJAdESTestSignat
 		boolean signingInputFound = false;
 		boolean sigDEntryFound = false;
 		for (XmlDigestMatcher digestMatcher : digestMatchers) {
-			if (DigestMatcherType.JWS_SIGNING_INPUT_DIGEST.equals(digestMatcher.getType())) {
+			if (DigestMatcherType.JWS_SIGNING_INPUT.equals(digestMatcher.getType())) {
 				assertTrue(digestMatcher.isDataFound());
 				assertTrue(digestMatcher.isDataIntact());
 				signingInputFound = true;

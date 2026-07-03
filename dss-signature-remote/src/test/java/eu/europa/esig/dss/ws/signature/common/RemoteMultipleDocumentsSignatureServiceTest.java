@@ -23,6 +23,8 @@ package eu.europa.esig.dss.ws.signature.common;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
 import eu.europa.esig.dss.enumerations.ASiCContainerType;
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.JWSSerializationType;
+import eu.europa.esig.dss.enumerations.SigDMechanism;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.enumerations.SignatureProfile;
@@ -60,12 +62,14 @@ class RemoteMultipleDocumentsSignatureServiceTest extends AbstractRemoteSignatur
 	void init() {
 		signatureService = new RemoteMultipleDocumentsSignatureServiceImpl();
 		signatureService.setXadesService(getXAdESService());
+		signatureService.setJadesService(getJAdESService());
+		signatureService.setCbadesService(getCBAdESService());
 		signatureService.setAsicWithXAdESService(getASiCXAdESService());
 		signatureService.setAsicWithCAdESService(getASiCCAdESService());
 	}
 
 	@Test
-	void testSigningAndExtensionMultiDocuments() throws Exception {
+	void testSigningAndExtensionMultiDocuments() {
 		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
 		parameters.setAsicContainerType(ASiCContainerType.ASiC_E);
 		parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
@@ -102,7 +106,7 @@ class RemoteMultipleDocumentsSignatureServiceTest extends AbstractRemoteSignatur
 	}
 
 	@Test
-	void testSigningAndExtensionMultiDocumentsWithSignatureProfile() throws Exception {
+	void testSigningAndExtensionMultiDocumentsWithSignatureProfile() {
 		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
 		parameters.setAsicContainerType(ASiCContainerType.ASiC_E);
 		parameters.setSignatureLevel(SignatureLevel.XAdES_BASELINE_B);
@@ -134,7 +138,7 @@ class RemoteMultipleDocumentsSignatureServiceTest extends AbstractRemoteSignatur
 	}
 	
 	@Test
-	void multipleDocumentTimestampingTest() throws Exception {
+	void multipleDocumentTimestampingTest() {
 		RemoteTimestampParameters timestampParameters = new RemoteTimestampParameters();
 		timestampParameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
 		timestampParameters.setTimestampContainerForm(TimestampContainerForm.ASiC_E);
@@ -225,6 +229,85 @@ class RemoteMultipleDocumentsSignatureServiceTest extends AbstractRemoteSignatur
 		assertNotNull(extendedDocument);
 
 		InMemoryDocument iMD = new InMemoryDocument(extendedDocument.getBytes());
+		validate(iMD, Arrays.asList(fileToSign, fileToSign2));
+	}
+
+	@Test
+	void testSigningAndExtensionJAdES() {
+		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+		parameters.setSigningCertificate(RemoteCertificateConverter.toRemoteCertificate(getSigningCert()));
+		parameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_B);
+		parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+		parameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH);
+		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+		parameters.setJwsSerializationType(JWSSerializationType.JSON_SERIALIZATION);
+
+		FileDocument fileToSign = new FileDocument(new File("src/test/resources/sample.xml"));
+		InMemoryDocument fileToSign2 = new InMemoryDocument("Hello world!".getBytes(StandardCharsets.UTF_8), "test.bin");
+		RemoteDocument toSignDocument = new RemoteDocument(DSSUtils.toByteArray(fileToSign), fileToSign.getName());
+		RemoteDocument toSignDoc2 = new RemoteDocument(DSSUtils.toByteArray(fileToSign2), fileToSign2.getName());
+		List<RemoteDocument> toSignDocuments = new ArrayList<>();
+		toSignDocuments.add(toSignDocument);
+		toSignDocuments.add(toSignDoc2);
+		ToBeSignedDTO dataToSign = signatureService.getDataToSign(toSignDocuments, parameters);
+		assertNotNull(dataToSign);
+
+		SignatureValue signatureValue = getToken().sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, getPrivateKeyEntry());
+		RemoteDocument signedDocument = signatureService.signDocument(toSignDocuments, parameters,
+				new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+
+		assertNotNull(signedDocument);
+
+		parameters = new RemoteSignatureParameters();
+		parameters.setSignatureLevel(SignatureLevel.JAdES_BASELINE_LT);
+		parameters.setDetachedContents(toSignDocuments);
+
+		RemoteDocument extendedDocument = signatureService.extendDocument(signedDocument, null, parameters);
+
+		assertNotNull(extendedDocument);
+
+		InMemoryDocument iMD = new InMemoryDocument(extendedDocument.getBytes());
+		// iMD.save("target/test.asice");
+
+		validate(iMD, Arrays.asList(fileToSign, fileToSign2));
+	}
+
+	@Test
+	void testSigningAndExtensionCBAdES() {
+		RemoteSignatureParameters parameters = new RemoteSignatureParameters();
+		parameters.setSigningCertificate(RemoteCertificateConverter.toRemoteCertificate(getSigningCert()));
+		parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_B);
+		parameters.setSignaturePackaging(SignaturePackaging.DETACHED);
+		parameters.setSigDMechanism(SigDMechanism.OBJECT_ID_BY_URI_HASH);
+		parameters.setDigestAlgorithm(DigestAlgorithm.SHA256);
+
+		FileDocument fileToSign = new FileDocument(new File("src/test/resources/sample.xml"));
+		InMemoryDocument fileToSign2 = new InMemoryDocument("Hello world!".getBytes(StandardCharsets.UTF_8), "test.bin");
+		RemoteDocument toSignDocument = new RemoteDocument(DSSUtils.toByteArray(fileToSign), fileToSign.getName());
+		RemoteDocument toSignDoc2 = new RemoteDocument(DSSUtils.toByteArray(fileToSign2), fileToSign2.getName());
+		List<RemoteDocument> toSignDocuments = new ArrayList<>();
+		toSignDocuments.add(toSignDocument);
+		toSignDocuments.add(toSignDoc2);
+		ToBeSignedDTO dataToSign = signatureService.getDataToSign(toSignDocuments, parameters);
+		assertNotNull(dataToSign);
+
+		SignatureValue signatureValue = getToken().sign(DTOConverter.toToBeSigned(dataToSign), DigestAlgorithm.SHA256, getPrivateKeyEntry());
+		RemoteDocument signedDocument = signatureService.signDocument(toSignDocuments, parameters,
+				new SignatureValueDTO(signatureValue.getAlgorithm(), signatureValue.getValue()));
+
+		assertNotNull(signedDocument);
+
+		parameters = new RemoteSignatureParameters();
+		parameters.setSignatureLevel(SignatureLevel.CB_AdES_BASELINE_LT);
+		parameters.setDetachedContents(toSignDocuments);
+
+		RemoteDocument extendedDocument = signatureService.extendDocument(signedDocument, null, parameters);
+
+		assertNotNull(extendedDocument);
+
+		InMemoryDocument iMD = new InMemoryDocument(extendedDocument.getBytes());
+		// iMD.save("target/test.asice");
+
 		validate(iMD, Arrays.asList(fileToSign, fileToSign2));
 	}
 

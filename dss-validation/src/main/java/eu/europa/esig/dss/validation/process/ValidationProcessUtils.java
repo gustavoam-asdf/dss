@@ -386,19 +386,24 @@ public class ValidationProcessUtils {
 	 */
 	public static MessageTag getCryptoPosition(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.ACCM_POS_SIG_SIG;
-		case TIMESTAMP:
-			return MessageTag.ACCM_POS_TST_SIG;
-		case REVOCATION:
-			return MessageTag.ACCM_POS_REVOC_SIG;
-		case CERTIFICATE:
-			return MessageTag.ACCM_POS_CERT_CHAIN;
-		case EVIDENCE_RECORD:
-			return MessageTag.ACCM_POS_EV_RECORD;
-		default:
-			throw new IllegalArgumentException("Unsupported context " + context);
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.ACCM_POS_SIG_SIG;
+			case TIMESTAMP:
+				return MessageTag.ACCM_POS_TST_SIG;
+			case REVOCATION:
+				return MessageTag.ACCM_POS_REVOC_SIG;
+			case CERTIFICATE:
+				return MessageTag.ACCM_POS_CERT_CHAIN;
+			case EVIDENCE_RECORD:
+				return MessageTag.ACCM_POS_EV_RECORD;
+			case EAA:
+				return MessageTag.ACCM_POS_EAA;
+			case EAA_REVOCATION:
+				return MessageTag.ACCM_POS_EAA;
+			default:
+				throw new IllegalArgumentException("Unsupported context " + context);
 		}
 	}
 
@@ -410,17 +415,20 @@ public class ValidationProcessUtils {
 	 */
 	public static MessageTag getCertificateChainCryptoPosition(Context context) {
 		switch (context) {
-		case SIGNATURE:
-		case COUNTER_SIGNATURE:
-			return MessageTag.ACCM_POS_CERT_CHAIN_SIG;
-		case TIMESTAMP:
-			return MessageTag.ACCM_POS_CERT_CHAIN_TST;
-		case REVOCATION:
-			return MessageTag.ACCM_POS_CERT_CHAIN_REVOC;
-		case CERTIFICATE:
-			return MessageTag.ACCM_POS_CERT_CHAIN;
-		default:
-			throw new IllegalArgumentException("Unsupported context " + context);
+			case SIGNATURE:
+			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
+				return MessageTag.ACCM_POS_CERT_CHAIN_SIG;
+			case TIMESTAMP:
+				return MessageTag.ACCM_POS_CERT_CHAIN_TST;
+			case REVOCATION:
+				return MessageTag.ACCM_POS_CERT_CHAIN_REVOC;
+			case EAA_REVOCATION:
+				return MessageTag.ACCM_POS_CERT_CHAIN_EAA_REV;
+			case CERTIFICATE:
+				return MessageTag.ACCM_POS_CERT_CHAIN;
+			default:
+				throw new IllegalArgumentException("Unsupported context " + context);
 		}
 	}
 	
@@ -453,8 +461,10 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_MES_DIG;
 			case CONTENT_DIGEST:
 				return MessageTag.ACCM_POS_CON_DIG;
-			case JWS_SIGNING_INPUT_DIGEST:
+			case JWS_SIGNING_INPUT:
 				return MessageTag.ACCM_POS_JWS;
+			case COSE_SIG_STRUCTURE:
+				return MessageTag.ACCM_POS_COSE;
 			case SIG_D_ENTRY:
 				return MessageTag.ACCM_POS_SIG_D_ENT;
 			case MESSAGE_IMPRINT:
@@ -469,6 +479,14 @@ public class ValidationProcessUtils {
 				return MessageTag.ACCM_POS_ER_TST_SEQ;
 			case EVIDENCE_RECORD_MASTER_SIGNATURE:
 				return MessageTag.ACCM_POS_ER_MST_SIG;
+			case EAA_DISCLOSURE:
+				return MessageTag.ACCM_POS_EAA_SD;
+			case EAA_NESTED_DISCLOSURE:
+				return MessageTag.ACCM_POS_EAA_NSD;
+			case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
+				return MessageTag.ACCM_POS_EAA_OSDC;
+			case EAA_KEY_BINDING:
+				return MessageTag.ACCM_POS_EAA_KB;
 			default:
 				throw new IllegalArgumentException(String.format(
 						"The provided DigestMatcherType '%s' is not supported!", digestMatcher.getType()));
@@ -513,6 +531,14 @@ public class ValidationProcessUtils {
 					return MessageTag.ACCM_POS_ER_ADO_PL;
 				case EVIDENCE_RECORD_ORPHAN_REFERENCE:
 					return MessageTag.ACCM_POS_ER_OR_PL;
+				case EAA_DISCLOSURE:
+					return MessageTag.ACCM_POS_EAA_SD_PL;
+				case EAA_NESTED_DISCLOSURE:
+					return MessageTag.ACCM_POS_EAA_NSD_PL;
+				case EAA_ORPHAN_SELECTIVELY_DISCLOSABLE_CLAIM:
+					return MessageTag.ACCM_POS_EAA_OSDC_PL;
+				case EAA_KEY_BINDING:
+					return MessageTag.ACCM_POS_EAA_KB;
 				default:
 					throw new IllegalArgumentException(String.format(
 							"The provided DigestMatcherType '%s' is not supported for multiple digest matchers!", digestMatcherType));
@@ -557,11 +583,14 @@ public class ValidationProcessUtils {
 	 *
 	 * @param context {@link Context}
 	 * @return {@link MessageTag}
+	 * @deprecated since DSS 6.5. To be removed.
 	 */
+	@Deprecated
 	public static MessageTag getContextPosition(Context context) {
 		switch (context) {
 			case SIGNATURE:
 			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
 			case CERTIFICATE:
 				return MessageTag.SIGNATURE;
 			case TIMESTAMP:
@@ -586,6 +615,7 @@ public class ValidationProcessUtils {
 				return MessageTag.CERTIFICATE;
 			case SIGNATURE:
 			case COUNTER_SIGNATURE:
+			case KEY_BINDING_SIGNATURE:
 				switch (subContext) {
 					case SIGNING_CERT:
 						return MessageTag.SIGNING_CERTIFICATE;
@@ -609,6 +639,15 @@ public class ValidationProcessUtils {
 						return MessageTag.REVOCATION_SIG_CERT;
 					case CA_CERTIFICATE:
 						return MessageTag.REVOCATION_CA_CERT;
+					default:
+						throw new IllegalArgumentException("Unsupported subContext " + subContext);
+				}
+			case EAA_REVOCATION:
+				switch (subContext) {
+					case SIGNING_CERT:
+						return MessageTag.EAA_REV_SIG_CERT;
+					case CA_CERTIFICATE:
+						return MessageTag.EAA_REV_CA_CERT;
 					default:
 						throw new IllegalArgumentException("Unsupported subContext " + subContext);
 				}
@@ -705,7 +744,7 @@ public class ValidationProcessUtils {
 	 *
 	 * @param values {@link String} to check
 	 * @param expectedValues {@link String}s to check against
-	 * @return TRUE if the values are allowed by the list of expected values, FALSE otherwise
+	 * @return TRUE if at least one of the value is allowed by the list of expected values, FALSE otherwise
 	 */
 	public static boolean processValuesCheck(List<String> values, List<String> expectedValues) {
 		if (Utils.isCollectionNotEmpty(values)) {
@@ -715,6 +754,46 @@ public class ValidationProcessUtils {
 				}
 			}
 			return false;
+		} else {
+			return Utils.isCollectionEmpty(expectedValues);
+		}
+	}
+
+    /**
+     * Checks the values against the expected values
+     *
+     * @param values {@link String} to check
+     * @param expectedValues {@link String}s to check against
+     * @return TRUE if all the values are allowed by the list of expected values, FALSE otherwise
+     */
+    public static boolean processAllValuesCheck(List<String> values, List<String> expectedValues) {
+        if (Utils.isCollectionNotEmpty(values)) {
+            for (String value : values) {
+                if (!processValueCheck(value, expectedValues)) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return Utils.isCollectionEmpty(expectedValues);
+        }
+    }
+
+	/**
+	 * Checks whether {@code values} contain all the {@code expectedValues}
+	 *
+	 * @param values {@link String} to check
+	 * @param expectedValues {@link String}s to check against
+	 * @return TRUE if all values is present within the expected values, FALSE otherwise
+	 */
+	public static boolean processValuesForEachExpectedCheck(List<String> values, List<String> expectedValues) {
+		if (Utils.isCollectionNotEmpty(values)) {
+			for (String expectedValue : expectedValues) {
+				if (!processValueCheck(expectedValue, values)) {
+					return false;
+				}
+			}
+			return true;
 		} else {
 			return Utils.isCollectionEmpty(expectedValues);
 		}

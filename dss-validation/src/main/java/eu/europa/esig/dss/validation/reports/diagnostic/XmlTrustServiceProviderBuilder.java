@@ -244,7 +244,7 @@ public class XmlTrustServiceProviderBuilder {
     }
 
     private XmlTrustService getXmlTrustService(TrustServiceStatusAndInformationExtensions serviceInfoStatus,
-                                                   CertificateToken certToken, CertificateToken trustAnchor) {
+                                               CertificateToken certToken, CertificateToken trustAnchor) {
         XmlTrustService trustService = new XmlTrustService();
 
         trustService.setServiceDigitalIdentifier(xmlCertsMap.get(trustAnchor.getDSSIdAsString()));
@@ -325,7 +325,7 @@ public class XmlTrustServiceProviderBuilder {
     }
 
     private List<XmlTrustService> getXmlTrustServicesForMRA(TrustServiceStatusAndInformationExtensions serviceInfoStatus,
-                                                         CertificateToken certToken, CertificateToken trustAnchor, MRA mra) {
+                                                            CertificateToken certToken, CertificateToken trustAnchor, MRA mra) {
         List<MutableTimeDependentValues<ServiceEquivalence>> mraEquivalences = getMRAServiceEquivalences(serviceInfoStatus, certToken, mra);
         boolean enactedMra = Utils.isCollectionNotEmpty(mraEquivalences);
         if (enactedMra) {
@@ -359,7 +359,7 @@ public class XmlTrustServiceProviderBuilder {
     }
 
     private List<MutableTimeDependentValues<ServiceEquivalence>> getMRAServiceEquivalences(TrustServiceStatusAndInformationExtensions serviceInfoStatus,
-                                                               CertificateToken certToken, MRA mra) {
+                                                                                           CertificateToken certToken, MRA mra) {
         LOG.debug("MRA");
         final List<MutableTimeDependentValues<ServiceEquivalence>> equivalences = new ArrayList<>();
         for (MutableTimeDependentValues<ServiceEquivalence> serviceEquivalenceList : mra.getServiceEquivalence()) {

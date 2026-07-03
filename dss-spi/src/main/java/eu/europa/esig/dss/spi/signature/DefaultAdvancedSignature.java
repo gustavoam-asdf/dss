@@ -20,18 +20,23 @@
  */
 package eu.europa.esig.dss.spi.signature;
 
+import eu.europa.esig.dss.enumerations.DigestAlgorithm;
+import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
+import eu.europa.esig.dss.enumerations.SignatureAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.DigestDocument;
 import eu.europa.esig.dss.model.ManifestFile;
 import eu.europa.esig.dss.model.ReferenceValidation;
 import eu.europa.esig.dss.model.scope.SignatureScope;
 import eu.europa.esig.dss.model.signature.SignatureCryptographicVerification;
+import eu.europa.esig.dss.model.signature.SignatureDigestReference;
 import eu.europa.esig.dss.model.signature.SignaturePolicy;
 import eu.europa.esig.dss.model.signature.SignerRole;
 import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.model.x509.revocation.crl.CRL;
 import eu.europa.esig.dss.model.x509.revocation.ocsp.OCSP;
 import eu.europa.esig.dss.spi.SignatureCertificateSource;
+import eu.europa.esig.dss.spi.eaa.EAA;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifier;
 import eu.europa.esig.dss.spi.signature.identifier.SignatureIdentifierBuilder;
 import eu.europa.esig.dss.spi.validation.CertificateVerifier;
@@ -50,7 +55,9 @@ import eu.europa.esig.dss.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A common implementation of {@code AdvancedSignature}
@@ -128,6 +135,16 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	private AdvancedSignature masterSignature;
 
 	/**
+	 * EAA in case of a key binding signature
+	 */
+	private EAA eaa;
+
+	/**
+	 * Contains information whether the signature is a key binding signature
+	 */
+	private boolean keyBindingSignature;
+
+	/**
 	 * The SignaturePolicy identifier
 	 */
 	protected SignaturePolicy signaturePolicy;
@@ -148,6 +165,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	protected SignatureIdentifier signatureIdentifier;
 
 	/**
+	 * Cached map of computed SignatureDigestReference's as defined in ETSI TS 119 102-2 ch. "4.1.1.5 Signature Reference"
+	 */
+	private Map<DigestAlgorithm, SignatureDigestReference> signatureDigestReferences = new HashMap<>();
+
+	/**
 	 * Performs a conformance check for the signature to a given profile
 	 */
 	private transient BaselineRequirementsChecker<?> baselineRequirementsChecker;
@@ -163,6 +185,24 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	protected DefaultAdvancedSignature() {
 		// empty
 	}
+
+	@Override
+	public EncryptionAlgorithm getEncryptionAlgorithm() {
+		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
+		if (signatureAlgorithm == null) {
+			return null;
+		}
+		return signatureAlgorithm.getEncryptionAlgorithm();
+	}
+
+	@Override
+	public DigestAlgorithm getDigestAlgorithm() {
+		SignatureAlgorithm signatureAlgorithm = getSignatureAlgorithm();
+		if (signatureAlgorithm == null) {
+			return null;
+		}
+		return signatureAlgorithm.getDigestAlgorithm();
+	}
 	
 	/**
 	 * Returns a builder to define and build a signature Id
@@ -170,6 +210,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	 * @return {@link SignatureIdentifierBuilder}
 	 */
 	protected abstract SignatureIdentifierBuilder getSignatureIdentifierBuilder();
+
+	@Override
+	public CertificateSource getSigningCertificateSource() {
+		return signingCertificateSource;
+	}
 
 	@Override
 	public void setSigningCertificateSource(CertificateSource signingCertificateSource) {
@@ -295,7 +340,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	/**
 	 * This method resets the source of certificates. It must be called when 
 	 * any certificate is added to the KeyInfo or CertificateValues (XAdES), or 'xVals' (JAdES).
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetCertificateSource() {
@@ -304,7 +349,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 
 	/**
 	 * This method resets the sources of the revocation data. It must be called when -LT level is created.
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetRevocationSources() {
@@ -314,7 +359,7 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 
 	/**
 	 * This method resets the timestamp source. It must be called when -LT level is created.
-	 * 
+	 * <p>
 	 * NOTE: used in XAdES and JAdES
 	 */
 	public void resetTimestampSource() {
@@ -366,6 +411,26 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	@Override
 	public boolean isCounterSignature() {
 		return masterSignature != null;
+	}
+
+	@Override
+	public EAA getEAA() {
+		return eaa;
+	}
+
+	@Override
+	public void setEAA(EAA eaa) {
+		this.eaa = eaa;
+	}
+
+	@Override
+	public boolean isKeyBindingSignature() {
+		return keyBindingSignature;
+	}
+
+	@Override
+	public void setKeyBindingSignature(boolean keyBindingSignature) {
+		this.keyBindingSignature = keyBindingSignature;
 	}
 
 	@Override
@@ -524,6 +589,22 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	 */
 	protected abstract SignaturePolicy buildSignaturePolicy();
 
+	@Override
+	public SignatureDigestReference getSignatureDigestReference(DigestAlgorithm digestAlgorithm) {
+		if (signatureDigestReferences == null) {
+			signatureDigestReferences = new HashMap<>();
+		}
+		return signatureDigestReferences.computeIfAbsent(digestAlgorithm, v -> buildSignatureDigestReference(digestAlgorithm));
+	}
+
+	/**
+	 * Builds a new SignatureDigestReference according to the applicable signature format rules
+	 *
+	 * @param digestAlgorithm {@link DigestAlgorithm} to be used for digest computation
+	 * @return {@link SignatureDigestReference}
+	 */
+	protected abstract SignatureDigestReference buildSignatureDigestReference(DigestAlgorithm digestAlgorithm);
+
 	/**
 	 * Returns a cached instance of the {@code BaselineRequirementsChecker}
 	 *
@@ -545,6 +626,11 @@ public abstract class DefaultAdvancedSignature implements AdvancedSignature {
 	 */
 	@SuppressWarnings("rawtypes")
 	protected abstract BaselineRequirementsChecker createBaselineRequirementsChecker(CertificateVerifier certificateVerifier);
+
+	@Override
+	public boolean hasAdESProfile() {
+		return getBaselineRequirementsChecker().hasAdESProfile();
+	}
 
 	@Override
 	public boolean hasBProfile() {

@@ -21,7 +21,6 @@
 package eu.europa.esig.dss.service.http.commons;
 
 import eu.europa.esig.dss.spi.DSSUtils;
-import eu.europa.esig.dss.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,36 +113,6 @@ public final class LdapURLUtils {
 			return false;
 		}
 		return false;
-	}
-
-	/**
-	 * Gets host name based on the given URL string.
-	 * E.g. for "ldap://ldap.infonotary.com/dc=identity-ca,dc=infonotary,dc=com" returns -> "ldap.infonotary.com"
-	 *
-	 * @param urlString {@link String}
-	 * @return {@link String} corresponding to a host name
-	 * @deprecated since DSS 6.4. Please use {@code DSSUtils#getHost} method instead
-	 */
-	@Deprecated
-	public static String getHost(String urlString) {
-		if (Utils.isStringEmpty(urlString)) {
-			return "";
-		}
-
-		int doubleslash = urlString.indexOf("//");
-		if (doubleslash == -1) {
-			doubleslash = 0;
-		} else {
-			doubleslash += 2;
-		}
-
-		int end = urlString.indexOf('/', doubleslash);
-		end = end >= 0 ? end : urlString.length();
-
-		int port = urlString.indexOf(':', doubleslash);
-		end = (port > 0 && port < end) ? port : end;
-
-		return urlString.substring(doubleslash, end);
 	}
 
 }

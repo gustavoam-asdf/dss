@@ -80,21 +80,6 @@ public interface RemoteMultipleDocumentsSignatureService extends Serializable {
 								final SignatureValueDTO signatureValue) throws DSSException;
 
 	/**
-	 * Extends the level of the signatures in the {@code toExtendDocument}
-	 *
-	 * @param toExtendDocument
-	 *            document to extend
-	 * @param parameters
-	 *            set of the driving signing parameters
-	 * @return the extended signature
-	 * @throws DSSException
-	 *             if an error occurred
-	 * @deprecated since DSS 6.4. Please use {@code #extendDocument(toExtendDocument, signatureProfile, parameters)} method instead.
-	 */
-	@Deprecated
-	RemoteDocument extendDocument(final RemoteDocument toExtendDocument, final RemoteSignatureParameters parameters) throws DSSException;
-
-	/**
 	 * Extends the level of the signatures in the {@code toExtendDocument} according
 	 * to the defined target {@code signatureProfile} and/or {@code parameters}
 	 *

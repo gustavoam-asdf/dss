@@ -176,7 +176,7 @@ class Sha2FileCacheDataLoaderTest {
 
         assertEquals(2, Utils.collectionSize(documentWithSha2.getErrors()));
         assertTrue(documentWithSha2.getErrors().stream().anyMatch(s -> s.contains("No sha2 document has been found")));
-        assertTrue(documentWithSha2.getErrors().stream().anyMatch(s -> s.contains("Empty content is obtained!")));
+        assertTrue(documentWithSha2.getErrors().stream().anyMatch(s -> s.contains("Cannot retrieve data from url")));
     }
 
     @Test
@@ -308,7 +308,7 @@ class Sha2FileCacheDataLoaderTest {
         urlMap.clear();
 
         Exception exception = assertThrows(DSSExternalResourceException.class, () -> sha2FileCacheDataLoader.getDocument("tl_ok.xml"));
-        assertEquals("Cannot retrieve data from url [tl_ok.xml]. Empty content is obtained!", exception.getMessage());
+        assertEquals("Cannot retrieve data from url [tl_ok.xml]", exception.getMessage());
     }
 
     @Test

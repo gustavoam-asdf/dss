@@ -29,6 +29,7 @@ import eu.europa.esig.dss.service.ocsp.OnlineOCSPSource;
 import eu.europa.esig.dss.spi.client.http.DSSCacheFileLoader;
 import eu.europa.esig.dss.spi.client.http.IgnoreDataLoader;
 import eu.europa.esig.dss.spi.tsl.TrustedListsCertificateSource;
+import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.spi.x509.CertificateSource;
 import eu.europa.esig.dss.spi.x509.KeyStoreCertificateSource;
 import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
@@ -42,14 +43,13 @@ import eu.europa.esig.dss.tsl.alerts.handlers.log.LogLOTLLocationChangeAlertHand
 import eu.europa.esig.dss.tsl.alerts.handlers.log.LogOJUrlChangeAlertHandler;
 import eu.europa.esig.dss.tsl.alerts.handlers.log.LogTLExpirationAlertHandler;
 import eu.europa.esig.dss.tsl.alerts.handlers.log.LogTLSignatureErrorAlertHandler;
-import eu.europa.esig.dss.tsl.cache.CacheCleaner;
 import eu.europa.esig.dss.tsl.function.OfficialJournalSchemeInformationURI;
 import eu.europa.esig.dss.tsl.job.TLValidationJob;
 import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
 import eu.europa.esig.dss.tsl.source.LOTLSource;
-import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
-import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 import eu.europa.esig.dss.validation.SignedDocumentValidator;
+import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,15 +85,15 @@ class EuropeanLOTLSnippets {
 	// import eu.europa.esig.dss.tsl.alerts.handlers.log.LogOJUrlChangeAlertHandler;
 	// import eu.europa.esig.dss.tsl.alerts.handlers.log.LogTLExpirationAlertHandler;
 	// import eu.europa.esig.dss.tsl.alerts.handlers.log.LogTLSignatureErrorAlertHandler;
-	// import eu.europa.esig.dss.tsl.cache.CacheCleaner;
 	// import eu.europa.esig.dss.tsl.function.OfficialJournalSchemeInformationURI;
 	// import eu.europa.esig.dss.tsl.job.TLValidationJob;
 	// import eu.europa.esig.dss.tsl.sha2.Sha2FileCacheDataLoader;
-	// import eu.europa.esig.dss.tsl.source.LOTLSource;
-	// import eu.europa.esig.dss.tsl.sync.AcceptAllStrategy;
+	// import eu.europa.esig.dss.tsl.source.LOTLSource;;
 	// import eu.europa.esig.dss.spi.validation.CommonCertificateVerifier;
 	// import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
 	// import eu.europa.esig.dss.validation.SignedDocumentValidator;
+	// import eu.europa.esig.dss.validation.job.cache.CacheCleaner;
+	// import eu.europa.esig.dss.validation.job.sync.AcceptAllStrategy
 	// import java.io.File;
 	// import java.io.IOException;
 	// import java.util.Arrays;
@@ -126,7 +126,7 @@ class EuropeanLOTLSnippets {
 		job.setOfflineDataLoader(offlineLoader());
 		job.setOnlineDataLoader(onlineLoader());
 		job.setTrustedListCertificateSource(trustedCertificateSource());
-		job.setSynchronizationStrategy(new AcceptAllStrategy());
+		job.setSynchronizationStrategy(new AcceptAllStrategy<>());
 		job.setCacheCleaner(cacheCleaner());
 
 		LOTLSource europeanLOTL = europeanLOTL();

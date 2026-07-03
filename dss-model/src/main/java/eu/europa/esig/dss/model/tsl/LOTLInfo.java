@@ -21,6 +21,9 @@
 package eu.europa.esig.dss.model.tsl;
 
 import eu.europa.esig.dss.model.identifier.Identifier;
+import eu.europa.esig.dss.model.job.DocumentListInfo;
+import eu.europa.esig.dss.model.job.DownloadInfoRecord;
+import eu.europa.esig.dss.model.job.ValidationInfoRecord;
 import eu.europa.esig.dss.model.tsl.identifier.LOTLIdentifier;
 
 import java.util.List;
@@ -29,7 +32,7 @@ import java.util.List;
  * Computes summary for a List of Trusted Lists processing result
  *
  */
-public class LOTLInfo extends TLInfo {
+public class LOTLInfo extends TLInfo implements DocumentListInfo<LOTLInfo, TLInfo> {
 	
 	private static final long serialVersionUID = -8969562861281744320L;
 
@@ -46,11 +49,11 @@ public class LOTLInfo extends TLInfo {
 	/**
 	 * The default constructor
 	 * @param downloadCacheInfo {@link DownloadInfoRecord} a download cache result
-	 * @param parsingCacheInfo {@link ParsingInfoRecord} a parsing cache result
+	 * @param parsingCacheInfo {@link TLParsingInfoRecord} a parsing cache result
 	 * @param validationCacheInfo {@link ValidationInfoRecord} a validation cache result
 	 * @param url {@link String} address used to extract the entry
 	 */
-	public LOTLInfo(final DownloadInfoRecord downloadCacheInfo, final ParsingInfoRecord parsingCacheInfo, 
+	public LOTLInfo(final DownloadInfoRecord downloadCacheInfo, final TLParsingInfoRecord parsingCacheInfo,
 			final ValidationInfoRecord validationCacheInfo, final String url) {
 		super(downloadCacheInfo, parsingCacheInfo, validationCacheInfo, url);
 	}
@@ -98,6 +101,11 @@ public class LOTLInfo extends TLInfo {
 	@Override
 	protected Identifier buildIdentifier() {
 		return new LOTLIdentifier(this);
+	}
+
+	@Override
+	public List<TLInfo> getChildrenInfos() {
+		return getTLInfos();
 	}
 
 }

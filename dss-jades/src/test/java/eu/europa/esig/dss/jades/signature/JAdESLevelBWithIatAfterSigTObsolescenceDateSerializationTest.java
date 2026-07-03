@@ -25,11 +25,11 @@ import eu.europa.esig.dss.enumerations.JWSSerializationType;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
 import eu.europa.esig.dss.enumerations.SignaturePackaging;
 import eu.europa.esig.dss.jades.DSSJsonUtils;
-import eu.europa.esig.dss.jades.JAdESHeaderParameterNames;
 import eu.europa.esig.dss.jades.JAdESSignatureParameters;
 import eu.europa.esig.dss.jades.JAdESSigningTimeType;
 import eu.europa.esig.dss.jades.JAdESTimestampParameters;
 import eu.europa.esig.dss.jades.JWSConstants;
+import eu.europa.esig.dss.jades.jwt.JWTClaimNames;
 import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.FileDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
@@ -101,7 +101,7 @@ class JAdESLevelBWithIatAfterSigTObsolescenceDateSerializationTest extends Abstr
             Map<String, Object> protectedHeaderMap = JsonUtil.parseJson(new String(bytes));
             assertTrue(Utils.isMapNotEmpty(protectedHeaderMap));
 
-            Object iat = protectedHeaderMap.get(JAdESHeaderParameterNames.IAT);
+            Object iat = protectedHeaderMap.get(JWTClaimNames.IAT);
             assertNotNull(iat);
 
             String signatureValue = (String) signature.get(JWSConstants.SIGNATURE);
