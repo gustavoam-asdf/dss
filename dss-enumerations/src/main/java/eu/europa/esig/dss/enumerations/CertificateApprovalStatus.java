@@ -25,7 +25,11 @@ import eu.europa.esig.dss.enumerations.loader.LoTELoader;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
-public interface CertificateUsage {
+/**
+ * Represents a certificate approval status, e.g. in the context of EUDI Wallet
+ * 
+ */
+public interface CertificateApprovalStatus {
 
     /**
      * Gets a list type URI of the List of Trusted Entities providing the certificates of the given usage
@@ -35,73 +39,73 @@ public interface CertificateUsage {
     ListType getListType();
 
     /**
-     * Gets the ServiceTypeIdentifier related to the certificate usage
+     * Gets the ServiceTypeIdentifier related to the certificate approval status
      *
      * @return {@link LoTEServiceTypeIdentifier}
      */
     LoTEServiceTypeIdentifier getServiceTypeIdentifier();
 
     /**
-     * Gets the ServiceStatus corresponding to the certificate usage
+     * Gets the ServiceStatus corresponding to the certificate approval status
      *
      * @return {@link LoTEServiceStatus}
      */
     LoTEServiceStatus getServiceStatus();
 
     /**
-     * Gets user-friendly description of the certificate usage
+     * Gets user-friendly description of the certificate approval status
      *
      * @return {@link String}
      */
     String getLabel();
 
     /**
-     * This method returns a {@code CertificateUsage} for the given URI
+     * This method returns a {@code CertificateApprovalStatus} for the given URI
      *
      * @param label {@link String}
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    static CertificateUsage fromLabel(String label) {
+    static CertificateApprovalStatus fromLabel(String label) {
         Objects.requireNonNull(label, "URI cannot be null!");
 
         for (LoTELoader loader : loaders()) {
-            CertificateUsage certUsage = loader.certificateUsageFromLabel(label);
-            if (certUsage != null) {
-                return certUsage;
+            CertificateApprovalStatus certApprovalStatus = loader.certificateApprovalStatusFromLabel(label);
+            if (certApprovalStatus != null) {
+                return certApprovalStatus;
             }
         }
         return null;
     }
 
     /**
-     * This method returns a {@code CertificateUsage} for the given definition
+     * This method returns a {@code CertificateApprovalStatus} for the given definition
      *
      * @param listType {@link ListType}
      * @param sti {@link LoTEServiceTypeIdentifier}
      * @param status {@link LoTEServiceStatus}
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    static CertificateUsage fromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
+    static CertificateApprovalStatus fromDefinition(ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
         for (LoTELoader loader : loaders()) {
-            CertificateUsage certUsage = loader.certificateUsageFromDefinition(listType, sti, status);
-            if (certUsage != null) {
-                return certUsage;
+            CertificateApprovalStatus certApprovalStatus = loader.certificateApprovalStatusFromDefinition(listType, sti, status);
+            if (certApprovalStatus != null) {
+                return certApprovalStatus;
             }
         }
         return null;
     }
 
     /**
-     * This method creates a new {@code CertificateUsage} from the provided data
+     * This method creates a new {@code CertificateApprovalStatus} from the provided data
      *
      * @param label {@link String}
      * @param listType {@link ListType}
      * @param sti {@link LoTEServiceTypeIdentifier}
      * @param status {@link LoTEServiceStatus}
-     * @return {@link CertificateUsage}
+     * @return {@link CertificateApprovalStatus}
      */
-    static CertificateUsage create(String label, ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
-        return new CertificateUsage() {
+    static CertificateApprovalStatus create(String label, ListType listType, LoTEServiceTypeIdentifier sti, LoTEServiceStatus status) {
+        return new CertificateApprovalStatus() {
             @Override
             public ListType getListType() {
                 return listType;

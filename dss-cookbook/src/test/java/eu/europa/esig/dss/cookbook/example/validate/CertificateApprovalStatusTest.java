@@ -22,7 +22,7 @@ package eu.europa.esig.dss.cookbook.example.validate;
 
 import eu.europa.esig.dss.detailedreport.DetailedReport;
 import eu.europa.esig.dss.diagnostic.DiagnosticData;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.lote.job.LoTEValidationJob;
 import eu.europa.esig.dss.lote.source.LoTESource;
 import eu.europa.esig.dss.model.x509.CertificateToken;
@@ -115,8 +115,8 @@ class CertificateApprovalStatusTest {
         SimpleCertificateReport simpleReport = reports.getSimpleReport();
 
         // Extract the qualification information
-        List<CertificateUsage> certificateApprovalStatusesAtCertificateIssuance = simpleReport.getCertificateUsageAtCertificateIssuance();
-        List<CertificateUsage> certificateApprovalStatusesAtValidationTime = simpleReport.getCertificateUsageAtValidationTime();
+        List<CertificateApprovalStatus> certificateApprovalStatusesAtCertificateIssuance = simpleReport.getCertificateApprovalStatusAtCertificateIssuance();
+        List<CertificateApprovalStatus> certificateApprovalStatusesAtValidationTime = simpleReport.getCertificateApprovalStatusAtValidationTime();
 
         // NOTE: List can be empty if no applicable approval statuses found
 

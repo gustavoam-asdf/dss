@@ -26,6 +26,10 @@ import eu.europa.esig.dss.utils.Utils;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Filters trusted entity services by the given URLs
+ *
+ */
 public class ServiceByTrustedEntityServiceUrlFilter extends AbstractTrustedEntityServiceFilter {
 
     /** Collection of Trusted Source URLs to filter by */

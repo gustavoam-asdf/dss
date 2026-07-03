@@ -100,6 +100,7 @@ public abstract class AbstractEAAPayloadBuilder<P extends EAAPayloadParameters, 
      * This method generates the next random salt using the {@code secureRandom}
      * By default, the method generates a 128-bit length salt.
      *
+     * @param secureRandom {@link SecureRandom}
      * @return byte array containing the salt
      */
     protected byte[] nextRandomSalt(SecureRandom secureRandom) {

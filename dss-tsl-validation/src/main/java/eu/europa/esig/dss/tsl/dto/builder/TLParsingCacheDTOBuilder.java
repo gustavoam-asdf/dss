@@ -39,6 +39,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Builds a parsing cache DTO for a Trusted List processing
+ *
+ */
 public class TLParsingCacheDTOBuilder extends AbstractParsingCacheDTOBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(TLParsingCacheDTOBuilder.class);

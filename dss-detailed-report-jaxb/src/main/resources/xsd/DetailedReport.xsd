@@ -81,7 +81,7 @@
 	<xs:complexType name="Certificate">
 		<xs:sequence>
 			<xs:element name="CertificateQualificationProcess" type="CertificateQualificationProcess" />
-			<xs:element name="CertificateUsageProcess" type="CertificateUsageProcess" minOccurs="0" />
+			<xs:element name="CertificateApprovalStatusProcess" type="CertificateApprovalStatusProcess" minOccurs="0" />
 			<xs:element name="QWACProcess" type="QWACProcess" minOccurs="0" />
 		</xs:sequence>
 		<xs:attribute name="Id" type="xs:string" />
@@ -98,11 +98,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="CertificateUsageProcess">
+	<xs:complexType name="CertificateApprovalStatusProcess">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
-					<xs:element name="ValidationCertificateUsage" type="ValidationCertificateUsage" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="ValidationCertificateApprovalStatus" type="ValidationCertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:attribute name="Id" type="xs:string" />
 			</xs:extension>
@@ -168,11 +168,11 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="ValidationCertificateUsage">
+	<xs:complexType name="ValidationCertificateApprovalStatus">
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
-					<xs:element name="CertificateUsage" type="CertificateUsage" />
+					<xs:element name="CertificateApprovalStatus" type="CertificateApprovalStatus" />
 				</xs:sequence>
 				<xs:attribute name="Id" type="xs:string" use="required" />
 				<xs:attribute name="DateTime" type="xs:dateTime" />
@@ -181,7 +181,7 @@
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="CertificateUsage">
+	<xs:complexType name="CertificateApprovalStatus">
 		<xs:sequence>
 			<xs:element name="ListType" type="xs:string" minOccurs="0" />
 			<xs:element name="ServiceTypeIdentifier" type="xs:string" minOccurs="0" />
@@ -314,7 +314,7 @@
 		<xs:complexContent>
 			<xs:extension base="ConstraintsConclusion">
 				<xs:sequence>
-					<xs:element name="ValidationCertificateUsage" type="ValidationCertificateUsage" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="ValidationCertificateApprovalStatus" type="ValidationCertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
 				<xs:attribute name="EAAQualification" type="EAAQualification" use="required" />
 			</xs:extension>

@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
+/**
+ * Creates filters for trusted entity services filtering
+ *
+ */
 public final class TrustedEntitiesFilterFactory {
 
     /**

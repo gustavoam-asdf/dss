@@ -22,17 +22,33 @@ package eu.europa.esig.dss.eaa.common.creation;
 
 import java.security.SecureRandom;
 
+/**
+ * Default implementation to build a salt for EAA creation
+ *
+ */
 public class DefaultEAASaltGenerator implements EAASaltGenerator {
 
+    /** Salt length used by default (16) */
     public static final int DEFAULT_SALT_LENGTH = 16;
 
+    /** Length of the salt */
     private final int saltLength;
+
+    /** SecureRandom to be used on salt generation */
     private final SecureRandom secureRandom = new SecureRandom();
 
+    /**
+     * Constructor to instantiate DefaultEAASaltGenerator with default salt length (16)
+     */
     public DefaultEAASaltGenerator() {
         this(DEFAULT_SALT_LENGTH);
     }
 
+    /**
+     * Constructor to instantiate DefaultEAASaltGenerator with custom salt length
+     *
+     * @param saltLength length of the salt
+     */
     public DefaultEAASaltGenerator(int saltLength) {
         this.saltLength = saltLength;
     }

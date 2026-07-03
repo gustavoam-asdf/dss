@@ -20,18 +20,18 @@
  */
 package eu.europa.esig.dss.validation.process.qualification.eaa.pid;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateApprovalStatus;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationPIDQualificationProcess;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.EAAWrapper;
 import eu.europa.esig.dss.diagnostic.SignatureWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustSourceList;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.EAAQualification;
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifierEnum;
 import eu.europa.esig.dss.enumerations.LoTETypeEnum;
@@ -41,7 +41,7 @@ import eu.europa.esig.dss.i18n.MessageTag;
 import eu.europa.esig.dss.utils.Utils;
 import eu.europa.esig.dss.validation.process.Chain;
 import eu.europa.esig.dss.validation.process.ChainItem;
-import eu.europa.esig.dss.validation.process.qualification.certificate.usage.CertificateUsageAtTimeBlock;
+import eu.europa.esig.dss.validation.process.qualification.certificate.usage.CertificateApprovalStatusAtTimeBlock;
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.AcceptableLoLoTECheck;
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.AcceptableLoTECheck;
 import eu.europa.esig.dss.validation.process.qualification.certificate.usage.checks.AcceptableLoTEPresenceCheck;
@@ -113,8 +113,8 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
             throw new IllegalStateException("No signatures found within the EAA token!");
         }
 
-        CertificateUsage certificateUsageAtIssuanceTime = CertificateUsageEnum.NA;
-        CertificateUsage certificateUsageAtValidationTime = CertificateUsageEnum.NA;
+        CertificateApprovalStatus certificateApprovalStatusAtIssuanceTime = CertificateApprovalStatusEnum.NA;
+        CertificateApprovalStatus certificateApprovalStatusAtValidationTime = CertificateApprovalStatusEnum.NA;
 
         SignatureWrapper signature = eaa.getEAASignatures().get(0);
         CertificateWrapper signingCertificate = signature.getSigningCertificate();
@@ -190,21 +190,21 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
 
                     if (Utils.isCollectionNotEmpty(relatedServices)) {
 
-                        CertificateUsageAtTimeBlock certUsageAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(signingCertificate, relatedServices);
-                        XmlValidationCertificateUsage certUsageAtIssuanceResult = certUsageAtIssuanceBlock.execute();
-                        result.getValidationCertificateUsage().add(certUsageAtIssuanceResult);
+                        CertificateApprovalStatusAtTimeBlock certApprovalStatusAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(signingCertificate, relatedServices);
+                        XmlValidationCertificateApprovalStatus certApprovalStatusAtIssuanceResult = certApprovalStatusAtIssuanceBlock.execute();
+                        result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtIssuanceResult);
 
-                        CertificateUsageAtTimeBlock certUsageAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(signingCertificate, relatedServices);
-                        XmlValidationCertificateUsage certUsageAtValidationTimeResult = certUsageAtValidationTimeBlock.execute();
-                        result.getValidationCertificateUsage().add(certUsageAtValidationTimeResult);
+                        CertificateApprovalStatusAtTimeBlock certApprovalStatusAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(signingCertificate, relatedServices);
+                        XmlValidationCertificateApprovalStatus certApprovalStatusAtValidationTimeResult = certApprovalStatusAtValidationTimeBlock.execute();
+                        result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtValidationTimeResult);
 
                         if (pidDocumentTypeAcceptableCheck.process()) {
 
-                            certificateUsageAtIssuanceTime = getCertificateUsage(certUsageAtIssuanceResult);
-                            item = item.setNextItem(pidProviderAtIssuanceTime(certificateUsageAtIssuanceTime));
+                            certificateApprovalStatusAtIssuanceTime = getCertificateApprovalStatus(certApprovalStatusAtIssuanceResult);
+                            item = item.setNextItem(pidProviderAtIssuanceTime(certificateApprovalStatusAtIssuanceTime));
 
-                            certificateUsageAtValidationTime = getCertificateUsage(certUsageAtValidationTimeResult);
-                            item = item.setNextItem(pidProviderAtValidationTime(certificateUsageAtValidationTime));
+                            certificateApprovalStatusAtValidationTime = getCertificateApprovalStatus(certApprovalStatusAtValidationTimeResult);
+                            item = item.setNextItem(pidProviderAtValidationTime(certificateApprovalStatusAtValidationTime));
 
                         }
 
@@ -217,7 +217,7 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
 
         }
 
-        determineFinalQualification(certificateUsageAtIssuanceTime, certificateUsageAtValidationTime);
+        determineFinalQualification(certificateApprovalStatusAtIssuanceTime, certificateApprovalStatusAtValidationTime);
 
     }
 
@@ -249,12 +249,12 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
         return new PIDDocumentTypeAcceptableCheck(i18nProvider, result, eaa, getFailLevelRule());
     }
 
-    private ChainItem<XmlValidationPIDQualificationProcess> pidProviderAtIssuanceTime(CertificateUsage certificateUsage) {
-        return new PIDProviderCertificateAtIssuanceTimeCheck(i18nProvider, result, certificateUsage, getFailLevelRule());
+    private ChainItem<XmlValidationPIDQualificationProcess> pidProviderAtIssuanceTime(CertificateApprovalStatus certificateApprovalStatus) {
+        return new PIDProviderCertificateAtIssuanceTimeCheck(i18nProvider, result, certificateApprovalStatus, getFailLevelRule());
     }
 
-    private ChainItem<XmlValidationPIDQualificationProcess> pidProviderAtValidationTime(CertificateUsage certificateUsage) {
-        return new PIDProviderCertificateAtValidationTimeCheck(i18nProvider, result, certificateUsage, getFailLevelRule());
+    private ChainItem<XmlValidationPIDQualificationProcess> pidProviderAtValidationTime(CertificateApprovalStatus certificateApprovalStatus) {
+        return new PIDProviderCertificateAtValidationTimeCheck(i18nProvider, result, certificateApprovalStatus, getFailLevelRule());
     }
 
     private XmlLoTEAnalysis getLoTEAnalysis(XmlTrustSourceList listSource) {
@@ -280,11 +280,11 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
      *
      * @param certificate {@link CertificateWrapper} to be verified
      * @param acceptableServices a list of {@link TrustedEntityServiceWrapper}s acceptable for the given certificate
-     * @return {@link CertificateUsageAtTimeBlock}
+     * @return {@link CertificateApprovalStatusAtTimeBlock}
      */
-    protected CertificateUsageAtTimeBlock getCertUsageAtIssuanceTimeBlock(
+    protected CertificateApprovalStatusAtTimeBlock getCertUsageAtIssuanceTimeBlock(
             CertificateWrapper certificate, List<TrustedEntityServiceWrapper> acceptableServices) {
-        return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.CERTIFICATE_ISSUANCE_TIME, certificate,
+        return new CertificateApprovalStatusAtTimeBlock(i18nProvider, ValidationTime.CERTIFICATE_ISSUANCE_TIME, certificate,
                 LoTETypeEnum.EUPIDProvidersList.getUri(), LoTEServiceTypeIdentifierEnum.PID_ISSUANCE.getUri(), acceptableServices);
     }
 
@@ -293,37 +293,37 @@ public class PIDQualificationProcessBlock extends Chain<XmlValidationPIDQualific
      *
      * @param certificate {@link CertificateWrapper} to be verified
      * @param acceptableServices a list of {@link TrustedEntityServiceWrapper}s acceptable for the given certificate
-     * @return {@link CertificateUsageAtTimeBlock}
+     * @return {@link CertificateApprovalStatusAtTimeBlock}
      */
-    protected CertificateUsageAtTimeBlock getCertUsageAtValidationTimeBlock(
+    protected CertificateApprovalStatusAtTimeBlock getCertUsageAtValidationTimeBlock(
             CertificateWrapper certificate, List<TrustedEntityServiceWrapper> acceptableServices) {
-        return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, currentTime, certificate,
+        return new CertificateApprovalStatusAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, currentTime, certificate,
                 LoTETypeEnum.EUPIDProvidersList.getUri(), LoTEServiceTypeIdentifierEnum.PID_ISSUANCE.getUri(), acceptableServices);
     }
 
-    private CertificateUsage getCertificateUsage(XmlValidationCertificateUsage xmlValidationCertificateUsage) {
-        XmlCertificateUsage xmlCertificateUsage = xmlValidationCertificateUsage.getCertificateUsage();
-        return CertificateUsage.fromDefinition(xmlCertificateUsage.getListType(), xmlCertificateUsage.getServiceTypeIdentifier(), xmlCertificateUsage.getServiceStatus());
+    private CertificateApprovalStatus getCertificateApprovalStatus(XmlValidationCertificateApprovalStatus xmlValidationCertificateApprovalStatus) {
+        XmlCertificateApprovalStatus xmlCertificateApprovalStatus = xmlValidationCertificateApprovalStatus.getCertificateApprovalStatus();
+        return CertificateApprovalStatus.fromDefinition(xmlCertificateApprovalStatus.getListType(), xmlCertificateApprovalStatus.getServiceTypeIdentifier(), xmlCertificateApprovalStatus.getServiceStatus());
     }
 
-    private void determineFinalQualification(CertificateUsage certificateUsageAtIssuanceTime, CertificateUsage certificateUsageAtValidationTime) {
-        CertificateUsage certificateUsage = determinedFinalCertificateUsage(certificateUsageAtIssuanceTime, certificateUsageAtValidationTime);
+    private void determineFinalQualification(CertificateApprovalStatus certificateApprovalStatusAtIssuanceTime, CertificateApprovalStatus certificateApprovalStatusAtValidationTime) {
+        CertificateApprovalStatus certificateApprovalStatus = determinedFinalCertificateApprovalStatus(certificateApprovalStatusAtIssuanceTime, certificateApprovalStatusAtValidationTime);
         EAAQualification finalQualification = EAAQualificationMatrix.getPIDQualification(
-                eaaConclusion.getIndication(), certificateUsage);
+                eaaConclusion.getIndication(), certificateApprovalStatus);
         result.setEAAQualification(finalQualification);
     }
 
-    private CertificateUsage determinedFinalCertificateUsage(CertificateUsage certificateUsageAtIssuanceTime, CertificateUsage certificateUsageAtValidationTime) {
-        if (certificateUsageAtIssuanceTime == certificateUsageAtValidationTime) {
-            return certificateUsageAtIssuanceTime;
+    private CertificateApprovalStatus determinedFinalCertificateApprovalStatus(CertificateApprovalStatus certificateApprovalStatusAtIssuanceTime, CertificateApprovalStatus certificateApprovalStatusAtValidationTime) {
+        if (certificateApprovalStatusAtIssuanceTime == certificateApprovalStatusAtValidationTime) {
+            return certificateApprovalStatusAtIssuanceTime;
         }
         return null;
     }
 
     @Override
     protected void collectAdditionalMessages(XmlConclusion conclusion) {
-        for (XmlValidationCertificateUsage certificateUsage : result.getValidationCertificateUsage()) {
-            super.collectAllMessages(conclusion, certificateUsage.getConclusion());
+        for (XmlValidationCertificateApprovalStatus certificateApprovalStatus : result.getValidationCertificateApprovalStatus()) {
+            super.collectAllMessages(conclusion, certificateApprovalStatus.getConclusion());
         }
     }
 

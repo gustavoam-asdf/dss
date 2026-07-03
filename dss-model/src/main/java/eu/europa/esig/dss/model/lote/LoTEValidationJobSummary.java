@@ -47,6 +47,7 @@ public class LoTEValidationJobSummary implements ValidationJobSummary<LoTEInfo, 
     /**
      * The default constructor
      *
+     * @param loloteInfos a list of {@link LoLoTEInfo}s
      * @param otherLoTEInfos a list of {@link LoTEInfo}s
      */
     public LoTEValidationJobSummary(final List<LoLoTEInfo> loloteInfos, final List<LoTEInfo> otherLoTEInfos) {

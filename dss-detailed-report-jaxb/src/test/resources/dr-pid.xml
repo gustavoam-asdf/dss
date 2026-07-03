@@ -16,7 +16,7 @@
                 <Errors Key="QUAL_VALID_TRUSTED_LIST_PRESENT_ANS">No acceptable trusted lists has been found!</Errors>
             </Conclusion>
         </CertificateQualificationProcess>
-        <CertificateUsageProcess Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" Title="Certificate Usages">
+        <CertificateApprovalStatusProcess Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" Title="Certificate Usages">
             <Constraint>
                 <Name Key="BBB_ACCEPT">Is the result of the Basic Building Block conclusive?</Name>
                 <Status>OK</Status>
@@ -43,7 +43,7 @@
             <Conclusion>
                 <Indication>PASSED</Indication>
             </Conclusion>
-            <ValidationCertificateUsage Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" DateTime="2023-02-25T14:20:16Z" ValidationTime="CERTIFICATE_ISSUANCE_TIME" Title="Certificate Usage 'PID Issuance' at certificate issuance time">
+            <ValidationCertificateApprovalStatus Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" DateTime="2023-02-25T14:20:16Z" ValidationTime="CERTIFICATE_ISSUANCE_TIME" Title="Certificate Usage 'PID Issuance' at certificate issuance time">
                 <Constraint>
                     <Name Key="CERT_USAGE_HAS_ATTIME">Is the certificate related to a trusted entity service at certificate issuance time?</Name>
                     <Status>OK</Status>
@@ -61,12 +61,12 @@
                 <Conclusion>
                     <Indication>PASSED</Indication>
                 </Conclusion>
-                <CertificateUsage label="PID Provider">
+                <CertificateApprovalStatus label="PID Provider">
                     <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                     <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
-                </CertificateUsage>
-            </ValidationCertificateUsage>
-            <ValidationCertificateUsage Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" DateTime="2026-02-25T14:20:19Z" ValidationTime="VALIDATION_TIME" Title="Certificate Usage 'PID Issuance' at validation time">
+                </CertificateApprovalStatus>
+            </ValidationCertificateApprovalStatus>
+            <ValidationCertificateApprovalStatus Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" DateTime="2026-02-25T14:20:19Z" ValidationTime="VALIDATION_TIME" Title="Certificate Usage 'PID Issuance' at validation time">
                 <Constraint>
                     <Name Key="CERT_USAGE_HAS_ATTIME">Is the certificate related to a trusted entity service at validation time?</Name>
                     <Status>OK</Status>
@@ -84,12 +84,12 @@
                 <Conclusion>
                     <Indication>PASSED</Indication>
                 </Conclusion>
-                <CertificateUsage label="PID Provider">
+                <CertificateApprovalStatus label="PID Provider">
                     <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                     <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
-                </CertificateUsage>
-            </ValidationCertificateUsage>
-        </CertificateUsageProcess>
+                </CertificateApprovalStatus>
+            </ValidationCertificateApprovalStatus>
+        </CertificateApprovalStatusProcess>
     </Certificate>
     <BasicBuildingBlocks Id="C-78F2C78FF7B3E5826B3E9C84518761A787FECAC072200427CD2A3A52CF5C3669" Type="CERTIFICATE">
         <XCV Title="X509 Certificate Validation">

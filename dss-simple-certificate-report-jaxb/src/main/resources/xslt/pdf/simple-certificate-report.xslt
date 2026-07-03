@@ -181,8 +181,8 @@
 								<xsl:apply-templates select="dss:enactedMRA"/>
 								<xsl:apply-templates select="dss:qwacProfile"/>
 								<xsl:apply-templates select="dss:qwacDetails"/>
-								<xsl:apply-templates select="dss:certificateUsageAtIssuanceTime"/>
-								<xsl:apply-templates select="dss:certificateUsageAtValidationTime"/>
+								<xsl:apply-templates select="dss:certificateApprovalStatusAtIssuanceTime"/>
+								<xsl:apply-templates select="dss:certificateApprovalStatusAtValidationTime"/>
 
 								<fo:table-row>
 									<xsl:variable name="indicationText" select="dss:Indication/text()"/>
@@ -566,11 +566,11 @@
 		</fo:table-row>
     </xsl:template>
 
-	<xsl:template match="dss:certificateUsageAtIssuanceTime|dss:certificateUsageAtValidationTime">
+	<xsl:template match="dss:certificateApprovalStatusAtIssuanceTime|dss:certificateApprovalStatusAtValidationTime">
 		<xsl:variable name="label">
 			<xsl:choose>
-				<xsl:when test="name()='certificateUsageAtIssuanceTime'">Usage at issuance time</xsl:when>
-				<xsl:when test="name()='certificateUsageAtValidationTime'">Usage at validation time</xsl:when>
+				<xsl:when test="name()='certificateApprovalStatusAtIssuanceTime'">Approval statusissuance time</xsl:when>
+				<xsl:when test="name()='certificateApprovalStatusAtValidationTime'">Approval statusvalidation time</xsl:when>
 				<xsl:otherwise>?</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
@@ -591,13 +591,13 @@
 					<xsl:attribute name="margin-bottom">1px</xsl:attribute>
 					<xsl:attribute name="font-size">7pt</xsl:attribute>
 
-					<xsl:apply-templates select="dss:certificateUsage"/>
+					<xsl:apply-templates select="dss:certificateApprovalStatus"/>
 				</fo:block>
 			</fo:table-cell>
 		</fo:table-row>
 	</xsl:template>
 
-	<xsl:template match="dss:certificateUsage">
+	<xsl:template match="dss:certificateApprovalStatus">
 		<fo:table table-layout="fixed">
 			<fo:table-column>
 				<xsl:attribute name="column-width">100%</xsl:attribute>

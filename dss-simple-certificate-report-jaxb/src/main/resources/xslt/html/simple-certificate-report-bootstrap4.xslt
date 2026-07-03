@@ -163,13 +163,13 @@
 		        	</dl>
 	        	</xsl:if>
 
-				<xsl:if test="dss:certificateUsageAtIssuanceTime or dss:certificateUsageAtValidationTime">
+				<xsl:if test="dss:certificateApprovalStatusAtIssuanceTime or dss:certificateApprovalStatusAtValidationTime">
 					<dl>
 						<xsl:attribute name="class">row mb-0</xsl:attribute>
 
 						<dt>
 							<xsl:attribute name="class">col-sm-3</xsl:attribute>
-							Certificate usage:
+							Certificate approval status:
 						</dt>
 
 						<dd>
@@ -178,23 +178,23 @@
 							<ul>
 								<xsl:attribute name="class">list-unstyled mb-0</xsl:attribute>
 
-								<xsl:if test="dss:certificateUsageAtIssuanceTime">
+								<xsl:if test="dss:certificateApprovalStatusAtIssuanceTime">
 									<li>
 										<xsl:attribute name="class">mb-1</xsl:attribute>
 
 										Issuance Time (<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="dss:notBefore"/></xsl:call-template>) :
 
-										<xsl:apply-templates select="dss:certificateUsageAtIssuanceTime"/>
+										<xsl:apply-templates select="dss:certificateApprovalStatusAtIssuanceTime"/>
 									</li>
 								</xsl:if>
 
-								<xsl:if test="dss:certificateUsageAtValidationTime">
+								<xsl:if test="dss:certificateApprovalStatusAtValidationTime">
 									<li>
 										<xsl:attribute name="class">mb-1</xsl:attribute>
 
 										Validation Time (<xsl:call-template name="formatdate"><xsl:with-param name="DateTimeStr" select="$validationTime"/></xsl:call-template>) :
 
-										<xsl:apply-templates select="dss:certificateUsageAtValidationTime"/>
+										<xsl:apply-templates select="dss:certificateApprovalStatusAtValidationTime"/>
 									</li>
 								</xsl:if>
 							</ul>
@@ -437,18 +437,18 @@
 		</dl>
 	</xsl:template>
 
-	<xsl:template match="dss:certificateUsageAtIssuanceTime|dss:certificateUsageAtValidationTime">
+	<xsl:template match="dss:certificateApprovalStatusAtIssuanceTime|dss:certificateApprovalStatusAtValidationTime">
 		<ul>
 			<xsl:attribute name="class">list-unstyled</xsl:attribute>
 
 			<li>
 				<xsl:attribute name="class">mb-1</xsl:attribute>
-				<xsl:apply-templates select="dss:certificateUsage"/>
+				<xsl:apply-templates select="dss:certificateApprovalStatus"/>
 			</li>
 		</ul>
 	</xsl:template>
 
-	<xsl:template match="dss:certificateUsage">
+	<xsl:template match="dss:certificateApprovalStatus">
 		<span>
 			<xsl:attribute name="class">
 				<xsl:choose>

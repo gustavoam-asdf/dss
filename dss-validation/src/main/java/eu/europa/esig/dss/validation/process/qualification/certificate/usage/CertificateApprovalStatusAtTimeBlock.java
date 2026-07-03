@@ -20,13 +20,13 @@
  */
 package eu.europa.esig.dss.validation.process.qualification.certificate.usage;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsage;
-import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateUsage;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatus;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlValidationCertificateApprovalStatus;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import eu.europa.esig.dss.diagnostic.TrustedSourceServiceWrapper;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
-import eu.europa.esig.dss.enumerations.CertificateUsageEnum;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatusEnum;
 import eu.europa.esig.dss.enumerations.ListType;
 import eu.europa.esig.dss.enumerations.LoTEServiceStatus;
 import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
@@ -53,9 +53,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateUsage> {
+/**
+ * Verifies certificate's approval status at the given time
+ * 
+ */
+public class CertificateApprovalStatusAtTimeBlock extends Chain<XmlValidationCertificateApprovalStatus> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CertificateUsageAtTimeBlock.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CertificateApprovalStatusAtTimeBlock.class);
 
     /** The time type to get the qualification at */
     private final ValidationTime validationTime;
@@ -67,7 +71,7 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
     private final String listTypeUri;
 
     /** Service Type Identifier URI */
-    private String stiUri;
+    private final String stiUri;
 
     /** List of matching TrustServices */
     private final List<TrustedEntityServiceWrapper> acceptableServices;
@@ -85,8 +89,8 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
      * @param stiUri {@link String} representing a target service type identifier
      * @param acceptableServices list of {@link TrustedEntityServiceWrapper}s
      */
-    public CertificateUsageAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime,
-                                       CertificateWrapper signingCertificate, String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
+    public CertificateApprovalStatusAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime,
+                                                CertificateWrapper signingCertificate, String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
         this(i18nProvider, validationTime, null, signingCertificate, listTypeUri, stiUri, acceptableServices);
     }
 
@@ -101,9 +105,9 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
      * @param stiUri {@link String} representing a target service type identifier
      * @param acceptableServices list of {@link TrustedEntityServiceWrapper}s
      */
-    public CertificateUsageAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime, Date date,
-                                       CertificateWrapper signingCertificate, String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
-        super(i18nProvider, new XmlValidationCertificateUsage());
+    public CertificateApprovalStatusAtTimeBlock(I18nProvider i18nProvider, ValidationTime validationTime, Date date,
+                                                CertificateWrapper signingCertificate, String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
+        super(i18nProvider, new XmlValidationCertificateApprovalStatus());
         result.setId(signingCertificate.getId());
 
         this.validationTime = validationTime;
@@ -149,7 +153,7 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
         TrustedEntityServiceFilter filter = TrustedEntitiesFilterFactory.createFilterByDate(date);
         filteredServices = filter.filter(filteredServices);
 
-        ChainItem<XmlValidationCertificateUsage> item = firstItem = hasTrustedServiceAtTime(filteredServices);
+        ChainItem<XmlValidationCertificateApprovalStatus> item = firstItem = hasTrustedServiceAtTime(filteredServices);
 
         // 2a. Check sti consistency
 
@@ -173,44 +177,44 @@ public class CertificateUsageAtTimeBlock extends Chain<XmlValidationCertificateU
 
     @Override
     protected void addAdditionalInfo() {
-        XmlCertificateUsage certificateUsage = new XmlCertificateUsage();
+        XmlCertificateApprovalStatus certificateApprovalStatus = new XmlCertificateApprovalStatus();
         ListType listType = ListType.fromUri(listTypeUri);
-        certificateUsage.setListType(listType);
+        certificateApprovalStatus.setListType(listType);
         String serviceStiUri = getServiceStiUri(filteredServices);
         LoTEServiceTypeIdentifier sti = LoTEServiceTypeIdentifier.fromUri(serviceStiUri);
-        certificateUsage.setServiceTypeIdentifier(sti);
+        certificateApprovalStatus.setServiceTypeIdentifier(sti);
         String serviceStatusUri = getServiceStatusUri(filteredServices);
         LoTEServiceStatus status = LoTEServiceStatus.fromUri(serviceStatusUri);
-        certificateUsage.setServiceStatus(status);
+        certificateApprovalStatus.setServiceStatus(status);
 
-        CertificateUsage certUsage = CertificateUsage.fromDefinition(listType, sti, status);
-        if (certUsage == null) {
-            certUsage = CertificateUsageEnum.CERT_FOR_UNKNOWN;
+        CertificateApprovalStatus certApprovalStatus = CertificateApprovalStatus.fromDefinition(listType, sti, status);
+        if (certApprovalStatus == null) {
+            certApprovalStatus = CertificateApprovalStatusEnum.CERT_FOR_UNKNOWN;
         }
-        certificateUsage.setLabel(certUsage.getLabel());
-        result.setCertificateUsage(certificateUsage);
+        certificateApprovalStatus.setLabel(certApprovalStatus.getLabel());
+        result.setCertificateApprovalStatus(certificateApprovalStatus);
 
         result.setValidationTime(validationTime);
         result.setDateTime(date);
     }
 
-    private ChainItem<XmlValidationCertificateUsage> hasTrustedServiceAtTime(List<TrustedEntityServiceWrapper> trustedServices) {
+    private ChainItem<XmlValidationCertificateApprovalStatus> hasTrustedServiceAtTime(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceAtTimeCheck(i18nProvider, result, trustedServices, validationTime, getFailLevelRule());
     }
 
-    private ChainItem<XmlValidationCertificateUsage> trustedServicesWithSti(List<TrustedEntityServiceWrapper> trustedServices) {
+    private ChainItem<XmlValidationCertificateApprovalStatus> trustedServicesWithSti(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceWithStiCheck(i18nProvider, result, trustedServices, stiUri, getFailLevelRule());
     }
 
-    private ChainItem<XmlValidationCertificateUsage> trustedServiceTypeIdentifierKnown(String serviceStatusUri) {
+    private ChainItem<XmlValidationCertificateApprovalStatus> trustedServiceTypeIdentifierKnown(String serviceStatusUri) {
         return new TrustedEntityServiceTypeIdentifierKnownCheck(i18nProvider, result, serviceStatusUri, getWarnLevelRule());
     }
 
-    private ChainItem<XmlValidationCertificateUsage> trustedServicesStatusConsistent(List<TrustedEntityServiceWrapper> trustedServices) {
+    private ChainItem<XmlValidationCertificateApprovalStatus> trustedServicesStatusConsistent(List<TrustedEntityServiceWrapper> trustedServices) {
         return new TrustedEntityServiceStatusConsistencyCheck(i18nProvider, result, trustedServices, getFailLevelRule());
     }
 
-    private ChainItem<XmlValidationCertificateUsage> trustedServiceStatusKnown(String serviceStatusUri) {
+    private ChainItem<XmlValidationCertificateApprovalStatus> trustedServiceStatusKnown(String serviceStatusUri) {
         return new TrustedEntityServiceStatusKnownCheck(i18nProvider, result, serviceStatusUri, getWarnLevelRule());
     }
 

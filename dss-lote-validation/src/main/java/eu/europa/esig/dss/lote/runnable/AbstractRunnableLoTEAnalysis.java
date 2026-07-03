@@ -37,7 +37,8 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Abstract class to perform an analysis of a TS 119 602 List of Trusted Entities
- * 
+ *
+ * @param <S> {@link LoTESource}
  */
 public abstract class AbstractRunnableLoTEAnalysis<S extends LoTESource> implements Runnable {
 
@@ -63,6 +64,7 @@ public abstract class AbstractRunnableLoTEAnalysis<S extends LoTESource> impleme
      * @param source {@link LoTESource} representing a List to be processed
      * @param cacheAccess {@link CacheAccessByKey}
      * @param dssFileLoader {@link DSSFileLoader}
+     * @param latch {@link CountDownLatch}
      */
     protected AbstractRunnableLoTEAnalysis(final S source, final CacheAccessByKey cacheAccess,
                                            final DSSFileLoader dssFileLoader, final CountDownLatch latch) {
@@ -101,12 +103,19 @@ public abstract class AbstractRunnableLoTEAnalysis<S extends LoTESource> impleme
         }
     }
 
+    /**
+     * Gets executor to perform LoTE analysis
+     *
+     * @param document {@link DSSDocument}
+     * @return {@link ILoTEAnalysisExecutor}
+     */
     protected abstract ILoTEAnalysisExecutor<S> getAnalysisExecutor(DSSDocument document);
 
     /**
      * Downloads the document by url
      *
      * @param analysisExecutor {@link ILoTEAnalysisExecutor}
+     * @param document {@link DSSDocument}
      * @param url {@link String}
      * @return {@link DSSDocument}
      */

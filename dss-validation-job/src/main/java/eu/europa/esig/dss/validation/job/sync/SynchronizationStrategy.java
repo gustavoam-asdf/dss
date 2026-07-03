@@ -25,6 +25,9 @@ import eu.europa.esig.dss.model.job.DocumentListInfo;
 
 /**
  * Defines a behaviour for a trusted certificate source synchronization
+ *
+ * @param <D> current {@link DocumentInfo}
+ * @param <L> parent {@link DocumentListInfo}
  */
 public interface SynchronizationStrategy<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>> {
 

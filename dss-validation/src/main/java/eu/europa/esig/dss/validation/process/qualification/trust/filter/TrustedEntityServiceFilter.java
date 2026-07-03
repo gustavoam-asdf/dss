@@ -24,6 +24,10 @@ import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 
 import java.util.List;
 
+/**
+ * Filters {@code TrustedEntityServiceWrapper}s by the given conditions
+ *
+ */
 public interface TrustedEntityServiceFilter {
 
     /**

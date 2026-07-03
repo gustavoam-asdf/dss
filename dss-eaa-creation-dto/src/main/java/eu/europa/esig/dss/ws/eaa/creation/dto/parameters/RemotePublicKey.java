@@ -47,18 +47,38 @@ public class RemotePublicKey implements Serializable {
         // empty
     }
 
+    /**
+     * Returns the public key
+     *
+     * @return the public key
+     */
     public byte[] getPublicKey() {
         return publicKey;
     }
 
+    /**
+     * Sets the public key
+     *
+     * @param publicKey the public key to set
+     */
     public void setPublicKey(byte[] publicKey) {
         this.publicKey = publicKey;
     }
 
+    /**
+     * Returns the certificate
+     *
+     * @return the certificate
+     */
     public RemoteCertificate getCertificate() {
         return certificate;
     }
 
+    /**
+     * Sets the certificate
+     *
+     * @param certificate the certificate to set
+     */
     public void setCertificate(RemoteCertificate certificate) {
         this.certificate = certificate;
     }

@@ -455,6 +455,11 @@ public class MdocDeviceResponseParser {
      */
     protected static class DSSMapDecoder extends MapDecoder {
 
+        /**
+         * Default constructor
+         *
+         * @param inputStream {@link InputStream}
+         */
         public DSSMapDecoder(InputStream inputStream) {
             super(null, inputStream);
         }

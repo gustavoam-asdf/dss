@@ -28,6 +28,9 @@ import eu.europa.esig.dss.validation.job.cache.CacheKey;
 /**
  * The class prevents reading of other records but the one with defined key
  *
+ * @param <D> {@link DownloadInfoRecord}
+ * @param <P> {@link ParsingInfoRecord}
+ * @param <V> {@link ValidationInfoRecord}
  */
 public abstract class AbstractReadOnlyCacheAccessByKey<D extends DownloadInfoRecord, P extends ParsingInfoRecord, V extends ValidationInfoRecord> implements ReadOnlyCacheAccessByKey {
 

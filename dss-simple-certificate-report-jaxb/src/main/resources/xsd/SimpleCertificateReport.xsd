@@ -79,8 +79,8 @@
 			<xs:element name="qualificationDetailsAtValidation" type="Details" minOccurs="0" />
 			<xs:element name="qwacProfile" type="QWACProfile" minOccurs="0" />
 			<xs:element name="qwacDetails" type="Details" minOccurs="0" />
-			<xs:element name="certificateUsageAtIssuanceTime" type="CertificateUsageAtIssuanceTime" minOccurs="0" />
-			<xs:element name="certificateUsageAtValidationTime" type="CertificateUsageAtValidationTime" minOccurs="0" />
+			<xs:element name="certificateApprovalStatusAtIssuanceTime" type="CertificateApprovalStatusAtIssuanceTime" minOccurs="0" />
+			<xs:element name="certificateApprovalStatusAtValidationTime" type="CertificateApprovalStatusAtValidationTime" minOccurs="0" />
 			<xs:element name="enactedMRA" type="xs:boolean" minOccurs="0" />
 			<xs:element name="revocation" type="Revocation" minOccurs="0" />
 			<xs:element name="trustAnchors" type="TrustAnchors" minOccurs="0" />
@@ -249,25 +249,25 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:complexType name="CertificateUsageAtIssuanceTime">
+	<xs:complexType name="CertificateApprovalStatusAtIssuanceTime">
 		<xs:complexContent>
-			<xs:extension base="CertificateUsageAtTime" />
+			<xs:extension base="CertificateApprovalStatusAtTime" />
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="CertificateUsageAtValidationTime">
+	<xs:complexType name="CertificateApprovalStatusAtValidationTime">
 		<xs:complexContent>
-			<xs:extension base="CertificateUsageAtTime" />
+			<xs:extension base="CertificateApprovalStatusAtTime" />
 		</xs:complexContent>
 	</xs:complexType>
 
-	<xs:complexType name="CertificateUsageAtTime">
+	<xs:complexType name="CertificateApprovalStatusAtTime">
 		<xs:sequence>
-			<xs:element name="certificateUsage" type="CertificateUsage" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="certificateApprovalStatus" type="CertificateApprovalStatus" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name="CertificateUsage">
+	<xs:complexType name="CertificateApprovalStatus">
 		<xs:sequence>
 			<xs:element name="ListType" type="xs:string" minOccurs="0" />
 			<xs:element name="ServiceTypeIdentifier" type="xs:string" minOccurs="0" />

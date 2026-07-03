@@ -92,43 +92,92 @@ public class RemoteEAAStatusList implements Serializable {
         this.index = index;
         this.uri = uri;
     }
-
+    /**
+     * Returns the EAA index
+     *
+     * @return the EAA index
+     */
     public Integer getIndex() {
         return index;
     }
 
+    /**
+     * Sets the EAA index
+     *
+     * @param index the EAA index to set
+     */
     public void setIndex(Integer index) {
         this.index = index;
     }
 
+    /**
+     * Returns the URI
+     *
+     * @return the URI
+     */
     public String getUri() {
         return uri;
     }
 
+    /**
+     * Sets the URI
+     *
+     * @param uri the URI to set
+     */
     public void setUri(String uri) {
         this.uri = uri;
     }
 
+    /**
+     * Returns the certificate
+     *
+     * @return the certificate
+     */
     public RemoteCertificate getCertificate() {
         return certificate;
     }
 
+    /**
+     * Sets the certificate
+     *
+     * @param certificate the certificate to set
+     */
     public void setCertificate(RemoteCertificate certificate) {
         this.certificate = certificate;
     }
 
+    /**
+     * Returns the type
+     *
+     * @return the type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets the type
+     *
+     * @param type the type to set
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Returns the purpose
+     *
+     * @return the purpose
+     */
     public String getPurpose() {
         return purpose;
     }
 
+    /**
+     * Sets the purpose
+     *
+     * @param purpose the purpose to set
+     */
     public void setPurpose(String purpose) {
         this.purpose = purpose;
     }

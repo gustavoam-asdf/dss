@@ -58,6 +58,13 @@ public class DefaultPublicKeyInfoFactory implements PublicKeyInfoFactory {
         Security.addProvider(DSSSecurityProvider.getSecurityProvider());
     }
 
+    /**
+     * Default constructor
+     */
+    public DefaultPublicKeyInfoFactory() {
+        // empty
+    }
+
     @Override
     public PublicKeyInfo create(PublicKey publicKey) {
         Objects.requireNonNull(publicKey, "Public key cannot be null!");

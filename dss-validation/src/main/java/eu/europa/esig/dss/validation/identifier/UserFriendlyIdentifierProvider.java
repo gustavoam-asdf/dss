@@ -65,12 +65,13 @@ import java.util.Objects;
 
 /**
  * Creates an identifier for a given token by the template:
- *
+ * <p>
  * TOKEN-CommonCertName-CreationDate-id(optional)
- *
+ * <p>
  * Examples:
  * SIGNATURE-JohnConner-20201015-2045
  * CERTIFICATE-CryptoSign-20151014-1425
+ *
  */
 public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
 
@@ -558,6 +559,12 @@ public class UserFriendlyIdentifierProvider implements TokenIdentifierProvider {
         return generateId(stringBuilder, evidenceRecord.getId());
     }
 
+    /**
+     * Gets an identifier for the EAA
+     *
+     * @param eaa {@link EAA}
+     * @return {@link String} identifier
+     */
     protected String getIdAsStringForEAAIdentifier(EAA eaa) {
         StringBuilder stringBuilder = new StringBuilder(eaaPrefix);
 

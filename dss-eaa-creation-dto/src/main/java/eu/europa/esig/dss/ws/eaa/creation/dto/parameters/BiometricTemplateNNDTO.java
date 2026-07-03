@@ -45,18 +45,38 @@ public class BiometricTemplateNNDTO implements Serializable {
         // empty
     }
 
+    /**
+     * Returns the type
+     *
+     * @return the type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Sets the type
+     *
+     * @param type the type to set
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Returns the data
+     *
+     * @return the data
+     */
     public byte[] getData() {
         return data;
     }
 
+    /**
+     * Sets the data
+     *
+     * @param data the data to set
+     */
     public void setData(byte[] data) {
         this.data = data;
     }

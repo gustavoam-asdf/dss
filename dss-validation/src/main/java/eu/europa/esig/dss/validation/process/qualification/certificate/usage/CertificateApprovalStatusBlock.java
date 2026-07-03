@@ -20,7 +20,7 @@
  */
 package eu.europa.esig.dss.validation.process.qualification.certificate.usage;
 
-import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateUsageProcess;
+import eu.europa.esig.dss.detailedreport.jaxb.XmlCertificateApprovalStatusProcess;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlConclusion;
 import eu.europa.esig.dss.detailedreport.jaxb.XmlLoTEAnalysis;
 import eu.europa.esig.dss.diagnostic.CertificateWrapper;
@@ -54,7 +54,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
+/**
+ * Verifies the certificate's approval status
+ * 
+ */
+public class CertificateApprovalStatusBlock extends Chain<XmlCertificateApprovalStatusProcess> {
 
     /** Certificate's BasicBuildingBlock's conclusion */
     protected final XmlConclusion buildingBlocksConclusion;
@@ -77,10 +81,10 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
      * @param signingCertificate {@link CertificateWrapper} to be validated
      * @param loteAnalysis a list of {@link XmlLoTEAnalysis}
      */
-    public CertificateUsageBlock(I18nProvider i18nProvider, XmlConclusion buildingBlocksConclusion,
-                                 Date validationTime, CertificateWrapper signingCertificate,
-                                 List<XmlLoTEAnalysis> loteAnalysis) {
-        super(i18nProvider, new XmlCertificateUsageProcess());
+    public CertificateApprovalStatusBlock(I18nProvider i18nProvider, XmlConclusion buildingBlocksConclusion,
+                                          Date validationTime, CertificateWrapper signingCertificate,
+                                          List<XmlLoTEAnalysis> loteAnalysis) {
+        super(i18nProvider, new XmlCertificateApprovalStatusProcess());
         Objects.requireNonNull(validationTime, "The validationTime shall be provided!");
         Objects.requireNonNull(signingCertificate, "The signingCertificate shall be provided!");
 
@@ -100,7 +104,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
     @Override
     protected void initChain() {
         // cover incomplete cert chain / expired/ revoked certs
-        ChainItem<XmlCertificateUsageProcess> item = firstItem = isAcceptableBuildingBlockConclusion(buildingBlocksConclusion);
+        ChainItem<XmlCertificateApprovalStatusProcess> item = firstItem = isAcceptableBuildingBlockConclusion(buildingBlocksConclusion);
 
         Set<XmlTrustSourceList> acceptableLoTEs = new HashSet<>();
         List<TrustedEntityServiceWrapper> originalTESs = signingCertificate.getTrustedEntityServices();
@@ -114,7 +118,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
             for (XmlTrustSourceList listOfLists : listsOfLists) {
                 XmlLoTEAnalysis loloteAnalysis = getLoTEAnalysis(listOfLists);
                 if (loloteAnalysis != null) {
-                    AcceptableLoLoTECheck<XmlCertificateUsageProcess> acceptableLOTL = isAcceptableLoLoTE(loloteAnalysis);
+                    AcceptableLoLoTECheck<XmlCertificateApprovalStatusProcess> acceptableLOTL = isAcceptableLoLoTE(loloteAnalysis);
                     item = item.setNextItem(acceptableLOTL);
                     if (acceptableLOTL.process()) {
                         acceptableLoLoTEs.add(listOfLists);
@@ -132,7 +136,7 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
                     XmlLoTEAnalysis currentTL = getLoTEAnalysis(lote);
                     if (currentTL != null) {
 
-                        AcceptableLoTECheck<XmlCertificateUsageProcess> acceptableTL = isAcceptableLoTE(currentTL);
+                        AcceptableLoTECheck<XmlCertificateApprovalStatusProcess> acceptableTL = isAcceptableLoTE(currentTL);
                         item = item.setNextItem(acceptableTL);
 
                         item = item.setNextItem(loteTypeKnown(lote.getType()));
@@ -162,11 +166,11 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
                 List<String> applicableStiUris = getApplicableStiUris(relatedServices);
 
                 for (String stiUri : applicableStiUris) {
-                    CertificateUsageAtTimeBlock certUsageAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(listTypeUri, stiUri, relatedServices);
-                    result.getValidationCertificateUsage().add(certUsageAtIssuanceBlock.execute());
+                    CertificateApprovalStatusAtTimeBlock certApprovalStatusAtIssuanceBlock = getCertUsageAtIssuanceTimeBlock(listTypeUri, stiUri, relatedServices);
+                    result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtIssuanceBlock.execute());
 
-                    CertificateUsageAtTimeBlock certUsageAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(listTypeUri, stiUri, relatedServices);
-                    result.getValidationCertificateUsage().add(certUsageAtValidationTimeBlock.execute());
+                    CertificateApprovalStatusAtTimeBlock certApprovalStatusAtValidationTimeBlock = getCertUsageAtValidationTimeBlock(listTypeUri, stiUri, relatedServices);
+                    result.getValidationCertificateApprovalStatus().add(certApprovalStatusAtValidationTimeBlock.execute());
                 }
 
             }
@@ -181,10 +185,10 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
      * @param listTypeUri {@link String} List of Trusted Entities type URI
      * @param stiUri {@link String} containing a service type identifier URL
      * @param acceptableServices a list of {@link TrustedEntityServiceWrapper}s acceptable for the given certificate
-     * @return {@link CertificateUsageAtTimeBlock}
+     * @return {@link CertificateApprovalStatusAtTimeBlock}
      */
-    protected CertificateUsageAtTimeBlock getCertUsageAtIssuanceTimeBlock(String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
-        return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.CERTIFICATE_ISSUANCE_TIME, signingCertificate, listTypeUri, stiUri, acceptableServices);
+    protected CertificateApprovalStatusAtTimeBlock getCertUsageAtIssuanceTimeBlock(String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
+        return new CertificateApprovalStatusAtTimeBlock(i18nProvider, ValidationTime.CERTIFICATE_ISSUANCE_TIME, signingCertificate, listTypeUri, stiUri, acceptableServices);
     }
 
     /**
@@ -193,10 +197,10 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
      * @param listTypeUri {@link String} List of Trusted Entities type URI
      * @param stiUri {@link String} containing a service type identifier URL
      * @param acceptableServices a list of {@link TrustedEntityServiceWrapper}s acceptable for the given certificate
-     * @return {@link CertificateUsageAtTimeBlock}
+     * @return {@link CertificateApprovalStatusAtTimeBlock}
      */
-    protected CertificateUsageAtTimeBlock getCertUsageAtValidationTimeBlock(String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
-        return new CertificateUsageAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, validationTime, signingCertificate, listTypeUri, stiUri, acceptableServices);
+    protected CertificateApprovalStatusAtTimeBlock getCertUsageAtValidationTimeBlock(String listTypeUri, String stiUri, List<TrustedEntityServiceWrapper> acceptableServices) {
+        return new CertificateApprovalStatusAtTimeBlock(i18nProvider, ValidationTime.VALIDATION_TIME, validationTime, signingCertificate, listTypeUri, stiUri, acceptableServices);
     }
 
     private XmlLoTEAnalysis getLoTEAnalysis(XmlTrustSourceList listSource) {
@@ -251,23 +255,23 @@ public class CertificateUsageBlock extends Chain<XmlCertificateUsageProcess> {
         }
     }
 
-    private AcceptableLoLoTECheck<XmlCertificateUsageProcess> isAcceptableLoLoTE(XmlLoTEAnalysis xmlLoLoTEAnalysis) {
+    private AcceptableLoLoTECheck<XmlCertificateApprovalStatusProcess> isAcceptableLoLoTE(XmlLoTEAnalysis xmlLoLoTEAnalysis) {
         return new AcceptableLoLoTECheck<>(i18nProvider, result, xmlLoLoTEAnalysis, getWarnLevelRule());
     }
 
-    private AcceptableLoTECheck<XmlCertificateUsageProcess> isAcceptableLoTE(XmlLoTEAnalysis xmlLoTEAnalysis) {
+    private AcceptableLoTECheck<XmlCertificateApprovalStatusProcess> isAcceptableLoTE(XmlLoTEAnalysis xmlLoTEAnalysis) {
         return new AcceptableLoTECheck<>(i18nProvider, result, xmlLoTEAnalysis, getWarnLevelRule());
     }
 
-    private ChainItem<XmlCertificateUsageProcess> loteTypeKnown(String loteType) {
+    private ChainItem<XmlCertificateApprovalStatusProcess> loteTypeKnown(String loteType) {
         return new ListTypeKnownCheck(i18nProvider, result, loteType, getWarnLevelRule());
     }
 
-    private ChainItem<XmlCertificateUsageProcess> isAcceptableLoTEPresent(Set<XmlTrustSourceList> acceptableLoTEs) {
+    private ChainItem<XmlCertificateApprovalStatusProcess> isAcceptableLoTEPresent(Set<XmlTrustSourceList> acceptableLoTEs) {
         return new AcceptableLoTEPresenceCheck<>(i18nProvider, result, acceptableLoTEs, getFailLevelRule());
     }
 
-    private ChainItem<XmlCertificateUsageProcess> isAcceptableBuildingBlockConclusion(XmlConclusion buildingBlocksConclusion) {
+    private ChainItem<XmlCertificateApprovalStatusProcess> isAcceptableBuildingBlockConclusion(XmlConclusion buildingBlocksConclusion) {
         return new AcceptableBuildingBlockConclusionCheck<>(i18nProvider, result, buildingBlocksConclusion, getWarnLevelRule());
     }
 

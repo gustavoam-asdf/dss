@@ -127,7 +127,7 @@
                 <Conclusion>
                     <Indication>PASSED</Indication>
                 </Conclusion>
-                <ValidationCertificateUsage Id="C-6EB85705071828887CACAEF723BD95952C862F7FC1CFB1026706CAFD80616BD7" DateTime="2023-04-03T09:58:09Z" ValidationTime="CERTIFICATE_ISSUANCE_TIME" Title="Certificate Usage 'PID Issuance' at certificate issuance time">
+                <ValidationCertificateApprovalStatus Id="C-6EB85705071828887CACAEF723BD95952C862F7FC1CFB1026706CAFD80616BD7" DateTime="2023-04-03T09:58:09Z" ValidationTime="CERTIFICATE_ISSUANCE_TIME" Title="Certificate Usage 'PID Issuance' at certificate issuance time">
                     <Constraint>
                         <Name Key="CERT_USAGE_HAS_ATTIME">Is the certificate related to a trusted entity service at certificate issuance time?</Name>
                         <Status>OK</Status>
@@ -149,12 +149,12 @@
                     <Conclusion>
                         <Indication>PASSED</Indication>
                     </Conclusion>
-                    <CertificateUsage label="PID Provider">
+                    <CertificateApprovalStatus label="PID Provider">
                         <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                         <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
-                    </CertificateUsage>
-                </ValidationCertificateUsage>
-                <ValidationCertificateUsage Id="C-6EB85705071828887CACAEF723BD95952C862F7FC1CFB1026706CAFD80616BD7" DateTime="2026-04-03T09:58:12Z" ValidationTime="VALIDATION_TIME" Title="Certificate Usage 'PID Issuance' at validation time">
+                    </CertificateApprovalStatus>
+                </ValidationCertificateApprovalStatus>
+                <ValidationCertificateApprovalStatus Id="C-6EB85705071828887CACAEF723BD95952C862F7FC1CFB1026706CAFD80616BD7" DateTime="2026-04-03T09:58:12Z" ValidationTime="VALIDATION_TIME" Title="Certificate Usage 'PID Issuance' at validation time">
                     <Constraint>
                         <Name Key="CERT_USAGE_HAS_ATTIME">Is the certificate related to a trusted entity service at validation time?</Name>
                         <Status>OK</Status>
@@ -176,11 +176,11 @@
                     <Conclusion>
                         <Indication>PASSED</Indication>
                     </Conclusion>
-                    <CertificateUsage label="PID Provider">
+                    <CertificateApprovalStatus label="PID Provider">
                         <ListType>http://uri.etsi.org/19602/LoTEType/EUPIDProvidersList</ListType>
                         <ServiceTypeIdentifier>http://uri.etsi.org/19602/SvcType/PID/Issuance</ServiceTypeIdentifier>
-                    </CertificateUsage>
-                </ValidationCertificateUsage>
+                    </CertificateApprovalStatus>
+                </ValidationCertificateApprovalStatus>
             </ValidationPIDQualificationProcess>
             <EAAQualification>EAA</EAAQualification>
             <EAAQualification>PID</EAAQualification>

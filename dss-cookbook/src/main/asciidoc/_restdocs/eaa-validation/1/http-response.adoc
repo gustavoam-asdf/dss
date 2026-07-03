@@ -1188,7 +1188,7 @@ Content-Length: 92794
             "EAAQualification" : "N/A"
           },
           "ValidationPIDQualificationProcess" : {
-            "ValidationCertificateUsage" : [ ],
+            "ValidationCertificateApprovalStatus" : [ ],
             "Constraint" : [ {
               "Name" : {
                 "value" : "Has a list of trusted entities been reached for the certificate chain?",

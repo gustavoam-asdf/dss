@@ -47,26 +47,56 @@ public class DrivingPrivilegeCodeDTO implements Serializable {
         // empty
     }
 
+    /**
+     * Returns the code
+     *
+     * @return the code
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * Sets the code
+     *
+     * @param code the code to set
+     */
     public void setCode(String code) {
         this.code = code;
     }
 
+    /**
+     * Returns the sign
+     *
+     * @return the sign
+     */
     public String getSign() {
         return sign;
     }
 
+    /**
+     * Sets the sign
+     *
+     * @param sign the sign to set
+     */
     public void setSign(String sign) {
         this.sign = sign;
     }
 
+    /**
+     * Returns the value
+     *
+     * @return the value
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Sets the value
+     *
+     * @param value the value to set
+     */
     public void setValue(String value) {
         this.value = value;
     }

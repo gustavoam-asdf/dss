@@ -57,6 +57,7 @@ public class EAAStatusList implements Serializable {
      *
      * @param index integer
      * @param uri {@link String}
+     * @param certificate {@link CertificateToken}
      */
     public EAAStatusList(final int index, final String uri, final CertificateToken certificate) {
         Objects.requireNonNull(uri, "Uri cannot be null!");

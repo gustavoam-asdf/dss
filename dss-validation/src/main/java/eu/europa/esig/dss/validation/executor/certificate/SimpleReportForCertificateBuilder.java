@@ -33,14 +33,14 @@ import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustService;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustServiceProvider;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntity;
 import eu.europa.esig.dss.diagnostic.jaxb.XmlTrustedEntityService;
-import eu.europa.esig.dss.enumerations.CertificateUsage;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
 import eu.europa.esig.dss.enumerations.Indication;
 import eu.europa.esig.dss.enumerations.SubIndication;
 import eu.europa.esig.dss.jaxb.object.Message;
 import eu.europa.esig.dss.model.policy.ValidationPolicy;
-import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsage;
-import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtIssuanceTime;
-import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateUsageAtValidationTime;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateApprovalStatus;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateApprovalStatusAtIssuanceTime;
+import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlCertificateApprovalStatusAtValidationTime;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlChainItem;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlConnectionDetails;
 import eu.europa.esig.dss.simplecertificatereport.jaxb.XmlDetails;
@@ -117,7 +117,7 @@ public class SimpleReportForCertificateBuilder {
 		XmlChainItem targetCertificate = getChainItem(certificate, false);
 		addQualifications(targetCertificate, certificate);
 		addQWACValidationDetails(targetCertificate, certificate);
-		addCertificateUsages(targetCertificate, certificate);
+		addCertificateApprovalStatuss(targetCertificate, certificate);
 		simpleReport.setCertificate(targetCertificate);
 
 		List<XmlChainItem> chain = new ArrayList<>();
@@ -375,49 +375,49 @@ public class SimpleReportForCertificateBuilder {
 		}
 	}
 
-	private void addCertificateUsages(XmlChainItem chainItem, CertificateWrapper certificate) {
-		chainItem.setCertificateUsageAtIssuanceTime(getCertificateUsageAtIssuanceTime(certificate));
-		chainItem.setCertificateUsageAtValidationTime(getCertificateUsageAtValidationTime(certificate));
+	private void addCertificateApprovalStatuss(XmlChainItem chainItem, CertificateWrapper certificate) {
+		chainItem.setCertificateApprovalStatusAtIssuanceTime(getCertificateApprovalStatusAtIssuanceTime(certificate));
+		chainItem.setCertificateApprovalStatusAtValidationTime(getCertificateApprovalStatusAtValidationTime(certificate));
 	}
 
-	private XmlCertificateUsageAtIssuanceTime getCertificateUsageAtIssuanceTime(CertificateWrapper certificate) {
-		List<CertificateUsage> certificateUsagesAtIssuanceTime = detailedReport.getCertificateUsagesAtIssuanceTime(certificate.getId());
-		if (Utils.isCollectionEmpty(certificateUsagesAtIssuanceTime)) {
+	private XmlCertificateApprovalStatusAtIssuanceTime getCertificateApprovalStatusAtIssuanceTime(CertificateWrapper certificate) {
+		List<CertificateApprovalStatus> certificateApprovalStatussAtIssuanceTime = detailedReport.getCertificateApprovalStatussAtIssuanceTime(certificate.getId());
+		if (Utils.isCollectionEmpty(certificateApprovalStatussAtIssuanceTime)) {
 			return null;
 		}
 
-		XmlCertificateUsageAtIssuanceTime xmlCertificateUsageAtTime = new XmlCertificateUsageAtIssuanceTime();
-		for (CertificateUsage certificateUsage : certificateUsagesAtIssuanceTime) {
-			XmlCertificateUsage xmlCertificateUsage = new XmlCertificateUsage();
-			xmlCertificateUsage.setListType(certificateUsage.getListType());
-			xmlCertificateUsage.setServiceTypeIdentifier(certificateUsage.getServiceTypeIdentifier());
-			xmlCertificateUsage.setServiceStatus(certificateUsage.getServiceStatus());
-			xmlCertificateUsage.setLabel(certificateUsage.getLabel());
-			xmlCertificateUsage.setDetails(getCertificateUsageDetailsAtIssuanceTime(certificate.getId(), certificateUsage));
+		XmlCertificateApprovalStatusAtIssuanceTime xmlCertificateApprovalStatusAtTime = new XmlCertificateApprovalStatusAtIssuanceTime();
+		for (CertificateApprovalStatus certificateApprovalStatus : certificateApprovalStatussAtIssuanceTime) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = new XmlCertificateApprovalStatus();
+			xmlCertificateApprovalStatus.setListType(certificateApprovalStatus.getListType());
+			xmlCertificateApprovalStatus.setServiceTypeIdentifier(certificateApprovalStatus.getServiceTypeIdentifier());
+			xmlCertificateApprovalStatus.setServiceStatus(certificateApprovalStatus.getServiceStatus());
+			xmlCertificateApprovalStatus.setLabel(certificateApprovalStatus.getLabel());
+			xmlCertificateApprovalStatus.setDetails(getCertificateApprovalStatusDetailsAtIssuanceTime(certificate.getId(), certificateApprovalStatus));
 
-			xmlCertificateUsageAtTime.getCertificateUsage().add(xmlCertificateUsage);
+			xmlCertificateApprovalStatusAtTime.getCertificateApprovalStatus().add(xmlCertificateApprovalStatus);
 		}
-		return xmlCertificateUsageAtTime;
+		return xmlCertificateApprovalStatusAtTime;
 	}
 
-	private XmlCertificateUsageAtValidationTime getCertificateUsageAtValidationTime(CertificateWrapper certificate) {
-		List<CertificateUsage> certificateUsagesAtIssuanceTime = detailedReport.getCertificateUsagesAtValidationTime(certificate.getId());
-		if (Utils.isCollectionEmpty(certificateUsagesAtIssuanceTime)) {
+	private XmlCertificateApprovalStatusAtValidationTime getCertificateApprovalStatusAtValidationTime(CertificateWrapper certificate) {
+		List<CertificateApprovalStatus> certificateApprovalStatussAtIssuanceTime = detailedReport.getCertificateApprovalStatussAtValidationTime(certificate.getId());
+		if (Utils.isCollectionEmpty(certificateApprovalStatussAtIssuanceTime)) {
 			return null;
 		}
 
-		XmlCertificateUsageAtValidationTime xmlCertificateUsageAtTime = new XmlCertificateUsageAtValidationTime();
-		for (CertificateUsage certificateUsage : certificateUsagesAtIssuanceTime) {
-			XmlCertificateUsage xmlCertificateUsage = new XmlCertificateUsage();
-			xmlCertificateUsage.setListType(certificateUsage.getListType());
-			xmlCertificateUsage.setServiceTypeIdentifier(certificateUsage.getServiceTypeIdentifier());
-			xmlCertificateUsage.setServiceStatus(certificateUsage.getServiceStatus());
-			xmlCertificateUsage.setLabel(certificateUsage.getLabel());
-			xmlCertificateUsage.setDetails(getCertificateUsageDetailsAtValidationTime(certificate.getId(), certificateUsage));
+		XmlCertificateApprovalStatusAtValidationTime xmlCertificateApprovalStatusAtTime = new XmlCertificateApprovalStatusAtValidationTime();
+		for (CertificateApprovalStatus certificateApprovalStatus : certificateApprovalStatussAtIssuanceTime) {
+			XmlCertificateApprovalStatus xmlCertificateApprovalStatus = new XmlCertificateApprovalStatus();
+			xmlCertificateApprovalStatus.setListType(certificateApprovalStatus.getListType());
+			xmlCertificateApprovalStatus.setServiceTypeIdentifier(certificateApprovalStatus.getServiceTypeIdentifier());
+			xmlCertificateApprovalStatus.setServiceStatus(certificateApprovalStatus.getServiceStatus());
+			xmlCertificateApprovalStatus.setLabel(certificateApprovalStatus.getLabel());
+			xmlCertificateApprovalStatus.setDetails(getCertificateApprovalStatusDetailsAtValidationTime(certificate.getId(), certificateApprovalStatus));
 
-			xmlCertificateUsageAtTime.getCertificateUsage().add(xmlCertificateUsage);
+			xmlCertificateApprovalStatusAtTime.getCertificateApprovalStatus().add(xmlCertificateApprovalStatus);
 		}
-		return xmlCertificateUsageAtTime;
+		return xmlCertificateApprovalStatusAtTime;
 	}
 
 	private XmlDetails getValidationDetails(String tokenId) {
@@ -452,19 +452,19 @@ public class SimpleReportForCertificateBuilder {
 		return qualificationDetails;
 	}
 
-	private XmlDetails getCertificateUsageDetailsAtIssuanceTime(String tokenId, CertificateUsage certificateUsage) {
+	private XmlDetails getCertificateApprovalStatusDetailsAtIssuanceTime(String tokenId, CertificateApprovalStatus certificateApprovalStatus) {
 		XmlDetails usageDetails = new XmlDetails();
-		usageDetails.getError().addAll(convert(detailedReport.getCertificateUsageErrorsAtIssuanceTime(tokenId, certificateUsage)));
-		usageDetails.getWarning().addAll(convert(detailedReport.getCertificateUsageWarningsAtIssuanceTime(tokenId, certificateUsage)));
-		usageDetails.getInfo().addAll(convert(detailedReport.getCertificateUsageInfosAtIssuanceTime(tokenId, certificateUsage)));
+		usageDetails.getError().addAll(convert(detailedReport.getCertificateApprovalStatusErrorsAtIssuanceTime(tokenId, certificateApprovalStatus)));
+		usageDetails.getWarning().addAll(convert(detailedReport.getCertificateApprovalStatusWarningsAtIssuanceTime(tokenId, certificateApprovalStatus)));
+		usageDetails.getInfo().addAll(convert(detailedReport.getCertificateApprovalStatusInfosAtIssuanceTime(tokenId, certificateApprovalStatus)));
 		return usageDetails;
 	}
 
-	private XmlDetails getCertificateUsageDetailsAtValidationTime(String tokenId, CertificateUsage certificateUsage) {
+	private XmlDetails getCertificateApprovalStatusDetailsAtValidationTime(String tokenId, CertificateApprovalStatus certificateApprovalStatus) {
 		XmlDetails usageDetails = new XmlDetails();
-		usageDetails.getError().addAll(convert(detailedReport.getCertificateUsageErrorsAtValidationTime(tokenId, certificateUsage)));
-		usageDetails.getWarning().addAll(convert(detailedReport.getCertificateUsageWarningsAtValidationTime(tokenId, certificateUsage)));
-		usageDetails.getInfo().addAll(convert(detailedReport.getCertificateUsageInfosAtValidationTime(tokenId, certificateUsage)));
+		usageDetails.getError().addAll(convert(detailedReport.getCertificateApprovalStatusErrorsAtValidationTime(tokenId, certificateApprovalStatus)));
+		usageDetails.getWarning().addAll(convert(detailedReport.getCertificateApprovalStatusWarningsAtValidationTime(tokenId, certificateApprovalStatus)));
+		usageDetails.getInfo().addAll(convert(detailedReport.getCertificateApprovalStatusInfosAtValidationTime(tokenId, certificateApprovalStatus)));
 		return usageDetails;
 	}
 

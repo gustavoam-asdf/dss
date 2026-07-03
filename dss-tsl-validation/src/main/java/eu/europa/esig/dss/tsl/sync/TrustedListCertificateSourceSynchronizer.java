@@ -97,6 +97,7 @@ public class TrustedListCertificateSourceSynchronizer {
 	 * @param certificateSource {@link TrustPropertiesCertificateSource}
 	 * @param synchronizationStrategy {@link SynchronizationStrategy}
 	 * @param syncCacheAccess {@link SynchronizerCacheAccess}
+	 * @param readOnlyCacheAccess {@link TLReadOnlyCacheAccess}
 	 */
 	public TrustedListCertificateSourceSynchronizer(TLSource[] tlSources, LOTLSource[] lotlSources,
 			TrustPropertiesCertificateSource certificateSource, SynchronizationStrategy<TLInfo, LOTLInfo> synchronizationStrategy,

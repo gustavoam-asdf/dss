@@ -39,6 +39,10 @@ import eu.europa.esig.dss.validation.process.qualification.trust.checks.TLWellSi
 
 import java.util.Date;
 
+/**
+ * Performs validation of a LoTE
+ *
+ */
 public class LoTEValidationBlock extends Chain<XmlTLAnalysis> {
 
     /** Trusted list to be validated */

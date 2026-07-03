@@ -74,6 +74,8 @@ public class RemoteKeyBindingParameters implements Serializable {
 
     /**
      * Constructor with EAA type provided
+     *
+     * @param eaaType {@link EAAType}
      */
     public RemoteKeyBindingParameters(EAAType eaaType) {
         this.eaaType = eaaType;

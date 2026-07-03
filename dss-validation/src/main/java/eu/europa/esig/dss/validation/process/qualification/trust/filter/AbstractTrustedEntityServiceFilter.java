@@ -25,6 +25,10 @@ import eu.europa.esig.dss.diagnostic.TrustedEntityServiceWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Abstract implementation of the {@code eu.europa.esig.dss.validation.process.qualification.trust.filter.TrustedEntityServiceFilter}
+ *
+ */
 public abstract class AbstractTrustedEntityServiceFilter implements TrustedEntityServiceFilter {
 
     /**

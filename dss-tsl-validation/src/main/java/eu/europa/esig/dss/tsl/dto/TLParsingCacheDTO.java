@@ -32,6 +32,10 @@ import eu.europa.esig.dss.validation.job.dto.AbstractParsingCacheDTO;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * DTO for a Trusted List parsing cache
+ *
+ */
 public class TLParsingCacheDTO extends AbstractParsingCacheDTO implements TLParsingInfoRecord {
 
     private static final long serialVersionUID = 5464908480606825440L;

@@ -44,18 +44,38 @@ public class AgeOverNNDTO implements Serializable {
         // empty
     }
 
+    /**
+     * Returns the age
+     *
+     * @return the age
+     */
     public Integer getAge() {
         return age;
     }
 
+    /**
+     * Sets the age
+     *
+     * @param age the age to set
+     */
     public void setAge(Integer age) {
         this.age = age;
     }
 
+    /**
+     * Returns whether the age is marked as over or equal
+     *
+     * @return whether the object is marked as over or equal
+     */
     public Boolean getOver() {
         return isOver;
     }
 
+    /**
+     * Sets whether the age is marked as over or equal
+     *
+     * @param over whether the object is marked as over or equal
+     */
     public void setOver(Boolean over) {
         isOver = over;
     }

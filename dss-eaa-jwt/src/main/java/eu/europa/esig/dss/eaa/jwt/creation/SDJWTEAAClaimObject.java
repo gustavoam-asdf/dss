@@ -35,6 +35,7 @@ public class SDJWTEAAClaimObject extends SDJWTEAAClaim implements EAAClaimObject
 
     private static final long serialVersionUID = 3602569321684484970L;
 
+    /** Decoy digests used to hide the number of selectively disclosable items */
     private final List<String> decoyDigests = new ArrayList<>();
 
     /**

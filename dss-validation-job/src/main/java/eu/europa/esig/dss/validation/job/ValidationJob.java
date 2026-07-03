@@ -56,6 +56,9 @@ import java.util.stream.Collectors;
 /**
  * The main class performing the document download / parsing / validation tasks
  *
+ * @param <D> current {@link DocumentInfo}
+ * @param <L> parent {@link DocumentListInfo}
+ * @param <C> {@link CacheAccessFactory}
  */
 public abstract class ValidationJob<D extends DocumentInfo<L>, L extends DocumentListInfo<L, D>, C extends CacheAccessFactory> {
 

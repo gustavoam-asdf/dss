@@ -54,39 +54,81 @@ public class DrivingPrivilegeDTO implements Serializable {
 
     /**
      * Constructor with vehicle category code
+     *
+     * @param vehicleCategoryCode {@link String}
      */
     public DrivingPrivilegeDTO(String vehicleCategoryCode) {
         this.vehicleCategoryCode = vehicleCategoryCode;
     }
 
+    /**
+     * Returns the vehicle category code
+     *
+     * @return the vehicle category code
+     */
     public String getVehicleCategoryCode() {
         return vehicleCategoryCode;
     }
 
+    /**
+     * Sets the vehicle category code
+     *
+     * @param vehicleCategoryCode the vehicle category code to set
+     */
     public void setVehicleCategoryCode(String vehicleCategoryCode) {
         this.vehicleCategoryCode = vehicleCategoryCode;
     }
 
+    /**
+     * Returns the issue date
+     *
+     * @return the issue date
+     */
     public Date getIssueDate() {
         return issueDate;
     }
 
+    /**
+     * Sets the issue date
+     *
+     * @param issueDate the issue date to set
+     */
     public void setIssueDate(Date issueDate) {
         this.issueDate = issueDate;
     }
 
+    /**
+     * Returns the expiry date
+     *
+     * @return the expiry date
+     */
     public Date getExpiryDate() {
         return expiryDate;
     }
 
+    /**
+     * Sets the expiry date
+     *
+     * @param expiryDate the expiry date to set
+     */
     public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
     }
 
+    /**
+     * Returns the codes
+     *
+     * @return the codes
+     */
     public List<DrivingPrivilegeCodeDTO> getCodes() {
         return codes;
     }
 
+    /**
+     * Sets the codes
+     *
+     * @param codes the codes to set
+     */
     public void setCodes(List<DrivingPrivilegeCodeDTO> codes) {
         this.codes = codes;
     }

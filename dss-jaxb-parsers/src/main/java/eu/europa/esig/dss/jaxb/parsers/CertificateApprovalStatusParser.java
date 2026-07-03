@@ -18,32 +18,42 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package eu.europa.esig.dss.model.tsl.identifier;
+package eu.europa.esig.dss.jaxb.parsers;
 
-import eu.europa.esig.dss.model.identifier.MultipleDigestIdentifier;
-import eu.europa.esig.dss.model.job.AbstractDocumentInfo;
+import eu.europa.esig.dss.enumerations.CertificateApprovalStatus;
+import eu.europa.esig.dss.enumerations.LoTEServiceTypeIdentifier;
 
-public class DocumentInfoIdentifier extends MultipleDigestIdentifier {
-
-    private static final long serialVersionUID = -250692069626295484L;
+/**
+ * Parses the {@code eu.europa.esig.dss.enumerations.CertificateApprovalStatus}
+ * 
+ */
+public class CertificateApprovalStatusParser {
 
     /**
      * Default constructor
-     *
-     * @param documentInfo {@link AbstractDocumentInfo} of the target document
      */
-    public DocumentInfoIdentifier(AbstractDocumentInfo documentInfo) {
-        this("DI-", documentInfo);
+    private CertificateApprovalStatusParser() {
+        // empty
     }
 
     /**
-     * Constructor with a custom prefix
+     * Parses the value and returns {@code CertificateApprovalStatus}
      *
-     * @param prefix {@link String} identifier prefix (e.g. 'TL-')
-     * @param documentInfo {@link AbstractDocumentInfo} of the target document
+     * @param v {@link String} to parse
+     * @return {@link CertificateApprovalStatus}
      */
-    protected DocumentInfoIdentifier(final String prefix, AbstractDocumentInfo documentInfo) {
-        super(prefix, documentInfo.getUrl().getBytes());
+    public static CertificateApprovalStatus parse(String v) {
+        return CertificateApprovalStatus.fromLabel(v);
+    }
+
+    /**
+     * Gets a text name of the value
+     *
+     * @param v {@link LoTEServiceTypeIdentifier}
+     * @return {@link String}
+     */
+    public static String print(CertificateApprovalStatus v) {
+        return v.getLabel();
     }
 
 }

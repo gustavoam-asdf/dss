@@ -100,6 +100,8 @@ public class EAAValidationBlock {
 
     /**
      * Performs validation of EAA presentations
+     *
+     * @return a list of {@link XmlEAA}s
      */
     public List<XmlEAA> execute() {
         final List<XmlEAA> result = new ArrayList<>();
