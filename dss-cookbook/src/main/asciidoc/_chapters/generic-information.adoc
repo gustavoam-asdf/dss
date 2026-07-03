@@ -42,6 +42,7 @@ In a more detailed manner the following concepts and features are addressed in t
 * Validation of the signing certificate;
 * Timestamp creation;
 * Timestamp validation and qualification;
+* Electronic Attestation of Attributes;
 * REST and SOAP webservices.
 
 This is not an exhaustive list of all the possibilities offered by the framework and the proposed examples cover only the most useful features. However, to discover every detail of the operational principles of the framework, the JavaDoc is available within the source code.

@@ -25,7 +25,7 @@
                                             * XAdES : Add alternative XPath query executor for XML processing;
                                             * PAdES : Review DPI behavior for visual PDF signatures;
                                             * PAdES : Resolve limitations in DSSSecureRansomProvider;
-                                            * JAdES : accept arbitrary `kid` protected header values;
+                                            * JAdES : Accept arbitrary `kid` protected header values;
                                             * JAdES : Add support of `x5c` as unsigned header parameter;
                                             * Support of ETSI TS 119 412-6 QcStatements;
                                             * Added a predicate to `FileCacheDataLoader` to choose whether to cache the downloaded data;
@@ -36,15 +36,15 @@
                                             * Demos : Webapp upgraded to Spring-Boot 4;
                                             * Java 26 support.
 
-Bug fixes:
+|v6.5.RC1           |July 2026             a|Bug fixes :
 
-* Add missing i18n messages for validation indication semantics;
-* CAdES validation : fix extraction of timestamped references from ats-hash-index tables which are not -v3;
-* PAdES : Fix final image position computation when using the ImageScaling.CENTER with an image+text combination;
-* TL signature may be validated successfully against CA certificate;
-* TrustAnchorBPPolicy does not include signing-certificate when trusted;
-* Make `CertificateToken.checkIsSignedBy` thread safe;
-* Fixed eSignature validation tests for empty or corrupted documents.
+                                            * Add missing i18n messages for validation indication semantics;
+                                            * CAdES validation : fix extraction of timestamped references from `ats-hash-index` tables which are not `-v3`;
+                                            * PAdES : Fix final image position computation when using the `ImageScaling.CENTER` with an image+text combination;
+                                            * TL signature may be validated successfully against CA certificate;
+                                            * TrustAnchorBPPolicy does not include signing-certificate when trusted;
+                                            * Make `CertificateToken.checkIsSignedBy` thread safe;
+                                            * Fixed eSignature validation tests for empty or corrupted documents.
 
 |v6.4              |March 2026             a|Main new features / improvements :
 
