@@ -14,8 +14,8 @@
 |v6.5.RC1          |July 2026              a|Main new features / improvements :
 
                                             * Creation and validation of CB-AdES signatures (ETSI TS 119 152-1 <<R41>>);
-                                            * Creation of Electronic Attestation of Attribute Presentations (EAAP) in SD-JWT VC <<R36>> & ISO/IEC-mdoc <<R38>>;
-                                            * Validation of Electronic Attestation of Attribute Presentations (EAA) based in SD-JWT VC <<R36>> and ISO/IEC-mdoc <<R38>> as per ETSI TS 119-472-1 <<R34>>;
+                                            * Creation of Electronic Attestation of Attribute Presentations (EAAP) on SD-JWT VC <<R36>> & ISO/IEC-mdoc <<R38>>;
+                                            * Validation of Electronic Attestation of Attributes (EAA) based on SD-JWT VC <<R36>> and ISO/IEC-mdoc <<R38>> as per ETSI TS 119-472-1 <<R34>>;
                                             * EAA Qualification validation (QEAA, PuB-EAA, PID);
                                             * EAA revocation verification (Token Status List, Identifiers List);
                                             * Introduce generic validation job module for a document validation;
@@ -33,7 +33,8 @@
                                             * Demos : New page for CB-AdES signature creation;
                                             * Demos : New page in the webapp for validation of EAAs;
                                             * Demos : OJEU keystore update;
-                                            * Demos : Webapp upgraded to Spring-Boot 4.
+                                            * Demos : Webapp upgraded to Spring-Boot 4;
+                                            * Java 26 support.
 
 Bug fixes:
 

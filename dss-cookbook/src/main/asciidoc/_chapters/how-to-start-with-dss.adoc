@@ -19,7 +19,7 @@ This section explains the usage and build requirements for https://github.com/es
 
 The latest version of DSS framework has the following minimal requirements:
 
-* Java 8 or higher (tested up to Java 25) is required for usage;
+* Java 8 or higher (tested up to Java 26) is required for usage;
 * Java 11 or higher is required for the build. Java 15 is the minimal requirement for a build with unit tests;
 * Maven 3.6.3 and higher (if build required);
 * Memory and Disk: see minimal requirements for the used JVM. In general the higher available is better;
@@ -176,7 +176,7 @@ This section explains the build and use requirements for the https://github.com/
 
 The minimal requirements to build/run DSS Demonstrations:
 
-* Java 17 or higher (tested up to Java 25) is required;
+* Java 17 or higher (tested up to Java 26) is required;
 * Maven 3.6 or higher (if build required);
 * Tomcat 10 or higher (for Web-application);
 * Memory and Disk: see minimal requirements for the used JVM. In general the highest available is the best;
@@ -246,7 +246,7 @@ mvn clean install -P jar
 
 If you continue with a default `war` packaging option, you may benefit from `dss-demo-bundle` module, encapsulating the created package within a Tomcat 11 bundle. After a successful build, in the directory `/dss-demo-bundle/target/` you will be able to find two containers: `dss-demo-bundle.zip` and `dss-demo-bundle.tar.gz`. Despite the different container type, the content of both containers is the same. After extracting the content, you will need to run the file `Webapp-Startup.bat` in order to launch the server and the file `Webapp-Shutdown.bat` to stop the server. After running the server, the web-application will be available at the address `http://localhost:8080/`.
 
-NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 25. For other possibilities, please see options below in this section.
+NOTE: By default, the `dss-demo-bundle` module will create a bundle with embedded JDK 26. For other possibilities, please see options below in this section.
 
 If during TL/LOTL loading you experience problems with some particular Trusted Lists, please refer the <<KeyStore>> chapter for a resolution.
 
@@ -268,6 +268,13 @@ DSS webapp version with JDK 21 can be created with a command below:
 .Maven command to create a JDK 21 bundle
 ----
 mvn clean install -P java21
+----
+
+DSS webapp version with JDK 25 can be created with a command below:
+
+.Maven command to create a JDK 25 bundle
+----
+mvn clean install -P java25
 ----
 
 ====== Integration tests
