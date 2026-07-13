@@ -127,6 +127,12 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 
 		SignatureImageParameters imageParameters = parameters.getImageParameters();
 		if (!imageParameters.getAdditionalFieldParameters().isEmpty()) {
+			// Multi-widget signatures are not supported by the OpenPDF implementation. OpenPDF's
+			// PdfSignatureAppearance creates the signature field and its single widget inside preClose(), and
+			// the signed /ByteRange is fixed at that point, so additional widgets (/Kids) cannot be attached to
+			// the field within the single-pass signing flow. A future implementation would require a different,
+			// two-revision approach (create the empty multi-widget field, then sign it). Use the PDFBox
+			// implementation, which fully supports multi-widget signatures.
 			throw new UnsupportedOperationException(
 					"Multi-widget signatures (additional signature field widgets) are not supported by the OpenPDF "
 							+ "implementation. Please use the PDFBox implementation instead.");
