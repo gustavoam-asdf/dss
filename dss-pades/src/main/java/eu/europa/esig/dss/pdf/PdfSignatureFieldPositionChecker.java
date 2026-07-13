@@ -120,6 +120,60 @@ public class PdfSignatureFieldPositionChecker {
     }
 
     /**
+     * This method verifies whether all provided {@code annotationBoxes} (widgets of the same signature) can be
+     * placed within {@code documentReader} on their respective {@code pageNumbers}. In addition to the checks
+     * performed by {@code #assertSignatureFieldPositionValid} for each box, it verifies that the widgets of the
+     * same signature do not overlap between each other.
+     *
+     * @param documentReader {@link PdfDocumentReader} document to create the new signature field in
+     * @param annotationBoxes a list of {@link AnnotationBox} representing the signature field widgets to be created
+     * @param pageNumbers a list of page numbers, one per {@code annotationBox} (same order and size)
+     */
+    public void assertSignatureFieldsPositionValid(PdfDocumentReader documentReader, List<AnnotationBox> annotationBoxes,
+                                                   List<Integer> pageNumbers) {
+        if (annotationBoxes.size() != pageNumbers.size()) {
+            throw new IllegalArgumentException("The number of annotation boxes shall match the number of page numbers!");
+        }
+        for (int i = 0; i < annotationBoxes.size(); i++) {
+            assertSignatureFieldPositionValid(documentReader, annotationBoxes.get(i), pageNumbers.get(i));
+        }
+        checkSignatureFieldWidgetsOverlap(annotationBoxes, pageNumbers);
+    }
+
+    /**
+     * This method verifies whether any two widgets of the same signature placed on the same page overlap
+     *
+     * @param annotationBoxes a list of {@link AnnotationBox} representing the signature field widgets to verify
+     * @param pageNumbers a list of page numbers, one per {@code annotationBox}
+     */
+    protected void checkSignatureFieldWidgetsOverlap(List<AnnotationBox> annotationBoxes, List<Integer> pageNumbers) {
+        for (int i = 0; i < annotationBoxes.size(); i++) {
+            AnnotationBox boxI = annotationBoxes.get(i);
+            if (boxI.getWidth() == 0 || boxI.getHeight() == 0) {
+                // invisible widget
+                continue;
+            }
+            for (int j = i + 1; j < annotationBoxes.size(); j++) {
+                if (pageNumbers.get(i).equals(pageNumbers.get(j))) {
+                    AnnotationBox boxJ = annotationBoxes.get(j);
+                    if (boxJ.getWidth() != 0 && boxJ.getHeight() != 0 && boxI.isOverlap(boxJ)) {
+                        alertOnSignatureFieldWidgetsOverlap();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Executes the alert {@code alertOnSignatureFieldOverlap} for a self-overlap between widgets of the same signature
+     */
+    private void alertOnSignatureFieldWidgetsOverlap() {
+        MessageStatus status = new MessageStatus();
+        status.setMessage("Two signature field widgets of the same signature overlap!");
+        alertOnSignatureFieldOverlap.alert(status);
+    }
+
+    /**
      * This method verifies whether the {@code signatureFieldBox} overlaps
      * with one of the extracted {@code pdfAnnotations}
      *

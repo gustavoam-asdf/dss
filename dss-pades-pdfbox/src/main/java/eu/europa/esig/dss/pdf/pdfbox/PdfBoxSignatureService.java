@@ -227,25 +227,38 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 			options.setPreferredSignatureSize(parameters.getContentSize());
 
 			SignatureImageParameters imageParameters = parameters.getImageParameters();
+			boolean multiWidget = Utils.isCollectionNotEmpty(imageParameters.getAdditionalFieldParameters());
+			PdfBoxSignatureDrawer signatureDrawer = null;
 			if (!imageParameters.isEmpty()) {
-				PdfBoxSignatureDrawer signatureDrawer = (PdfBoxSignatureDrawer) loadSignatureDrawer(imageParameters);
+				signatureDrawer = (PdfBoxSignatureDrawer) loadSignatureDrawer(imageParameters);
 				signatureDrawer.init(imageParameters, pdDocument, options);
 				if (signatureDrawer instanceof NativePdfBoxVisibleSignatureDrawer) {
 					((NativePdfBoxVisibleSignatureDrawer) signatureDrawer).setResourcesHandlerBuilder(resourcesHandlerBuilder);
 				}
-				
+
 				if (pdSignatureField == null) {
-					// check signature field position only for new annotations
-					getVisibleSignatureFieldBoxPosition(signatureDrawer, documentReader, fieldParameters);
+					// check signature field position only for new annotations (primary + additional widgets)
+					assertSignatureFieldsPositionValid(signatureDrawer, documentReader, imageParameters);
+				} else if (multiWidget) {
+					throw new IllegalArgumentException(
+							"Additional signature field widgets are not supported when signing an existing signature field!");
 				}
 
 				int page = fieldParameters.getPage();
 				options.setPage(page - ImageUtils.DEFAULT_FIRST_PAGE); // DSS-1138
-				
+
 				signatureDrawer.draw();
+
+			} else if (multiWidget) {
+				throw new IllegalArgumentException(
+						"Additional signature field widgets require a visible signature (image or text parameters)!");
 			}
 
 			pdDocument.addSignature(pdSignature, signatureInterface, options);
+
+			if (multiWidget) {
+				addAdditionalWidgets(pdDocument, pdSignature, signatureDrawer, imageParameters);
+			}
 
 			// the document needs to have an ID, if not the current system time is used, 
 			// and then the digest of the signed data will be different
@@ -295,6 +308,136 @@ public class PdfBoxSignatureService extends AbstractPDFSignatureService {
 			PDAcroForm acroForm = pdDocument.getDocumentCatalog().getAcroForm();
 			if (acroForm != null) {
 				return acroForm.getField(fieldId);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Adds the additional widgets of a multi-widget signature to the signature field created for {@code pdSignature}.
+	 * The signature field (merged with its primary widget by PDFBox) is first converted to a field with a /Kids
+	 * array, then a widget is added for each additional field, sharing the same signature value and the same visual
+	 * appearance as the primary widget (differing only in position, dimensions, page and rotation).
+	 *
+	 * @param pdDocument {@link PDDocument} document being signed
+	 * @param pdSignature {@link PDSignature} signature dictionary of the created signature
+	 * @param signatureDrawer {@link PdfBoxSignatureDrawer} used to build the shared visual appearance
+	 * @param imageParameters {@link SignatureImageParameters} defining the primary and additional fields
+	 * @throws IOException if an exception occurs
+	 */
+	private void addAdditionalWidgets(PDDocument pdDocument, PDSignature pdSignature, PdfBoxSignatureDrawer signatureDrawer,
+									  SignatureImageParameters imageParameters) throws IOException {
+		if (signatureDrawer == null) {
+			throw new IllegalArgumentException(
+					"Additional signature field widgets require a visible signature (image or text parameters)!");
+		}
+		PDSignatureField signatureField = findSignatureFieldByValue(pdDocument, pdSignature);
+		if (signatureField == null) {
+			throw new DSSException("Unable to find the created signature field to add additional widgets to!");
+		}
+
+		COSDictionary fieldDictionary = signatureField.getCOSObject();
+		int primaryPage = imageParameters.getFieldParameters().getPage();
+
+		// Convert the merged field/widget into a field with a /Kids array holding the primary widget
+		COSArray kids = splitMergedFieldWidget(pdDocument, fieldDictionary, primaryPage);
+
+		for (SignatureFieldParameters additionalFieldParameters : imageParameters.getAdditionalFieldParameters()) {
+			AnnotationBox annotationBox = buildSignatureFieldBox(signatureDrawer, additionalFieldParameters);
+			if (annotationBox == null) {
+				throw new DSSException("Unable to compute the position of an additional signature field widget!");
+			}
+			PDAppearanceDictionary appearance = signatureDrawer.buildWidgetAppearance(pdDocument, additionalFieldParameters);
+
+			PDPage page = pdDocument.getPage(additionalFieldParameters.getPage() - ImageUtils.DEFAULT_FIRST_PAGE);
+			PDRectangle rect = new PDRectangle(annotationBox.getMinX(), annotationBox.getMinY(),
+					annotationBox.getWidth(), annotationBox.getHeight());
+
+			PDAnnotationWidget widget = new PDAnnotationWidget();
+			widget.setRectangle(rect);
+			widget.setPage(page);
+			widget.setAppearance(appearance);
+			widget.setPrinted(true);
+			COSDictionary widgetDictionary = widget.getCOSObject();
+			widgetDictionary.setItem(COSName.PARENT, fieldDictionary);
+
+			kids.add(widgetDictionary);
+			page.getAnnotations().add(widget);
+
+			widgetDictionary.setNeedToBeUpdated(true);
+			page.getCOSObject().setNeedToBeUpdated(true);
+			COSArray annots = page.getCOSObject().getCOSArray(COSName.ANNOTS);
+			if (annots != null) {
+				annots.setNeedToBeUpdated(true);
+			}
+		}
+
+		kids.setNeedToBeUpdated(true);
+		fieldDictionary.setNeedToBeUpdated(true);
+	}
+
+	/**
+	 * Converts a merged signature field/widget dictionary into a field with a /Kids array containing a single
+	 * separate widget (the primary widget), as required by the PDF specification when a field has multiple widgets.
+	 *
+	 * @param pdDocument {@link PDDocument} document being signed
+	 * @param fieldDictionary {@link COSDictionary} of the (merged) signature field
+	 * @param primaryPage the page number (1-based) of the primary widget
+	 * @return {@link COSArray} the created /Kids array (already containing the primary widget)
+	 */
+	private COSArray splitMergedFieldWidget(PDDocument pdDocument, COSDictionary fieldDictionary, int primaryPage) {
+		COSDictionary widgetDictionary = new COSDictionary();
+		widgetDictionary.setItem(COSName.TYPE, COSName.ANNOT);
+		widgetDictionary.setItem(COSName.SUBTYPE, COSName.WIDGET);
+		// move the widget-specific entries from the merged field dictionary to the separate widget
+		moveItem(fieldDictionary, widgetDictionary, COSName.RECT);
+		moveItem(fieldDictionary, widgetDictionary, COSName.AP);
+		moveItem(fieldDictionary, widgetDictionary, COSName.AS);
+		moveItem(fieldDictionary, widgetDictionary, COSName.P);
+		moveItem(fieldDictionary, widgetDictionary, COSName.F);
+		moveItem(fieldDictionary, widgetDictionary, COSName.MK);
+		moveItem(fieldDictionary, widgetDictionary, COSName.BS);
+		moveItem(fieldDictionary, widgetDictionary, COSName.getPDFName("Border"));
+		// the field itself is no longer a widget
+		fieldDictionary.removeItem(COSName.SUBTYPE);
+		widgetDictionary.setItem(COSName.PARENT, fieldDictionary);
+
+		// replace the merged widget reference by the separate widget in the primary page annotations
+		PDPage page = pdDocument.getPage(primaryPage - ImageUtils.DEFAULT_FIRST_PAGE);
+		COSArray annots = page.getCOSObject().getCOSArray(COSName.ANNOTS);
+		if (annots != null) {
+			for (int i = 0; i < annots.size(); i++) {
+				if (annots.getObject(i) == fieldDictionary) {
+					annots.set(i, widgetDictionary);
+					break;
+				}
+			}
+			annots.setNeedToBeUpdated(true);
+		}
+
+		COSArray kids = new COSArray();
+		kids.add(widgetDictionary);
+		fieldDictionary.setItem(COSName.KIDS, kids);
+
+		widgetDictionary.setNeedToBeUpdated(true);
+		fieldDictionary.setNeedToBeUpdated(true);
+		page.getCOSObject().setNeedToBeUpdated(true);
+		return kids;
+	}
+
+	private void moveItem(COSDictionary source, COSDictionary target, COSName key) {
+		COSBase value = source.getItem(key);
+		if (value != null) {
+			target.setItem(key, value);
+			source.removeItem(key);
+		}
+	}
+
+	private PDSignatureField findSignatureFieldByValue(final PDDocument pdDocument, final PDSignature pdSignature) {
+		for (PDSignatureField signatureField : pdDocument.getSignatureFields()) {
+			PDSignature signature = signatureField.getSignature();
+			if (signature != null && signature.getCOSObject() == pdSignature.getCOSObject()) {
+				return signatureField;
 			}
 		}
 		return null;

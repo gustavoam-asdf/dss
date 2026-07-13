@@ -126,6 +126,11 @@ public class ITextPDFSignatureService extends AbstractPDFSignatureService {
 		sap.setAcro6Layers(true);
 
 		SignatureImageParameters imageParameters = parameters.getImageParameters();
+		if (!imageParameters.getAdditionalFieldParameters().isEmpty()) {
+			throw new UnsupportedOperationException(
+					"Multi-widget signatures (additional signature field widgets) are not supported by the OpenPDF "
+							+ "implementation. Please use the PDFBox implementation instead.");
+		}
 		SignatureFieldParameters fieldParameters = imageParameters.getFieldParameters();
 
 		Item fieldItem = findExistingSignatureField(reader, fieldParameters);

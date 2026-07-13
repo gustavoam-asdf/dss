@@ -21,13 +21,22 @@
 package eu.europa.esig.dss.pdf.pdfbox.visible.defaultdrawer;
 
 import eu.europa.esig.dss.pades.DSSFont;
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pdf.AnnotationBox;
+import eu.europa.esig.dss.pdf.pdfbox.PdfBoxUtils;
 import eu.europa.esig.dss.pdf.pdfbox.visible.AbstractPdfBoxSignatureDrawer;
 import eu.europa.esig.dss.pdf.visible.ImageUtils;
 import eu.europa.esig.dss.pdf.visible.SignatureFieldDimensionAndPosition;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
 
@@ -96,6 +105,39 @@ public class DefaultPdfBoxVisibleSignatureDrawer extends AbstractPdfBoxSignature
 		signatureProperties.buildSignature();
 
 		signatureOptions.setVisualSignature(signatureProperties);
+	}
+
+	@Override
+	public PDAppearanceDictionary buildWidgetAppearance(PDDocument targetDocument, SignatureFieldParameters fieldParameters)
+			throws IOException {
+		SignatureFieldDimensionAndPosition dimensionAndPosition = buildSignatureFieldBox(fieldParameters);
+
+		BufferedImage image = null;
+		BufferedImage textImage = null;
+		if (parameters.getImage() != null) {
+			image = DefaultImageDrawerUtils.toBufferedImage(parameters.getImage());
+		}
+		if (parameters.getTextParameters() != null && !parameters.getTextParameters().isEmpty()) {
+			textImage = DefaultImageDrawerUtils.createTextImage(parameters, dimensionAndPosition, getDSSFontMetrics());
+		}
+		if (image == null && textImage == null) {
+			throw new IllegalArgumentException("Image or text shall be defined in order to build a visual signature!");
+		}
+
+		BufferedImage bufferedImage = DefaultImageDrawerUtils.mergeImages(image, textImage, dimensionAndPosition, parameters);
+		bufferedImage = DefaultImageDrawerUtils.rotate(bufferedImage, dimensionAndPosition.getGlobalRotation());
+
+		AnnotationBox annotationBox = dimensionAndPosition.getAnnotationBox();
+		PDRectangle rectangle = new PDRectangle(annotationBox.getMinX(), annotationBox.getMinY(),
+				annotationBox.getWidth(), annotationBox.getHeight());
+
+		PDAppearanceDictionary appearance = PdfBoxUtils.createSignatureAppearanceDictionary(targetDocument, rectangle);
+		PDAppearanceStream appearanceStream = appearance.getNormalAppearance().getAppearanceStream();
+		PDImageXObject imageXObject = LosslessFactory.createFromImage(targetDocument, bufferedImage);
+		try (PDPageContentStream cs = new PDPageContentStream(targetDocument, appearanceStream)) {
+			cs.drawImage(imageXObject, 0, 0, annotationBox.getWidth(), annotationBox.getHeight());
+		}
+		return appearance;
 	}
 
 	@Override

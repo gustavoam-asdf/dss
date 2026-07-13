@@ -20,6 +20,8 @@
  */
 package eu.europa.esig.dss.pdf.visible;
 
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
+
 import java.io.IOException;
 
 /**
@@ -28,13 +30,28 @@ import java.io.IOException;
  *
  */
 public interface SignatureFieldBoxBuilder {
-	
+
 	/**
 	 * Builds a {@code SignatureFieldBox}, defining signature field position and dimension
-	 * 
+	 *
 	 * @return {@link VisualSignatureFieldAppearance}
 	 * @throws IOException if an exception occurs
 	 */
 	VisualSignatureFieldAppearance buildSignatureFieldBox() throws IOException;
+
+	/**
+	 * Builds a {@code SignatureFieldBox} for the given {@code fieldParameters}, defining position and dimension
+	 * of a specific widget of a multi-widget signature. The visual appearance (image, text, ...) is shared with
+	 * the primary field; only position, dimensions, page and rotation of {@code fieldParameters} are used.
+	 * <p>
+	 * The default implementation ignores {@code fieldParameters} and delegates to {@code #buildSignatureFieldBox()}.
+	 *
+	 * @param fieldParameters {@link SignatureFieldParameters} defining the widget position and dimensions
+	 * @return {@link VisualSignatureFieldAppearance}
+	 * @throws IOException if an exception occurs
+	 */
+	default VisualSignatureFieldAppearance buildSignatureFieldBox(SignatureFieldParameters fieldParameters) throws IOException {
+		return buildSignatureFieldBox();
+	}
 
 }

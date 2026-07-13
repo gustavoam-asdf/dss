@@ -865,9 +865,26 @@ public abstract class AbstractPDFSignatureService implements PDFSignatureService
 	 * @throws IOException if an exception occurs
 	 */
 	protected AnnotationBox buildSignatureFieldBox(SignatureDrawer signatureDrawer) throws IOException {
+		return buildSignatureFieldBox(signatureDrawer, null);
+	}
+
+	/**
+	 * Returns a SignatureFieldBox for the given {@code fieldParameters}. Used for a SignatureField position
+	 * validation of a specific widget of a multi-widget signature. When {@code fieldParameters} is null, the
+	 * primary field box is built.
+	 *
+	 * @param signatureDrawer {@link SignatureDrawer}
+	 * @param fieldParameters {@link SignatureFieldParameters} of the targeted widget, or null for the primary field
+	 * @return {@link AnnotationBox}
+	 * @throws IOException if an exception occurs
+	 */
+	protected AnnotationBox buildSignatureFieldBox(SignatureDrawer signatureDrawer,
+												   SignatureFieldParameters fieldParameters) throws IOException {
 		if (signatureDrawer instanceof SignatureFieldBoxBuilder) {
 			SignatureFieldBoxBuilder signatureFieldBoxBuilder = (SignatureFieldBoxBuilder) signatureDrawer;
-			VisualSignatureFieldAppearance signatureFieldBox = signatureFieldBoxBuilder.buildSignatureFieldBox();
+			VisualSignatureFieldAppearance signatureFieldBox = fieldParameters == null
+					? signatureFieldBoxBuilder.buildSignatureFieldBox()
+					: signatureFieldBoxBuilder.buildSignatureFieldBox(fieldParameters);
 			if (signatureFieldBox != null) {
 				return signatureFieldBox.getAnnotationBox();
 			}
@@ -877,6 +894,38 @@ public abstract class AbstractPDFSignatureService implements PDFSignatureService
 					+ "in order to verify a SignatureField position!");
 		}
 		return null;
+	}
+
+	/**
+	 * Checks validity of the positions of all widgets of a (multi-widget) signature: the primary field defined in
+	 * {@code imageParameters} plus its additional fields. Verifies each widget against the page dimensions and the
+	 * existing annotations, and verifies that the widgets of the same signature do not overlap between each other.
+	 *
+	 * @param signatureDrawer {@link SignatureDrawer}
+	 * @param documentReader  {@link PdfDocumentReader}
+	 * @param imageParameters {@link SignatureImageParameters} defining the primary and additional fields
+	 * @throws IOException if an exception occurs
+	 */
+	protected void assertSignatureFieldsPositionValid(SignatureDrawer signatureDrawer, PdfDocumentReader documentReader,
+													  SignatureImageParameters imageParameters) throws IOException {
+		List<AnnotationBox> annotationBoxes = new ArrayList<>();
+		List<Integer> pageNumbers = new ArrayList<>();
+		collectSignatureFieldBox(annotationBoxes, pageNumbers, signatureDrawer, imageParameters.getFieldParameters());
+		for (SignatureFieldParameters additionalFieldParameters : imageParameters.getAdditionalFieldParameters()) {
+			collectSignatureFieldBox(annotationBoxes, pageNumbers, signatureDrawer, additionalFieldParameters);
+		}
+		if (!annotationBoxes.isEmpty()) {
+			pdfSignatureFieldPositionChecker.assertSignatureFieldsPositionValid(documentReader, annotationBoxes, pageNumbers);
+		}
+	}
+
+	private void collectSignatureFieldBox(List<AnnotationBox> annotationBoxes, List<Integer> pageNumbers,
+										  SignatureDrawer signatureDrawer, SignatureFieldParameters fieldParameters) throws IOException {
+		AnnotationBox annotationBox = buildSignatureFieldBox(signatureDrawer, fieldParameters);
+		if (annotationBox != null) {
+			annotationBoxes.add(annotationBox);
+			pageNumbers.add(fieldParameters.getPage());
+		}
 	}
 
 	/**

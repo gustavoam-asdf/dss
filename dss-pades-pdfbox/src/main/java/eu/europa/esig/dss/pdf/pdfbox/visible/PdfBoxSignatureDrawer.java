@@ -20,9 +20,11 @@
  */
 package eu.europa.esig.dss.pdf.pdfbox.visible;
 
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pdf.visible.SignatureDrawer;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 
 import java.io.IOException;
@@ -34,12 +36,27 @@ public interface PdfBoxSignatureDrawer extends SignatureDrawer {
 
 	/**
 	 * Initializes the drawer
-	 * 
+	 *
 	 * @param parameters {@link SignatureImageParameters}
 	 * @param document {@link PDDocument}
 	 * @param signatureOptions {@link SignatureOptions}
 	 * @throws IOException if an exception occurs
 	 */
 	void init(SignatureImageParameters parameters, PDDocument document, SignatureOptions signatureOptions) throws IOException;
+
+	/**
+	 * Builds a normal appearance dictionary for an additional widget of a multi-widget signature, drawing the
+	 * shared visual appearance (image, text, ...) directly into {@code targetDocument} for the position and
+	 * dimensions defined by {@code fieldParameters}.
+	 * <p>
+	 * Unlike {@code #draw()} (which builds the primary widget through {@code SignatureOptions}), this method
+	 * creates the appearance stream inside the target document so that it can be attached to an additional widget.
+	 *
+	 * @param targetDocument {@link PDDocument} document being signed, where the appearance stream is created
+	 * @param fieldParameters {@link SignatureFieldParameters} defining the widget position and dimensions
+	 * @return {@link PDAppearanceDictionary} the built appearance dictionary
+	 * @throws IOException if an exception occurs
+	 */
+	PDAppearanceDictionary buildWidgetAppearance(PDDocument targetDocument, SignatureFieldParameters fieldParameters) throws IOException;
 
 }

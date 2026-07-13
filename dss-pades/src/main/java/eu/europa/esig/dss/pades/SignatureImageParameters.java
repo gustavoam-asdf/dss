@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -57,7 +59,19 @@ public class SignatureImageParameters implements Serializable {
 	 * This variable defines a {@code SignatureFieldParameters} like field positions and dimensions
 	 */
 	private SignatureFieldParameters fieldParameters;
-        
+
+	/**
+	 * This variable defines additional {@code SignatureFieldParameters} used to display the same visual
+	 * signature in multiple positions and/or pages within the same signature (multi-widget signature).
+	 * <p>
+	 * Each entry defines an additional widget sharing the same signature value and the same visual appearance
+	 * (image, text, ...) as the primary {@code fieldParameters}, differing only in position, dimensions,
+	 * page and rotation. The {@code fieldId} of an additional field is ignored (a signature field has a single id).
+	 * <p>
+	 * NOTE: multi-widget signatures are currently supported only by the PDFBox implementation.
+	 */
+	private List<SignatureFieldParameters> additionalFieldParameters;
+
 	/**
 	 * This variable defines a percent to zoom the image (100% means no scaling).
 	 * Note: This do not touch zooming of the text representation.
@@ -118,6 +132,26 @@ public class SignatureImageParameters implements Serializable {
 	}
 
 	/**
+	 * Copy constructor. Creates a shallow copy of the given {@code SignatureImageParameters}, copying every
+	 * appearance-related property. The {@code additionalFieldParameters} list is copied into a new list.
+	 *
+	 * @param original {@link SignatureImageParameters} to copy
+	 */
+	public SignatureImageParameters(SignatureImageParameters original) {
+		this.image = original.image;
+		this.fieldParameters = original.fieldParameters;
+		this.additionalFieldParameters = new ArrayList<>(original.getAdditionalFieldParameters());
+		this.zoom = original.zoom;
+		this.backgroundColor = original.backgroundColor;
+		this.dpi = original.dpi;
+		this.legacyDPIHandling = original.legacyDPIHandling;
+		this.alignmentHorizontal = original.alignmentHorizontal;
+		this.alignmentVertical = original.alignmentVertical;
+		this.imageScaling = original.imageScaling;
+		this.textParameters = original.textParameters;
+	}
+
+	/**
 	 * Returns a {@code DSSDocument} image defined for displaying on the signature field
 	 *
 	 * @return {@link DSSDocument} image
@@ -157,6 +191,46 @@ public class SignatureImageParameters implements Serializable {
 	 */
 	public void setFieldParameters(SignatureFieldParameters fieldParameters) {
 		this.fieldParameters = fieldParameters;
+	}
+
+	/**
+	 * Returns a list of additional {@code SignatureFieldParameters} used to display the same visual signature
+	 * in multiple positions/pages within the same signature (multi-widget signature).
+	 * <p>
+	 * The returned list never contains the primary field (see {@code #getFieldParameters()}).
+	 *
+	 * @return a list of additional {@link SignatureFieldParameters} (never {@code null})
+	 */
+	public List<SignatureFieldParameters> getAdditionalFieldParameters() {
+		if (additionalFieldParameters == null) {
+			additionalFieldParameters = new ArrayList<>();
+		}
+		return additionalFieldParameters;
+	}
+
+	/**
+	 * Sets a list of additional {@code SignatureFieldParameters}, allowing to display the same visual signature
+	 * in multiple positions/pages within the same signature (multi-widget signature).
+	 * <p>
+	 * Each additional field shares the same visual appearance as the primary {@code fieldParameters} and differs
+	 * only in position, dimensions, page and rotation. The {@code fieldId} of an additional field is ignored.
+	 * <p>
+	 * NOTE: multi-widget signatures are currently supported only by the PDFBox implementation.
+	 *
+	 * @param additionalFieldParameters a list of additional {@link SignatureFieldParameters}
+	 */
+	public void setAdditionalFieldParameters(List<SignatureFieldParameters> additionalFieldParameters) {
+		this.additionalFieldParameters = additionalFieldParameters;
+	}
+
+	/**
+	 * Adds an additional {@code SignatureFieldParameters} to display the same visual signature in an additional
+	 * position/page within the same signature (multi-widget signature).
+	 *
+	 * @param fieldParameters {@link SignatureFieldParameters} to add
+	 */
+	public void addFieldParameters(SignatureFieldParameters fieldParameters) {
+		getAdditionalFieldParameters().add(fieldParameters);
 	}
 
 	/**
@@ -341,6 +415,7 @@ public class SignatureImageParameters implements Serializable {
 		return "SignatureImageParameters [" +
 				"image=" + image +
 				", fieldParameters=" + fieldParameters +
+				", additionalFieldParameters=" + getAdditionalFieldParameters() +
 				", zoom=" + zoom +
 				", backgroundColor=" + backgroundColor +
 				", dpi=" + dpi +
@@ -360,6 +435,7 @@ public class SignatureImageParameters implements Serializable {
 		return zoom == that.zoom
 				&& Objects.equals(image, that.image)
 				&& Objects.equals(fieldParameters, that.fieldParameters)
+				&& Objects.equals(getAdditionalFieldParameters(), that.getAdditionalFieldParameters())
 				&& Objects.equals(backgroundColor, that.backgroundColor)
 				&& Objects.equals(dpi, that.dpi)
 				&& alignmentHorizontal == that.alignmentHorizontal
@@ -372,6 +448,7 @@ public class SignatureImageParameters implements Serializable {
 	public int hashCode() {
 		int result = Objects.hashCode(image);
 		result = 31 * result + Objects.hashCode(fieldParameters);
+		result = 31 * result + Objects.hashCode(getAdditionalFieldParameters());
 		result = 31 * result + zoom;
 		result = 31 * result + Objects.hashCode(backgroundColor);
 		result = 31 * result + Objects.hashCode(dpi);

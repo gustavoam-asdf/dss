@@ -24,6 +24,7 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.pades.DSSFileFont;
 import eu.europa.esig.dss.pades.DSSFont;
 import eu.europa.esig.dss.pades.PAdESUtils;
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.SignatureImageTextParameters;
 import eu.europa.esig.dss.pdf.AnnotationBox;
@@ -180,6 +181,23 @@ public class NativePdfBoxVisibleSignatureDrawer extends AbstractPdfBoxSignatureD
 			}
 
 		}
+	}
+
+	@Override
+	public PDAppearanceDictionary buildWidgetAppearance(PDDocument targetDocument, SignatureFieldParameters fieldParameters)
+			throws IOException {
+		SignatureFieldDimensionAndPosition dimensionAndPosition = buildSignatureFieldBox(fieldParameters);
+		PDRectangle rectangle = getPdRectangle(dimensionAndPosition);
+
+		PDAppearanceDictionary appearance = PdfBoxUtils.createSignatureAppearanceDictionary(targetDocument, rectangle);
+		PDAppearanceStream appearanceStream = appearance.getNormalAppearance().getAppearanceStream();
+		try (PDPageContentStream cs = new PDPageContentStream(targetDocument, appearanceStream)) {
+			rotateSignature(cs, rectangle, dimensionAndPosition);
+			setFieldBackground(cs, parameters.getBackgroundColor());
+			setText(cs, dimensionAndPosition, parameters);
+			setImage(cs, targetDocument, dimensionAndPosition, parameters.getImage());
+		}
+		return appearance;
 	}
 
 	private void rotateSignature(PDPageContentStream cs, PDRectangle rectangle,

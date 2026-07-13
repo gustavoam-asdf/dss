@@ -20,6 +20,7 @@
  */
 package eu.europa.esig.dss.pdf.pdfbox.visible;
 
+import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pdf.AnnotationBox;
 import eu.europa.esig.dss.pdf.visible.DSSFontMetrics;
@@ -93,19 +94,60 @@ public abstract class AbstractPdfBoxSignatureDrawer implements PdfBoxSignatureDr
 	 * @return {@link SignatureFieldDimensionAndPosition}
 	 */
 	public SignatureFieldDimensionAndPosition buildSignatureFieldBox() {
-		PDPage originalPage = getPage();
+		return buildSignatureFieldBox(parameters.getFieldParameters());
+	}
+
+	/**
+	 * Builds a signature field dimension and position object for the given {@code fieldParameters}, used to
+	 * position an additional widget of a multi-widget signature. The visual appearance is shared with the primary
+	 * field; only position, dimensions, page and rotation of {@code fieldParameters} are taken into account.
+	 *
+	 * @param fieldParameters {@link SignatureFieldParameters} defining the widget position and dimensions
+	 * @return {@link SignatureFieldDimensionAndPosition}
+	 */
+	@Override
+	public SignatureFieldDimensionAndPosition buildSignatureFieldBox(SignatureFieldParameters fieldParameters) {
+		SignatureImageParameters imageParameters = getImageParametersForField(fieldParameters);
+		PDPage originalPage = getPage(fieldParameters);
 		AnnotationBox pageBox = getPageAnnotationBox(originalPage);
-		return new SignatureFieldDimensionAndPositionBuilder(parameters, getDSSFontMetrics(), pageBox,
+		return new SignatureFieldDimensionAndPositionBuilder(imageParameters, getDSSFontMetrics(), pageBox,
 				originalPage.getRotation()).setSignatureFieldAnnotationBox(getSignatureFieldAnnotationBox()).build();
 	}
 
 	/**
-	 * Gets the page to create a new signature field in
+	 * Returns the {@code SignatureImageParameters} to use for building a widget box. Returns the drawer's
+	 * parameters unchanged for the primary field, or a shallow copy with the field parameters replaced for
+	 * an additional field (so the shared appearance is preserved without mutating the original parameters).
+	 *
+	 * @param fieldParameters {@link SignatureFieldParameters} of the targeted widget
+	 * @return {@link SignatureImageParameters}
+	 */
+	private SignatureImageParameters getImageParametersForField(SignatureFieldParameters fieldParameters) {
+		if (fieldParameters == parameters.getFieldParameters()) {
+			return parameters;
+		}
+		SignatureImageParameters imageParameters = new SignatureImageParameters(parameters);
+		imageParameters.setFieldParameters(fieldParameters);
+		return imageParameters;
+	}
+
+	/**
+	 * Gets the page to create the primary signature field in
 	 *
 	 * @return {@link PDPage}
 	 */
 	protected PDPage getPage() {
-		return document.getPage(parameters.getFieldParameters().getPage() - ImageUtils.DEFAULT_FIRST_PAGE);
+		return getPage(parameters.getFieldParameters());
+	}
+
+	/**
+	 * Gets the page to create a signature field widget in, for the given {@code fieldParameters}
+	 *
+	 * @param fieldParameters {@link SignatureFieldParameters} of the targeted widget
+	 * @return {@link PDPage}
+	 */
+	protected PDPage getPage(SignatureFieldParameters fieldParameters) {
+		return document.getPage(fieldParameters.getPage() - ImageUtils.DEFAULT_FIRST_PAGE);
 	}
 
 	/**
