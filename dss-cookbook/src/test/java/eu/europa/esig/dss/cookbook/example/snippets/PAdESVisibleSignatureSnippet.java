@@ -139,6 +139,40 @@ public class PAdESVisibleSignatureSnippet {
 		
 	}
 
+	public void multipleWidgets() {
+
+		// tag::multiWidget[]
+		// import eu.europa.esig.dss.pades.SignatureImageParameters;
+		// import eu.europa.esig.dss.pades.SignatureFieldParameters;
+
+		SignatureImageParameters imageParameters = new SignatureImageParameters();
+		// ... define the visual appearance (image and/or text) as usual ...
+
+		// The primary field defines the first widget (position, dimensions, page and rotation).
+		SignatureFieldParameters primaryField = new SignatureFieldParameters();
+		primaryField.setPage(1);
+		primaryField.setOriginX(50);
+		primaryField.setOriginY(50);
+		primaryField.setWidth(100);
+		primaryField.setHeight(50);
+		imageParameters.setFieldParameters(primaryField);
+
+		// Additional fields make the SAME signature (a single signature value) appear in other
+		// positions and/or pages, through several widgets. Each additional widget shares the same
+		// visual appearance (image, text, ...) as the primary field and differs only in its position,
+		// dimensions, page and rotation.
+		// NOTE: multi-widget signatures are currently supported by the PDFBox implementation only.
+		SignatureFieldParameters secondWidget = new SignatureFieldParameters();
+		secondWidget.setPage(2);
+		secondWidget.setOriginX(50);
+		secondWidget.setOriginY(50);
+		secondWidget.setWidth(100);
+		secondWidget.setHeight(50);
+		imageParameters.addFieldParameters(secondWidget);
+
+		// end::multiWidget[]
+	}
+
 	public void dss65Migration() {
 		DSSDocument modifiedImage = new InMemoryDocument(); // blank sample
 

@@ -227,6 +227,19 @@ DSS framework provides a set of functions to manage the signature field size :
 include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/PAdESVisibleSignatureSnippet.java[tags=dimensions]
 ----
 
+[[MultipleWidgets]]
+====== Multiple widgets (multi-widget signature)
+
+DSS allows a single PAdES signature to be displayed in several positions and/or pages at once, through multiple widgets sharing the same signature field (i.e. a single signature value and a single `/ByteRange`). In addition to the primary field, additional fields can be defined; every additional widget shares the same visual appearance (image, text, ...) as the primary field and differs only in its position, dimensions, page and rotation.
+
+NOTE: multi-widget signatures are currently supported by the PDFBox implementation only. The OpenPDF implementation throws an `UnsupportedOperationException` when additional fields are defined.
+
+[source,java,indent=0]
+.Multi-widget signature (the same signature shown in several positions/pages)
+----
+include::{sourcetestdir}/eu/europa/esig/dss/cookbook/example/snippets/PAdESVisibleSignatureSnippet.java[tags=multiWidget]
+----
+
 [[TextParameters]]
 ====== Text Parameters
 
