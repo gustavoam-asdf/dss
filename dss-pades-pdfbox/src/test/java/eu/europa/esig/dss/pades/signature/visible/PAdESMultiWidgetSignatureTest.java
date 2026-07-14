@@ -28,11 +28,14 @@ import eu.europa.esig.dss.model.DSSDocument;
 import eu.europa.esig.dss.model.InMemoryDocument;
 import eu.europa.esig.dss.model.SignatureValue;
 import eu.europa.esig.dss.model.ToBeSigned;
+import eu.europa.esig.dss.model.x509.CertificateToken;
 import eu.europa.esig.dss.pades.PAdESSignatureParameters;
 import eu.europa.esig.dss.pades.SignatureFieldParameters;
 import eu.europa.esig.dss.pades.SignatureImageParameters;
 import eu.europa.esig.dss.pades.signature.PAdESService;
 import eu.europa.esig.dss.pades.validation.suite.AbstractPAdESTestValidation;
+import eu.europa.esig.dss.pki.model.CertEntity;
+import eu.europa.esig.dss.test.pki.CertEntitySignatureTokenConnection;
 import eu.europa.esig.dss.validation.reports.Reports;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -121,6 +125,84 @@ class PAdESMultiWidgetSignatureTest extends AbstractPAdESTestValidation {
 	}
 
 	@Test
+	void doubleMultiWidgetSignatureTest() throws IOException {
+		// first multi-widget signature
+		SignatureImageParameters imageParameters = new SignatureImageParameters();
+		imageParameters.setImage(image);
+		imageParameters.setFieldParameters(fieldParameters(1, 50, 50));
+		imageParameters.setAdditionalFieldParameters(Arrays.asList(
+				fieldParameters(1, 50, 200),
+				fieldParameters(2, 50, 50)));
+		signatureParameters.setImageParameters(imageParameters);
+
+		DSSDocument firstSignedDocument = sign();
+		assertNotNull(firstSignedDocument);
+
+		// second multi-widget signature over the already (multi-widget) signed document, at non-overlapping positions
+		PAdESSignatureParameters secondSignatureParameters = new PAdESSignatureParameters();
+		secondSignatureParameters.bLevel().setSigningDate(new Date());
+		secondSignatureParameters.setSigningCertificate(getSigningCert());
+		secondSignatureParameters.setCertificateChain(getCertificateChain());
+		secondSignatureParameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+
+		SignatureImageParameters secondImageParameters = new SignatureImageParameters();
+		secondImageParameters.setImage(image);
+		secondImageParameters.setFieldParameters(fieldParameters(1, 300, 50));
+		secondImageParameters.setAdditionalFieldParameters(Collections.singletonList(fieldParameters(2, 300, 50)));
+		secondSignatureParameters.setImageParameters(secondImageParameters);
+
+		DSSDocument secondSignedDocument = sign(firstSignedDocument, secondSignatureParameters);
+		assertNotNull(secondSignedDocument);
+
+		Reports reports = verify(secondSignedDocument);
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		// two independent signatures, both valid
+		assertEquals(2, diagnosticData.getSignatures().size());
+		diagnosticData.getSignatures().forEach(signature ->
+				assertTrue(diagnosticData.isBLevelTechnicallyValid(signature.getId())));
+	}
+
+	@Test
+	void singleThenMultiWidgetDifferentSignersTest() throws IOException {
+		// first signer: single-widget signature
+		signatureParameters.setImageParameters(imageParameters(fieldParameters(1, 50, 50), null));
+		DSSDocument firstSignedDocument = sign();
+		assertNotNull(firstSignedDocument);
+
+		// second, different signer: multi-widget signature at non-overlapping positions
+		PAdESSignatureParameters secondSignatureParameters = signatureParameters(ECDSA_USER);
+		secondSignatureParameters.setImageParameters(imageParameters(fieldParameters(1, 300, 50),
+				Collections.singletonList(fieldParameters(2, 50, 50))));
+		DSSDocument secondSignedDocument = signWith(firstSignedDocument, secondSignatureParameters, ECDSA_USER);
+
+		assertTwoValidSignatures(secondSignedDocument);
+	}
+
+	@Test
+	void multiThenSingleWidgetDifferentSignersTest() throws IOException {
+		// first signer: multi-widget signature
+		signatureParameters.setImageParameters(imageParameters(fieldParameters(1, 50, 50),
+				Arrays.asList(fieldParameters(1, 50, 200), fieldParameters(2, 50, 50))));
+		DSSDocument firstSignedDocument = sign();
+		assertNotNull(firstSignedDocument);
+
+		// second, different signer: single-widget signature at a non-overlapping position
+		PAdESSignatureParameters secondSignatureParameters = signatureParameters(ECDSA_USER);
+		secondSignatureParameters.setImageParameters(imageParameters(fieldParameters(1, 300, 50), null));
+		DSSDocument secondSignedDocument = signWith(firstSignedDocument, secondSignatureParameters, ECDSA_USER);
+
+		assertTwoValidSignatures(secondSignedDocument);
+	}
+
+	private void assertTwoValidSignatures(DSSDocument signedDocument) {
+		Reports reports = verify(signedDocument);
+		DiagnosticData diagnosticData = reports.getDiagnosticData();
+		assertEquals(2, diagnosticData.getSignatures().size());
+		diagnosticData.getSignatures().forEach(signature ->
+				assertTrue(diagnosticData.isBLevelTechnicallyValid(signature.getId())));
+	}
+
+	@Test
 	void noAdditionalWidgetRemainsSingleWidgetTest() throws IOException {
 		SignatureImageParameters imageParameters = new SignatureImageParameters();
 		imageParameters.setImage(image);
@@ -136,6 +218,27 @@ class PAdESMultiWidgetSignatureTest extends AbstractPAdESTestValidation {
 		assertTrue(diagnosticData.isBLevelTechnicallyValid(diagnosticData.getFirstSignatureId()));
 	}
 
+	private SignatureImageParameters imageParameters(SignatureFieldParameters primary,
+													 List<SignatureFieldParameters> additional) {
+		SignatureImageParameters imageParameters = new SignatureImageParameters();
+		imageParameters.setImage(image);
+		imageParameters.setFieldParameters(primary);
+		if (additional != null) {
+			imageParameters.setAdditionalFieldParameters(additional);
+		}
+		return imageParameters;
+	}
+
+	private PAdESSignatureParameters signatureParameters(String signerAlias) {
+		CertEntity signer = getCertEntity(signerAlias);
+		PAdESSignatureParameters parameters = new PAdESSignatureParameters();
+		parameters.bLevel().setSigningDate(new Date());
+		parameters.setSigningCertificate(signer.getCertificateToken());
+		parameters.setCertificateChain(signer.getCertificateChain().toArray(new CertificateToken[0]));
+		parameters.setSignatureLevel(SignatureLevel.PAdES_BASELINE_B);
+		return parameters;
+	}
+
 	private SignatureFieldParameters fieldParameters(int page, float originX, float originY) {
 		SignatureFieldParameters fieldParameters = new SignatureFieldParameters();
 		fieldParameters.setPage(page);
@@ -147,9 +250,20 @@ class PAdESMultiWidgetSignatureTest extends AbstractPAdESTestValidation {
 	}
 
 	private DSSDocument sign() throws IOException {
-		ToBeSigned dataToSign = service.getDataToSign(documentToSign, signatureParameters);
-		SignatureValue signatureValue = getToken().sign(dataToSign, signatureParameters.getDigestAlgorithm(), getPrivateKeyEntry());
-		return service.signDocument(documentToSign, signatureParameters, signatureValue);
+		return sign(documentToSign, signatureParameters);
+	}
+
+	private DSSDocument sign(DSSDocument document, PAdESSignatureParameters parameters) throws IOException {
+		ToBeSigned dataToSign = service.getDataToSign(document, parameters);
+		SignatureValue signatureValue = getToken().sign(dataToSign, parameters.getDigestAlgorithm(), getPrivateKeyEntry());
+		return service.signDocument(document, parameters, signatureValue);
+	}
+
+	private DSSDocument signWith(DSSDocument document, PAdESSignatureParameters parameters, String signerAlias) throws IOException {
+		CertEntitySignatureTokenConnection token = new CertEntitySignatureTokenConnection(getCertEntity(signerAlias));
+		ToBeSigned dataToSign = service.getDataToSign(document, parameters);
+		SignatureValue signatureValue = token.sign(dataToSign, parameters.getDigestAlgorithm(), token.getKeys().iterator().next());
+		return service.signDocument(document, parameters, signatureValue);
 	}
 
 	@Override
